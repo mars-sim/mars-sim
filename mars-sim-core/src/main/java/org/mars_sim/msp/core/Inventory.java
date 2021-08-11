@@ -836,7 +836,7 @@ public class Inventory implements Serializable {
 						if (unit instanceof Container) {						
 							Equipment e = (Equipment)unit;		
 							int resourceID = e.getResource();
-							if (resourceID == storedResourceID) {
+							if (resourceID == storedResourceID || resourceID == -1) {
 								double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
 								double unitStorageAmount = remainingAmount;
 								if (unitStorageAmount > remainingCap) {
@@ -935,7 +935,7 @@ public class Inventory implements Serializable {
 						if (unit instanceof Container) {
 							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
-							if (resourceID == resource) {
+							if (resourceID == resource || resourceID == -1) {
 								double remainingCap = e.getAmountResourceRemainingCapacity(resource);
 								double unitStorageAmount = remainingAmount;
 								if (unitStorageAmount > remainingCap) {
@@ -1033,7 +1033,7 @@ public class Inventory implements Serializable {
 						if (unit instanceof Container) {
 							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
-							if (resourceID == resource) {
+							if (resourceID == resource || resourceID == -1) {
 								double stored = e.getAmountResourceRemainingCapacity(resource);
 								double retrievedAmount = remainingAmount;
 								if (retrievedAmount > stored) {
@@ -1645,12 +1645,12 @@ public class Inventory implements Serializable {
 	 * @param unitClass
 	 * @return
 	 */
-	public Equipment findAnEmptyEquipment(Class<? extends Unit> unitClass) {
+	public Equipment findAnEmptyEquipment(Class<? extends Unit> unitClass, int resource) {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
 				if (unitClass.isInstance(e)) {
-					if (e.isEmpty()) {
+					if (e.isEmpty(resource)) {
 						return e;
 					}
 				}
@@ -1719,24 +1719,19 @@ public class Inventory implements Serializable {
 	}	
 	
 	/**
-	 * Finds a bag in storage.
+	 * Finds a brand new bag in storage.
 	 * 
 	 * @param empty does it need to be empty ?
 	 * @return the instance of SpecimenBox or null if none.
 	 */
-	public Bag findABag(boolean empty) {
+	public Bag findNewBag() {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
 				if (e instanceof Bag) {
-					if (empty) {
-						// It must be empty inside
-						if (e.isEmpty()) {
-							return (Bag)e;
-						}
-					}
-					else
+					if (e.isBrandNew()) {
 						return (Bag)e;
+					}
 				}
 			}
 		}
@@ -1756,11 +1751,11 @@ public class Inventory implements Serializable {
 				if (e instanceof Bag) {
 					if (empty) {
 						// It must be empty inside
-						if (e.isEmpty() && e.getResource() == resource) {
+						if (e.isEmpty(resource)) {
 							return (Bag)e;
 						}
 					}
-					else if (e.getResource() == resource)
+					else if (e.getResource() == resource || e.getResource() == -1)
 						return (Bag)e;
 				}
 			}
@@ -1768,30 +1763,30 @@ public class Inventory implements Serializable {
 		return null;
 	}	
 	
-	/**
-	 * Does this inventory have a a bag in storage.
-	 * 
-	 * @param empty does it need to be empty ?
-	 * @return the instance of SpecimenBox or null if none.
-	 */
-	public boolean hasABag(boolean empty) {
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer id : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof Bag) {
-					if (empty) {
-						// It must be empty inside
-						if (e.isEmpty()) {
-							return true;
-						}
-					}
-					else
-						return true;
-				}
-			}
-		}
-		return false;
-	}	
+//	/**
+//	 * Does this inventory have a bag in storage.
+//	 * 
+//	 * @param empty does it need to be empty ?
+//	 * @return the instance of SpecimenBox or null if none.
+//	 */
+//	public boolean hasABag(boolean empty) {
+//		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+//			for (Integer id : containedUnitIDs) {
+//				Equipment e = unitManager.getEquipmentByID(id);
+//				if (e instanceof Bag) {
+//					if (empty) {
+//						// It must be empty inside
+//						if (e.isEmpty()) {
+//							return true;
+//						}
+//					}
+//					else
+//						return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}	
 	
 	/**
 	 * Does this inventory have a a bag in storage.
@@ -1806,11 +1801,12 @@ public class Inventory implements Serializable {
 				if (e instanceof Bag) {
 					if (empty) {
 						// It must be empty inside
-						if (e.isEmpty() && e.getResource() == resource) {
+						if (e.isEmpty(resource)) {
 							return true;
 						}
 					}
-					else if (e.getResource() == resource)
+					else if (e.getResource() == resource || e.getResource() == -1)
+						// resourceID = -1 means the container has not been initialized
 						return true;
 				}
 			}
@@ -1993,10 +1989,10 @@ public class Inventory implements Serializable {
 	 * Finds the number of specimen box that are contained in storage.
 	 * 
 	 * @param isEmpty    does it need to be empty ?
-	 * @param allowDirty will allow dirty (possibly out of date) results.
+	 * @param brandNew  does it include brand new bag only
 	 * @return number of specimen box
 	 */
-	public int findNumSpecimenBoxes(boolean isEmpty, boolean allowDirty) {
+	public int findNumSpecimenBoxes(boolean isEmpty, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
@@ -2004,7 +2000,7 @@ public class Inventory implements Serializable {
 				if (e instanceof SpecimenBox) {
 					if (isEmpty) {
 						// It must be empty inside
-						if (e.isEmpty()) {
+						if (e.isEmpty(brandNew)) {
 							result++;
 						}
 					}
@@ -2020,10 +2016,10 @@ public class Inventory implements Serializable {
 	 * Finds the number of bags that are contained in storage.
 	 * 
 	 * @param isEmpty    does it need to be empty ?
-	 * @param allowDirty will allow dirty (possibly out of date) results.
+	 * @param brandNew  does it include brand new bag only
 	 * @return number of bags
 	 */
-	public int findNumBags(boolean isEmpty, boolean allowDirty) {
+	public int findNumBags(boolean isEmpty, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
@@ -2031,7 +2027,7 @@ public class Inventory implements Serializable {
 				if (e instanceof Bag) {
 					if (isEmpty) {
 						// It must be empty inside
-						if (e.isEmpty()) {
+						if (e.isEmpty(brandNew)) {
 							result++;
 						}
 					}
@@ -2076,24 +2072,24 @@ public class Inventory implements Serializable {
 	 * an empty inventory.
 	 * 
 	 * @param unitClass  the unit class.
-	 * @param allowDirty will allow dirty (possibly out of date) results.
+	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty units.
 	 */
-	public <T extends Unit> int findNumEmptyUnitsOfClass(Class<T> unitClass, boolean allowDirty) {
+	public <T extends Unit> int findNumEmptyUnitsOfClass(Class<T> unitClass, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Unit unit = unitManager.getUnitByID(id);
 				if (unitClass.isInstance(unit)) {
 					if (unit instanceof Container) {
-						if (((Equipment)unit).isEmpty()) {
+						if (((Equipment)unit).isEmpty(brandNew)) {
 							result++;
 						}
 					}
 					else {
 						Inventory inv = unit.getInventory();
 						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(allowDirty)) {
+						if ((inv != null) && inv.isEmpty(brandNew)) {
 							result++;
 						}
 					}
@@ -2108,16 +2104,16 @@ public class Inventory implements Serializable {
 	 * an empty inventory.
 	 * 
 	 * @param containerClass  the unit class.
-	 * @param allowDirty will allow dirty (possibly out of date) results.
+	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
-	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> containerClass, boolean allowDirty) {
+	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> containerClass, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment unit = unitManager.getEquipmentByID(id);
 				if (containerClass.isInstance(unit)) {
-					if (((Equipment)unit).isEmpty()) {
+					if (((Equipment)unit).isEmpty(brandNew)) {
 						result++;
 					}
 				}
@@ -2127,21 +2123,28 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	public int findNumEmptyUnitsOfClass(int typeID, boolean allowDirty) {
+	/**
+	 * Finds the number of empty equipment units
+	 * 
+	 * @param typeID
+	 * @param brandNew  does it include brand new bag only
+	 * @return
+	 */
+	public int findNumEmptyUnitsOfClass(int typeID, boolean brandNew) {
 		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(typeID);	
 		int result = 0;
 		if (containsUnitClass(typeID)) {
 			for (Unit unit : getContainedUnits()) {
 				if (unitClass.isInstance(unit)) {
 					if (unit instanceof Container) {
-						if (((Equipment)unit).isEmpty()) {
+						if (((Equipment)unit).isEmpty(brandNew)) {
 							result++;
 						}
 					}
 					else {
 						Inventory inv = unit.getInventory();
 						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(allowDirty)) {
+						if ((inv != null) && inv.isEmpty(brandNew)) {
 							result++;
 						}
 					}
@@ -2356,6 +2359,7 @@ public class Inventory implements Serializable {
 						int resourceID = e.getResource();
 						double quantity = e.getQuanity();
 						if (resourceID != -1 && quantity > 0) {
+							// resourceID != -1 means the container has not been initialized
 							updateAmountResourceCapacityCache(resourceID);
 							updateAmountResourceStoredCache(resourceID);
 							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
@@ -2636,6 +2640,11 @@ public class Inventory implements Serializable {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
 							containedCapacity += ((Equipment)unit).getAmountResourceCapacity(resource);
+//							Equipment e = ((Equipment)unit);
+//							if (e.getResource() == resource || e.getResource() == -1) {
+//								// e.getResource() = -1 means the container is never being used.
+//								containedCapacity += e.getAmountResourceCapacity(resource);
+//							}
 						}
 					}
 				}
@@ -2954,6 +2963,7 @@ public class Inventory implements Serializable {
 				if (unit instanceof Container) {
 					int resource = ((Equipment)unit).getResource();
 					if (resource != -1)
+						// resourceID = -1 means the container has not been initialized
 						tempAllStored.add(resource);
 				}
 			}

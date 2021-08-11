@@ -755,7 +755,7 @@ public final class TradeUtil {
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlementInv.findAnEmptyEquipment(containerClass);
+			result = settlementInv.findAnEmptyEquipment(containerClass, resource.getID());
 
 		return result;
 	}

@@ -801,7 +801,7 @@ public final class DeliveryUtil {
 			containersDelivered = deliveredGoods.get(containerGood);
 
 		if (containersStored > containersDelivered)
-			result = settlementInv.findAnEmptyEquipment(containerClass);
+			result = settlementInv.findAnEmptyEquipment(containerClass, resource.getID());
 
 		return result;
 	}

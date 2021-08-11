@@ -258,7 +258,7 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (MissionType.COLLECT_ICE == type ||
 							MissionType.COLLECT_REGOLITH == type) {
 						if (column == 8)
-							result = inv.findNumBags(true, true);//findNumEmptyUnitsOfClass(Bag.class, true);
+							result = inv.findNumBags(true, false);
 					}
 					else if (MissionType.MINING == type) {
 						if (column == 8) {
@@ -392,20 +392,20 @@ class StartingSettlementPanel extends WizardPanel {
 				MissionType type = getWizard().getMissionData().getMissionType();
 				if (MissionType.EXPLORATION == type) {
 					if (column == 8) {
-						if (inv.findNumSpecimenBoxes(true, true) < //.findNumEmptyUnitsOfClass(SpecimenBox.class, true) <
+						if (inv.findNumSpecimenBoxes(true, true) < 
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (MissionType.COLLECT_ICE == type ||
 						MissionType.COLLECT_REGOLITH == type) {
 					if (column == 8) {
-						if (inv.findNumBags(true, true) < //.findNumEmptyUnitsOfClass(Bag.class, true) <
+						if (inv.findNumBags(true, false) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 				}
 				else if (MissionType.MINING == type ) {
 					if (column == 8) {
-						if (inv.findNumBags(true, true) < //findNumEmptyUnitsOfClass(Bag.class, true) <
+						if (inv.findNumBags(true, true) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 					if (column == 9) {

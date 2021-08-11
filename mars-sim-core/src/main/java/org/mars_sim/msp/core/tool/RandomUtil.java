@@ -101,7 +101,7 @@ public final class RandomUtil {
 	}
 
 	/**
-	 * Returns a random double number from 0 to the ceiling number given.
+	 * Returns a random double number from base to the ceiling number given.
 	 * 
 	 * @param ceiling the maximum number result
 	 * @return the random number
@@ -109,7 +109,7 @@ public final class RandomUtil {
 	public static double getRandomDouble(double base, double ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		return ThreadLocalRandom.current().nextDouble() * ceiling - ThreadLocalRandom.current().nextDouble() * base;
+		return ThreadLocalRandom.current().nextDouble(ceiling - base) + base;
 	}
 	
 	/**

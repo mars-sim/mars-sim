@@ -114,35 +114,40 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @param resource
 	 * @param quantity
+	 * @param test true if it's just a test
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		// Note: if a bag was filled with regolith and later was emptied out
-		// should it be tagged for only regolith and not for another resource ?
-		if (this.resource == resource || this.resource == -1) {
-			if (this.resource == -1) {
-				this.resource = resource;
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.config(this, "Initialized for storing " + name + ".");
-			}
+		if (this.resource == -1) {
+			// Note: if a bag was filled with regolith and later was emptied out
+			// should it be tagged for only regolith and not for another resource ?
+			this.resource = resource;
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.config(this, "Initialized for storing " + name + ".");
+		}
+		
+		if (this.resource == resource) {
 			
 			double newQ = this.quantity + quantity;
+			String name = ResourceUtil.findAmountResourceName(resource);
 			
 			if (newQ > getTotalCapacity()) {
 				double excess = newQ - getTotalCapacity();
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, "storage is full. Excess " + name + " " + Math.round(excess * 10.0)/10.0 + " kg .");
+				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
 				this.quantity = getTotalCapacity();
 				return excess;
 			}
 			else {
 				this.quantity = newQ;
+//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
 				return 0;
 			}
 		}
 		else {
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "Storing " + name + ": " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			logger.warning(this, "Invalid request. Not for " + name 
+					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return quantity;
 		}
 	}
@@ -155,11 +160,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (this.resource == resource || this.resource == - 1) {
+		if (this.resource == resource || this.resource == -1) {
 			double diff = this.quantity - quantity;
 			if (diff < 0) {
 				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, "Not enough " + name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
+				logger.warning(this, "Just retrieved all " + this.quantity + " kg " 
+						+ name + " but still lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
 				this.quantity = 0;
 				return diff;
 			}
@@ -178,14 +184,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	public double getAmountResourceCapacity(int resource) {
-		if (this.resource == resource || this.resource == - 1) {
+		if (this.resource == resource || this.resource == -1) {
 			return getTotalCapacity();
 		}
 		else {
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
-					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
@@ -197,27 +203,37 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		if (this.resource == resource || this.resource == - 1) {
+		if (this.resource == resource || this.resource == -1) {
 			return getTotalCapacity() - this.quantity;
 		}
 		else {
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
-					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
 	
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public double getAmountResourceStored(int resource) {
-		if (this.resource == resource || this.resource == - 1) {
+		if (this.resource == resource) {
 			return this.quantity;
 		}
+		else if (this.resource == - 1) {
+			return 0;
+		}
 		else {
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
-					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
@@ -226,9 +242,45 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return this.quantity;
 	}
 	
-	public boolean isEmpty() {
-		if (resource == -1 || this.quantity == 0)
+
+	/**
+	 * Is this equipment empty ? 
+	 * 
+	 * @param brandNew true if it needs to be brand new and never be used before
+	 * @return
+	 */
+	public boolean isEmpty(boolean brandNew) {
+		if (brandNew && resource == -1)
 			return true;
+		else if (this.quantity == 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isBrandNew() {
+		if (resource == -1 && this.quantity == 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isUsed() {
+		if (resource != -1)
+			return true;
+		return false;
+	}	
+
+	public boolean hasContent() {
+		if (quantity > 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isEmpty(int resource) {
+		if (resource == -1)
+			return true;
+		if (this.resource == resource || this.quantity == 0)
+			return true;
+		
 		return false;
 	}	
 	
@@ -409,6 +461,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		int number = unitManager.incrementTypeCount(baseName);
 		return String.format("%s %03d", baseName, number);
 	}
+	
+	/**
+	 * Clean this container for future use
+	 */
+	public void clean() {
+		this.resource = -1;
+		this.quantity = 0;
+	}
+	
 	
 	/**
 	 * Compares if an object is the same as this equipment 

@@ -822,7 +822,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 						Equipment eq = (Equipment) array[x];
 
-						if (eq.isEmpty()) {
+						if (eq.isEmpty(true)) {
 							if (vInv.canStoreUnit(eq, false)) {
 								// Put this equipment into a vehicle
 								eq.transfer(sInv, vInv);
@@ -906,7 +906,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 					Equipment eq = (Equipment) array[x];
 
-					if (eq.isEmpty()) {
+					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle
 							eq.transfer(sInv, vInv);

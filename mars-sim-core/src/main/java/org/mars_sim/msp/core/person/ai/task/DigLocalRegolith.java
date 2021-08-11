@@ -52,28 +52,24 @@ implements Serializable {
     private static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
-	public static final double SMALL_AMOUNT = 0.001;
+	public static final double SMALL_AMOUNT = 0.00001;
 			
 	private boolean ended = false;
 	
 	private double compositeRate;
 	
-	private double factor = .9;
+	private double factor;
 	/**  Collection rate of ice during EVA (kg/millisol). */
 	private double collectionRate;
-	
 	/** Total ice collected in kg. */
 	private double totalCollected;
 	/** The resource name. */
 	private String resourceString = "regolith";
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
-	/** Bag for collecting regolith. */
-	private Bag aBag;
-	
+
 	private Settlement settlement;
 
-	
 	private static int resourceID = ResourceUtil.regolithID;
 
 	/**
@@ -112,10 +108,10 @@ implements Serializable {
      	}
 
         // Take bags for collecting resource.
-        takeBag();
+     	Bag aBag = transferBag();
 
         // If bags are not available, end task.
-        if (!hasBags()) {
+        if (aBag == null) {
         	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
@@ -138,7 +134,8 @@ implements Serializable {
 	        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 	        
 	        factor = .9 * (1 - (agility + strength) / 200D);
-	        compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
+	        compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
+//	        logger.log(person, Level.INFO, 4_000, "compositeRate for regolith: " + compositeRate);
 	        
 			// set the boolean to true so that it won't be done again today
 	//		person.getPreference().setTaskDue(this, true);
@@ -209,7 +206,11 @@ implements Serializable {
 		
     	Inventory pInv = person.getInventory();
 
-        double collected = RandomUtil.getRandomDouble(2) * time * compositeRate;
+        // Introduce randomness into the amount collected so that it will NOT
+        // always weigh strangely at exactly 50 kg 
+        double rand = RandomUtil.getRandomDouble(0.5, 1.5);
+        
+        double collected = rand * time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY); 
@@ -221,58 +222,76 @@ implements Serializable {
 		}
 
 		if (collected < SMALL_AMOUNT) {
+			 logger.log(person, Level.WARNING, 4_000, "Collected too little " 
+		            	+ Math.round(collected*100D)/100D 
+		            	+ " kg " + resourceString + ".");
 			return 0;
 		}
+//		else
+//			 logger.log(person, Level.WARNING, 4_000, "Collected " 
+//		            	+ Math.round(collected*100D)/100D 
+//		            	+ " kg " + resourceString + ".");
 		
         boolean finishedCollecting = false;
         
-        // Introduce randomness into the amount collected so that it will NOT
-        // always weigh strangely at exactly 50 kg 
-        double rand = RandomUtil.getRandomDouble(1.5);
+//        double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
+//        		resourceID, false, false);
         
-        double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
-        		resourceID, false, false);
+        Bag aBag = person.getInventory().findABag(false, resourceID);
         
         if (aBag == null) {
-        	takeBag();
+        	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
+        	if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
+            else {
+            	ended = true;
+            	endTask();
+         		return 0;
+            }
         }
         
         double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
         		resourceID);
-
-        // Case 1
-        if (personRemainingCap < SMALL_AMOUNT) {
-            collected = 0;
-            finishedCollecting = true;
-        }
-        // Case 2        
-        else if (collected + rand >= personRemainingCap) {
-        	collected = personRemainingCap - rand;
-        	finishedCollecting = true;
-    	}
-        // Case 3
-        else if (bagRemainingCap < SMALL_AMOUNT) {
-            collected = 0;
-            finishedCollecting = true;
-        }
-        // Case 4        
-        else if (collected + rand >= bagRemainingCap) {
-        	collected = bagRemainingCap - rand;
-        	finishedCollecting = true;
-    	}
-        // Case 5
-        else if (totalCollected + collected + rand >= pInv.getGeneralCapacity()) {    
-        	collected = pInv.getGeneralCapacity() - totalCollected - collected - rand;
-            finishedCollecting = true;
-        }
-        // Case 6      
-        else if (totalCollected + collected + rand >= aBag.getTotalCapacity()) {    
-        	collected = aBag.getTotalCapacity() - totalCollected - collected - rand;
-            finishedCollecting = true;
-        }
+//        logger.log(person, Level.INFO, 4_000, "bagRemainingCap: " 
+//            	+ Math.round(bagRemainingCap*100D)/100D 
+//        		+ " kg " + resourceString + "."); 
+  	  
+//        // Case 1
+//        if (personRemainingCap < SMALL_AMOUNT) {
+//            collected = 0;
+//            finishedCollecting = true;
+//        }
+//        // Case 2        
+//        else if (collected + rand >= personRemainingCap) {
+//        	collected = personRemainingCap;
+//        	finishedCollecting = true;
+//    	}
+//        // Case 3
+//        else if (bagRemainingCap < SMALL_AMOUNT) {
+//            collected = 0;
+//            finishedCollecting = true;
+//        }
+//        // Case 4        
+		if (collected + rand >= bagRemainingCap) {
+			collected = bagRemainingCap;
+			finishedCollecting = true;
+		}
+//        // Case 5
+//        else if (totalCollected + collected + rand >= pInv.getGeneralCapacity()) {    
+//        	collected = pInv.getGeneralCapacity() - totalCollected;
+//            finishedCollecting = true;
+//        }
+//        // Case 6      
+//        if (totalCollected + collected + rand >= aBag.getTotalCapacity()) {    
+//        	collected = aBag.getTotalCapacity() - totalCollected;
+//            finishedCollecting = true;
+//        }
 
         if (collected > SMALL_AMOUNT) {
-        	totalCollected += collected;
+//        	totalCollected += collected;
+//        	  logger.log(person, Level.INFO, 4_000, "Storing " 
+//                  	+ Math.round(collected*100D)/100D 
+//              		+ " kg " + resourceString + "."); 
         	aBag.storeAmountResource(resourceID, collected);
         }
         
@@ -322,23 +341,25 @@ implements Serializable {
     }
 
     /**
-     * Takes an empty bag
+     * Transfers an empty bag from a settlement to a person
      */
-    private void takeBag() {
+    private Bag transferBag() {
     	// Note: should take a bag before leaving the airlock
     	// Note:  also consider dropping off the resource in a shed 
     	// or a shed outside of the workshop/landerhab for processing
-        aBag = settlement.getInventory().findABag(true, resourceID);
-//        if (aBag == null) {
-//        	// if no empty bag, take any bags
-//        	aBag = settlement.getInventory().findABag(false);
-//	    	// Add the equipment demand for a bag
-////	    	settlement.getInventory().addEquipmentDemandTotalRequest(aBag, 1);
-////	    	settlement.getInventory().addEquipmentDemand(aBag, 1);
-//        }
+        Bag aBag = settlement.getInventory().findABag(true, resourceID);
         if (aBag != null) {
             if (person.getInventory().canStoreUnit(aBag, false)) {
-            	aBag.transfer(settlement, person);
+            	boolean successful = aBag.transfer(settlement, person);
+            	if (successful) {
+            		logger.log(person, Level.INFO, 10_000, "Just obtained an empty bag for " + resourceString + ".");
+            		return aBag;
+            	}
+            	else {
+                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceString + ".");
+                	ended = true;
+                	super.endTask();
+                }
             }
             else {
             	logger.log(person, Level.WARNING, 10_000, "Strangely unable to carry an empty bag for " + resourceString + ".");
@@ -351,6 +372,7 @@ implements Serializable {
         	ended = true;
         	super.endTask();
         }
+        return null;
     }
 
     @Override
@@ -399,9 +421,11 @@ implements Serializable {
     	
     	else {
 	    	Inventory pInv = person.getInventory();
-	    	Bag bag = pInv.findABag(false);
-
-            double amount = pInv.getAmountResourceStored(resourceID, false);
+	    	Bag bag = pInv.findABag(false, resourceID);
+	    	if (bag == null)
+	    		return;
+	    	
+            double amount = bag.getAmountResourceStored(resourceID);
             logger.log(person, Level.INFO, 0,
             			"Had " + Math.round(amount*10.0)/10.0 + " kg of "
             			+ resourceString + ".");

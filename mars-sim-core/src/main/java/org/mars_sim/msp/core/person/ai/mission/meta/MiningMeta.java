@@ -75,7 +75,7 @@ public class MiningMeta implements MetaMission {
 	    			return 0;
 	       		
 	            // Check if there are enough bags at the settlement for collecting minerals.
-	            if (settlement.getInventory().findNumBags(true, true) < Mining.NUMBER_OF_LARGE_BAGS)
+	            if (settlement.getInventory().findNumBags(true, false) < Mining.NUMBER_OF_LARGE_BAGS)
 	            	return 0;
 	
 	            // Check if available light utility vehicles.

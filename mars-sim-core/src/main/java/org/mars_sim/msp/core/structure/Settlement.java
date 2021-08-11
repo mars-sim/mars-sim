@@ -265,7 +265,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private boolean[] missionsDisable = new boolean[12];
 
 	/** The average regolith collection rate nearby */
-	private double regolithCollectionRate = RandomUtil.getRandomDouble(3, 5);
+	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
 	/** The average ice collection rate of the water ice nearby */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The composite value of the minerals nearby. */

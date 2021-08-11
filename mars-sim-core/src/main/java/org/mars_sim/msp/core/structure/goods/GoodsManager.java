@@ -3420,7 +3420,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		Iterator<Unit> k = equipmentList.iterator();
 		while (k.hasNext()) {
-			if (!((Equipment)k.next()).isEmpty())
+			if (((Equipment)k.next()).hasContent())
 				numUsed++;
 		}
 		

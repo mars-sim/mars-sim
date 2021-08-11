@@ -153,27 +153,24 @@ implements Serializable {
         while (i.hasNext() && !result) {
         	Equipment e = i.next();
             if (e instanceof Container) {
-                
-                if (!e.isEmpty()) {
+               
+                if (e.hasContent()) {
                     // Only check one type of amount resource for container.
                     int resource = e.getResource();
-                    if (resource != -1) {
-                    
-                        // Check if container could be unloaded into main inventory.
-                        if (inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
-                            result = true;
-                            break;
-                        }
+                    // Check if container could be unloaded into main inventory.
+                    if (inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
+                        result = true;
+                        break;
+                    }
 
-                        // Check if container is only partially full of resource.
-                        if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
-                            // If another container is also partially full of resource, they can be consolidated.
-                            if (partialResources.contains(resource)) {
-                                result = true;
-                            }
-                            else {
-                                partialResources.add(resource);
-                            }
+                    // Check if container is only partially full of resource.
+                    if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
+                        // If another container is also partially full of resource, they can be consolidated.
+                        if (partialResources.contains(resource)) {
+                            result = true;
+                        }
+                        else {
+                            partialResources.add(resource);
                         }
                     }
                 }
@@ -215,9 +212,10 @@ implements Serializable {
         while (i.hasNext() && (remainingAmountLoading > 0D)) {
         	Equipment e = i.next();
         	
-            if (e instanceof Container) {  
+            if (e instanceof Container) { 
             	int resource = e.getResource();
-                if (resource != -1) {            
+                if (resource != -1) {
+                	// resourceID = -1 means the container has not been initialized
                     double amount = e.getAmountResourceStored(resource);
                     // Move resource in container to top inventory if possible.
                     double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
@@ -239,13 +237,12 @@ implements Serializable {
                     }
                     
                     // Check if container is empty.
-                    if (e.isEmpty()) {
+                    if (e.isEmpty(false)) {
                         // Go through each other container in top inventory and try to consolidate resource.
                         Iterator<Equipment> k = topInventory.findAllContainers().iterator();
                         while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
                         	Equipment otherUnit = k.next();
                             if (otherUnit != e && otherUnit instanceof Container) {
-                                
                                 double otherAmount = otherUnit.getAmountResourceStored(resource);
                                 if (otherAmount > 0D) {
                                     double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resource);

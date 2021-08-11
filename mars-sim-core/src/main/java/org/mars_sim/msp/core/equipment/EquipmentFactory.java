@@ -52,7 +52,7 @@ public final class EquipmentFactory {
 		if (temp) {
 			newName = "Temp " + newName;
 		}
-				
+
 		Equipment newEqm = null;
 		if (Bag.TYPE.equalsIgnoreCase(type))
 			newEqm =  new Bag(newName, settlement);
@@ -90,8 +90,10 @@ public final class EquipmentFactory {
 		Map<Integer, Equipment> e = settlement.getEquipmentTypeCache();
 		
 		if (temp && e.containsKey(id)) {
+			Equipment eq = e.get(id);
+			eq.clean();
 			// since it's temporary, it doesn't matter if the location has been defined
-			return e.get(id);
+			return eq;
 		}
 	
 		// Create a new instance of the equipment		

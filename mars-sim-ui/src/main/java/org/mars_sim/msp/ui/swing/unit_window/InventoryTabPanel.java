@@ -469,6 +469,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			else {
 				int resource = e.getResource();
 				if (resource != -1) {
+					// resourceID = -1 means the container has not been initialized
 					s = ResourceUtil.findAmountResourceName(resource);
 				}
 			}
