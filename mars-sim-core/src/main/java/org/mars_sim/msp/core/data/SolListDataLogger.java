@@ -30,7 +30,7 @@ public class SolListDataLogger<T> extends DataLogger<List<T>> {
 	}
 
 	/**
-	 * Add an item to teh current sol list
+	 * Add an item to the current sol list
 	 * @param item
 	 */
 	public void addData(T item) {

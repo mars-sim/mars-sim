@@ -57,7 +57,6 @@ public class MissionManager implements Serializable, Temporal {
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
-	
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
@@ -574,9 +573,9 @@ public class MissionManager implements Serializable, Temporal {
 				List<MissionStatus> mss = m.getMissionStatus();
 				if (mss != null && !mss.isEmpty()) {
 					for (MissionStatus ms: mss) {
-						if (m.isDone()
+						if ( //m.isDone() // still want to keep a list of completed missions in Mission Tool
 		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
-								|| m.getPlan() == null
+								m.getPlan() == null
 								|| m.getPhase() == null
 								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)								
 								|| ms == MissionStatus.CANNOT_ENTER_ROVER				
