@@ -17,12 +17,12 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
@@ -151,7 +151,7 @@ public class Mining extends RoverMission {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
 
@@ -234,7 +234,7 @@ public class Mining extends RoverMission {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 			endMission();
 		}
 

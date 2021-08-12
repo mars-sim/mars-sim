@@ -20,10 +20,10 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -927,13 +927,12 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		// Note: !done is very important to keep !
 		if (!done) {
-			// TODO : there can be custom reason such as "Equipment EVA Suit 12 cannot be
+			// Note: there can be custom reason such as "Equipment EVA Suit 12 cannot be
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
 	
 			done = true; // Note: done = true is very important to keep !
 //			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			// logger.info("done firing End_Mission_Event");
-			
 		}
 		
 		else {
@@ -1527,9 +1526,8 @@ public abstract class Mission implements Serializable, Temporal {
 		Person p = (Person)member;
 		
 		if (plan == null) {			
-			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
-			logger.log(member, Level.INFO, 0, "(" + p.getRole().getType() 
-					+ ") Will be the mission lead on " + getDescription() + ".");
+			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
+			logger.log(member, Level.INFO, 0, "Serving as the mission lead on " + this + ".");
 
 			 missionManager.requestMissionApproving(plan);
 		}

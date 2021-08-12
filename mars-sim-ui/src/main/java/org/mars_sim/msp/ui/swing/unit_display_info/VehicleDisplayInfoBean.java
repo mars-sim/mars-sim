@@ -8,7 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;

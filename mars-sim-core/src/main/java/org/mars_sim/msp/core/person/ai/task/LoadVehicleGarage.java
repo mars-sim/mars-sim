@@ -1311,12 +1311,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				int stored = vInv.getItemResourceNum(resource);
 				if (stored < num) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "2. Insufficient supply of " + itemResource
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 2. Insufficient supply of " + itemResource
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				}
 				else
-					logger.info(vehicle, 10_000, "2. Sufficient supply of " + itemResource
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 2. Sufficient supply of " + itemResource
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				
@@ -1356,14 +1356,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						double toLoad = amount - storedAmount;
 						
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "3. Insufficient supply of " + amountResource 
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 3. Insufficient supply of " + amountResource 
 								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
 					else
-						logger.info(vehicle, 10_000, "3. Sufficient supply of " + amountResource 
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 3. Sufficient supply of " + amountResource 
 								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " );
 
@@ -1394,12 +1394,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "4. Insufficient supply of " + itemResource
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 4. Insufficient supply of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
 								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 					}
 					else
-						logger.info(vehicle, 10_000, "4. Sufficient supply of " + itemResource
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 4. Sufficient supply of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
 								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 
@@ -1443,10 +1443,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int num = requiredEquipment.get(equipmentID);
 			if (vInv.findNumEquipment(equipmentID) < num) {
 				sufficientSupplies = false;
-				logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Cannot load " + num + "x " + equipmentName);
 			}
 			else
-				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Can load " + num + "x " + equipmentName);
 		}
 
 		// Check that optional equipment is loaded or can't be loaded.
@@ -1473,13 +1473,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (hasStoredSettlement) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Cannot load " + num + "x " + equipmentName);
 				}
 				else
-					logger.info(vehicle, 10_000, "6. Can load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
 			}
 			if (num > 0)
-				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
 		}
 
 		return sufficientSupplies;

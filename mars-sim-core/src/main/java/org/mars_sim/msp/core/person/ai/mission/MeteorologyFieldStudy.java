@@ -130,7 +130,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
 		}
@@ -201,7 +201,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 			endMission();
 		}
 	}

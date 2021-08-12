@@ -1,10 +1,10 @@
 /**
  * Mars Simulation Project
- * Mars.java
+ * Environment.java
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
@@ -14,9 +14,9 @@ import org.mars_sim.msp.core.time.Temporal;
 
 
 /**
- * Mars represents the planet Mars in the simulation.
+ * Environment represents the surface and orbital environment of Mars in the simulation.
  */
-public class Mars implements Serializable, Temporal {
+public class Environment implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -33,8 +33,6 @@ public class Mars implements Serializable, Temporal {
 	private SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
-	/** Mars Surface as a unit container */
-	//private transient MarsSurface marsSurface;
 	
 	/**
 	 * Constructor.
@@ -42,9 +40,7 @@ public class Mars implements Serializable, Temporal {
 	 * @param clock The Mars clock
 	 * @throws Exception if Mars could not be constructed.
 	 */
-	public Mars(MarsClock clock) {
-		// Initialize mars surface		
-		//marsSurface = new MarsSurface();
+	public Environment(MarsClock clock) {
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo(clock);
 		// Initialize weather

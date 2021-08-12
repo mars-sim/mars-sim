@@ -16,7 +16,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Landmark;
+import org.mars_sim.msp.core.environment.Landmark;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.

@@ -5,7 +5,7 @@
  * @author Dalen Kruse
  */
 
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 

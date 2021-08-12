@@ -3,7 +3,7 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
@@ -222,7 +222,7 @@ public class TestLocalAreaUtil extends TestCase {
             unitManager.removeUnit(i.next());
         }
 		
-        Mars mars = sim.getMars();
+        Environment mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
         							 mars.getWeather(), unitManager);

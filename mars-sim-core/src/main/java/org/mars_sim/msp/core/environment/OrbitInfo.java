@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 

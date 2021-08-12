@@ -13,9 +13,9 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -47,7 +47,7 @@ extends TestCase {
 
         unitManager = sim.getUnitManager();
         
-        Mars mars = sim.getMars();
+        Environment mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
         							 mars.getWeather(), sim.getUnitManager());

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import com.google.inject.AbstractModule;
 

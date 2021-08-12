@@ -19,8 +19,8 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;

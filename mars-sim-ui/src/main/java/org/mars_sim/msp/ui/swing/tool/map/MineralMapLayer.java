@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.MineralMap;
+import org.mars_sim.msp.core.environment.MineralMap;
 
 import java.awt.*;
 import java.awt.image.MemoryImageSource;

@@ -27,7 +27,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;

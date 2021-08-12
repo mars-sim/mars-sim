@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
+import org.mars_sim.msp.core.environment.MineralMapConfig.MineralType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -123,7 +123,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
 						Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-						double pixelRadius = (Mars.MARS_CIRCUMFERENCE / W) / 2D;
+						double pixelRadius = (Environment.MARS_CIRCUMFERENCE / W) / 2D;
 						double distance = RandomUtil.getRandomDouble(pixelRadius);
 						Coordinates location = regionLocation.getNewLocation(direction, distance);
 						double concentration = RandomUtil.getRandomDouble(100D);

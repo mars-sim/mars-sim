@@ -35,9 +35,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.mars.Landmark;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.TerrainElevation;
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.Landmark;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -96,7 +96,7 @@ implements ListSelectionListener, MissionListener {
 	
 	private static Simulation sim = Simulation.instance();
 	private static TerrainElevation terrainElevation;
-	private static Mars mars;
+	private static Environment mars;
 	
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static List<Landmark> landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();

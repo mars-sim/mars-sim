@@ -8,7 +8,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -31,7 +31,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         Simulation sim = Simulation.instance();
         sim.testRun();
         
-        Mars mars = sim.getMars();
+        Environment mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
         							 mars.getWeather(), sim.getUnitManager());

@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
+import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -371,7 +371,7 @@ public class Coordinates implements Serializable {
 			return 0;
 		}
 		
-		double rho = Mars.MARS_RADIUS_KM;
+		double rho = Environment.MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
 //		System.out.println("   c : " + otherCoords + "   this : " + this + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
@@ -394,7 +394,7 @@ public class Coordinates implements Serializable {
 			return 0;
 		}
 				
-		double rho = Mars.MARS_RADIUS_KM;
+		double rho = Environment.MARS_RADIUS_KM;
 		double angle = c0.getAngle(c1);
 		double result = rho * angle;
 //		System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
@@ -620,7 +620,7 @@ public class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y) {
-		return convertRectToSpherical(x, y, Mars.MARS_RADIUS_KM);
+		return convertRectToSpherical(x, y, Environment.MARS_RADIUS_KM);
 	}
 
 	/**

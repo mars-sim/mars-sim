@@ -204,7 +204,7 @@ implements Serializable {
 			return time;
 		}
 		
-    	Inventory pInv = person.getInventory();
+//    	Inventory pInv = person.getInventory();
 
         // Introduce randomness into the amount collected so that it will NOT
         // always weigh strangely at exactly 50 kg 
@@ -272,8 +272,8 @@ implements Serializable {
 //            finishedCollecting = true;
 //        }
 //        // Case 4        
-		if (collected + rand >= bagRemainingCap) {
-			collected = bagRemainingCap;
+		if (collected + rand - 0.5 >= bagRemainingCap) {
+//			collected = bagRemainingCap;
 			finishedCollecting = true;
 		}
 //        // Case 5
@@ -320,7 +320,7 @@ implements Serializable {
     	}
         
      	if (person.isInSettlement()) {
-            logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
+//            logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
         	ended = true;
         	endTask();
      		return 0;
@@ -352,7 +352,7 @@ implements Serializable {
             if (person.getInventory().canStoreUnit(aBag, false)) {
             	boolean successful = aBag.transfer(settlement, person);
             	if (successful) {
-            		logger.log(person, Level.INFO, 10_000, "Just obtained an empty bag for " + resourceString + ".");
+//            		logger.log(person, Level.INFO, 10_000, "Just obtained an empty bag for " + resourceString + ".");
             		return aBag;
             	}
             	else {
