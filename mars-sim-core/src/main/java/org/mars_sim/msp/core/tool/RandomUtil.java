@@ -12,35 +12,28 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.mars_sim.msp.core.Msg;
 
-//import it.unimi.dsi.util.XorShift1024StarRandom;
+// Note : may consider using it.unimi.dsi.util.XorShift1024StarRandom;
 
 /**
  * The RandomUtil class is a library of various random-related methods.
  */
 public final class RandomUtil {
 
-	/**
-	 * MersenneTwisterFast provides a fast, much "more" random than the linear
-	 * congruential of the java.util.Random
-	 */
-	//private final static MersenneTwisterFast random = new MersenneTwisterFast();
+	// MersenneTwisterFast provides a fast, much "more" random than the linear congruential of the java.util.Random
 	// Note 1: it is compatible with standard java.util.Randrom's method and require
 	// no mapping
 	// See intro at
 	// https://cran.r-project.org/web/packages/randtoolbox/vignettes/fullpres.pdf
 
 	// Add XORSHIFT maven artifact
-	// private final static XorShift1024StarRandom random = new
-	// XorShift1024StarRandom();
-
+	// May try XorShift1024StarRandom
+	
 	// Add two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
 	// Note 1: they are not compatible with standard java.util.Random's methods,
 	// require seeding and re-mapping of methods
 	// Note 2: other PRNG in the MT family can be found at
 	// https://github.com/zwxadz/SFMT-for-Java
 
-	// private final static SFMT19937 random = new SFMT19937();
-	// private final static SFMT19937j random = new SFMT19937j();
 
 	/**
 	 * Returns true if given number is less than a random percentage.
@@ -214,8 +207,10 @@ public final class RandomUtil {
 			totalProbability += probability;
 			probability /= 2D;
 		}
-
-		return totalValue / totalProbability;
+		if (totalProbability > 0)
+			return totalValue / totalProbability;
+		else
+			return totalValue;
 	}
 
 	/**

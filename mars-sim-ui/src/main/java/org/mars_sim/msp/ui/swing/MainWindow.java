@@ -16,7 +16,6 @@ import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -243,9 +242,9 @@ extends JComponent implements ClockListener {
 	
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
-	private static MasterClock masterClock;// = sim.getMasterClock(); 
-	private static EarthClock earthClock;// = masterClock.getEarthClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
+	private static MasterClock masterClock; 
+	private static EarthClock earthClock;
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor 1.
@@ -285,7 +284,7 @@ extends JComponent implements ClockListener {
 		initializeTheme();
 		
 		// Set up the frame
-		frame = new JFrame();//StyleId.rootpane);
+		frame = new JFrame();
 		frame.setResizable(true);
 				
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -295,29 +294,20 @@ extends JComponent implements ClockListener {
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			graphicsDevice = gs[0];
-			//gs[screen].setFullScreenWindow( frame );
+
 		}
-//		else if (gs.length > 1) {
-//			logger.log(Level.CONFIG, "Detecting more than one screen.");
-//			graphicsDevice = gs[0];
-//			//gs[screen].setFullScreenWindow( frame );
-//		}
 		else if (gs.length == 0) {
 			throw new RuntimeException("No Screens Found.");
 		}
 
 		// Load UI configuration.
-		if (cleanUI || graphicsDevice == gs[0]) {
-//			Rectangle bounds = graphicsDevice.getDefaultConfiguration().getBounds();
+		if (cleanUI || (graphicsDevice != null && graphicsDevice == gs[0])) {
 			int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 			int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 			selectedSize = new Dimension(screenWidth, screenHeight);
 			
 			// Set frame size
-			frame.setSize(selectedSize);
-			// Set location
-//		    frame.setLocation(bounds.x + (screenWidth - frame.getPreferredSize().width) / 2,
-//		            bounds.y + (screenHeight - frame.getPreferredSize().height) / 2);	    
+			frame.setSize(selectedSize);   
 			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 		}
 		
@@ -350,7 +340,6 @@ extends JComponent implements ClockListener {
 			desktop = new MainDesktopPane(this);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
-//			e.printStackTrace(System.err);
 		}
 		
 		// Set up timers for use on the status bar
@@ -361,11 +350,9 @@ extends JComponent implements ClockListener {
 			init(); 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
-//			e.printStackTrace(System.err);
 		}
 
 		// Show frame
-//    		frame.pack();
 		frame.setVisible(true);
 
 		// Stop the wait indicator layer
@@ -462,17 +449,12 @@ extends JComponent implements ClockListener {
 		        "info",
 		        new ClassResource(MainWindow.class, INFO_SVG),
 		        new Dimension(size, size)));
-		
-//		String s1 = CrewEditor.class.getResource(MainWindow.EDIT_SVG).getPath();
-		
+				
 		iconSet.addIcon(new SvgIconSource (
 		        "edit",
 		        new ClassResource(MainWindow.class, EDIT_SVG),
 		        new Dimension(size, size)));
-		
-//		String s2 = CrewEditor.class.getResource(LANDER_SVG).getPath();		
-//		File f2a = new File(LANDER_SVG);
-		
+			
 		iconSet.addIcon(new SvgIconSource (
 		        "left",
 		        new ClassResource(MainWindow.class, LEFT_SVG),
@@ -574,58 +556,6 @@ extends JComponent implements ClockListener {
 		landerIcon = new LazyIcon("lander").getIcon(); 
 	}
 	
- 
-//	/**
-//	 * Converts InputStream to File
-//	 * 
-//	 * @param inputStream
-//	 * @param file
-//	 * @throws IOException
-//	 */
-//    private static File copyInputStreamToFile(InputStream inputStream, File file)
-//		throws IOException {
-//
-//        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-//
-//            int read;
-//            byte[] bytes = new byte[1024];
-//
-//            while ((read = inputStream.read(bytes)) != -1) {
-//                outputStream.write(bytes, 0, read);
-//            }
-//
-//			// commons-io
-//            //IOUtils.copy(inputStream, outputStream);
-//        }
-//        
-//        return file;
-//    }
-
-//	/**
-//	 * Returns an image from an icon
-//	 * 
-//	 * @param icon
-//	 * @return
-//	 */
-//	public static Image iconToImage(Icon icon) {
-//		if (icon instanceof ImageIcon) {
-//			return ((ImageIcon)icon).getImage();
-//		} 
-//		else {
-//			int w = icon.getIconWidth();
-//			int h = icon.getIconHeight();
-//			GraphicsEnvironment ge = 
-//					GraphicsEnvironment.getLocalGraphicsEnvironment();
-//			GraphicsDevice gd = ge.getDefaultScreenDevice();
-//			GraphicsConfiguration gc = gd.getDefaultConfiguration();
-//			BufferedImage image = gc.createCompatibleImage(w, h);
-//			Graphics2D g = image.createGraphics();
-//			icon.paintIcon(null, g, 0, 0);
-//			g.dispose();
-//			return image;
-//		}
-//	}
-	
 	/**
 	 * Initializes UI elements for the frame
 	 */
@@ -643,9 +573,6 @@ extends JComponent implements ClockListener {
 		frame.addWindowStateListener(new WindowStateListener() {
 			   public void windowStateChanged(WindowEvent e) {
                    isIconified = (e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED; //
-					// maximized
-//				   else if ((e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH){
-//				   }
 			   }
 		});
 		
@@ -661,27 +588,17 @@ extends JComponent implements ClockListener {
 
 		// Set up the jlayer pane
 		JPanel jlayerPane = new JPanel(new BorderLayout());
-		jlayerPane.add(desktop);
-//		jlayer.add(desktop);
-			
+		jlayerPane.add(desktop);		
 		// Set up the glassy wait layer for pausing
 		jlayer = new JLayer<>(jlayerPane, layerUI);
-//		mainPane.add(jlayer);
 
-		// Add overlay
-//		jlayerPane.add(overlay, BorderLayout.CENTER);	
-	
 		// Set up the overlay pane
 		JPanel overlayPane = new JPanel(new BorderLayout());
 
 		// Create a pause overlay
 		createOverlay(overlayPane);
-				
-		// Add desktop
-//		mainPane.add(desktop, BorderLayout.CENTER);
-		
+						
 		// Add desktop to the overlay pane
-//		overlayPane.add(desktop, BorderLayout.CENTER);
 		overlayPane.add(jlayer, BorderLayout.CENTER);
 		
 		// Add overlay
@@ -720,9 +637,7 @@ extends JComponent implements ClockListener {
 		unitToolbar = new UnitToolBar(this) {
 			@Override
 			protected JButton createActionComponent(Action a) {
-				JButton jb = super.createActionComponent(a);
-//				jb.setOpaque(false);
-				return jb;
+				return super.createActionComponent(a);
 			}
 		};
 
@@ -773,7 +688,6 @@ extends JComponent implements ClockListener {
 		statusBar.addRightCorner();
 		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
-//		logger.config("Done with init()");
 	}
 
 	/**
@@ -788,9 +702,7 @@ extends JComponent implements ClockListener {
 		Icon pauseIcon = new LazyIcon("pause_orange").getIcon();
 				
         blockingOverlay = new WebStyledLabel(
-        		//StyleId.overlay,//.of("blocking-layer"),
         		pauseIcon,
-//        		"P A U S E",
                 SwingConstants.CENTER
         );
         NoOpMouseListener.install(blockingOverlay);
@@ -807,7 +719,6 @@ extends JComponent implements ClockListener {
 		    public void itemStateChanged(ItemEvent e) {
 		        if(e.getStateChange() == ItemEvent.SELECTED) {
 		        	// Checkbox has been selected
-//		        	if (masterClock.isPaused())
 		        	overlay.addOverlay(new FillOverlay(blockingOverlay));
 		        } else {
 		        	// Checkbox has been unselected
@@ -841,7 +752,6 @@ extends JComponent implements ClockListener {
 	public void openOrbitViewer() {
 		if (orbitViewer == null) {
 			orbitViewer = new OrbitViewer(desktop);
-//			orbitViewer.setVisible(true);
 			return;
 		}
 
@@ -940,9 +850,6 @@ extends JComponent implements ClockListener {
 		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
 		earthDateField.setPreferredWidth(240);
 		earthDateField.setAllowUserInput(false);
-//		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
-//		c.customize();
-//		earthDateField.setCalendarCustomizer(c);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
 		earthDateField.setAlignmentX(.5f);
@@ -952,10 +859,6 @@ extends JComponent implements ClockListener {
 		earthDateField.setDateFormat(d); 
 		
 		if (earthClock.getInstant() != null) {
-//			LocalDateTime ldt = LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC"));
-//			ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC"));
-//			Date date = Date.from(zdt.toInstant());
-//			earthDateField.setDate(date);
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
 	}
@@ -968,8 +871,7 @@ extends JComponent implements ClockListener {
 		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus, 16);
 		marsTimeTF.setEditable(false);
 		marsTimeTF.setFont(ARIAL_FONT);
-//		marsTimeTF.setPreferredWidth(240);
-		marsTimeTF.setForeground(new Color(150,96,0));//135,100,39));
+		marsTimeTF.setForeground(new Color(150,96,0));
 		marsTimeTF.setAlignmentX(.5f);
 		marsTimeTF.setAlignmentY(.5f);
 		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
@@ -1092,7 +994,7 @@ extends JComponent implements ClockListener {
 	 */
 	public void saveSimulation(boolean defaultFile, boolean isAutosave) {
 		if (isAutosave) {
-//			SwingUtilities.invokeLater(() -> layerUI.start());
+			// Note: may need to use SwingUtilities.invokeLater(() -> layerUI.start());
 			masterClock.setSaveSim(SaveType.AUTOSAVE, null);
 		}
 
@@ -1103,7 +1005,7 @@ extends JComponent implements ClockListener {
 				chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 				if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 					final File fileLocn = chooser.getSelectedFile();
-//					SwingUtilities.invokeLater(() -> layerUI.start());
+					// Note: may use SwingUtilities.invokeLater(() -> layerUI.start());
 					masterClock.setSaveSim(SaveType.SAVE_AS, fileLocn);
 				} else {
 					return;
@@ -1111,7 +1013,7 @@ extends JComponent implements ClockListener {
 			}
 
 			else {
-//				SwingUtilities.invokeLater(() -> layerUI.start());
+				// Note: may use SwingUtilities.invokeLater(() -> layerUI.start());
 				masterClock.setSaveSim(SaveType.SAVE_DEFAULT, null);
 			}
 		}
@@ -1119,21 +1021,18 @@ extends JComponent implements ClockListener {
 		sleeping.set(true);
 		while (sleeping.get() && masterClock.isSavingSimulation()) {
 			try {
-				// Thread.sleep(interval);
 				TimeUnit.MILLISECONDS.sleep(200L);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
-//				e.printStackTrace(System.err);
 			}
 			// do something here
 		}
 		
 		// Save the current main window ui config
 		UIConfig.INSTANCE.saveFile(this);
-
-//		SwingUtilities.invokeLater(() -> layerUI.stop());
-
+		
+		// Note: may use SwingUtilities.invokeLater(() -> layerUI.stop());
 	}
 
 	public void stopSleeping() {
@@ -1189,13 +1088,12 @@ extends JComponent implements ClockListener {
 	    		// Save the UI configuration.
 	    		UIConfig.INSTANCE.saveFile(this);
 	    		masterClock.exitProgram();
-	    		frame.dispose();		
-	//			frame.setVisible(false);	
+	    		frame.dispose();	
 	    		destroy();
 	    		System.exit(0);
 	        } 
 	        
-	        else { //if (reply == JOptionPane.CANCEL_OPTION) {
+	        else {
 	        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 	        }
 		}
@@ -1228,7 +1126,6 @@ extends JComponent implements ClockListener {
 			// Start the weblaf icon manager
 			if (!iconsConfigured)
 				initIconManager();
-//				SwingUtilities.invokeLater(() -> initIconManager());
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 		}
