@@ -203,40 +203,20 @@ implements Serializable {
         		endTask();
 			return time;
 		}
-		
-//    	Inventory pInv = person.getInventory();
 
-        // Introduce randomness into the amount collected so that it will NOT
-        // always weigh strangely at exactly 50 kg 
-        double rand = RandomUtil.getRandomDouble(0.5, 1.5);
-        
-        double collected = rand * time * compositeRate;
+        double collected = time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY); 
 		if (areologySkill >= 1) {
 			collected = collected + .1 * collected * areologySkill;
 		}
-		else { //if (areologySkill == 0) {
+		else {
 			collected /= 1.5D;
 		}
 
-		if (collected < SMALL_AMOUNT) {
-			 logger.log(person, Level.WARNING, 4_000, "Collected too little " 
-		            	+ Math.round(collected*100D)/100D 
-		            	+ " kg " + resourceString + ".");
-			return 0;
-		}
-//		else
-//			 logger.log(person, Level.WARNING, 4_000, "Collected " 
-//		            	+ Math.round(collected*100D)/100D 
-//		            	+ " kg " + resourceString + ".");
-		
         boolean finishedCollecting = false;
-        
-//        double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
-//        		resourceID, false, false);
-        
+
         Bag aBag = person.getInventory().findABag(false, resourceID);
         
         if (aBag == null) {
@@ -252,48 +232,15 @@ implements Serializable {
         
         double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
         		resourceID);
-//        logger.log(person, Level.INFO, 4_000, "bagRemainingCap: " 
-//            	+ Math.round(bagRemainingCap*100D)/100D 
-//        		+ " kg " + resourceString + "."); 
-  	  
-//        // Case 1
-//        if (personRemainingCap < SMALL_AMOUNT) {
-//            collected = 0;
-//            finishedCollecting = true;
-//        }
-//        // Case 2        
-//        else if (collected + rand >= personRemainingCap) {
-//        	collected = personRemainingCap;
-//        	finishedCollecting = true;
-//    	}
-//        // Case 3
-//        else if (bagRemainingCap < SMALL_AMOUNT) {
-//            collected = 0;
-//            finishedCollecting = true;
-//        }
-//        // Case 4        
-		if (collected + rand - 0.5 >= bagRemainingCap) {
-//			collected = bagRemainingCap;
+    
+		if (collected >= bagRemainingCap) {
+			collected = bagRemainingCap;
 			finishedCollecting = true;
 		}
-//        // Case 5
-//        else if (totalCollected + collected + rand >= pInv.getGeneralCapacity()) {    
-//        	collected = pInv.getGeneralCapacity() - totalCollected;
-//            finishedCollecting = true;
-//        }
-//        // Case 6      
-//        if (totalCollected + collected + rand >= aBag.getTotalCapacity()) {    
-//        	collected = aBag.getTotalCapacity() - totalCollected;
-//            finishedCollecting = true;
-//        }
 
-        if (collected > SMALL_AMOUNT) {
-//        	totalCollected += collected;
-//        	  logger.log(person, Level.INFO, 4_000, "Storing " 
-//                  	+ Math.round(collected*100D)/100D 
-//              		+ " kg " + resourceString + "."); 
-        	aBag.storeAmountResource(resourceID, collected);
-        }
+		if (collected > SMALL_AMOUNT) {
+			aBag.storeAmountResource(resourceID, collected);
+		}
         
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
@@ -305,7 +252,9 @@ implements Serializable {
         // Add experience points
         addExperience(time);
         
-        if (finishedCollecting && totalCollected > 0) {
+        if (finishedCollecting && totalCollected > 0 && collected > 0) {
+        	totalCollected += collected;
+
             logger.log(person, Level.INFO, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
         		+ " kg " + resourceString + "."); 
@@ -345,7 +294,7 @@ implements Serializable {
      */
     private Bag transferBag() {
     	// Note: should take a bag before leaving the airlock
-    	// Note:  also consider dropping off the resource in a shed 
+    	// Note: also consider dropping off the resource in a shed 
     	// or a shed outside of the workshop/landerhab for processing
         Bag aBag = settlement.getInventory().findABag(true, resourceID);
         if (aBag != null) {
@@ -426,9 +375,9 @@ implements Serializable {
 	    		return;
 	    	
             double amount = bag.getAmountResourceStored(resourceID);
-            logger.log(person, Level.INFO, 0,
-            			"Had " + Math.round(amount*10.0)/10.0 + " kg of "
-            			+ resourceString + ".");
+//            logger.log(person, Level.INFO, 0,
+//            			"Had " + Math.round(amount*10.0)/10.0 + " kg of "
+//            			+ resourceString + ".");
             if (amount > 0) {
 	        	Inventory sInv = settlement.getInventory();
 	        	
