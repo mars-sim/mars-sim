@@ -95,7 +95,8 @@ public class UIConfig {
 		    SAXBuilder builder = new SAXBuilder();
 		    // In order to get rid of the XMLConstants.ACCESS_EXTERNAL_DTD as well
 		    // Need to switch to using internal DTD first
-		    
+		    // Gets rid of ACCESS_EXTERNAL_SCHEMA
+		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
 		    // Gets rid of ACCESS_EXTERNAL_SCHEMA
 		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
@@ -139,86 +140,93 @@ public class UIConfig {
 
 		}
 		
-		if (!configFile.exists()) {
-					
-			Document outputDoc = new Document();
-			DocType dtd = new DocType(UI, SimulationFiles.getSaveDir() + File.separator + FILE_NAME_DTD);
-			outputDoc.setDocType(dtd);
-
-			Element uiElement = new Element(UI);
-			outputDoc.setRootElement(uiElement);
-
-			uiElement.setAttribute(USE_DEFAULT, "false"); 
-			uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
-			uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
-
-			Element mainWindowElement = new Element(MAIN_WINDOW);
-			uiElement.addContent(mainWindowElement);
-
-			JFrame realWindow = mainWindow.getFrame();
-			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
-			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
+//		if (!configFile.exists()) {
 			
-			// Get the real display size
-			mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
-			mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
+		Document outputDoc = new Document();
+//		DocType dtd = new DocType(UI, SimulationFiles.getSaveDir() + File.separator + FILE_NAME_DTD);
+//		outputDoc.setDocType(dtd);
+			
+		Element uiElement = new Element(UI);
+		outputDoc.setRootElement(uiElement);
 
-			Element volumeElement = new Element(VOLUME);
-			uiElement.addContent(volumeElement);
+		uiElement.setAttribute(USE_DEFAULT, "false"); 
+		uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
+		uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
-			AudioPlayer player = desktop.getSoundPlayer();
-			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
-			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
-			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-			volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
+		Element mainWindowElement = new Element(MAIN_WINDOW);
+		uiElement.addContent(mainWindowElement);
 
-			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
-			uiElement.addContent(internalWindowsElement);
+		JFrame realWindow = mainWindow.getFrame();
+		mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
+		mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
+		
+		// Get the real display size
+		mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
+		mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
 
-			// Add all internal windows.
-			JInternalFrame[] windows = desktop.getAllFrames();
-			for (JInternalFrame window1 : windows) {
-				if (window1.isVisible() || window1.isIcon()) {
-					Element windowElement = new Element(WINDOW);
-					internalWindowsElement.addContent(windowElement);
+		Element volumeElement = new Element(VOLUME);
+		uiElement.addContent(volumeElement);
 
-					windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-					windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-					windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-					windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-					windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-					windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+		AudioPlayer player = desktop.getSoundPlayer();
+		volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
+		volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
+		volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+		volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
 
-					if (window1 instanceof ToolWindow) {
-						windowElement.setAttribute(TYPE, TOOL);
-						windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-					} else if (window1 instanceof UnitWindow) {
-						windowElement.setAttribute(TYPE, UNIT);
-						windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-					} else {
-						windowElement.setAttribute(TYPE, "other");
-						windowElement.setAttribute(NAME, "other");
-					}
+		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+		uiElement.addContent(internalWindowsElement);
+
+		// Add all internal windows.
+		JInternalFrame[] windows = desktop.getAllFrames();
+		for (JInternalFrame window1 : windows) {
+			if (window1.isVisible() || window1.isIcon()) {
+				Element windowElement = new Element(WINDOW);
+				internalWindowsElement.addContent(windowElement);
+
+				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+				windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+				windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+				windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+				windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+
+				if (window1 instanceof ToolWindow) {
+					windowElement.setAttribute(TYPE, TOOL);
+					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+				} else if (window1 instanceof UnitWindow) {
+					windowElement.setAttribute(TYPE, UNIT);
+					windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+				} else {
+					windowElement.setAttribute(TYPE, "other");
+					windowElement.setAttribute(NAME, "other");
 				}
 			}
+		}
+		
+		// Load the DTD scheme from the ui_settings.dtd file
+		try (
+//				InputStream in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
+//				OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD));
+			OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME));
+			OutputStream stream = new FileOutputStream(configFile)) {
+			
+			// Copy /dtd/ui_settings.dtd resource to save directory.
+			// Always do this as we don't know when the local saved dtd file is out of date.
+//				IOUtils.copy(in, out);
 
-			try (InputStream in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
-				 OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD));
-				 OutputStream stream = new FileOutputStream(configFile)) {
-				
-				// Copy /dtd/ui_settings.dtd resource to save directory.
-				// Always do this as we don't know when the local saved dtd file is out of date.
-				IOUtils.copy(in, out);
+			XMLOutputter fmt = new XMLOutputter();
+			fmt.setFormat(Format.getPrettyFormat());
 
-				XMLOutputter fmt = new XMLOutputter();
-				fmt.setFormat(Format.getPrettyFormat());
+			OutputStreamWriter writer = new OutputStreamWriter(stream, Charsets.UTF_8);
+//				fmt.output(outputDoc, writer);
+//			    logger.config("Saving the dtd schema."); 
+			    
+			fmt.output(outputDoc, writer);
 
-				OutputStreamWriter writer = new OutputStreamWriter(stream, Charsets.UTF_8);
-				fmt.output(outputDoc, writer);
-			    logger.config("Saving new ui_settings.xml."); 
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
+		    logger.config("Saving the ui_settings.xml."); 
+
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
