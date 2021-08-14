@@ -34,6 +34,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>${project.version}</version>
 		</dependency>
 		
+		<!-- https://github.com/Dansoftowner/jSystemThemeDetector -->
+		<dependency>
+			<groupId>com.github.Dansoftowner</groupId>
+			<artifactId>jSystemThemeDetector</artifactId>
+			<version>3.7</version>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
 		     can jfreesvg potentially replace batik ? 
 		     see http://object-refinery.com/blog/blog-20140423.html 
@@ -129,7 +136,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>3.7.4</version>
 		</dependency-->
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 
-			 https://github.com/JFormDesigner/jide-oss       -->
+			 main      -->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>

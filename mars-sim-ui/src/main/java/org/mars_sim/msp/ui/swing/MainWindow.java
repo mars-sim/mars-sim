@@ -13,7 +13,10 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,6 +96,7 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.NoOpKeyListener;
 import com.alee.utils.swing.NoOpMouseListener;
+import com.jthemedetecor.OsThemeDetector;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -250,6 +254,29 @@ extends JComponent implements ClockListener {
 	 */
 	public MainWindow(boolean cleanUI) {
 
+		logger.log(Level.CONFIG, "Checking OS color scheme.");
+    	// Detect if OS dark theme is in use
+		final OsThemeDetector detector = OsThemeDetector.getDetector();
+		boolean supported = OsThemeDetector.isSupported();
+		if (supported)
+			logger.log(Level.CONFIG, "OsThemeDetector is supported.");
+		boolean dark = detector.isDark();
+		if (dark)
+			logger.log(Level.CONFIG, "OS is using a dark theme.");
+		else
+			logger.log(Level.CONFIG, "OS is using a light theme.");
+		detector.registerListener(isDark -> {
+		    SwingUtilities.invokeLater(() -> {
+		        if (isDark) {
+		            // Switch to a dark theme
+		        	logger.log(Level.CONFIG, "Switch to a dark theme since OS is now using a dark theme.");
+		        } else {
+		            // Switch to a light theme
+		        	logger.log(Level.CONFIG, "Switch to a light theme since OS is now using a light theme.");
+		        }
+		    });
+		});
+		
 		// Start the wait layer
 		layerUI.start();
 		
@@ -261,60 +288,89 @@ extends JComponent implements ClockListener {
 		frame = new JFrame();//StyleId.rootpane);
 		frame.setResizable(true);
 				
-		// Load UI configuration.
-		if (!cleanUI) {
-			UIConfig.INSTANCE.parseFile();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		GraphicsDevice graphicsDevice = null;
+		
+		if (gs.length == 1) {
+			logger.log(Level.CONFIG, "Detecting only one screen.");
+			graphicsDevice = gs[0];
+			//gs[screen].setFullScreenWindow( frame );
+		}
+//		else if (gs.length > 1) {
+//			logger.log(Level.CONFIG, "Detecting more than one screen.");
+//			graphicsDevice = gs[0];
+//			//gs[screen].setFullScreenWindow( frame );
+//		}
+		else if (gs.length == 0) {
+			throw new RuntimeException("No Screens Found.");
 		}
 
-		// Set the UI configuration
-		useDefault = UIConfig.INSTANCE.useUIDefault();
-		selectedSize = calculatedSelectedSize();
+		// Load UI configuration.
+		if (cleanUI || graphicsDevice == gs[0]) {
+//			Rectangle bounds = graphicsDevice.getDefaultConfiguration().getBounds();
+			int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+			int screenHeight = graphicsDevice.getDisplayMode().getHeight();
+			selectedSize = new Dimension(screenWidth, screenHeight);
+			
+			// Set frame size
+			frame.setSize(selectedSize);
+			// Set location
+//		    frame.setLocation(bounds.x + (screenWidth - frame.getPreferredSize().width) / 2,
+//		            bounds.y + (screenHeight - frame.getPreferredSize().height) / 2);	    
+			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+		}
+		
+		else {
+			UIConfig.INSTANCE.parseFile();
+			
+			// Set the UI configuration
+			useDefault = UIConfig.INSTANCE.useUIDefault();
+			selectedSize = calculatedScreenSize();
+			
+			// Set frame size
+			frame.setSize(selectedSize);
+			
+			// Set frame location.
+			if (useDefault) {
+				// Center frame on screen
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				frame.setLocation(
+					((screen_size.width - selectedSize.width) / 2),
+					((screen_size.height - selectedSize.height) / 2)
+				);
+			}
+			else {
+				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+			}
+		}
 
 		try {
 			// Set up MainDesktopPane
 			desktop = new MainDesktopPane(this);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e); //$NON-NLS-1$
-			e.printStackTrace(System.err);
+			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
+//			e.printStackTrace(System.err);
 		}
 		
 		// Set up timers for use on the status bar
 		setupDelayTimer();
-		
-		// Initialize UI elements for the frame
-//		SwingUtilities.invokeLater(() -> {
-        	  
-    		try {
-    			// Set up other elements
-    			init(); 
-    		} catch (Exception e) {
-    			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e); //$NON-NLS-1$
-    			e.printStackTrace(System.err);
-    		}
-    		
-    		// Set frame size
-    		frame.setSize(selectedSize);
+		  	  
+		try {
+			// Set up other elements
+			init(); 
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
+//			e.printStackTrace(System.err);
+		}
 
-    		// Set frame location.
-    		if (useDefault) {
-    			// Center frame on screen
-        		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-    			frame.setLocation(
-    				((screen_size.width - selectedSize.width) / 2),
-    				((screen_size.height - selectedSize.height) / 2)
-    			);
-    		}
-    		else {
-    			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-    		}
-    		
-    		// Show frame
+		// Show frame
 //    		frame.pack();
-    		frame.setVisible(true);
-    		
-    		layerUI.stop();
-//	    });  
-		
+		frame.setVisible(true);
+
+		// Stop the wait indicator layer
+		layerUI.stop();	
+
 		// Dispose the Splash Window
 		disposeSplash();
 
@@ -323,15 +379,15 @@ extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * Calcualetd the selected screen size.
+	 * Calculates the screen size.
 	 * @return
 	 */
-	private Dimension calculatedSelectedSize() {
+	private Dimension calculatedScreenSize() {
 		
 		Dimension frameSize = InteractiveTerm.getSelectedScreen();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		logger.config("screen size " + screenSize.width + " x " + screenSize.height);
+		logger.config("Screen size " + screenSize.width + " x " + screenSize.height);
 		if ((frameSize == null) && !useDefault) {
 			// Use any stored size
 			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
@@ -357,7 +413,7 @@ extends JComponent implements ClockListener {
 				frameSize = new Dimension(screenSize);
 			}
 		}
-		logger.config("window size " + frameSize.width + " x " + frameSize.height);
+		logger.config("Window size " + frameSize.width + " x " + frameSize.height);
 		
 		return frameSize;
 	}
@@ -810,7 +866,7 @@ extends JComponent implements ClockListener {
 	public void createStarMapButton() {
 		starMap = new WebButton();
 		marsIcon = new LazyIcon("telescope").getIcon(); 
-		starMap.setIcon(marsIcon);//ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
+		starMap.setIcon(marsIcon);
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 		
 		starMap.addActionListener(new ActionListener() {
@@ -1068,7 +1124,7 @@ extends JComponent implements ClockListener {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
-				e.printStackTrace(System.err);
+//				e.printStackTrace(System.err);
 			}
 			// do something here
 		}
