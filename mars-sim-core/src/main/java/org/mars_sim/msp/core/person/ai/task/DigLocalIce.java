@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DigLocalIce.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -221,8 +221,8 @@ implements Serializable {
             else {
             	ended = true;
             	endTask();
-         		return 0;
             }
+        	return 0;
         }
         
         double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(

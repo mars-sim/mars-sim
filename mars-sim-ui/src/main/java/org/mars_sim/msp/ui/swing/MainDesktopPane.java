@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -19,7 +19,6 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1191,7 +1190,6 @@ public class MainDesktopPane extends JDesktopPane
 		
 		else {
 			openToolWindow(GuideWindow.NAME);
-			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
 	}
 

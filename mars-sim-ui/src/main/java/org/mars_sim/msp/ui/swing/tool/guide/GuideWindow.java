@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * GuideWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Lars Naesbye Christensen
  */
 
@@ -41,15 +41,11 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
 /**
- * The GuideWindow is a tool window that displays the built-in User Guide, About
- * Box and Tutorial.
+ * The GuideWindow is a tool window that displays built-in html pages such as User Guide, Quick Tutorial, Keyboard Shortcuts, etc.
  */
-public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener { //, ComponentListener {
+public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener {
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** Default logger. */
-//	private static final Logger logger = Logger.getLogger(GuideWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
@@ -69,12 +65,14 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	private JViewport viewPort;
 	/** The guide window URL. */
 	private URL guideURL;
-
+	/** The What's New URL. */
+	private URL whatsNewURL;
+	
 	private ImageIcon icon = new ImageIcon(GuideWindow.class.getResource(HOME_ICON));
 	
 	private WebButton homeButton = new WebButton(icon);
-	private WebButton backButton = new WebButton("<");//Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
-	private WebButton forwardButton = new WebButton(">");//Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
+	private WebButton backButton = new WebButton("<");
+	private WebButton forwardButton = new WebButton(">");
 
 	/**
 	 * Constructor.
@@ -95,7 +93,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public void init() {
 		
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
-
+		whatsNewURL = getClass().getResource(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
+				
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.setSize(16, 16);
 		homeButton.addActionListener(this);
@@ -108,7 +107,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 		// Create the main panel
 		JPanel mainPane = new JPanel(new BorderLayout());
-//		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
 		JPanel topPanel = new JPanel(new BorderLayout());
@@ -125,12 +123,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		JPanel linkPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.TRAILING));
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
-//		link = new WebLink(StyleId.linkShadow, new SvgIcon("github19"), WIKI_TEXT, new UrlLinkAction(WIKI_URL));
 		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
-//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
 		link.setAlignmentY(1f);
 		link.setText(WIKI_TEXT);
-//		link.setIcon(new SvgIcon("github.svg")); // github19
 		TooltipManager.setTooltip(link, "Open mars-sim wiki in GitHub", TooltipWay.down);
 		linkPanel.add(link);
 
@@ -145,11 +140,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
-//		scrollPane.setBorder(new MarsPanelBorder());
 		viewPort = (JViewport) scrollPane.getViewport();
-//		viewPort.addComponentListener(this);
 		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-		
 		mainPane.add(scrollPane,  BorderLayout.CENTER);
 		
 		updateButtons();
@@ -159,22 +151,18 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		setVisible(true);
 	
 		setSize(new Dimension(800, 600));
-//		setMinimumSize(new Dimension(320, 320));
-//		setPreferredSize(new Dimension(800, 600));
-//		setMaximumSize(new Dimension(1280, 600));
-		
+
 		Dimension desktopSize = desktop.getMainWindow().getFrame().getSize();
 		Dimension windowSize = getSize();
-//		System.out.println("desktopSize.width : " + desktopSize.width);
-//		System.out.println("desktopSize.height : " + desktopSize.height);
+
 		int width = (desktopSize.width - windowSize.width) / 2;
 		int height = (desktopSize.height - windowSize.height - 100) / 2;
 		setLocation(width, height);
 		
 		// Pack window.
-		// WARNING: this will shrink the window to one line tall in swing mode
-//		pack(); 
+		// WARNING: using pack() here will shrink the window to one line tall in swing mode
 
+		setURL(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
 	}
 
     /**
@@ -186,11 +174,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
         urlLabel = new WebStyledLabel(StyleId.styledlabelShadow);
         urlLabel.setFont(new Font("Times New Roman", Font.ITALIC, 10));
         urlLabel.setForeground(Color.DARK_GRAY);
-//        urlLabel.setPreferredHeight(20);
 		statusBar.add(urlLabel);
 
         final WebCanvas resizeCorner = new WebCanvas(StyleId.canvasGripperSE);
-//        new ComponentResizeBehavior(resizeCorner, CompassDirection.southEast).install();
         statusBar.addToEnd(resizeCorner);
 
         return statusBar;
@@ -223,26 +209,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 			updateButtons();
 		}
 	}
-	
-//	/**
-//	 * Implement ComponentListener interface. Make sure the text is scrolled to the
-//	 * top. Need to find a better way to do this
-//	 * 
-//	 * @author Scott
-//	 */
-//	@Override
-//	public void componentResized(ComponentEvent e) {
-//		viewPort.setViewPosition(new Point(0, 0));
-//	}
-//
-//	public void componentMoved(ComponentEvent e) {
-//	}
-//
-//	public void componentShown(ComponentEvent e) {
-//	}
-//
-//	public void componentHidden(ComponentEvent e) {
-//	}
 
 	/**
 	 * Handles a click on a link.
@@ -259,9 +225,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		else if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			htmlPane.goToURL(event.getURL());
 			updateButtons();
-		}
-	
-		
+		}	
 	}
 	
 	/**
@@ -273,16 +237,17 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		forwardButton.setEnabled(!htmlPane.isLast());
 	}
 	
-	/** Prepare tool window for deletion. */
+	/** 
+	 * Prepare tool window for deletion. 
+	 */
 	@Override
 	public void destroy() {
-//		htmlPane.removeHyperlinkListener(this);
 		htmlPane = null;
 		viewPort = null;
 		guideURL = null;
+		whatsNewURL = null;
 		homeButton = null;
 		backButton = null;
 		forwardButton = null;
 	}
-
 }

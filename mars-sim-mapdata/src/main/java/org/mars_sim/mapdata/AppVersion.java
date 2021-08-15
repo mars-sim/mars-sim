@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AppVersion.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Manny Kung
  */
 
@@ -24,15 +24,10 @@ public class AppVersion {
 
 	private static final String path = ClassLoader.getSystemClassLoader().getResource(".").getPath() + "/map.properties";
 	private static final String xzFilename = ClassLoader.getSystemClassLoader().getResource(".").getPath() + "SurfaceMarsMap.xz";
-
-//	URI uri = ClassLoader.getSystemResource("com/stackoverflow/json").toURI();
-//	String mainPath = Paths.get(uri).toString();
-//	Path path = Paths.get(mainPath ,"Movie.class");
 	
   	static ClassLoader loader = AppVersion.class.getClassLoader();
 
-    //the base folder is ./, the root of the main.properties file  
-//    String path = "./main.properties";
+    // Note: the base folder is ./, the root of the main.properties file  
 
     public static void main(String[] args) {
     	
@@ -48,11 +43,10 @@ public class AppVersion {
 		    
 		    decompressMapData(p);
 		    	
-//		     System.out.println("app : " + );
 		}
-		catch (IOException ioe){
-		    ioe.printStackTrace();
-		} 
+		catch (IOException ioe) {
+			System.err.println(ioe);
+		}
     }
     
 	/**
@@ -66,18 +60,18 @@ public class AppVersion {
 		
 	    String versionString = null;
 
-	    //to load application's properties, we use this class
+	    // Load application's properties, we use this class
 	    Properties mainProperties = new Properties();
 
-	    //load the file handle for main.properties
+	    // Load the file handle for main.properties
 	    try (FileInputStream file = new FileInputStream(path)) {
-		    //load all the properties from this file
+		    // Load all the properties from this file
 		    mainProperties.load(file);	
 		    
 		    file.close();
 	    }
 
-	    //retrieve the property we are intrested, the app.version
+	    // Retrieve the property we are interested, the app.version
 	    versionString = mainProperties.getProperty("app.version");
 
 	    return versionString;
@@ -86,31 +80,11 @@ public class AppVersion {
   
 	private static void decompressMapData(String xzFilename) throws IOException {
       
-
-	    String datFilename = xzFilename.replace(".xz", ".dat");//.replace(":/", "://");
+	    String datFilename = xzFilename.replace(".xz", ".dat");
 	    System.out.println("dat filename : " + datFilename);
 	    System.out.println("xz Filename : " + xzFilename);
 	    
-//	    String from = xzFilename;
-//	    String to = filename;
-//	    
-//	    int offset = 0;//Integer.parseInt("");
-//	    int size = 8192;//Integer.parseInt("");
-//	    
-//	    try (SeekableInputStream fileStream = new SeekableFileInputStream(from);
-//	         SeekableXZInputStream xzStream = new SeekableXZInputStream(fileStream, BasicArrayCache.getInstance())) {
-//
-//	        xzStream.seek(offset);
-//	        byte[] buf1 = new byte[size];
-//	        if (size != xzStream.read(buf1)) {
-//	            xzStream.available(); // let it throw the last exception, if any
-//	            throw new IOException("Truncated stream");
-//	        }
-//	        Files.write(Paths.get(to), buf1);
-//	    }
-
-	      // Load map data from map_data jar file.
-
+	    // Load map data from map_data jar file.
 	    byte[] buf = new byte[8192];
 	    String name = xzFilename;
 
@@ -127,34 +101,26 @@ public class AppVersion {
               in.close();
 
           } else {
-              // Read from files given on the command line.
-//              for (int i = 0; i < args.length; ++i) {
-//                  name = args[i];
+              // Or try read from files given on the command line. for (int i = 0; i < args.length; ++i) name = args[i];
 
-              InputStream in = new FileInputStream(name); //  loader.getResourceAsStream(name);//
+              InputStream in = new FileInputStream(name); 
+              // not loader.getResourceAsStream(name);
 
               try {
                   // Since XZInputStream does some buffering internally
                   // anyway, BufferedInputStream doesn't seem to be
-                  // needed here to improve performance.
-                  // in = new BufferedInputStream(in);
+                  // needed here to improve performance. in = new BufferedInputStream(in);
                   in = new XZInputStream(in);
-
-//                      int size;
-//                      while ((size = in.read(buf)) != -1)
-//                          System.out.write(buf, 0, size);
-                  
+           
       	        Files.copy(in, Paths.get(datFilename));//, StandardCopyOption.REPLACE_EXISTING);
 
               } catch (NullPointerException e) {
                   System.err.println("XZDecDemo: Cannot open " + name + ": "
                                      + e.getMessage());
-                  e.printStackTrace();
                   System.exit(1);
 
               } finally {
-                  // Close FileInputStream (directly or indirectly
-                  // via XZInputStream, it doesn't matter).
+                  // Close FileInputStream (directly or indirectly via XZInputStream, it doesn't matter).
                   in.close();
               }
 
