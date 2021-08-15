@@ -155,7 +155,7 @@ public class SimulationConfigEditor {
 					Msg.getString("SimulationConfigEditor.column.sponsor"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
-					"Crew",
+					Msg.getString("SimulationConfigEditor.column.crew"),
 					Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
@@ -370,10 +370,14 @@ public class SimulationConfigEditor {
 								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
 								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
 								info.latitude = doubleLat + " " + dir1.toUpperCase();
-							} else
+							}
+							else {
 								info.latitude = (String) aValue;
-						} else
+							}
+						}
+						else {
 							info.latitude = (String) aValue;
+						}
 						checkLat(info.latitude);
 						checkRepeatingLatLon();
 						break;
@@ -388,10 +392,14 @@ public class SimulationConfigEditor {
 								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
 								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
 								info.longitude = doubleLong + " " + dir2.toUpperCase();
-							} else
+							}
+							else {
 								info.longitude = (String) aValue;
-						} else
+							}
+						}
+						else {
 							info.longitude = (String) aValue;
+						}
 						checkLon(info.longitude);
 						checkRepeatingLatLon();
 						break;
@@ -402,7 +410,6 @@ public class SimulationConfigEditor {
 					checkForAllErrors();
 
 				fireTableDataChanged();
-				
 			}
 		}
 
@@ -863,34 +870,27 @@ public class SimulationConfigEditor {
 		//bottomButtonPanel.add(new JLabel("    "));
 		 
 		// Edit Alpha Crew button.
-		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
-		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
-		alphaButton.addActionListener(new ActionListener() {
+		JButton crewButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
+		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+		crewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editCrewProfile("alpha");
+				editCrewProfile();
 			}
 		});
 
 		// Set a check box for enabling/disable the alpha crew button
-		JCheckBox cb = new JCheckBox("Load Alpha Crew");
-		cb.setSelected(useCrew );
+		JCheckBox cb = new JCheckBox("Load Crews");
+		cb.setSelected(useCrew);
 		cb.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-            	 if (e.getStateChange() == ItemEvent.SELECTED) {
-            		 alphaButton.setEnabled(true);
-            		 useCrew = true;
-            	 }
-            	 else { 
-            		 alphaButton.setEnabled(false);
-            		 useCrew = false;;
-            	 }
+            	 useCrew = (e.getStateChange() == ItemEvent.SELECTED);
+        		 crewButton.setEnabled(useCrew);
              }     
         });
 
 		bottomButtonPanel.add(cb);
-		bottomButtonPanel.add(alphaButton);
+		bottomButtonPanel.add(crewButton);
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -933,16 +933,14 @@ public class SimulationConfigEditor {
 	 * 
 	 * @param crew
 	 */
-	private void editCrewProfile(String crew) {
+	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
 			crewEditor = new CrewEditor(this, crewConfig);
-			// System.out.println("new CrewEditor()");
 		} 
 		
 		else {
 			crewEditor.getJFrame().setVisible(true);
 		}
-
 	}
 
 	void setCrewEditorOpen(boolean value) {

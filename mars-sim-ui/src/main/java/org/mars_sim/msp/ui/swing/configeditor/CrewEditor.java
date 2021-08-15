@@ -375,6 +375,7 @@ public class CrewEditor implements ActionListener {
 	private static final String LOAD_CREW = "Load Crew";
 	private static final String ADD_MEMBER = "Add Member";
 	private static final String REMOVE_MEMBER = "Remove member";
+	private static final String DEL_CREW = "Delete Crew";
 		
 	public static final int PANEL_WIDTH = 180;
 	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
@@ -404,7 +405,8 @@ public class CrewEditor implements ActionListener {
 	private Crew crew;
 
 	private JButton saveButton;
-
+	private JButton delButton;
+	
 	private DefaultComboBoxModel<String> crewCB;
 
 	private WebTextField descriptionTF;
@@ -523,6 +525,11 @@ public class CrewEditor implements ActionListener {
 		JButton newButton = new JButton(SAVE_NEW_CREW);
 		newButton.addActionListener(this);
 		buttonPane.add(newButton);
+
+		// Create save new crew button.
+		delButton = new JButton(DEL_CREW);
+		delButton.addActionListener(this);
+		buttonPane.add(delButton);
 		
 		// Create save new crew button.
 		JButton addButton = new JButton(ADD_MEMBER);
@@ -566,7 +573,25 @@ public class CrewEditor implements ActionListener {
 				}
 			}
 			break;
-		
+			
+		case DEL_CREW:
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			int result = JOptionPane.showConfirmDialog(f, 
+							"Are you sure you want to delete the Crew " + crew.getName() + " ? " + System.lineSeparator()
+							+ "All the changes made will be lost.",
+							"Confirm Delete Crew",
+							JOptionPane.YES_NO_CANCEL_OPTION);
+			
+			if (result == JOptionPane.YES_OPTION) {
+				String oldCrew = crew.getName();
+				crewConfig.deleteCrew(oldCrew);
+				
+				String nextCrew = crewConfig.getKnownCrewNames().get(0);
+				designateCrew(nextCrew);
+				crewCB.removeElement(oldCrew);
+			}
+			break;
+			
 		case SAVE_CREW:
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			int result2 = JOptionPane.showConfirmDialog(f,
@@ -578,8 +603,7 @@ public class CrewEditor implements ActionListener {
 					"Confirm Saving Crew",
 					JOptionPane.YES_NO_CANCEL_OPTION);
 			
-			if (result2 == JOptionPane.YES_OPTION) {
-				commitChanges(crew.getName());
+			if ((result2 == JOptionPane.YES_OPTION) && commitChanges(crew.getName())) {
 				crewConfig.save(crew);
 			}
 			break;
@@ -589,11 +613,11 @@ public class CrewEditor implements ActionListener {
 			String newCrewName = (String)JOptionPane.showInputDialog(
                     f, "Enter the name of the new Crew.");
 
-			if ((newCrewName != null) && (newCrewName.length() > 0)) {
-				// Create new Crew
-				commitChanges(newCrewName);
+			// Create new Crew
+			if ((newCrewName != null) && (newCrewName.length() > 0)
+					&&  commitChanges(newCrewName)) {
 				crewConfig.save(crew); 
-				f.setTitle(TITLE + " - " + newCrewName + " Crew On-board");	
+				setDecoration();
 				
 				crewCB.addElement(newCrewName);
 				crewCB.setSelectedItem(newCrewName);
@@ -613,10 +637,28 @@ public class CrewEditor implements ActionListener {
 	}
 
 	/**
+	 * Set up decoration the crew Editor
+	 */
+	private void setDecoration() {
+		f.setTitle(TITLE + " - " + crew.getName() + " Crew On-board");	
+		saveButton.setEnabled(!crew.isBundled());
+		delButton.setEnabled(!crew.isBundled());
+	}
+
+	/**
 	 * Commits the changes to the crew profiles
 	 */
 	private boolean commitChanges(String name) {
 		boolean goodToGo = true;
+		if (crewPanels.isEmpty()) {
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			JOptionPane.showMessageDialog(f, 
+							"Crew must have at least one member.",
+							"No Members Defined",
+							JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 		Crew newCrew = new Crew(name, false);
 		for (MemberPanel mp : crewPanels) {
 			// Find member
@@ -846,6 +888,9 @@ public class CrewEditor implements ActionListener {
 		}
 		crew = newCrew;
 		List<Member> members = crew.getTeam();
+		if (members.isEmpty()) {
+			logger.warning("Crew " + crewName + " has no members.");
+		}
 		for(int i = 0; i < members.size(); i++) {
 			loadMember(members.get(i), i);
 		}
@@ -855,9 +900,8 @@ public class CrewEditor implements ActionListener {
 			removeMember(crewPanels.get(j-1));
 		}
 		
-		// Show alpha crew in title 
-		f.setTitle(TITLE + " - " + crew.getName() + " Crew On-board");
-		saveButton.setEnabled(!crew.isBundled());
+		setDecoration();
+		crewCB.setSelectedItem(crew.getName());
 		
 		descriptionTF.setText(crew.getDescription());
 		return true;

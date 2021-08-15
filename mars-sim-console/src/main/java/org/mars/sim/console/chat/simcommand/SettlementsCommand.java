@@ -35,7 +35,7 @@ public class SettlementsCommand extends ChatCommand {
 									"Template", 12, "Population");
 		for(Settlement s : settlements) {
 			response.appendTableRow(s.getName(),
-					                s.getSponsor(),
+					                s.getSponsor().getCode(),
 					                s.getTemplate(),
 									s.getNumCitizens());
 		}

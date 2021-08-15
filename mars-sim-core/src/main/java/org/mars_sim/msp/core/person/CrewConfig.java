@@ -58,7 +58,6 @@ public class CrewConfig {
 	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
 	private static final String PERSONALITY_TRAIT = "personality-trait";
 
-	private static final String CREW = "crew";
 	private static final String NAME_ATTR = "name";
 	private static final String DESC_ATTR = "description";
 	private static final String JOB = "job";
@@ -112,6 +111,19 @@ public class CrewConfig {
 	 */
 	public Crew getCrew(String name) {
 		return knownCrews.get(name);
+	}
+	
+	/**
+	 * Delete the crew
+	 * @param name
+	 */
+	public void deleteCrew(String name) {
+		knownCrews.remove(name);
+
+		String filename = getCrewFilename(name);
+		File crewFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
+		logger.info("Deleting crew file " + crewFile.getAbsolutePath());
+		crewFile.delete();
 	}
 	
 	/**
