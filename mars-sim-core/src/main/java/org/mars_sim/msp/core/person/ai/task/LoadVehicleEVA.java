@@ -555,7 +555,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				// Load resource from settlement inventory to vehicle inventory.
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
-					vInv.storeAmountResource(resource, resourceAmount, true);
+					vInv.storeAmountResource(resource, resourceAmount, false);
 					
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
@@ -756,13 +756,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 						Equipment eq = (Equipment) array[x];
 
-						boolean isEmpty = true;
-						Inventory eInv = eq.getInventory();
-						if (eInv != null) {
-							isEmpty = eq.getInventory().isEmpty(false);
-						}
-
-						if (isEmpty) {
+						if (eq.isEmpty(true)) {
 							if (vInv.canStoreUnit(eq, false)) {
 								// Put this equipment into a vehicle
 								eq.transfer(sInv, vInv);
@@ -854,13 +848,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 					Equipment eq = (Equipment) array[x];
 
-					boolean isEmpty = true;
-					Inventory eInv = eq.getInventory();
-					if (eInv != null) {
-						isEmpty = eq.getInventory().isEmpty(false);
-					}
-
-					if (isEmpty) {
+					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle
 							eq.transfer(sInv, vInv);
@@ -1082,9 +1070,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Class<? extends Equipment> equipmentType = i.next();
 				int num = equipment.get(equipmentType);
-//				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++) {
-					inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(), true));
+					inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, settlement, true));
 				}
 			}
 
@@ -1095,7 +1082,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (resource < FIRST_ITEM_RESOURCE_ID) {
 					double amount = resources.get(resource).doubleValue();
 					inv.storeAmountResource(resource, amount, true);
-				} else {
+				} else if (resource < FIRST_EQUIPMENT_RESOURCE_ID) {
 					int num = resources.get(resource).intValue();
 					inv.storeItemResources(resource, num);
 				}

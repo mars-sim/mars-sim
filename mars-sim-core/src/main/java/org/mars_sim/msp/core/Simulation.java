@@ -34,17 +34,17 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.environment.OrbitInfo;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.mars.OrbitInfo;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -180,7 +180,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
-	private Mars mars;
+	private Environment mars;
 	/** Planet Mars. */	
 	private OrbitInfo orbit;
 	/** All historical info. */
@@ -263,9 +263,9 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void createNewSimulation(int timeRatio) {
 		isUpdating = true;
-
+		
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
-
+		
 		Simulation sim = instance();
 
 		// Destroy old simulation.
@@ -297,7 +297,7 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
-		mars = new Mars(marsClock);
+		mars = new Environment(marsClock);
 		unitManager = new UnitManager();
 		
 		// Build plantary objects
@@ -337,7 +337,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-		mars = new Mars(marsClock);
+		mars = new Environment(marsClock);
 		orbit = new OrbitInfo(marsClock);
 		//mars.createInstances(marsClock);
 	
@@ -466,8 +466,8 @@ public class Simulation implements ClockListener, Serializable {
 				sim.readFromFile(f);
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "Problem loading file:" + e.getMessage(), e);	
-				System.exit(1);
+				logger.log(Level.SEVERE, "Problem loading file: ", e);	
+//				System.exit(1);
 			}
 		}
 
@@ -519,7 +519,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
-			mars = (Mars) ois.readObject();
+			mars = (Environment) ois.readObject();
 			mars.initializeTransientData();
 			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
@@ -1326,7 +1326,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * 
 	 * @return Mars
 	 */
-	public Mars getMars() {
+	public Environment getMars() {
 		return mars;
 	}
 

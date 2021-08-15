@@ -1065,10 +1065,10 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				} catch (Exception e2) {
 				}
 				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
-				double totalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
-						totalDistance,
-						travelledDistance
+						travelledDistance,
+						estTotalDistance
 						));
 			}
 

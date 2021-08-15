@@ -345,7 +345,7 @@ public final class TradeUtil {
 					else {
 						int number = 1;
 						if (isAmountResource)
-							number = (int) getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
+							number = (int) getResourceTradeAmount(resource, buyingSettlement);
 						else if (isItemResource)
 							number = itemResourceNum;
 						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
@@ -358,14 +358,14 @@ public final class TradeUtil {
 					double goodNum = 1D;
 					
 					if (isAmountResource)
-						goodNum = getResourceTradeAmount(resource);
+						goodNum = getResourceTradeAmount(resource, buyingSettlement);
 					if (isItemResource)
 						goodNum = itemResourceNum;
 					
 					double buyGoodValue = buyerGoodsManager.determineGoodValueWithSupply(good, (supply + currentNum + goodNum));
 					
 					if (isAmountResource) {
-						double tradeAmount = getResourceTradeAmount(resource);
+						double tradeAmount = getResourceTradeAmount(resource, buyingSettlement);
 						buyGoodValue *= tradeAmount;
 					}
 					if (isItemResource) {
@@ -408,7 +408,7 @@ public final class TradeUtil {
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
-				double amount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
+				double amount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()), settlement);
 				if (amount < 1) {
 					multiplier = 1;
 				}
@@ -592,7 +592,7 @@ public final class TradeUtil {
 		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyAmount);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			resource = ResourceUtil.findAmountResource(good.getID());
-			sellingValue *= getResourceTradeAmount(resource);
+			sellingValue *= getResourceTradeAmount(resource, sellingSettlement);
 		}
 		boolean allTraded = (sellingInventory <= amountTraded);
 
@@ -602,13 +602,13 @@ public final class TradeUtil {
 			buyingSupplyAmount = 0D;
 		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyAmount);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE)
-			buyingValue *= getResourceTradeAmount(resource);
+			buyingValue *= getResourceTradeAmount(resource, buyingSettlement);
 
 		boolean profitable = (buyingValue > sellingValue);
 		boolean hasBuyValue = buyingValue > 0D;
 		if ((allowNegValue || profitable) && hasBuyValue && !allTraded) {
 			// Check if rover inventory has capacity for the good.
-			boolean isRoverCapacity = hasCapacityInInventory(good, remainingCapacity, hasVehicle);
+			boolean isRoverCapacity = hasCapacityInInventory(good, buyingSettlement, remainingCapacity, hasVehicle);
 
 			boolean isContainerAvailable = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
@@ -627,7 +627,7 @@ public final class TradeUtil {
 
 			boolean enoughResourceForContainer = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				enoughResourceForContainer = (sellingSupplyAmount >= getResourceTradeAmount(resource));
+				enoughResourceForContainer = (sellingSupplyAmount >= getResourceTradeAmount(resource, sellingSettlement));
 			}
 
 			boolean enoughEVASuits = true;
@@ -679,17 +679,17 @@ public final class TradeUtil {
 	 * @return true if capacity for good.
 	 * @throws Exception if error checking for capacity.
 	 */
-	private static boolean hasCapacityInInventory(Good good, double remainingCapacity, boolean hasVehicle) {
+	private static boolean hasCapacityInInventory(Good good, Settlement settlement, double remainingCapacity, boolean hasVehicle) {
 		boolean result = false;
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			result = (remainingCapacity >= getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID())));
+			result = (remainingCapacity >= getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()), settlement));
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE)
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
 			Class<? extends Equipment> type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
-				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
+				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, settlement, true));
 			}
 			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
 		} else if (good.getCategory() == GoodCategory.VEHICLE)
@@ -755,7 +755,7 @@ public final class TradeUtil {
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlementInv.findAnEmptyEquipment(containerClass);
+			result = settlementInv.findAnEmptyEquipment(containerClass, resource.getID());
 
 		return result;
 	}
@@ -800,13 +800,6 @@ public final class TradeUtil {
 		Good foodGood = GoodsUtil.getResourceGood(foodID);
 		neededResources.put(foodGood, (int) foodAmount);
 
-		// Get dessert amount.
-//		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-//				Rover.getErrorMargin();
-//		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-//		Good dessertGood = GoodsUtil.getResourceGood(dessert);
-//		neededResources.put(dessertGood, (int) dessertAmount);
-
 		// Get cost of resources.
 		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
@@ -819,7 +812,7 @@ public final class TradeUtil {
 	 * @return amount (kg) of resource to trade.
 	 * @throws Exception if error determining container.
 	 */
-	private static double getResourceTradeAmount(AmountResource resource) {
+	private static double getResourceTradeAmount(AmountResource resource, Settlement settlement) {
 		double result = 0D;
 
 		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
@@ -828,11 +821,11 @@ public final class TradeUtil {
 		if (containerTypeCache.containsKey(containerType))
 			container = containerTypeCache.get(containerType);
 		else { 
-			container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
+			container = EquipmentFactory.createEquipment(containerType, settlement, true);
 			containerTypeCache.put(containerType, container);
 		}
 
-		result = container.getInventory().getAmountResourceCapacity(resource, false);
+		result = container.getAmountResourceCapacity(resource.getID());
 
 		return result;
 	}

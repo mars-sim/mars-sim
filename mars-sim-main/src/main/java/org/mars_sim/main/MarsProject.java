@@ -263,15 +263,15 @@ public class MarsProject {
 		while (true) {
 	        try {
 				TimeUnit.MILLISECONDS.sleep(250);
+				if (!sim.isUpdating()) {
+					logger.config("Starting GUI");
+					new MainWindow(cleanUI).stopLayerUI();
+					break;
+				}
 	        } catch (InterruptedException e) {
 	            e.printStackTrace();
+				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); //$NON-NLS-1$
 	        }
-			
-			if (!sim.isUpdating()) {
-				logger.config("Starting GUI");
-				new MainWindow(cleanUI).stopLayerUI();
-				break;
-			}
 		}
 	}
 	

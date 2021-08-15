@@ -97,7 +97,47 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-			<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-maven-plugin -->
+				<!-- https://github.com/graalvm/native-build-tools -->
+				<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
+				<plugin>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<version>0.9.2</version>
+					<executions>
+						<execution>
+							<id>test-native</id>
+							<goals>
+								<goal>test</goal>
+							</goals>
+							<phase>test</phase>
+						</execution>
+						<execution>
+							<id>build-native</id>
+							<goals>
+								<goal>build</goal>
+	              			</goals>
+							<phase>package</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<imageName>mars-sim-graal</imageName>
+							<mainClass>${domainNameMainClass}</mainClass>
+							<buildArgs>
+							--no-fallback
+							--verbose
+							</buildArgs>
+					</configuration>
+					<dependencies>
+					   <!-- ... -->
+					   <dependency>
+					        <groupId>org.graalvm.buildtools</groupId>
+					        <artifactId>junit-platform-native</artifactId>
+					        <version>${junit.version}</version>
+					        <scope>test</scope>
+					    </dependency>
+					</dependencies>
+				</plugin>
+				<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-maven-plugin -->
 				<plugin>
 					<groupId>org.jetbrains.kotlin</groupId>				
 					<artifactId>kotlin-maven-plugin</artifactId>

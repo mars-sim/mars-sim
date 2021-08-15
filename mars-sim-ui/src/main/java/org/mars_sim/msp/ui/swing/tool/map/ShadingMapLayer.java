@@ -14,7 +14,7 @@ import java.awt.Graphics2D;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time

@@ -11,12 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
@@ -24,7 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -41,6 +40,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
 	// Data members.
 	/** is this equipment being salvage. */
@@ -53,6 +54,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** The equipment type. */
 	private String type;
 	
+	private int resource = -1;
+	private double quantity;
+	
 	/** The SalvageInfo instatnce. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
@@ -64,10 +68,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
-	 * @param location the unit's coordinates
+	 * @param settlement the unit's owner
 	 */
-	protected Equipment(String name, String type, Coordinates location) {
-		super(name, location);
+	protected Equipment(String name, String type, Settlement settlement) {
+		super(name, settlement.getCoordinates());
 		
 		// Initialize data members.
 		this.type = type;
@@ -80,16 +84,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		// Is this needed ?? It is very ineffecient.
-		if (!(this instanceof Robot) && location != null && !location.equals(new Coordinates(0D, 0D))) {
-			// TODO: why !location.equals(new Coordinates(0D, 0D) ?
-			Settlement s = CollectionUtils.findSettlement(location);
-			associatedSettlementID = s.getIdentifier();
-			
+		// if it's a container, proceed
+		if (equipmentType != null) {
+			// Gets the settlement id
+			associatedSettlementID = settlement.getIdentifier();
 			// Stores this equipment into its settlement
-			s.getInventory().storeUnit(this);
+			settlement.getInventory().storeUnit(this);
 			// Add this equipment as being owned by this settlement
-			s.addOwnedEquipment(this);
+			settlement.addOwnedEquipment(this);
 		}
 	}
 
@@ -99,6 +101,191 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return false;
 	}
 
+	public int getResource() {
+		return resource;
+	}
+	
+	public double getQuanity() {
+		return quantity;
+	}
+	
+	/**
+	 * Stores the resource
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @param test true if it's just a test
+	 * @return excess quantity that cannot be stored
+	 */
+	public double storeAmountResource(int resource, double quantity) {
+		if (this.resource == -1) {
+			// Note: if a bag was filled with regolith and later was emptied out
+			// should it be tagged for only regolith and not for another resource ?
+			this.resource = resource;
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.config(this, "Initialized for storing " + name + ".");
+		}
+		
+		if (this.resource == resource) {
+			
+			double newQ = this.quantity + quantity;
+			String name = ResourceUtil.findAmountResourceName(resource);
+			
+			if (newQ > getTotalCapacity()) {
+				double excess = newQ - getTotalCapacity();
+				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
+				this.quantity = getTotalCapacity();
+				return excess;
+			}
+			else {
+				this.quantity = newQ;
+//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
+				return 0;
+			}
+		}
+		else {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			logger.warning(this, "Invalid request. Not for " + name 
+					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Retrieve the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	public double retrieveAmountResource(int resource, double quantity) {
+		if (this.resource == resource || this.resource == -1) {
+			double diff = this.quantity - quantity;
+			if (diff < 0) {
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.warning(this, "Just retrieved all " + this.quantity + " kg " 
+						+ name + " but still lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
+				this.quantity = 0;
+				return diff;
+			}
+			else {
+				this.quantity = diff;
+				return 0;
+			}
+		}
+		else {
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Cannot retrieve " + requestedResource 
+					+ ". Storing " + storedResource + ": " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return quantity;
+		}
+	}
+	
+	public double getAmountResourceCapacity(int resource) {
+		if (this.resource == resource || this.resource == -1) {
+			return getTotalCapacity();
+		}
+		else {
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	/**
+	 * Obtains the remaining storage space 
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public double getAmountResourceRemainingCapacity(int resource) {
+		if (this.resource == resource || this.resource == -1) {
+			return getTotalCapacity() - this.quantity;
+		}
+		else {
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public double getAmountResourceStored(int resource) {
+		if (this.resource == resource) {
+			return this.quantity;
+		}
+		else if (this.resource == - 1) {
+			return 0;
+		}
+		else {
+//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "Invalid request. Not for " + requestedResource 
+//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	public double getStoredMass() {
+		return this.quantity;
+	}
+	
+
+	/**
+	 * Is this equipment empty ? 
+	 * 
+	 * @param brandNew true if it needs to be brand new and never be used before
+	 * @return
+	 */
+	public boolean isEmpty(boolean brandNew) {
+		if (brandNew && resource == -1)
+			return true;
+		else if (this.quantity == 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isBrandNew() {
+		if (resource == -1 && this.quantity == 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isUsed() {
+		if (resource != -1)
+			return true;
+		return false;
+	}	
+
+	public boolean hasContent() {
+		if (quantity > 0)
+			return true;
+		return false;
+	}	
+	
+	public boolean isEmpty(int resource) {
+		if (resource == -1)
+			return true;
+		if (this.resource == resource || this.quantity == 0)
+			return true;
+		
+		return false;
+	}	
+	
+	public abstract double getTotalCapacity();
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
@@ -193,10 +380,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-//			else
-			// either at the vicinity of a settlement or already outside on a mission
-			// TODO: need to differentiate which case in future better granularity
-//				return null;
 		}
 
 		return null;
@@ -226,37 +409,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
         return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
     }
 	
-//	/**
-//	 * Get the equipment's location
-//	 * 
-//	 * @return {@link LocationSituation} the person's location
-//	 */
-//	public LocationSituation getLocationSituation() {
-//		Unit container = getContainerUnit();
-//		if (container instanceof Settlement)
-//			return LocationSituation.IN_SETTLEMENT;
-//		else if (container instanceof Vehicle)
-//			return LocationSituation.IN_VEHICLE;
-//		else if (container instanceof Person || container instanceof Robot)
-//			return container.getLocationSituation();
-//		else if (container instanceof MarsSurface)
-//			return LocationSituation.OUTSIDE;
-//		else
-//			return LocationSituation.UNKNOWN;
-//	}
-
-//	/**
-//	 * Is a person carrying this equipment? Is this equipment's container a person ?
-//	 * 
-//	 * @return true if yes
-//	 */
-//	public boolean isCarriedByAPerson() {
-//		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
-//			return true;
-//		
-//		return false;
-//	}
-
 	/**
 	 * Sets the last owner of this equipment
 	 * 
@@ -296,12 +448,29 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 	
-	
 	@Override
 	protected UnitType getUnitType() {
 		return UnitType.EQUIPMENT;
 	}
 
+	public static String generateName(String baseName) {
+		if (baseName == null) {
+			throw new IllegalArgumentException("Must sepecified a baseName");
+		}
+		
+		int number = unitManager.incrementTypeCount(baseName);
+		return String.format("%s %03d", baseName, number);
+	}
+	
+	/**
+	 * Clean this container for future use
+	 */
+	public void clean() {
+		this.resource = -1;
+		this.quantity = 0;
+	}
+	
+	
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 
@@ -336,12 +505,4 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		salvageInfo = null;
 	}
 
-	public static String generateName(String baseName) {
-		if (baseName == null) {
-			throw new IllegalArgumentException("Must sepecified a baseName");
-		}
-		
-		int number = unitManager.incrementTypeCount(baseName);
-		return String.format("%s %03d", baseName, number);
-	}
 }

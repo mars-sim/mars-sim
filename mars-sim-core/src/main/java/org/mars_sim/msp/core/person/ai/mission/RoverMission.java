@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -403,7 +404,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 					
 				} else {
-					addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 					endMission();
 					return;
 				}
@@ -1005,8 +1006,8 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
 		Map<Integer, Number> map = new HashMap<>();
-			// Get temporary EVA suit.
-		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
+		// Get an EVA suit.
+		EVASuit suit = InventoryUtil.getGoodEVASuit(startingSettlement.getInventory(), getStartingPerson());
 
 		// Determine needed repair parts for EVA suits.
 		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();

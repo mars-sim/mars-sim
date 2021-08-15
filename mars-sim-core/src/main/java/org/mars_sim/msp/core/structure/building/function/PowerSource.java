@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.OrbitInfo;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.OrbitInfo;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -33,7 +33,7 @@ implements Serializable {
 	private PowerSourceType type;
 
 	protected static SurfaceFeatures surface ;
-	protected static Mars mars;
+	protected static Environment mars;
 	protected static OrbitInfo orbitInfo;
 	protected static Weather weather;
 	
@@ -102,12 +102,12 @@ implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link Mars}
+	 * @param {@link Environment}
 	 * @param {@link SurfaceFeatures}
 	 * @param {@link OrbitInfo}
 	 * @param {@link Weather}
 	 */
-	public static void initializeInstances(Mars m, SurfaceFeatures s, OrbitInfo o, Weather w) {
+	public static void initializeInstances(Environment m, SurfaceFeatures s, OrbitInfo o, Weather w) {
 		mars = m;
 		surface = s;
 		orbitInfo = o;

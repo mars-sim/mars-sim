@@ -260,13 +260,12 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
 				
 				Inventory pInv = person.getInventory();
-		        Inventory sInv = pInv.findASpecimenBox().getInventory();
-				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
-				double rockSampleCapacity = sInv.getAmountResourceRemainingCapacity(randomRock, true,
-						false);
-				if (rockSampleMass < rockSampleCapacity) {
-					sInv.storeAmountResource(randomRock, rockSampleMass, true);
-					totalCollected += rockSampleMass;
+		        SpecimenBox box = pInv.findASpecimenBox();
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
+				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				if (mass < cap) {
+					double excess = box.storeAmountResource(randomRock, mass);
+					totalCollected += mass - excess;
 				}
 			}
 		}
@@ -337,8 +336,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		while (i.hasNext()) {
 			SpecimenBox container = i.next();
 			try {
-				double remainingCapacity = container.getInventory().getRemainingGeneralCapacity(true);
-//						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
+				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
 
 				if (remainingCapacity > mostCapacity) {
 					result = container;

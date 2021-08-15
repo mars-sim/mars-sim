@@ -33,10 +33,10 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.environment.DustStorm;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -185,12 +186,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.regolithID };
 	}
 
+	/** The equipment map cache. */
+	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The settlement's list of citizens. */
 	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of owned robots. */
@@ -261,8 +264,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** Flags that track if each of the 13 missions have been disable. */
 	private boolean[] missionsDisable = new boolean[12];
 
+	/** The average regolith collection rate nearby */
+	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
 	/** The average ice collection rate of the water ice nearby */
-	private double iceCollectionRate = 1;
+	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
@@ -502,44 +507,67 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
 //		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
-//		logger.config("Done iceCollectionRate");
+		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
+		logger.config("Done iceCollectionRate");
 		
-		// Set inventory total mass capacity.
-		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
-
-		double max = 500;
-		// Initialize inventory of this building for resource storage
+		final double GEN_MAX = 1_000_000;
+		// Initialize the general storage capacity for this settlement
+		getInventory().addGeneralCapacity(GEN_MAX);
+		
+		// initialize the oxygen type capacity
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
+		
+		final double PHASE_MAX = 10_000;
+		// initialize the phase type capacity
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
+		
+		final double INITIAL_FREE_OXYGEN = 1_000;
+		// Stores limited amount of oxygen in this settlement
+		getInventory().storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN, false);
+		
+		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		logger.config(this, "oxygen amount: " + amount);		
+		
+		final double INITIAL_FREE_CAP = 1_000;
+		// Initialize a limited storage capacity for each resource
 		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
-			if (resourceCapacity >= 0) {
-				getInventory().addAmountResourceTypeCapacity(ar, max);
-			}
+			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
 		}
-//		logger.config("Done addAmountResourceTypeCapacity()");
+		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 //		logger.config("Done BuildingManager()");
+		
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
+		
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
 //		logger.config("Done GoodsManager()");
+		
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
+		
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
+		
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
 //		logger.config("Done ThermalSystem()");
+		
 		// Initialize scientific achievement.
-		scientificAchievement = new ConcurrentHashMap<ScienceType, Double>(0);
+		scientificAchievement = new HashMap<ScienceType, Double>(0);
+		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 //		logger.config("Done ChainOfCommand()");
+		
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
 //		logger.config("Done CompositionOfAir()");
+		
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
@@ -547,10 +575,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
 		else
 			setObjective(ObjectiveType.CROP_FARM, 2);
-
-//		LogConsolidated.log(Level.INFO, 0, sourceName,
-//				"[" + this + "] Set development objective to " + objectiveType.toString() 
-//				+ " (based upon the '" + template + "' Template).", null);
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
@@ -562,9 +586,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-//		logger.config("Done initialize()");
-		
-		// TODO fire the New Unit event here
 	}
 
 	/**
@@ -812,14 +833,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
-		// boolean result = true;
-		try {
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
-				return false;
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
-				return false;
 
-			// TODO: check against indoor air pressure
+		try {
+			double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false); 
+			if (amount <= 0D) {
+				logger.warning(this, "No more oxygen.");
+				return false;
+			}
+			amount = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+			if (amount <= 0D) {
+				logger.warning(this, "No more water.");
+				return false;
+			}
+
+			// Check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
 				logger.warning(this, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
@@ -863,6 +890,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
+//			logger.info(this, "oxygenLeft: " + oxygenLeft); 
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
@@ -1355,6 +1383,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		refreshSupplyDemandMap(solElapsed);
 				
+		// clear estimated orbit repair parts cache value
+		goodsManager.clearOrbitRepairParts();
+		
 		solCache = solElapsed;
 		
 		int size = samplingResources.length;
@@ -3262,14 +3293,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *		    2 : CollectIce, 
 	 *			3 : CollectRegolith,
 	 *			4 : Delivery, 
-	 *			5 : Emergency, 
 	 *
+	 *			5 : Emergency,
 	 *			6 : Exploration, 
 	 * 			7 : Meteorology, 
 	 *			8 : Mining, 
      * 			9 : RescueSalvageVehicle, 
-	 * 		   10 : Trade, 
-	 * 
+     * 
+	 * 		   10 : Trade,
 	 * 		   11 : TravelToSettlement	
 	 * @return the range [in km]
 	 */
@@ -3589,7 +3620,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //    	}
     	return iceCollectionRate;
     }
-
+    
+    public double getRegolithCollectionRate() {
+    	return regolithCollectionRate;
+    }
 	
 	public int getMissionDirectiveModifier(MissionType mission) {
 		return missionModifiers.get(mission);
@@ -3658,6 +3692,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public void reinit() {
 		buildingManager.reinit();
+	}
+	
+	/**
+	 * Gets the equipment type cache
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Equipment> getEquipmentTypeCache() {
+		return equipmentTypeCache;
+	}
+	
+	@Override
+	public Settlement getSettlement() {
+		return null;
 	}
 	
 	@Override

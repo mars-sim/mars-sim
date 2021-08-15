@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -139,7 +139,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, robotType.getName(), settlement.getCoordinates()); // extending equipment
+		super(name, robotType.getName(), settlement); // extending equipment
 		
 		// Store this robot to the settlement 
 		settlement.getInventory().storeUnit(this);
@@ -200,11 +200,13 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	}
 
 	/**
-	 * Gets the instance of the task schedule of the robot.
+	 * Gets the total capacity of resource that this container can hold.
+	 * @return total capacity (kg).
 	 */
-//	public TaskSchedule getTaskSchedule() {
-//		return taskSchedule;
-//	}
+	public double getTotalCapacity() {
+		return BASE_CAPACITY;
+	}
+
 
 	/**
 	 * Create a string representing the birth time of the person.

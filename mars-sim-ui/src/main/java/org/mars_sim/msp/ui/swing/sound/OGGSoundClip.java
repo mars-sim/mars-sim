@@ -347,7 +347,7 @@ public class OGGSoundClip {
 					// + "Please check your audio source.", e.getMessage());
 					// e.printStackTrace();
 					playerThread = null;
-					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
+//					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
 //					disableSound();
 				}
 

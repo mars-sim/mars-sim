@@ -310,6 +310,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 
+	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
+	
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
@@ -1349,6 +1351,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getCropDemand(int resource) {
 		double demand = 0D;
 		
+		if (settlement.getNumCitizens() == 0)
+			return demand;
+		
 		HotMeal mainMeal = null;
 		HotMeal sideMeal = null;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -2149,15 +2154,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return true if building can be constructed.
 	 */
 	private boolean isLocallyConstructable(ConstructionStageInfo buildingStage) {
-		boolean result = false;
-
+		
 		if (buildingStage.isConstructable()) {
 			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
 			if (frameStage != null) {
 				ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
 				if (foundationStage != null) {
 					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
-						result = true;
+						return true;
 					} else {
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
@@ -2170,7 +2174,7 @@ public class GoodsManager implements Serializable, Temporal {
 								ConstructionStageInfo tempFrameStage = ConstructionUtil
 										.getPrerequisiteStage(tempBuildingStage);
 								if (frameStage.equals(tempFrameStage)) {
-									result = true;
+									return true;									
 								}
 							}
 						}
@@ -2179,7 +2183,7 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
@@ -2756,27 +2760,55 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Clears the previous calculation on estimated orbit repair parts
+	 */
+	public void clearOrbitRepairParts() {
+		orbitRepairParts.clear();
+	}
+	
+	/**
+	 * Gets the estimated orbit repair parts by entity
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
-		Map<Integer, Number> result = new HashMap<>();
+		
+		if (!orbitRepairParts.containsKey(entity)) {
+			
+			Map<Integer, Number> result = new HashMap<>();
+			
+			MalfunctionManager manager = entity.getMalfunctionManager();
+	
+			// Estimate number of malfunctions for entity per orbit.
+			double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
+	
+			// Estimate parts needed per malfunction.
+			Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
+	
+			// Multiply parts needed by malfunctions per orbit.
+			Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
+			while (i.hasNext()) {
+				Integer part = i.next();
+				result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+			}
 
-		MalfunctionManager manager = entity.getMalfunctionManager();
-
-		// Estimate number of malfunctions for entity per orbit.
-		double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
-
-		// Estimate parts needed per malfunction.
-		Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
-
-		// Multiply parts needed by malfunctions per orbit.
-		Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+			orbitRepairParts.put(entity, result);
+			return result;
 		}
-
-		return result;
+		
+		else {
+			return orbitRepairParts.get(entity);
+		}
 	}
 
+	/**
+	 * Gets the outstanding repair parts by entity
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getOutstandingRepairParts(Malfunctionable entity) {
 		Map<Integer, Number> result = new HashMap<>(0);
 
@@ -3326,7 +3358,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			double ratio = computeUsageFactor(equipmentClass);
-			return demand * ratio * DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * BAG_DEMAND;
+			return demand * ratio * settlement.getRegolithCollectionRate() * areologistFactor * BAG_DEMAND;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
@@ -3388,7 +3420,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		Iterator<Unit> k = equipmentList.iterator();
 		while (k.hasNext()) {
-			if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D)
+			if (((Equipment)k.next()).hasContent())
 				numUsed++;
 		}
 		

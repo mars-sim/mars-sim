@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * A factory for equipment units.
@@ -20,11 +20,11 @@ import org.mars_sim.msp.core.Simulation;
 public final class EquipmentFactory {
 
 	// Cache maps.
-	/** The equipment map cache. */
-	private static final Map<String, Equipment> equipmentTypeCache = new ConcurrentHashMap<String, Equipment>(6);
 	/** The equipment name set cache. */
 	private static Set<String> equipmentNamesCache;
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Private constructor for static factory class.
 	 */
@@ -46,18 +46,34 @@ public final class EquipmentFactory {
 
 	}
 
-	/**
-	 * Gets the equipment object
-	 * 
-	 * @param id		the equipment resource id.
-	 * @param location 	the location of the equipment.
-	 * @param temp 		is this equipment only temporary?
-	 * @return {@link Equipment}
-	 */
-	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.convertID2Type(id).getName(), location, temp);
-	}
+	public static Equipment createNewEquipment(String type, Settlement settlement, boolean temp) {
+		// Create the name upfront
+		String newName = Equipment.generateName(type);
+		if (temp) {
+			newName = "Temp " + newName;
+		}
 
+		Equipment newEqm = null;
+		if (Bag.TYPE.equalsIgnoreCase(type))
+			newEqm =  new Bag(newName, settlement);
+		else if (Barrel.TYPE.equalsIgnoreCase(type))
+			newEqm =  new Barrel(newName, settlement);
+		else if (EVASuit.TYPE.equalsIgnoreCase(type))
+			newEqm =  new EVASuit(newName, settlement);
+		else if (GasCanister.TYPE.equalsIgnoreCase(type))
+			newEqm =  new GasCanister(newName, settlement);
+		else if (LargeBag.TYPE.equalsIgnoreCase(type))
+			newEqm =  new LargeBag(newName, settlement);
+		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
+			newEqm =  new SpecimenBox(newName, settlement);
+		else
+			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
+
+		unitManager.addUnit(newEqm);
+
+		return newEqm;
+	}
+	
 	/**
 	 * Gets an equipment instance from an equipment type string.
 	 * 
@@ -67,39 +83,55 @@ public final class EquipmentFactory {
 	 * @return {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment createEquipment(String type, Coordinates location, boolean temp) {
-		if (temp && equipmentTypeCache.containsKey(type)) {
-			// since it's temporary, it doesn't matter if the location has been defined
-			return equipmentTypeCache.get(type);
-		}
-
-		// Create the name upfront
-		String newName = Equipment.generateName(type);
-		if (temp) {
-			newName = "Temp " + newName;
-		}
+	public static Equipment createEquipment(String type, Settlement settlement, boolean temp) {
 		
-		Equipment newEqm = null;
-		if (Bag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Bag(newName, location);
-		else if (Barrel.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Barrel(newName, location);
-		else if (EVASuit.TYPE.equalsIgnoreCase(type))
-			newEqm =  new EVASuit(newName, location);
-		else if (GasCanister.TYPE.equalsIgnoreCase(type))
-			newEqm =  new GasCanister(newName, location);
-		else if (LargeBag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new LargeBag(newName, location);
-		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
-			newEqm =  new SpecimenBox(newName, location);
-		else
-			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
+		int id = EquipmentType.convertName2ID(type);
+		
+		Map<Integer, Equipment> e = settlement.getEquipmentTypeCache();
+		
+		if (temp && e.containsKey(id)) {
+			Equipment eq = e.get(id);
+			eq.clean();
+			// since it's temporary, it doesn't matter if the location has been defined
+			return eq;
+		}
+	
+		// Create a new instance of the equipment		
+		Equipment newEqm = createNewEquipment(type, settlement, temp);
+		if (temp) {
+			e.put(id, newEqm);
+		}
+//		System.out.println(type + " " + e.size());
+		return newEqm;
+	}
+	
+	/**
+	 * Gets an equipment instance from an equipment type string.
+	 * 
+	 * @param id     the equipment id.
+	 * @param location the location of the equipment.
+	 * @param temp     is this equipment only temporary?
+	 * @return {@link Equipment}
+	 * @throws Exception if error creating equipment instance.
+	 */
+	public static Equipment createEquipment(int id, Settlement settlement, boolean temp) {
+		
+		Map<Integer, Equipment> e = settlement.getEquipmentTypeCache();
+		
+		if (temp && e.containsKey(id)) {
+			// since it's temporary, it doesn't matter if the location has been defined
+			return e.get(id);
+		}
 
-		Simulation.instance().getUnitManager().addUnit(newEqm);
+		String type = EquipmentType.convertID2Type(id).getName();
+
+		// Create a new instance of the equipment		
+		Equipment newEqm = createNewEquipment(type, settlement, temp);
 
 		if (temp) {
-			equipmentTypeCache.put(type, newEqm);
+			e.put(id, newEqm);
 		}
+//		System.out.println(type + " " + e.size());
 		return newEqm;
 	}
 
@@ -112,9 +144,9 @@ public final class EquipmentFactory {
 	 * @return  {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment createEquipment(Class<? extends Equipment> equipmentClass, Coordinates location,
+	public static Equipment createEquipment(Class<? extends Equipment> equipmentClass, Settlement settlement,
 			boolean temp) {
-		return createEquipment(EquipmentType.convertClass2Type(equipmentClass).getName(), location, temp);
+		return createEquipment(EquipmentType.convertClass2Type(equipmentClass).getName(), settlement, temp);
 	}
 
 	/**

@@ -373,7 +373,7 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement.getCoordinates());
+			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
 			unitManager.addUnit(eqm);
 			inv.storeUnit(eqm);
 		}
@@ -415,7 +415,7 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement.getCoordinates());
+			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
 			unitManager.addUnit(eqm);
 			inv.storeUnit(eqm);
 		}
@@ -465,7 +465,7 @@ extends TestCase {
 		inv.storeAmountResource(methaneID, 100D, true);
 
 		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement.getCoordinates());
+			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
 			unitManager.addUnit(eqm);
 			inv.storeUnit(eqm);
 		}

@@ -23,9 +23,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -131,7 +131,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get the apporpirate Unit Map for a Unit identifier
+	 * Get the appropriate Unit Map for a Unit identifier
 	 * @param id
 	 * @return
 	 */
@@ -169,9 +169,9 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets the unit with a particular indentifier (unit id)
+	 * Gets the unit with a particular identifier (unit id)
 	 * 
-	 * @param id indentifier
+	 * @param id identifier
 	 * @return
 	 */
 	public Unit getUnitByID(Integer id) {

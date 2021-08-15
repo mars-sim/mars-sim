@@ -7,12 +7,11 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.Coordinates;
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import java.io.Serializable;
 
 /**
  * A gas canister container for holding gas amount resources.
@@ -33,18 +32,18 @@ implements Container, Serializable {
 	/**
 	 * Constructor.
 	 * @param name 
-	 * @param location the location of the gas canister.
+	 * @param settlement the location of the gas canister.
 	 * @throws Exception if error creating gas canister.
 	 */
-	public GasCanister(String name, Coordinates location) {
+	public GasCanister(String name, Settlement settlement) {
 		// Use Equipment constructor.
-		super(name, TYPE, location);
+		super(name, TYPE, settlement);
 		
 		// Sets the base mass of the gas canister.
 		setBaseMass(EMPTY_MASS);
 		
 		// Set the gas capacity.
-		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
+//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 	
 	/**

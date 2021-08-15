@@ -75,8 +75,8 @@ public class Malfunction implements Serializable {
 
 	private static final String INCIDENT_NUM = " - Incident #";
 	private static final String REPAIR_REQUIRES = " - Repair requires ";
-	private static final String QUANTITY = "(x";
-	private static final String CLOSE_B = ").";
+	private static final String QUANTITY = " x";
+	private static final String CLOSE_B = ".";
 	
 	// Data members
 	private int incidentNum;
@@ -469,7 +469,7 @@ public class Malfunction implements Serializable {
 	private void determineRepairParts() {
 		for (RepairPart part : definition.getParts()) {
 			if (RandomUtil.lessThanRandPercent(part.getProbability())) {				
-				int id = ItemResourceUtil.findIDbyItemResourceName(part.getName());				
+				int id = part.getPartID();				
 				repairParts.put(id, part.getNumber());
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,

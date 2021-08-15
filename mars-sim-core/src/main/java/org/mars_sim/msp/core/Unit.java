@@ -15,15 +15,17 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.TerrainElevation;
+import org.mars_sim.msp.core.environment.Weather;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.TerrainElevation;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
@@ -99,7 +101,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
 	
-	protected static Mars mars;
+	protected static Environment mars;
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
@@ -182,7 +184,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case EQUIPMENT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			this.inventory = new Inventory(this);
+			if (name.contains(EVASuit.TYPE)) {
+				this.inventory = new Inventory(this);
+			}
 			break;
 			
 		case PERSON:
@@ -279,7 +283,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param newName new name
 	 */
 	public final void changeName(String newName) {
-		String oldName = this.name;
+//		String oldName = this.name;
 		
 		// Create an event here ?
 		setName(newName);
@@ -406,7 +410,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
-		inventory.setCoordinates(newLocation);
+		
+		if (getUnitType() != UnitType.EQUIPMENT) {
+			inventory.setCoordinates(newLocation);
+		}
+		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 	
@@ -416,6 +424,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return the unit's inventory object
 	 */
 	public Inventory getInventory() {
+		if (getUnitType() == UnitType.EQUIPMENT) {
+			if (name.contains(EVASuit.TYPE)) {
+				return inventory;
+			}
+			else {
+				logger.severe(this + " cannot use Inventory class anymore! ");
+				return null;
+			}
+		}
+
 		return inventory;
 	}
 
@@ -628,9 +646,22 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @throws Exception if error getting the mass.
 	 */
 	public double getMass() {
-		double invMass = inventory.getTotalInventoryMass(false);
-		if (invMass == 0)
-			return baseMass;
+		double invMass = 0;
+//		if (getUnitType() == UnitType.EQUIPMENT) {
+//			if (!name.contains(EVASuit.TYPE)) {
+//				invMass = ((Equipment)this).getStoredMass();
+//			}
+//		}
+		if (this instanceof Container) {
+			invMass = ((Equipment)this).getStoredMass();
+		}
+		else {
+//			logger.warning(this + " is inventory null ?");
+			if (inventory == null) logger.warning(this + " inventory is null ?");
+			inventory.getTotalInventoryMass(false);
+			if (invMass == 0)
+				return baseMass;
+		}
 		
 		return baseMass + invMass;
 	}
@@ -733,26 +764,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return tag.getLocale();
 	}
 
-	public Settlement getSettlement() {
-		if (this instanceof Equipment) {
-			return ((Equipment) this).getSettlement();
-		} 
-		
-		else if (this instanceof Person) {
-			return ((Person) this).getSettlement();
-		}
-
-		else if (this instanceof Robot) {
-			return ((Robot) this).getSettlement();
-		}
-
-		else if (this instanceof Vehicle) {
-			return ((Vehicle) this).getSettlement();
-		} 
-		
-		else
-			return null;
-	}
+	public abstract Settlement getSettlement();
 
 	public Building getBuildingLocation() {
 		if (this instanceof Equipment) {
@@ -952,25 +964,19 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-//			return getContainerUnit().isInVehicleInGarage();
-		
-		
-//		if (containerID >= FIRST_VEHICLE_ID && containerID < FIRST_PERSON_ID) {
-//			int vid = getContainerUnit().getContainerID();
-//			
-//			if (vid >= FIRST_SETTLEMENT_ID
-//					&& vid < FIRST_VEHICLE_ID)
-//				return true;
-//		}
-//		
-//		return false;	
-		
 		if (getContainerUnit() instanceof Vehicle) {
             // still inside the garage
             return BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null;
 		}
 		return false;
+	}
+	
+	public double getTotalCapacity() {
+		if (getUnitType() == UnitType.EQUIPMENT) {
+			return ((Equipment)this).getTotalCapacity();
+		}
+		
+		return 0;
 	}
 	
 	
@@ -981,13 +987,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param c1 {@link MarsClock}
 	 * @param e {@link EarthClock}
 	 * @param s {@link Simulation}
-	 * @param m {@link Mars}
+	 * @param m {@link Environment}
 	 * @param w {@link Weather}
 	 * @param u {@link UnitManager}
 	 * @param mm {@link MissionManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Mars m, Weather w, SurfaceFeatures sf, MissionManager mm) {
+			Environment m, Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
@@ -1004,7 +1010,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	
 	/**
-	 * Transfer the unit from one unit to another unit
+	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -1014,7 +1020,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Transfer the unit from one inventory to another unit
+	 * Transfer the unit from one owner's inventory to another owner
 	 * 
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -1024,7 +1030,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 	
 	/**
-	 * Transfer the unit from one unit to another inventory
+	 * Transfer the unit from one owner to another owner's inventory
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
@@ -1034,7 +1040,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 	
 	/**
-	 * Transfer the unit from one inventory to another inventory
+	 * Transfer the unit from one owner's inventory to another owner's inventory
 	 * 
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit

@@ -35,12 +35,12 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.mars_sim.msp.core.environment.LandmarkConfig;
+import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
-import org.mars_sim.msp.core.mars.LandmarkConfig;
-import org.mars_sim.msp.core.mars.MineralMapConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
@@ -937,7 +937,7 @@ public class SimulationConfig implements Serializable {
 		// Since the xml file does NOT exist in the home directory, start the input stream for copying
 		try (InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName)) {
 			if (stream == null) {
-				logger.severe("Can not find the bundled XML " + fullPathName);
+				logger.severe("Cannot find the bundled XML " + fullPathName);
 				return null;
 			}
 			int bytes = stream.available();

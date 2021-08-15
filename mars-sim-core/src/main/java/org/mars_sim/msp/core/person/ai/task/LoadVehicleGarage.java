@@ -623,7 +623,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				// Load resource from settlement inventory to vehicle inventory.
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
-					vInv.storeAmountResource(resource, resourceAmount, true);
+					vInv.storeAmountResource(resource, resourceAmount, false);
 					
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
@@ -822,13 +822,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 						Equipment eq = (Equipment) array[x];
 
-						boolean isEmpty = true;
-						Inventory eInv = eq.getInventory();
-						if (eInv != null) {
-							isEmpty = eq.getInventory().isEmpty(false);
-						}
-
-						if (isEmpty) {
+						if (eq.isEmpty(true)) {
 							if (vInv.canStoreUnit(eq, false)) {
 								// Put this equipment into a vehicle
 								eq.transfer(sInv, vInv);
@@ -912,13 +906,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
 					Equipment eq = (Equipment) array[x];
 
-					boolean isEmpty = true;
-					Inventory eInv = eq.getInventory();
-					if (eInv != null) {
-						isEmpty = eq.getInventory().isEmpty(false);
-					}
-
-					if (isEmpty) {
+					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle
 							eq.transfer(sInv, vInv);
@@ -1211,9 +1199,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Integer id = i.next();
 				int num = equipment.get(id);
-//				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++)
-					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement.getCoordinates(), true));
+					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement, true));
 			}
 
 			// Add all resources.
@@ -1223,10 +1210,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (resource < FIRST_ITEM_RESOURCE_ID) {
 					double amount = (resources.get(resource)).doubleValue();
-//					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
-//						+ " amount : " + amount);
 					inv.storeAmountResource(resource, amount, true);
-				} else {
+				} else if (resource < FIRST_EQUIPMENT_RESOURCE_ID) {
 					int num = resources.get(resource).intValue();
 					inv.storeItemResources(resource, num);
 				}
@@ -1326,12 +1311,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				int stored = vInv.getItemResourceNum(resource);
 				if (stored < num) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "2. Insufficient supply of " + itemResource
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 2. Insufficient supply of " + itemResource
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				}
 				else
-					logger.info(vehicle, 10_000, "2. Sufficient supply of " + itemResource
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 2. Sufficient supply of " + itemResource
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				
@@ -1371,14 +1356,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						double toLoad = amount - storedAmount;
 						
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "3. Insufficient supply of " + amountResource 
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 3. Insufficient supply of " + amountResource 
 								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
 					else
-						logger.info(vehicle, 10_000, "3. Sufficient supply of " + amountResource 
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 3. Sufficient supply of " + amountResource 
 								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " );
 
@@ -1409,12 +1394,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "4. Insufficient supply of " + itemResource
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 4. Insufficient supply of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
 								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 					}
 					else
-						logger.info(vehicle, 10_000, "4. Sufficient supply of " + itemResource
+						logger.info(vehicle, 10_000, vehicle.getMission() + " 4. Sufficient supply of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
 								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 
@@ -1458,10 +1443,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int num = requiredEquipment.get(equipmentID);
 			if (vInv.findNumEquipment(equipmentID) < num) {
 				sufficientSupplies = false;
-				logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Cannot load " + num + "x " + equipmentName);
 			}
 			else
-				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Can load " + num + "x " + equipmentName);
 		}
 
 		// Check that optional equipment is loaded or can't be loaded.
@@ -1488,13 +1473,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (hasStoredSettlement) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Cannot load " + num + "x " + equipmentName);
 				}
 				else
-					logger.info(vehicle, 10_000, "6. Can load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
 			}
 			if (num > 0)
-				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
 		}
 
 		return sufficientSupplies;

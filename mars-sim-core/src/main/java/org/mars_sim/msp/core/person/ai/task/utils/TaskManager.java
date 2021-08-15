@@ -124,7 +124,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
 
-	private static PrintWriter diagnosticFile = null;
+	protected static PrintWriter diagnosticFile = null;
 
 	/**
 	 * Enable the detailed diagnostics
@@ -564,9 +564,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
 			rebuildTaskCache();
-			if (diagnosticFile != null) {
-				outputCache();
-			}
 		}		
 
 		if (totalProbCache == 0D) {
@@ -623,12 +620,16 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * This method output the cache to a file for diagnostics
+	 * This method output the cache to a file for diagnostics.
+	 * @param extras Extra details about Task
 	 */
-	private void outputCache() {	
+	protected void outputCache(String... extras) {	
 		synchronized (diagnosticFile) {	
 			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
 			diagnosticFile.println("Worker:" + worker.getName());
+			for (String s : extras) {
+				diagnosticFile.println(s);				
+			}
 			diagnosticFile.println("Total:" + totalProbCache);
 			for (Entry<MetaTask, Double> task : taskProbCache.entrySet()) {
 				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());

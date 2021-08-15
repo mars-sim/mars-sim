@@ -416,29 +416,30 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_aeroDragForce);
         
-        double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
+//        double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
         // Question: what to do with the kinetic_E ?		
         
         double delta_E = energyNeeded;// + kinetic_E;
         		
         double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
     	
-//    	if (delta_v != 0) {
-        	logger.log(vehicle, Level.SEVERE, 2_000, 
-        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
-            		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
-                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
-        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
-        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
-        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
-    				+ "F_airResistance: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
-    				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
-    	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
-    				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
-    				);
+//        logger.log(vehicle, Level.SEVERE, 2_000, 
+//        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
+//            		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
+//                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+//        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
+//        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
+//        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
+//    				+ "F_airResistance: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
+//    				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
+//    	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
+//    				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
+//    				);
+        	
+        if (fuelNeeded > fuelUsed) {
     		// Use fuelUsed since it's more accurate in computing the delta kinetic energy needed to change the speed
-//    		fuelNeeded = fuelUsed;
-//    	}
+    		fuelNeeded = fuelUsed;
+    	}
     	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
@@ -658,13 +659,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double determineSpeed(Direction direction, double time) {
 
     	double currentSpeed = vehicle.getSpeed();
-    	double maxSpeed = vehicle.getBaseSpeed() * getLightConditionModifier() * getTerrainModifier(direction);
+    	double lightMod = getLightConditionModifier();
+    	double terrainMod = getTerrainModifier(direction);
+    	double maxSpeed = vehicle.getBaseSpeed() * lightMod * terrainMod;
     	double nextSpeed = currentSpeed;
     	
-    	logger.log(vehicle, Level.INFO, 2_000,
-					"0. currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
-					+ "maxSpeed: " + Math.round(maxSpeed * 10.0)/10.0 + " kph   "
-					);
+//    	logger.log(vehicle, Level.INFO, 2_000,
+//					"0. currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
+//					+ "lightMod: " + Math.round(lightMod * 10.0)/10.0 + "   "
+//					+ "terrainMod: " + Math.round(terrainMod * 10.0)/10.0 + "   "		
+//					+ "maxSpeed: " + Math.round(maxSpeed * 10.0)/10.0 + " kph   "
+//					);
     	
     	if (currentSpeed < maxSpeed) {
     	
@@ -672,30 +677,28 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        double accel = vehicle.getAccel();
 	        
 	        // Determine the hours used.
-	        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+	        double secTime = 3_600.0 * MarsClock.HOURS_PER_MILLISOL * time;
 	        
 	        // Note: 1 m/s = 3.6 kph or km/h
 	
-	    	nextSpeed = (currentSpeed + accel * 3.6 * 3.6 * hrsTime) + getSpeedSkillModifier();
-	        if (nextSpeed < 0D) {
-	        	nextSpeed = 0D;
-	        }
-	    	logger.log(vehicle, Level.INFO, 2_000,
-					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
-					+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-					);
+	        // Need to convert back and forth between the SI and imperial unit system
+	        // for speed and accel
+	    	nextSpeed = (currentSpeed /3.6 + accel * secTime) * 3.6 + getSpeedSkillModifier();
+	        
+//	    	logger.log(vehicle, Level.INFO, 2_000,
+//					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   ");
 	    	
 	       	if (nextSpeed > maxSpeed)
 	       		nextSpeed = maxSpeed;
 	        
-	    	logger.log(vehicle, Level.INFO, 2_000,
-					"2. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-					);
+//	    	logger.log(vehicle, Level.INFO, 2_000,
+//					"2. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+//					);
     	}
-    	else 
-        	logger.log(vehicle, Level.INFO, 2_000,
-    					"3. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-    					);
+//    	else 
+//        	logger.log(vehicle, Level.INFO, 2_000,
+//    					"3. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+//    					);
     	
         return nextSpeed;
     }

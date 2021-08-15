@@ -57,7 +57,6 @@ public class MissionManager implements Serializable, Temporal {
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
-	
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
@@ -574,27 +573,27 @@ public class MissionManager implements Serializable, Temporal {
 				List<MissionStatus> mss = m.getMissionStatus();
 				if (mss != null && !mss.isEmpty()) {
 					for (MissionStatus ms: mss) {
-	//					MissionStatus reason = m.getReason().toLowerCase();
-						if (// ms == null
-		//						|| m.isDone() 
+						if ( //m.isDone() // still want to keep a list of completed missions in Mission Tool
 		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
 								m.getPlan() == null
 								|| m.getPhase() == null
-								|| ms == MissionStatus.DESTINATION_IS_NULL								
-								|| ms == MissionStatus.USER_ABORTED_MISSION
-								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES
+								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)								
+								|| ms == MissionStatus.CANNOT_ENTER_ROVER				
+								|| ms == MissionStatus.CANNOT_LOAD_RESOURCES									
+								|| ms == MissionStatus.DESTINATION_IS_NULL		
+								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED						
 								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE				
 								|| ms == MissionStatus.LUV_NOT_AVAILABLE
 								|| ms == MissionStatus.LUV_NOT_RETRIEVED
-								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
-								|| ms == MissionStatus.NO_EXPLORATION_SITES
-								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED
 								|| ms == MissionStatus.MINING_SITE_NOT_BE_DETERMINED
 								|| ms == MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED
-								|| ms == MissionStatus.NO_TRADING_SETTLEMENT							
-//								|| ms.getName().toLowerCase().contains("no ")
-//								|| ms.getName().toLowerCase().contains("not ")
-								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
+								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
+								|| ms == MissionStatus.NO_EXPLORATION_SITES
+								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES								
+								|| ms == MissionStatus.NO_TRADING_SETTLEMENT
+								|| ms == MissionStatus.USER_ABORTED_MISSION
+//								|| ms.getName().toLowerCase().contains("no ") // need to first enforce standard
+//								|| ms.getName().toLowerCase().contains("not ") // need to first enforce standard
 								) {
 							removeMission(m);
 						} 
@@ -614,7 +613,7 @@ public class MissionManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// Remove inactivemissions
+		// Remove inactive missions
 		cleanMissions();
 		return true;
 	}

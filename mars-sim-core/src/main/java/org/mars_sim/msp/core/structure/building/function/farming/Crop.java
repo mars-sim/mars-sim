@@ -13,8 +13,8 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -270,7 +270,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		
 		building = farm.getBuilding();
 		phases = cropType.getPhases();
-
 
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();

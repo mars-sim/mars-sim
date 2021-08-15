@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,23 +65,25 @@ public class ResourceProcessing extends Function implements Serializable {
 
 		Inventory inv = settlement.getInventory();
 
-		double result = 0D;
-		List<ResourceProcessSpec> processes = buildingConfig.getResourceProcesses(buildingName);
-		for (ResourceProcessSpec process : processes) {
+		double result = 0D;		
+		Iterator<ResourceProcessSpec> i = buildingConfig.getResourceProcesses(buildingName).iterator();
+		while (i.hasNext()) {
+			ResourceProcessSpec process = i.next();	
 			double processValue = 0D;
-			for (int resource : process.getOutputResources()) {
+			Iterator<Integer> ii = Collections.unmodifiableCollection(process.getOutputResources()).iterator();
+			while (ii.hasNext()) {
+				int resource = ii.next();	
 				if (!process.isWasteOutputResource(resource)) {
-//					Good resourceGood = GoodsUtil.getResourceGood(resource);
 					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 				}
 			}
 
 			double inputInventoryLimit = 1D;
-			for (int resource : process.getInputResources()) {
+			Iterator<Integer> iii = process.getInputResources().iterator();
+		    while (iii.hasNext()) {
+		    	int resource = iii.next();
 				if (!process.isAmbientInputResource(resource)) {
-//					Good resourceGood = GoodsUtil.getResourceGood(resource);
-//					if (resource == ResourceUtil.greyWaterID); 
 					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 

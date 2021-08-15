@@ -404,6 +404,11 @@ public class SimLogger {
 		log(Level.WARNING, message);
 	}
 	
+	
+	public void warning(long timeBetweenLogs, String message) {
+		log(null, null, Level.WARNING, timeBetweenLogs, sourceName + " : " + message, null);		
+	}
+	
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param actor

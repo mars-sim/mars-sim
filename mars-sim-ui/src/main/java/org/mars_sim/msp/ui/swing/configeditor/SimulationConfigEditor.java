@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
@@ -51,9 +50,9 @@ import javax.swing.table.TableColumn;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -152,7 +151,6 @@ public class SimulationConfigEditor {
 
 			// Add table columns.
 			columns = new String[] { 
-//					Msg.getString("SimulationConfigEditor.column.isCommanderSettlement"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.sponsor"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
@@ -180,8 +178,7 @@ public class SimulationConfigEditor {
 			
 			if (mode == GameMode.COMMAND) {
 				sponsorCC = personConfig.getCommander().getSponsorStr();
-				LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName,
-						"The commander's sponsor is " + sponsorCC + ".");
+				logger.config("The commander's sponsor is " + sponsorCC + ".");
 			}
 			
 			for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
@@ -204,7 +201,6 @@ public class SimulationConfigEditor {
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
 					if (sponsorCC == info.sponsor) {
-//						logger.config("hasSponsor is " + hasSponsor);
 						hasSponsor = true;
 					}
 				}
@@ -231,12 +227,12 @@ public class SimulationConfigEditor {
 						break;
 					}
 					
-					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+					logger.config( 
 							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
 				}
 				
 				else {
-					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+					logger.config( 
 							"The commander's sponsor will sponsor one of the settlements in the site editor.");
 				}
 			}
@@ -586,9 +582,7 @@ public class SimulationConfigEditor {
 	}
 	
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(SimulationConfigEditor.class.getName());
 
 	private static final int HORIZONTAL_SIZE = 1024;
 	
@@ -627,8 +621,7 @@ public class SimulationConfigEditor {
 	
 	/**
 	 * Constructor
-	 * @param config
-	 *            the simulation configuration.
+	 * @param config the simulation configuration.
 	 */
 	public SimulationConfigEditor(SimulationConfig config) {
 
@@ -682,11 +675,6 @@ public class SimulationConfigEditor {
 			topPanel = new JPanel(new GridLayout(1, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
-		
-		// Create the title label.
-//		JLabel instructionLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.LEADING); //$NON-NLS-1$
-//		instructionLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-//		topPanel.add(instructionLabel);
 
 		// Create the title label.
 		if (mode == GameMode.COMMAND) {
@@ -978,21 +966,12 @@ public class SimulationConfigEditor {
 		settlementConfig.clearInitialSettlements();
 
 		// Add configuration settlements from table data.
-		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			String sponsor = 
-							(String) settlementTableModel.getValueAt(x, SPONSOR_COL);
-			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
-			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
-			int populationNum = Integer.parseInt(population);
-			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, BOT_COL);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			String crew = (String) settlementTableModel.getValueAt(x, CREW_COL);
-			String latitude = (String) settlementTableModel.getValueAt(x, LAT_COL);
-			String longitude = (String) settlementTableModel.getValueAt(x, LON_COL);
-//			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
-					longitude, crew);
+		for (SettlementInfo info : settlementTableModel.getSettlementInfoList()) {
+			int populationNum = Integer.parseInt(info.population);
+			int numOfRobots = Integer.parseInt(info.numOfRobots);
+			settlementConfig.addInitialSettlement(info.name, info.template, populationNum, numOfRobots,
+												  info.sponsor, info.latitude,
+												  info.longitude, info.crew);
 		}
 	}
 
@@ -1196,6 +1175,7 @@ public class SimulationConfigEditor {
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
 			usedNames.add(name);
+
 		}
 
 		// Gets a list of settlement names that are tailored to this country

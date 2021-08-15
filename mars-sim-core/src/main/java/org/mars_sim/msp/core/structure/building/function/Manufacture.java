@@ -527,8 +527,12 @@ public class Manufacture extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement.getCoordinates(), false);
+									settlement, false);
 
+							// Stores this equipment into its settlement
+							inv.storeUnit(equipment);
+							// Add this equipment as being owned by this settlement
+							settlement.addOwnedEquipment(equipment);
 							// Place this equipment within a settlement
 							unitManager.addUnit(equipment);
 							// TODO: how to add tracking supply for equipment
@@ -615,7 +619,7 @@ public class Manufacture extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement.getCoordinates(), false);
+									settlement, false);
 //							inv.storeUnit(equipment);
 							unitManager.addUnit(equipment);
 						}

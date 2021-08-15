@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -28,7 +29,6 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -959,7 +959,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException
 	 */
 	public double getEstimatedRemainingMissionTime(boolean useMargin) {
-		return getEstimatedTripTime(useMargin, getEstimatedTotalRemainingDistance());
+		double distance = getEstimatedTotalRemainingDistance();
+		if (distance > 0) {
+			logger.info(startingMember, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			return getEstimatedTripTime(useMargin, distance);
+		}
+		
+		return 0;
 	}
 
 	/**
@@ -1009,7 +1015,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+		double distance = getEstimatedTotalRemainingDistance();
+		if (distance > 0) {
+			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+		}
+		
+		return new HashMap<>();//getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
 	}
 
 	/**
@@ -1023,7 +1035,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
-		Map<Integer, Number> result = new ConcurrentHashMap<Integer, Number>();
+		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
@@ -1066,7 +1078,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuffer buffer = new StringBuffer();
 	
-				buffer.append("Fetching spare parts: ");
+				buffer.append("Fetching spare parts - ");
 //					.append(Conversion.capitalize(vehicle.getVehicleType()) + "'");
 	
 				// TODO: need to figure out why a vehicle's scope would contain the following parts :
@@ -1095,9 +1107,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						result.put(id, number);			
 //						if (i > 1)
 //							buffer.append(", ");					
-						buffer.append(" x").append(number).append(" ")
-							.append(ItemResourceUtil.findItemResourceName(id))
-							.append(" ID:").append(id).append("  ");
+						buffer
+						.append("ID: ").append(id).append(" ")
+						.append(ItemResourceUtil.findItemResourceName(id)).append(" ")
+						.append("x").append(number).append("   ");
 					}
 //					i++;
 				}
@@ -1546,7 +1559,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 
 	/**
-	 * Gets the optional containers needed for storing the resource when loading up the vehicle.
+	 * Gets the optional containers needed for storing the optional resources when loading up the vehicle.
 	 * 
 	 * @return the containers needed.
 	 */
@@ -1554,7 +1567,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
-		// Add containers needed for optional amount resources.
+		// Figure out the type of containers needed by optional amount resources.
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
 		Iterator<Integer> i = optionalResources.keySet().iterator();
 		while (i.hasNext()) {
@@ -1579,27 +1592,32 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //						+ "   capacity : " + capacity);
 				result.put(containerID, numContainers);
 					
-			}  // Check if these resources are Parts
-			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-				int num = (Integer) optionalResources.get(id);
-
-				// Obtain a container for storing the amount resource
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-				double capacity = ContainerUtil.getContainerCapacity(containerID);
-				int numContainers = (int) Math.ceil(num / capacity);
-
-				if (result.containsKey(containerID)) {
-					numContainers += (int) (result.get(containerID));
-				}
-
-//				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
-//						+ "   containerID : " + containerID
-//						+ "   numContainers : " + numContainers 
-//						+ "   numContainers : " + numContainers
-//						+ "   capacity : " + capacity);
-				result.put(containerID, numContainers);
-				
-			}
+			}  
+			
+			// Note: containers are NOT designed to hold parts 
+			// Parts do not need a container. Any exceptions for that ? 
+			
+			// Check if these resources are Parts
+//			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+//				int num = (Integer) optionalResources.get(id);
+//
+//				// Obtain a container for storing the amount resource
+//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+//				double capacity = ContainerUtil.getContainerCapacity(containerID);
+//				int numContainers = (int) Math.ceil(num / capacity);
+//
+//				if (result.containsKey(containerID)) {
+//					numContainers += (int) (result.get(containerID));
+//				}
+//
+////				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
+////						+ "   containerID : " + containerID
+////						+ "   numContainers : " + numContainers 
+////						+ "   numContainers : " + numContainers
+////						+ "   capacity : " + capacity);
+//				result.put(containerID, numContainers);
+//				
+//			}
 			
 //			// Check if these resources are equipment
 //			else if (id >= ResourceUtil.FIRST_VEHICLE_RESOURCE_ID && id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
@@ -1621,8 +1639,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //				result.put(containerID, numContainers);
 //			}
 			
-			else
-				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+//			else
+//				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() - id: " + id);
 			
 			// Gets a spare EVA suit for each 4 members in a mission
 			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);

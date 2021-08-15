@@ -1370,25 +1370,25 @@ public class PhysicalCondition implements Serializable {
 			double decimals = 10.0;
 			ComplaintType ct = complaint.getType();
 			if (ct == ComplaintType.SUFFOCATION) {
-				reading = "Oxygen sensor";
+				reading = "Oxygen";
 				unit = " kg";
 				decimals = 10000.0;
 			}
 			else if (ct == ComplaintType.DECOMPRESSION) {
-				reading = "Pressure sensor";
+				reading = "Pressure";
 				unit = " kPa";
 			}
 			if (ct == ComplaintType.FREEZING) {
-				reading = "Low Temperature sensor";
+				reading = "Low Temperature";
 				unit = " C";
 			}
 			if (ct == ComplaintType.HEAT_STROKE) {
-				reading = "High Temperature sensor";
+				reading = "High Temperature";
 				unit = " C";
 			}
-			String s = reading + " triggered.   Affected : " + name
-					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit
-					+ "   Required : " + Math.round(required*decimals)/decimals + unit;
+			String s = reading + " sensor triggered.  Affected: " + name
+					+ "  Actual: " + Math.round(actual*decimals)/decimals + unit
+					+ "  Required: " + Math.round(required*decimals)/decimals + unit;
 			logger.log(person, Level.SEVERE, 60_000, s);
 			
 			addMedicalComplaint(complaint);

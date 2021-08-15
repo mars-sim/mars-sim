@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 /**
  * Details about the Sun 

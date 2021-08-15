@@ -556,7 +556,7 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				}
 			} else {
-				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
 		} else {

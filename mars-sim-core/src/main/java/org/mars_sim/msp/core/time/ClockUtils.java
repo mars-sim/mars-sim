@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.environment.OrbitInfo;
 
 /**
  * The ClockUtils class stores methods for clock related computation

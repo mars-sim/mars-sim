@@ -9,13 +9,11 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -70,19 +68,16 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(EVASuit.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(EVASuit.class.getName());
 
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
 	public static String GOODTYPE = "EVA Gear";
 	
-//	private static String[] parts;
-	
+	/** capacity (kg). */
+	public static final double CAPACITY = 250;
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
@@ -150,13 +145,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * Constructor.
 	 * @param name 
 	 * 
-	 * @param location the location of the EVA suit.
+	 * @param settlement the location of the EVA suit.
 	 * @throws Exception if error creating EVASuit.
 	 */
-	public EVASuit(String name, Coordinates location) {
+	public EVASuit(String name, Settlement settlement) {
 
 		// Use Equipment constructor.
-		super(name, TYPE, location);
+		super(name, TYPE, settlement);
 	
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -172,10 +167,18 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
-		getInventory().addGeneralCapacity(250);
+		getInventory().addGeneralCapacity(CAPACITY);
 		
 	}
-
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
+	
 	/**
 	 * Gets the unit's malfunction manager.
 	 * 
@@ -196,29 +199,22 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// boolean result = true;
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
-			String name = getOwner().getName();
+//			String name = getOwner().getName();
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {				
-				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ name + "'s " 
-								+ getName()
-								+ " had less than 0.1792 kg oxygen (below the safety limit).");
+				logger.log(getOwner(), Level.WARNING, 30_000,
+						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 			
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {				
-				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ name + "'s " 
-								+ getName() + " ran out of water.");
+				logger.log(getOwner(), Level.WARNING, 30_000, 
+						"Ran out of water.");
 //				return false;
 			}
 			
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ name + "'s " 
-								+ getName() + " had oxygen flow sensor malfunction.", null);
+				logger.log(getOwner(), Level.WARNING, 30_000,
+						"Oxygen flow sensor malfunction.", null);
 				return false;
 			}
 //			if (malfunctionManager.getWaterFlowModifier() < 100D) {
@@ -230,18 +226,14 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ name + "'s " 
-								+ getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
+				logger.log(getOwner(), Level.WARNING, 30_000,
+						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ name + "'s " 
-								+ getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
+				logger.log(getOwner(), Level.WARNING, 30_000,
+						"Detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
 				return false;
 			}
 		} catch (Exception e) {
@@ -359,7 +351,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS 
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
+			logger.log(this, Level.WARNING, 30_000, 
 					"[" + this.getLocationTag().getLocale() + "] " 
 						+ getOwner().getName() + "'s " 
 						+ this.getName() + " got " + Math.round(oxygenLeft*100.0)/100.0

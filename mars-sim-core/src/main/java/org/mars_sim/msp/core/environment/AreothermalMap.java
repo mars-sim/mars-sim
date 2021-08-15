@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -117,7 +117,7 @@ public class AreothermalMap implements Serializable {
 			while (i.hasNext()) {
 				Coordinates hotspot = i.next();
 				double distance = location.getDistance(hotspot);
-				double pixelRadius = (Mars.MARS_CIRCUMFERENCE / W) / 2D;
+				double pixelRadius = (Environment.MARS_CIRCUMFERENCE / W) / 2D;
 
 				double a = 25D; // value at pixel radius.
 				double b = 15D; // ratio max / ratio mid.

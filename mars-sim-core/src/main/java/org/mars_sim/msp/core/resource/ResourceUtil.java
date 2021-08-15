@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.tool.Conversion;
 
 public class ResourceUtil implements Serializable {
 
@@ -498,6 +499,15 @@ public class ResourceUtil implements Serializable {
 	}
 	
 	/**
+	 * Prints the capitalized name of the resource 
+	 * @param id the resource's id.
+	 * @return capitalized name
+	 */
+	public static String printCapName(int id) {
+		return Conversion.capitalize(findAmountResourceName(id));
+	}
+	
+	/**
 	 * Finds an amount resource by id.
 	 * 
 	 * @param id the resource's id.
@@ -506,6 +516,10 @@ public class ResourceUtil implements Serializable {
 	 */
 	public static AmountResource findAmountResource(int id) {
 		return amountResourceIDMap.get(id);
+	}
+	
+	public static Map<Integer, AmountResource> getAmountResourceIDMap() {
+		return amountResourceIDMap;
 	}
 
 	/**

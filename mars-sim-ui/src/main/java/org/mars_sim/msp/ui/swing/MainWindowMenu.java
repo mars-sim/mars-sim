@@ -9,8 +9,12 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -44,7 +48,7 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 /**
  * The MainWindowMenu class is the menu for the main window.
  */
-public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
+public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener, ItemListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -119,6 +123,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	/** User Guide menu item. */
 	private JMenuItem guideItem;
 
+	protected Action musicMuteAction;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -320,9 +326,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		// Create Background Music mute menu item
 		musicMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
 		musicMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
-		musicMuteItem.addActionListener(this);
+//		musicMuteItem.addActionListener(this);
 		musicMuteItem.setToolTipText(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
 		settingsMenu.add(musicMuteItem);
+		musicMuteItem.addItemListener(this);
 		
 		// Create Sound Effect Volume Slider 
 		effectVolumeSlider = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
@@ -358,10 +365,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		// Create Sound Effect mute menu item
 		effectMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
 		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK, false));
-		effectMuteItem.addActionListener(this);
+//		effectMuteItem.addActionListener(this);
 		effectMuteItem.setToolTipText(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
 		settingsMenu.add(effectMuteItem);
-
+		effectMuteItem.addItemListener(this);
+		
 		// Add notificationMenu
 		notificationMenu = new NotificationMenu(this);
 
@@ -413,6 +421,51 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return mainWindow;
 	}
 
+	public void itemStateChanged(ItemEvent event) {
+		JMenuItem selectedItem = (JMenuItem) event.getSource();
+		
+		if (selectedItem == musicMuteItem) {
+			
+			if (event.getStateChange() == ItemEvent.SELECTED) {
+//				System.out.println("Music was on. Mute it now.");
+				// mute the music
+				soundPlayer.muteMusic();
+				musicVolumeSlider.setEnabled(false);
+				musicMuteItem.revalidate();
+				musicMuteItem.repaint();
+		    } else {
+		    	// unmute the music
+//				System.out.println("Music was off. Turn it on now.");
+				soundPlayer.unmuteMusic();
+				musicVolumeSlider.setEnabled(true);
+				musicMuteItem.revalidate();
+				musicMuteItem.repaint();
+		    }
+//			// Is the music track stopped ?
+//			if (soundPlayer.isMusicTrackStopped()) {
+//				System.out.println("Music track is stopped. Mute the music.");
+//				// mute the music
+//				soundPlayer.muteMusic();
+//				musicVolumeSlider.setEnabled(false);
+//				musicMuteItem.setSelected(true);
+//			}
+		}
+		
+		else if (selectedItem == effectMuteItem) {
+			if (event.getStateChange() == ItemEvent.SELECTED) {
+//				System.out.println("Sound effect was on. Mute it now.");
+				// mute the sound effect
+				soundPlayer.muteSoundEffect();
+				effectVolumeSlider.setEnabled(false);
+		    } else {
+		    	// unmute the sound effect
+//				System.out.println("Sound effect was off. Turn it on now.");
+				soundPlayer.unmuteSoundEffect();
+				effectVolumeSlider.setEnabled(true);
+		    }
+		} 
+	}
+	
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
@@ -543,49 +596,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			}
 		}
 
-		else if (selectedItem == musicMuteItem) {
-			
-			if (soundPlayer.isMusicMute()) { // musicMuteItem.isSelected()) {//
-				// Is the music track stopped ?
-				if (soundPlayer.isMusicTrackStopped()) {
-					musicVolumeSlider.setEnabled(false);
-					musicMuteItem.setSelected(true);
-				}
-				else {
-					// unmute the music
-	//				System.out.println("Music was off. Turning it on now.");
-					soundPlayer.unmuteMusic();
-					musicVolumeSlider.setEnabled(true);
-				}
-			}
-			else {
-//				System.out.println("Music was on. Turning it off now.");
-				// mute the music
-				soundPlayer.muteMusic();
-				musicVolumeSlider.setEnabled(false);
-			}  
-		}
-
-		else if (selectedItem == effectMuteItem) {
-//			AbstractButton button = (AbstractButton) event.getSource();
-//		    if (button.isSelected()) {
-				if (!soundPlayer.isEffectMute()) {
-//					System.out.println("Sound Effect was on. Turning it off now.");
-					// mute the sound effect
-					soundPlayer.muteSoundEffect();
-					effectVolumeSlider.setEnabled(false);
-//					effectMuteItem.setSelected(true);
-				}
-				else if (soundPlayer.isEffectMute()) {
-					// unmute the sound effect
-//					System.out.println("Sound Effect was off. Turning it on now.");
-					soundPlayer.unmuteSoundEffect();
-					effectVolumeSlider.setEnabled(true);
-//					effectMuteItem.setSelected(false);
-				}
-//			}
-		}
-
 		else if (selectedItem == homeAboutItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
@@ -629,8 +639,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
 		musicVolumeSlider.setEnabled(!soundPlayer.isMusicMute());
+		
 		effectVolumeSlider.setValue((int) Math.round(soundPlayer.getEffectVolume() * 10));
 		effectVolumeSlider.setEnabled(!soundPlayer.isEffectMute());
+		
 		musicMuteItem.setSelected(soundPlayer.isMusicMute());
 		effectMuteItem.setSelected(soundPlayer.isEffectMute());
 	}

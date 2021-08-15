@@ -30,7 +30,7 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.mars.ExploredLocation;
+import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;

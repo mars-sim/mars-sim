@@ -20,12 +20,12 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -112,7 +112,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getNickName());
+								+ entity.getNickName() + ".");
 						 malfunction.setChiefRepairer(MalfunctionRepairWork.EVA, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
@@ -120,7 +120,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getNickName());
+								+ entity.getNickName() + ".");
 						malfunction.setDeputyRepairer(MalfunctionRepairWork.EVA, person.getName());
 					}
 					

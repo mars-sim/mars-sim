@@ -588,21 +588,18 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @param equipment the equipment.
 	 */
 	private void unloadEquipmentInventory(Equipment equipment) {
-		Inventory eInv = equipment.getInventory();
 		Inventory sInv = settlement.getInventory();
 
-		// Unload amount resources.
 		// Note: only unloading amount resources at the moment.
-		Iterator<Integer> i = eInv.getAllARStored(false).iterator();
-		while (i.hasNext()) {
-			Integer resource = i.next();
-			double amount = eInv.getAmountResourceStored(resource, false);
+		int resource = equipment.getResource();
+		if (resource != -1) {
+			double amount = equipment.getAmountResourceStored(resource);
 			double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
 			if (amount < capacity) {
 				amount = capacity;
 			}
 			try {
-				eInv.retrieveAmountResource(resource, amount);
+				equipment.retrieveAmountResource(resource, amount);
 				sInv.storeAmountResource(resource, amount, true);
 			} catch (Exception e) {
 			}

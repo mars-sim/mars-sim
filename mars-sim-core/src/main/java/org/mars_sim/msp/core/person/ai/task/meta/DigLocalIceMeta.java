@@ -99,7 +99,7 @@ public class DigLocalIceMeta extends MetaTask {
             }
 
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumBags(true, true);
+            int numEmptyBags = inv.findNumBags(true, false);
             if (numEmptyBags == 0) {
                 return 0;
             }

@@ -42,9 +42,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.mars.Landmark;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.TerrainElevation;
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.Landmark;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -196,7 +196,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	
 	private static Simulation sim = Simulation.instance();
 	private static TerrainElevation terrainElevation;
-	private static Mars mars;
+	private static Environment mars;
 	
 	private static UnitManager unitManager = sim.getUnitManager();
 

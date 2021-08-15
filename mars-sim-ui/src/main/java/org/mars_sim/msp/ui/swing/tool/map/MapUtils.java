@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.environment.Environment;
 
 /**
  * Static class for map utilities.
@@ -48,7 +48,7 @@ public class MapUtils {
 
 	public static int getPixelDistance(double distance, String mapType) {
 		int mapWidth = CannedMarsMap.MAP_WIDTH;
-		double distancePerPixel = Mars.MARS_CIRCUMFERENCE / mapWidth;
+		double distancePerPixel = Environment.MARS_CIRCUMFERENCE / mapWidth;
 		return (int) Math.round(distance / distancePerPixel);
 	}
 }

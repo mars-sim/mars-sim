@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.Meteorite;
+import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.Meteorite;
-import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
@@ -107,8 +108,8 @@ public class BuildingManager implements Serializable {
 	
 	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<String, Double>();
 	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<String, Double>();
-	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new ConcurrentHashMap<FunctionType, List<Building>>();
-	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
+	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new HashMap<FunctionType, List<Building>>();
+	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
 
 	// Data members
 	private double farmTimeCache = -5D;
@@ -120,8 +121,8 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-	private List<Integer> buildingInts = new CopyOnWriteArrayList<>();
-	private List<Integer> garageInts = new CopyOnWriteArrayList<>();
+	private List<Integer> buildingInts = new ArrayList<>();
+	private List<Integer> garageInts = new ArrayList<>();
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -159,7 +160,7 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 		this.settlementID = (Integer) settlement.getIdentifier();
-		
+
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
@@ -172,7 +173,6 @@ public class BuildingManager implements Serializable {
 		if (buildingTemplates != null) {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
-//				BuildingTemplate template = i.next();
 				addBuilding(i.next(), false);
 			}
 		}
@@ -192,8 +192,6 @@ public class BuildingManager implements Serializable {
 
 		// Make use of Guice for Meteorite
 		meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
-
-//		System.out.println(settlement.getName() + "'s BuildingManager is initialized.");
 	}
 
 	/**
@@ -503,15 +501,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithLifeSupport() {
 		return getBuildings(FunctionType.LIFE_SUPPORT);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithLifeSupport =
-//            	buildings.stream()
-//        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	return buildingsWithLifeSupport;
 	}
 
 	/**
@@ -521,15 +510,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithPowerGeneration() {
 		return getBuildings(FunctionType.POWER_GENERATION);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithPower =
-//            	buildings.stream()
-//        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	return buildingsWithPower;
 	}
 
 	/**
@@ -569,34 +549,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithThermal() {
 		return getBuildings(FunctionType.THERMAL_GENERATION);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithThermal =
-//        	buildings.stream()
-//    		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	//List<Building> buildings = getBuildings();
-//    	//List<Building> buildingsWithThermal = new CopyOnWriteArrayList<Building>();
-//    	Iterator<Building> i = buildings.iterator();
-//		while (i.hasNext()) {
-//			Building b = i.next();
-//			String buildingType = b.getBuildingType();
-//			//if (config.hasThermalGeneration(buildingType) && !buildingType.equals("Hallway") && !buildingType.equals("Tunnel") ) {
-//			if (config.hasThermalGeneration(buildingType)) {
-//				buildingsWithThermal.add(b);
-//			}
-//		}
-//
-//		//Using Lambda Expression with internal iterator
-//    	buildings.forEach(b -> {
-//			String buildingType = b.getBuildingType();
-//			if (config.hasThermalGeneration(buildingType)) {
-//				buildingsWithThermal.add(b);
-//			}
-//		});
-//    	return buildingsWithThermal;
 	}
 
 	/**
@@ -1291,7 +1243,6 @@ public class BuildingManager implements Serializable {
 						return garageBuilding;
 					}
 				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
 					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
 							   "is not in a building.", e);
 				}
@@ -1387,23 +1338,10 @@ public class BuildingManager implements Serializable {
 	 *         within any building.
 	 */
 	public Building getBuildingAtPosition(double xLoc, double yLoc) {
-		// Use Java 8 stream
-//		List<Building> list = buildings.stream()
-//				.filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
-//				.collect(Collectors.toList());
-//		return list.get(RandomUtil.getRandomInt(list.size()-1));
-		
-//		return buildings.stream().filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
-//				.findFirst().orElse(null);// get();
-		
-//        Building result = null;
-        //for (Building building : buildings) {
         Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {// && (result == null)) {
+        while (i.hasNext()) {
             Building building = i.next();
             if (LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
-//                result = building;
-//                break;
                 return building;
             }
         }
@@ -1421,23 +1359,6 @@ public class BuildingManager implements Serializable {
 	 *                           function.
 	 */
 	public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
-//    	List<Building> result = new CopyOnWriteArrayList<Building>();
-//        try {
-//            for (Building building : buildingList) {
-//            //Iterator<Building> i = buildingList.iterator();
-//            //while (i.hasNext()) {
-//            //    Building building = i.next();
-//                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-//                if (lifeSupport.getAvailableOccupancy() > 0) {
-//                    result.add(building);
-//                }
-//            }
-//        }
-//        catch (ClassCastException e) {
-//            throw new IllegalStateException("BuildingManager.getUncrowdedBuildings(): " +
-//                    "building isn't a life support building.");
-//        }
-//        return result;
 		return buildingList.stream()
 				.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT))
 				.getAvailableOccupancy() > 0)

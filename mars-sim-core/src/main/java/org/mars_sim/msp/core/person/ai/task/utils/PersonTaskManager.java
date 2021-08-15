@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.role.Role;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -148,16 +149,20 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	@Override
 	protected synchronized void rebuildTaskCache() {
 
+		String shiftDesc = null;
 		TaskSchedule taskSchedule = person.getTaskSchedule();
 		List<MetaTask> mtList = null;
 		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
 			mtList = MetaTaskUtil.getPersonMetaTasks();
+			shiftDesc = "OnCall";
 		}
 		else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
 			mtList = MetaTaskUtil.getDutyHourTasks();
+			shiftDesc = "Duty";
 		}
 		else {
 			mtList = MetaTaskUtil.getNonDutyHourTasks();
+			shiftDesc = "NonDuty";
 		}
 
 
@@ -181,6 +186,13 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 				taskProbCache.put(mt, probability);
 				totalProbCache += probability;
 			}
+		}
+		
+		// Output shift
+		if (diagnosticFile != null) {
+            Role role = person.getRole();
+            String roleDetails = "Role: " + (role != null ? role.getType() : "None");
+			outputCache("Shift: " + shiftDesc, roleDetails);
 		}
 	}
 

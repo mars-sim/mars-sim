@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Unit;
@@ -177,7 +176,7 @@ public abstract class Vehicle extends Unit
 	private double startMass;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
-	/** The base acceleration of the vehicle [kph2]. */
+	/** The base acceleration of the vehicle [m/s2]. */
 	private double baseAccel = 0;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
 	private double endMass;
@@ -361,14 +360,14 @@ public abstract class Vehicle extends Unit
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
 				
-		logger.config(vehicleType 
-					+ " -            peak power : " + Math.round(peakPower*100.0)/100.0 + " kW");
-		logger.config(vehicleType 
-					+ " -         average power : " + Math.round(averagePower*100.0)/100.0 + " kW");
-		logger.config(vehicleType 
-					+ " -   ave energy consumed : " + Math.round(aveEnergyConsumption*100.0)/100.0 + " kWh/km");
-		logger.config(vehicleType 
-					+ " -         fuel capacity : " + Math.round(fuelCapacity*100.0)/100.0 + " kg");
+//		logger.config(vehicleType 
+//					+ " -            peak power : " + Math.round(peakPower*100.0)/100.0 + " kW");
+//		logger.config(vehicleType 
+//					+ " -         average power : " + Math.round(averagePower*100.0)/100.0 + " kW");
+//		logger.config(vehicleType 
+//					+ " -   ave energy consumed : " + Math.round(aveEnergyConsumption*100.0)/100.0 + " kWh/km");
+//		logger.config(vehicleType 
+//					+ " -         fuel capacity : " + Math.round(fuelCapacity*100.0)/100.0 + " kg");
 		
 		if (this instanceof Rover) {
 		
@@ -376,16 +375,16 @@ public abstract class Vehicle extends Unit
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	//cargoCapacity/15;
 			
-			logger.config(vehicleType 
-					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(vehicleType 
-					+ " - est total crew weight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
-			logger.config(vehicleType 
-					+ " -    est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(vehicleType 
-					+ " -          est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(vehicleType 
-					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " - est total crew weight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
+//			logger.config(vehicleType 
+//					+ " -    est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " -          est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+//			logger.config(vehicleType 
+//					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
 		else if (this instanceof Drone || this instanceof LightUtilityVehicle) {
@@ -393,40 +392,40 @@ public abstract class Vehicle extends Unit
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;	//cargoCapacity/15;
 			
-			logger.config(vehicleType 
-					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(vehicleType 
-					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(vehicleType 
-					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(vehicleType 
-					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+//			logger.config(vehicleType 
+//					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+//			logger.config(vehicleType 
+//					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
 		if (this instanceof Drone || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
+			// Gets the acceleration in m/s2
+			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 			
-			baseAccel = averagePower / beginningMass / baseSpeed * 3600;
-			
-			logger.config(vehicleType 
-					+ " -            base accel : " + Math.round(baseAccel*100.0)/100.0 + " m/s2");	
-			logger.config(vehicleType 
-					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
-			logger.config(vehicleType 
-					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
-			logger.config(vehicleType 
-					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
-			logger.config(vehicleType 
-					+ " -            base speed : " + Math.round(baseSpeed*100.0)/100.0 + " km/hr");
-			logger.config(vehicleType 
-					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + "");	
-			logger.config(vehicleType 
-					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(vehicleType 
-					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(vehicleType 
-					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
+//			logger.config(vehicleType 
+//					+ " -            base accel : " + Math.round(baseAccel*100.0)/100.0 + " m/s2");	
+//			logger.config(vehicleType 
+//					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
+//			logger.config(vehicleType 
+//					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
+//			logger.config(vehicleType 
+//					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
+//			logger.config(vehicleType 
+//					+ " -            base speed : " + Math.round(baseSpeed*100.0)/100.0 + " km/hr");
+//			logger.config(vehicleType 
+//					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + "");	
+//			logger.config(vehicleType 
+//					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
+//			logger.config(vehicleType 
+//					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
+//			logger.config(vehicleType 
+//					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
 		}
 		
 		// Set initial parked location and facing at settlement.
@@ -988,17 +987,27 @@ public abstract class Vehicle extends Unit
 		
 		int radius = (int)(getAssociatedSettlement().getMissionRadius(missionType));	
 		double range = 0;
-		Inventory vInv = getInventory();
-        int fuelType = getFuelType();
-        double amountOfFuel = vInv.getAmountResourceStored(fuelType, false);
-		if (amountOfFuel > 0)
-			range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
-		else
-			range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+		Mission mission = getMission();
 		
-		radius = Math.min(radius, (int)range);
+        if (mission == null) {
+        	// Before the mission is created, the range would be based on vehicle's capacity
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        }
+        else if (getMission().getPhase() == VehicleMission.REVIEWING
+        	|| getMission().getPhase() == VehicleMission.EMBARKING) {
+        	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
+        	// So the range would be based on vehicle's capacity
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        }
+        else {
+            double amountOfFuel = getInventory().getAmountResourceStored(getFuelType(), false);
+        	// During the journey, the range would be based on the amount of fuel in the vehicle
+    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;	
+        }
+        
+		range = Math.min(radius, (int)range);
 		
-		return radius;
+		return range;
 	}
 
 	/**
@@ -1145,7 +1154,7 @@ public abstract class Vehicle extends Unit
 
 
 	/**
-	 * Gets the instantaneous acceleration of the vehicle [kW / kg / kph]
+	 * Gets the instantaneous acceleration of the vehicle [m/s2]
 	 * @return
 	 */
 	public double getAccel() {

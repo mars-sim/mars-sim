@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.ExploredLocation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.ExploredLocation;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 public class ExploredSiteMapLayer implements MapLayer {

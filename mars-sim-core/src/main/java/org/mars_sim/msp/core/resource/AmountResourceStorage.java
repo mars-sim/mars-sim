@@ -14,7 +14,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.logging.SimLogger;
 
 /**
  * Storage for amount resources.
@@ -24,7 +25,8 @@ public class AmountResourceStorage implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(AmountResourceStorage.class.getName());
 
 	// Domain members
 	private AmountResourceTypeStorage typeStorage = null;
@@ -32,13 +34,16 @@ public class AmountResourceStorage implements Serializable {
 
 	// Cache values
 	private transient Set<Integer> allStoredARCache = null;
-	// private transient Set<AmountResource> allStoredResourcesCache = null;
 	private transient boolean allStoredResourcesCacheDirty = true;
 	private transient double totalResourcesStored = 0D;
 	private transient boolean totalResourcesStoredDirty = true;
-	
-//	private static ResourceUtil resourceUtil = ResourceUtil.getInstance();
 
+	public boolean isEmpty() {
+		if (allStoredARCache == null)
+			return true;
+		return allStoredARCache.isEmpty();
+	}
+	
 	/**
 	 * Adds capacity for a resource type.
 	 * 
@@ -83,7 +88,8 @@ public class AmountResourceStorage implements Serializable {
 	public void removeAmountResourceTypeCapacity(int resource, double capacity) {
 
 		if (typeStorage == null) {
-			typeStorage = new AmountResourceTypeStorage();
+			return;
+//			typeStorage = new AmountResourceTypeStorage();
 		}
 
 		typeStorage.removeTypeCapacity(resource, capacity);
@@ -219,11 +225,8 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public double getAmountResourceCapacity(int resource) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
-//		if (ar == null)
-//			System.out.println("resource : " + resource);
-//		if (resource == 281)
-//			System.out.println("resource : " + ar.getName());
-//		System.out.println("resource " + resource + " " + ar.getName());
+//		logger.info(40_000L, ar + " " + 
+//				resource + " getAmountResourceCapacity");
 		PhaseType pt = ar.getPhase();
 		double result = 0D;
 
@@ -492,9 +495,7 @@ public class AmountResourceStorage implements Serializable {
 	 * @throws ResourceException if error storing resource.
 	 */
 	public void storeAmountResource(int resource, double amount) {
-		AmountResource ar = ResourceUtil.findAmountResource(resource);
-		PhaseType pt = ar.getPhase();
-
+	
 		if (amount < 0D) {
 			throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
 		}
@@ -524,11 +525,13 @@ public class AmountResourceStorage implements Serializable {
 
 					// Store resource in phase storage.
 					if ((phaseStorage != null) && (remainingAmount > 0D)) {
-
-						double remainingPhaseCapacity = phaseStorage.getAmountResourcePhaseRemainingCapacity(pt);
+						AmountResource ar = ResourceUtil.findAmountResource(resource);
+						PhaseType phase = ar.getPhase();
+						
+						double remainingPhaseCapacity = phaseStorage.getAmountResourcePhaseRemainingCapacity(phase);
 						if (remainingPhaseCapacity >= remainingAmount) {
 
-							AmountResource resourceTypeStored = phaseStorage.getAmountResourcePhaseType(pt);
+							AmountResource resourceTypeStored = phaseStorage.getAmountResourcePhaseType(phase);
 							if ((resourceTypeStored == null) || ar.equals(resourceTypeStored)) {
 								phaseStorage.storeAmountResourcePhase(ar, remainingAmount);
 							}
@@ -541,7 +544,7 @@ public class AmountResourceStorage implements Serializable {
 						allStoredResourcesCacheDirty = true;
 						totalResourcesStoredDirty = true;
 					} else {
-						logger.severe("Amount resource " + ar + " of amount: " + amount
+						logger.severe("Amount resource " + ResourceUtil.findAmountResource(resource) + " of amount: " + amount
 								+ " to store.  Amount remaining capacity: " + getARRemainingCapacity(resource)
 								+ " remaining: " + remainingAmount);
 					}
@@ -550,7 +553,8 @@ public class AmountResourceStorage implements Serializable {
 
 			if (!storable)
 				throw new IllegalStateException(
-						"Amount resource: " + ar + " of amount: " + amount + " could not be stored in inventory.");
+						"Amount resource: " + ResourceUtil.findAmountResource(resource) 
+						+ " of amount: " + amount + " could not be stored in inventory.");
 		}
 	}
 

@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
@@ -262,10 +263,11 @@ class TradeGoodsPanel extends WizardPanel {
 	boolean commitChanges() {
 		boolean result = false;
 		try {
+			MissionDataBean missionData = getWizard().getMissionData();
+			
 			// Check if enough containers in trade goods.
-			if (hasEnoughContainers()) {
+			if (hasEnoughContainers(missionData.getStartingSettlement())) {
 				// Set buy/sell goods.
-				MissionDataBean missionData = getWizard().getMissionData();
 				if (buyGoods) missionData.setBuyGoods(tradeTableModel.getTradeGoods());
 				else missionData.setSellGoods(tradeTableModel.getTradeGoods());
 				result = true;
@@ -283,7 +285,7 @@ class TradeGoodsPanel extends WizardPanel {
 	 * @throws Exception if error checking containers.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean hasEnoughContainers() {
+	private boolean hasEnoughContainers(Settlement settlement) {
 		boolean result = true;
 
 		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
@@ -301,8 +303,8 @@ class TradeGoodsPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
-				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
+				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
+				double capacity = ((Equipment)container).getAmountResourceCapacity(resource.getID());
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);
 				if (resourceAmount > totalCapacity) {

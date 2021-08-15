@@ -302,7 +302,7 @@ public class DroneMission extends VehicleMission {
 					}
 					
 				} else {
-					addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 					endMission();
 					return;
 				}

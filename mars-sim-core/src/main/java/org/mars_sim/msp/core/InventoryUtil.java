@@ -45,6 +45,7 @@ public class InventoryUtil {
 	 * @return
 	 */
 	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
+		// Gets the suit the person has used before
 		EVASuit suit = inv.findAnEVAsuit(p);
 		// Check if suit has any malfunctions.
 		if (suit != null) {

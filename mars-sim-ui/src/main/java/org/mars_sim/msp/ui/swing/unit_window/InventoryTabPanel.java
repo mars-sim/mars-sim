@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -294,7 +295,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
             }
 
-            Set<ItemResource> itemResources = inventory.getAllItemRsStored();
+            Set<ItemResource> itemResources = inventory.getAllIRStored();
             keys.addAll(itemResources);
             Iterator<ItemResource> iItem = itemResources.iterator();
             while (iItem.hasNext()) {
@@ -370,7 +371,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>(inventory.getAllAmountResourcesStored(false));
         		
         		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
-        		Set<ItemResource> itemResources = inventory.getAllItemRsStored();
+        		Set<ItemResource> itemResources = inventory.getAllIRStored();
         		newResourceKeys.addAll(itemResources);
 
     			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
@@ -437,8 +438,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		 */
 		private EquipmentTableModel(Inventory inventory) {
 			this.inventory = inventory;
-			// Sort equipment alphabetically by name.
-			
+
 			types = new HashMap<>();
 			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
@@ -446,38 +446,31 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			for (Equipment e : inventory.findAllEquipment()) {
 				String name = e.getName();
 				types.put(name, e.getType());
-				contentOwner.put(name, showOwner(e));
+				contentOwner.put(name, getContentOwner(e));
 				mass.put(name, e.getMass());
 				equipmentList.add(e);
 			}
-			
+			// Sort equipment alphabetically by name.
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-//			Collections.sort(equipmentList);
 		}
 
-		private String showOwner(Equipment e) {
+		private String getContentOwner(Equipment e) {
 			String s = "";
-//			String item = e.getName().toLowerCase();
-			if (e instanceof EVASuit) {//item.contains("eva suit")) {
+			if (e.getType().equalsIgnoreCase(EVASuit.TYPE)) {
 				Person p = (Person) e.getLastOwner();
 				if (p != null)
-					s = p.getName();
-				//else 
-				//	s = unit.getContainerUnit().getName();		
+					s = p.getName();	
 			}
 			else if (e instanceof Robot) {
-				;// TODO: assign the ownership of each bot
+				Unit u = e.getLastOwner();
+				if (u != null)
+					s = Conversion.capitalize(u.getName() + "  ");
 			}
-//			else if (item.contains("box") || item.contains("canister") 
-//					|| item.contains("barrel") || item.contains("bag")) {
-				// shower the owner of this Container instance
-//				Person p = (Person) ((Equipment) unit).getLastOwner();	
-//			}
 			else {
-				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) logger.warning(e.getName() + " has a total of " + ars.size() + " different resources.");
-				for (AmountResource ar : ars) {
-					s = Conversion.capitalize(ar.getName() + "  ");
+				int resource = e.getResource();
+				if (resource != -1) {
+					// resourceID = -1 means the container has not been initialized
+					s = ResourceUtil.findAmountResourceName(resource);
 				}
 			}
 
@@ -505,7 +498,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.type"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.name"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.Equipment.header.status"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.Equipment.header.content"); //$NON-NLS-1$
 			else return "unknown";
 		}
 
@@ -540,7 +533,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			Map<String, Double> newMass = new HashMap<>();
 			for (Equipment e : inventory.findAllEquipment()) {
 				newTypes.put(e.getName(), e.getType());
-				newContentOwner.put(e.getName(), showOwner(e));
+				newContentOwner.put(e.getName(), getContentOwner(e));
 				newMass.put(e.getName(), e.getMass());
 				newEquipment.add(e);
 			}

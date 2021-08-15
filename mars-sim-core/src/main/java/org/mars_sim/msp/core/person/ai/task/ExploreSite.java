@@ -17,10 +17,10 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.environment.ExploredLocation;
+import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mars.ExploredLocation;
-import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -264,15 +264,17 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				probability = .8;
 			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
+				
+				int randomRock = ResourceUtil.rockSamplesID;
+				
 				Inventory pInv = person.getInventory();
-		        Inventory sInv = pInv.findASpecimenBox().getInventory();
-				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double rockSampleCapacity = sInv.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, true,
-						false);
-				if (rockSampleMass < rockSampleCapacity) {
-					sInv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
-					totalCollected += rockSampleMass;
+		        SpecimenBox box = pInv.findASpecimenBox();
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
+				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				if (mass < cap) {
+					double excess = box.storeAmountResource(randomRock, mass);
+					totalCollected += mass - excess;
 				}
 			}
 		}
@@ -351,8 +353,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			SpecimenBox container = i.next();
 			try {
-				double remainingCapacity = container.getInventory()
-						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
+				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
 
 				if (remainingCapacity > mostCapacity) {
 					result = container;

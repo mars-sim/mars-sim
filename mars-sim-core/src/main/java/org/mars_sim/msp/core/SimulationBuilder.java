@@ -8,6 +8,7 @@ package org.mars_sim.msp.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.Runtime.Version;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -218,6 +219,17 @@ public class SimulationBuilder {
 	 * Uses the previously defines options and start the required Simulation
 	 */
 	public void start() {
+		Version version = java.lang.Runtime.version();
+		logger.config("-----------------------------------------------------------");
+		logger.config("    Java Version Full String = "+version);
+		logger.config("Java Version Feature Element = "+version.feature());
+		logger.config("Java Version Interim Element = "+version.interim());
+		logger.config("  Java Patch Element Version = "+version.patch());
+		logger.config(" Java Update Element Version = "+version.update());
+		logger.config("          Java Version Build = "+version.build().get());
+		logger.config("  Java additional build Info = "+version.optional().get());
+		logger.config("       Java Pre-Release Info = "+version.pre().orElse("NA"));
+		logger.config("-----------------------------------------------------------");
 		// Load xml files
 		simulationConfig.loadConfig();
 		

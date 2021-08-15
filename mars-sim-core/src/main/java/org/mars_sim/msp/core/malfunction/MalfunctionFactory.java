@@ -44,6 +44,8 @@ public final class MalfunctionFactory implements Serializable {
 	// Data members
 	private int newIncidentNum = 0;
 		
+	public static MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+	
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * 
@@ -61,8 +63,6 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
 		MalfunctionMeta choosenMalfunction = null;
-
-		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
 
 		List<MalfunctionMeta> malfunctions = mc.getMalfunctionList();
 		double totalProbability = 0D;
@@ -226,8 +226,6 @@ public final class MalfunctionFactory implements Serializable {
 	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
 		Map<Integer, Double> repairPartProbabilities = new HashMap<>();
 
-		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
-
 		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
@@ -237,7 +235,7 @@ public final class MalfunctionFactory implements Serializable {
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(p.getNumber());
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 
-					Integer id = ItemResourceUtil.findIDbyItemResourceName(p.getName());
+					int id = p.getPartID();
 					if (repairPartProbabilities.containsKey(id))
 						totalNumber += repairPartProbabilities.get(id);
 					repairPartProbabilities.put(id, totalNumber);
@@ -282,7 +280,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static MalfunctionMeta getMalfunctionByname(String malfunctionName) {
 		MalfunctionMeta result = null;
-		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+
 		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.getName().equals(malfunctionName))
 				result = m;

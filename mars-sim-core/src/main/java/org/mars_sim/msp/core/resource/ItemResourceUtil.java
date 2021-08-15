@@ -10,13 +10,14 @@ package org.mars_sim.msp.core.resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+//import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -176,7 +177,7 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares maps for storing all item resources
 	 */
 	public static void createMaps() {
-		itemResourceMap = new ConcurrentHashMap<>();
+		itemResourceMap = new HashMap<>();
 		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 
@@ -184,12 +185,12 @@ public class ItemResourceUtil implements Serializable {
 			itemResourceMap.put(p.getName(), p);
 		}
 
-		itemResourceIDMap = new ConcurrentHashMap<>();
+		itemResourceIDMap = new HashMap<>();
 		for (Part p : sortedParts) {
 			itemResourceIDMap.put(p.getID(), p);
 		}
 
-		partIDNameMap = new ConcurrentHashMap<Integer, String>();
+		partIDNameMap = new HashMap<Integer, String>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
@@ -200,11 +201,11 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	public static void createTestMaps() {		
 		partSet = getItemResources();
-		itemResourceMap = new ConcurrentHashMap<>();
+		itemResourceMap = new HashMap<>();
 		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 
-		partIDNameMap = new ConcurrentHashMap<Integer, String>();
+		partIDNameMap = new HashMap<Integer, String>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
