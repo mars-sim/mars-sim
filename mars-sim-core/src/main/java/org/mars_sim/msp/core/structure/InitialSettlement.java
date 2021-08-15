@@ -23,9 +23,10 @@ public class InitialSettlement implements Serializable {
 	private int populationNumber;
 	private int numOfRobots;
 	private Coordinates location;
+	private String crew;
 	
 	public InitialSettlement(String name, String sponsor, String template, int populationNumber,
-			int numOfRobots, Coordinates location) {
+			int numOfRobots, Coordinates location, String crew) {
 		super();
 		this.name = name;
 		this.sponsor = sponsor;
@@ -33,6 +34,7 @@ public class InitialSettlement implements Serializable {
 		this.populationNumber = populationNumber;
 		this.numOfRobots = numOfRobots;
 		this.location = location;
+		this.crew = crew;
 	}
 
 	public String getName() {
@@ -57,5 +59,9 @@ public class InitialSettlement implements Serializable {
 
 	public Coordinates getLocation() {
 		return location;
+	}
+	
+	public String getCrew() {
+		return crew;
 	}
 }

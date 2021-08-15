@@ -146,9 +146,10 @@ public class MarsProject {
 					logger.config("Running the site editor...");
 					editor.waitForCompletion();
 					
-					CrewConfig crew = editor.getCrew();
+					CrewConfig crew = editor.getCrewConfig();
 					if (crew != null) {
-						builder.setCrew(crew);
+						// Set the actual CrewConfig as it has editted entries
+						builder.setCrewConfig(crew);
 					}
 				}
 			
@@ -161,7 +162,7 @@ public class MarsProject {
 				}
 				else {
 					// Check out crew flag
-					builder.setUseAlphaCrew(interactiveTerm.getUseCrew());
+					builder.setUseCrews(interactiveTerm.getUseCrew());
 				}
 			}
 			

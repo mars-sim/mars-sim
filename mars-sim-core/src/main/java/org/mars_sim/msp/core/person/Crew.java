@@ -6,28 +6,29 @@
  */
 package org.mars_sim.msp.core.person;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Crew implements Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-    //private static final Logger logger = Logger.getLogger(Crew.class.getName());
+public class Crew {
 
 	private String name;
-	private String destination;
+	private String description = "";
 	
 	private List<Member> team = new ArrayList<>();
+
+	private boolean bundled;
 	
-	public Crew(String name) {
-		this.name = name;	
+	public Crew(String name, boolean bundled) {
+		this.name = name;
+		this.bundled = bundled;
 	}
 
-	public void setName(String newName) {
-		this.name = newName;	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 	
 	public void addMember(Member m) {
@@ -41,13 +42,29 @@ public class Crew implements Serializable {
 	public String getName() {
 		return name;
 	}
-
-	public void setDestination(String value) {
-		destination = value;
+	
+	/**
+	 * Gets the number of people configured for the simulation.
+	 * 
+	 * @param crewID the type of crew (Alpha or Beta)
+	 * @return number of people.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public int getNumberOfConfiguredPeople() {
+		return team.size();
 	}
 	
-	public String getDestination() {
-		return destination;
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	/**
+	 * Is this crew bundled with the code base
+	 * @return
+	 */
+	public boolean isBundled() {
+		return bundled;
 	}
 
 }

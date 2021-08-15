@@ -7,11 +7,9 @@
 package org.mars_sim.msp.core.structure;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -25,9 +23,11 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -69,15 +69,9 @@ public final class SettlementBuilder {
 
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
-	private CrewConfig crewConfig = null;
 	private RobotConfig robotConfig;
+	private CrewConfig crewConfig;
 
-	private Set<Integer> unassignedCrew = null;
-
-	// Record of Crew Persons added
-	private Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
-
-	
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
 		this.unitManager = sim.getUnitManager();
@@ -131,6 +125,8 @@ public final class SettlementBuilder {
 		createParts(template, settlement);
 		outputTimecheck(settlement, watch, "Create Parts");
 
+		// TOCO get off the Initial Settlement
+		String crew = spec.getCrew();
 		
 		// Create pre-configured robots as stated in robots.xml
 		if (crewConfig != null) {
@@ -143,8 +139,8 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create Robots");
 
 		// Create settlers to fill the settlement(s)
-		if (crewConfig != null) {
-			createPreconfiguredPeople(settlement);
+		if ((crew != null) && (crewConfig != null)) {
+			createPreconfiguredPeople(settlement, crew);
 			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
 		createPeople(settlement);
@@ -384,53 +380,62 @@ public final class SettlementBuilder {
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
 	 */
-	private void createPreconfiguredPeople(Settlement settlement) {
+	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
+		Crew crew = crewConfig.getCrew(crewName);
+		if (crew == null) {
+			throw new IllegalArgumentException("No crew defined called " + crewName);
+		}
+		
+		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
+		
 		// Create all configured people.
-		Set<Integer> unassigned = new HashSet<>(unassignedCrew);
-		for (Integer x : unassigned) {
-			// Get person's settlement or same sponsor
-			ReportingAuthority sponsor = ReportingAuthorityFactory.getAuthority(
-										crewConfig.getConfiguredPersonSponsor(x));
-			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x);
-			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor().equals(sponsor)))
-					&& (settlement.getInitialPopulation() > settlement.getNumCitizens())) {
-
-				String name = crewConfig.getConfiguredPersonName(x);
-				logger.log(Level.INFO, name + " crew assigned Settlement " + settlement.getName());
-				unassignedCrew.remove(x);
-				
+		for (Member m : crew.getTeam()) {
+			if (settlement.getInitialPopulation() > settlement.getNumCitizens()) {
+	
+				// Get person's settlement or same sponsor
+				ReportingAuthority sponsor = settlement.getSponsor();
+				if (m.getSponsorCode() != null) {
+					 sponsor = ReportingAuthorityFactory.getAuthority(
+											m.getSponsorCode());
+				}
+	
+				String name = m.getName();
+				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
+					
 				// Get person's gender or randomly determine it if not configured.
-				GenderType gender = crewConfig.getConfiguredPersonGender(x);
+				GenderType gender = m.getGender();
 				if (gender == null) {
 					gender = GenderType.FEMALE;
 					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 						gender = GenderType.MALE;
 					}
 				}
-	
+		
 				// Get person's age
-				int age = RandomUtil.getRandomInt(21, 65);
-				String ageStr = crewConfig.getConfiguredPersonAge(x);
+				int age = 0;
+				String ageStr = m.getAge();
 				if (ageStr != null)
 					age = Integer.parseInt(ageStr);	
-
+				else
+					age = RandomUtil.getRandomInt(21, 65);
+	
 				// Retrieve country & sponsor designation from people.xml (may be edited in
 				// CrewEditorFX)
-				String country = crewConfig.getConfiguredPersonCountry(x);
+				String country = m.getCountry();
 	
 				// Loads the person's preconfigured skills (if any).
-				Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
-			
+				Map<String, Integer> skillMap = m.getSkillMap();
+				
 				// Set the person's configured Big Five Personality traits (if any).
-				Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
-	
+				Map<String, Integer> bigFiveMap = new HashMap<>(); //TOOO
+		
 				// Override person's personality type based on people.xml, if any.
-				String mbti = crewConfig.getConfiguredPersonPersonalityType(x);
+				String mbti = m.getMBTI();
 				
 				// Set person's configured natural attributes (if any).
-				Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
-			
+				Map<String, Integer> attributeMap = new HashMap<>();
+				
 				// Create person and add to the unit manager.
 				// Use Builder Pattern for creating an instance of Person
 				Person person = Person.create(name, settlement)
@@ -445,15 +450,17 @@ public final class SettlementBuilder {
 				
 				person.initialize();
 				unitManager.addUnit(person);
-	
+		
 				// Set the person as a preconfigured crew member
 				person.setPreConfigured(true);
-				addedCrew.put(person, crewConfig.getRelationshipMap(x));
-
+				Map<String, Integer> relMap = m.getRelationshipMap();
+				if (relMap != null) {
+					addedCrew.put(person, relMap);
+				}
 				relationshipManager.addInitialSettler(person, settlement);
-	
+		
 				// Set person's job (if any).
-				String jobName = crewConfig.getConfiguredPersonJob(x);
+				String jobName = m.getJob();
 				if (jobName != null) {
 					JobType job = JobType.getJobTypeByName(jobName);
 					if (job != null) {
@@ -462,13 +469,13 @@ public final class SettlementBuilder {
 								JobUtil.MISSION_CONTROL);
 					}
 				}
-
-				// Add Favorite class
-				String mainDish = crewConfig.getFavoriteMainDish(x);
-				String sideDish = crewConfig.getFavoriteSideDish(x);
-				String dessert = crewConfig.getFavoriteDessert(x);
-				String activity = crewConfig.getFavoriteActivity(x);
 	
+				// Add Favorite class
+				String mainDish = m.getMainDish();
+				String sideDish = m.getSideDish();
+				String dessert = m.getDessert();
+				String activity = m.getActivity();
+		
 				// Add Favorite class
 				Favorite f = person.getFavorite();
 				
@@ -492,13 +499,16 @@ public final class SettlementBuilder {
 				person.getPreference().initializePreference();
 			}
 		}
+		
+		createConfiguredRelationships(addedCrew);
 	}
 	
 
 	/**
 	 * Creates all configured pre-configured crew relationships
+	 * @param addedCrew 
 	 */
-	private void createConfiguredRelationships() {
+	private void createConfiguredRelationships(Map<Person, Map<String, Integer>> addedCrew) {
 	
 		// Create all configured people relationships.
 		for(Entry<Person, Map<String, Integer>> p : addedCrew.entrySet()) {
@@ -574,15 +584,9 @@ public final class SettlementBuilder {
 	}
 	
 	/**
-	 * Enable the use of a predefined crew
+	 * Enable the use of a predefined crews
 	 */
-	public void setCrew(CrewConfig selectedCrew) {
-		crewConfig = selectedCrew;
-		logger.config("Selected " + selectedCrew.getName().toLowerCase() + " crew.");
-		int crewSize = crewConfig.getNumberOfConfiguredPeople();
-		unassignedCrew = new HashSet<>();
-		for(int i = 0; i < crewSize; i++) {
-			unassignedCrew.add(i);
-		}		
-	}	
+	public void setCrew(CrewConfig crewConfig) {
+		this.crewConfig = crewConfig;
+	}
 }

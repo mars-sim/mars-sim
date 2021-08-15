@@ -12,20 +12,15 @@ import java.util.Map;
 /**
  * The Member class is for storing the alpha team roster
  */
-public class Member implements Serializable {
+public class Member {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-    private String crewName;
 	private String name; 
-	private String gender;
+	private GenderType gender;
 	private String age; 
 	private String mbti; 
 	private String job;
 	private String country; 
 	private String sponsorCode;
-	private String destination;
 	
 	private String mainDish;
 	private String sideDish;
@@ -40,15 +35,11 @@ public class Member implements Serializable {
 	public Member() {
 	}
 
-	public void setCrewName(String value) {
-		crewName = value;
-	}
-	
 	public void setName(String value) {
 		name = value;
 	}
 	
-	public void setGender(String value) {
+	public void setGender(GenderType value) {
 		gender = value;
 	}
 	
@@ -72,10 +63,6 @@ public class Member implements Serializable {
 		sponsorCode = value;
 	} 
 
-	public void setDestination(String value) {
-		destination = value;
-	}
-	
 	public void setMainDish(String value) {
 		mainDish = value;
 	}
@@ -91,16 +78,12 @@ public class Member implements Serializable {
 	public void setActivity(String value) {
 		activity = value;
 	}
-
-	public String getCrewName() {
-		return crewName;
-	} 
 	
 	public String getName() {
 		return name;
 	} 
 	
-	public String getGender() {
+	public GenderType getGender() {
 		return gender;
 	}
 	
@@ -123,11 +106,7 @@ public class Member implements Serializable {
 	public String getSponsorCode() {
 		return sponsorCode;
 	}
-	
-	public String getDestination() {
-		return destination;
-	}
-	
+
 	public String getMainDish() {
 		return mainDish;
 	}
@@ -161,4 +140,86 @@ public class Member implements Serializable {
 		return relationships;
 	}
 	
+	/**
+	 * Checks if the personality is introvert.
+	 * 
+	 * @param index the crew index
+	 * @return true if introvert
+	 */
+	public boolean isIntrovert(int index) {
+		return mbti.substring(0, 1).equals("I");
+	}
+
+	/**
+	 * Checks if the personality is extrovert.
+	 * 
+	 * @param index the crew index
+	 * @return true if extrovert
+	 */
+	public boolean isExtrovert() {
+		return mbti.substring(0, 1).equals("E");
+	}
+
+	/**
+	 * Checks if the personality is sensor.
+	 * 
+	 * @param index the crew index
+	 * @return true if sensor
+	 */
+	public boolean isSensor() {
+		return mbti.substring(1, 2).equals("S");
+	}
+
+	/**
+	 * Checks if the personality is intuitive.
+	 * 
+	 * @param index the crew index
+	 * @return true if intuitive
+	 */
+	public boolean isIntuitive() {
+		return mbti.substring(1, 2).equals("N");
+	}
+
+	/**
+	 * Checks if the personality is thinker.
+	 * 
+	 * @param index the crew index
+	 * @return true if thinker
+	 */
+	public boolean isThinker() {
+		return mbti.substring(2, 3).equals("T");
+	}
+
+	/**
+	 * Checks if the personality is feeler.
+	 * 
+	 * @param index the crew index
+	 * @return true if feeler
+	 */
+	public boolean isFeeler() {
+		return mbti.substring(2, 3).equals("F");
+	}
+
+	/**
+	 * Checks if the personality is judger.
+	 * 
+	 * @param index the crew index
+	 * @return true if judger
+	 */
+	public boolean isJudger() {
+		return mbti.substring(3, 4).equals("J");
+	}
+
+	/**
+	 * Checks if the personality is perceiver.
+	 * 
+	 * @param index the crew index
+	 * @return true if perceiver
+	 */
+	public boolean isPerceiver() {
+		return mbti.substring(3, 4).equals("P");
+	}
+
+
+		
 }

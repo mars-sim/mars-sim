@@ -1,7 +1,9 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE crew-configuration [
 	<!ELEMENT crew-configuration (crew-list)>
-
+	<!ATTLIST crew-configuration name CDATA #REQUIRED>
+	<!ATTLIST crew-configuration description CDATA #REQUIRED>
+	
 	<!ELEMENT crew-list (person*)>
 	<!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
 	<!ATTLIST person crew CDATA #REQUIRED>
@@ -9,8 +11,7 @@
 	<!ATTLIST person gender (male|female) #REQUIRED>
 	<!ATTLIST person age CDATA #IMPLIED>	
 	<!ATTLIST person personality-type CDATA #IMPLIED>
-	<!ATTLIST person settlement CDATA #IMPLIED>
-	<!ATTLIST person sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #IMPLIED>	
+	<!ATTLIST person sponsor CDATA #IMPLIED>	
 	<!ATTLIST person country CDATA #IMPLIED>
 	<!ATTLIST person job CDATA #IMPLIED>
 	<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
@@ -40,7 +41,7 @@
 ]>
 
 
-<crew-configuration>
+<crew-configuration name="Alpha" description="Preloaded Alpha crew">
 
 	<!-- List of preconfigured crew  -->
 	<crew-list>
@@ -83,8 +84,6 @@
 			gender="female" 
 			age="37"
 			personality-type="ISTJ"
-			settlement="Schiaparelli Point"
-			sponsor="MS"
 			country="USA"
 			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
@@ -162,8 +161,6 @@
 			crew ="alpha" 
 			gender="male" 
 			personality-type="ESTP"
-			settlement="Schiaparelli Point"
-			sponsor="MS"
 			country="USA"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
@@ -191,7 +188,6 @@
         	crew ="alpha" 
         	gender="male" 
         	personality-type="INFJ"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Engineer"
@@ -220,7 +216,6 @@
         	crew ="alpha" 
         	gender="female" 
         	personality-type="ENFJ"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Technician"
@@ -250,7 +245,6 @@
        		gender="male" 
        		age="50"
        		personality-type="INTP"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Doctor"
