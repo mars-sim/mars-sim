@@ -1,19 +1,19 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleAmountResource.java
- * @version 3.2.0 2021-06-20
+ * LoadVehicleEVA.java
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
@@ -64,9 +64,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * millisol.
 	 */
 	private static double LOAD_RATE = 20D;
-
 	private static double WATER_NEED = 10D;
-	private static double FOOD_NEED = 10D;
 	private static double OXYGEN_NEED = 10D;
 
 	// Data members
@@ -88,8 +86,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
-//	private static int methaneID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor.
@@ -131,17 +127,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
 			  
-			requiredResources = new ConcurrentHashMap<Integer, Number>();
-//            requiredResources.put(foodID, FOOD_NEED);
+			requiredResources = new HashMap<Integer, Number>();
 			requiredResources.put(waterID, WATER_NEED);
 			requiredResources.put(oxygenID, OXYGEN_NEED);
 			
-			optionalResources = new ConcurrentHashMap<Integer, Number>(0);
+			optionalResources = new HashMap<Integer, Number>(0);
 			
-			requiredEquipment = new ConcurrentHashMap<>(1);
+			requiredEquipment = new HashMap<>(1);
 			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
 			
-			optionalEquipment = new ConcurrentHashMap<>(0);
+			optionalEquipment = new HashMap<>(0);
 		}
 		
 		vehicleMission = getRandomMissionNeedingLoading();
@@ -225,16 +220,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return;
 		}
 		if (requiredResources != null) {
-			this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
+			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
 		}
 		if (optionalResources != null) {
-			this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
+			this.optionalResources = new HashMap<Integer, Number>(optionalResources);
 		}
 		if (requiredEquipment != null) {
-			this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
+			this.requiredEquipment = new HashMap<>(requiredEquipment);
 		}
 		if (optionalEquipment != null) {
-			this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
+			this.optionalEquipment = new HashMap<>(optionalEquipment);
 		}
 		
 		// Determine location for loading.
@@ -442,16 +437,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			amountNeededTotal += optionalResources.get(resource).doubleValue();
 		}
 
-		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
-		
-//		if (resource == 1)
-//			LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " + 
-//			System.out.println("1. " + 
-//				vehicle.getName() + " - "
-//				+ ResourceUtil.findAmountResourceName(resource) 
-//				+ " needed: " + Math.round(amountNeededTotal*100.0)/100.0
-//				+ " already loaded: " + Math.round(amountAlreadyLoaded*100.0)/100.0);
-		
+		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);	
 		
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
@@ -532,7 +518,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 									sInv.addAmountDemand(resource, excess1);
 									
 								} catch (Exception e) {
-									e.printStackTrace(System.err);
+									logger.severe(worker, "Cannot load from settlement to vehicle.", e);
 								}						
 							}
 						}
@@ -559,7 +545,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
+					logger.severe(worker, "Cannot load from settlement to vehicle.", e);
 				}
 				amountLoading -= resourceAmount;
 			}
@@ -570,7 +556,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		}
 		
-		else { // if (amountAlreadyLoaded >= amountNeededTotal) {
+		else {
 			if (required && optionalResources.containsKey(resource)) {
 				amountNeededTotal += optionalResources.get(resource).doubleValue();
 			}
@@ -585,16 +571,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					try {
 						vInv.retrieveAmountResource(resource, amountToRemove);
 						sInv.storeAmountResource(resource, amountToRemove, true);
-						
-//						if (resource == 1)
-//							LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " + 
-//									System.out.println("4. " + 
-//									vehicle.getName() + " - "
-//									+ ResourceUtil.findAmountResourceName(resource) 
-//									+ " needed: " + amountNeededTotal
-//									+ " loaded: " + amountAlreadyLoaded
-//									+ " returning: " + amountToRemove);
-					
+									
 					} catch (Exception e) {
 						logger.warning(vehicle, "Was trying to return the excessive " + ResourceUtil.findAmountResourceName(resource));
 					}
@@ -688,7 +665,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			} else {
 				logger.warning(vehicle, loadingError);
 				endTask();
-//                throw new IllegalStateException(loadingError);
 			}
 		} else {
 			if (required && optionalResources.containsKey(resource)) {
@@ -703,6 +679,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					vInv.retrieveItemResources(resource, numToRemove);
 					sInv.storeItemResources(resource, numToRemove);
 				} catch (Exception e) {
+					logger.severe(worker, "Cannot retrieve from vehicle and store to settlement.", e);
 				}
 			}
 		}
@@ -823,8 +800,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		while (iE.hasNext() && (amountLoading > 0D)) {
 			Integer equipmentType = iE.next();
 			int numNeededTotal = optionalEquipment.get(equipmentType);
-//			int i0 = numNeededTotal;
-			
+		
 			if (requiredEquipment.containsKey(equipmentType)) {
 				numNeededTotal += requiredEquipment.get(equipmentType);
 			}
@@ -852,8 +828,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle
 							eq.transfer(sInv, vInv);
-//							sInv.retrieveUnit(eq);
-//							vInv.storeUnit(eq);
 							amountLoading -= eq.getMass();
 							if (amountLoading < 0D) {
 								amountLoading = 0D;
@@ -899,7 +873,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
 
-		List<Mission> result = new CopyOnWriteArrayList<Mission>();
+		List<Mission> result = new ArrayList<Mission>();
 
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
@@ -952,7 +926,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
 
-		List<Rover> result = new CopyOnWriteArrayList<Rover>();
+		List<Rover> result = new ArrayList<Rover>();
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
@@ -1157,19 +1131,33 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 				double amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
-				
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
-					double toLoad = amount - storedAmount;
-					double remainingCap = vInv.getAmountResourceRemainingCapacity(resource, true, false);
-					
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "1. Insufficient supply of " + amountResource 
+					
+					if (resource == ResourceUtil.oxygenID) {
+						// Note: account for occupants inside the vehicle to use up oxygen over time
+						if (storedAmount > .95 * amount) {
+							logger.info(vehicle, 10_000, "1. Enough oxygen "
+									+ "stored: " + Math.round(storedAmount*10.0)/10.0 + " kg " 
+									+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " );
+							sufficientSupplies = true;
+						}
+					}
+					
+					if (!sufficientSupplies) {
+						double toLoad = amount - storedAmount;
+						double remainingCap = vInv.getAmountResourceRemainingCapacity(resource, true, false);
+						
+						sufficientSupplies = false;
+						logger.info(vehicle, 10_000, "1. Insufficient supply of " + amountResource 
 							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
 							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " 
 							+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 							+ "  remainingCap: " + Math.round(remainingCap*10.0)/10.0 + " kg " 
 							);
+					}
 				}
+				
 				else
 					logger.info(vehicle, 10_000, "1. Sufficient supply of " + amountResource 
 							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg " 
@@ -1225,12 +1213,24 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					}
 					boolean hasStoredSettlement = (storedSettlement >= (amount - storedAmount));
 
-					if (hasVehicleCapacity && hasStoredSettlement) {
+					if (!hasVehicleCapacity) {
+						double toLoad = amount - storedAmount;
+						
+						sufficientSupplies = false;
+						logger.info(vehicle, 10_000, "3. Insufficient capacity for " + amountResource 
+								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+								+ "  storedSettlement: " + Math.round(storedSettlement*10.0)/10.0+ " kg " 
+								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
+								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+					}
+					else if (!hasStoredSettlement) {
 						double toLoad = amount - storedAmount;
 						
 						sufficientSupplies = false;
 						logger.info(vehicle, 10_000, "3. Insufficient supply of " + amountResource 
 								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+								+ "  storedSettlement: " + Math.round(storedSettlement*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );

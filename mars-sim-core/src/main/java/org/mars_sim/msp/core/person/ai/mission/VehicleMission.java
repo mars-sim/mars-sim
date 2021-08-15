@@ -599,16 +599,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			return false;
 		}
 
-		boolean vehicleCapacity = LoadVehicleGarage.enoughCapacityForSupplies(resources, equipment, vehicle,
-				settlement);
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
-		if (!vehicleCapacity) {
-			logger.warning(vehicle, "Not enough capacity for "
-							+ startingMember.getName() + "'s proposed excursion.");
-			// Disapprove this mission
-			setApproval(false);
-		}
+
 		if (!settlementSupplies) {
 			logger.warning(settlement, "Not enough supplies for "
 							+ startingMember.getName() + "'s proposed excursion.");
@@ -616,7 +609,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setApproval(false);		
 		}
 		
-		return vehicleCapacity && settlementSupplies;
+		return settlementSupplies;
 	}
 
 	/**
