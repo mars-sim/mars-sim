@@ -27,11 +27,8 @@ public class CollectIce extends CollectResourcesMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(CollectIce.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			 logger.getName().length());
+	/** default logger. */ 
+	// may use private static SimLogger logger = SimLogger.getLogger(CollectIce.class.getName());
 
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$

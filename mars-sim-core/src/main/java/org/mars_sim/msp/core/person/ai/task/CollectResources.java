@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 
@@ -297,7 +297,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 		} else {
 			if (sampleLimit >= 0D) {
 				person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
-//				person.getInventory().addAmountSupply(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
 			return time - (sampleLimit / collectionRate);

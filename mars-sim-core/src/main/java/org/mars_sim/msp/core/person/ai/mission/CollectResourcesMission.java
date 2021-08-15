@@ -815,9 +815,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (num == 0) {
 			int id = EquipmentType.convertClass2ID(containerType);
 			String name = EquipmentType.convertID2Type(id).toString();
-	    	// Add the equipment demand for a bag
-//	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
-//	    	settlement.getInventory().addEquipmentDemand(id, 1);
+	    	// Note: Create methods for adding the equipment demand for a bag in GoodsManager
         	logger.log(settlement, Level.WARNING, 10_000,
         			"No more empty " + name 
 					+ " available.");

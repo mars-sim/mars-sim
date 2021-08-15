@@ -525,27 +525,6 @@ public class MissionManager implements Serializable, Temporal {
 					if (((VehicleMission) mission).getVehicle() == vehicle) {
 						result = mission;
 					}
-//					
-//					if (mission instanceof Delivery) {
-//						if (((Delivery) mission).getVehicle() == vehicle) {
-//							result = mission;
-//						}
-//					}
-//					
-//					if (mission instanceof Mining) {
-//						if (((Mining) mission).getLightUtilityVehicle() == vehicle) {
-//							result = mission;
-//						}
-//					}
-//
-//					if (mission instanceof Trade) {
-//						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
-//						if (towingRover != null) {
-//							if (towingRover.getTowedVehicle() == vehicle) {
-//								result = mission;
-//							}
-//						}
-//					}
 				} else if (mission instanceof BuildingConstructionMission) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
 					if (construction.getConstructionVehicles() != null) {
@@ -577,9 +556,9 @@ public class MissionManager implements Serializable, Temporal {
 				List<MissionStatus> mss = m.getMissionStatus();
 				if (mss != null && !mss.isEmpty()) {
 					for (MissionStatus ms: mss) {
-						if ( //m.isDone() // still want to keep a list of completed missions in Mission Tool
-		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
-								m.getPlan() == null
+						// Note: m.isDone() // still want to keep a list of completed missions in Mission Tool
+						// Note: !m.isApproved() // initially it's not approved until it passes the approval phase 
+						if (m.getPlan() == null
 								|| m.getPhase() == null
 								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)								
 								|| ms == MissionStatus.CANNOT_ENTER_ROVER				
@@ -596,8 +575,9 @@ public class MissionManager implements Serializable, Temporal {
 								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES								
 								|| ms == MissionStatus.NO_TRADING_SETTLEMENT
 								|| ms == MissionStatus.USER_ABORTED_MISSION
-//								|| ms.getName().toLowerCase().contains("no ") // need to first enforce standard
-//								|| ms.getName().toLowerCase().contains("not ") // need to first enforce standard
+								|| ms == MissionStatus.NO_ICE_COLLECTION_SITES								
+								// Note: ms.getName().toLowerCase().contains("no ") // need to first enforce standard
+								// Note: ms.getName().toLowerCase().contains("not ") // need to first enforce standard
 								) {
 							removeMission(m);
 						} 
