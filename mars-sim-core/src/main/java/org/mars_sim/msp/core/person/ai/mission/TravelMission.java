@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TravelMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 
@@ -461,7 +461,7 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getEstimatedTotalRemainingDistance() {
-		// TODO: check for Double.isInfinite() and Double.isNaN()
+		
 		double leg = getCurrentLegRemainingDistance();
 		int index = 0;
 		double navDist = 0;
@@ -470,21 +470,16 @@ public abstract class TravelMission extends Mission {
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
-//		if (navPoints.size() > 1) {
-			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-				navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
-//			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-//				NavPoint prevNav = navPoints.get(x - 1);
-//				NavPoint currNav = navPoints.get(x);
-//				navDist = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
-			}
-			
-			if (Double.isNaN(navDist)) {
-				logger.severe(getVehicle(), 20_000,
-							"navDist is NaN.");
-				navDist = 0;
-			}
-//		}
+		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+			navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
+		}
+		
+		// Note: check for Double.isInfinite() and Double.isNaN()
+		if (Double.isNaN(navDist)) {
+			logger.severe(getVehicle(), 20_000,
+						"navDist is NaN.");
+			navDist = 0;
+		}
 		
 		double total = leg + navDist;
 		

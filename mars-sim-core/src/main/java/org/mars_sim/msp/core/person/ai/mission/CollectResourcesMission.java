@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 
@@ -23,8 +23,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.TerrainElevation;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -32,9 +30,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -59,12 +55,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			Msg.getString("Mission.phase.collectResources")); //$NON-NLS-1$
 
 	/** Estimated collection time multiplier for EVA. */
-	public final static double EVA_COLLECTION_OVERHEAD = 20D;
+	public static final double EVA_COLLECTION_OVERHEAD = 20D;
 
 	/** THe maximum number of sites under consideration. */
-	public final static int MAX_NUM_PRIMARY_SITES = 30;
+	public static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
-	public final static int MAX_NUM_SECONDARY_SITES = 5;
+	public static final int MAX_NUM_SECONDARY_SITES = 5;
 	
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
@@ -83,14 +79,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
-	/** The total amount (kg) of ice collected. */
-//	private double totalCollectedIce;
-//	/** The total amount (kg) of Regolith-B collected. */
-//	private double totalCollectedRegolithB;
-//	/** The total amount (kg) of Regolith-C collected. */
-//	private double totalCollectedRegolithC;
-//	/** The total amount (kg) of Regolith-D collected. */
-//	private double totalCollectedRegolithD;
 	
 	/** The type of container needed for the mission or null if none. */
 	private Integer containerID;
@@ -100,10 +88,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private Integer resourceID;
 
 	// Static members
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
-//	private static final int methaneID = ResourceUtil.methaneID;
+	private static final int OXYGEN = ResourceUtil.oxygenID;
+	private static final int WATER = ResourceUtil.waterID;
+	private static final int FOOD = ResourceUtil.foodID;
 
 	private static final int[] REGOLITH_TYPES = ResourceUtil.REGOLITH_TYPES;
 	
@@ -186,7 +173,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					}
 				}
 
-
 				// Add home settlement
 				addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
@@ -206,8 +192,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			setPhase(VehicleMission.REVIEWING);
 			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); //$NON-NLS-1$
 		}
-		
-//		logger.info(startingPerson + " had started CollectResourcesMission");
 	}
 
 	/**
@@ -261,19 +245,14 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
 		Person person = null;
-//		Robot robot = null;
 
 		// Add mission members.
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
-			// TODO Refactor
+			MissionMember member = i.next();			
 			if (member instanceof Person) {
 				person = (Person) member;
 				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
 			}
 		}
 
@@ -428,6 +407,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param member the mission member currently performing the mission
 	 */
 	private void collectingPhase(MissionMember member) {
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		
 		Inventory inv = getRover().getInventory();
 		
 		double roverRemainingCap = inv.getRemainingGeneralCapacity(false);
@@ -501,22 +483,19 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		if (!getPhaseEnded()) {
 			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
-				// TODO Refactor.
+				
 				if (member instanceof Person) {
 					Person person = (Person) member;
 
 					if (resourceID == ResourceUtil.iceID) {
 					
-						if (terrainElevation == null)
-							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
-								
 						double rate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
 						// Randomize the rate of collection upon arrival
 						rate = rate 
 								* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
 						
-						// TODO: Add how areologists and some scientific study may come up with better technique 
+						// Note: Add how areologists and some scientific study may come up with better technique 
 						// to obtain better estimation of the collection rate. Go to a prospective site, rather 
 						// than going to a site coordinate in the blind.
 						
@@ -539,10 +518,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 								resourceID = type;
 							}
 						}
-						
-						if (terrainElevation == null)
-							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
-								
+							
 						double rate = terrainElevation.getRegolithCollectionRate(null, person.getCoordinates());
 				
 						// Randomize the rate of collection upon arrival
@@ -576,16 +552,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		updateResources(inv);
 	}
 
-	/**
-	 * Determine the locations of the sample collection sites.
-	 * 
-	 * @param roverRange the rover's driving range.
-	 * @param tripTimeLimit the time limit of trip (millisols).
-	 * @param numSites   the number of collection sites.
-	 * @throws MissionException of collection sites can not be determined.
-	 */
-	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) {
-
+	private void computeIceSites(double roverRange, double tripTimeLimit, int numSites) {
+		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
+		
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 
 		// Determining the actual traveling range.
@@ -601,159 +570,72 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		Direction direction = null;
 		Coordinates newLocation = null;
 		Coordinates currentLocation = null;
-		double siteDistance = 0;
-	
-		// Determine the first collection site.
-		if (resourceID == ResourceUtil.iceID) {
-			double bestScore = 0;
-			Coordinates bestLocation = null;
-			int count = 0;
-			while (count++ <= MAX_NUM_PRIMARY_SITES) {
-				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-				limit = range / 4D;
-				siteDistance = RandomUtil.getRandomDouble(limit);
-				newLocation = startingLocation.getNewLocation(direction, siteDistance);
-				if (terrainElevation == null)
-					terrainElevation = surfaceFeatures.getTerrainElevation();
-				double score = terrainElevation.getIceCollectionRate(newLocation);
-				if (score > bestScore) {
-					bestScore = score;
-					bestLocation = newLocation;
-				}
-			}
-			totalSiteScore += bestScore;
-//			System.out.println("(1) Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
-//					+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
-			unorderedSites.add(bestLocation);
-			currentLocation = bestLocation;
-		}
+		int siteDistance = 0;
 		
-		else {
-			// for ResourceUtil.regolithID
-			double bestScore = 0;
-			Coordinates bestLocation = null;
-			int count = 0;
-			while (count++ <= MAX_NUM_PRIMARY_SITES) {
-				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-				limit = range / 4D;
-				siteDistance = RandomUtil.getRandomDouble(limit);
-				newLocation = startingLocation.getNewLocation(direction, siteDistance);
-				if (terrainElevation == null)
-					terrainElevation = surfaceFeatures.getTerrainElevation();
-				double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
-				if (score > bestScore) {
-					bestScore = score;
-					bestLocation = newLocation;
-				}
+		/////////////////////////////////////////
+		
+		// Determine the first collection site.
+		double bestScore = 0;
+		Coordinates bestLocation = null;
+		int count = 0;
+		while (count++ <= MAX_NUM_PRIMARY_SITES) {
+			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+			limit = range / 4D;
+			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+			newLocation = startingLocation.getNewLocation(direction, siteDistance);
+				
+			double score = terrainElevation.getIceCollectionRate(newLocation);
+			
+			if (score > bestScore) {
+				bestScore = score;
+				bestLocation = newLocation;
 			}
-			totalSiteScore += bestScore;
-//			System.out.println("(1) Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
-//					+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
-			
-			unorderedSites.add(bestLocation);
-			currentLocation = bestLocation;
-			
-//			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-//			limit = range / 4D;
-//			siteDistance = RandomUtil.getRandomDouble(limit);
-//			newLocation = startingLocation.getNewLocation(direction, siteDistance);
-//			unorderedSites.add(newLocation);
-//			currentLocation = newLocation;
 		}
+		totalSiteScore += bestScore;
 
+		unorderedSites.add(bestLocation);
+		currentLocation = bestLocation;
+		
 		// Determine remaining collection sites.
-		double remainingRange = (range / 2D) - siteDistance;
+		double remainingRange = RandomUtil.getRandomDouble((range - siteDistance)/2);
 		
-		// Determine the first collection site.
-		if (resourceID == ResourceUtil.iceID) {
-
-			for (int x = 1; x < numSites; x++) {
-				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
-				if (remainingRange > currentDistanceToSettlement) {
-					double bestScore = 0;
-					Coordinates bestLocation = null;
-					int count = 0;
-					while (count++ <= MAX_NUM_SECONDARY_SITES) {
-						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-						
-						double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-						double tempLimit2 = (2D * remainingRange)
-								- (2D * currentDistanceToSettlement * direction.getCosDirection());
-						limit = tempLimit1 / tempLimit2;
-						
-						siteDistance = RandomUtil.getRandomDouble(limit);
-						newLocation = currentLocation.getNewLocation(direction, siteDistance);
-						
-						if (terrainElevation == null)
-							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
-
-						double score = terrainElevation.getIceCollectionRate(newLocation);
-//						if (score < 0) {
-//							bestScore = 0; 
-//						}
-						if (score > bestScore) {
-							bestScore = score;
-							bestLocation = newLocation;
-						}
-					}
+		/////////////////////////////////////////
+		
+		for (int x = 1; x < numSites; x++) {
+			double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
+			if (remainingRange > currentDistanceToSettlement) {
+				bestScore = 0;
+				bestLocation = null;
+				count = 0;
+				while (count++ <= MAX_NUM_SECONDARY_SITES && bestScore > 0.1) {
+					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 					
-					totalSiteScore += bestScore;
-					System.out.println("(2) Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
-							+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
-					unorderedSites.add(bestLocation);
-					currentLocation = bestLocation;
-				
-					remainingRange -= siteDistance;
+					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+					double tempLimit2 = (2D * remainingRange)
+							- (2D * currentDistanceToSettlement * direction.getCosDirection());
+					limit = tempLimit1 / tempLimit2;
+					
+					siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+					newLocation = currentLocation.getNewLocation(direction, siteDistance);
+					
+					double score = terrainElevation.getIceCollectionRate(newLocation);
+
+					if (score > bestScore) {
+						bestScore = score;
+						bestLocation = newLocation;
+					}
 				}
-			}
-		}
-		
-		else {
-			// for regolith collection mission
+				
+				totalSiteScore += bestScore;
+				logger.log(Level.INFO, "Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+						+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
+				unorderedSites.add(bestLocation);
+				currentLocation = bestLocation;
 			
-			for (int x = 1; x < numSites; x++) {
-				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
-				if (remainingRange > currentDistanceToSettlement) {
-					double bestScore = 0;
-					Coordinates bestLocation = null;
-					int count = 0;
-	
-					while (count++ <= MAX_NUM_SECONDARY_SITES) {
-							
-						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-						
-						double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-						double tempLimit2 = (2D * remainingRange)
-								- (2D * currentDistanceToSettlement * direction.getCosDirection());
-						limit = tempLimit1 / tempLimit2;
-						
-						siteDistance = RandomUtil.getRandomDouble(limit);
-						newLocation = currentLocation.getNewLocation(direction, siteDistance);
-						
-						if (terrainElevation == null)
-							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
-
-						double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
-//						if (score < 0) {
-//							bestScore = 0; 
-//						}
-						if (score > bestScore) {
-							bestScore = score;
-							bestLocation = newLocation;
-						}
-					}
-					
-					totalSiteScore += bestScore;
-					System.out.println("(2) Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
-							+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
-					unorderedSites.add(bestLocation);
-					currentLocation = bestLocation;
-				
-					remainingRange -= siteDistance;
-				}
+				remainingRange -= siteDistance;
 			}
 		}
-
+		
 		// Reorder sites for shortest distance.
 		int collectionSiteNum = 1;
 		currentLocation = startingLocation;
@@ -771,6 +653,133 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			collectionSiteNum++;
 		}
 	}
+	
+	private void computeRegolithSites(double roverRange, double tripTimeLimit, int numSites) {
+		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
+		
+		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
+
+		// Determining the actual traveling range.
+		double range = roverRange;
+		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
+		if (timeRange < range)
+			range = timeRange;
+
+		// Get the current location.
+		Coordinates startingLocation = getCurrentMissionLocation();
+
+		double limit = 0;
+		Direction direction = null;
+		Coordinates newLocation = null;
+		Coordinates currentLocation = null;
+		double siteDistance = 0;
+		
+		/////////////////////////////////////////
+		
+		// Determine the first collection site.
+		double bestScore = 0;
+		Coordinates bestLocation = null;
+		int count = 0;
+		while (count++ <= MAX_NUM_PRIMARY_SITES) {
+			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+			limit = range / 4D;
+			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+			newLocation = startingLocation.getNewLocation(direction, siteDistance);
+			
+			double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
+			
+			if (score > bestScore) {
+				bestScore = score;
+				bestLocation = newLocation;
+			}
+		}
+		totalSiteScore += bestScore;
+	
+		unorderedSites.add(bestLocation);
+		currentLocation = bestLocation;
+		
+		// Determine remaining collection sites.
+		double remainingRange = RandomUtil.getRandomDouble((range - siteDistance)/2);
+				
+		/////////////////////////////////////////
+		
+		// for regolith collection mission
+		
+		for (int x = 1; x < numSites; x++) {
+			double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
+			if (remainingRange > currentDistanceToSettlement) {
+				bestScore = 0;
+				bestLocation = null;
+				count = 0;
+
+				while (count++ <= MAX_NUM_SECONDARY_SITES && bestScore > 0.1) {
+
+					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+					
+					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+					double tempLimit2 = (2D * remainingRange)
+							- (2D * currentDistanceToSettlement * direction.getCosDirection());
+					limit = tempLimit1 / tempLimit2;
+					
+					siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+					newLocation = currentLocation.getNewLocation(direction, siteDistance);
+
+					double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
+
+					if (score > bestScore) {
+						bestScore = score;
+						bestLocation = newLocation;
+					}
+				}
+				
+				totalSiteScore += bestScore;
+				logger.log(Level.INFO, "Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+						+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
+				unorderedSites.add(bestLocation);
+				currentLocation = bestLocation;
+			
+				remainingRange -= siteDistance;
+			}
+		}
+		
+		// Reorder sites for shortest distance.
+		int collectionSiteNum = 1;
+		currentLocation = startingLocation;
+		while (unorderedSites.size() > 0) {
+			Coordinates shortest = unorderedSites.get(0);
+			Iterator<Coordinates> i = unorderedSites.iterator();
+			while (i.hasNext()) {
+				Coordinates site = i.next();
+				if (Coordinates.computeDistance(currentLocation, site) < Coordinates.computeDistance(currentLocation, shortest))
+					shortest = site;
+			}
+			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));
+			unorderedSites.remove(shortest);
+			currentLocation = shortest;
+			collectionSiteNum++;
+		}
+	}
+	
+	/**
+	 * Determine the locations of the sample collection sites.
+	 * 
+	 * @param roverRange the rover's driving range.
+	 * @param tripTimeLimit the time limit of trip (millisols).
+	 * @param numSites   the number of collection sites.
+	 * @throws MissionException of collection sites can not be determined.
+	 */
+	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) {
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		
+		if (resourceID == ResourceUtil.iceID) {
+			computeIceSites(roverRange, tripTimeLimit, numSites);
+		}
+	
+		else {
+			computeRegolithSites(roverRange, tripTimeLimit, numSites);
+		}
+	}
 
 	/**
 	 * Gets the range of a trip based on its time limit and collection sites.
@@ -784,8 +793,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		double timeAtSites = getEstimatedTimeAtCollectionSite(useBuffer) * numSites;
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
 		double averageSpeed = getAverageVehicleSpeedForOperators();
-//		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;//millisolsInHour;
+		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
@@ -876,19 +884,19 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenID))
-			oxygenAmount += (Double) result.get(oxygenID);
-		result.put(oxygenID, oxygenAmount);
+		if (result.containsKey(OXYGEN))
+			oxygenAmount += (Double) result.get(OXYGEN);
+		result.put(OXYGEN, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterID))
-			waterAmount += (Double) result.get(waterID);
-		result.put(waterID, waterAmount);
+		if (result.containsKey(WATER))
+			waterAmount += (Double) result.get(WATER);
+		result.put(WATER, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodID))
-			foodAmount += (Double) result.get(foodID);
-		result.put(foodID, foodAmount);
+		if (result.containsKey(FOOD))
+			foodAmount += (Double) result.get(FOOD);
+		result.put(FOOD, foodAmount);
 
 		return result;
 	}
@@ -960,21 +968,21 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit)
 			timeLimit = foodTimeLimit;
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;

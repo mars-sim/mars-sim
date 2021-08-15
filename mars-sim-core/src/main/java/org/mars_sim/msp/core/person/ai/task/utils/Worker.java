@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Worker.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Barry Evans
  */
 
@@ -88,7 +88,7 @@ public interface Worker extends Loggable {
 	public boolean isInSettlement();
 
 	/**
-	 * Get the current Settlement of the worker; may be different from the assoicated Settlement.
+	 * Get the current Settlement of the worker; may be different from the associated Settlement.
 	 * @return
 	 */
 	public Settlement getSettlement();

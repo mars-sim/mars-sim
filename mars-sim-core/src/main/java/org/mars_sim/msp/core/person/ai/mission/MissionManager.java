@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.data.SolListDataLogger;
+import org.mars_sim.msp.core.environment.CollectionSite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -65,6 +67,7 @@ public class MissionManager implements Serializable, Temporal {
 	private static List<String> missionNames;
 	private static List<String> travelMissionNames;
 	private static Map<String, Integer> settlementID;
+	private static Set<CollectionSite> collectionSites;
 	
 	// Note : MissionManager is instantiated before MarsClock
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -122,6 +125,7 @@ public class MissionManager implements Serializable, Temporal {
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolListDataLogger<>(5);
 		settlementID = new ConcurrentHashMap<>();
+		collectionSites = ConcurrentHashMap.newKeySet();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 	}
 

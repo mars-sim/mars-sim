@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -22,8 +22,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -31,7 +29,6 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -120,7 +117,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private OperateVehicle operateVehicleTask;
 
 	/** Caches */
-	protected Map<Integer, Integer> equipmentNeededCache;
+	protected transient Map<Integer, Integer> equipmentNeededCache;
 
 	private transient Map<Integer, Number> cachedParts = null;
 
@@ -141,10 +138,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 		this.startingMember = startingMember;
 		
-		if (!reserveVehicle()) {
-			return;
-		}
-		else {
+		if (reserveVehicle()) {
 			// Add mission phases.
 			addPhase(REVIEWING);
 			addPhase(EMBARKING);
@@ -347,7 +341,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (member.getSettlement() == null)
 			return false;
 		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
-		// Create list of best unreserved vehicles for the mission.
 
 		if (vList.isEmpty()) {
 			return false;
@@ -436,36 +429,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (needHelp()) {
 				getHelp();
 			}
-
-			else if (vehicleCache.getSettlement() != null) {
-				// if a vehicle is at a settlement		
-				// e.g. Mission not approved
-				setPhaseEnded(true);
-				
-				if (vehicleCache instanceof Drone) {
-					if (!vehicleCache.getInventory().isEmpty(false)) {
-						addPhase(VehicleMission.DISEMBARKING);
-						setPhase(VehicleMission.DISEMBARKING);
-					}
-					else {
-						leaveVehicle();
-						super.endMission();
-					}
-				}
-				
-				else if (vehicleCache instanceof Rover) {
-					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
-						addPhase(VehicleMission.DISEMBARKING);
-						setPhase(VehicleMission.DISEMBARKING);
-					}
-					else {
-						leaveVehicle();
-						super.endMission();
-					}
-				}
-			}
-			
+		
 			else {
+				
+				// What if a vehicle is still at a settlement and Mission is not approved ?
+				
 				// for ALL OTHER REASONS
 				setPhaseEnded(true);
 				
@@ -517,7 +485,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		logger.info(startingMember, 20_000, "Asked for help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
-		// TODO: need to find out if there are other matching reasons for setting
+		// Note: need to find out if there are other matching reasons for setting
 		// emergency beacon.
 		if (vehicle.getSettlement() == null) {
 			// if the vehicle somewhere on Mars 
@@ -554,8 +522,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			else {
 				// Note : if the emergency beacon is on, don't end the mission yet
 				// So do not called setPhaseEnded(true) and super.endMission(reason);
-//				 logger.info(vehicle + "'s emergency beacon is on. awaiting the response for
-//				 rescue right now.");
+				// May use logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
 			}
 		}
 
@@ -579,7 +546,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			// if the vehicle is still somewhere inside the settlement when it got broken
 			// down
-			// TODO: wait till the repair is done and the mission may resume ?!?
+			// Note: consider to wait till the repair is done and the mission may resume ?!?
 			
 			else if (vehicle.getSettlement() != null) {
 				// if a vehicle is at a settlement			
@@ -602,7 +569,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public final boolean isVehicleLoaded() {
 		if (vehicle == null) {
-			throw new IllegalStateException(getPhase() + " : vehicle is null");
+			throw new IllegalStateException(getPhase() + ": vehicle is null.");
 		}
 
 		try {
@@ -648,8 +615,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// Disapprove this mission
 			setApproval(false);		
 		}
-
-//		logger.info(getStartingMember() + " was done with isVehicleLoadable()");
 		
 		return vehicleCapacity && settlementSupplies;
 	}
@@ -1585,71 +1550,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					numContainers += (int) (result.get(containerID));
 				}
 
-//				logger.finer("Loading amount resources in getOptionalEquipmentToLoad() id : " + id 
-//						+ "   containerID : " + containerID
-//						+ "   numContainers : " + numContainers 
-//						+ "   numContainers : " + numContainers
-//						+ "   capacity : " + capacity);
-				result.put(containerID, numContainers);
-					
+				result.put(containerID, numContainers);				
 			}  
 			
 			// Note: containers are NOT designed to hold parts 
 			// Parts do not need a container. Any exceptions for that ? 
-			
-			// Check if these resources are Parts
-//			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-//				int num = (Integer) optionalResources.get(id);
-//
-//				// Obtain a container for storing the amount resource
-//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-//				double capacity = ContainerUtil.getContainerCapacity(containerID);
-//				int numContainers = (int) Math.ceil(num / capacity);
-//
-//				if (result.containsKey(containerID)) {
-//					numContainers += (int) (result.get(containerID));
-//				}
-//
-////				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
-////						+ "   containerID : " + containerID
-////						+ "   numContainers : " + numContainers 
-////						+ "   numContainers : " + numContainers
-////						+ "   capacity : " + capacity);
-//				result.put(containerID, numContainers);
-//				
-//			}
-			
-//			// Check if these resources are equipment
-//			else if (id >= ResourceUtil.FIRST_VEHICLE_RESOURCE_ID && id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-//				int num = (Integer) optionalResources.get(id);
-//				// TODO: how to specify adding extra parts for EVASuit here ?
-//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-//				double capacity = ContainerUtil.getContainerCapacity(containerID);
-//				int numContainers = (int) Math.ceil(num / capacity);
-//
-//				if (result.containsKey(containerID)) {
-//					numContainers += (int) (result.get(containerID));
-//				}
-//
-////				logger.finer("Loading equipment in getOptionalEquipmentToLoad() id : " + id 
-////				+ "   containerID : " + containerID
-////				+ "   numContainers : " + numContainers 
-////				+ "   numContainers : " + numContainers
-////				+ "   capacity : " + capacity);
-//				result.put(containerID, numContainers);
-//			}
-			
-//			else
-//				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() - id: " + id);
-			
+	
 			// Gets a spare EVA suit for each 4 members in a mission
 			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
 			result.put(EquipmentType.getEVAResourceID(), numEVA);
 
 		}
-		
-		// TODO: add extra EVASuit here 
-		
+
 		return result;
 	}
 
@@ -1696,20 +1608,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
         	valid = getStartingPerson().equals(worker);
         }
         else if (TRAVELLING.equals(getPhase())) {
-//			if (vehicle.getOperator() != null) {
-//				// Check if I am the driver.
-//				if (vehicle.getOperator().getOperatorName().equals(worker.getName())) {
-//					// Vehicle thinks I'm driving but I am looking for a new Task ????
-////					vehicle.setOperator(null);
-////					logger.log(vehicle, worker, Level.WARNING, 0, "No longer being the vehicle operator.");
-//					
-////					logger.log(vehicle, worker, Level.WARNING, 0, "Yes I'm the vehicle operator.");
-//				}
-//				else {
-//					// Someone else is driving
-//					valid = false;
-//				}
-//			}
+			// Note: may use if (vehicle.getOperator() != null) to check if I am the driver.
         }
 		return valid && super.canParticipate(worker);
 	}
@@ -1770,14 +1669,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return result;
 	}
 	
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param mgr
-//	 */
-//	public static void justReloaded(MissionManager mgr) {
-//		missionManager = mgr;
-//	}
 	
 	/**
 	 * Gets the settlement associated with the vehicle.

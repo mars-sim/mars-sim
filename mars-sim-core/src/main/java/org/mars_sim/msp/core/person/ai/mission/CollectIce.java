@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CollectIce.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -64,7 +64,6 @@ public class CollectIce extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, BASE_COLLECTION_RATE,
 				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
-//		logger.info(startingPerson + " had started CollectIce");
 	}
 
 	/**
