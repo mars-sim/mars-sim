@@ -155,10 +155,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 							determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
 								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
 							// Quit if totalSiteScore is > zero
-							if (totalSiteScore > 0) i = 10;
+							if (totalSiteScore > 0) 
+								break;
 							// Re-do the for loop again if totalSiteScore is zero
-							if (i == 9 && totalSiteScore == 0) i = 0;	
-								
+							// May try if (i == 9 && totalSiteScore == 0) i = 0;
 						}
 						
 						if (totalSiteScore == 0) {
@@ -190,7 +190,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 			// Set initial mission phase.
 			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); //$NON-NLS-1$
+			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 		}
 	}
 
@@ -285,7 +285,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-//		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
+
 		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
@@ -303,7 +303,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 			if (getCurrentNavpoint() == null)
 				// go back home
-//        		logger.info("getCurrentNavpoint() == null");
 				returnHome();
 			else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
@@ -348,7 +347,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	}
 
 	public void endCollectingAtSite() {
-		// logger.info("Collecting phase ended due to external trigger.");
+
 		endCollectingSite = true;
 
 		// End each member's collection task.
@@ -504,11 +503,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					}
 
 					else { //if resourceID is one of the regolith type
-						
-//						int rand = RandomUtil.getRandomInt(2);
-//						// Randomly pick one of the 3 types of regolith
-//						resourceID = REGOLITH_TYPES[rand];
-						
+					
 						// Look for the regolith type that has the highest vp
 						double highest = 0;
 						for (int type: REGOLITH_TYPES) {
@@ -578,7 +573,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		double bestScore = 0;
 		Coordinates bestLocation = null;
 		int count = 0;
-		while (count++ <= MAX_NUM_PRIMARY_SITES) {
+		while (count++ <= MAX_NUM_PRIMARY_SITES || bestScore == 0) {
 			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 			limit = range / 4D;
 			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
@@ -597,7 +592,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		currentLocation = bestLocation;
 		
 		// Determine remaining collection sites.
-		double remainingRange = RandomUtil.getRandomDouble((range - siteDistance)/2);
+		double remainingRange = RandomUtil.getRandomDouble(range/2 - siteDistance);
 		
 		/////////////////////////////////////////
 		
@@ -607,7 +602,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				bestScore = 0;
 				bestLocation = null;
 				count = 0;
-				while (count++ <= MAX_NUM_SECONDARY_SITES && bestScore > 0.1) {
+				while (count++ <= MAX_NUM_SECONDARY_SITES || bestScore == 0) {
 					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 					
 					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
@@ -637,7 +632,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 		
 		// Reorder sites for shortest distance.
-		int collectionSiteNum = 1;
+		int collectionSiteNum = 1;	
 		currentLocation = startingLocation;
 		while (unorderedSites.size() > 0) {
 			Coordinates shortest = unorderedSites.get(0);
@@ -680,7 +675,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		double bestScore = 0;
 		Coordinates bestLocation = null;
 		int count = 0;
-		while (count++ <= MAX_NUM_PRIMARY_SITES) {
+		while (count++ <= MAX_NUM_PRIMARY_SITES || bestScore == 0) {
 			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 			limit = range / 4D;
 			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
@@ -699,7 +694,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		currentLocation = bestLocation;
 		
 		// Determine remaining collection sites.
-		double remainingRange = RandomUtil.getRandomDouble((range - siteDistance)/2);
+		double remainingRange = RandomUtil.getRandomDouble(range/2 - siteDistance);
 				
 		/////////////////////////////////////////
 		
@@ -712,7 +707,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				bestLocation = null;
 				count = 0;
 
-				while (count++ <= MAX_NUM_SECONDARY_SITES && bestScore > 0.1) {
+				while (count++ <= MAX_NUM_SECONDARY_SITES || bestScore == 0) {
 
 					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 					

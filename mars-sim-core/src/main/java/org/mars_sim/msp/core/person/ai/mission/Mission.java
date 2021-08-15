@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Mission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -165,7 +165,7 @@ public abstract class Mission implements Serializable, Temporal {
 	protected static ScientificStudyManager scientificManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
-	protected static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
+	protected static MarsClock marsClock;
 	protected static RelationshipManager relationshipManager;
 	protected static CreditManager creditManager;
 	
@@ -208,9 +208,9 @@ public abstract class Mission implements Serializable, Temporal {
 		phases = new CopyOnWriteArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
-		missionCapacity = MAX_CAP;//Integer.MAX_VALUE;
+		missionCapacity = MAX_CAP;
 				
-		listeners = new CopyOnWriteArrayList<>(); //Collections.synchronizedList(new ArrayList<MissionListener>());
+		listeners = new CopyOnWriteArrayList<>();
 		
 		Person person = (Person) startingMember;
 		String loc0 = null;
@@ -256,8 +256,6 @@ public abstract class Mission implements Serializable, Temporal {
 			
 			// Note: do NOT set his shift to ON_CALL yet.
 			// let the mission lead have more sleep before departing
-//			if (startingMember instanceof Person)
-//				startingMember.setShiftType(ShiftType.ON_CALL);
 
 		}
 
@@ -383,19 +381,17 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
 		if (listeners == null)
-			listeners = new CopyOnWriteArrayList<>();// Collections.synchronizedList(new ArrayList<MissionListener>());
-//		synchronized (listeners) {
+			listeners = new CopyOnWriteArrayList<>();
 			Iterator<MissionListener> i = listeners.iterator();
 			while (i.hasNext())
 				i.next().missionUpdate(new MissionEvent(this, addMemberEvent, target));
-//		}
 	}
 
 	/**
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return this.getTypeID();//missionName;
+		return this.getTypeID();
 	}
 
 	public final void addMember(MissionMember member) {
@@ -448,12 +444,11 @@ public abstract class Mission implements Serializable, Temporal {
 	public final void removeMember(MissionMember member) {
 		if (members.contains(member)) {
 			members.remove(member);
-			// logger.info("done removing " + member);
 
 			// Added codes in reassigning a work shift
 			if (member instanceof Person) {
 				Person person = (Person) member;
-				person.getMind().stopMission();// setMission(null);
+				person.getMind().stopMission();
 				member.setMission(null);
 
 				ShiftType shift = null;
@@ -465,10 +460,6 @@ public abstract class Mission implements Serializable, Temporal {
 						shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
 						person.setShiftType(shift);
 					}
-
-				// Creating missing finishing event.
-//				 HistoricalEvent newEvent = new MissionHistoricalEvent(member, this,
-//				 EventType.MISSION_FINISH);
 
 				String loc0 = null;
 				String loc1 = null;
@@ -490,15 +481,10 @@ public abstract class Mission implements Serializable, Temporal {
 								"Removing a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName()));
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
-//				if ((members.size() == 0) && !done) {
-//					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
-//					endMission();
-//				} else 
 				if (getPeopleNumber() == 0 && !done) {
 					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
 					endMission();
 				}
-				// logger.fine(member.getName() + " removed from mission : " + name);
 			}
 		}
 	}
@@ -527,15 +513,6 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		return false;
 	}
-	
-//	/**
-//	 * Determines if a mission includes the given person.
-//	 * @param person person to be checked
-//	 * @return true if person is member of mission
-//	 */
-//	public final boolean hasPerson(Person person) {
-//		return people.contains(person);
-//	}
 
 	/**
 	 * Gets the number of members in the mission.
@@ -555,16 +532,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public final int getPeopleNumber() {
 		return getMembersNumber();
-//		int result = 0;
-//
-//		Iterator<MissionMember> i = members.iterator();
-//		while (i.hasNext()) {
-//			if (i.next() instanceof Person) {
-//				result++;
-//			}
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -607,8 +574,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public final Collection<Person> getPeople() {
 		Collection<MissionMember> members = getMembers();
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		// Collection<Person> people = members.stream()
-		// .filter(p -> p instanceof Person).collect(Collectors.toList());
 
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
@@ -619,7 +584,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		return people;
-		// return new ConcurrentLinkedQueue<Person>(people);
 	}
 
 	/**
@@ -855,7 +819,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Go to the nearest settlement and end collection phase if necessary.
 	 */
-	// TODO : connect to determineEmergencyDestination() in VehicleMission
+	// Note : connect to determineEmergencyDestination() in VehicleMission
 	public void goToNearestSettlement() {
 		if (this instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) this;
@@ -865,8 +829,7 @@ public abstract class Mission implements Serializable, Temporal {
 					vehicleMission.clearRemainingNavpoints();
 					vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
 							nearestSettlement.getName()));
-					// TODO: Not sure if they should become citizens of another settlement
-//					vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
+					// Note: Not sure if they should become citizens of another settlement
 					vehicleMission.updateTravelDestination();
 					endCollectionPhase();
 				}
@@ -931,8 +894,6 @@ public abstract class Mission implements Serializable, Temporal {
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
 	
 			done = true; // Note: done = true is very important to keep !
-//			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-			// logger.info("done firing End_Mission_Event");
 		}
 		
 		else {
@@ -983,7 +944,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		// Proactively call removeMission to update the list in MissionManager right away
-//		missionManager.removeMission(this); // not legit ! will crash the mission tab in monitor tool
+		// Note: Calling missionManager.removeMission(this) will crash the mission tab in monitor tool
 	}
 
 	/**
@@ -1232,14 +1193,6 @@ public abstract class Mission implements Serializable, Temporal {
 				recruitee.setMission(this);
 
 				// NOTE: do not set his shift to ON_CALL until after the mission plan has been approved
-//				if (recruitee instanceof Person) {
-//					((Person) recruitee).setShiftType(ShiftType.ON_CALL);
-//				}
-				
-				// Note : robot cannot be a recruitee
-				// else if (recruitee instanceof Robot) {
-				// ((Robot) recruitee).getTaskSchedule().setShiftType("None");
-				// }
 			}
 		}
 	}
@@ -1272,21 +1225,6 @@ public abstract class Mission implements Serializable, Temporal {
 			if (!onMission && !healthProblem && isQualified) {
 				result = true;
 			}
-		} else if (member instanceof Robot) {
-//			Robot robot = (Robot) member;
-//
-//			// Make sure robot isn't already on a mission.
-//			boolean onMission = (robot.getBotMind().getMission() != null);
-//
-//			// Make sure robot doesn't have a malfunction.
-//			boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
-//
-//			// Check if robot is qualified to join the mission.
-//			boolean isQualified = (getMissionQualification(robot) > 0D);
-//
-//			if (!onMission && !hasMalfunction && isQualified) {
-//				result = true;
-//			}
 		}
 
 		return result;
@@ -1320,8 +1258,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public double getMissionQualification(MissionMember member) {
 
 		double result = 0D;
-
-//        if (isCapableOfMission(member)) {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;
@@ -1422,7 +1358,6 @@ public abstract class Mission implements Serializable, Temporal {
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-//			member.setAssociatedSettlement(settlement.getIdentifier());
 			if (member instanceof Person) {
 				Person p = (Person) member;
 				settlement.addACitizen(p);
@@ -1461,8 +1396,7 @@ public abstract class Mission implements Serializable, Temporal {
 				}
 				else {
 					s.append("Error : no crew members for ");
-					
-//					int rand = RandomUtil.getRandomInt(2);
+
 					if (Conversion.isVowel(missionName))
 						s.append("an ");
 					else
@@ -1480,7 +1414,6 @@ public abstract class Mission implements Serializable, Temporal {
 				else {
 					s.append("Error : no crew members for ");
 					
-//					int rand = RandomUtil.getRandomInt(2);
 					if (Conversion.isVowel(missionName))
 						s.append("an ");
 					else
@@ -1493,7 +1426,6 @@ public abstract class Mission implements Serializable, Temporal {
 			logger.log(startingMember, Level.INFO, 0, s.toString());
 		}
 
-//		System.out.println("   p is at " + result);
 		return result;
 	}
 
@@ -1534,7 +1466,6 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		else if (plan != null) {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-//				logger.info(this + " was not approved.");
 				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
 				endMission();
 			}
@@ -1548,7 +1479,6 @@ public abstract class Mission implements Serializable, Temporal {
 				if (!(this instanceof TravelMission)) {
 					// Set the members' work shift to on-call to get ready
 					for (MissionMember m : members) {
-	//					Person pp = (Person) m;
 						 ((Person) m).setShiftType(ShiftType.ON_CALL);
 					}
 				}

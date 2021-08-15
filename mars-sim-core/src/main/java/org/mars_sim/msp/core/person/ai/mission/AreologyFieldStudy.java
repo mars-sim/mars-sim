@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AreologyFieldStudy.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission to do areology research at a remote field location for a scientific
- * study. TODO externalize strings
+ * study.
  */
 public class AreologyFieldStudy extends RoverMission implements Serializable {
 
@@ -89,11 +89,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, MIN_PEOPLE);
-
-//		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
 
 		Settlement s = startingPerson.getSettlement();
 
@@ -164,11 +159,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(description, missionType, leadResearcher, MIN_PEOPLE, rover);
 
-		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
-
 		setStartingSettlement(startingSettlement);
 		this.study = study;
 		this.leadResearcher = leadResearcher;
@@ -233,7 +223,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 	public static ScientificStudy determineStudy(Person researcher) {
 		ScientificStudy result = null;
 
-		// ScienceType areology = ScienceType.AREOLOGY;
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
@@ -290,14 +279,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
 		}
-
-		// Check dessert1 capacity as time limit.
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-//        double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D;
-//        double dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false);
-//        double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
-//        if (dessert1TimeLimit < timeLimit)
-//            timeLimit = dessert1TimeLimit;
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
@@ -376,7 +357,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 			Person person = (Person) member;
 
 			// Add modifier if person is a researcher on the same scientific study.
-			// ScienceType areology = ScienceType.AREOLOGY;
 			if (study != null) {
 				if (person == study.getPrimaryResearcher()) {
 					result += 2D;
@@ -449,10 +429,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} 
-		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
 		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
@@ -578,7 +554,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 			if (!endFieldSite && !timeExpired) {
 				// If person can research the site, start that task.
 				if (AreologyStudyFieldWork.canResearchSite(member, getRover())) {
-					// TODO Refactor
+
 					if (member instanceof Person) {
 						Person person = (Person) member;
 						assignTask(person,
@@ -608,7 +584,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 
 		// Add estimated remaining field work time at field site if still there.
 		if (RESEARCH_SITE.equals(getPhase())) {
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+
 			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, fieldSiteStartTime);
 			double remainingTime = FIELD_SITE_TIME - timeSpentAtExplorationSite;
 			if (remainingTime > 0D) {
@@ -648,30 +624,11 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		result.put(waterID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-//				* PhysicalCondition.FOOD_RESERVE_FACTOR;
 		if (result.containsKey(foodID)) {
 			foodAmount += (Double) result.get(foodID);
 		}
 		result.put(foodID, foodAmount);
 
-		// Add the chosen dessert for the journey
-//		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-//	  	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
-//		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION ;
-//	  	// Put together a list of available dessert
-//        for(String n : availableDesserts) {
-//    		AmountResource dessert = AmountResource.findAmountResource(n);
-//        	// match the chosen dessert for the journey
-//            if (result.containsKey(dessert))
-//                dessertAmount += (Double) result.get(dessert);
-//            result.put(dessert, dessertAmount);
-//        }
-
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-//        double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;
-//        if (result.containsKey(dessert1))
-//            dessert1Amount += (Double) result.get(dessert1);
-//        result.put(dessert1, dessert1Amount);
 		return result;
 	}
 

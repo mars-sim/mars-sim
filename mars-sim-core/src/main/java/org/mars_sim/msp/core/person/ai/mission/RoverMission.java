@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -367,18 +367,17 @@ public abstract class RoverMission extends VehicleMission {
 									hasAnotherMission = true; 
 								
 								if (!hasAnotherMission && isRoverInAGarage) {
-									// TODO Refactor.
+
 									assignTask(person,
 												new LoadVehicleGarage(person, v,
 														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 								} else {
 									// Check if it is day time.
-//										if (!EVAOperation.isGettingDark(person)) {
-										assignTask(person, new LoadVehicleEVA(person, v,
+									assignTask(person, new LoadVehicleEVA(person, v,
 													getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 													getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-//										}
+
 								}
 							}
 						}
@@ -394,11 +393,9 @@ public abstract class RoverMission extends VehicleMission {
 							
 							if (!hasAnotherMission) {
 							// Check if it is day time.
-//								if (!EVAOperation.isGettingDark(person)) {
 								assignTask(person, new LoadVehicleEVA(person, v,
 											getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 											getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-//								}
 							}
 						}
 					}
@@ -434,7 +431,7 @@ public abstract class RoverMission extends VehicleMission {
 								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
 									EVASuit suit = settlement.getInventory().findAnEVAsuit(person);
 									if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
-										// TODL: should add codes to have a person carries the extra EVA suit physically
+										// Note : should add codes to have a person carries the extra EVA suit physically
 										suit.transfer(settlement, v);
 									}
 								}
@@ -442,13 +439,12 @@ public abstract class RoverMission extends VehicleMission {
 						}
 					}
 				
-					else { // this crewmember cannot find the walking steps to enter the rover
+					else { // this crew member cannot find the walking steps to enter the rover
 						LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 									+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 								v.getName()));
-//								addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-//								endMission();
+
 					}
 				}
 			}
@@ -570,15 +566,11 @@ public abstract class RoverMission extends VehicleMission {
 				
 				else {
 					// the person is still inside the vehicle
-					
-//					LogConsolidated.log(Level.INFO, 10_000, sourceName,
-//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-//							+ " came home safety on the rover "+ rover.getName() + ".");
-
+					// See if this person can come home 
 				}
 				
 				// Initiate an rescue operation
-				// TODO: Gets a lead person to perform it and give him a rescue badge
+				// Note : Gets a lead person to perform it and give him a rescue badge
 				rescueOperation(rover, p, disembarkSettlement);
 			}
 			
@@ -698,14 +690,12 @@ public abstract class RoverMission extends VehicleMission {
 					
 						if (availableSuitNum > 0) {
 							// Deliver an EVA suit from the settlement to the rover
-							// TODO: Need to generate a task for a person to hand deliver an extra suit
+							// Note: Need to generate a task for a person to hand deliver an extra suit
 							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(p);
 							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
 								
 								suit.transfer(disembarkSettlement, rover);
-//								disembarkSettlement.getInventory().retrieveUnit(suit);
-//								rover.getInventory().storeUnit(suit);
-								
+							
 								LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " received a spare EVA suit from the settlement.");
 							}
@@ -735,7 +725,7 @@ public abstract class RoverMission extends VehicleMission {
 				else if (!hasStrength) {
 
 					// Help this person put on an EVA suit
-					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
+					// Note: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
 					// This person needs to be rescued.
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
@@ -744,7 +734,7 @@ public abstract class RoverMission extends VehicleMission {
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
 					
 					// Initiate an rescue operation
-					// TODO: Gets a lead person to perform it and give him a rescue badge
+					// Note: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, p, disembarkSettlement);
 					
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
@@ -755,7 +745,7 @@ public abstract class RoverMission extends VehicleMission {
 							+ Math.round(p.getYLocation()*10.0)/10.0 + ") in "
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
 					
-					// TODO: how to force the person to receive some form of medical treatment ?
+					// Note: how to force the person to receive some form of medical treatment ?
 					p.getMind().getTaskManager().clearAllTasks("Rover rescue");
 					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));		
 				}
@@ -785,23 +775,17 @@ public abstract class RoverMission extends VehicleMission {
 		}
 		// Retrieve the person from the rover
 		else if (r != null) {
-//			r.getInventory().retrieveUnit(p);
 			p.transfer(r, s);
 		}
 		else if (p.isOutside()) {
-//			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
 			p.transfer(unitManager.getMarsSurface(), s);
 		}
-		
-		// Store the person into the settlement
-//		s.getInventory().storeUnit(p);
-		
+				
 		// Gets the settlement id
 		int id = s.getIdentifier();
 		// Store the person into a medical building
 		BuildingManager.addToMedicalBuilding(p, id);
-		// Register the person
-//		p.setAssociatedSettlement(id);
+		
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
 				this,
@@ -828,8 +812,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (member instanceof Person) {
 			Person person = (Person) member;
 			Vehicle v = (Vehicle)getRover();
-			// TODO: should it check for fatigue only ?
-//			if (person.getFatigue() < 750) {
+			// Note: should it check for fatigue only ?
 			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),

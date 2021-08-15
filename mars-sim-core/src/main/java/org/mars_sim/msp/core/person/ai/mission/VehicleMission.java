@@ -713,14 +713,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	@Override
 	protected void performPhase(MissionMember member) {
-//		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
-			if (isMissionPlanReady)
+			if (isMissionPlanReady) {
 				requestReviewPhase(member);
+				computeEstimatedTotalDistance();
+			}
 		}
 		else if (EMBARKING.equals(getPhase())) {
-			computeEstimatedTotalDistance();
 			checkVehicleMaintenance();
 			performEmbarkFromSettlementPhase(member);
 		} 
@@ -980,13 +980,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = getEstimatedTotalRemainingDistance();
+		double distance = getEstimatedTotalDistance(); // getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
 			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
 			return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
 		}
 		
-		return new HashMap<>();//getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+		return new HashMap<>();
 	}
 
 	/**
