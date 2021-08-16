@@ -1,0 +1,84 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE scenario-configuration [
+	<!ELEMENT scenario-configuration (initial-settlement-list)>
+	<!ATTLIST scenario-configuration name CDATA #REQUIRED>
+	<!ATTLIST scenario-configuration description CDATA #REQUIRED>
+
+	<!ELEMENT initial-settlement-list (settlement*)>
+	<!ELEMENT settlement (location, population, robots, sponsor)>
+	<!ATTLIST settlement name CDATA #REQUIRED>
+	<!ATTLIST settlement template CDATA #REQUIRED>
+	<!ATTLIST settlement crew CDATA #IMPLIED>
+	<!ELEMENT location EMPTY>
+	<!ATTLIST location longitude CDATA #REQUIRED>
+	<!ATTLIST location latitude CDATA #REQUIRED>
+	<!ELEMENT population EMPTY>
+	<!ATTLIST population number CDATA #REQUIRED>
+	<!ELEMENT robots EMPTY>
+	<!ATTLIST robots number CDATA #REQUIRED>
+	<!ELEMENT sponsor EMPTY>
+	<!ATTLIST sponsor name CDATA #REQUIRED>
+
+]>
+
+<scenario-configuration name="Default" description="Default provided Scenario">
+	<initial-settlement-list>
+	<!-- List of initial settlements in the simulation -->
+		<settlement name="New Plymouth" template="Phase 2-U">
+			<location longitude="29.75 W" latitude="10.63 N" />
+			<population number="8" />
+			<robots number="4" />
+			<sponsor name="NASA"/>
+		</settlement>
+		
+		<settlement name="Europa" template="Phase 2-E">
+			<location longitude="50.0 W" latitude="20.0 N" />
+			<population number="8" />
+			<robots number="4" />
+			<sponsor name="ESA"/>
+		</settlement>
+		
+		<settlement name="Tian Cheng" template="Phase 2-C">
+			<location longitude="134.67 E" latitude="22.67 N" />
+			<population number="8" />
+			<robots number="4" />
+			<sponsor name="CNSA"/>
+		</settlement>
+		
+		<settlement name="New Pompeii" template="Phase 2-I">
+			<location longitude="82.9 W" latitude="22.0 N" />
+			<population number="8" />
+			<robots number="4" />
+			<sponsor name="ISRO"/>
+		</settlement>
+	
+		<settlement name="Kyocera" template="Phase 2-J">
+			<location longitude="150.0 W" latitude="35.0 N" />
+			<population number="8" />
+			<robots number="4" />
+			<sponsor name="JAXA"/>
+		</settlement>
+			
+		<settlement name="Starcity" template="Phase 3-X">
+			<location longitude="165.32 E" latitude="41.01 N" />
+			<population number="12" />
+			<robots number="8" />
+			<sponsor name="SPACEX"/>
+		</settlement>
+					
+		<settlement name="Zvezda" template="Phase 3-R">
+			<location longitude="76.37 E" latitude="25.94 N" />
+			<population number="12" />
+			<robots number="8" />
+			<sponsor name="RKA"/>
+		</settlement>
+					
+		<settlement name="Schiaparelli Point" template="Alpha Base" crew="Alpha">
+			<location longitude="0.0 W" latitude="0.0 N" />
+			<population number="24" />
+			<robots number="12" />
+			<sponsor name="MS"/>
+		</settlement>
+		
+	</initial-settlement-list>
+</scenario-configuration>

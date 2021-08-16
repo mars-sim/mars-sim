@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -85,8 +86,9 @@ public final class SettlementBuilder {
 	/**
 	 * Create all the initial Settlements
 	 */
-	public void createInitialSettlements() {
-		for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
+	public void createInitialSettlements(Scenario bootstrap) {
+		logger.config("Scenario " + bootstrap.getName() + " loading");
+		for (InitialSettlement spec : bootstrap.getSettlements()) {
 			createFullSettlement(spec);
 		}
 		

@@ -95,7 +95,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param crewName
 	 * @return
 	 */
-	private String getItemFilename(String name) {
+	protected String getItemFilename(String name) {
 		// Replace spaces 
 		return itemPrefix + name.toLowerCase().replace(' ', '_');
 	}

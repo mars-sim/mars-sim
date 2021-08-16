@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.mars_sim.msp.core.configuration.Scenario;
+import org.mars_sim.msp.core.configuration.ScenarioConfig;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -259,7 +261,10 @@ public class SimulationBuilder {
 				builder.createFullSettlement(spec);
 			}
 			else {
-				builder.createInitialSettlements();
+				// TODO workaround for now until Editor working
+				ScenarioConfig config = new ScenarioConfig();
+				Scenario bootstrap = config.getItem(ScenarioConfig.DEFAULT);
+				builder.createInitialSettlements(bootstrap);
 			}
 		}
 

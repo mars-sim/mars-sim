@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,8 +18,6 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -75,8 +72,6 @@ public class SettlementConfig implements Serializable {
 	private static final String ROBOTS_NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
-	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
-	private static final String SETTLEMENT = "settlement";
 	private static final String LOCATION = "location";
 	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";
@@ -95,7 +90,6 @@ public class SettlementConfig implements Serializable {
 	private static final String PART_PACKAGE = "part-package";
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
-	private static final String CREW_ATT = "crew";
 
 	
 	// Random value indicator.
@@ -107,7 +101,6 @@ public class SettlementConfig implements Serializable {
 
 	// Data members
 	private List<SettlementTemplate> settlementTemplates;
-	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private Map<Integer, String> templateMap = new HashMap<>();
 
@@ -125,13 +118,11 @@ public class SettlementConfig implements Serializable {
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
 		settlementTemplates = new ArrayList<SettlementTemplate>();
-		initialSettlements = new ArrayList<InitialSettlement>();
 		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
 		loadMissionControl(settlementDoc);
 		loadLifeSupportRequirements(settlementDoc);
 		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
-		loadInitialSettlements(settlementDoc);
 		loadNewArrivingSettlements(settlementDoc);
 	}
 
@@ -471,70 +462,7 @@ public class SettlementConfig implements Serializable {
 		return templateID;
 	}
 	
-	/**
-	 * Load initial settlements.
-	 * 
-	 * @param settlementDoc DOM document with settlement configuration.
-	 * @throws Exception if XML error.
-	 */
-	private void loadInitialSettlements(Document settlementDoc) {
-		Element root = settlementDoc.getRootElement();
-		Element initialSettlementList = root.getChild(INITIAL_SETTLEMENT_LIST);
-		List<Element> settlementNodes = initialSettlementList.getChildren(SETTLEMENT);
-		for (Element settlementElement : settlementNodes) {
-
-			String settlementName = settlementElement.getAttributeValue(NAME);
-			if (settlementName.equals(RANDOM))
-				settlementName = null;
-
-			String template = settlementElement.getAttributeValue(TEMPLATE);
-
-			Coordinates location = null;
-			List<Element> locationNodes = settlementElement.getChildren(LOCATION);
-			if (locationNodes.size() > 0) {
-				Element locationElement = locationNodes.get(0);
-
-				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
-				String latitudeString = locationElement.getAttributeValue(LATITUDE);
-
-				// If both have a value then parse
-				if (!longitudeString.equals(RANDOM) && !latitudeString.equals(RANDOM)) {
-
-					// take care to internationalize the coordinates
-					longitudeString = longitudeString.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
-					longitudeString = longitudeString.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-					// take care to internationalize the coordinates
-					latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
-					latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-					location = new Coordinates(latitudeString, longitudeString);
-				}
-			}
-
-			Element populationElement = settlementElement.getChild(POPULATION);
-			String numberStr = populationElement.getAttributeValue(NUMBER);
-			int popNumber = Integer.parseInt(numberStr);
-			if (popNumber < 0) {
-				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
-			}
-
-			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
-			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("The number of robots cannot be less than zero: " + numOfRobots);
-			}
-
-			Element sponsorElement = settlementElement.getChild(SPONSOR);
-			String sponsor = sponsorElement.getAttributeValue(NAME);
-			String crew = settlementElement.getAttributeValue(CREW_ATT);
-			
-			initialSettlements.add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
-										location, crew));
-		}
-	}
-
+	
 	/**
 	 * Load new arriving settlements.
 	 * 
@@ -834,25 +762,6 @@ public class SettlementConfig implements Serializable {
 		} else
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
-	
-	/**
-	 * Gets the number of initial settlements.
-	 * 
-	 * @return number of settlements.
-	 */
-	public int getNumberOfInitialSettlements() {
-		return initialSettlements.size();
-	}
-
-
-
-	/**
-	 * Get an Initial settlement details. This comes form the static configuration
-	 */
-	public List<InitialSettlement> getInitialSettlements() {
-		return Collections.unmodifiableList(initialSettlements);
-	}
-	
 
 	/**
 	 * Gets a list of possible settlement names.
@@ -875,35 +784,6 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	
-	/**
-	 * Clears the list of initial settlements.
-	 */
-	public void clearInitialSettlements() {
-		initialSettlements.clear();
-	}
-
-	/**
-	 * Adds an initial settlement to the configuration.
-	 * 
-	 * @param name      the settlement name.
-	 * @param template  the settlement template.
-	 * @param latitude  the settlement latitude (ex. "10.3 S").
-	 * @param longitude the settlement longitude (ex. "47.0 W").
-	 */
-	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, String sponsor,
-			String latitude, String longitude, String crew) {
-		
-		// take care to internationalize the coordinates
-		latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
-		latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-		longitude = longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
-		longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-		Coordinates location = new Coordinates(latitude, longitude);
-
-		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, location, crew));
-	}
-
 	public Map<Integer, String> getTemplateMap() {
 		return templateMap;
 	}
@@ -918,8 +798,6 @@ public class SettlementConfig implements Serializable {
 		}
 		settlementTemplates.clear();
 		settlementTemplates = null;
-		initialSettlements.clear();
-		initialSettlements = null;
 		settlementNamesBySponsor.clear();
 		settlementNamesBySponsor = null;
 		templateMap.clear();

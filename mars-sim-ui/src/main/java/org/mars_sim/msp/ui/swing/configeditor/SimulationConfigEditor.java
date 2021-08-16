@@ -52,6 +52,8 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.configuration.Scenario;
+import org.mars_sim.msp.core.configuration.ScenarioConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -160,17 +162,15 @@ public class SimulationConfigEditor {
 					Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
 			};
-
-			settlementInfoList = new ArrayList<SettlementInfo>();
-			// Load default settlements.
-			loadDefaultSettlements();
+			
+			this.settlementInfoList = new ArrayList<>();
 		}
 
 		
 		/**
 		 * Load the default settlements in the table.
 		 */
-		private void loadDefaultSettlements() {
+		public void loadDefaultSettlements(Scenario selected) {
 			settlementInfoList.clear();
 			boolean hasSponsor = false;
 			String sponsorCC = null;
@@ -181,7 +181,7 @@ public class SimulationConfigEditor {
 				logger.config("The commander's sponsor is " + sponsorCC + ".");
 			}
 			
-			for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
+			for (InitialSettlement spec : selected.getSettlements()) {
 				SettlementInfo info = new SettlementInfo();
 				info.name = spec.getName();
 				info.sponsor = spec.getSponsor();
@@ -625,6 +625,10 @@ public class SimulationConfigEditor {
 	private boolean completed = false;
 	private boolean useCrew = true;
 	private CrewConfig crewConfig;
+
+	private Scenario selectedScenario;
+
+	private ScenarioConfig scenarioConfig;
 	
 	/**
 	 * Constructor
@@ -817,7 +821,7 @@ public class SimulationConfigEditor {
 		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setDefaultSettlements();
+				settlementTableModel.loadDefaultSettlements(selectedScenario);
 			}
 		});
 		configurationButtonInnerBottomPanel.add(defaultButton);
@@ -892,6 +896,11 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(cb);
 		bottomButtonPanel.add(crewButton);
 
+		// Load it
+		scenarioConfig = new ScenarioConfig();
+		selectedScenario = scenarioConfig.getItem(ScenarioConfig.DEFAULT);
+		settlementTableModel.loadDefaultSettlements(selectedScenario);
+		
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
@@ -949,28 +958,32 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Sets the default settlements from the loaded configuration.
-	 */
-	private void setDefaultSettlements() {
-		settlementTableModel.loadDefaultSettlements();
-	}
-
-	/**
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
 	private void finalizeSettlementConfig() {
 
-		// Clear configuration settlements.
-		settlementConfig.clearInitialSettlements();
+		List<InitialSettlement> is = new ArrayList<>();
 
 		// Add configuration settlements from table data.
 		for (SettlementInfo info : settlementTableModel.getSettlementInfoList()) {
 			int populationNum = Integer.parseInt(info.population);
 			int numOfRobots = Integer.parseInt(info.numOfRobots);
-			settlementConfig.addInitialSettlement(info.name, info.template, populationNum, numOfRobots,
-												  info.sponsor, info.latitude,
-												  info.longitude, info.crew);
+			
+			// take care to internationalize the coordinates
+			String latitude = info.latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
+			latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+			String longitude = info.longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
+			longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
+
+			Coordinates location = new Coordinates(latitude, longitude);
+
+			is.add(new InitialSettlement(info.name, info.sponsor, info.template,
+												populationNum, numOfRobots, location, info.crew));
+
 		}
+		
+		Scenario newScenario = new Scenario(selectedScenario.getName(), selectedScenario.getDescription(), is, selectedScenario.isBundled());
+		scenarioConfig.saveItem(newScenario);
 	}
 
 	/**
