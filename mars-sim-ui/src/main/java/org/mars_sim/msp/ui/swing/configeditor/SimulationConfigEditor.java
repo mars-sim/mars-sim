@@ -106,12 +106,12 @@ public class SimulationConfigEditor {
 
 		@Override
 		public int getSize() {
-			return crewConfig.getKnownCrewNames().size();
+			return crewConfig.getItemNames().size();
 		}
 
 		@Override
 		public String getElementAt(int index) {
-			return crewConfig.getKnownCrewNames().get(index);
+			return crewConfig.getItemNames().get(index);
 		}
 
 		@Override

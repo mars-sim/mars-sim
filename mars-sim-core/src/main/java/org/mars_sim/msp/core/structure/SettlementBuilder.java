@@ -382,7 +382,7 @@ public final class SettlementBuilder {
 	 */
 	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
-		Crew crew = crewConfig.getCrew(crewName);
+		Crew crew = crewConfig.getItem(crewName);
 		if (crew == null) {
 			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}

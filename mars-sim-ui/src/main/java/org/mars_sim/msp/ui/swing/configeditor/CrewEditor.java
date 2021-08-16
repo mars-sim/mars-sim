@@ -28,7 +28,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -370,12 +369,8 @@ public class CrewEditor implements ActionListener {
 	private static final String TITLE = "Crew Editor";
 	private static final String SELECT_SPONSOR = "Select Sponsor";
 
-	private static final String SAVE_CREW = "Save Crew";
-	private static final String SAVE_NEW_CREW = "Save As New Crew";
-	private static final String LOAD_CREW = "Load Crew";
 	private static final String ADD_MEMBER = "Add Member";
 	private static final String REMOVE_MEMBER = "Remove member";
-	private static final String DEL_CREW = "Delete Crew";
 		
 	public static final int PANEL_WIDTH = 180;
 	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
@@ -397,21 +392,11 @@ public class CrewEditor implements ActionListener {
 	private JPanel scrollPane;
 	
 	private List<MemberPanel> crewPanels = new ArrayList<>();
-	
-	private CrewConfig crewConfig;
+	//private CrewConfig crewConfig;
 
 	private SimulationConfigEditor simulationConfigEditor;
 
-	private Crew crew;
-
-	private JButton saveButton;
-	private JButton delButton;
 	
-	private DefaultComboBoxModel<String> crewCB;
-
-	private WebTextField descriptionTF;
-
-
 	/**
 	 * Constructor.
 	 * 
@@ -423,13 +408,8 @@ public class CrewEditor implements ActionListener {
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor, CrewConfig config) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
-		this.crewConfig = config;
 		
-		// Start with first crew
-		String defaultCrew = crewConfig.getKnownCrewNames().get(0);
-		this.crew = config.getCrew(defaultCrew);
-		
-		createGUI();
+		createGUI(config);
 	}
 
 	/**
@@ -461,7 +441,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Creates the GUI
 	 */
-	private void createGUI() {
+	private void createGUI(CrewConfig crewConfig) {
 	
 		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(MainWindow.getIconImage());
@@ -498,46 +478,26 @@ public class CrewEditor implements ActionListener {
 		mainPane.add(scrollPanel, BorderLayout.CENTER);
 				
 		// Create button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mainPane.add(buttonPane, BorderLayout.SOUTH);
+		UserConfigurableControl<Crew> control = new UserConfigurableControl<Crew>(f, "Crew",
+																		crewConfig) {
+			@Override
+			protected void displayItem(Crew newDisplay) {
+				designateCrew(newDisplay);
+			}
 
-		// Crew name selection
-		buttonPane.add(new WebLabel("Crew Loaded :"));
-		crewCB = new DefaultComboBoxModel<>();
-		crewCB.addAll(0, crewConfig.getKnownCrewNames());
-		crewCB.setSelectedItem(crew.getName());
-		JComboBox<String> crewSelector = new JComboBox<>(crewCB) ;
-		crewSelector.addActionListener(this);
-		crewSelector.setActionCommand(LOAD_CREW);
-		buttonPane.add(crewSelector);
-		
-		// Description field
-		buttonPane.add(new WebLabel("   Description : "));
-		descriptionTF = new WebTextField(15);
-		buttonPane.add(descriptionTF);
-		
-		// Create save crew button.
-		saveButton = new JButton(SAVE_CREW);
-		saveButton.addActionListener(this);
-		buttonPane.add(saveButton);		
-
-		// Create save new crew button.
-		JButton newButton = new JButton(SAVE_NEW_CREW);
-		newButton.addActionListener(this);
-		buttonPane.add(newButton);
-
-		// Create save new crew button.
-		delButton = new JButton(DEL_CREW);
-		delButton.addActionListener(this);
-		buttonPane.add(delButton);
+			@Override
+			protected Crew createItem(String newName) {
+				return commitChanges(newName);
+			}
+		};
 		
 		// Create save new crew button.
 		JButton addButton = new JButton(ADD_MEMBER);
 		addButton.addActionListener(this);
-		buttonPane.add(addButton);
+		control.getPane().add(addButton);
 
-		// Load the first crew
-		designateCrew(crew.getName());
+
+		mainPane.add(control.getPane(), BorderLayout.SOUTH);
 
 		
 		// Set up the frame to be visible
@@ -558,71 +518,6 @@ public class CrewEditor implements ActionListener {
 
 		String cmd = (String) evt.getActionCommand();
 		switch (cmd) {
-		case LOAD_CREW: 
-			String loadCrew = (String) crewCB.getSelectedItem();
-			if (!crew.getName().equalsIgnoreCase(loadCrew)) {
-				JDialog.setDefaultLookAndFeelDecorated(true);
-				int result = JOptionPane.showConfirmDialog(f, 
-								"Are you sure you want to reload the Crew " + loadCrew + " ? " + System.lineSeparator()
-								+ "All the changes made will be lost.",
-								"Confirm Reloading Crew",
-								JOptionPane.YES_NO_CANCEL_OPTION);
-				
-				if (result == JOptionPane.YES_OPTION) {
-					designateCrew(loadCrew);
-				}
-			}
-			break;
-			
-		case DEL_CREW:
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			int result = JOptionPane.showConfirmDialog(f, 
-							"Are you sure you want to delete the Crew " + crew.getName() + " ? " + System.lineSeparator()
-							+ "All the changes made will be lost.",
-							"Confirm Delete Crew",
-							JOptionPane.YES_NO_CANCEL_OPTION);
-			
-			if (result == JOptionPane.YES_OPTION) {
-				String oldCrew = crew.getName();
-				crewConfig.deleteCrew(oldCrew);
-				
-				String nextCrew = crewConfig.getKnownCrewNames().get(0);
-				designateCrew(nextCrew);
-				crewCB.removeElement(oldCrew);
-			}
-			break;
-			
-		case SAVE_CREW:
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			int result2 = JOptionPane.showConfirmDialog(f,
-					"Are you sure you want to save the changes to for " + crew.getName() + " ? " 
-					+ System.lineSeparator() + System.lineSeparator()
-					+ "Note : If you only want the changes to apply to " + System.lineSeparator()
-					+ "the simulation you are setting up, choose " + System.lineSeparator()
-					+ "'Commit Change' instead." + System.lineSeparator(),
-					"Confirm Saving Crew",
-					JOptionPane.YES_NO_CANCEL_OPTION);
-			
-			if ((result2 == JOptionPane.YES_OPTION) && commitChanges(crew.getName())) {
-				crewConfig.save(crew);
-			}
-			break;
-
-		case SAVE_NEW_CREW:
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			String newCrewName = (String)JOptionPane.showInputDialog(
-                    f, "Enter the name of the new Crew.");
-
-			// Create new Crew
-			if ((newCrewName != null) && (newCrewName.length() > 0)
-					&&  commitChanges(newCrewName)) {
-				crewConfig.save(crew); 
-				setDecoration();
-				
-				crewCB.addElement(newCrewName);
-				crewCB.setSelectedItem(newCrewName);
-			}
-			break;
 		
 		case ADD_MEMBER:
 			MemberPanel newPanel = new MemberPanel(crewPanels.size(), this);
@@ -637,26 +532,16 @@ public class CrewEditor implements ActionListener {
 	}
 
 	/**
-	 * Set up decoration the crew Editor
-	 */
-	private void setDecoration() {
-		f.setTitle(TITLE + " - " + crew.getName() + " Crew On-board");	
-		saveButton.setEnabled(!crew.isBundled());
-		delButton.setEnabled(!crew.isBundled());
-	}
-
-	/**
 	 * Commits the changes to the crew profiles
 	 */
-	private boolean commitChanges(String name) {
-		boolean goodToGo = true;
+	private Crew commitChanges(String name) {
 		if (crewPanels.isEmpty()) {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			JOptionPane.showMessageDialog(f, 
 							"Crew must have at least one member.",
 							"No Members Defined",
 							JOptionPane.ERROR_MESSAGE);
-			return false;
+			return null;
 		}
 		
 		Crew newCrew = new Crew(name, false);
@@ -664,12 +549,8 @@ public class CrewEditor implements ActionListener {
 			// Find member
 			Member m = mp.toMember();
 			newCrew.addMember(m);
-		}
-		
-		newCrew.setDescription(descriptionTF.getText());
-		
-		crew = newCrew;
-		return goodToGo;
+		}		
+		return newCrew;
 	}
 	
 	/**
@@ -833,7 +714,7 @@ public class CrewEditor implements ActionListener {
 	private DefaultComboBoxModel<String> setUpCountryCBModel() {
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 
-		m.addElement(SELECT_SPONSOR);
+		populateCountryCombo(SETTLEMENT_SPONSOR, m);
 		return m;
 	}
 	
@@ -873,21 +754,10 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 	
-	/**
-	 * Get the current committed changes
-	 * @return
-	 */
-	public Crew getCrewConfig() {
-		return crew;
-	}
 	
-	private boolean designateCrew(String crewName) {		
-		Crew newCrew = crewConfig.getCrew(crewName);
-		if (newCrew == null) {
-			return false;
-		}
-		crew = newCrew;
-		List<Member> members = crew.getTeam();
+	private void designateCrew(Crew newCrew) {		
+		String crewName = newCrew.getName();
+		List<Member> members = newCrew.getTeam();
 		if (members.isEmpty()) {
 			logger.warning("Crew " + crewName + " has no members.");
 		}
@@ -899,23 +769,16 @@ public class CrewEditor implements ActionListener {
 		for(int j = crewPanels.size(); j > members.size(); j--) {
 			removeMember(crewPanels.get(j-1));
 		}
-		
-		setDecoration();
-		crewCB.setSelectedItem(crew.getName());
-		
-		descriptionTF.setText(crew.getDescription());
-		return true;
+
+		f.setTitle(TITLE + " - " + crewName + " Crew On-board");	
 	}
 	
 	/**
 	 * Prepare this window for deletion.
 	 */
 	public void destroy() {
-		crewConfig = null;
 		simulationConfigEditor = null;
 		f = null;
 		mainPane = null;
 	}
-
-
 }
