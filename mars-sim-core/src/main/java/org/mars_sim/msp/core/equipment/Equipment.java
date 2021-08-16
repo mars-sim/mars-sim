@@ -118,12 +118,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
+		// If this container has never been used before
 		if (this.resource == -1) {
-			// Note: if a bag was filled with regolith and later was emptied out
-			// should it be tagged for only regolith and not for another resource ?
+			// Question: if a bag was filled with regolith and later was emptied out
+			// should it be tagged for only regolith and NOT for another resource ?
 			this.resource = resource;
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.config(this, "Initialized for storing " + name + ".");
+			if (name != null) {
+				logger.config(this, "Initialized for storing " + name + ".");
+			}
+			else {
+				logger.warning(this, "Resource " + resource + " is invalid.");
+				return quantity;
+			}
 		}
 		
 		if (this.resource == resource) {

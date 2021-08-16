@@ -157,8 +157,8 @@ implements Serializable {
                 if (e.hasContent()) {
                     // Only check one type of amount resource for container.
                     int resource = e.getResource();
-                    // Check if container could be unloaded into main inventory.
-                    if (inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
+                    // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
+                    if (resource != 1 && inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
                         result = true;
                         break;
                     }

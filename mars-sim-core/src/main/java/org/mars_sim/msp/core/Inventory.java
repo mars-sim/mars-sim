@@ -2187,7 +2187,7 @@ public class Inventory implements Serializable {
 				result = false;
 			}
 
-			if (unitID == ownerID) {
+			if (unitID.equals(ownerID)) {
 				logger.log(unit, Level.SEVERE, 30_000,
 						  unit.getName() + " was the same as its owner.");
 				result = false;

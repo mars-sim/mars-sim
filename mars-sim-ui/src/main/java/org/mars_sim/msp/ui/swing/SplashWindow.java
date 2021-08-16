@@ -34,36 +34,36 @@ public class SplashWindow extends JComponent {
 	private JFrame window;
 
 	// Constant data member
-	private static final String VERSION_STRING = Simulation.VERSION;
+	private static final String VERSION_STRING = "v" + Simulation.VERSION;
 	private static final String BUILD_STRING = "Build " + Simulation.BUILD;
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
-	private static final String AUTHOR_STRING = "Drawing by Patrick Leger";
+	private static final String AUTHOR_STRING = "Picture from NASA Ames Research Center, 2005";
 	
-	/** stores the font for displaying {@link #MSP_STRING}. */
-	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 48);
-	/** stores the font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
-	/** measures the pixels needed to display text. */
+	/** The font for displaying {@link #MSP_STRING}. */
+	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 36);
+	/** Measures the pixels needed to display text. */
+	private final FontMetrics titleMetrics = getFontMetrics(titleFont);
+	/** The displayed length of {@link #MSP_STRING} in pixels. */
+	private final int titleWidth = titleMetrics.stringWidth(MSP_STRING);
+	
+	/** The font for displaying {@link #VERSION_STRING}. */
+	private final Font versionStringFont = new Font(Font.MONOSPACED, Font.BOLD, 24);
+	/** Measures the pixels needed to display text. */
 	private final FontMetrics versionMetrics = getFontMetrics(versionStringFont);
-	/** stores the displayed length of {@link #VERSION_STRING} in pixels. */
+	/** The displayed length of {@link #VERSION_STRING} in pixels. */
 	private final int versionStringWidth = versionMetrics.stringWidth(VERSION_STRING);
 	
-	/** stores the font for displaying {@link #BUILD_STRING}. */
-	private final Font buildStringFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
-	/** measures the pixels needed to display text. */
+	/** The font for displaying {@link #BUILD_STRING}. */
+	private final Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
+	/** Measures the pixels needed to display text. */
 	private final FontMetrics buildMetrics = getFontMetrics(buildStringFont);
-	/** stores the displayed length of {@link #BUILD_STRING} in pixels. */
+	/** The displayed length of {@link #BUILD_STRING} in pixels. */
 	private final int buildStringWidth = buildMetrics.stringWidth(BUILD_STRING);
 	
-	/** stores the font for displaying {@link #AUTHOR_STRING}. */
-	private final Font authorStringFont = new Font("Bell MT", Font.PLAIN, 18);
-//	/** measures the pixels needed to display text. */
-//	private final FontMetrics authorMetrics = getFontMetrics(authorStringFont);
-//	/** stores the displayed length of {@link #AUTHOR_STRING} in pixels. */
-//	private final int authorStringWidth = authorMetrics.stringWidth(AUTHOR_STRING);
-	
-	
-	private static String PIC_NAME = "splash/marsfamily.jpg";
+	/** The font for displaying {@link #AUTHOR_STRING}. */
+	private final Font authorStringFont = new Font("Bell MT", Font.PLAIN, 16);
+
+	private static String PIC_NAME = "splash/Mars_Canyon.jpg";
 
 	private Image splashImage;
 	private int width;
@@ -82,15 +82,21 @@ public class SplashWindow extends JComponent {
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				g2d.drawImage(splashImage, 0, 0, this);
-				g2d.setColor(Color.WHITE);
+				
+				g2d.setColor(Color.black);
 				g2d.setFont(titleFont);
-				g2d.drawString(MSP_STRING, 30, 60);
+				g2d.drawString(MSP_STRING, (splashImage.getWidth(this) - titleWidth)/2, 60);
+				
 				g2d.setFont(versionStringFont);
-				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 70, height - 80);
+				g2d.drawString(VERSION_STRING, (splashImage.getWidth(this) - versionStringWidth)/2 , 90);
+//				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 20, height - 35);
+				
+				g2d.setColor(Color.white);
 				g2d.setFont(buildStringFont);
-				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 50, height - 55);
+				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 10, height - 15);
+				
 				g2d.setFont(authorStringFont);
-				g2d.drawString(AUTHOR_STRING, 40, height - 55);
+				g2d.drawString(AUTHOR_STRING, 15, height - 15);
 			}
 		};
 
