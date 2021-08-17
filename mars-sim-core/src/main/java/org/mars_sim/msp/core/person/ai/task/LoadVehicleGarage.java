@@ -593,7 +593,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			double resourceAmount = Math.min(amountNeeded, amountLoading);
 
 			if (canLoad) {
-
 				// Load resource from settlement inventory to vehicle inventory.
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);

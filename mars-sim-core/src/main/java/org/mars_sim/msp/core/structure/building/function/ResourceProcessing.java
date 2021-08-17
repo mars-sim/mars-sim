@@ -70,7 +70,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		while (i.hasNext()) {
 			ResourceProcessSpec process = i.next();	
 			double processValue = 0D;
-			Iterator<Integer> ii = new ArrayList<>(process.getOutputResources()).iterator();
+			Iterator<Integer> ii = process.getOutputResources().iterator();
 			while (ii.hasNext()) {
 				int resource = ii.next();	
 				if (!process.isWasteOutputResource(resource)) {

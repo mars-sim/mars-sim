@@ -10,8 +10,10 @@ package org.mars_sim.msp.core.vehicle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -25,7 +27,10 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -675,10 +680,62 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		boolean onAMission = isOnAMission();
 		if (onAMission || isReservedForMission()) {
-			if (isInSettlement()) {
-				plugInTemperature(pulse.getElapsed());
-				plugInAirPressure(pulse.getElapsed());	
+			
+			Mission mission = getMission();
+			if (mission != null) {
+				// This code feel wrong
+				Collection<MissionMember> members = mission.getMembers();
+				for (MissionMember m: members) {
+					if (m.getMission() == null) {
+						// Defensively set the mission in the case that the delivery bot is registered as a mission member 
+						// but its mission is null 
+						// Question: why would the mission be null for this member in the first place after loading from a saved sim
+						logger.info(this, m.getName() + " reregistered for " + mission + ".");
+						m.setMission(mission);
+					}
+				}
+				
+				if (isInSettlement()) {
+				
+					if (mission instanceof VehicleMission) {
+						VehicleMission rm = (VehicleMission)mission;
+						
+						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+							double time = pulse.getElapsed();
+							double transferSpeed = 20; // Assume 20 kg per msol
+							
+							Map<Integer, Number> emptyMap = new HashMap<>();
+							Map<Integer, Number> map = rm.getResourcesNeededForRemainingMission(true);
+							double amountLoading = time * transferSpeed;
+							
+							if (map.get(ResourceUtil.methaneID) != null) {
+							// Transfer methane needed
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.methaneID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.methaneID, true); 
+							}
+													
+							if (map.get(ResourceUtil.oxygenID) != null) {
+								// Transfer oxygen needed							
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.oxygenID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.oxygenID, true); 
+							}
+							
+							if (map.get(ResourceUtil.waterID) != null) {
+								// Transfer water needed
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.waterID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.waterID, true); 
+							}
+						}
+					}
+					
+					plugInTemperature(pulse.getElapsed());
+					plugInAirPressure(pulse.getElapsed());
+				}
 			}
+
 			
 			if (getInventory().getAmountResourceStored(getFuelType(), false) > GroundVehicle.LEAST_AMOUNT)
 				if (super.haveStatusType(StatusType.OUT_OF_FUEL))

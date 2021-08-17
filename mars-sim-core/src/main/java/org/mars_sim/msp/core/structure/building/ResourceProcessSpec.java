@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
@@ -35,7 +36,7 @@ public class ResourceProcessSpec implements Serializable {
 	// Cache some aggregate values
 	private transient Set<Integer> inputResources;
 	private transient Set<Integer> outputResources;
-
+	
 	/** The minimum period of time in millisols the process must stay on or off. */
 	private int togglePeriodicity = 200;
 
@@ -142,7 +143,7 @@ public class ResourceProcessSpec implements Serializable {
 	 */
 	public Set<Integer> getOutputResources() {
 		if (outputResources == null) {
-			outputResources = new HashSet<>();
+			outputResources = ConcurrentHashMap.newKeySet();
 			outputResources.addAll(maxOutputResourceRates.keySet());
 			outputResources.addAll(maxWasteOutputResourceRates.keySet());
 		}

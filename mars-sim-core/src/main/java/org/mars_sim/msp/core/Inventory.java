@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -3071,7 +3072,10 @@ public class Inventory implements Serializable {
 
 		if (containedItemResources != null) {
 			Set<Entry<Integer, Integer>> es = containedItemResources.entrySet();
-			for (Entry<Integer, Integer> e : es) {
+			Iterator<Entry<Integer, Integer>> i = es.iterator();
+			while (i.hasNext()) {
+				Entry<Integer, Integer> e = i.next();
+//			for (Entry<Integer, Integer> e : es) {
 				tempMass += e.getValue() * ItemResourceUtil.findItemResource(e.getKey()).getMassPerItem();
 			}
 		}

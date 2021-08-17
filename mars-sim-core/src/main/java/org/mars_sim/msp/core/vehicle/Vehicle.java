@@ -993,8 +993,8 @@ public abstract class Vehicle extends Unit
         	// Before the mission is created, the range would be based on vehicle's capacity
         	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
         }
-        else if (getMission().getPhase() == VehicleMission.REVIEWING
-        	|| getMission().getPhase() == VehicleMission.EMBARKING) {
+        else if (VehicleMission.REVIEWING.equals(mission.getPhase()) 
+        	|| VehicleMission.EMBARKING.equals(mission.getPhase())) {
         	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
         	// So the range would be based on vehicle's capacity
         	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;

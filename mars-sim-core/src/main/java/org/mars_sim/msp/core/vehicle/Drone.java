@@ -9,13 +9,17 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -38,6 +42,8 @@ public class Drone extends Flyer implements Serializable {
 	public static final double MISSION_RANGE_FACTOR = 1.9;
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
+	/** Comparison to indicate a small but non-zero amount. */
+	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -79,25 +85,57 @@ public class Drone extends Flyer implements Serializable {
 		if (onAMission || isReservedForMission()) {
 		
 			Mission mission = getMission();
-			if (mission != null ) {
+			if (mission != null) {
 				// This code feel wrong
 				Collection<MissionMember> members = mission.getMembers();
 				for (MissionMember m: members) {
 					if (m.getMission() == null) {
-						// Defensively set the mission in the case that the deliverybot is registered as a mission member 
+						// Defensively set the mission in the case that the delivery bot is registered as a mission member 
 						// but its mission is null 
 						// Question: why would the mission be null for this member in the first place after loading from a saved sim
 						logger.info(this, m.getName() + " reregistered for " + mission + ".");
 						m.setMission(mission);
 					}
 				}
+				
+				if (isInSettlement()) {
+				
+					if (mission instanceof VehicleMission) {
+						VehicleMission rm = (VehicleMission)mission;
+						
+						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+							double time = pulse.getElapsed();
+							double transferSpeed = 20; // Assume 20 kg per msol
+							
+							Map<Integer, Number> emptyMap = new HashMap<>();
+							Map<Integer, Number> map = rm.getResourcesNeededForRemainingMission(true);
+							double amountLoading = time * transferSpeed;
+							
+							if (map.get(ResourceUtil.methaneID) != null) {
+							// Transfer methane needed
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.methaneID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.methaneID, true); 
+							}
+													
+							if (map.get(ResourceUtil.oxygenID) != null) {
+								// Transfer oxygen needed							
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.oxygenID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.oxygenID, true); 
+							}
+							
+							if (map.get(ResourceUtil.waterID) != null) {
+								// Transfer water needed
+								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.waterID, amountLoading);
+								if (!isFullyLoaded)
+									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.waterID, true); 
+							}
+						}
+					}
+				}
 			}
-			
-			if (isInSettlement()) {
-//				plugInTemperature(pulse.getElapsed());
-//				plugInAirPressure(pulse.getElapsed());	
-			}
-			
+	
 			if (getInventory().getAmountResourceStored(getFuelType(), false) > Flyer.LEAST_AMOUNT) {
 				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
 					super.removeStatus(StatusType.OUT_OF_FUEL);
