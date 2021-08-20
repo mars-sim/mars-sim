@@ -1,0 +1,58 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE scenario-configuration [
+	<!ELEMENT scenario-configuration (initial-settlement-list)>
+	<!ATTLIST scenario-configuration name CDATA #REQUIRED>
+	<!ATTLIST scenario-configuration description CDATA #REQUIRED>
+
+	<!ELEMENT initial-settlement-list (settlement*)>
+	<!ELEMENT settlement (location)>
+	<!ATTLIST settlement name CDATA #REQUIRED>
+	<!ATTLIST settlement template CDATA #REQUIRED>
+	<!ATTLIST settlement crew CDATA #IMPLIED>
+	<!ATTLIST settlement persons CDATA #REQUIRED>
+	<!ATTLIST settlement robots CDATA #REQUIRED>
+	<!ATTLIST settlement sponsor CDATA #REQUIRED>
+	<!ELEMENT location EMPTY>
+	<!ATTLIST location longitude CDATA #REQUIRED>
+	<!ATTLIST location latitude CDATA #REQUIRED>
+
+
+]>
+
+<scenario-configuration name="Default" description="Default provided Scenario">
+	<initial-settlement-list>
+	<!-- List of initial settlements in the simulation -->
+		<settlement name="New Plymouth" template="Phase 2-U" persons="8" robots="4" sponsor="NASA">
+			<location longitude="29.75 W" latitude="10.63 N" />
+		</settlement>
+		
+		<settlement name="Europa" template="Phase 2-E" persons="8" robots="4" sponsor="ESA">
+			<location longitude="50.0 W" latitude="20.0 N" />
+		</settlement>
+		
+		<settlement name="Tian Cheng" template="Phase 2-C" persons="8" robots="4" sponsor="CNSA">
+			<location longitude="134.67 E" latitude="22.67 N" />
+		</settlement>
+		
+		<settlement name="New Pompeii" template="Phase 2-I" persons="8" robots="4" sponsor="ISRO">
+			<location longitude="82.9 W" latitude="22.0 N" />
+		</settlement>
+	
+		<settlement name="Kyocera" template="Phase 2-J" persons="8" robots="4" sponsor="JAXA">
+			<location longitude="150.0 W" latitude="35.0 N" />
+		</settlement>
+			
+		<settlement name="Starcity" template="Phase 3-X" persons="12" robots="8" sponsor="SPACEX">
+			<location longitude="165.32 E" latitude="41.01 N" />
+		</settlement>
+					
+		<settlement name="Zvezda" template="Phase 3-R" persons="12" robots="8" sponsor="RKA">
+			<location longitude="76.37 E" latitude="25.94 N" />
+		</settlement>
+					
+		<settlement name="Schiaparelli Point" template="Alpha Base" crew="Alpha" persons="24" robots="12" sponsor="MS">
+			<location longitude="0.0 W" latitude="0.0 N" />
+		</settlement>
+		
+	</initial-settlement-list>
+</scenario-configuration>

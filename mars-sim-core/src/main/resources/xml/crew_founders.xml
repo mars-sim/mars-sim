@@ -40,36 +40,13 @@
 ]>
 
 
-<crew-configuration name="Alpha" description="Preloaded Alpha crew">
+<crew-configuration name="Founders" description="Project contributors">
 
 	<!-- List of preconfigured crew  -->
 	<crew-list>
-
-		<!--    Configure a crew member   -->
-		<!--    Note that it must include at least a member -->
-		<!--                                                -->
-		<!--             name : the person's name (required) -->
-		<!--           gender : the person's gender, "male" or "female" (required)-->
-		<!--              age : the person's age (optional) -->		
-		<!-- personality-type : the person's MBTI personality type. (optional) -->
-		<!--          country : the nationality of this person (optional. "USA" by default)  	-->
-		<!--              job : the person's permanent job. (optional) -->
-		<!--          sponsor : the person's Sponsor; if not defined then the 
-		                        Settlement sponsor is used. (optional) -->
-			
-		<!-- favorite-main-dish : the person's favorite main dish. (optional)	-->
-		<!-- favorite-side-dish : the person's favorite side dish. (optional)	-->
-		<!--   favorite-dessert : the person's favorite dessert. (optional)		-->
-		<!--  favorite-activity : the person's favorite hobby.					-->
-		
-		<!--    See a list of meal names in meals.xml -->
-		<!--    See a list of favorite activities in FavoriteType class 		-->
-		<!-- 																	-->
-		<!--  Available dessert are soymilk, sugarcane juice, strawberry, granola bar, blueberry muffin, and cranberry juice -->
 	
-		<person name="Karen Andersen" 
-			gender="female" 
-			age="37"
+		<person name="Manny Kung" 
+			gender="male" 
 			personality-type="ISTJ"
 			country="USA"
 			job="Botanist"
@@ -77,20 +54,6 @@
 			favorite-side-dish="Roasted Carrot Soup"
 			favorite-dessert="strawberry"
 			favorite-activity="Field Work">
-
-			<!-- A list of predefined personality traits (optional)
-
-		 	Personality Trait Model / Big Five Model:
-
-//          Openness - The willingness to make a shift of standards in new situations and appreciation for a variety of experience.
-// Conscientiousness - Planning ahead rather than being spontaneous.
-//      Extraversion - The willingness to communicate and socialize with people. Being energetic with people.
-//     Agreeableness - The adaptiveness to other people. Adopt goals in favor of others.
-//       Neuroticism - The extent to which one's emotion are sensitive to his environment; 
-//                     The degree of worrying or feeling vulnerable;
-//	                   The emotional sensitivity and sense of security to the situation.
-
-			See https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/doc/personality-insights/models.shtml -->
 
 			<personality-trait-list>
 				<!-- the personality trait for a person using The Big Five Personality Traits, aka the Five Factor Model (FFM) -->
@@ -132,22 +95,12 @@
 				<skill name="Medicine" level="1"/>
 				<skill name="Cooking" level="1"/>
 			</skill-list>
-
-			<!-- List of configured relationships. (optional) -->
-			<relationship-list>
-				<!-- A relationship with another configured person. -->
-				<!-- person-name : the name of the relationship person. (required) -->
-				<!--   Note that other person must be configured on this list. -->
-				<!--     opinion : this person's opinion of the relationship person. -->
-				<!--                values from 0 (hate) to 100 (close friend) (required) -->
-				<relationship person-name="Rik Declercq" opinion="100"/> 
-			</relationship-list>
 		</person>
 
-		<person name="Rik Declercq" 
+		<person name="Lars Christensen" 
 			gender="male" 
 			personality-type="ESTP"
-			country="USA"
+			country="Denmark"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
 			favorite-side-dish="Sesame Miso Soup" 
@@ -170,10 +123,9 @@
             </skill-list>
        </person>
 
-        <person name="Leonardo DaVinci" 
+        <person name="Scott Davis" 
         	gender="male" 
         	personality-type="INFJ"
-        	sponsor="MS"
 			country="USA"
         	job="Engineer"
 			favorite-main-dish="Steamed Brown Rice" 
@@ -197,11 +149,10 @@
             </skill-list>
         </person>
 
-        <person name="Lena LaGranda" 
-        	gender="female" 
+        <person name="Dennis Krenz" 
+        	gender="male" 
         	personality-type="ENFJ"
-        	sponsor="MS"
-			country="USA"
+			country="Germany"
         	job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice" 
 			favorite-side-dish="Garlic Bread" 
@@ -224,12 +175,10 @@
             </skill-list>
         </person>
 
-       <person name="Ray Bradbury" 
+       <person name="Barry Evans" 
        		gender="male" 
-       		age="50"
        		personality-type="INTP"
-        	sponsor="MS"
-			country="USA"
+			country="UK"
         	job="Doctor"
 			favorite-main-dish="Veggie Sandwich" 
 			favorite-side-dish="Taro Soup"

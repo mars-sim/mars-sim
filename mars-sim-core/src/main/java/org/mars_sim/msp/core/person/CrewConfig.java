@@ -6,42 +6,25 @@
  */
 package org.mars_sim.msp.core.person;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.XMLConstants;
-
-import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 
 /**
  * Provides configuration information about the crew.
  */
-public class CrewConfig {
+public class CrewConfig extends UserConfigurableConfig<Crew> {
 
 	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
 	private static final String CREW_PREFIX = "crew_";
-	private static final String CREW_BACKUP = ".bak";
 	
 	// Element or attribute names
 	private static final String CREW_COFIG = "crew-configuration";
@@ -80,68 +63,29 @@ public class CrewConfig {
 	/** 
 	 * Crew files preloaded in the code
 	 */
-	private String [] PREDEFINED_CREWS = {"crew_alpha"};
+	private static final String [] PREDEFINED_CREWS = {"Alpha", "Founders"};
 	private Map<String, Integer> bigFiveMap = new HashMap<>();
-
-	private Map<String,Crew> knownCrews = new TreeMap<>();
 	
 	/**
 	 * Constructor
 	 */
 	public CrewConfig() {
-		for (String name : PREDEFINED_CREWS) {
-			loadCrew(name, true);
-		}
-		
-		// Scan save crews
-		File savedDir = new File(SimulationFiles.getSaveDir());
-	    String[] list = savedDir.list();
-	    for (String userFile : list) {
-	    	if (userFile.startsWith(CREW_PREFIX)
-	    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-	    		loadCrew(userFile, false);
-	    	}
-		}
+		super(CREW_PREFIX, PREDEFINED_CREWS);
 	}
-	
-	/**
-	 * Get a crew by it's name
-	 * @param name
-	 * @return
-	 */
-	public Crew getCrew(String name) {
-		return knownCrews.get(name);
-	}
-	
-	/**
-	 * Delete the crew
-	 * @param name
-	 */
-	public void deleteCrew(String name) {
-		knownCrews.remove(name);
 
-		String filename = getCrewFilename(name);
-		File crewFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
-		logger.info("Deleting crew file " + crewFile.getAbsolutePath());
-		crewFile.delete();
-	}
-	
 	/**
-	 * Load a create from external or bundled XML.
-	 * @param name
+	 * Parse an XML document to create an Crew instance.
+	 * @param doc
+	 * @param predefined
 	 * @return
 	 */
-	private void loadCrew(String file, boolean predefined) {
-		
-		Document doc = parseXMLFileAsJDOMDocument(file, predefined);
-		if (doc == null) {
-			throw new IllegalStateException("Can not find " + file);
-		}
+	@Override
+	protected Crew parseItemXML(Document doc, boolean predefined) {
 		Element crewEl = doc.getRootElement();
 		String name = crewEl.getAttributeValue(NAME_ATTR);
 		if (name == null) {
-			name = file.substring(CREW_PREFIX.length(),
-						file.length() - SimulationConfig.XML_EXTENSION.length());
+			logger.warning("Crew has no name");
+			name = "Unknown";
 		}
 		String desc = crewEl.getAttributeValue(DESC_ATTR);
 		if (desc == null) {
@@ -176,69 +120,19 @@ public class CrewConfig {
 			m.setRelationshipMap(parseRelationshipMap(personElement));
 		}
 		
-		logger.config("Loaded Crew " + name + " from " + file);
-		knownCrews.put(name, roster);
+		logger.config("Loaded Crew " + name);
+		return roster;
 	}
 	
-	/**
-	 * Parses an XML file into a DOM document.
-	 * 
-	 * @param filename the path of the file.
-	 * @param useDTD   true if the XML DTD should be used.
-	 * @return DOM document
-	 * @throws IOException
-	 * @throws JDOMException
-	 * @throws Exception     if XML could not be parsed or file could not be found.
-	 */
-	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-		SAXBuilder builder = null;
-		String path = "";
-		
-		if (useDTD) { // for alpha crew
-			builder = new SAXBuilder();
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			path = SimulationFiles.getXMLDir();
-			
-			// Alpha is a bundled XML so needs to be copied out
-			SimulationConfig.instance().getBundledXML(filename);
-			filename += SimulationConfig.XML_EXTENSION;
-		}
-		else { // for beta crew
-			builder = new SAXBuilder();
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			path = SimulationFiles.getSaveDir();
-		}
 
-	    Document document = null;
-	    
-		File f = new File(path, filename);
-		if (!f.exists()) {
-			return null;
-		}
-		
-		if (f.exists() && f.canRead()) {
-	        
-	        try {
-		        document = builder.build(f);
-		    }
-		    catch (JDOMException | IOException e)
-		    {
-		        e.printStackTrace();
-		    }
-		}
-		
-	    return document;
-	}
-	
 
 	/**
 	 * Creates an XML document for this crew.
 	 * 
 	 * @return
 	 */
-	private Document createCrewDoc(Crew roster) {
+	@Override
+	protected Document createItemDoc(Crew roster) {
 
 		Element root = new Element(CREW_COFIG);
 		Document doc = new Document(root);
@@ -284,92 +178,6 @@ public class CrewConfig {
 	        
         return doc;
 	}
-
-	/**
-	 * Save an attribute to a Element if it is defined
-	 * @param personElement
-	 * @param activity2
-	 * @param activity3
-	 */
-	private static void saveOptionalAttribute(Element node, String attrName, String value) {
-		if (value != null) {
-			node.setAttribute(new Attribute(attrName, value));
-		}
-	}
-
-	private static String getCrewFilename(String crewName) {
-		// Replace spaces 
-		return CREW_PREFIX + crewName.toLowerCase().replace(' ', '_');
-	}
-	
-	/**
-	 * Save the XML document for this crew.
-	 * 
-	 * @param roster the crew manifest
-	 */
-	public void save(Crew crew) {
-
-		String filename = getCrewFilename(crew.getName());
-		File crewFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
-		File crewBackup = new File(SimulationFiles.getSaveDir(), filename + CREW_BACKUP);
-		
-		// Create save directory if it doesn't exist.
-		if (!crewFile.getParentFile().exists()) {
-			crewFile.getParentFile().mkdirs();
-			logger.config(crewFile.getParentFile().getAbsolutePath() + " created successfully."); 
-		}
-		
-		if (crewFile.exists()) {
-			
-			try {
-				if (Files.deleteIfExists(crewBackup.toPath())) {
-					// Delete the beta_crew.bak
-				    logger.config("Old " + crewBackup.getName() + " deleted."); 
-				} 
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			
-			try {
-				// Back up the previous version of beta_crew.xml as beta_crew.bak
-				FileUtils.moveFile(crewFile, crewBackup);
-			    logger.config("beta_crew.xml --> beta_crew.bak"); 
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			try {
-				if (Files.deleteIfExists(crewFile.toPath())) {
-					// Delete the beta_crew.xml
-				    logger.config("Old " + crewFile.getName() + " deleted."); 
-				} 
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if (!crewFile.exists()) {
-			Document outputDoc = createCrewDoc(crew);
-			XMLOutputter fmt = new XMLOutputter();
-			fmt.setFormat(Format.getPrettyFormat());
-				
-			try (FileOutputStream stream = new FileOutputStream(crewFile);
-				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {						 
-				fmt.output(outputDoc, writer);
-			    logger.config("New " + crewFile.getName() + " created and saved."); 
-			    stream.close();
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-		}
-		
-		// Update or register new crew
-		knownCrews.put(crew.getName(), crew);
-	}
-	
 
 	/**
 	 * Gets a map of the configured person's natural attributes.
@@ -469,11 +277,5 @@ public class CrewConfig {
 			}
 		}
 		return result;
-	}
-
-	public List<String> getKnownCrewNames() {
-		List<String> names = new ArrayList<>(knownCrews.keySet());
-		Collections.sort(names);
-		return names;
 	}
 }

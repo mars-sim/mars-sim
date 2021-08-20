@@ -20,11 +20,12 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.configuration.Scenario;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
-import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
@@ -70,7 +71,7 @@ public final class SettlementBuilder {
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
 	private RobotConfig robotConfig;
-	private CrewConfig crewConfig;
+	private UserConfigurableConfig<Crew> crewConfig;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
@@ -85,8 +86,9 @@ public final class SettlementBuilder {
 	/**
 	 * Create all the initial Settlements
 	 */
-	public void createInitialSettlements() {
-		for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
+	public void createInitialSettlements(Scenario bootstrap) {
+		logger.config("Scenario " + bootstrap.getName() + " loading");
+		for (InitialSettlement spec : bootstrap.getSettlements()) {
 			createFullSettlement(spec);
 		}
 		
@@ -382,7 +384,7 @@ public final class SettlementBuilder {
 	 */
 	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
-		Crew crew = crewConfig.getCrew(crewName);
+		Crew crew = crewConfig.getItem(crewName);
 		if (crew == null) {
 			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}
@@ -586,7 +588,7 @@ public final class SettlementBuilder {
 	/**
 	 * Enable the use of a predefined crews
 	 */
-	public void setCrew(CrewConfig crewConfig) {
+	public void setCrew(UserConfigurableConfig<Crew> crewConfig) {
 		this.crewConfig = crewConfig;
 	}
 }

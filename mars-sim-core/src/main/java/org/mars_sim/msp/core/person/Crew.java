@@ -9,7 +9,13 @@ package org.mars_sim.msp.core.person;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Crew {
+import org.mars_sim.msp.core.configuration.UserConfigurable;
+
+
+/**
+ * This class represents a pre-defiend Crew of people who can be assigned to Settlments.
+ */
+public class Crew implements UserConfigurable {
 
 	private String name;
 	private String description = "";
@@ -23,10 +29,12 @@ public class Crew {
 		this.bundled = bundled;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -39,6 +47,7 @@ public class Crew {
 		return team;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -63,6 +72,7 @@ public class Crew {
 	 * Is this crew bundled with the code base
 	 * @return
 	 */
+	@Override
 	public boolean isBundled() {
 		return bundled;
 	}
