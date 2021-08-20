@@ -24,6 +24,7 @@ module mars-sim-ui {
     requires trident;  
     requires jorbis;
     requires nimrodlf;
+    requires eu.hansolo.steelseries;
     
     requires weblaf-core;
     requires weblaf-ui;

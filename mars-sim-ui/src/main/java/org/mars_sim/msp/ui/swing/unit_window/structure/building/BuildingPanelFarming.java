@@ -130,7 +130,7 @@ implements MouseListener {
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		
 		// Set panel layout
-		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
+		setLayout(new BorderLayout());
 
 		// Prepare farming label
 		WebLabel farmingLabel = new WebLabel(Msg.getString("BuildingPanelFarming.title"), WebLabel.CENTER);
@@ -138,7 +138,6 @@ implements MouseListener {
 	    farmingPanel.add(farmingLabel);
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		add(farmingLabel, BorderLayout.NORTH);
-		//farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
 		// Create label panel
 		WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(5, 1, 0, 0));
@@ -188,7 +187,6 @@ implements MouseListener {
 		springPanel.add(wrapper3);
 		
 		WebLabel waterUsageLabel = new WebLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), WebLabel.RIGHT);
-		//waterUsagePanel.add(waterUsageLabel);
 		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 		springPanel.add(waterUsageLabel);
 		
@@ -232,41 +230,14 @@ implements MouseListener {
 		                                6, 2, //rows, cols
 		                                65, 20,        //initX, initY
 		                                3, 1);       //xPad, yPad
-		
-
-//		// Add opsPanel and opsButton
-//		WebPanel opsPanel = new WebPanel(new FlowLayout());
-//		labelPanel.add(opsPanel);
-//        opsButton = new WebButton("Ops Panel");
-//        //slotButton.setOpaque(false);
-//        //slotButton.setBackground(new Color(51,25,0,128));
-//        //slotButton.setForeground(Color.ORANGE);
-//        //slotButton.setEnabled(processComboBox.getItemCount() > 0);
-//        //opsButton.setToolTipText("Click to enter the greenhouse ops panel");
-//		balloonToolTip.createBalloonTip(opsButton, "<html>Enter the greenhouse ops panel.</html>"); //$NON-NLS-1$
-//
-//        opsButton.addActionListener(new ActionListener() {
-//        	public void actionPerformed(ActionEvent event) {
-//        		//try {
-//        			openGreenhouseOps();
-//        		//}
-//        		//catch (Exception e) {
-//        		//	logger.log(Level.SEVERE, "new slot button", e);
-//        		//}
-//        	}
-//        });
-//        opsPanel.add(opsButton);
 
 		WebPanel southPanel = new WebPanel(new BorderLayout());
 		add(southPanel, BorderLayout.SOUTH);
 		
 		// Create scroll panel for crop table
 		WebScrollPane tableScrollPanel = new WebScrollPane();
-//		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
-//			tableScrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
-//		else
-			// Increase the height from 100 to 130 to make the first 5 rows of crop FULLY visible
-			tableScrollPanel.setPreferredSize(new Dimension(200, 140)); // 140 is the best fit for 5 crops
+		// Set the height and width of the table
+		tableScrollPanel.setPreferredSize(new Dimension(200, 290)); // 290 is the best fit for 10 crops
 
 		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
 
@@ -291,7 +262,6 @@ implements MouseListener {
 
 			// Implement Table Cell ToolTip for crops
             public String getToolTipText(MouseEvent e) {
-//                String name = null;
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
@@ -300,13 +270,15 @@ implements MouseListener {
                 try {
                 	//if (colIndex == 1)
                 		result.append(buildCropToolTip(rowIndex, colIndex, null));
-                	} catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
+                	} catch (RuntimeException e1) {
+                		//catch null pointer exception if mouse is over an empty line
                 }
     			return result.toString();
 
             }
         }; // end of WebTable
 
+        cropTable.setRowSelectionAllowed(true);
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(5);
@@ -319,7 +291,6 @@ implements MouseListener {
 		tableScrollPanel.setViewportView(cropTable);
 
 		WebPanel queuePanel = new WebPanel(new BorderLayout());
-	    //add(queuePanel, BorderLayout.SOUTH);
 	    southPanel.add(queuePanel, BorderLayout.CENTER);
 	    
 	    WebPanel selectPanel = new WebPanel(new FlowLayout());
@@ -327,7 +298,6 @@ implements MouseListener {
 
 		WebPanel buttonPanel = new WebPanel(new BorderLayout());
 		WebButton addButton = new WebButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-	    //balloonToolTip.createBalloonTip(addButton, "<html>Select a crop from <br> the left to add</html>");
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		addButton.addActionListener(new ActionListener() {
@@ -342,7 +312,6 @@ implements MouseListener {
 		selectPanel.add(buttonPanel);
 
 		WebButton delButton = new WebButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-	    //balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop in <br> the queue below to delete </html>");
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 
@@ -363,7 +332,6 @@ implements MouseListener {
 		cropCache = new ArrayList<String>(nameList);
 		comboBoxModel = new DefaultComboBoxModel<String>();
 
-		//tooltipArray = new String[cropCache.size()];
 		tooltipArray = new ArrayList<String>();
 
 		Iterator<String> i = cropCache.iterator();
@@ -371,7 +339,6 @@ implements MouseListener {
 		while (i.hasNext()) {
 			String n = i.next();
 	    	comboBoxModel.addElement(n);
-			//tooltipArray[j] = buildCropToolTip(j, c).toString();
 	    	tooltipArray.add(buildCropToolTip(j, -1, n).toString());
 	    	j++;
 		}
@@ -379,7 +346,7 @@ implements MouseListener {
 		// Create comboBox.
 		comboBox = new JComboBoxMW<String>(comboBoxModel);
 
-		// Add ComboboxToolTipRenderer to use tooltip to display the crop parameters for each crop in the combobox
+		// Use tooltip to display the crop parameters for each crop in the combobox
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
 	    comboBox.setRenderer(toolTipRenderer);
 	    toolTipRenderer.setTooltips(tooltipArray);
@@ -390,20 +357,17 @@ implements MouseListener {
             }
         });
 		comboBox.setMaximumRowCount(10);
-	    //balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");
 	    selectPanel.add(comboBox);
 
 		WebPanel queueListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebPanel queueButtonLabelPanel = new WebPanel(new BorderLayout());
 	    WebLabel queueListLabel = new WebLabel("     Crop Queue     ");
-	    //<html><center>Crop<br>Queue:</center></html>");
-		//queueListLabel.setUI(new org.mars_sim.msp.ui.swing.tool.VerticalLabelUI(false));
 		queueListLabel.setUI(new VerticalLabelUI(false));
 	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
-	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+	    queuePanel.add(queueListPanel, BorderLayout.CENTER);
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new WebScrollPane();
@@ -414,7 +378,6 @@ implements MouseListener {
 		listModel = new ListModel();
 		// Create list
 		list = new JList<String>(listModel);
-	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -453,10 +416,6 @@ implements MouseListener {
         	PAR = ct.getDailyPAR();
         	health =  Math.round(crop.getHealthCondition()*10.0 * 100.0)/10.0;
         	sols = Math.round(crop.getGrowingTimeCompleted()*10.0 /1_000.0)/10.0;
-        	
-//        	result.append("<html><p width=\"500\">Crop Name: ").append(cropName).append(System.lineSeparator())
-//        		.append("Category: ").append(cat).append(System.lineSeparator())
-//        		.append("Growing Days: ").append(time);
         	
         	if (col == 0) {
 	        	result.append("Health: ").append(health).append(" %");
@@ -500,47 +459,6 @@ implements MouseListener {
     	return result;
 	}
 	
-	/*
-	 * Creates a TWL display window for greenhouse operations
-	 */
-    public void openGreenhouseOps() {
-//        try {
-//            Display.setDisplayMode(new DisplayMode(800, 600));
-//            Display.create();
-//            Display.setTitle("Greenhouse Operations Panel");
-//            Display.setVSyncEnabled(true);
-//
-//            Mouse.setClipMouseCoordinatesToWindow(false);
-//
-//            InventoryDemo ops = new InventoryDemo();
-//
-//            LWJGLRenderer renderer = new LWJGLRenderer();
-//            GUI gui = new GUI(ops, renderer);
-//
-//            ThemeManager theme = ThemeManager.createThemeManager(
-//                    InventoryDemo.class.getResource("/twl/inventory/inventory.xml"), renderer);
-//            gui.applyTheme(theme);
-//
-//            gui.validateLayout();
-//            ops.positionFrame();
-//
-//            while(!Display.isCloseRequested() && !ops.quit) {
-//                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-//
-//                gui.update();
-//                Display.update();
-//            }
-//
-//            gui.destroy();
-//            theme.destroy();
-//        } catch (Exception ex) {
-//            TestUtils.showErrMsg(ex);
-//        }
-//        Display.destroy();
-
-    }
-
-
 	/**
 	 * Selects Crop
 	 * @param table
@@ -568,8 +486,6 @@ implements MouseListener {
  		listScrollPanel.repaint();
 		comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
 		comboBox.setSelectedIndex(-1);
-    	//list.clearSelection(); // cause setting deletingCropIndex to -1
-    	//list.setSelectedIndex(0);
 	}
 
 	/**
@@ -578,11 +494,11 @@ implements MouseListener {
 	 */
 	public void mouseClicked(MouseEvent event) {
 
-		// TODO: If double-click, open tooltip for the selected crop?
+		// Note: If double-click, open tooltip for the selected crop?
 		if (event.getClickCount() >= 2) {
 			selectCrop();
 			if (deletingCropType != null) {
-            	//farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
+            	// do something
             	//listModel.update();
 			}
 		}
@@ -821,9 +737,6 @@ implements MouseListener {
 
 	        if (-1 < index && null != value && null != tooltipArray) {
 	        	list.setToolTipText((String) tooltipArray.get(index));
-	        	//System.out.println("value.toString is "+ value.toString());
-	        	//System.out.println("list.toString is "+ list.toString());
-	        	//balloonToolTip.createListItemBalloonTip(list, (String)(tooltipArray.get(index)), index);
 	        }
 	        return comp;
 	    }
@@ -857,27 +770,12 @@ implements MouseListener {
 				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-//				Component c = defaultRenderer.getListCellRendererComponent(
-//		                list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
 				setText(Conversion.capitalize(prompt));
 				return this;
 			}
-			//if (index == -1) {
-				//value = prompt.toString();
-			//	setText(prompt);
-			//	return this;
-			//}
-			//else {
-				//setText(Conversion.capitalize(value.toString()));
-				//c = super.getListCellRendererComponent(
-	            //        list, Conversion.capitalize(value.toString()), index, isSelected, cellHasFocus);
-				//CropType ct = (CropType) value;
-				//setText(Conversion.capitalize(ct.getName()));
-				//String s = buildCropToolTip(index).toString();
-			    //balloonToolTip.createBalloonTip(list, s);
-			//}
+
 
 			if (c instanceof WebLabel) {
 
@@ -910,11 +808,9 @@ implements MouseListener {
 
 		farm = null;
 		tooltipArray = null;
-		//balloonToolTip = null;
 		comboBoxModel= null;
 		comboBox= null;
 		list= null;
-		//opsButton= null;
 		listModel= null;
 		cropTableModel= null;
 		listScrollPanel= null;

@@ -139,6 +139,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Parse a building spec node
+	 * 
 	 * @param buildingTypeName
 	 * @param buildingElement
 	 * @return

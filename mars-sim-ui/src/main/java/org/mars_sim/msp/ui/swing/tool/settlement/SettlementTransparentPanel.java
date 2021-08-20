@@ -56,11 +56,6 @@ import javax.swing.event.ChangeListener;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.environment.Environment;
-import org.mars_sim.msp.core.environment.OrbitInfo;
-import org.mars_sim.msp.core.environment.SunData;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -69,6 +64,11 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.OrbitInfo;
+import org.mars_sim.msp.core.environment.SunData;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -77,8 +77,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
-import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -93,6 +91,9 @@ import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
 
+import eu.hansolo.steelseries.gauges.DisplaySingle;
+import eu.hansolo.steelseries.tools.LcdColor;
+
 
 @SuppressWarnings("serial")
 public class SettlementTransparentPanel extends WebComponent implements ClockListener {
@@ -106,17 +107,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
-//	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
-//	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
-//	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
-////	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
-//	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
-//	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
-//	private static final String T_SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
-//	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
-//	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
-//	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
-	
+
 	public static final String SANDSTORM_SVG = MainWindow.SANDSTORM_SVG;
 	public static final String DUST_DEVIL_SVG = MainWindow.DUST_DEVIL_SVG;
 	public static final String SAND_SVG = MainWindow.SAND_SVG;
@@ -203,8 +194,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private WebButton weatherButton00;
 	private WebButton weatherButton01;
 	private WebButton weatherButton10;
-//	private WebButton weatherButton11;
-	
+
 	private WebButton[] weatherButtons = new WebButton[3];
 	
 	private JPopupMenu labelsMenu;
@@ -218,7 +208,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
 
-	
 	private static Weather weather;
 	private static SurfaceFeatures surfaceFeatures;
 	private static OrbitInfo orbitInfo;
@@ -294,7 +283,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    topPane.setOpaque(false);
 	    	
 	    JPanel settlementPanel = new JPanel();
-//	    settlementPanel.setPreferredSize(new Dimension(getNameLength() * 12, 25));
 		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
 	    
@@ -309,7 +297,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    weatherPane.add(weatherButton00);
 	    weatherPane.add(weatherButton01);
 	    weatherPane.add(weatherButton10);
-//	    weatherPane.add(weatherButton11);
 
 	    WebPanel sunPane = createSunPane();
 	    
@@ -327,12 +314,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    westPanel.setOpaque(false);
 	    westPanel.add(panel, BorderLayout.CENTER);
 	    westPanel.add(weatherPane, BorderLayout.NORTH);
-//	    westPanel.add(new JLabel("           "), BorderLayout.WEST);
 	    
-        // Make panel drag-able
-//	    ComponentMover cmZoom = 
-//	    new ComponentMover(panel, sunPane);
-//		cmZoom.registerComponent(zoomPane);
+        // Make zoom pane drag-able
+		// Register cm cmZoom.registerComponent(zoomPane);
 		
 		centerPanel.add(westPanel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
@@ -345,8 +329,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		controlPane.setOpaque(false);
        	
 	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//	    controlCenterPane = new JPanel(new BoxLayout(controlPane, BoxLayout.Y_AXIS));
-	    controlCenterPane.setBackground(new Color(0,0,0,128));//,0));
+	    controlCenterPane.setBackground(new Color(0,0,0,128));
 	    controlCenterPane.setOpaque(false);
 	    controlCenterPane.add(zoomSlider);
 	    controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
@@ -367,10 +350,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
         centerPanel.add(eastPane, BorderLayout.EAST);
         
-        // Make panel drag-able
-//  	ComponentMover cmZoom = new ComponentMover(zoomPane);
-//		cmZoom.registerComponent(zoomPane);
-        
         mapPanel.setVisible(true);
     }
 
@@ -389,7 +368,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	           Graphics2D graphics = (Graphics2D) g;
 	           graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-
 	           //Draws the rounded panel with borders.
 	           graphics.setColor(getBackground());
 	           graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint background
@@ -397,20 +375,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	           graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint border
 	        }
 	    };
-	     
-//	    roundPane.setBackground(new Color(5,5,5,128));
+
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
 	    roundPane.setPreferredSize(240, 135);
 	    sunPane.add(roundPane, BorderLayout.EAST);
-	     
-//	    sunriseLabel = new WebLabel(SUNRISE + PENDING);
-//		sunsetLabel = new WebLabel(SUNSET + PENDING);
-//		zenithLabel = new WebLabel(ZENITH + PENDING);
-//		maxSunLabel = new WebLabel(MAX_LIGHT + PENDING);
-//		daylightLabel = new WebLabel(DAYLIGHT + PENDING);
-//		currentSunLabel = new WebLabel(CURRENT_LIGHT + PENDING);
-		
+	
 	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
 		sunsetLabel = new WebLabel(StyleId.labelShadow, SUNSET + PENDING);
 		zenithLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
@@ -425,7 +395,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		daylightLabel.setFont(sunFont);
 		currentSunLabel.setFont(sunFont);
 		
-		Color color = Color.white;//.DARK_GRAY.darker();
+		Color color = Color.white;
 		sunriseLabel.setForeground(color);
 		sunsetLabel.setForeground(color);
 		zenithLabel.setForeground(color);
@@ -520,14 +490,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 */
 	public void buildBanner() {
 		bannerBar = new DisplaySingle();
-//		lcdText.setLcdInfoString("1 2 3 4 5");
-		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
-//		lcdText.setGlowColor(Color.ORANGE.darker());
 		bannerBar.setLcdColor(LcdColor.REDDARKRED_LCD);
-		// lcdText.setBackground(Background.SATIN_GRAY);
 		bannerBar.setDigitalFont(true);
-//		bannerText.setSize(new Dimension(150, 30));
-//		bannerText.setMaximumSize(new Dimension(150, 30));
 		bannerBar.setPreferredSize(new Dimension(150, 30));
 		bannerBar.setVisible(true);
 		bannerBar.setLcdNumericValues(false);
@@ -546,11 +510,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		
 		Coordinates c = s.getCoordinates();
 		
-//		String t = null;
-//		String ws = null;
-//		String za = null;
-//		String od = null;
-			
        	double temperature =  Math.round(getTemperature(c)*100.0)/100.0;      	
        	if (temperatureCache != temperature) {
        		temperatureCache = temperature;
@@ -626,7 +585,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     }
 
     public String getWindDirectionString(double value) {
-       	return fmt.format(value) + " deg";// + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+       	return fmt.format(value) + " deg";
     }
       
     public double getOpticalDepth(Coordinates c) {
@@ -642,7 +601,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
      }
 
     public String getZenithAngleString(double value) {
-     	return fmt2.format(value * RADIANS_TO_DEGREES) + " deg";// + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return fmt2.format(value * RADIANS_TO_DEGREES) + " deg";
     }
 
     public double getSolarDeclination() {
@@ -668,15 +627,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     public String getSolarIrradianceString(double value) {
       	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
     }
-
-//	private String getLatitudeString(Coordinates c) {
-//		return c.getFormattedLatitudeString();
-//	}
-//
-//	private String getLongitudeString(Coordinates c) {
-//		return c.getFormattedLongitudeString();
-//	}
-    
     
     /**
      * Builds the weather panel
@@ -705,14 +655,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     	weatherButton01.setPreferredSize(new Dimension(size, size));
     	weatherButton10 = new WebButton(StyleId.buttonUndecorated);
     	weatherButton10.setPreferredSize(new Dimension(size, size));
-//    	weatherButton11 = new WebButton(StyleId.buttonUndecorated);
-//    	weatherButton11.setPreferredSize(new Dimension(size, size));
-    	
+  	
 	    weatherButtons[0] = weatherButton00;
 	    weatherButtons[1] = weatherButton01;
 	    weatherButtons[2] = weatherButton10;
-//	    weatherButtons[3] = weatherButton11;
-    	
+	
         updateIcon();
 	}
 	
@@ -852,33 +799,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				
     	return new String[] {icon00, icon01, icon10};//, icon11};
     }
-    
-//	/**
-//	 * Sets weather image.
-//	 */
-//	public void setImage(String image) {
-//	URL resource = ImageLoader.class.getResource(icon);
-//		if (resource == null) {
-//			logger.severe("'" + icon + "' cannot be found");
-//		}
-//		
-//		Toolkit kit = Toolkit.getDefaultToolkit();
-//		Image img = kit.createImage(resource);
-//		ImageIcon weatherImageIcon = new ImageIcon(img);
-//	}
+   
 	
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
-		//public boolean isOptimizedDrawingEnabled();
-		//private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
 		public PromptComboBoxRenderer(){
-			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
-		    //settlementListBox.setRenderer(defaultRenderer);
-		    //setOpaque(false);
 		    setHorizontalAlignment(CENTER);
-//		    setVerticalAlignment(CENTER);
 		}
 
 		public PromptComboBoxRenderer(String prompt){
@@ -889,13 +818,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		            int index, boolean isSelected, boolean cellHasFocus) {
 				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				
-//		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 				if (value == null) {
 					setText(prompt);
-					//this.setForeground(Color.green);
-			        //this.setBackground(new Color(184,134,11));
 					return this;
 				}
 
@@ -907,28 +831,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				        c.setBackground(new Color(184,134,11,50)); // mud orange
 		          }
 
-		        //result.setOpaque(false);
-
 		        return c;
 		    }
 	}
-
-
-//    public void buildZoomLabel() {
-//
-//		zoomLabel = new JLabel(Msg.getString("SettlementTransparentPanel.label.zoom")); //$NON-NLS-1$
-//		//zoomLabel.setPreferredSize(new Dimension(60, 20));
-//		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-//		zoomLabel.setForeground(Color.GREEN);
-//		//zoomLabel.setContentAreaFilled(false);
-//		zoomLabel.setOpaque(false);
-//		zoomLabel.setVerticalAlignment(JLabel.CENTER);
-//		zoomLabel.setHorizontalAlignment(JLabel.CENTER);
-//		//zoomLabel.setBorder(new LineBorder(Color.green, 1, true));
-//		//zoomLabel.setBorderPainted(true);
-//		zoomLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-//
-//    }
 
 
     public void buildZoomSlider() {
@@ -963,16 +868,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
-//        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
-//        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
 		zoomSlider.setMajorTickSpacing(30);
 		zoomSlider.setMinorTickSpacing(10);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-//		zoomSlider.setBackground(new Color(0,0,0,15));
-		//zoomSlider.setContentAreaFilled(false);
+
 		zoomSlider.setOpaque(false);
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
 		zoomSlider.addChangeListener(new ChangeListener() {
@@ -981,20 +883,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				int sliderValue = zoomSlider.getValue();
 				if (sliderValue == 0)
 					sliderValue = 1;
-//				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
-//				double newScale = defaultScale;
-//				if (sliderValue > 0) {
-//					newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
-//				}
-//				else if (sliderValue < 0) {
-//					newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
-//				}
-//				System.out.println("newScale : " + newScale);
-				mapPanel.setScale(sliderValue);//newScale);
+				mapPanel.setScale(sliderValue);
 			}
 		});
-
-		//zoomPane.add(zoomSlider);
 
 		// Add mouse wheel listener for zooming.
 		mapPanel.addMouseWheelListener(new MouseWheelListener() {
@@ -1017,36 +908,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
     public void buildInfoP() {
 
-//		infoP = new JPanel(new FlowLayout());
-//		infoP.setBackground(new Color(0,0,0,128));
-////		infoP.setBackground(new Color(51,25,0,128)); // dark brown
-//		infoP.setOpaque(false);
-//		infoP.setAlignmentX(FlowLayout.CENTER);
-		
-//		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
-//		infoButton.setPreferredSize(new Dimension(70, 25)); //35, 20));
-//		infoButton.setFont(new Font("Dialog", Font.ITALIC, 13));
-//		infoButton.setForeground(Color.ORANGE.darker().darker());
-//		infoButton.setContentAreaFilled(false);
-//		infoButton.setOpaque(false); // text disappeared if setOpaque(false)
-//		infoButton.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 1, true));
-//		infoButton.setBorderPainted(true);
-//		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
-//		infoButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				Settlement settlement = mapPanel.getSettlement();
-//				if (settlement != null) {
-//					desktop.openUnitWindow(settlement, false);
-//				}
-//			}
-//		});
-		
-    	SvgIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
+    	SvgIcon icon = IconManager.getIcon ("info");
     	icon.apply(new SvgStroke(Color.ORANGE));
     	infoButton = new WebButton(StyleId.buttonUndecorated, icon);
-    	
-//		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),
-//				Msg.getString("icon.info")); //$NON-NLS-1$ //$NON-NLS-2$
+
 		infoButton.setPreferredSize(new Dimension(32, 32));		
 		infoButton.setOpaque(false);
 		infoButton.setBackground(new Color(0,0,0,128));
@@ -1065,36 +930,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     }
 
     public void buildrenameBtn() {
-
-//		renameP  = new JPanel(new FlowLayout());
-//		renameP.setBackground(new Color(0,0,0,128));
-////		renameP.setBackground(new Color(51,25,0,128));
-//		renameP.setOpaque(false);
-//		renameP.setAlignmentX(FlowLayout.CENTER);
-
-//		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
-//		renameBtn.setPreferredSize(new Dimension(70, 25)); //
-//		renameBtn.setFont(new Font("Dialog", Font.ITALIC, 13));
-//		renameBtn.setForeground(Color.ORANGE.darker().darker());
-//		renameBtn.setContentAreaFilled(false);
-//		renameBtn.setOpaque(false); // text disappeared if setOpaque(false)
-//		renameBtn.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 1, true));
-//		renameBtn.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
-//		renameBtn.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				openRenameDialog();
-//			}
-//		});
     	
     	ImageIcon icon = new LazyIcon("edit").getIcon();
     	renameBtn = new WebButton(StyleId.buttonUndecorated, icon);
-    	
-//		renameBtn = new ToolButton(Msg.getString("SettlementTransparentPanel.button.rename"),
-//				Msg.getString("icon.rename")); //$NON-NLS-1$ //$NON-NLS-2$
     	renameBtn.setPreferredSize(new Dimension(32, 32));
-//		renameBtn.setSize(30, 30);
-//		renameBtn.setMaximumSize(new Dimension(30, 30));
-    	
 		renameBtn.setOpaque(false);
 		renameBtn.setBackground(new Color(0,0,0,128));
 		renameBtn.setContentAreaFilled(false);
@@ -1105,28 +944,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				openRenameDialog();
 			};
 		});
-//		renameP.add(renameBtn);
     }
-
-//    private BufferedImage getModifiedImage(String n) {
-//    	BufferedImage originalImage = null;
-//    	BufferedImage modifiedImage = null;
-//        originalImage = (BufferedImage) (ImageLoader.getIcon(n, "png", "/icons/map/").getImage()); //$NON-NLS-1$
-//		 modifiedImage = new BufferedImage(
-//		    originalImage.getWidth(),
-//		    originalImage.getHeight(),
-//		    BufferedImage.TYPE_INT_ARGB);
-//
-//        Graphics2D g2 = modifiedImage.createGraphics();
-//        AlphaComposite newComposite = 
-//            AlphaComposite.getInstance(
-//                AlphaComposite.SRC_OVER, 0.5f);
-//        g2.setComposite(newComposite);      
-//        g2.drawImage(originalImage, 0, 0, null);
-//        g2.dispose();
-//        
-//        return modifiedImage;
-//    }
     
     public void buildButtonPane() {
 
@@ -1212,14 +1030,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    WebButton labelsButton = new WebButton(StyleId.buttonUndecorated, 
 	    		Msg.getString("SettlementTransparentPanel.button.labels"), labelsIcon);  //$NON-NLS-1$
 	        
-//		WebButton labelsButton = new WebButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
-//		labelsButton.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
-
-		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
-		//labelsButton.setBackground(new Color(139,69,19,40));
-		//labelsButton.setBackground(new Color(51,25,0,5)); // dull gold color
-//		labelsButton.setBackground(new Color(0,0,0));//,0));
-		
 		labelsButton.setFont(new Font("Dialog", Font.BOLD, 13));
 		labelsButton.setForeground(Color.ORANGE.darker().darker());		
 		labelsButton.setPreferredSize(new Dimension(32, 32));
@@ -1250,47 +1060,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		labelPane.add(emptyLabel);
 	}
     
-//    class MyCellRenderer extends JLabel implements ListCellRenderer<Object>  {
-//		private static final long serialVersionUID = 1L;
-//
-//		public MyCellRenderer() {
-//	          setOpaque(true);
-//	      }
-//	      public Component getListCellRendererComponent(JList<?> list,
-//	                                                    Object value,
-//	                                                    int index,
-//	                                                    boolean isSelected,
-//	                                                    boolean cellHasFocus) {
-//
-//	          setText(value.toString());
-//	  		  setBackground(new Color(0,0,0,0));
-//
-//	          Color background = Color.orange;
-//	          Color foreground = Color.green;
-//
-//	          // check if this cell represents the current DnD drop location
-//	          JList.DropLocation dropLocation = list.getDropLocation();
-//
-//	          if (dropLocation != null
-//	                  && !dropLocation.isInsert()
-//	                  && dropLocation.getIndex() == index) {
-//
-//	          // check if this cell is selected
-//	          } else if (isSelected) {
-//	              background = Color.orange;
-//	              foreground = Color.green;
-//
-//	          // unselected
-//	          } else {
-//	          };
-//
-//	          setBackground(background);
-//	          setForeground(foreground);
-//
-//	          return this;
-//	      }
-//    }
-
 	/**
 	 * Create the labels popup menu.
 	 * @return popup menu.
@@ -1299,14 +1068,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
 		popMenu.setOpaque(false);
 		popMenu.setBackground(new Color(0,0,0,128));
-//		result.setContentAreaFilled(false);
 		popMenu.setBorderPainted(false);
-//		result.setOpaque(false);
-//		result.setBorder(BorderFactory.createLineBorder(new Color(139,69,19)));// dark brown
-//		result.setBackground(new Color(222,184,135,128)); // pale silky brown
-//        UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
-//        UIManager.put("PopupMenu.border", res);
-//        result.setLightWeightPopupEnabled(false);
 
 		// Create Day Night Layer menu item.
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -1326,9 +1088,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
 		// Add setting setForeground setContentAreaFilled setOpaque
 		buildingLabelMenuItem.setForeground(new Color(139,69,19));
-		//buildingLabelMenuItem.setBackground(new Color(222,184,135,0));
 		buildingLabelMenuItem.setContentAreaFilled(false);
-		//buildingLabelMenuItem.setOpaque(false);
 		buildingLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels());
@@ -1340,9 +1100,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
 		constructionLabelMenuItem.setForeground(new Color(139,69,19));
-		//constructionLabelMenuItem.setBackground(new Color(222,184,135,0));
 		constructionLabelMenuItem.setContentAreaFilled(false);
-		//constructionLabelMenuItem.setOpaque(false);
 		constructionLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());
@@ -1354,9 +1112,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
 		vehicleLabelMenuItem.setForeground(new Color(139,69,19));
-		//vehicleLabelMenuItem.setBackground(new Color(222,184,135,0));
 		vehicleLabelMenuItem.setContentAreaFilled(false);
-		//vehicleLabelMenuItem.setOpaque(false);
 		vehicleLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
@@ -1368,9 +1124,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		personLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
 		personLabelMenuItem.setForeground(new Color(139,69,19));
-		//personLabelMenuItem.setBackground(new Color(222,184,135,0));
 		personLabelMenuItem.setContentAreaFilled(false);
-		//personLabelMenuItem.setOpaque(false);
 		personLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
@@ -1401,16 +1155,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		public JCustomCheckBoxMenuItem(String s, boolean b) {
 			super(s, b);
 		}
-
-//		public void paint(Graphics g) {
-//			//protected void paintComponent(Graphics g) {
-//				//super.paintComponent(g);
-//
-//                Graphics2D g2d = (Graphics2D) g.create();
-//                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-//                super.paint(g2d);
-//                g2d.dispose();
-//      }
 	}
 
 
@@ -1500,7 +1244,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// Initialize settlement list.
 			updateSettlements();
 			// Add this as a unit manager listener.
-//			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
 
 			// Add addUnitListener
@@ -1592,33 +1335,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		}
 	}
 
-//	public JComboBoxMW<?> getSettlementListBox() {
-//		return settlementListBox;
-//	}
 
 	public WebComboBox getSettlementListBox() {
 		return settlementListBox;
 	}
-	
-//	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
-//		return buildingLabelMenuItem;
-//	}
-//
-//	public JCustomCheckBoxMenuItem getPersonLabelMenuItem () {
-//		return personLabelMenuItem ;
-//	}
-//
-//	public JCustomCheckBoxMenuItem getConstructionLabelMenuItem () {
-//		return constructionLabelMenuItem ;
-//	}
-//
-//	public JCustomCheckBoxMenuItem getVehicleLabelMenuItem () {
-//		return vehicleLabelMenuItem ;
-//	}
-//
-//	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
-//		return robotLabelMenuItem ;
-//	}
 	
 	/**
 	 * Gets the sunlight data and display it on the top left panel of the settlement map
@@ -1692,11 +1412,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 							prepareResourceStat(s0);
 						}
 					}
-				}
-				
-//				if (mapPanel.isDaylightTrackingOn() && mapPanel.getDayNightMapLayer().getOpacity() > 128)
-//					adjustIconColor();
-				
+				}	
 			}
 		}
 	}

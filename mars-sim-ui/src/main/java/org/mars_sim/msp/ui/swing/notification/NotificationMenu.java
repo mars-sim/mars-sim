@@ -34,11 +34,8 @@ public class NotificationMenu implements ActionListener, MenuListener {
 
 	private MainWindowMenu mainWindowMenu; // Needed and do NOT delete
 	
-	
-	// 2014-12-04 Added notification related items
 	private JCheckBoxMenuItem medicalMenuItem;
 	private JCheckBoxMenuItem malfunctionMenuItem;
-	// 2014-12-17 Added confirmMenuItem
 	private JRadioButtonMenuItem confirmMenuItem;
 	private JRadioButtonMenuItem threeMenuItem;
 	private JRadioButtonMenuItem twoMenuItem;
@@ -46,7 +43,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 	private JRadioButtonMenuItem showAllMenuItem ;
 	private JRadioButtonMenuItem showLastThreeMenuItem ;
 	private JRadioButtonMenuItem showLastOneMenuItem ;
-	// 2014-12-17 Added isConfirmButtonEnabled
+
 	private boolean isConfirmEachEnabled  = false;
 	private boolean showMedical = true;
 	private boolean showMalfunction = true;

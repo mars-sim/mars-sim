@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
-import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -97,14 +96,11 @@ public class EventTableModel extends AbstractTableModel
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 
-	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
-//	private MainSceneMenu mainSceneMenu;
 
 	private List<String> messageCache = new ArrayList<>();
 
-//	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -116,9 +112,8 @@ public class EventTableModel extends AbstractTableModel
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	public EventTableModel(NotificationWindow notifyBox, MainDesktopPane desktop) {
+	public EventTableModel(MainDesktopPane desktop) {
 
-		this.notifyBox = notifyBox;
 		this.desktop = desktop;
 
 		desktop.setEventTableModel(this);
@@ -622,7 +617,6 @@ public class EventTableModel extends AbstractTableModel
 					// e.printStackTrace();
 //				}
 			} else if (nMenu != null) {
-				// 2015-01-14 Added noFiring condition
 				// Boolean noFiring = false;
 				showMedical = nMenu.getShowMedical();
 				if (showMedical != showMedicalCache) {
@@ -635,7 +629,7 @@ public class EventTableModel extends AbstractTableModel
 				}
 
 				if (!showMedical && !showMalfunction) {
-					notifyBox.emptyQueue();
+					//notifyBox.emptyQueue();
 					noFiring = true;
 				}
 
@@ -849,7 +843,7 @@ public class EventTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-			notifyBox.validateMsg(event);
+//			notifyBox.validateMsg(event);
 			// Note: adding try-catch can cause UI significant slow down here
 		}
 	}
@@ -884,16 +878,9 @@ public class EventTableModel extends AbstractTableModel
 			Simulation.instance().getMasterClock().removeClockListener(this);
 		eventManager.removeListener(this);
 		eventManager = null;
-		notifyBox = null;
 		desktop = null;
 		nMenu = null;
-//		mainSceneMenu = null;
 		messageCache = null;
-//		appIconSet = null;
-//		icon_med = null;
-//		icon_mal = null;
-//		icon_mission = null;
-//		icon_hazard = null;
 		cachedEvents.clear();
 		cachedEvents = null;
 	}

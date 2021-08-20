@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.ui.steelseries.extras.Led;
+import eu.hansolo.steelseries.extras.Led;
 
 
 public class TestLED {

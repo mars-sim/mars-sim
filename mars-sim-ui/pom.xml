@@ -57,6 +57,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.5.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.bidib.jbidib.eu.hansolo/SteelSeries -->
+		<dependency>
+		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
+		    <artifactId>SteelSeries</artifactId>
+		    <version>3.9.31.2</version>
+		</dependency>
+
 		<!-- trident is required by steelseries.extras in mars-sim-ui		
 		https://mvnrepository.com/artifact/com.github.insubstantial/trident : (106 KB) 
 			https://github.com/Insubstantial/insubstantial/tree/master/trident

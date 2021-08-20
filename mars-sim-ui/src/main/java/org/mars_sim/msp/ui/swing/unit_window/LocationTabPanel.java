@@ -35,11 +35,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.steelseries.gauges.DisplayCircular;
-import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
-import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
-import org.mars_sim.msp.ui.steelseries.tools.FrameDesign;
-import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -51,6 +46,12 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+
+import eu.hansolo.steelseries.gauges.DisplayCircular;
+import eu.hansolo.steelseries.gauges.DisplaySingle;
+import eu.hansolo.steelseries.tools.BackgroundColor;
+import eu.hansolo.steelseries.tools.FrameDesign;
+import eu.hansolo.steelseries.tools.LcdColor;
 
 /**
  * The LocationTabPanel is a tab panel for location information.

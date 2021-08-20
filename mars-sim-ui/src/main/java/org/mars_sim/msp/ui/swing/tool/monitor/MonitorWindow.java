@@ -23,7 +23,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
@@ -32,7 +31,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -212,13 +210,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		// Add the default table tabs
 		// Added notifyBox
-		NotificationWindow notifyBox = new NotificationWindow(desktop);
+//		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
 		addTab(new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON));
 		
 		addTab(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
 		// Added notifyBox
-		eventsTab = new EventTab(this, notifyBox, desktop);
+		eventsTab = new EventTab(this, desktop);
 
 		addTab(eventsTab);
 
