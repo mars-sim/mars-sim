@@ -5,7 +5,7 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.2.1 (build ____) - 2021-__-__
+## v3.3.0 (build ____) - 2021-__-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -25,8 +25,8 @@ Copyright (C) 2021 Scott Davis
 
 1. Correct extreme value point fluctuation.
 2. Correct no vehicle operator in Delivery drone.
-3. Fix drone delivery
-4. Fix switching vehicle operator 
+3. Fix drone delivery.
+4. Fix switching vehicle operator.
 5. Adopt Sonarcloud for improving code quality.
 
 ------------------------------------------|---------------------
