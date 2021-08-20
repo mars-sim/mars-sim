@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -56,9 +57,10 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		this.parent = parent;
 
 		this.buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		this.buttonPane.setBorder(BorderFactory.createTitledBorder(itemType));
 		
 		// Crew name selection
-		buttonPane.add(new WebLabel(itemType + " Loaded :"));
+		buttonPane.add(new WebLabel("Loaded :"));
 		itemCB = new DefaultComboBoxModel<>();
 		itemCB.addAll(0, config.getItemNames());
 		JComboBox<String> crewSelector = new JComboBox<>(itemCB) ;
@@ -198,6 +200,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 			if ((newName != null) && (newName.length() > 0)) {
 				T newSelected = createItem(newName);
 				if (newSelected != null) {
+					newSelected.setDescription(descriptionTF.getText());
 					config.saveItem(newSelected); 
 
 					itemCB.addElement(newName);
@@ -221,5 +224,17 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 
 	public JPanel getPane() {
 		return buttonPane;
+	}
+
+	/**
+	 * Set the select item that is displayed
+	 * @param newSelection
+	 */
+	public void setSelectedItem(String newSelection) {
+		// Refresh display with item
+		selectItem(newSelection);
+		
+		// Set the CB after the internal item to stop the dialog popping up
+		itemCB.setSelectedItem(newSelection);
 	}
 }

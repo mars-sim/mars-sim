@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -879,12 +880,13 @@ public class SimulationConfigEditor {
 				return finalizeSettlementConfig(newName);
 			}
 		};
-		bottomPanel.add(control.getPane(), BorderLayout.CENTER);
+		bottomPanel.add(control.getPane(), BorderLayout.WEST);
 
 		
 		// Create the bottom button panel.
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
+		bottomButtonPanel.setBorder(BorderFactory.createTitledBorder("Simulation"));
+		bottomPanel.add(bottomButtonPanel, BorderLayout.EAST);
 
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
@@ -944,9 +946,9 @@ public class SimulationConfigEditor {
 
 		bottomButtonPanel.add(cb);
 		bottomButtonPanel.add(crewButton);
-
-		// Load it
-		//settlementTableModel.loadDefaultSettlements(selectedScenario);
+		
+		// Force a load of the default Scenario
+		control.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
 		
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

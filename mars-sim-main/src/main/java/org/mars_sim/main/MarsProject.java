@@ -53,8 +53,6 @@ public class MarsProject {
 	private static final String NOGUI = "nogui";
 	private static final String DISPLAYHELP = "help";
 	private static final String GENERATEHELP = "html";
-	
-	private static String[] args;
 
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
@@ -67,19 +65,18 @@ public class MarsProject {
 
 
 	/**
-	 * Constructor 1.
-	 * 
-	 * @param args command line arguments.
+	 * Constructor 
 	 */
-	public MarsProject(String args[]) {
+	public MarsProject() {
 		logger.config("Starting " + Simulation.title);
-		
-		parseArgs(args);
-	}
-
-
-	private void parseArgs(String[] args2) {
-		logger.config("List of input args : " + Arrays.toString(args2));
+	};
+	
+	/**
+	 * Parse the argument and start the simulation.
+	 * @param args
+	 */
+	public void parseArgs(String[] args) {
+		logger.config("List of input args : " + Arrays.toString(args));
 		
 		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
 		
@@ -138,7 +135,7 @@ public class MarsProject {
 			SimulationConfig.instance().loadConfig();
 			
 			// Get user choices if there is no template defined or a preload
-			if ((builder.getTemplate() == null) && (builder.getSimFile() == null)) {
+			if (!builder.isFullyDefined()) {
 				logger.config("Please go to the mars-sim console's Main Menu to choose an option.");
 				
 				int type = interactiveTerm.startConsoleMainMenu();
@@ -312,8 +309,6 @@ public class MarsProject {
 
 		Logger.getLogger("").setLevel(Level.FINE);
 
-		MarsProject.args = args;
-
 		/*
 		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so
 		 * that this gets webstart compatible. Also create the logs dir in user.home
@@ -336,7 +331,9 @@ public class MarsProject {
 		System.setProperty("awt.useSystemAAFontSettings", "lcd"); // for newer VMs
 
 		// starting the simulation
-		new MarsProject(args);
+		MarsProject project = new MarsProject();
+		project.parseArgs(args);
+		logger.config("Simulation running");
 	}
 
 }

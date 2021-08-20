@@ -45,6 +45,7 @@ public class SimulationBuilder {
 	private static final String LONGITUDE_ARG = "lon";
 	private static final String CREW_ARG = "crew";
 	private static final String DIAGNOSTICS_ARG = "diags";
+	private static final String SCENARIO_ARG = "scenario";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -106,10 +107,6 @@ public class SimulationBuilder {
 		template = optionValue;
 	}
 
-	public String getTemplate() {
-		return template;
-	}
-
 	public void setSponsor(String optionValue) {
 		authority = ReportingAuthorityFactory.getAuthority(optionValue);
 	}
@@ -144,13 +141,21 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Is there a simulation file defined for this launch
-	 * @return
+	 * Define a set of crews to be used
+	 * @param crewConfig
 	 */
-	public File getSimFile() {
-		return this.simFile;
+	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
+		this.crewConfig  = crewConfig;
 	}
 
+	/**
+	 * Set the scenario for a new simulation
+	 * @param scenario
+	 */
+	public void setScenario(Scenario scenario) {
+		this.bootstrap = scenario;
+	}
+	
 	/**
 	 * Get the list of core command line options that are supported bu this builder
 	 * @return
@@ -167,7 +172,9 @@ public class SimulationBuilder {
 						.desc("Create a new simulation if one is not present").build());
 		options.add(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
 						.desc("Load the a previously saved sim, default is used if none specifed").build());
-		options.add(Option.builder(TEMPLATE_ARG).argName("template").hasArg().optionalArg(false)
+		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg().optionalArg(false)
+				.desc("New simulation from a scenario").build());
+		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg().optionalArg(false)
 						.desc("New simulation from a template").build());
 		options.add(Option.builder(SPONSOR_ARG).argName("sponsor").hasArg().optionalArg(false)
 						.desc("Set the sponsor for the settlement template").build());		
@@ -176,7 +183,7 @@ public class SimulationBuilder {
 		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg().optionalArg(false)
 				.desc("Set the longitude of the new template Settlement").build());	
 		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg().optionalArg(false)
-				.desc("Enable or disable use of the Alpha crew").build());	
+				.desc("Enable or disable use of the crews").build());	
 		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg().optionalArg(false)
 				.desc("Enable diagnositics modules").build());	
 		return options;
@@ -200,6 +207,9 @@ public class SimulationBuilder {
 		if (line.hasOption(SPONSOR_ARG)) {
 			setSponsor(line.getOptionValue(SPONSOR_ARG));
 		}
+		if (line.hasOption(SCENARIO_ARG)) {
+			setScenarioName(line.getOptionValue(SCENARIO_ARG));
+		}
 		if (line.hasOption(LOAD_ARG)) {
 			setSimFile(line.getOptionValue(LOAD_ARG));
 		}
@@ -218,6 +228,19 @@ public class SimulationBuilder {
 		if (line.hasOption(DIAGNOSTICS_ARG)) {
 			setDiagnostics(line.getOptionValue(DIAGNOSTICS_ARG));
 		}		
+	}
+
+	/**
+	 * Set teh bootstrap Scenario based on the name.
+	 * @param name
+	 */
+	private void setScenarioName(String name) {
+		ScenarioConfig config = new ScenarioConfig();
+		Scenario found = config.getItem(name);
+		if (found == null) {
+			throw new IllegalArgumentException("No scenario named '" + name + "'");
+		}
+		setScenario(found);
 	}
 
 	/**
@@ -339,11 +362,12 @@ public class SimulationBuilder {
 									 new Coordinates(latitude, longitude), null);
 	}
 
-	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
-		this.crewConfig  = crewConfig;
-	}
-
-	public void setScenario(Scenario scenario) {
-		this.bootstrap = scenario;
+	/**
+	 * Are all the pre-condition defiend to start a simulation.
+	 * @return
+	 */
+	public boolean isFullyDefined() {
+		return (template != null) || (simFile != null)
+				|| (bootstrap != null);
 	}
 }
