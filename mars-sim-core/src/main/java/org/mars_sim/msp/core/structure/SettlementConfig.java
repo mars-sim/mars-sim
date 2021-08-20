@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 
 /**
- * Provides configuration information about settlements. Uses a DOM document to
+ * Provides configuration information about settlements templates. Uses a DOM document to
  * get the information.
  */
 public class SettlementConfig implements Serializable {

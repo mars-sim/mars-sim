@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * Scenario.java
+ * @version 3.3.0 2021-08-20
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.configuration;
 
 import java.util.List;
@@ -6,7 +12,6 @@ import org.mars_sim.msp.core.structure.InitialSettlement;
 
 /**
  * This represents a certain scenario that is used to bootstrap a new Simulation.
-
  */
 public class Scenario implements UserConfigurable {
 

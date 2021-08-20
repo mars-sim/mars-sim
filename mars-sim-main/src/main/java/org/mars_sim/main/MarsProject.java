@@ -32,7 +32,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.person.CrewConfig;
+import org.mars_sim.msp.core.configuration.Scenario;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
@@ -146,10 +148,15 @@ public class MarsProject {
 					logger.config("Running the site editor...");
 					editor.waitForCompletion();
 					
-					CrewConfig crew = editor.getCrewConfig();
+					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
 					if (crew != null) {
 						// Set the actual CrewConfig as it has editted entries
 						builder.setCrewConfig(crew);
+					}
+					
+					Scenario scenario = editor.getScenario();
+					if (scenario != null) {
+						builder.setScenario(scenario);
 					}
 				}
 			

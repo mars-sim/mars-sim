@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * ScenarioConfig.java
+ * @version 3.2.2 2021-08-20
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.configuration;
 
 import java.util.ArrayList;
@@ -9,6 +15,9 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 
+/**
+ * Loads and maintains a repository Scenario instances from XML files.
+ */
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	private static final String PREFIX = "scenario_";
@@ -21,25 +30,47 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String LOCATION_EL = "location";
 	private static final String LONGITUDE_ATTR = "longitude";
 	private static final String LATITUDE_ATTR = "latitude";
-	private static final String POPULATION_EL = "population";
-	private static final String NUMBER_ATTR = "number";
-	private static final String ROBOTS_EL = "robots";
-	private static final String SPONSOR_EL = "sponsor";
-	
+	private static final String PERSONS_ATTR = "persons";
+	private static final String ROBOTS_ATTR = "robots";
+	private static final String SPONSOR_ATTR = "sponsor";
+	private static final String SCENARIO_CONFIG = "scenario-configuration";
+
 	// Default scenario
-	public static final String DEFAULT = "Default";
+	public static final String[] PREDEFINED_SCENARIOS = {"Default"};
+
 	
 	public ScenarioConfig() {
-		super(PREFIX);
-		
-		// One scenario is bundled
-		loadItem(getItemFilename(DEFAULT), true);
+		super(PREFIX, PREDEFINED_SCENARIOS);
 	}
 
 	@Override
 	protected Document createItemDoc(Scenario item) {
-		// TODO Auto-generated method stub
-		return null;
+		Element root = new Element(SCENARIO_CONFIG);
+		Document doc = new Document(root);
+		
+		saveOptionalAttribute(root, NAME_ATTR, item.getName());
+		saveOptionalAttribute(root, DESCRIPTION_ATTR, item.getDescription());
+
+		// Add the initial settlements
+		Element initialSettlementList = new Element(INITIAL_SETTLEMENT_LIST);
+		for (InitialSettlement settlement : item.getSettlements()) {
+			Element settlementElement = new Element(SETTLEMENT_EL);
+			saveOptionalAttribute(settlementElement, NAME_ATTR, settlement.getName());
+			saveOptionalAttribute(settlementElement, TEMPLATE_ATTR, settlement.getSettlementTemplate());
+			saveOptionalAttribute(settlementElement, PERSONS_ATTR, Integer.toString(settlement.getPopulationNumber()));
+			saveOptionalAttribute(settlementElement, ROBOTS_ATTR, Integer.toString(settlement.getNumOfRobots()));
+			saveOptionalAttribute(settlementElement, SPONSOR_ATTR, settlement.getSponsor());
+			saveOptionalAttribute(settlementElement, CREW_ATTR, settlement.getCrew());
+
+			Element locationElement = new Element(LOCATION_EL);
+			saveOptionalAttribute(locationElement, LONGITUDE_ATTR, settlement.getLocation().getFormattedLongitudeString());
+			saveOptionalAttribute(locationElement, LATITUDE_ATTR, settlement.getLocation().getFormattedLatitudeString());
+			settlementElement.addContent(locationElement);
+			
+			initialSettlementList.addContent(settlementElement);
+		}
+		root.addContent(initialSettlementList);
+		return doc;
 	}
 
 	@Override
@@ -87,22 +118,19 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 				location = new Coordinates(latitudeString, longitudeString);
 			}
 
-			Element populationElement = settlementElement.getChild(POPULATION_EL);
-			String numberStr = populationElement.getAttributeValue(NUMBER_ATTR);
+			String numberStr = settlementElement.getAttributeValue(PERSONS_ATTR);
 			int popNumber = Integer.parseInt(numberStr);
 			if (popNumber < 0) {
 				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
 			}
 
-			Element numOfRobotsElement = settlementElement.getChild(ROBOTS_EL);
-			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(NUMBER_ATTR);
+			String numOfRobotsStr = settlementElement.getAttributeValue(ROBOTS_ATTR);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
 			if (numOfRobots < 0) {
 				throw new IllegalStateException("The number of robots cannot be less than zero: " + numOfRobots);
 			}
 
-			Element sponsorElement = settlementElement.getChild(SPONSOR_EL);
-			String sponsor = sponsorElement.getAttributeValue(NAME_ATTR);
+			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 			String crew = settlementElement.getAttributeValue(CREW_ATTR);
 			
 			initialSettlements .add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,

@@ -16,7 +16,9 @@ import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
@@ -34,11 +36,34 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
 	private static final String BACKUP = ".bak";
 	
+	/**
+	 * Save an attribute to a Element if it is defined
+	 * @param personElement
+	 * @param activity2
+	 * @param activity3
+	 */
+	protected static void saveOptionalAttribute(Element node, String attrName, String value) {
+		if (value != null) {
+			node.setAttribute(new Attribute(attrName, value));
+		}
+	}
+
 	private String itemPrefix;
 	private Map<String,T> knownItems = new HashMap<>();
 
-	protected UserConfigurableConfig(String itemPrefix) {
+	/**
+	 * Construct a config of a UserConfigurable subclass.
+	 * @param itemPrefix The prefix to add when saving to an item,
+	 * @param predefined The predefined items that are bundled with the release.
+	 */
+	protected UserConfigurableConfig(String itemPrefix, String [] predefined) {
 		this.itemPrefix = itemPrefix;
+		
+		// Load predefined
+		for (String name : predefined) {
+			String file = getItemFilename(name);
+			loadItem(file, true);
+		}
 		
 		// Scan saved items folder
 		File savedDir = new File(SimulationFiles.getSaveDir());
@@ -46,7 +71,12 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	    for (String userFile : list) {
 	    	if (userFile.startsWith(itemPrefix)
 	    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-	    		loadItem(userFile, false);
+	    		try {
+	    			loadItem(userFile, false);
+	    		}
+	    		catch (Exception e) {
+	    			logger.warning("Problem loading user defined item in " + userFile + ": " + e.getMessage());
+	    		}
 	    	}
 		}
 	}
@@ -95,7 +125,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param crewName
 	 * @return
 	 */
-	protected String getItemFilename(String name) {
+	private String getItemFilename(String name) {
 		// Replace spaces 
 		return itemPrefix + name.toLowerCase().replace(' ', '_');
 	}

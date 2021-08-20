@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.2.0 2021-06-20
+ * @version 3.3.0 2021-06-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -54,7 +54,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -80,29 +82,14 @@ import com.alee.managers.style.StyleId;
 public class SimulationConfigEditor {
 
 	/**
-	 * Inner class representing a settlement configuration.
-	 */
-	private final class SettlementInfo {
-		
-		String name;
-		String sponsor;
-		String template;
-		String population;
-		String numOfRobots;
-		String latitude;
-		String longitude;
-		String crew;
-	}
-
-	/**
 	 * Adapter for the CreConfig to appear as a ComboModel
 	 */
 	private final class CrewComboModel implements ComboBoxModel<String> {
 
-		private CrewConfig crewConfig;
+		private UserConfigurableConfig<Crew> crewConfig;
 		private String selectedCrew = null;
 
-		public CrewComboModel(CrewConfig crewConfig) {
+		public CrewComboModel(UserConfigurableConfig<Crew> crewConfig) {
 			this.crewConfig = crewConfig;
 		}
 
@@ -140,7 +127,19 @@ public class SimulationConfigEditor {
 	 */
 	@SuppressWarnings("serial")
 	private class SettlementTableModel extends AbstractTableModel {
-		
+
+		// Inner class representing a settlement configuration.
+		private final class SettlementInfo {
+			String name;
+			String sponsor;
+			String template;
+			String population;
+			String numOfRobots;
+			String latitude;
+			String longitude;
+			String crew;
+		}
+
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
 		private String sponsorCache;
@@ -182,19 +181,8 @@ public class SimulationConfigEditor {
 			}
 			
 			for (InitialSettlement spec : selected.getSettlements()) {
-				SettlementInfo info = new SettlementInfo();
-				info.name = spec.getName();
-				info.sponsor = spec.getSponsor();
-				info.crew = spec.getCrew();
-				info.template = spec.getSettlementTemplate();
-				info.population = Integer.toString(spec.getPopulationNumber());
-				info.numOfRobots = Integer.toString(spec.getNumOfRobots());
-				Coordinates location = spec.getLocation();
-				if (location != null) {
-					info.latitude = location.getFormattedLatitudeString();
-					info.longitude = location.getFormattedLongitudeString();
-				}	
-				
+				SettlementInfo info = toSettlementInfo(spec);
+
 				// Save this name to the list
 				usedNames.add(info.name);
 							
@@ -240,8 +228,50 @@ public class SimulationConfigEditor {
 			fireTableDataChanged();
 		}
 
-		public List<SettlementInfo> getSettlementInfoList() {
-			return settlementInfoList;
+		private SettlementInfo toSettlementInfo(InitialSettlement spec) {
+			SettlementInfo info = new SettlementInfo();
+			info.name = spec.getName();
+			info.sponsor = spec.getSponsor();
+			info.crew = spec.getCrew();
+			info.template = spec.getSettlementTemplate();
+			info.population = Integer.toString(spec.getPopulationNumber());
+			info.numOfRobots = Integer.toString(spec.getNumOfRobots());
+			Coordinates location = spec.getLocation();
+			if (location != null) {
+				info.latitude = location.getFormattedLatitudeString();
+				info.longitude = location.getFormattedLongitudeString();
+			}	
+			return info;
+		}
+
+
+		/**
+		 * Get the rows as InitialSettlements.
+		 * @return
+		 */
+		public List<InitialSettlement> getSettlements() {
+
+			List<InitialSettlement> is = new ArrayList<>();
+
+			// Add configuration settlements from table data.
+			for (SettlementInfo info : settlementInfoList) {
+				int populationNum = Integer.parseInt(info.population);
+				int numOfRobots = Integer.parseInt(info.numOfRobots);
+				
+				// take care to internationalize the coordinates
+				String latitude = info.latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
+				latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+				String longitude = info.longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
+				longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
+
+				Coordinates location = new Coordinates(latitude, longitude);
+
+				is.add(new InitialSettlement(info.name, info.sponsor, info.template,
+													populationNum, numOfRobots, location, info.crew));
+
+			}
+			
+			return is;
 		}
 		
 		@Override
@@ -344,8 +374,8 @@ public class SimulationConfigEditor {
 						
 					case PHASE_COL:
 						info.template = (String) aValue;
-						info.population = determineNewSettlementPopulation(info.template);
-						info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
+						info.population = Integer.toString(determineNewSettlementPopulation(info.template));
+						info.numOfRobots = Integer.toString(determineNewSettlementNumOfRobots(info.template));
 						break;
 						
 					case SETTLER_COL:
@@ -443,8 +473,8 @@ public class SimulationConfigEditor {
 		 * @param settlement
 		 *            the settlement configuration.
 		 */
-		private void addSettlement(SettlementInfo settlement) {
-			settlementInfoList.add(settlement);
+		private void addSettlement(InitialSettlement settlement) {
+			settlementInfoList.add(toSettlementInfo(settlement));
 			fireTableDataChanged();
 		}
 
@@ -624,10 +654,9 @@ public class SimulationConfigEditor {
 	
 	private boolean completed = false;
 	private boolean useCrew = true;
-	private CrewConfig crewConfig;
+	private UserConfigurableConfig<Crew> crewConfig;
 
 	private Scenario selectedScenario;
-
 	private ScenarioConfig scenarioConfig;
 	
 	/**
@@ -640,6 +669,8 @@ public class SimulationConfigEditor {
 		settlementConfig = config.getSettlementConfiguration();
 		personConfig = config.getPersonConfig();
 		crewConfig = new CrewConfig();
+		scenarioConfig = new ScenarioConfig();
+
 		
 		hasError = false;
 
@@ -835,9 +866,25 @@ public class SimulationConfigEditor {
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 		
+		// Create the config control
+		UserConfigurableControl<Scenario> control = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
+
+			@Override
+			protected void displayItem(Scenario newDisplay) {
+				settlementTableModel.loadDefaultSettlements(newDisplay);
+			}
+
+			@Override
+			protected Scenario createItem(String newName) {
+				return finalizeSettlementConfig(newName);
+			}
+		};
+		bottomPanel.add(control.getPane(), BorderLayout.CENTER);
+
+		
 		// Create the bottom button panel.
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.add(bottomButtonPanel, BorderLayout.CENTER);
+		bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
 
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
@@ -852,6 +899,7 @@ public class SimulationConfigEditor {
 //		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent evt) {
 				// Make sure any editing cell is completed, then check if error.
 				TableCellEditor editor = settlementTable.getCellEditor();
@@ -861,8 +909,9 @@ public class SimulationConfigEditor {
 				if (!hasError) {
 
 					f.setVisible(false);
-					// Finalizes the simulation configuration
-					finalizeSettlementConfig();		
+					
+					// Recalculate the Scenario in case user has made unsaved changes 
+					selectedScenario = finalizeSettlementConfig(control.getSelectItemName());
 					
 					// Close simulation config editor
 					closeWindow();
@@ -897,9 +946,7 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(crewButton);
 
 		// Load it
-		scenarioConfig = new ScenarioConfig();
-		selectedScenario = scenarioConfig.getItem(ScenarioConfig.DEFAULT);
-		settlementTableModel.loadDefaultSettlements(selectedScenario);
+		//settlementTableModel.loadDefaultSettlements(selectedScenario);
 		
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -925,7 +972,7 @@ public class SimulationConfigEditor {
 	 * Adds a new settlement with default values.
 	 */
 	private void addDefaultNewSettlement() {
-		SettlementInfo settlement = determineNewDefaultSettlement();
+		InitialSettlement settlement = determineNewDefaultSettlement();
 		settlementTableModel.addSettlement(settlement);
 	}
 
@@ -960,30 +1007,9 @@ public class SimulationConfigEditor {
 	/**
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
-	private void finalizeSettlementConfig() {
-
-		List<InitialSettlement> is = new ArrayList<>();
-
-		// Add configuration settlements from table data.
-		for (SettlementInfo info : settlementTableModel.getSettlementInfoList()) {
-			int populationNum = Integer.parseInt(info.population);
-			int numOfRobots = Integer.parseInt(info.numOfRobots);
-			
-			// take care to internationalize the coordinates
-			String latitude = info.latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			String longitude = info.longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-			Coordinates location = new Coordinates(latitude, longitude);
-
-			is.add(new InitialSettlement(info.name, info.sponsor, info.template,
-												populationNum, numOfRobots, location, info.crew));
-
-		}
-		
-		Scenario newScenario = new Scenario(selectedScenario.getName(), selectedScenario.getDescription(), is, selectedScenario.isBundled());
-		scenarioConfig.saveItem(newScenario);
+	private Scenario finalizeSettlementConfig(String newName) {
+		List<InitialSettlement> is = settlementTableModel.getSettlements();
+		return new Scenario(newName, "", is, false);
 	}
 
 	/**
@@ -1032,18 +1058,16 @@ public class SimulationConfigEditor {
 	 * 
 	 * @return settlement configuration.
 	 */
-	private SettlementInfo determineNewDefaultSettlement() {
-		SettlementInfo settlement = new SettlementInfo();
-
-		settlement.sponsor = ReportingAuthorityFactory.MS_CODE;
-		settlement.name = determineNewSettlementName(settlement.sponsor);
-		settlement.template = determineNewSettlementTemplate();
-		settlement.population = determineNewSettlementPopulation(settlement.template);
-		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
-		settlement.latitude = determineNewSettlementLatitude();
-		settlement.longitude = determineNewSettlementLongitude();
-
-		return settlement;
+	private InitialSettlement determineNewDefaultSettlement() {
+			
+		String sponsor = ReportingAuthorityFactory.MS_CODE;
+		String template = determineNewSettlementTemplate();
+		Coordinates location = determineNewSettlementLocation();
+		
+		return new InitialSettlement(determineNewSettlementName(sponsor),
+				sponsor, template, 
+				determineNewSettlementPopulation(template),
+				determineNewSettlementNumOfRobots(template), location, null);
 	}
 
 	/**
@@ -1130,16 +1154,16 @@ public class SimulationConfigEditor {
 	 *            the settlement template name.
 	 * @return the new population number.
 	 */
-	private String determineNewSettlementPopulation(String templateName) {
+	private int determineNewSettlementPopulation(String templateName) {
 
-		String result = "0"; //$NON-NLS-1$
+		int result = 0; 
 
 		if (templateName != null) {
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
 				if (template.getTemplateName().equals(templateName)) {
-					result = Integer.toString(template.getDefaultPopulation());
+					result = template.getDefaultPopulation();
 				}
 			}
 		}
@@ -1154,16 +1178,16 @@ public class SimulationConfigEditor {
 	 *            the settlement template name.
 	 * @return number of robots.
 	 */
-	private String determineNewSettlementNumOfRobots(String templateName) {
+	private int determineNewSettlementNumOfRobots(String templateName) {
 
-		String result = "0"; //$NON-NLS-1$
+		int result = 0;
 
 		if (templateName != null) {
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
 				if (template.getTemplateName().equals(templateName)) {
-					result = Integer.toString(template.getDefaultNumOfRobots());
+					result = template.getDefaultNumOfRobots();
 
 				}
 			}
@@ -1199,32 +1223,13 @@ public class SimulationConfigEditor {
 			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
 	}
 	
-	/**
-	 * Determines a new settlement's latitude.
-	 * 
-	 * @return latitude string.
+	/** 
+	 * Get a new Location ofr a Settlement 
+	 * @return
 	 */
-	private String determineNewSettlementLatitude() {
-		double phi = Coordinates.getRandomLatitude();
-		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
-		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLatitude.substring(0, degreeIndex) + " "
-				+ formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length());
+	private Coordinates determineNewSettlementLocation() {
+		return new Coordinates(Coordinates.getRandomLatitude(), Coordinates.getRandomLongitude());
 	}
-
-	/**
-	 * Determines a new settlement's longitude.
-	 * 
-	 * @return longitude string.
-	 */
-	private String determineNewSettlementLongitude() {
-		double theta = Coordinates.getRandomLongitude();
-		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
-		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLongitude.substring(0, degreeIndex) + " "
-				+ formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length());
-	}
-
 
 	public WebFrame<?> getFrame() {
 		return f;
@@ -1249,7 +1254,14 @@ public class SimulationConfigEditor {
 	 * Crew configuration if to be used. If returns null then no Crews
 	 * @return
 	 */
-	public CrewConfig getCrewConfig() {
+	public UserConfigurableConfig<Crew> getCrewConfig() {
 		return crewConfig;
+	}
+
+	/**
+	 * The Scenario created in the editor.
+	 */
+	public Scenario getScenario() {
+		return selectedScenario;
 	}
 }

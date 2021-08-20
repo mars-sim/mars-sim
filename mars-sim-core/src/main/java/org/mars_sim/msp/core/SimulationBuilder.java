@@ -18,7 +18,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -56,7 +58,8 @@ public class SimulationBuilder {
 	private String latitude = null;
 	private String longitude = null;
 	private boolean useCrews = true;
-	private CrewConfig crewConfig;
+	private UserConfigurableConfig<Crew> crewConfig;
+	private Scenario bootstrap;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -257,13 +260,18 @@ public class SimulationBuilder {
 				crewConfig = new CrewConfig();
 			}
 			builder.setCrew(crewConfig);
+			
+			// Is the a specific template requested?
 			if (spec !=  null) {
 				builder.createFullSettlement(spec);
 			}
 			else {
-				// TODO workaround for now until Editor working
-				ScenarioConfig config = new ScenarioConfig();
-				Scenario bootstrap = config.getItem(ScenarioConfig.DEFAULT);
+				if (bootstrap == null) {
+					String defaultName = ScenarioConfig.PREDEFINED_SCENARIOS[0];
+					ScenarioConfig config = new ScenarioConfig();
+					bootstrap = config.getItem(defaultName);
+				}
+				logger.config("Using Scenario '" + bootstrap.getName() + "'");
 				builder.createInitialSettlements(bootstrap);
 			}
 		}
@@ -331,7 +339,11 @@ public class SimulationBuilder {
 									 new Coordinates(latitude, longitude), null);
 	}
 
-	public void setCrewConfig(CrewConfig crewConfig) {
+	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
 		this.crewConfig  = crewConfig;
+	}
+
+	public void setScenario(Scenario scenario) {
+		this.bootstrap = scenario;
 	}
 }

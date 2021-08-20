@@ -63,18 +63,14 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	/** 
 	 * Crew files preloaded in the code
 	 */
-	private String [] PREDEFINED_CREWS = {"crew_alpha"};
+	private static final String [] PREDEFINED_CREWS = {"Alpha", "Founders"};
 	private Map<String, Integer> bigFiveMap = new HashMap<>();
 	
 	/**
 	 * Constructor
 	 */
 	public CrewConfig() {
-		super(CREW_PREFIX);
-		
-		for (String name : PREDEFINED_CREWS) {
-			loadItem(name, true);
-		}
+		super(CREW_PREFIX, PREDEFINED_CREWS);
 	}
 
 	/**
@@ -181,18 +177,6 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 		doc.getRootElement().addContent(crewList);
 	        
         return doc;
-	}
-
-	/**
-	 * Save an attribute to a Element if it is defined
-	 * @param personElement
-	 * @param activity2
-	 * @param activity3
-	 */
-	private static void saveOptionalAttribute(Element node, String attrName, String value) {
-		if (value != null) {
-			node.setAttribute(new Attribute(attrName, value));
-		}
 	}
 
 	/**

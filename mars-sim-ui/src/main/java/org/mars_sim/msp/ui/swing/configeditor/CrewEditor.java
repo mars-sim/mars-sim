@@ -37,8 +37,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.Crew;
-import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -405,7 +405,7 @@ public class CrewEditor implements ActionListener {
 	 * @param simulationConfigEditor
 	 *            SimulationConfigEditor
 	 */
-	public CrewEditor(SimulationConfigEditor simulationConfigEditor, CrewConfig config) {
+	public CrewEditor(SimulationConfigEditor simulationConfigEditor, UserConfigurableConfig<Crew> config) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 		
@@ -441,7 +441,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Creates the GUI
 	 */
-	private void createGUI(CrewConfig crewConfig) {
+	private void createGUI(UserConfigurableConfig<Crew> crewConfig) {
 	
 		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(MainWindow.getIconImage());

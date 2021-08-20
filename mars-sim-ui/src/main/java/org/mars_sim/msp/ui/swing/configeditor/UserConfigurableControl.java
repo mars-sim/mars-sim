@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * UserConfigurableControl.java
+ * @version 3.3.0 2021-08-20
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.Component;
@@ -34,7 +40,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	private JButton saveButton;
 	private JButton delButton;
 	
-	private DefaultComboBoxModel<String> crewCB;
+	private DefaultComboBoxModel<String> itemCB;
 
 	private WebTextField descriptionTF;
 	private UserConfigurableConfig<T> config;
@@ -52,10 +58,10 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		this.buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		// Crew name selection
-		buttonPane.add(new WebLabel("Crew Loaded :"));
-		crewCB = new DefaultComboBoxModel<>();
-		crewCB.addAll(0, config.getItemNames());
-		JComboBox<String> crewSelector = new JComboBox<>(crewCB) ;
+		buttonPane.add(new WebLabel(itemType + " Loaded :"));
+		itemCB = new DefaultComboBoxModel<>();
+		itemCB.addAll(0, config.getItemNames());
+		JComboBox<String> crewSelector = new JComboBox<>(itemCB) ;
 		crewSelector.addActionListener(this);
 		crewSelector.setActionCommand(LOAD);
 		buttonPane.add(crewSelector);
@@ -100,7 +106,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 			
 			saveButton.setEnabled(!selected.isBundled());
 			delButton.setEnabled(!selected.isBundled());
-			crewCB.setSelectedItem(selected.getName());
+			itemCB.setSelectedItem(selected.getName());
 			descriptionTF.setText(selected.getDescription());	
 		}
 	}
@@ -127,7 +133,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		String cmd = (String) evt.getActionCommand();
 		switch (cmd) {
 		case LOAD: 
-			String loadItem = (String) crewCB.getSelectedItem();
+			String loadItem = (String) itemCB.getSelectedItem();
 			if (!selected.getName().equalsIgnoreCase(loadItem)) {
 				JDialog.setDefaultLookAndFeelDecorated(true);
 				int result = JOptionPane.showConfirmDialog(parent, 
@@ -156,7 +162,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 				
 				String nextItem = config.getItemNames().get(0);
 				selectItem(nextItem);
-				crewCB.removeElement(oldItem);
+				itemCB.removeElement(oldItem);
 			}
 			break;
 			
@@ -194,7 +200,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 				if (newSelected != null) {
 					config.saveItem(newSelected); 
 
-					crewCB.addElement(newName);
+					itemCB.addElement(newName);
 					selectItem(newName);
 				}
 			}
@@ -205,7 +211,13 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		}
 	}
 
-
+	/**
+	 * Get the select item name.
+	 * @return
+	 */
+	public String getSelectItemName() {
+		return (String) itemCB.getSelectedItem();
+	}
 
 	public JPanel getPane() {
 		return buttonPane;
