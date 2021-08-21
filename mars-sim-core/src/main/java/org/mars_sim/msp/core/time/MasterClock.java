@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-21
  * @author Scott Davis
  */
 
@@ -464,7 +464,6 @@ public class MasterClock implements Serializable {
 					}
 					else {
 						// If on pause or acceptablePulse is false
-//						logger.info("AddTime not accepted: lastPulse " + tLast);
 						sleepTime = maxMilliSecPerPulse;
 					}
 					
@@ -482,7 +481,6 @@ public class MasterClock implements Serializable {
 							}
 						}
 						if (sleepTime > 0) {
-//							logger.warning("sleepTime: " + sleepTime);
 							// Pause simulation to allow other threads to complete.
 							try {
 								Thread.sleep(sleepTime);
@@ -490,10 +488,6 @@ public class MasterClock implements Serializable {
 								Thread.currentThread().interrupt();
 							}
 						}
-//						else if (sleepTime < -3000) {
-//							// Divide by 2
-//							targetTR = targetTR >> 1;
-//						}
 					}
 
 					// Exit program if exitProgram flag is true.
@@ -641,17 +635,13 @@ public class MasterClock implements Serializable {
 				sim.saveSimulation(saveType, file);
 			} catch (NullPointerException e) {
 				logger.log(Level.SEVERE,
-						"NullPointerException. Could not save the simulation.", e);// as " + (file == null ? "null" : file.getPath()), e);
-				e.printStackTrace();	
+						"NullPointerException. Could not save the simulation: ", e);
 			} catch (IOException e) {
 				logger.log(Level.SEVERE,
-						"IOException. Could not save the simulation.", e);//  as " + (file == null ? "null" : file.getPath()), e);
-				e.printStackTrace();
-
+						"IOException. Could not save the simulation: ", e);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE,
-						"Exception. Could not save the simulation.", e);//  as " + (file == null ? "null" : file.getPath()), e1);
-				e.printStackTrace();
+						"Exception. Could not save the simulation: ", e);
 			}
 			
 			// Reset saveType back to zero
@@ -702,32 +692,22 @@ public class MasterClock implements Serializable {
 			if (sim.isDoneInitializing() && !isPaused) {
 				try {
 					// The most important job for CLockListener is to send a clock pulse to listener
-				
 					// gets updated.
 					listener.clockPulse(currentPulse);
 					timeCache += currentPulse.getElapsed();
-//					timeRatioCache += timeCache;
 					count++;
 
 					if (count > UI_COUNT) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
 						listener.uiPulse(timeCache);
-//						System.out.println(count);
 						// Reset count
 						count = 0;
-						
-//						int limit = 60 * (int)(Math.log(targetTR + 1));
-//						if (timeCache > limit) {
-//							System.out.println(timeCache);
-//							// Check the sim speed
-//							checkSpeed();
-//							// Reset timeRatioCache
-							timeCache = 0;
-//						}
+						// Reset timeRatioCache
+						timeCache = 0;
 					}
 
 				} catch (ConcurrentModificationException e) {
-					e.printStackTrace();
+					logger.log(Level.SEVERE, "Can't send out clock pulse: ", e);
 				}
 			}
 			return "done";
@@ -775,7 +755,6 @@ public class MasterClock implements Serializable {
 					result.get();
 				} catch (ExecutionException e) {
 					logger.log(Level.SEVERE, "Problem in clock listener", e);
-					e.printStackTrace();
 				} catch (InterruptedException e) {
 					// Program closing down
 					Thread.currentThread().interrupt();
@@ -783,6 +762,7 @@ public class MasterClock implements Serializable {
 			});
 		} catch (RejectedExecutionException ree) {
 			// Executor is shutdown and cannot complete queued tasks
+			logger.log(Level.SEVERE, "Can't set current pulse on clock listener tasks:  ", ree);
 		}
 	}
 

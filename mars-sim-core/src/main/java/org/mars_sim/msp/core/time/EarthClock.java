@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EarthClock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-21
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,9 +36,7 @@ public class EarthClock implements Serializable {
 
 	/** Initialized logger. */
 	private static final Logger logger = Logger.getLogger(EarthClock.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+
 	/**
 	 * Tracks the number of milliseconds since 1 January 1970 00:00:00 at the start of the sim
 	 */
@@ -64,7 +63,7 @@ public class EarthClock implements Serializable {
 		// Java 8's Date/Time API in java.time package, see
 		// https://docs.oracle.com/javase/tutorial/datetime/TOC.html
 		
-		// dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
+		// Alternatively, dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
 
 		// see http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
 
@@ -86,11 +85,11 @@ public class EarthClock implements Serializable {
 		f1 = new SimpleDateFormat("yyyy-MM-dd HH:mm '(UT)'", Locale.US);
 		f1.setTimeZone(zone);
 
-		// Note: By default, java set locale to user's machine system locale via
-		// Locale.getDefault(Locale.Category.FORMAT));
+		// Note: By default, java set locale to user's machine system locale
+		// by using Locale.getDefault(Locale.Category.FORMAT));
 		// i.e. f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-		// Locale.getDefault(Locale.Category.FORMAT));
-		// 2017-03-27 set it to Locale.US
+		// Use Locale.getDefault(Locale.Category.FORMAT));
+		// or Set it to Locale.US
 
 		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 		f2.setTimeZone(zone);
@@ -107,7 +106,7 @@ public class EarthClock implements Serializable {
 			zonedDateTime = dateOfFirstLanding;
 			computeMillisAtStart();
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.log(Level.SEVERE, "Can't obtain the ogg music file.", ex);
 		}
 
 		// Initialize a second formatter
@@ -349,25 +348,6 @@ public class EarthClock implements Serializable {
 
 	public String getDayOfWeekString() {
 		return zonedDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);//gregCal.get(Calendar.DAY_OF_WEEK);
-		
-//		StringBuilder s = new StringBuilder();
-//		if (w == Calendar.SUNDAY)
-//			s.append("Sunday");
-//		else if (w == Calendar.MONDAY)
-//			s.append("Monday");
-//		else if (w == Calendar.TUESDAY)
-//			s.append("Tuesday");
-//		else if (w == Calendar.WEDNESDAY)
-//			s.append("Wednesday");
-//		else if (w == Calendar.THURSDAY)
-//			s.append("Thursday");
-//		else if (w == Calendar.FRIDAY)
-//			s.append("Friday");
-//		else if (w == Calendar.SATURDAY)
-//			s.append("Saturaday");
-//		// else
-//		// s = "";
-//		return s.toString();
 	}
 
 	public ZonedDateTime getZonedDateTime() {
@@ -381,12 +361,6 @@ public class EarthClock implements Serializable {
 	public LocalTime getLocalTime() {
 		return zonedDateTime.toLocalTime();
 	}
-
-//	public Date getDT() {
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//		LocalDate localDate = zonedDateTime //LocalDate.parse(dateString, formatter);
-//		Date.from(java.time.ZonedDateTime.now().toInstant());
-//	}
     
 	public void destroy() {
 		f0 = null;

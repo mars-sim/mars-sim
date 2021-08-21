@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-21
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -99,8 +99,7 @@ public class AudioPlayer implements ClockListener {
 		try {
 			return new OGGSoundClip(name, true);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Can't obtain the ogg music file '" + name + "': ", e);
 		}
 		return null;
 	}
@@ -121,7 +120,7 @@ public class AudioPlayer implements ClockListener {
 			try {
 				FileUtils.forceDelete(folder);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Can't load music files: ", e);
 			}
 		}
 		
@@ -171,7 +170,7 @@ public class AudioPlayer implements ClockListener {
 			try {
 				allSoundClips.put(s, new OGGSoundClip(s, false));
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Can't load the sound effect files: ", e);
 			}
 		}
 
@@ -206,7 +205,7 @@ public class AudioPlayer implements ClockListener {
 				currentSoundClip.determineGain(currentSoundVol);
 				currentSoundClip.play();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "IOException in AudioPlayer's playSound()", e);
+				logger.log(Level.SEVERE, "Can't load sound effect: ", e);
 			}
 		}
 	}
