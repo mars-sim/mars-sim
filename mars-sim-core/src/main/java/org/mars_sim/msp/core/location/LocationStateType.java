@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LocationStateType.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-21
  * @author Manny Kung
  */
 
@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.location;
 import org.mars_sim.msp.core.Msg;
 
 /**
- * The LocationStateType enum class keeps track of the location state of an unit
+ * The LocationStateType enum class keeps track of the location state of a unit
  * 
  * @apiNote (1) : WITHIN_SETTLEMENT_VICINITY should be an intermediate state between being INSIDE_SETTLEMENT and OUTSIDE/MARS_SURFACE 
  *                but has NEVER been used this way. 
@@ -30,7 +30,7 @@ public enum LocationStateType {
 	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
 	ON_PERSON_OR_ROBOT				(Msg.getString("LocationStateType.onPersonOrRobot")), //$NON-NLS-1$
 	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")), //$NON-NLS-1$
-	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")), //$NON-NLS-1$
+	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
 	OUTER_SPACE						(Msg.getString("LocationStateType.outerSpace")), //$NON-NLS-1$
 	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
 //	IN_AIRLOCK						(Msg.getString("LocationStateType.inAirlock")), //$NON-NLS-1$
@@ -56,7 +56,7 @@ public enum LocationStateType {
 	private String name;
 
 	/** hidden constructor. */
-	private LocationStateType(String name) {
+	LocationStateType(String name) {
 		this.name = name;
 	}
 	

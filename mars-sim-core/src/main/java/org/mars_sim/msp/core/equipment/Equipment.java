@@ -50,9 +50,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private int associatedSettlementID;
 	
 	/** The identifier for the last owner of this equipment. */
-	private Integer lastOwner = Unit.UNKNOWN_UNIT_ID;
+	private int lastOwner;
 	/** The equipment type. */
-	private String type;
+	private final String type;
 	
 	private int resource = -1;
 	private double quantity;
@@ -60,7 +60,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** The SalvageInfo instatnce. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
-	private EquipmentType equipmentType;
+	private final EquipmentType equipmentType;
 	
 	
 	/**
@@ -79,7 +79,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		isSalvaged = false;
 		salvageInfo = null;
 		
-		lastOwner = Integer.valueOf(-1);
+		lastOwner = -1;
 		
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
@@ -114,7 +114,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @param resource
 	 * @param quantity
-	 * @param test true if it's just a test
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
@@ -253,13 +252,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/**
 	 * Is this equipment empty ? 
 	 * 
-	 * @param brandNew true if it needs to be brand new and never be used before
+	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
 	public boolean isEmpty(boolean brandNew) {
-		if (brandNew && resource == -1)
-			return true;
-		else if (this.quantity == 0)
+		// if resource is -1, it's never been used before
+		// if it's not brand new, it doesn't matter if source is -1 or not
+		if ((brandNew && resource == -1) || this.quantity == 0)
 			return true;
 		return false;
 	}	
@@ -301,16 +300,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = new ArrayList<>();
 
-		Person owner = null;
-		if ((lastOwner != null) && lastOwner.intValue() != -1) {
-			owner = unitManager.getPersonByID(lastOwner);
-			people.add(owner);
+		if (lastOwner != -1) {
+			people.add(unitManager.getPersonByID(lastOwner));
 		}
 
 		// Check all people.
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
+		for (Person person : unitManager.getPeople()) {
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
@@ -462,7 +457,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	public static String generateName(String baseName) {
 		if (baseName == null) {
-			throw new IllegalArgumentException("Must sepecified a baseName");
+			throw new IllegalArgumentException("Must specify a baseName");
 		}
 		
 		int number = unitManager.incrementTypeCount(baseName);
