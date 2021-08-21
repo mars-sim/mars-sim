@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Person.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-20
  * @author Scott Davis
  */
 
@@ -354,8 +354,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		maternal_chromosome = new ConcurrentHashMap<>();
 
 		if (bornOnMars) {
-			// TODO: figure out how to account for growing characteristics such as height
-			// and weight
+			// Note: figure out how to account for growing characteristics 
+			// such as height and weight
 			// and define various traits get passed on from parents
 		} else {
 			// Biochemistry: id 0 - 19
@@ -374,8 +374,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Compute a person's attributes and its chromosome
 	 */
 	public void setupAttributeTrait() {
-		// TODO: set up a set of genes that was passed onto this person from two
-		// hypothetical parents
+		// Note: set up a set of genes that was passed onto this person 
+		// from two hypothetical parents
 		int ID = 40;
 		boolean dominant = false;
 
@@ -482,8 +482,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
 
-		// TODO: factor in country of origin.
-		// TODO: look for a gender-correlated curve
+		// Note: factor in country of origin.
+		// Note: look for a gender-correlated curve
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
@@ -520,8 +520,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
 
-		// TODO: factor in country of origin.
-		// TODO: look for a gender-correlated curve
+		// Note: factor in country of origin.
+		// Note: look for a gender-correlated curve
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
@@ -656,7 +656,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			day = RandomUtil.getRandomInt(29) + 1;
 		}
 
-		// TODO: find out why sometimes day = 0 as seen on
+		// Note: find out why sometimes day = 0 as seen on
 		if (day == 0) {
 			logger.warning(this, "Date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
@@ -818,15 +818,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	void deregisterBed() {
 		// Set quarters to null
 		if (quartersInt != -1) {
-			Map<Person, Point2D>  map = unitManager.getBuildingByID(quartersInt).getLivingAccommodations().getAssignedBeds();
-			if (map.containsKey(this)) 
-				map.remove(this);
+			Map<Integer, Point2D>  map = unitManager.getBuildingByID(quartersInt).getLivingAccommodations().getAssignedBeds();
+			if (map.containsKey(getIdentifier()))
+				map.remove(getIdentifier());
 			quartersInt = -1;
 		}
 		// Empty the bed
 		if (bed != null)
 			bed = null;
-
 	}
 
 	/**

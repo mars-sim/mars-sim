@@ -56,7 +56,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private double greyWaterFraction; 
 
 	/** The bed registry in this facility. */
-	private Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
+	private Map<Integer, Point2D> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
@@ -177,7 +177,7 @@ public class LivingAccommodations extends Function implements Serializable {
 						 		+ ", Bed Capacity: " + maxNumBeds + ").");	
 			}
 			
-			else if (!assignedBeds.containsKey(person)) {
+			else if (!assignedBeds.containsKey(person.getIdentifier())) {
 				// TODO: need to rework for guest stay
 				if (isAGuest) {
 					// Note : do not designate a bed since he's only a guest
@@ -210,7 +210,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		else {
 			// Ensure the person's registered bed has been added to the assignedBeds map
 			if (!assignedBeds.containsValue(registeredBed)) {
-				assignedBeds.put(person, registeredBed);
+				assignedBeds.put(person.getIdentifier(), registeredBed);
 			}
 			return registeredBed;
 		}
@@ -225,7 +225,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param bed
 	 */
 	public void assignABed(Person person, Point2D bed) {
-		assignedBeds.put(person, bed);
+		assignedBeds.put(person.getIdentifier(), bed);
 		person.setBed(bed);
 		person.setQuarters(building);
 		
@@ -396,12 +396,12 @@ public class LivingAccommodations extends Function implements Serializable {
 		}
 	}
 
-	public Map<Person, Point2D> getAssignedBeds() {
+	public Map<Integer, Point2D> getAssignedBeds() {
 		return assignedBeds;
 	}
 
 	/*
-	 * Checks if an unmarked or undesignated bed is available
+	 * Checks if an unmarked or unassigned bed is available
 	 */
 	public boolean hasAnUnmarkedBed() {
         return getNumAssignedBeds() < maxNumBeds;
