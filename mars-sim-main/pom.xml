@@ -17,18 +17,12 @@
 	</properties>
 	
 	<dependencies>
-		<dependency>
+		<!-->dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>hamcrest-core</artifactId>
-					<groupId>org.hamcrest</groupId>
-				</exclusion>
-			</exclusions>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>
@@ -62,7 +56,8 @@
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
-		        <version>1.6.0</version>
+		        <!-- >version>1.6.0</version-->
+		        <version>3.0.0</version>
 		        <executions>
 		            <execution>
 		                <goals>
@@ -101,7 +96,7 @@
 					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -130,7 +125,7 @@
 				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.8</version>
+				<version>1.9</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

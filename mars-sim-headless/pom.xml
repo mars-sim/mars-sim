@@ -14,6 +14,30 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>		
 	</properties>
+	<dependencies>
+		<!-->dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency-->
+		<dependency>
+			<groupId>com.github.mars-sim</groupId>
+			<artifactId>mars-sim-console</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-cli</groupId>
+		    <artifactId>commons-cli</artifactId>
+		    <version>1.4</version>
+		</dependency>		
+	</dependencies>	
 	<build>
 		<plugins>
 			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin : 65KB -->
@@ -22,7 +46,7 @@
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
-		        <version>1.6.0</version>
+		        <version>3.0.0</version>
 		        <executions>
 		            <execution>
 		                <goals>
@@ -61,7 +85,7 @@
 					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -90,7 +114,7 @@
 				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.8</version>
+				<version>1.9</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -161,11 +185,12 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Copy the headless JAR to a fixed name without a version number -->
+			<!-- Copy the headless JAR to a fixed name without a version number  -->
+			<!-- https://mvnrepository.com/artifact/com.coderplus.maven.plugins/copy-rename-maven-plugin -->
 			<plugin>
 				<groupId>com.coderplus.maven.plugins</groupId>
 				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>1.0.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -182,37 +207,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>hamcrest-core</artifactId>
-					<groupId>org.hamcrest</groupId>
-				</exclusion>
-			</exclusions>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.mars-sim</groupId>
-			<artifactId>mars-sim-console</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-lang3</artifactId>
-		    <version>3.9</version>
-		</dependency>
-		<dependency>
-		    <groupId>commons-cli</groupId>
-		    <artifactId>commons-cli</artifactId>
-		    <version>1.4</version>
-		</dependency>		
-	</dependencies>
-
 	<repositories>
 		<repository>
 			<id>jcenter</id>

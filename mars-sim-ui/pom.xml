@@ -12,12 +12,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<dependencies>
-		<dependency>
+		<!-->dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>

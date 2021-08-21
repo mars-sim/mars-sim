@@ -14,8 +14,9 @@
 	<properties>
 		<release>11</release>
 		<project.version>3.3.0</project.version>
-		<junit.version>4.13.2</junit.version>
-
+		<junit-jupiter.version>5.7.2</junit-jupiter.version>
+        <!-- optional : if we want to use a junit4 specific version -->
+        <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<!-- Set file encoding to UTF-8. See http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
@@ -32,7 +33,30 @@
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>11</sonar.java.source>
 	</properties>
-
+	<dependencies>
+		<!-- https://stackoverflow.com/questions/41635164/is-junit5-backward-compatible-to-junit4 -->
+        <!--JUnit Jupiter Engine to depend on the JUnit5 engine and JUnit 5 API -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+		<!-- Incorporate junit-vintage to cover junit4 tests -->
+        <!--JUnit Jupiter Engine to depend on the JUnit4 engine and JUnit 4 API  -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+        </dependency>
+        <!-- Optional : override the JUnit 4 API version provided by junit-vintage-engine -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 	<!-- ************************************************************************************************* -->
 	<!-- * Developers Section * -->
 	<!-- ************************************************************************************************* -->
@@ -97,9 +121,13 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- https://github.com/graalvm/native-build-tools -->
-				<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
+	            <plugin>
+	                <artifactId>maven-surefire-plugin</artifactId>
+	                <version>3.0.0-M5</version>
+	            </plugin>						
 				<plugin>
+					<!-- https://github.com/graalvm/native-build-tools -->
+					<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>native-maven-plugin</artifactId>
 					<version>0.9.2</version>
@@ -188,17 +216,16 @@
 					</dependencies-->
 				</plugin>
 				<plugin>
-				<!--https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
+				<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 				  <groupId>com.github.spotbugs</groupId>
 				  <artifactId>spotbugs-maven-plugin</artifactId>
-				  <version>4.0.4</version>
-				  <!--version>3.1.12.2</version-->
+				  <version>4.3.0</version>
 				  <dependencies>
-				    <!-- https://spotbugs.github.io/ -->
+				    <!-- https://github.com/spotbugs/spotbugs -->
 				    <dependency>
 				      <groupId>com.github.spotbugs</groupId>
 				      <artifactId>spotbugs</artifactId>
-				      <version>4.0.4</version>
+				      <version>4.3.0</version>
 				    </dependency>
 				  </dependencies>
 				</plugin>			
@@ -206,7 +233,7 @@
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
 				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.7</version>
+				    <version>2.8.1</version>
 				    <configuration>
 				        <generateBackupPoms>false</generateBackupPoms>
 				    </configuration>
@@ -237,7 +264,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<release>${release}</release>
 						<compilerArgs>
@@ -293,11 +320,12 @@
 						<dependency>
 						    <groupId>org.apache.maven.wagon</groupId>
 						    <artifactId>wagon-ssh</artifactId>
-						    <version>3.4.1</version>
+						    <version>3.4.3</version>
 						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
 					<groupId>org.apache.maven.plugins</groupId>
 			        <artifactId>maven-war-plugin</artifactId>
 			        <version>3.3.1</version>
@@ -322,7 +350,7 @@
 				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.0</version>
 				<configuration>
 					<outputDirectory>
 						${project.build.directory}
@@ -332,7 +360,7 @@
 			<plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.7.0.1746</version>
+                <version>3.9.0.2155</version>
             </plugin>
 		</plugins>
 	</reporting>
