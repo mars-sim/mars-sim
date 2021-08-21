@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LogConsolidated.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-20
  * @author Manny Kung
  */
 
@@ -18,10 +18,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.flogger.FluentLogger;
 //  See https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
-//	Do
-// 		LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
-//	Instead of:
-//		logger.warn("File: " + f + " not found.", e);
+//	Do LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
+//	Instead of logger.warn("File: " + f + " not found.", e);
 
 public class LogConsolidated {
 
@@ -89,15 +87,14 @@ public class LogConsolidated {
 	public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message,
 			Throwable t) {
 		long dTime = timeBetweenLogs;
-//		System.out.print(sourceName + " - ");
+
 		String className = sourceName;
 		if (sourceName.contains("."))
 			className = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
-//		System.out.println(className);
 		
-//		if (logger.isEnabledFor(level)) {
 		String uniqueIdentifier = getFileAndLine();
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
+		
 		if (lastTimeAndCount != null) {
 			synchronized (lastTimeAndCount) {
 				long now = System.currentTimeMillis();
@@ -126,14 +123,6 @@ public class LogConsolidated {
 
 	private static void log(Logger logger, Level level, String message, Throwable t) {
 
-//    	java.util.logging.Level l2 = null;
-//    	if (level == Level.INFO)
-//    		l2 =  java.util.logging.Level.INFO;
-//    	else if (level == Level.WARN || level == Level.ERROR)
-//    		l2 =  java.util.logging.Level.WARNING;
-//    	else if (level == Level.FATAL)
-//    		l2 =  java.util.logging.Level.SEVERE;
-
 		if (t == null) {
 			logger.log(level, message);
 
@@ -143,31 +132,16 @@ public class LogConsolidated {
 
 	}
 
-//	public static void go(Level level, int timeBetweenLogs, StringBuffer sb) {
-//		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sb.toString());
-//	}
+
 	
 	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message) {
-//		if (sourceName.contains("."))
-//			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message);
 	}
 	
 	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
-//		if (sourceName.contains("."))
-//			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
+
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + PROMPT + message, t);
 	}
-	
-//	public static void info(int timeBetweenLogs, String sourceName, String message) {
-//		flogger.atInfo().atMostEvery(timeBetweenLogs, TimeUnit.SECONDS)
-//			.log(sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length()) + COLON + message);
-//	}
-//	
-//	public static void info(int timeBetweenLogs, String sourceName, String message, Throwable t) {
-//		flogger.atInfo().atMostEvery(timeBetweenLogs, TimeUnit.SECONDS)
-//			.log(sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length()) + COLON + message, t);
-//	}
 	
 	/**
 	 * Returns the line

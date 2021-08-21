@@ -26,7 +26,6 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
@@ -43,9 +42,8 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * The GuideWindow is a tool window that displays built-in html pages such as User Guide, Quick Tutorial, Keyboard Shortcuts, etc.
  */
+@SuppressWarnings("serial")
 public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener {
-	/** Default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$

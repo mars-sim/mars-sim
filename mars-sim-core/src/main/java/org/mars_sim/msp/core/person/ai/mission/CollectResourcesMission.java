@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @date 2021-08-15
+ * @date 2021-08-20
  * @author Scott Davis
  */
 

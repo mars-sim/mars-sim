@@ -1,10 +1,10 @@
-/**
+/*
  * Mars Simulation Project
- * GuideWindow.java
- * @version 3.2.0 2021-06-20
+ * HTMLContentPane.java
+ * @date 2021-08-20
  * @author Lars Naesbye Christensen
  */
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.ui.swing.tool.guide;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,11 +22,8 @@ import org.mars_sim.msp.core.Msg;
  * The HTMLContentPane class provides an HTML pane for displaying the help files
  * in the Guide window.
  */
-
+@SuppressWarnings("serial")
 public class HTMLContentPane extends JEditorPane {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(HTMLContentPane.class.getName());

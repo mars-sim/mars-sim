@@ -101,7 +101,7 @@ public class MarsProject {
 			builder.parseCommandLine(line);
 			
 			if (line.hasOption(NOAUDIO)) {
-				// TODO disable all audio not just the volume
+				// Disable all audio not just the volume
 				AudioPlayer.disableVolume();
 			}
 			if (line.hasOption(DISPLAYHELP)) {

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Scenario.java
- * @version 3.3.0 2021-08-20
+ * @date 2021-08-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.configuration;

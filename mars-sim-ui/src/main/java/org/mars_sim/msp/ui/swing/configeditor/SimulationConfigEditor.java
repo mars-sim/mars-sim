@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.3.0 2021-06-20
+ * @date 2021-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;

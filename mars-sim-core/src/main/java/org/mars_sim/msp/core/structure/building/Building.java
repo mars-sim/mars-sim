@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Building.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-20
  * @author Scott Davis
  */
 
@@ -120,7 +120,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 	
 	/** A list of functions of this building. */
-	protected transient List<Function> functions;
+	protected List<Function> functions;
 	
 	/** Default : 3340 Sols (5 orbits). Will be overridden by the value from buildings.xml for each building type. */
 	private int wearLifeTime = 3_340_000;
@@ -169,34 +169,34 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 	
-	private transient Communication comm;
-	private transient ThermalGeneration furnace;
-	private transient PowerGeneration powerGen;
-	private transient PowerStorage powerStorage;
-	private transient LifeSupport lifeSupport;
-	private transient RoboticStation roboticStation;
-	private transient Heating heating;
-	private transient EVA eva;
-	private transient Farming farm;
-	private transient Fishery fish;
-	private transient LivingAccommodations livingAccommodations;
-	private transient PreparingDessert preparingDessert;
-	private transient Cooking cooking;
-	private transient Management management;
-	private transient MedicalCare medical;
-	private transient WasteDisposal waste;
-	private transient VehicleMaintenance garage;
-	private transient FoodProduction foodFactory;
-	private transient ResourceProcessing processing;
-	private transient Research lab;
-	private transient Manufacture workshop;
-	private transient Administration admin;
-	private transient Recreation rec;
-	private transient Dining dine;
-	private transient GroundVehicleMaintenance maint;
-	private transient AstronomicalObservation astro;
-	private transient Exercise gym;
-	private transient Storage storage;
+	private Communication comm;
+	private ThermalGeneration furnace;
+	private PowerGeneration powerGen;
+	private PowerStorage powerStorage;
+	private LifeSupport lifeSupport;
+	private RoboticStation roboticStation;
+	private Heating heating;
+	private EVA eva;
+	private Farming farm;
+	private Fishery fish;
+	private LivingAccommodations livingAccommodations;
+	private PreparingDessert preparingDessert;
+	private Cooking cooking;
+	private Management management;
+	private MedicalCare medical;
+	private WasteDisposal waste;
+	private VehicleMaintenance garage;
+	private FoodProduction foodFactory;
+	private ResourceProcessing processing;
+	private Research lab;
+	private Manufacture workshop;
+	private Administration admin;
+	private Recreation rec;
+	private Dining dine;
+	private GroundVehicleMaintenance maint;
+	private AstronomicalObservation astro;
+	private Exercise gym;
+	private Storage storage;
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;

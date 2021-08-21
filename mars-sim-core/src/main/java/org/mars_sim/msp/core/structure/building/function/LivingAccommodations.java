@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -56,7 +56,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private double greyWaterFraction; 
 
 	/** The bed registry in this facility. */
-	private transient Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
+	private Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;

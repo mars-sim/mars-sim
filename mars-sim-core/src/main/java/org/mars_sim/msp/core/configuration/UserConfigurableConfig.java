@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * UserConfigurableConfig.java
+ * @date 2021-08-20
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.configuration;
 
 import java.io.File;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @version 3.2.0 2021-06-28
+ * @date 2021-08-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;

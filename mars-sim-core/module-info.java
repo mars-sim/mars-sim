@@ -6,13 +6,10 @@ module mars-sim-core {
 //	requires java.nio;
 //	requires java.io;
 	requires sun.misc.Unsafe;
-	
     requires javax.json;
 //    requires java.json;
 //    requires java.util;
 //    requires java.text;
-
-    
     requires junit;
     requires jdom;
     requires guava;
@@ -23,7 +20,6 @@ module mars-sim-core {
     requires gson;
     requires commons-lang3;
 //    requires xz;
-    
     requires jackson;
 	requires flogger;
     requires kotlin;

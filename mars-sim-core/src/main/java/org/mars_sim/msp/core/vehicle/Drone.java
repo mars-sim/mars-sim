@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
  * Drone.java
- * @version 3.2.0 2021-06-20
- * @author Manny
+ * @date 2021-08-20
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.vehicle;
@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;

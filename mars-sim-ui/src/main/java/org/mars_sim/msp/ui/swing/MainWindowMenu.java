@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-20
  * @author Scott Davis
  */
 
@@ -13,7 +13,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -29,8 +28,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
