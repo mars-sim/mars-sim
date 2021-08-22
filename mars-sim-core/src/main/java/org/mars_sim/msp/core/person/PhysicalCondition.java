@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -183,12 +183,10 @@ public class PhysicalCondition implements Serializable {
 	private double bodyMassDeviation;
 
 	private String name;
-
 	/** Person owning this physical. */
 	private Person person;
 	/** Details of persons death. */
 	private DeathInfo deathDetails;
-
 	/** Radiation Exposure. */
 	private RadiationExposure radiation;
 
@@ -203,8 +201,6 @@ public class PhysicalCondition implements Serializable {
 
 	/** The CircadianClock instance. */
 	private transient CircadianClock circadian;
-	/** The TaskManager instance. */
-//	private transient TaskManager taskMgr;
 	/** The NaturalAttributeManager instance. */
 	private transient NaturalAttributeManager naturalAttributeManager;
 	
@@ -216,11 +212,7 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem radiationPoisoned;
 	/** Most serious problem. */
 	private HealthProblem serious;
-	
-	
-	/** A static list of all available medical complaints. */
-//	private static List<Complaint> allMedicalComplaints;
-	
+
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -266,10 +258,7 @@ public class PhysicalCondition implements Serializable {
 		medicalManager = sim.getMedicalManager();
 		
 		// Set health instances
-		if (medicalManager != null) {
-			// Note that this 'if' above is for maven test, or else NullPointerException
-//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
-			
+		if (medicalManager != null) {		
 //			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
 //			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
 //			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
@@ -294,7 +283,6 @@ public class PhysicalCondition implements Serializable {
 		name = newPerson.getName();
 		
 		circadian = person.getCircadianClock();
-//		taskMgr = person.getMind().getTaskManager();
 		naturalAttributeManager = person.getNaturalAttributeManager();
 		
 		alive = true;
@@ -318,8 +306,8 @@ public class PhysicalCondition implements Serializable {
 		// Computes the adjustment from a person's natural attributes
 		double es = (endurance + strength + agility) / 300D;
 
-		// TODO: may incorporate real world parameters such as areal density in g cm−2,
-		// T-socre and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
+		// Note: may incorporate real world parameters such as areal density in g cm−2,
+		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
 		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + (int) es; // pain tolerance
 		musculoskeletal[1] = 50; // muscle health index; 50 being the average
 		musculoskeletal[2] = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
@@ -381,8 +369,6 @@ public class PhysicalCondition implements Serializable {
 		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-		
-//		logger.info(person + " : " + personalMaxEnergy + "   appetite : " + Math.round(appetite*1000.0)/1000.0);
 	}
 
 	public void recoverFromSoreness(double value) {
@@ -405,8 +391,6 @@ public class PhysicalCondition implements Serializable {
 	 * @return True still alive.
 	 */
 	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
-//		if (time > 10)
-//			System.out.println("time : " + time);
 		if (alive) {
 			double time = pulse.getElapsed();
 			
@@ -416,16 +400,10 @@ public class PhysicalCondition implements Serializable {
 				recoverFromSoreness(1);
 			}
 
-			// Check if a person is performing low aerobic tasks 
-            //					|| person.getTaskDescription().toLowerCase().contains("teach")
-            //					|| person.getTaskDescription().toLowerCase().contains("walk")
-            //					|| person.getTaskDescription().toLowerCase().contains("yoga")
+			// Check if a person is performing low aerobic tasks as such "teach", "walk", "yoga"
             restingTask = person.getTaskDescription().toLowerCase().contains("eat")
                     || person.getTaskDescription().toLowerCase().contains("drink")
-//					person.getTaskDescription().toLowerCase().contains("assist")
-//					|| person.getTaskDescription().toLowerCase().contains("compil")
                     || person.getTaskDescription().toLowerCase().contains("meet")
-//					|| person.getTaskDescription().toLowerCase().contains("peer")
                     || person.getTaskDescription().toLowerCase().contains("relax")
                     || person.getTaskDescription().toLowerCase().contains("rest")
                     || person.getTaskDescription().toLowerCase().contains("sleep");
@@ -445,9 +423,9 @@ public class PhysicalCondition implements Serializable {
 
 			// Build up fatigue & hunger for given time passing.
 			setThirst(thirst + time * bodyMassDeviation);
-//			System.out.println(person + " fatigue : " + fatigue);
+
 			setFatigue(fatigue + time);
-//			System.out.println(person + " fatigue : " + fatigue);
+
 			setHunger(hunger + time * bodyMassDeviation);
 
 			// normal bodily function consume a minute amount of energy
@@ -460,28 +438,12 @@ public class PhysicalCondition implements Serializable {
 			int msol = pulse.getMarsTime().getMillisolInt();
 			if (msol % 7 == 0) {
 
-//				if (!restingTask) {
-					checkStarvation(hunger);
-					checkDehydration(thirst);
-//				}
+				checkStarvation(hunger);
+				checkDehydration(thirst);
 
 //				// If person is at high stress, check for mental breakdown.
-//				if (!isStressedOut)
-//					if (stress > MENTAL_BREAKDOWN)
-//						checkForStressBreakdown(time);
-////					else if (stress < 33) {
-////						isStressedOut = false;
-////						checkHealth(time);// remove highFatigue
-////					}
-//				
-//				// Check if person is at very high fatigue may collapse.
-//				if (!isCollapsed)
-//					if (fatigue > COLLAPSE_IMMINENT)
-//						checkForHighFatigueCollapse(time);
-////					else if (fatigue < 333) {
-////						isCollapsed = false;
-////						checkHealth(time);// remove highFatigue
-////					}
+			
+				// Check if person is at very high fatigue may collapse.
 
 				if (!isRadiationPoisoned)
 					checkRadiationPoisoning(time);
@@ -516,28 +478,14 @@ public class PhysicalCondition implements Serializable {
 				Complaint nextComplaintPhase = problem.timePassing(pulse.getElapsed(), this);
 	
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
-//				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
-//						&& fatigue < 500) {
-//					isCollapsed = false;
-//					problems.remove(problem.getIllness());	
-//				}
-				
-//				LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//						 person + " had " + problem.getType() + " (state : " + problem.getStateString() + ").");
-				
+		
 				if (problem.isCured() || (nextComplaintPhase != null)) {
-//					Complaint c = problem.getIllness();
+
 					ComplaintType type = problem.getType();
 	
 					logger.log(person, Level.INFO, 20_000, 
 							"Cured from " + type + ".");
 					
-//					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-//						isCollapsed = false;
-//	
-//					else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
-//						isStressedOut = false;
-	
 					if (type == ComplaintType.DEHYDRATION)
 						isDehydrated = false;
 	
@@ -556,22 +504,15 @@ public class PhysicalCondition implements Serializable {
 				// If a new problem, check it doesn't exist already
 				if (nextComplaintPhase != null) {
 					newComplaints.add(nextComplaintPhase);
-				}
-				
+				}			
 			}
-	
-//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//					 person + " had a list of " + problems + ".");
-			
+
 			// Add the new problems
 			for (Complaint c : newComplaints) {
 				addMedicalComplaint(c);
 				illnessEvent = true;
 			}
 		}
-	
-		// Has the person died ?
-		// if (isDead()) return false;
 	
 		// Generates any random illnesses.
 		if (!restingTask) {
@@ -613,8 +554,7 @@ public class PhysicalCondition implements Serializable {
 					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal temperature.");
 				
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.log(person, Level.SEVERE, 60_000, "Reported anomaly in the life support system.");
+				logger.log(person, Level.SEVERE, 60_000, "Reported anomaly in the life support system: ", e);
 			}
 		}
 	}
@@ -682,7 +622,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void addEnergy(double foodAmount) {
 		// 1 calorie = 4.1858 kJ
-		// TODO: vary MAX_KJ according to the individual's physical profile strength,
+		// Note: vary MAX_KJ according to the individual's physical profile strength,
 		// endurance, etc..
 		// double FOOD_COMPOSITION_ENERGY_RATIO = 16290; 1kg of food has ~16290 kJ (see
 		// notes on people.xml under <food-consumption-rate value="0.62" />)
@@ -760,10 +700,6 @@ public class PhysicalCondition implements Serializable {
 		if (t > 4000)
 			t = 4000;
 		thirst = t;
-//		if (t > THIRST_THRESHOLD && !isThirsty)
-//			isThirsty = true;
-//		else if (isThirsty)
-//			isThirsty = false;
 		// person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 
@@ -807,8 +743,8 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
 			}
 			
-			// TODO : how to tell a person to walk back to the settlement ?
-			// TODO : should check if a person is on a critical mission,
+			// Note : how to tell a person to walk back to the settlement ?
+			// Note : should check if a person is on a critical mission,
 		}
 
 		else if (isStarving) {
@@ -1132,7 +1068,7 @@ public class PhysicalCondition implements Serializable {
 						if (ct == ComplaintType.PULL_MUSCLE_TENDON 
 								|| ct == ComplaintType.BROKEN_BONE) {
 							// Note: at the time of workout, pulled muscle can happen
-							// TODO: but make a person less prone to pulled muscle while doing other tasks
+							// Note: how to make a person less prone to pulled muscle while doing other tasks
 							// if having consistent workout.
 							String taskDes = person.getTaskDescription().toLowerCase();
 							String taskPhase = person.getTaskPhase().toLowerCase();
@@ -1232,7 +1168,7 @@ public class PhysicalCondition implements Serializable {
 
 			String phrase = "";
 
-			if (type == ComplaintType.STARVATION)// .equalsIgnoreCase("starvation"))
+			if (type == ComplaintType.STARVATION)
 				phrase = "Starving.";
 			else if (type == ComplaintType.DEHYDRATION)
 				phrase = "Dehydrated.";
@@ -1256,15 +1192,10 @@ public class PhysicalCondition implements Serializable {
 				phrase = "Pulled a muscle.";
 			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 				phrase = "Collapsed under high fatigue.";
-//			else
-//				phrase = " was complaining about " + n;
 
 			logger.log(person, Level.INFO, 60_000, phrase);
 
 			recalculatePerformance();
-			
-			// Stop any on-going tasks
-//			taskMgr.clearTask();
 		}
 	}
 
@@ -1334,7 +1265,7 @@ public class PhysicalCondition implements Serializable {
 	
 				// Track the amount consumed
 				person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
-				// TODO: how to model how much oxygen we need properly ?			
+				// Note: how to model how much oxygen we need properly ?			
 				double required = amount / 2D; 
 	
 				return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
@@ -1407,6 +1338,12 @@ public class PhysicalCondition implements Serializable {
 		return newProblem;
 	}
 
+	/**
+	 * Converts a complaint object to a health problem object 
+	 * 
+	 * @param complaint
+	 * @return
+	 */
 	private HealthProblem getProblem(Complaint complaint) {
 		for (HealthProblem hp: problems) {
 			if (hp.getType() == complaint.getType())
@@ -1554,7 +1491,6 @@ public class PhysicalCondition implements Serializable {
 			} else {
 				situation = SICK_COLON + serious.toString();
 			}
-			// else situation = "Not Well";
 		}
 		return situation;
 	}
@@ -1619,8 +1555,6 @@ public class PhysicalCondition implements Serializable {
 			tempPerformance -= (fatigue - 1500D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
 		} else if (fatigue > 700D) {
 			tempPerformance -= (fatigue - 700D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
-			// e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 ->
-			// reduces by 1.25% on each frame
 		}
 
 		// High stress reduces performance.
@@ -1628,21 +1562,13 @@ public class PhysicalCondition implements Serializable {
 			tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER / 2;
 		} else if (stress > 50D) {
 			tempPerformance -= (stress - 50D) * STRESS_PERFORMANCE_MODIFIER / 4;
-			// e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125 or 1.25% on each
-			// frame
 		}
 
 		// High kJoules improves performance and low kJoules hurts performance.
 		if (kJoules > 7500) {
-			// double old = tempPerformance;
 			tempPerformance += (kJoules - 7500) * ENERGY_PERFORMANCE_MODIFIER / 8;
-			// LogConsolidated.log(logger, Level.INFO, 200, sourceName,
-			// "kJ > 2000 " + old + " --> " + tempPerformance, null);
 		} else if (kJoules < 400) {
-			// double old = tempPerformance;
 			tempPerformance -= 400_000 / kJoules * ENERGY_PERFORMANCE_MODIFIER / 4;
-			// LogConsolidated.log(logger, Level.INFO, 200, sourceName,
-			// "kJ < 400 " + old + " --> " + tempPerformance, null);
 		}
 
 		setPerformanceFactor(tempPerformance);
@@ -1756,8 +1682,6 @@ public class PhysicalCondition implements Serializable {
 			status = Msg.getString("PersonTableModel.column.performance.level4");
 		else 
 			status = Msg.getString("PersonTableModel.column.performance.level5");
-		// logger.info(" Perf : " + Math.round(value) + " ; status : " +
-		// status);
 		return status;
 	}
 
@@ -2027,7 +1951,6 @@ public class PhysicalCondition implements Serializable {
 	
 	public void reinit() {
 		circadian = person.getCircadianClock();
-//		taskMgr = person.getMind().getTaskManager();
 		naturalAttributeManager = person.getNaturalAttributeManager();
 	}
 	
@@ -2037,14 +1960,11 @@ public class PhysicalCondition implements Serializable {
 	public void destroy() {
 
 		deathDetails = null;
-		// problems.clear();
 		problems = null;
 		serious = null;
 		person = null;
-
 		radiation = null;
 		circadian = null;
-//		taskMgr = null;
 		starved = null;
 		dehydrated = null;
 		medicalManager = null;
@@ -2059,10 +1979,6 @@ public class PhysicalCondition implements Serializable {
 //		panicAttack = null;
 //		highFatigue = null;
 		radiationPoisoning = null;
-
-		// if (medicationList != null) medicationList.clear();
 		medicationList = null;
-//		allMedicalComplaints = null;
-
 	}
 }

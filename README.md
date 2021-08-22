@@ -1,4 +1,4 @@
-[![Download Mars Simulation Project](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/latest/download)
+[![Download Mars Simulation Project](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.github.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.github.mars-sim%3Amars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
@@ -183,26 +183,8 @@ If you like, click on the SF's button below to automatically sense the correct O
 Currently, mars-sim supports Java 11. We will transition to Java 17 as 
 JDK 17 is the next long-term support (LTS) release.
 
-For r5389 and onward,
 * Requires only JRE 11 for running mars-sim
 * Requires only JDK 11 (or openjdk 11) for compiling binary
-
-For r5274 and onward,
-* Requires JRE 14 for running mars-sim
-* Requires JDK 14 (or openjdk 14) for compiling binary
-
-For r5217 and onward,
-* Requires JRE 12 for running mars-sim
-* Requires JDK 12 (or openjdk 12) for compiling binary
-
-For r4945 and onward,
-* Requires JRE 11 for running mars-sim
-* Requires JDK 11 (or openjdk 11) for compiling binary
-
-For r4945,
-* Require JDK 8 (u77 or above) for compiling Java 8 compatible binary
-* Require JDK 9/10 for compiling Java 9/10 compatible binary
-
 
 ### JDK and JavaFX
 
@@ -214,7 +196,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 Currently, mars-sim does not require JavaFX. 
 
  ```
-Note : the official release v3.1.0, v3.1.1, v3.1.2, v3.2.0 of mars-sim do not 
+Specifically, the official release v3.1.0 to v3.2.0 of mars-sim do not 
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
  ```
@@ -240,7 +222,7 @@ For windows platform, choose MSI version that will automatically set up the envi
 
 ### OS Platforms
 
-Assuming that OpenJDK 14.0.2 is being used,
+Assuming that OpenJDK 11.0.12 is being used,
 
 #### Linux
 
@@ -253,25 +235,25 @@ see this [DZone article](https://dzone.com/articles/how-to-install-multiple-vers
 
 #### macOS
 
-1.  Check if the directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-14.jdk/Contents/Home`. 
-See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more instructions.
+1.  Check if the directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`. 
+See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
 
 #### Windows
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-14.0.2\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.12\bin";%PATH%`.
 
 2. Alternatively, pre-set the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel. 
    
-  a. Add `C:\Program Files\Java\jre-14.0.2\bin` to the `PATH` variable. 
+  a. Add `C:\Program Files\Java\jre-11.0.12\bin` to the `PATH` variable. 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-  b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-14.0.2\bin\` or 
-`C:\Program Files\Java\jre-14.0.2\bin`. 
+  b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.12\bin\` or 
+`C:\Program Files\Java\jre-11.0.12\bin`. 
  
   ```
 Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the 
@@ -284,7 +266,7 @@ variable to look for a valid JDK folder. If it's not found, java cannot start ma
 the order of precedence when it comes to searching for the JDK. 
 
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 14.0.2) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.12) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
 3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 
@@ -312,6 +294,9 @@ have multiple versions of Java installed. Unfortunately, this panel only tracks 
 official Oracle versions. If you install any openJDK's on your machine, JCP won't 
 be able to recognize them.
  ```
+ ``` 
+Note 6. To track what versions of openjdk having been installed on your machine. Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html) 
+ ``` 
  
 ### Remote Console Connection
 
@@ -362,7 +347,7 @@ e.g. Include the followings :
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle JDK 14.0.2, AdoptOpenJDK 14.0.2, openjfx 14 etc.]
+ - Java version : [e.g. Oracle JDK 11.0.12, AdoptOpenJDK 11.0.12, openjfx 11 etc.]
  - mars-sim build version : [e.g. r4255, v3.1.1, etc.]
 
 **Additional context**
