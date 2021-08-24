@@ -26,22 +26,22 @@ implements Serializable {
 	private List<String> countries;
 
 	private List<String> settlementNames;
+
+	private List<String> vehicleNames;
  
 	ReportingAuthority(String code, String name,
 							  MissionAgenda agenda, List<String> countries,
-							  List<String> names) {
+							  List<String> names, List<String> vehicleNames) {
 		this.name  = name;
 		this.code = code;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;
+		this.vehicleNames = vehicleNames;
 	}
-	
-	protected ReportingAuthority() {
-	}
-	
+
 	/**
-	 * Work ont he mission objectives conducted
+	 * Work on the mission objectives conducted
 	 * @param unit
 	 */
 	public void conductMissionObjective(Worker unit) {
@@ -87,6 +87,14 @@ implements Serializable {
 	 */
 	public List<String> getSettlementNames() {
 		return settlementNames;
+	}
+
+	/**
+	 * Get the potential names of Vehicles
+	 * @return
+	 */
+	public List<String> getVehicleNames() {
+		return vehicleNames;
 	}
 	
 	@Override

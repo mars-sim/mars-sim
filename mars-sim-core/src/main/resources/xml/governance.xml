@@ -15,7 +15,7 @@
 	<!ATTLIST modifier value CDATA #REQUIRED>
 	
 	<!ELEMENT authorities (authority+)>
-	<!ELEMENT authority (country+, settlement-name*)>
+	<!ELEMENT authority (country+, settlement-name*, rover-name*)>
 	<!ATTLIST authority code CDATA #REQUIRED>
 	<!ATTLIST authority name CDATA #REQUIRED>
 	<!ATTLIST authority agenda CDATA #REQUIRED>
@@ -23,6 +23,8 @@
 	<!ATTLIST country name CDATA #REQUIRED>	
 	<!ELEMENT settlement-name EMPTY>
 	<!ATTLIST settlement-name name CDATA #REQUIRED>	
+	<!ELEMENT rover-name EMPTY>
+	<!ATTLIST rover-name name CDATA #REQUIRED>	
 ]>
 
 <governance>
@@ -298,6 +300,20 @@
 			<settlement-name name="Xin Chongqing" />
 			<settlement-name name="New Manchuria" />	
 			<settlement-name name="Xin Xianggang" />
+			<rover-name name="Huoxing" />  <!-- Chinese for "Mars" -->		
+			<rover-name name="Zidan" />    <!-- Chinese for bullet -->		
+			<rover-name name="Huojian" />  <!-- Chinese for rocket -->		
+			<rover-name name="Bolang" />   <!-- Chinese for wave front -->		
+			<rover-name name="Lingxian" /> <!-- Chinese for leading the way -->		
+			<rover-name name="guoLu" />    <!-- Chinese for passing through -->		
+			<rover-name name="Youli" />    <!-- Chinese for traveling -->		
+			<rover-name name="Changtu" />   <!-- Chinese for long journey" -->		
+			<rover-name name="Hangcheng" /> <!-- Chinese for voyage -->		
+			<rover-name name="Youke" />     <!-- Chinese for traveler -->		
+			<rover-name name="YouShan" />   <!-- Chinese for treking mountain -->		
+			<rover-name name="Aoxiang" />   <!-- Chinese for soaring -->		
+			<rover-name name="Piaofu" />    <!-- Chinese for hovering -->		
+			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
 					agenda="ScienceKnowledge">
@@ -313,7 +329,23 @@
 			<settlement-name name="New Calgary" />
 			<settlement-name name="Sherbrooke" />
 			<settlement-name name="Fredericton" />
-			<settlement-name name="New Waterloo" />
+			<settlement-name name="New Waterloo" />					
+			<rover-name name="Desert Pearl" />	
+			<rover-name name="Desert Rose" />
+			<rover-name name="Deimos Tide" />
+			<rover-name name="Desert Star" />
+			<rover-name name="Drift Wood" />
+			<rover-name name="Desertfarer" />
+			<rover-name name="Dream Chaser" />	
+			<rover-name name="Dune Drifter" />
+			<rover-name name="Dune Runner" />	
+			<rover-name name="Niagara" />
+			<rover-name name="Ottawa" />
+			<rover-name name="Nova Scotia" />	
+			<rover-name name="Notre Dame" />
+			<rover-name name="Buffalo Jump" />
+			<rover-name name="Banff" />
+			<rover-name name="St Lawrence" />
 		</authority>
 		<authority code="ESA" name="European Space Agency"
 					agenda="SurfaceOperations">
@@ -352,7 +384,30 @@
 			<settlement-name name="New Copenhagen" />
 			<settlement-name name="New Rome" />
 			<settlement-name name="Europa" />
+			
+			<rover-name name="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
+			<rover-name name="Areos Aster" /> <!-- Greek for "star of Ares" -->
+			<rover-name name="Ariane" /> 
+			<rover-name name="Beagle IV" />
+			<rover-name name="Bedouin" />		
+			<rover-name name="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
+			<rover-name name="Bahram" /> <!-- Ancient Persian for "Mars" -->
+			
+			<rover-name name="Autobahn" />	<!-- German for Motorway  -->
+			<rover-name name="Fahrzeug" />	<!-- German for vehicle -->
+	 		<rover-name name="Gaspedal" />	<!-- German for Accelerator  -->	
+			<rover-name name="Gondel" />		<!-- German for gondola -->		
+			<rover-name name="Kutsche" />	<!-- German for carriage -->		
+	 		<rover-name name="Schlitten" />	<!-- German for carriage -->	
+					
+			<rover-name name="Nergal" />     <!-- Babylonian for "Mars" -->		
+			
+			<rover-name name="Merih" />      <!-- Turkish for "Mars" -->	
+			<rover-name name="Sakit" />      <!-- Ancient Turkish for "Mars" -->
+			
+			<rover-name name="Voiture " />	<!-- French for vehicle -->			
 		</authority>
+		
 		<authority code="ISRO" name="The Indian Space Research Organisation"
 					agenda="AdvancedTechnology">
 			<country name="India"/>
@@ -367,7 +422,17 @@
 			<settlement-name name="Marshal" />
 			<settlement-name name="Base Sani" />
 			<settlement-name name="Basti" />
+			<rover-name name="Agni" /> <!-- Hindi for "fire" -->
+			<rover-name name="Naag" /> <!-- Hindi for "snake" -->		
+			<rover-name name="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
+			<rover-name name="Mangala" /> <!--  Sanskrit for "Mars" in Jyotish astrology -->
+			<rover-name name="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
+			<rover-name name="Vayu" /> <!-- Hindi for "wind" -->
+			<rover-name name="Prithvi" /> <!-- Hindi for "earth" -->
+			<rover-name name="Reth" /> <!-- Hindi for "sand" -->
+			<rover-name name="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
 		</authority>
+		
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
 					agenda="SpaceApplications">
 			<country name="Japan"/>
@@ -385,7 +450,25 @@
 			<settlement-name name="New Yokohama" />
 			<settlement-name name="Sony World" />
 			<settlement-name name="Kyocera" />
-		</authority>								
+			<rover-name name="Jyu-Sokosha" />
+			<rover-name name="Ha-Go" />
+			<rover-name name="Ke-To" />
+			<rover-name name="Ke-Nu" />
+			<rover-name name="Shinhoto" />
+			<rover-name name="Ro-Go" />
+			<rover-name name="So-Ki" />
+			<rover-name name="So-Da" />
+			<rover-name name="Ku-Se" />
+			<rover-name name="Ke-Ri" />
+			<rover-name name="Ho-To" />
+			<rover-name name="Ke-Ho" />										
+			<rover-name name="Chi-Ha" />
+			<rover-name name="Chi-He" />		
+			<rover-name name="Chi-To" />
+			<rover-name name="Chi-Ri" />
+			<rover-name name="Shi-Ki" />	
+		</authority>
+										
 		<authority code="MS" name="Mars Society"
 					agenda="SettlingMars">
 			<country name="Austria"/>
@@ -431,17 +514,29 @@
 			<settlement-name name="Robinson Camp" />
 			<settlement-name name="Hartmann Base" />
 			<settlement-name name="Shoemaker Base" />
-			<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
-			<settlement-name name="New Zzyzx" />
-	
-			<settlement-name name="Pavonis Base" />
-			<settlement-name name="Olympus Scarp" />
-			<settlement-name name="Canyon's End" />
-			<settlement-name name="Lowell Trading Post" />
-	
-			<settlement-name name="Mars Base Camp" />
-			<settlement-name name="Watney Station" />
+			<rover-name name="Dusty Star" />
+			<rover-name name="Dust Storm" />
+			<rover-name name="Dust Sprite" />
+			<rover-name name="Martian Escape" />		
+			<rover-name name="Martian Cloud" />	
+			<rover-name name="Ma'adim" /> <!-- Hebrew for "Mars" -->
+			<rover-name name="Red Mariner" />
+			<rover-name name="Red Moon" />
+			<rover-name name="Ridge Runner" />		
+			<rover-name name="Shooting Star" />
+			<rover-name name="Sand Dancer" />
+			<rover-name name="Spice Trader" />
+			<rover-name name="Solitude" />
+			<rover-name name="Sand Spirit" />		
+			<rover-name name="Sand Crawler" />
+			<rover-name name="Sojourner II" />
+			<rover-name name="Spirit II" />
+			<rover-name name="Sun Dancer" />
+			<rover-name name="Wind Runner" />
+			<rover-name name="Windstorm" />
+			<rover-name name="Desert Fox" />
 		</authority>	
+		
 		<authority code="NASA" name="National Aeronautics and Space Administration"
 					agenda="FindingLife">
 			<country name="USA"/>
@@ -455,7 +550,27 @@
 			<settlement-name name="Goddard Trading Post" />
 			<settlement-name name="Ares One" />
 			<settlement-name name="Asimov Base" />
+			<rover-name name="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->			
+			<rover-name name="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
+			<rover-name name="Crater Crab" />		
+			<rover-name name="Desert Rat" /> 
+			<rover-name name="Firefly" />
+			<rover-name name="Fire Star" />	
+			<rover-name name="Fremen Wanderer" />			
+			<rover-name name="Liberty" />
+			<rover-name name="Loonie" /> 	
+			<rover-name name="Jetson" /> 
+			<rover-name name="Marina" /> 			
+			<rover-name name="Opportunity II" />
+			<rover-name name="Buggy" /> 	
+			<rover-name name="Gemini" /> 
+			<rover-name name="Mercury" />
+			<rover-name name="Schrodinger" />
+			<rover-name name="Artemis" />		 
+			<rover-name name="Perseverance II" />
+			<rover-name name="Pathfinder II" />
 		</authority>		
+		
 		<authority code="RKA" name="Roscosmos"
 					agenda="HealthHazards">
 			<country name="Russia"/>
@@ -467,7 +582,22 @@
 			<settlement-name name="Chebyshev" />
 			<settlement-name name="Mendeleev" />				
 			<settlement-name name="Kaspersky" />
+			<rover-name name="Chizhevsky" />
+			<rover-name name="Lomonosov" />
+			<rover-name name="Lvov" />		
+			<rover-name name="Obruchev" />
+			<rover-name name="Tatishchev" />
+			<rover-name name="Vernadsky" />	
+			<rover-name name="Chikhachyov" />
+			<rover-name name="Dokuchaev" />
+			<rover-name name="Karpinsky" />	
+			<rover-name name="Middendorf" />
+			<rover-name name="Shirshov" />
+			<rover-name name="Shokalsky" />					
+			<rover-name name="Tikhonov" />
+			<rover-name name="Maleev" />
 		</authority>	
+		
 		<authority code="SPACEX" name="Space X"
 					agenda="PlanetLife">
 			<country name="USA"/>
@@ -482,6 +612,16 @@
 			<settlement-name name="Boring Town" />
 			<settlement-name name="Hawthorne" />
 			<settlement-name name="XAE-13" />
+			<rover-name name="Roadster" />
+			<rover-name name="Gypsea" />
+			<rover-name name="Nomad" />
+			<rover-name name="Oasis" />
+			<rover-name name="Odyssey" />
+			<rover-name name="Osprey" />
+			<rover-name name="Drifter" />
+			<rover-name name="Princess" />
+			<rover-name name="Serenity" />
+			<rover-name name="Ironman" />
 		</authority>	
 	</authorities>
 </governance>

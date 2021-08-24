@@ -38,6 +38,7 @@ public class GovernanceConfig {
 	private static final String COUNTRY_EL = "country";
 	private static final String NAME_ATTR = "name";
 	private static final String SETTLEMENTNAME_EL = "settlement-name";
+	private static final String ROVERNAME_EL = "rover-name";
 	
 	/**
 	 * Constructor
@@ -111,8 +112,15 @@ public class GovernanceConfig {
 					.map(a -> a.getAttributeValue(NAME_ATTR))
 					.collect(Collectors.toList());
 
+			// Get Rover names
+			List<String> roverNames = authorityNode.getChildren(ROVERNAME_EL).stream()
+					.map(a -> a.getAttributeValue(NAME_ATTR))
+					.collect(Collectors.toList());
+			
 			// Add to lookup
-			authorites.put(code, new ReportingAuthority(code, name, agenda, countries, settlementNames));
+			authorites.put(code, new ReportingAuthority(code, name, agenda,
+														countries, settlementNames,
+														roverNames));
 		}
 		
 		return authorites;

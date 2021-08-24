@@ -2181,7 +2181,7 @@ public abstract class Vehicle extends Unit
 			baseName = "Drone";
 		}
 		else {
-			List<String> possibleNames = simulationConfig.getVehicleConfiguration().getRoverNameList(sponsor.getCode());
+			List<String> possibleNames = sponsor.getVehicleNames();
 			if (!possibleNames.isEmpty()) {
 				List<String> availableNames = new ArrayList<>(possibleNames);
 				Collection<Vehicle> vehicles = unitManager.getVehicles();
