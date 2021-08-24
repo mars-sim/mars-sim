@@ -3750,8 +3750,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return
 	 */
 	public static String generateName(ReportingAuthority sponsor) {
-		List<String> remainingNames = new ArrayList<>(
-				settlementConfig.getSettlementNameList(sponsor.getCode()));
+		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
 	
 		List<String> usedNames = unitManager.getSettlements().stream()
 							.map(s -> s.getName()).collect(Collectors.toList());

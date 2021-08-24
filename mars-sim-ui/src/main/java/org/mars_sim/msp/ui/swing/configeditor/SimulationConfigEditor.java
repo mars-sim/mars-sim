@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -203,7 +204,8 @@ public class SimulationConfigEditor {
 					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
-					List<String> candidateNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsorCC));
+					ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsorCC);
+					List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
 					Collections.shuffle(candidateNames);
 					candidateNames.removeAll(usedNames);
 					if (!candidateNames.isEmpty()) {
@@ -359,7 +361,7 @@ public class SimulationConfigEditor {
 						String newSponsor = (String) aValue;
 						if (!info.sponsor.equals(newSponsor)) {
 							info.sponsor = newSponsor;
-							String newName = tailorSettlementNameBySponsor(info.sponsor);
+							String newName = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
 							if (newName != null) {
 								info.name = newName;
 							}
@@ -1057,69 +1059,11 @@ public class SimulationConfigEditor {
 		String template = determineNewSettlementTemplate();
 		Coordinates location = determineNewSettlementLocation();
 		
-		return new InitialSettlement(determineNewSettlementName(sponsor),
+		return new InitialSettlement(tailorSettlementNameBySponsor(sponsor,
+										settlementTableModel.getRowCount()),
 				sponsor, template, 
 				determineNewSettlementPopulation(template),
 				determineNewSettlementNumOfRobots(template), location, null);
-	}
-
-	/**
-	 * Determines a new settlement's name.
-	 * 
-	 * @return name.
-	 */
-	private String determineNewSettlementName(String sponsor) {
-		String result = null;
-
-		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
-		List<String> settlementNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsor));
-		// Randomly shuffle settlement name list first.
-		Collections.shuffle(settlementNames);
-		
-		Iterator<String> i = settlementNames.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					// Label it as being used already in the table.
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-				break;
-			}
-		}
-
-		// If no name found, create numbered settlement name: "Settlement 1",
-		// "Settlement 2", etc.
-		int count = 1;
-		while (result == null) {
-			String name = Msg.getString("SimulationConfigEditor.settlement", //$NON-NLS-1$
-					Integer.toString(count));
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-			}
-
-			count++;
-		}
-
-		return result;
 	}
 
 	/**
@@ -1195,8 +1139,9 @@ public class SimulationConfigEditor {
 	 * @param sponsor
 	 * @return
 	 */
-	private String tailorSettlementNameBySponsor(String sponsor) {
-		
+	private String tailorSettlementNameBySponsor(String sponsor, int index) {
+		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+
 		List<String> usedNames = new ArrayList<>();
 		
 		// Add configuration settlements from table data.
@@ -1207,11 +1152,11 @@ public class SimulationConfigEditor {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<String>(settlementConfig.getSettlementNameList(sponsor));
+		List<String> candidateNames = new ArrayList<String>(ra.getSettlementNames());
 		candidateNames.removeAll(usedNames);
 
 		if (candidateNames.isEmpty())
-			return "[Type in a name]";
+			return "Settlement #" + index;
 		else
 			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
 	}

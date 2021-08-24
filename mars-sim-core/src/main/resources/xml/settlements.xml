@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
 	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list,
-	new-arriving-settlement-list, settlement-name-list)>
+	new-arriving-settlement-list)>
 	
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -87,11 +87,6 @@
 	<!ATTLIST number-of-robots number CDATA #REQUIRED>
 	<!ELEMENT sponsor EMPTY>
 	<!ATTLIST sponsor name (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>
-	
-	<!ELEMENT settlement-name-list (settlement-name*)>
-	<!ELEMENT settlement-name EMPTY>
-	<!ATTLIST settlement-name sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>	
-	<!ATTLIST settlement-name value CDATA #REQUIRED>
 ]>
 
 <settlement-configuration>
@@ -4753,7 +4748,6 @@
 
 	</settlement-template-list>
 
-
 	<!--  List of settlements that will arrive on Mars at a later time -->
 	<new-arriving-settlement-list>
 		<!-- Example of new arriving settlement.
@@ -4765,146 +4759,5 @@
 		</arriving-settlement>
 		-->
 	</new-arriving-settlement-list>
-
-	<!-- List of settlement names -->
-	<!-- 
-	    - Canadian Space Agency (CSA)
-		- European Space Agency (ESA)
-		- Indian Space Research Organisation (ISRO)
-		- Japan Aerospace Exploration Agency (JAXA)
-		- National Aeronautics and Space Administration (NASA)
-		- Roscosmos (RKA)
-		- Mars Society (MS)
-		- Space Exploration Technologies (SpaceX)
-	-->
-		
-	<settlement-name-list>
-		<settlement-name sponsor="CNSA" value="Tian Cheng" />
-		<settlement-name sponsor="CNSA" value="Xin Cheng" />
-		<settlement-name sponsor="CNSA" value="Huoxing Cheng" />
-		<settlement-name sponsor="CNSA" value="Chang-e Cheng" />
-		<settlement-name sponsor="CNSA" value="Xin Shenzhen" />
-		<settlement-name sponsor="CNSA" value="Xin Tianjin" />
-		<settlement-name sponsor="CNSA" value="Xin Shanghai" />
-		<settlement-name sponsor="CNSA" value="Xin Beijing" />
-		<settlement-name sponsor="CNSA" value="New Macau" />
-		<settlement-name sponsor="CNSA" value="Xin Chongqing" />
-		<settlement-name sponsor="CNSA" value="New Manchuria" />	
-		<settlement-name sponsor="CNSA" value="Xin Xianggang" />											
-													
-		<settlement-name sponsor="CSA" value="New Quebec" />
-		<settlement-name sponsor="CSA" value="New Columbia" />
-		<settlement-name sponsor="CSA" value="New Ontario" />
-		<settlement-name sponsor="CSA" value="New Alberta" />
-		<settlement-name sponsor="CSA" value="New Yukon" />
-		<settlement-name sponsor="CSA" value="New Montreal" />
-		<settlement-name sponsor="CSA" value="New Toronto" />
-		<settlement-name sponsor="CSA" value="New Vancouver" />
-		<settlement-name sponsor="CSA" value="New Calgary" />
-		<settlement-name sponsor="CSA" value="Sherbrooke" />
-		<settlement-name sponsor="CSA" value="Fredericton" />
-		<settlement-name sponsor="CSA" value="New Waterloo" />
-												
-		<settlement-name sponsor="ESA" value="Base Visage" />
-		<settlement-name sponsor="ESA" value="Base Gaia" />
-		<settlement-name sponsor="ESA" value="Station Mere" />
-		<settlement-name sponsor="ESA" value="Neu Braunfels" />
-		<settlement-name sponsor="ESA" value="Nieuw Amsterdam" />	
-		<settlement-name sponsor="ESA" value="Schiaparelli Point" />
-		<settlement-name sponsor="ESA" value="New Paris" />
-		<settlement-name sponsor="ESA" value="New Berlin" />
-		<settlement-name sponsor="ESA" value="New Athen" />
-		<settlement-name sponsor="ESA" value="New Brussels" />
-		<settlement-name sponsor="ESA" value="New Madrid" />
-		<settlement-name sponsor="ESA" value="New Copenhagen" />
-		<settlement-name sponsor="ESA" value="New Rome" />
-		<settlement-name sponsor="ESA" value="Europa" />
-							
-						
-		<settlement-name sponsor="ISRO" value="New Bengal" />
-		<settlement-name sponsor="ISRO" value="New Chennai" />
-		<settlement-name sponsor="ISRO" value="New Punjab" />
-		<settlement-name sponsor="ISRO" value="Mahindra" />
-		<settlement-name sponsor="ISRO" value="New Mumbai" />		
-		<settlement-name sponsor="ISRO" value="Chandrasekhar" />	
-		<settlement-name sponsor="ISRO" value="Maangalan" />
-		<settlement-name sponsor="ISRO" value="BhomBhavan" />
-		<settlement-name sponsor="ISRO" value="Marshal" />
-		<settlement-name sponsor="ISRO" value="Base Sani" />
-		<settlement-name sponsor="ISRO" value="Basti" />		
-		
-		<settlement-name sponsor="JAXA" value="New Tokyo" />
-		<settlement-name sponsor="JAXA" value="New Seto" />						
-		<settlement-name sponsor="JAXA" value="Ohsumi" />
-		<settlement-name sponsor="JAXA" value="Kawasaki Port" />		
-		<settlement-name sponsor="JAXA" value="Obayashi Port" />
-		<settlement-name sponsor="JAXA" value="Osamu" />	
-		<settlement-name sponsor="JAXA" value="New Osake" />
-		<settlement-name sponsor="JAXA" value="New Okinawa" />						
-		<settlement-name sponsor="JAXA" value="New Kyoto" />
-		<settlement-name sponsor="JAXA" value="New Saga" />		
-		<settlement-name sponsor="JAXA" value="New Sapporo" />
-		<settlement-name sponsor="JAXA" value="New Yokohama" />
-		<settlement-name sponsor="JAXA" value="Sony World" />
-		<settlement-name sponsor="JAXA" value="Kyocera" />
-								
-		<settlement-name sponsor="NASA" value="Port Braun" />
-		<settlement-name sponsor="NASA" value="Sagan Station" />
-		<settlement-name sponsor="NASA" value="McKay Base" />
-		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
-		<settlement-name sponsor="NASA" value="Meyer Station" />
-		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
-		<settlement-name sponsor="NASA" value="Garvin Station" />
-		<settlement-name sponsor="NASA" value="Goddard Trading Post" />
-		<settlement-name sponsor="NASA" value="Ares One" />
-		<settlement-name sponsor="NASA" value="Asimov Base" />
-		
-		<settlement-name sponsor="RKA" value="Mir Town" />
-		<settlement-name sponsor="RKA" value="Kosmosdrome" />
-		<settlement-name sponsor="RKA" value="Konstantin Point" />
-		<settlement-name sponsor="RKA" value="Gorbachev" />				
-		<settlement-name sponsor="RKA" value="New Moscow" />
-		<settlement-name sponsor="RKA" value="Chebyshev" />
-		<settlement-name sponsor="RKA" value="Mendeleev" />				
-		<settlement-name sponsor="RKA" value="Kaspersky" />
-
-		<settlement-name sponsor="MS" value="New Cairo" />
-		<settlement-name sponsor="MS" value="New Boulder" />
-		<settlement-name sponsor="MS" value="Burroughstown" />
-		<settlement-name sponsor="MS" value="Zubrin City" />
-		<settlement-name sponsor="MS" value="Clarketown" />
-		<settlement-name sponsor="MS" value="Sojourner Station" />
-		<settlement-name sponsor="MS" value="Viking Base" />
-		<settlement-name sponsor="MS" value="Mariner Settlement" />
-		<settlement-name sponsor="MS" value="Camp Bradbury" />
-		<settlement-name sponsor="MS" value="Heinlein Station" />
-		<settlement-name sponsor="MS" value="Port Kokh" />
-		<settlement-name sponsor="MS" value="Red Colony" />
-		<settlement-name sponsor="MS" value="Robinson Camp" />
-		<settlement-name sponsor="MS" value="Hartmann Base" />
-		<settlement-name sponsor="MS" value="Shoemaker Base" />
-		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
-		<settlement-name sponsor="MS" value="New Zzyzx" />
-
-		<settlement-name sponsor="MS" value="Pavonis Base" />
-		<settlement-name sponsor="MS" value="Olympus Scarp" />
-		<settlement-name sponsor="MS" value="Canyon's End" />
-		<settlement-name sponsor="MS" value="Lowell Trading Post" />
-
-		<settlement-name sponsor="MS" value="Mars Base Camp" />
-		<settlement-name sponsor="MS" value="Watney Station" />
-
-		<settlement-name sponsor="SPACEX" value="MuskVille" />
-		<settlement-name sponsor="SPACEX" value="Falcon Station" />
-		<settlement-name sponsor="SPACEX" value="Nicolas Town" />
-		<settlement-name sponsor="SPACEX" value="Starcity" />
-		<settlement-name sponsor="SPACEX" value="Solar City" />		
-		<settlement-name sponsor="SPACEX" value="New Eden" />
-		<settlement-name sponsor="SPACEX" value="IronVille" />
-		<settlement-name sponsor="SPACEX" value="Boring Town" />
-		<settlement-name sponsor="SPACEX" value="Hawthorne" />
-		<settlement-name sponsor="SPACEX" value="XAE-13" />
-		
-	</settlement-name-list>
 
 </settlement-configuration>

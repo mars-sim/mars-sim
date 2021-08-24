@@ -15,12 +15,14 @@
 	<!ATTLIST modifier value CDATA #REQUIRED>
 	
 	<!ELEMENT authorities (authority+)>
-	<!ELEMENT authority (country+)>
+	<!ELEMENT authority (country+, settlement-name*)>
 	<!ATTLIST authority code CDATA #REQUIRED>
 	<!ATTLIST authority name CDATA #REQUIRED>
 	<!ATTLIST authority agenda CDATA #REQUIRED>
 	<!ELEMENT country EMPTY>
 	<!ATTLIST country name CDATA #REQUIRED>	
+	<!ELEMENT settlement-name EMPTY>
+	<!ATTLIST settlement-name name CDATA #REQUIRED>	
 ]>
 
 <governance>
@@ -284,10 +286,34 @@
 		<authority code="CNSA" name="China National Space Administration"
 					agenda="ProspectMinerals">
 			<country name="China"/>
+			<settlement-name name="Tian Cheng" />
+			<settlement-name name="Xin Cheng" />
+			<settlement-name name="Huoxing Cheng" />
+			<settlement-name name="Chang-e Cheng" />
+			<settlement-name name="Xin Shenzhen" />
+			<settlement-name name="Xin Tianjin" />
+			<settlement-name name="Xin Shanghai" />
+			<settlement-name name="Xin Beijing" />
+			<settlement-name name="New Macau" />
+			<settlement-name name="Xin Chongqing" />
+			<settlement-name name="New Manchuria" />	
+			<settlement-name name="Xin Xianggang" />
 		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
 					agenda="ScienceKnowledge">
 			<country name="Canada"/>
+			<settlement-name name="New Quebec" />
+			<settlement-name name="New Columbia" />
+			<settlement-name name="New Ontario" />
+			<settlement-name name="New Alberta" />
+			<settlement-name name="New Yukon" />
+			<settlement-name name="New Montreal" />
+			<settlement-name name="New Toronto" />
+			<settlement-name name="New Vancouver" />
+			<settlement-name name="New Calgary" />
+			<settlement-name name="Sherbrooke" />
+			<settlement-name name="Fredericton" />
+			<settlement-name name="New Waterloo" />
 		</authority>
 		<authority code="ESA" name="European Space Agency"
 					agenda="SurfaceOperations">
@@ -313,14 +339,52 @@
 			<country name="Sweden"/>
 			<country name="Switzerland"/>
 			<country name="UK"/>
+			<settlement-name name="Base Visage" />
+			<settlement-name name="Base Gaia" />
+			<settlement-name name="Station Mere" />
+			<settlement-name name="Neu Braunfels" />
+			<settlement-name name="Nieuw Amsterdam" />	
+			<settlement-name name="New Paris" />
+			<settlement-name name="New Berlin" />
+			<settlement-name name="New Athen" />
+			<settlement-name name="New Brussels" />
+			<settlement-name name="New Madrid" />
+			<settlement-name name="New Copenhagen" />
+			<settlement-name name="New Rome" />
+			<settlement-name name="Europa" />
 		</authority>
 		<authority code="ISRO" name="The Indian Space Research Organisation"
 					agenda="AdvancedTechnology">
 			<country name="India"/>
+			<settlement-name name="New Bengal" />
+			<settlement-name name="New Chennai" />
+			<settlement-name name="New Punjab" />
+			<settlement-name name="Mahindra" />
+			<settlement-name name="New Mumbai" />		
+			<settlement-name name="Chandrasekhar" />	
+			<settlement-name name="Maangalan" />
+			<settlement-name name="BhomBhavan" />
+			<settlement-name name="Marshal" />
+			<settlement-name name="Base Sani" />
+			<settlement-name name="Basti" />
 		</authority>
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
 					agenda="SpaceApplications">
 			<country name="Japan"/>
+			<settlement-name name="New Tokyo" />
+			<settlement-name name="New Seto" />						
+			<settlement-name name="Ohsumi" />
+			<settlement-name name="Kawasaki Port" />		
+			<settlement-name name="Obayashi Port" />
+			<settlement-name name="Osamu" />	
+			<settlement-name name="New Osake" />
+			<settlement-name name="New Okinawa" />						
+			<settlement-name name="New Kyoto" />
+			<settlement-name name="New Saga" />		
+			<settlement-name name="New Sapporo" />
+			<settlement-name name="New Yokohama" />
+			<settlement-name name="Sony World" />
+			<settlement-name name="Kyocera" />
 		</authority>								
 		<authority code="MS" name="Mars Society"
 					agenda="SettlingMars">
@@ -352,19 +416,72 @@
 			<country name="Switzerland"/>
 			<country name="UK"/>
 			<country name="USA"/>
+			<settlement-name name="New Cairo" />
+			<settlement-name name="New Boulder" />
+			<settlement-name name="Burroughstown" />
+			<settlement-name name="Zubrin City" />
+			<settlement-name name="Clarketown" />
+			<settlement-name name="Sojourner Station" />
+			<settlement-name name="Viking Base" />
+			<settlement-name name="Mariner Settlement" />
+			<settlement-name name="Camp Bradbury" />
+			<settlement-name name="Heinlein Station" />
+			<settlement-name name="Port Kokh" />
+			<settlement-name name="Red Colony" />
+			<settlement-name name="Robinson Camp" />
+			<settlement-name name="Hartmann Base" />
+			<settlement-name name="Shoemaker Base" />
+			<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
+			<settlement-name name="New Zzyzx" />
+	
+			<settlement-name name="Pavonis Base" />
+			<settlement-name name="Olympus Scarp" />
+			<settlement-name name="Canyon's End" />
+			<settlement-name name="Lowell Trading Post" />
+	
+			<settlement-name name="Mars Base Camp" />
+			<settlement-name name="Watney Station" />
 		</authority>	
 		<authority code="NASA" name="National Aeronautics and Space Administration"
 					agenda="FindingLife">
 			<country name="USA"/>
+			<settlement-name name="Port Braun" />
+			<settlement-name name="Sagan Station" />
+			<settlement-name name="McKay Base" />
+			<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
+			<settlement-name name="Meyer Station" />
+			<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
+			<settlement-name name="Garvin Station" />
+			<settlement-name name="Goddard Trading Post" />
+			<settlement-name name="Ares One" />
+			<settlement-name name="Asimov Base" />
 		</authority>		
 		<authority code="RKA" name="Roscosmos"
 					agenda="HealthHazards">
 			<country name="Russia"/>
+			<settlement-name name="Mir Town" />
+			<settlement-name name="Kosmosdrome" />
+			<settlement-name name="Konstantin Point" />
+			<settlement-name name="Gorbachev" />				
+			<settlement-name name="New Moscow" />
+			<settlement-name name="Chebyshev" />
+			<settlement-name name="Mendeleev" />				
+			<settlement-name name="Kaspersky" />
 		</authority>	
 		<authority code="SPACEX" name="Space X"
 					agenda="PlanetLife">
 			<country name="USA"/>
 			<country name="Canada"/>
+			<settlement-name name="MuskVille" />
+			<settlement-name name="Falcon Station" />
+			<settlement-name name="Nicolas Town" />
+			<settlement-name name="Starcity" />
+			<settlement-name name="Solar City" />		
+			<settlement-name name="New Eden" />
+			<settlement-name name="IronVille" />
+			<settlement-name name="Boring Town" />
+			<settlement-name name="Hawthorne" />
+			<settlement-name name="XAE-13" />
 		</authority>	
 	</authorities>
 </governance>

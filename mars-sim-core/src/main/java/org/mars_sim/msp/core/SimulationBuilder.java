@@ -346,7 +346,7 @@ public class SimulationBuilder {
 		
 		// Create a random name
 		String settlementName = "New Settlement";
-		List<String> settlementNames = settlementConfig.getSettlementNameList(authority.getCode());
+		List<String> settlementNames = authority.getSettlementNames();
 		if (!settlementNames.isEmpty()) {
 			int size = settlementNames.size();
 			int rand = RandomUtil.getRandomInt(size-1);

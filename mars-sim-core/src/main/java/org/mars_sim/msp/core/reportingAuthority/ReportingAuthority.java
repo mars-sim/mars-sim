@@ -24,13 +24,17 @@ implements Serializable {
 	private String code;
 
 	private List<String> countries;
+
+	private List<String> settlementNames;
  
 	ReportingAuthority(String code, String name,
-							  MissionAgenda agenda, List<String> countries) {
+							  MissionAgenda agenda, List<String> countries,
+							  List<String> names) {
 		this.name  = name;
 		this.code = code;
 		this.missionAgenda = agenda;
 		this.countries = countries;
+		this.settlementNames = names;
 	}
 	
 	protected ReportingAuthority() {
@@ -77,6 +81,14 @@ implements Serializable {
 		return countries;
 	}
 
+	/**
+	 * Get the name of Settlement for this Authority
+	 * @return
+	 */
+	public List<String> getSettlementNames() {
+		return settlementNames;
+	}
+	
 	@Override
 	public String toString() {
 		return "ReportingAuthority [code=" + code + "]";
@@ -106,4 +118,5 @@ implements Serializable {
 			return false;
 		return true;
 	}
+
 }

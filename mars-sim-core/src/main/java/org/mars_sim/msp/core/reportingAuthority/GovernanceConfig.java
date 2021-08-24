@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -36,6 +37,7 @@ public class GovernanceConfig {
 	private static final String AGENDAS_EL = "agendas";
 	private static final String COUNTRY_EL = "country";
 	private static final String NAME_ATTR = "name";
+	private static final String SETTLEMENTNAME_EL = "settlement-name";
 	
 	/**
 	 * Constructor
@@ -100,14 +102,17 @@ public class GovernanceConfig {
 			}
 			 
 			// Get Countries
-			List<String> countries = new ArrayList<>();
-			List<Element> countryNodes = authorityNode.getChildren(COUNTRY_EL);
-			for (Element countryNode : countryNodes) {
-				countries.add(countryNode.getAttributeValue(NAME_ATTR));			 
-			}
+			List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
+									.map(a -> a.getAttributeValue(NAME_ATTR))
+									.collect(Collectors.toList());
 			 
+			// Get Settlement names
+			List<String> settlementNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
+					.map(a -> a.getAttributeValue(NAME_ATTR))
+					.collect(Collectors.toList());
+
 			// Add to lookup
-			authorites.put(code, new ReportingAuthority(code, name, agenda, countries ));
+			authorites.put(code, new ReportingAuthority(code, name, agenda, countries, settlementNames));
 		}
 		
 		return authorites;
