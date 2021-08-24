@@ -70,7 +70,10 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	 * Constructor
 	 */
 	public CrewConfig() {
-		super(CREW_PREFIX, PREDEFINED_CREWS);
+		super(CREW_PREFIX);
+		
+		loadDefaults(PREDEFINED_CREWS);
+		loadUserDefined();
 	}
 
 	/**
@@ -120,7 +123,6 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 			m.setRelationshipMap(parseRelationshipMap(personElement));
 		}
 		
-		logger.config("Loaded Crew " + name);
 		return roster;
 	}
 	

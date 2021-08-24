@@ -40,7 +40,10 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 
 	
 	public ScenarioConfig() {
-		super(PREFIX, PREDEFINED_SCENARIOS);
+		super(PREFIX);
+		
+		loadDefaults(PREDEFINED_SCENARIOS);
+		loadUserDefined();
 	}
 
 	@Override

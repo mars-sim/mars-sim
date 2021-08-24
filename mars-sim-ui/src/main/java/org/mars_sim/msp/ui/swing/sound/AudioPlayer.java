@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -35,8 +36,7 @@ public class AudioPlayer implements ClockListener {
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
 
 	/** music files directory. */
-	public static final String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+	public static final String MUSIC_DIR = SimulationFiles.getDataDir() +
 			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	
 	public static final double DEFAULT_VOL = .5;

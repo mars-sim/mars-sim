@@ -73,33 +73,33 @@ public class SimulationConfig implements Serializable {
 			logger.getName().length());
 	
 	/** The version.txt denotes the xml build version. */	
-	public static final String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
+	public static final String VERSION_FILE = "version.txt";
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
-	public static final String EXCEPTION_FILE = Msg.getString("Simulation.exceptionFile"); //$NON-NLS-1$
-	
-	public static final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
+	public static final String EXCEPTION_FILE = "exception.txt";
+			
+	public static final String XML_FOLDER = "/xml/";
 	public static final String XML_EXTENSION = ".xml";
-	public static final String SIMULATION_FILE = "simulation";
-	public static final String PEOPLE_FILE = "people";
-	public static final String VEHICLE_FILE = "vehicles";
-	public static final String SETTLEMENT_FILE = "settlements";
-	public static final String RESUPPLY_FILE = "resupplies";
-	public static final String MEDICAL_FILE = "medical";
-	public static final String MALFUNCTION_FILE = "malfunctions";
-	public static final String CROP_FILE = "crops";
-	public static final String LANDMARK_FILE = "landmarks";
-	public static final String MINERAL_MAP_FILE = "minerals";
-	public static final String BUILDING_FILE = "buildings";
-	public static final String PART_FILE = "parts";
-	public static final String PART_PACKAGE_FILE = "part_packages";
-	public static final String RESOURCE_FILE = "resources";
-	public static final String MANUFACTURE_FILE = "manufacturing";
-	public static final String CONSTRUCTION_FILE = "construction";
-	public static final String FOODPRODUCTION_FILE = "foodProduction";
-	public static final String MEAL_FILE = "meals";
-	public static final String ROBOT_FILE = "robots";
-	public static final String QUOTATION_FILE = "quotations";
-	public static final String VALUE = "value";
+	private static final String SIMULATION_FILE = "simulation";
+	private static final String PEOPLE_FILE = "people";
+	private static final String VEHICLE_FILE = "vehicles";
+	private static final String SETTLEMENT_FILE = "settlements";
+	private static final String RESUPPLY_FILE = "resupplies";
+	private static final String MEDICAL_FILE = "medical";
+	private static final String MALFUNCTION_FILE = "malfunctions";
+	private static final String CROP_FILE = "crops";
+	private static final String LANDMARK_FILE = "landmarks";
+	private static final String MINERAL_MAP_FILE = "minerals";
+	private static final String BUILDING_FILE = "buildings";
+	private static final String PART_FILE = "parts";
+	private static final String PART_PACKAGE_FILE = "part_packages";
+	private static final String RESOURCE_FILE = "resources";
+	private static final String MANUFACTURE_FILE = "manufacturing";
+	private static final String CONSTRUCTION_FILE = "construction";
+	private static final String FOODPRODUCTION_FILE = "foodProduction";
+	private static final String MEAL_FILE = "meals";
+	private static final String ROBOT_FILE = "robots";
+	private static final String QUOTATION_FILE = "quotations";
+	private static final String VALUE = "value";
 
     public static final String EXPERIMENTS_FILE = "/json/experiments.json";
     
@@ -944,6 +944,7 @@ public class SimulationConfig implements Serializable {
 			
 			if (bytes != 0) {
 				Path testPath = testf.getAbsoluteFile().toPath();
+				testf.mkdirs();
 	
 				// Copy the xml files from within the jar to user home's xml directory
 				Files.copy(stream, testPath, StandardCopyOption.REPLACE_EXISTING);

@@ -254,8 +254,8 @@ public class SimulationBuilder {
 		logger.config("Java Version Interim Element = "+version.interim());
 		logger.config("  Java Patch Element Version = "+version.patch());
 		logger.config(" Java Update Element Version = "+version.update());
-		logger.config("          Java Version Build = "+version.build().get());
-		logger.config("  Java additional build Info = "+version.optional().get());
+		logger.config("          Java Version Build = "+version.build().orElse(0));
+		logger.config("  Java additional build Info = "+version.optional().orElse("None"));
 		logger.config("       Java Pre-Release Info = "+version.pre().orElse("NA"));
 		logger.config("-----------------------------------------------------------");
 		// Load xml files
@@ -294,7 +294,6 @@ public class SimulationBuilder {
 					ScenarioConfig config = new ScenarioConfig();
 					bootstrap = config.getItem(defaultName);
 				}
-				logger.config("Using Scenario '" + bootstrap.getName() + "'");
 				builder.createInitialSettlements(bootstrap);
 			}
 		}

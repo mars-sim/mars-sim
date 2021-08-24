@@ -143,7 +143,6 @@ public class SimulationConfigEditor {
 
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
-		private String sponsorCache;
 		
 		/**
 		 * Hidden Constructor.
@@ -189,7 +188,7 @@ public class SimulationConfigEditor {
 							
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
-					if (sponsorCC == info.sponsor) {
+					if (sponsorCC.equals(info.sponsor)) {
 						hasSponsor = true;
 					}
 				}
@@ -204,18 +203,12 @@ public class SimulationConfigEditor {
 					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
-					List<String> candidateNames = settlementConfig.getSettlementNameList(sponsorCC);
+					List<String> candidateNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsorCC));
 					Collections.shuffle(candidateNames);
-					for (String c: candidateNames) {
-						for (String u: usedNames) {
-							if (!c.equalsIgnoreCase(u)) {
-								// Change the 1st settlement's name to this country's preferred name
-								settlementInfoList.get(0).name = c;
-							}			
-						}
-						break;
+					candidateNames.removeAll(usedNames);
+					if (!candidateNames.isEmpty()) {
+						settlementInfoList.get(0).name = candidateNames.get(0);
 					}
-					
 					logger.config( 
 							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
 				}
@@ -363,9 +356,9 @@ public class SimulationConfigEditor {
 						break;
 						
 					case SPONSOR_COL:
-						info.sponsor = (String) aValue;
-						if (sponsorCache != info.sponsor) {
-							sponsorCache = info.sponsor;
+						String newSponsor = (String) aValue;
+						if (!info.sponsor.equals(newSponsor)) {
+							info.sponsor = newSponsor;
 							String newName = tailorSettlementNameBySponsor(info.sponsor);
 							if (newName != null) {
 								info.name = newName;
@@ -395,8 +388,7 @@ public class SimulationConfigEditor {
 						String latStr = ((String) aValue).trim();
 						double doubleLat = 0;
 						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-						dir1.toUpperCase();
-						if (dir1.toUpperCase().equalsIgnoreCase("N") || dir1.toUpperCase().equalsIgnoreCase("S")) {
+						if (dir1.equalsIgnoreCase("N") || dir1.equalsIgnoreCase("S")) {
 							if (latStr.length() > 2) {
 								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
 								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
@@ -417,8 +409,7 @@ public class SimulationConfigEditor {
 						String longStr = ((String) aValue).trim();
 						double doubleLong = 0;
 						String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
-						dir2.toUpperCase();
-						if (dir2.toUpperCase().equalsIgnoreCase("E") || dir2.toUpperCase().equalsIgnoreCase("W")) {
+						if (dir2.equalsIgnoreCase("E") || dir2.equalsIgnoreCase("W")) {
 							if (longStr.length() > 2) {
 								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
 								doubleLong = Math.round(doubleLong * 100.0) / 100.0;

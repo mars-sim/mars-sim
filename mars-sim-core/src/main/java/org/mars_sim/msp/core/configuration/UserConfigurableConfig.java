@@ -43,11 +43,14 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
 	private static final String BACKUP = ".bak";
 	
+	// Location in the bundles JAR of the default UserConfigurable items
+	private static final String DEFAULT_DIR = "defaults";
+	
 	/**
 	 * Save an attribute to a Element if it is defined
-	 * @param personElement
-	 * @param activity2
-	 * @param activity3
+	 * @param node
+	 * @param attrName
+	 * @param value
 	 */
 	protected static void saveOptionalAttribute(Element node, String attrName, String value) {
 		if (value != null) {
@@ -61,21 +64,37 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	/**
 	 * Construct a config of a UserConfigurable subclass.
 	 * @param itemPrefix The prefix to add when saving to an item,
-	 * @param predefined The predefined items that are bundled with the release.
 	 */
-	protected UserConfigurableConfig(String itemPrefix, String [] predefined) {
+	protected UserConfigurableConfig(String itemPrefix) {
 		this.itemPrefix = itemPrefix;
-		
-		// Load predefined
-		for (String name : predefined) {
-			String file = getItemFilename(name);
-			loadItem(file, true);
-		}
-		
-		// Scan saved items folder
+	}
+	
+	/**
+	 * Load the user defined configuration items.
+	 */
+	protected void loadUserDefined() {
+		// Scan the old saved directory to move any saved files
+		// This can be dropped in a later release
 		File savedDir = new File(SimulationFiles.getSaveDir());
-	    String[] list = savedDir.list();
-	    for (String userFile : list) {
+	    for (String oldUserFile : savedDir.list()) {
+	    	if (oldUserFile.startsWith(itemPrefix)
+	    			&& oldUserFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+	    		try {
+	    			File oldPath = new File(SimulationFiles.getSaveDir(), oldUserFile);
+	    			File newPath = new File(SimulationFiles.getUserConfigDir(), oldUserFile);
+					FileUtils.moveFile(oldPath, newPath);
+	    			logger.info("Moving user configuration file " + oldUserFile + " from old location to new");
+
+	    		}
+	    		catch (Exception e) {
+	    			logger.warning("Problem moving old file " + oldUserFile + ": " + e.getMessage());
+	    		}
+	    	}
+		}
+	    
+		// Scan saved items folder
+		File configDir = new File(SimulationFiles.getUserConfigDir());
+	    for (String userFile : configDir.list()) {
 	    	if (userFile.startsWith(itemPrefix)
 	    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
 	    		try {
@@ -88,6 +107,18 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		}
 	}
 
+	/**
+	 * Load the predefined defaults that are bundled in the code base
+	 * @param predefined The predefined items that are bundled with the release.
+	 */
+	protected void loadDefaults(String [] predefined) {
+		// Load predefined
+		for (String name : predefined) {
+			String file = getItemFilename(name);
+			loadItem(file, true);
+		}
+	}
+	
 	/**
 	 * Load a create from external or bundled XML.
 	 * @param name
@@ -121,9 +152,10 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		knownItems.remove(name);
 
 		String filename = getItemFilename(name);
-		File oldFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
-		logger.info("Deleting file " + oldFile.getAbsolutePath());
-		oldFile.delete();
+		File oldFile = new File(SimulationFiles.getUserConfigDir(), filename + SimulationConfig.XML_EXTENSION);
+		if (oldFile.delete()) {
+			logger.info("Deleted file " + oldFile.getAbsolutePath());
+		}
 	}
 	
 
@@ -148,24 +180,22 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
 	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-		SAXBuilder builder = null;
+		SAXBuilder builder = new SAXBuilder();
 		String path = "";
 		
-		if (useDTD) { // for alpha crew
-			builder = new SAXBuilder();
+		if (useDTD) { // For bundled
 		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			path = SimulationFiles.getXMLDir();
+			path = SimulationFiles.getXMLDir() + File.separator + DEFAULT_DIR;
 			
-			// Alpha is a bundled XML so needs to be copied out
-			SimulationConfig.instance().getBundledXML(filename);
+			// Alpha is a bundled XML so needs to be copied out of the CONF sub folder
+			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + File.separator + filename );
 			filename += SimulationConfig.XML_EXTENSION;
 		}
-		else { // for beta crew
-			builder = new SAXBuilder();
+		else { // for user
 		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			path = SimulationFiles.getSaveDir();
+			path = SimulationFiles.getUserConfigDir();
 		}
 
 	    Document document = null;
@@ -196,9 +226,10 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param item The details to save
 	 */
 	public void saveItem(T item) {
-
+		String storagePath = SimulationFiles.getUserConfigDir();
+		
 		String filename = getItemFilename(item.getName());
-		File itemFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
+		File itemFile = new File(storagePath, filename + SimulationConfig.XML_EXTENSION);
 		
 		// Create save directory if it doesn't exist.
 		if (!itemFile.getParentFile().exists()) {
@@ -207,7 +238,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		}
 		
 		if (itemFile.exists()) {
-			File itemBackup = new File(SimulationFiles.getSaveDir(), filename + BACKUP);
+			File itemBackup = new File(storagePath, filename + BACKUP);
 			try {
 				if (Files.deleteIfExists(itemBackup.toPath())) {
 					// Delete the beta_crew.bak
