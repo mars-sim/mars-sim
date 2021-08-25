@@ -170,8 +170,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			double diff = this.quantity - quantity;
 			if (diff < 0) {
 				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, "Just retrieved all " + this.quantity + " kg " 
-						+ name + " but still lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
+				logger.warning(this, "Just retrieved all " + this.quantity + " kg of " 
+						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
 				this.quantity = 0;
 				return diff;
 			}

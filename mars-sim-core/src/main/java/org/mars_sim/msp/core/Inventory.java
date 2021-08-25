@@ -2279,8 +2279,7 @@ public class Inventory implements Serializable {
 						int resourceID = e.getResource();
 						double quantity = e.getQuanity();
 						double containerAmount = e.getAmountResourceStored(resourceID);
-						if (resourceID != -1 && quantity > 0 &&
-							containerAmount > 0 &&
+						if (resourceID != -1 && quantity > 0 && containerAmount > 0 &&
 							getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
 							e.retrieveAmountResource(resourceID, containerAmount);
 							storeAmountResource(resourceID, containerAmount, false);

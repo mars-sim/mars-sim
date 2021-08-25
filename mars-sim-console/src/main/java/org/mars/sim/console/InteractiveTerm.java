@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * InteractiveTerm.java
- * @version 3.1.0 2018-09-24
+ * @date 2021-08-25
  * @author Manny Kung
  */
 

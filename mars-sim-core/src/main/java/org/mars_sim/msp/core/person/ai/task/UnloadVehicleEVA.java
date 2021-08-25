@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -595,7 +595,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		if (resource != -1) {
 			double amount = equipment.getAmountResourceStored(resource);
 			double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
-			if (amount < capacity) {
+			if (amount > capacity) {
 				amount = capacity;
 			}
 			try {
