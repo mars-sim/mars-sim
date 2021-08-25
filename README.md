@@ -198,7 +198,6 @@ Currently, mars-sim does not require JavaFX.
  ```
 Specifically, the official release v3.1.0 to v3.2.0 of mars-sim do not 
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
-
  ```
  
 However, if you want to run any JavaFX apps, make sure you also download and 
@@ -279,7 +278,8 @@ instead of the java version you prefer.
 4. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
 
-5. To check if a particular Oracle version of Java is being *enabled*, 
+5. It's very typical for a machine to have multiple versions of Java installed.
+To check if a particular Oracle version of Java is being *enabled*, 
 start **Java Control Panel (JCP)** in Windows's Control Panel as follows :  
 
 * Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
@@ -289,29 +289,32 @@ start **Java Control Panel (JCP)** in Windows's Control Panel as follows :
 * Click on `View` button to open up another panel window.
 * Click on the checkbox on the `Enable` column to enable or disable any installed versions of Java.
  ```
-Note 5. In JCP, each row represents a version of Java. It's very typical for a machine to 
-have multiple versions of Java installed. Unfortunately, this panel only tracks the 
-official Oracle versions. If you install any openJDK's on your machine, JCP won't 
-be able to recognize them.
+Note 5. In JCP, each row represents a version of Java. Unfortunately, this panel
+only tracks the official Oracle versions. If you install any openJDK's on 
+your machine, JCP won't be able to recognize them.
  ```
- ``` 
-Note 6. To track what versions of openjdk having been installed on your machine. Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html) 
- ``` 
+ 
+6. To track what versions of openjdk have been installed on your machine. 
+Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html)
+
  
 ### Remote Console Connection
 
-To set up true headless mode in your platform, follow the steps in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
+To set up true headless mode in your platform, follow the steps in this 
+[wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
 ---
 
 ## Outreach
-Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) to discuss relevant topics with 
-regard to the development of mars-sim. See also old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
+Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) 
+to discuss relevant topics with regard to the development of mars-sim. See also 
+old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
 
 ---
 
 ## Discussions
-Feel free to start a discussion on a particular topic at our GitHub [Discussion](https://github.com/mars-sim/mars-sim/discussions) page. 
+Feel free to start a discussion on a particular topic at our GitHub 
+[Discussion](https://github.com/mars-sim/mars-sim/discussions) page. 
 
 ---
 
@@ -325,8 +328,9 @@ Help us by filling in the info below when submitting an issue :
  - A clear and concise description of what the bug is.
 
 **Affected Area**
- - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, 
- Saving/Loading Sim, System Exceptions in Command Prompt/Terminal, etc..]
+ - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, 
+ Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command 
+ Prompt/Terminal, etc..]
 
 **Expected behaviors**
  - A clear and concise description of what you expected to happen.

@@ -104,101 +104,113 @@ public class InteractiveTerm {
 	
 		try {
 		
-		marsTerminal.print(System.lineSeparator() 
-				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
-				+ System.lineSeparator()
-				+ "                          * * *   Main Menu   * * *\n"
-//				+ "                                   r" + Simulation.BUILD +"\n");
-				+ System.lineSeparator()
-				+ System.lineSeparator()
-				+ "0. Exit "
-				+ System.lineSeparator()
-				+ "1. Start a new Sim"
-				+ System.lineSeparator()
-				+ "2. Load a saved Sim"
-				+ System.lineSeparator()
-				+ "3. Change screen resolution"
-				+ System.lineSeparator()
-				+ System.lineSeparator()
-				);
-			
-        handler.addStringTask("menu", "Choose an option :", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
-        handler.executeOneTask();
-
-        if (GameManager.menu.equals("0")) {
-        	sim.endSimulation(); 
-
-			System.exit(0);
-    		disposeTerminal();
-        }
-        else if (GameManager.menu.equals("1")) {
-        	marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Starting a new sim...");
-        	marsTerminal.print(System.lineSeparator());
-        	// Go to selectMode() to choose a mode
-        	menuChoice = selectMode();
-        }
-        
-        else if (GameManager.menu.equals("2")) {
-        	marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Loading from a saved sim...");
-        	marsTerminal.print(System.lineSeparator());
-        	
-        	menuChoice = 2;
-        }
-        
-        else if (GameManager.menu.equals("3")) {
-        	StringBuilder buffer = new StringBuilder();
-        	for(int i = 0; i < screenSizes.length; i++) {
-        		buffer.append(i).append(". ")
-        		.append(screenSizes[i].width)
-        		.append(" x ")
-        		.append(screenSizes[i].height)
-        		.append(System.lineSeparator());
-        	}
-        	
-        	marsTerminal.print(System.lineSeparator() 
-    				+ System.lineSeparator()
-    				+ "                        * * *   Resolution Menu   * * *\n"
-    				+ System.lineSeparator()
-    				+ System.lineSeparator()
-    				+ buffer.toString()
-    	        	+ System.lineSeparator()
-        			);
-        	        			
-        	String oldRes = "Screen size";
-        	if (selectedScreen >= 0) {
-        		oldRes = screenSizes[selectedScreen].width + " x " + screenSizes[selectedScreen].height;
-        	}
-        	
-        	marsTerminal.print("Current resolution : " + oldRes);
-        	marsTerminal.print(System.lineSeparator());
-        	marsTerminal.print(System.lineSeparator());
-        	
-        	handler.addStringTask("resolution", "Choose an option :", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
-            handler.executeOneTask();
-
-            String userInput = GameManager.resolution;
-            selectedScreen = Integer.parseInt(userInput);
-            
-    		String newRes = screenSizes[selectedScreen].width + " x " + screenSizes[selectedScreen].height;
-                      
-        	marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("The screen resolution has been changed from '" + oldRes + "' to '" + newRes + "'");
-        	marsTerminal.print(System.lineSeparator());
-        	
-        	return selectMenu();
-        }
-        
-        
-		marsTerminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator() 
+					+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
+					+ System.lineSeparator()
+					+ "                          * * *   Main Menu   * * *\n"
+	//				+ "                                   r" + Simulation.BUILD +"\n");
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ "0. Exit "
+					+ System.lineSeparator()
+					+ "1. Start a new Sim"
+					+ System.lineSeparator()
+					+ "2. Load a saved Sim"
+					+ System.lineSeparator()
+					+ "3. Change screen resolution"
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					);
+				
+	        handler.addStringTask("menu", "Choose an option :", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
+	        handler.executeOneTask();
+	
+	        if (GameManager.menu.equals("0")) {
+	        	sim.endSimulation(); 
+	
+				System.exit(0);
+	    		disposeTerminal();
+	    		return menuChoice;
+	        }
+	        
+	        else if (GameManager.menu.equals("1")) {
+	        	marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Starting a new sim...");
+	        	marsTerminal.print(System.lineSeparator());
+	        	// Go to selectMode() to choose a mode
+	        	menuChoice = selectMode();
+	        	
+	    		marsTerminal.print(System.lineSeparator());
+	    		
+	            return menuChoice;
+	        }
+	        
+	        else if (GameManager.menu.equals("2")) {
+	        	marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Loading from a saved sim...");
+	        	marsTerminal.print(System.lineSeparator());
+	        	
+	        	menuChoice = 2;
+	        	
+	    		marsTerminal.print(System.lineSeparator());
+	    		
+	            return menuChoice;
+	        }
+	        
+	        else if (GameManager.menu.equals("3")) {
+	        	StringBuilder buffer = new StringBuilder();
+	        	for(int i = 0; i < screenSizes.length; i++) {
+	        		buffer.append(i).append(". ")
+	        		.append(screenSizes[i].width)
+	        		.append(" x ")
+	        		.append(screenSizes[i].height)
+	        		.append(System.lineSeparator());
+	        	}
+	        	
+	        	marsTerminal.print(System.lineSeparator() 
+	    				+ System.lineSeparator()
+	    				+ "                        * * *   Resolution Menu   * * *\n"
+	    				+ System.lineSeparator()
+	    				+ System.lineSeparator()
+	    				+ buffer.toString()
+	    	        	+ System.lineSeparator()
+	        			);
+	        	        			
+	        	String oldRes = "Screen size";
+	        	if (selectedScreen >= 0) {
+	        		oldRes = screenSizes[selectedScreen].width + " x " + screenSizes[selectedScreen].height;
+	        	}
+	        	
+	        	marsTerminal.print("Current resolution : " + oldRes);
+	        	marsTerminal.print(System.lineSeparator());
+	        	marsTerminal.print(System.lineSeparator());
+	        	
+	        	handler.addStringTask("resolution", "Choose an option :", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
+	            handler.executeOneTask();
+	
+	            String userInput = GameManager.resolution;
+	            selectedScreen = Integer.parseInt(userInput);
+	            
+	    		String newRes = screenSizes[selectedScreen].width + " x " + screenSizes[selectedScreen].height;
+	                      
+	        	marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("The screen resolution has been changed from '" + oldRes + "' to '" + newRes + "'");
+	        	marsTerminal.print(System.lineSeparator());
+	        	
+	        	return selectMenu();
+	        }
+	        
+	        else {
+	        	
+	        	return selectMenu();
+	        }        
 		
 		} catch(RuntimeException e) {
 			e.printStackTrace();
 			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
 		}
 		
-        return menuChoice;
+		return menuChoice;
 	}
 	
 	/**
