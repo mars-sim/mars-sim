@@ -9,12 +9,10 @@ package org.mars_sim.msp.core.reportingAuthority;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Factory method for creating/managing Reporting Authorities.
@@ -34,21 +32,6 @@ public final class ReportingAuthorityFactory {
 	
 	private ReportingAuthorityFactory() {
 		
-	}
-	
-	/**
-	 * Find the default country for an Authority
-	 * @param sponsor
-	 * @return
-	 */
-	public static String getDefaultCountry(ReportingAuthority sponsor) {
-		List<String> countries = sponsor.getCountries();
-		if (countries.size() == 1) {
-			return countries.get(0);
-		}
-		else {
-			return countries.get(RandomUtil.getRandomInt(0, countries.size() - 1));	
-		}
 	}
 
 	/**
@@ -84,7 +67,7 @@ public final class ReportingAuthorityFactory {
 		// Then overwrite the loaded with those that are active in the simulation
 		for (Settlement s : mgr.getSettlements()) {
 			ReportingAuthority ra = s.getSponsor();
-			controls.put(ra.getCode(), ra);
+			controls.put(ra.getName(), ra);
 		}
 	}
 

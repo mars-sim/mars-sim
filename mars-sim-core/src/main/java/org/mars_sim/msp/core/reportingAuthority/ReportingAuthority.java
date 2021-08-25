@@ -9,31 +9,38 @@ package org.mars_sim.msp.core.reportingAuthority;
 import java.io.Serializable;
 import java.util.List;
 
+import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
+/**
+ * Represents a Reporting Authority that "owns" Units
+ */
 public class ReportingAuthority
-implements Serializable {
+implements UserConfigurable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private MissionAgenda missionAgenda;
 
-	private String name;
+	private String description;
 
-	private String code;
+	private String name;
 
 	private List<String> countries;
 
 	private List<String> settlementNames;
 
 	private List<String> vehicleNames;
+
+	private boolean predefined;
  
-	ReportingAuthority(String code, String name,
+	ReportingAuthority(String name, String description,
 							  MissionAgenda agenda, List<String> countries,
 							  List<String> names, List<String> vehicleNames) {
-		this.name  = name;
-		this.code = code;
+		this.description  = description;
+		this.name = name;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;
@@ -58,21 +65,43 @@ implements Serializable {
 	}
 
 	/**
-	 * Get the associated short code.
+	 * Get the unique name of this authority which is the short code.
 	 * @return
 	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Get the associated short code.
+	 * @return
+	 * @deprecated Use the {@link #getName()} method
+	 */
 	public String getCode() {
-		return code;
+		return name;
 	}
 	
 	/**
 	 * Get the full name of the authority
 	 * @return
 	 */
-	public String getName() {
-		return name;
+	public String getDescription() {
+		return description;
 	}
 
+
+	@Override
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public boolean isBundled() {
+		return predefined;
+	}
+
+	
 	/**
 	 * Get the countries associated to this Authority.
 	 * @return
@@ -81,6 +110,20 @@ implements Serializable {
 		return countries;
 	}
 
+	/**
+	 * Get the default Country for Authority. If there are multiples
+	 * then one is choosen.
+	 * @return
+	 */
+	public String getDefaultCountry() {
+		if (countries.size() == 1) {
+			return countries.get(0);
+		}
+		else {
+			return countries.get(RandomUtil.getRandomInt(0, countries.size() - 1));	
+		}
+	}
+	
 	/**
 	 * Get the name of Settlement for this Authority
 	 * @return
@@ -99,14 +142,14 @@ implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "ReportingAuthority [code=" + code + "]";
+		return "ReportingAuthority [code=" + name + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -119,10 +162,10 @@ implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ReportingAuthority other = (ReportingAuthority) obj;
-		if (code == null) {
-			if (other.code != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!code.equals(other.code))
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}

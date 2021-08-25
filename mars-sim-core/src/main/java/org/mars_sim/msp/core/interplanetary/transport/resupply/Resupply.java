@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -525,7 +524,7 @@ public class Resupply implements Serializable, Transportable {
 				gender = GenderType.MALE;
 			}
 
-			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
+			String country = sponsor.getDefaultCountry();
 			String immigrantName = Person.generateName(country, gender);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement)

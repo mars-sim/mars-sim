@@ -345,7 +345,7 @@ public final class SettlementBuilder {
 			Person person = null;
 			
 			// This is random and may change on each call
-			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
+			String country = sponsor.getDefaultCountry();
 
 			// Make sure settlement name isn't already being used.
 			String fullname = Person.generateName(country, gender);
