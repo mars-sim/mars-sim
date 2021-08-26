@@ -1243,13 +1243,13 @@ public class SimulationConfigEditor {
 	public synchronized void waitForCompletion() {
         while (!completed ) {
             try {
-            	logger.config("Waiting for the Site Editor to complete...");
+//            	logger.config("Waiting for player.");
                 wait();
             } catch (InterruptedException e)  {
                 Thread.currentThread().interrupt(); 
             }
         }
-        logger.config("Site Editor completed.");
+        logger.config("Close the Site Editor.");
 	}
 	
 	/**

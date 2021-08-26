@@ -1,10 +1,8 @@
-/**
+/*
  * Mars Simulation Project
  * MarsProject.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-25
  * @author Scott Davis
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 package org.mars_sim.main;
 
@@ -136,13 +134,13 @@ public class MarsProject {
 			
 			// Get user choices if there is no template defined or a preload
 			if (!builder.isFullyDefined()) {
-				logger.config("Please go to the mars-sim console's Main Menu to choose an option.");
+				logger.config("Please go to the console's Main Menu to choose an option.");
 				
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
 					// Start sim config editor
 					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
-					logger.config("Running the site editor...");
+					logger.config("Start the Site Editor...");
 					editor.waitForCompletion();
 					
 					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
@@ -168,6 +166,7 @@ public class MarsProject {
 					// Check out crew flag
 					builder.setUseCrews(interactiveTerm.getUseCrew());
 				}
+				
 			}
 			
 			// Build and run the simulator
@@ -195,7 +194,7 @@ public class MarsProject {
 		HelpFormatter format = new HelpFormatter();
 		System.out.println();
 		System.out.println(message);
-		format.printHelp(" [for mars-sim swing edition]", options);
+		format.printHelp(" [for mars-sim Swing dition]", options);
 		System.exit(1);
 	}
 
@@ -251,7 +250,6 @@ public class MarsProject {
 	private void exitWithError(String message, Exception e) {
 		if (e != null) {
 			logger.log(Level.SEVERE, message, e);
-			e.printStackTrace();
 		} else {
 			logger.log(Level.SEVERE, message);
 		}
@@ -273,7 +271,6 @@ public class MarsProject {
 					break;
 				}
 	        } catch (InterruptedException e) {
-	            e.printStackTrace();
 				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); //$NON-NLS-1$
 	        }
 		}
