@@ -204,7 +204,7 @@ public class SimulationConfigEditor {
 					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
-					ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsorCC);
+					ReportingAuthority ra = raFactory.getAuthority(sponsorCC);
 					List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
 					Collections.shuffle(candidateNames);
 					candidateNames.removeAll(usedNames);
@@ -643,16 +643,17 @@ public class SimulationConfigEditor {
 	private CrewEditor crewEditor;
 	
 	private GameMode mode;
-	private  SettlementConfig settlementConfig;
-	private  PersonConfig personConfig;
-	
+	private SettlementConfig settlementConfig;
+	private PersonConfig personConfig;
+	private ReportingAuthorityFactory raFactory;
+
 	private boolean completed = false;
 	private boolean useCrew = true;
 	private UserConfigurableConfig<Crew> crewConfig;
 
 	private Scenario selectedScenario;
 	private ScenarioConfig scenarioConfig;
-	
+
 	/**
 	 * Constructor
 	 * @param config the simulation configuration.
@@ -660,12 +661,12 @@ public class SimulationConfigEditor {
 	public SimulationConfigEditor(SimulationConfig config) {
 
 		// Initialize data members.
+		raFactory = config.getReportingAuthorityFactory();
 		settlementConfig = config.getSettlementConfiguration();
 		personConfig = config.getPersonConfig();
 		crewConfig = new CrewConfig();
 		scenarioConfig = new ScenarioConfig();
 
-		
 		hasError = false;
 
 		try {
@@ -776,7 +777,7 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : ReportingAuthorityFactory.getSupportedCodes()) {
+		for (String s : raFactory.getSupportedCodes()) {
 			sponsorCB.addItem(s);
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
@@ -986,7 +987,7 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this, crewConfig);
+			crewEditor = new CrewEditor(this, crewConfig, raFactory);
 		} 
 		
 		else {
@@ -1140,7 +1141,7 @@ public class SimulationConfigEditor {
 	 * @return
 	 */
 	private String tailorSettlementNameBySponsor(String sponsor, int index) {
-		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+		ReportingAuthority ra = raFactory.getAuthority(sponsor);
 
 		List<String> usedNames = new ArrayList<>();
 		

@@ -20,6 +20,8 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlementUtil;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
+import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -35,23 +37,23 @@ public class TransportManager implements Serializable, Temporal {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TransportManager.class.getName());
 
-	// Data members
-	// private volatile boolean isTransportingBuilding = false;
-
 	private Collection<Transportable> transportItems;
 
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
 	 * Constructor.
+	 * @param settlementConfig 
+	 * @param raFactory 
 	 */
-	public TransportManager() {
+	public TransportManager(SettlementConfig settlementConfig, ReportingAuthorityFactory raFactory) {
 		// initialize ResupplyUtil.
 		new ResupplyUtil();
 		// Initialize data
-		transportItems = new ConcurrentLinkedQueue<Transportable>();
+		transportItems = new ArrayList<>();
 		// Create initial arriving settlements.
-		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements());
+		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements(
+							settlementConfig, raFactory));
 		// Create initial resupply missions.
 		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions());
 	}
@@ -70,21 +72,12 @@ public class TransportManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets all of the transport items.
-	 * 
-	 * @return list of all transport items.
-	 */
-	public List<Transportable> getAllTransportItems() {
-		return new ArrayList<Transportable>(transportItems);
-	}
-
-	/**
 	 * Gets the transport items that are planned or in transit.
 	 * 
 	 * @return transportables.
 	 */
 	public List<Transportable> getIncomingTransportItems() {
-		List<Transportable> incoming = new ArrayList<Transportable>(transportItems.size());
+		List<Transportable> incoming = new ArrayList<>();
 
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext()) {
@@ -104,7 +97,7 @@ public class TransportManager implements Serializable, Temporal {
 	 * @return transportables.
 	 */
 	public List<Transportable> getArrivedTransportItems() {
-		List<Transportable> arrived = new ArrayList<Transportable>(transportItems.size());
+		List<Transportable> arrived = new ArrayList<>();
 
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext()) {

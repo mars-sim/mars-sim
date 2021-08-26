@@ -28,6 +28,7 @@ import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -71,15 +72,16 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	private List<String> authorities;
 
     public CommanderProfile(InteractiveTerm term) {	
-    	commander = SimulationConfig.instance().getPersonConfig().getCommander();
+    	SimulationConfig config = SimulationConfig.instance();
+    	commander = config.getPersonConfig().getCommander();
     	terminal = term.getTerminal();
     	
-    	// Cheap for now; country list should be driven from ReportingAuthority
-    	ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(
-    			ReportingAuthorityFactory.MS_CODE);
-    	countryList = ra.getCountries();
+    	// Get Country list from known PersonConfig
+    	PersonConfig pc = config.getPersonConfig();
+    	countryList = pc.getKnownCountries();
     	
-        authorities = new ArrayList<>(ReportingAuthorityFactory.getSupportedCodes());
+    	ReportingAuthorityFactory raFactory = config.getReportingAuthorityFactory();
+        authorities = new ArrayList<>(raFactory.getSupportedCodes());
 	}
 
     private void setChoices(String... choices) {

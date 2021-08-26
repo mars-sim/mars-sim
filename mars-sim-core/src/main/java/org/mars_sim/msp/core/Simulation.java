@@ -394,7 +394,8 @@ public class Simulation implements ClockListener, Serializable {
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
-		transportManager = new TransportManager();
+		transportManager = new TransportManager(simulationConfig.getSettlementConfiguration(),
+												simulationConfig.getReportingAuthorityFactory());
 
 //		logger.config("Done with TransportManager()");
 
@@ -694,7 +695,8 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done Unit");
 		
 		// Rediscover the MissionControls
-		ReportingAuthorityFactory.discoverReportingAuthorities(unitManager);
+		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
+		rf.discoverReportingAuthorities(unitManager);
 		
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);

@@ -22,15 +22,15 @@ import org.mars_sim.msp.core.structure.Settlement;
 public final class ReportingAuthorityFactory {
 	
 	/**
-	 * The code for the Mars Society Reporting Authoritu which is considered the default.
+	 * The code for the Mars Society Reporting Authority which is considered the default.
 	 * This society should always be created.
 	 */
 	public static final String MS_CODE = "MS";
 	
-	private static Map<String,ReportingAuthority> controls
+	private Map<String,ReportingAuthority> controls
 			= new HashMap<>();
 	
-	private ReportingAuthorityFactory() {
+	public ReportingAuthorityFactory() {
 		
 	}
 
@@ -40,7 +40,7 @@ public final class ReportingAuthorityFactory {
 	 * @param unit
 	 * @return
 	 */
-	public static ReportingAuthority getAuthority(String code) {
+	public ReportingAuthority getAuthority(String code) {
 		if (controls.isEmpty()) {
 			controls = GovernanceConfig.loadAuthorites();
 		}
@@ -58,7 +58,7 @@ public final class ReportingAuthorityFactory {
 	 * What about pending arrivals of new Settlement with new RA ?
 	 * @param mgr
 	 */
-	public static void discoverReportingAuthorities(UnitManager mgr) {
+	public void discoverReportingAuthorities(UnitManager mgr) {
 		// Load the defaults 
 		if (controls.isEmpty()) {
 			controls = GovernanceConfig.loadAuthorites();
@@ -75,7 +75,7 @@ public final class ReportingAuthorityFactory {
 	 * Get a list of the support Reporting Authority codes loaded.
 	 * @return
 	 */
-	public static Collection<String> getSupportedCodes() {
+	public Collection<String> getSupportedCodes() {
 		return Collections.unmodifiableCollection(controls.keySet());
 	}
 }

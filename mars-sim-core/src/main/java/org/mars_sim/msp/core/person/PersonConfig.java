@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -729,5 +730,13 @@ public class PersonConfig implements Serializable {
 			namesByCountry.put(country, result);
 		}
 		return result;
+	}
+
+	/**
+	 * Get the list of known Countries
+	 * @return
+	 */
+	public List<String> getKnownCountries() {
+		return new ArrayList<>(namesByCountry.keySet());
 	}
 }

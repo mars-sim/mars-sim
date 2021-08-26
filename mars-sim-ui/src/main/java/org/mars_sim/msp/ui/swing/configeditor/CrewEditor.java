@@ -392,9 +392,10 @@ public class CrewEditor implements ActionListener {
 	private JPanel scrollPane;
 	
 	private List<MemberPanel> crewPanels = new ArrayList<>();
-	//private CrewConfig crewConfig;
 
 	private SimulationConfigEditor simulationConfigEditor;
+
+	private ReportingAuthorityFactory raFactory;
 
 	
 	/**
@@ -405,9 +406,12 @@ public class CrewEditor implements ActionListener {
 	 * @param simulationConfigEditor
 	 *            SimulationConfigEditor
 	 */
-	public CrewEditor(SimulationConfigEditor simulationConfigEditor, UserConfigurableConfig<Crew> config) {
+	public CrewEditor(SimulationConfigEditor simulationConfigEditor,
+					  UserConfigurableConfig<Crew> config,
+					  ReportingAuthorityFactory raFactory) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
+		this.raFactory = raFactory;
 		
 		createGUI(config);
 	}
@@ -728,7 +732,7 @@ public class CrewEditor implements ActionListener {
 					
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
 		m.addElement(SETTLEMENT_SPONSOR);
-		m.addAll(ReportingAuthorityFactory.getSupportedCodes());
+		m.addAll(raFactory.getSupportedCodes());
 		return m;
 	}
  
@@ -748,7 +752,7 @@ public class CrewEditor implements ActionListener {
 			sponsorCode = ReportingAuthorityFactory.MS_CODE;
 		}
 		// Load the countries
-		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsorCode);
+		ReportingAuthority ra = raFactory.getAuthority(sponsorCode);
 		for (String country : ra.getCountries()) {
 			model.addElement(country);
 		}

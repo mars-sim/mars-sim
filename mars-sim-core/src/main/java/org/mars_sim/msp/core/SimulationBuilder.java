@@ -108,7 +108,7 @@ public class SimulationBuilder {
 	}
 
 	public void setSponsor(String optionValue) {
-		authority = ReportingAuthorityFactory.getAuthority(optionValue);
+		authority = simulationConfig.getReportingAuthorityFactory().getAuthority(optionValue);
 	}
 
 	public void setDiagnostics(String modules) {
@@ -341,7 +341,7 @@ public class SimulationBuilder {
 		if (authority == null) {
 			// Use the default on the template
 			String sponsorCode = settlementTemplate.getSponsor();
-			authority = ReportingAuthorityFactory.getAuthority(sponsorCode);
+			authority = simulationConfig.getReportingAuthorityFactory().getAuthority(sponsorCode);
 		}
 		
 		// Create a random name

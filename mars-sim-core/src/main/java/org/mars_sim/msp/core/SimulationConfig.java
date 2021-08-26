@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
@@ -162,7 +163,9 @@ public class SimulationConfig implements Serializable {
 	private transient ExperimentConfig experimentConfig;
 	private transient ScienceConfig scienceConfig;
 
-	private transient List<String> excludedList;	
+	private transient List<String> excludedList;
+
+	private transient ReportingAuthorityFactory raFactory;	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -172,6 +175,7 @@ public class SimulationConfig implements Serializable {
 
 	/** hidden constructor. */
 	private SimulationConfig() {
+		raFactory = new ReportingAuthorityFactory();
 	}
 
 
@@ -923,6 +927,14 @@ public class SimulationConfig implements Serializable {
 			
 
 	/**
+	 * Get teh manager to the ReportingAuthority
+	 * @return
+	 */
+	public ReportingAuthorityFactory getReportingAuthorityFactory() {
+		return raFactory;
+	}
+	
+	/**
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
 	public File getBundledXML(String filename) {
@@ -1107,6 +1119,8 @@ public class SimulationConfig implements Serializable {
 		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 		scienceConfig = new ScienceConfig();
 		
+		
 		logger.config("Done loading all xml config files.");
 	}
+
 }

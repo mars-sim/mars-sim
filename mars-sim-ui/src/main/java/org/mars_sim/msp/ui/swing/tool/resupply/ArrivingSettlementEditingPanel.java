@@ -45,6 +45,7 @@ import javax.swing.text.JTextComponent;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -191,7 +192,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(sponsorTitleLabel);
 
 		// Create sponsor CB
-		Collection<String> codes = ReportingAuthorityFactory.getSupportedCodes();
+		Collection<String> codes = SimulationConfig.instance().getReportingAuthorityFactory().getSupportedCodes();
 		sponsorCB = new JComboBoxMW<String>(codes.toArray(new String[codes.size()]));
 		if (settlement != null) {
 			sponsorCB.setSelectedItem(settlement.getSponsorCode());

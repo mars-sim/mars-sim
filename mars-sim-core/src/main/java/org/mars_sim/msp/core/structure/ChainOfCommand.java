@@ -457,7 +457,7 @@ public class ChainOfCommand implements Serializable {
 		logger.config(commander.getFullName() + " accepted the role of being a Commander by the order of the Mission Control.");
 		cc.setRole(RoleType.COMMANDER);
 		cc.setCountry(commander.getCountryStr());
-		cc.setSponsor(ReportingAuthorityFactory.getAuthority(commander.getSponsorStr()));		
+		cc.setSponsor(SimulationConfig.instance().getReportingAuthorityFactory().getAuthority(commander.getSponsorStr()));		
 	}
 
 	/**
