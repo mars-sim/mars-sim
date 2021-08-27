@@ -391,9 +391,17 @@ extends TestCase {
 		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
+	
+		// Check if there are enough resources in the vehicle.
+		assertTrue("Resources fully loaded", LoadVehicleGarage.isFullyLoadedWithResources(
+				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
 
-		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		// Check if there is enough equipment in the vehicle.
+		assertTrue("Equipment fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
+				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		
+//		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(
+//				requiredResourcesMap, optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 
 	/*
@@ -403,7 +411,7 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 		
-		int hammerID = ItemResourceUtil.smallHammerID;
+//		int hammerID = ItemResourceUtil.smallHammerID;
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;
@@ -412,30 +420,38 @@ extends TestCase {
         Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		inv.storeItemResources(hammerID, 5);
+//		inv.storeItemResources(hammerID, 5);
 
-		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-			unitManager.addUnit(eqm);
-			inv.storeUnit(eqm);
-		}
+//		for (int x = 0; x < 5; x++) {
+//			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
+//			unitManager.addUnit(eqm);
+//			inv.storeUnit(eqm);
+//		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
 		requiredResourcesMap.put(oxygenID, 100D);
 		requiredResourcesMap.put(foodID, 100D);
 		requiredResourcesMap.put(waterID, waterAmount);
 		requiredResourcesMap.put(methaneID, 100D);
-		requiredResourcesMap.put(hammerID, 5);
+//		requiredResourcesMap.put(hammerID, 5);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
-		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
+//		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
+//		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
-		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
+//		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		// Check if there are enough resources in the vehicle.
+		assertFalse("Resources not fully loaded", LoadVehicleGarage.isFullyLoadedWithResources(
+				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
+
+		// Check if there is enough equipment in the vehicle.
+//		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
+//				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		
+//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
+//		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 
 	/*
@@ -450,42 +466,50 @@ extends TestCase {
 		inv.addGeneralCapacity(100D);
 
 		int hammerID = ItemResourceUtil.smallHammerID;
-		int oxygenID = ResourceUtil.oxygenID;
-		int foodID = ResourceUtil.foodID;
-		int waterID = ResourceUtil.waterID;
-		int methaneID = ResourceUtil.methaneID;
-		
-		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-		inv.storeAmountResource(oxygenID, 100D, true);
-		inv.addAmountResourceTypeCapacity(foodID, 100D);
-		inv.storeAmountResource(foodID, 100D, true);
-		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-		inv.storeAmountResource(waterID, waterAmount, true);
-		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-		inv.storeAmountResource(methaneID, 100D, true);
+//		int oxygenID = ResourceUtil.oxygenID;
+//		int foodID = ResourceUtil.foodID;
+//		int waterID = ResourceUtil.waterID;
+//		int methaneID = ResourceUtil.methaneID;
+//		
+//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
+//		inv.storeAmountResource(oxygenID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(foodID, 100D);
+//		inv.storeAmountResource(foodID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
+//		inv.storeAmountResource(waterID, waterAmount, true);
+//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
+//		inv.storeAmountResource(methaneID, 100D, true);
 
-		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-			unitManager.addUnit(eqm);
-			inv.storeUnit(eqm);
-		}
+//		for (int x = 0; x < 5; x++) {
+//			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
+//			unitManager.addUnit(eqm);
+//			inv.storeUnit(eqm);
+//		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, 100D);
-		requiredResourcesMap.put(foodID, 100D);
-		requiredResourcesMap.put(waterID, waterAmount);
-		requiredResourcesMap.put(methaneID, 100D);
+//		requiredResourcesMap.put(oxygenID, 100D);
+//		requiredResourcesMap.put(foodID, 100D);
+//		requiredResourcesMap.put(waterID, waterAmount);
+//		requiredResourcesMap.put(methaneID, 100D);
 		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
-		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
+//		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
+//		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
+//
+//		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
-		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
+		// Check if there are enough resources in the vehicle.
+		assertFalse("Resources not fully loaded", LoadVehicleGarage.isFullyLoadedWithResources(
+				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
 
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		// Check if there is enough equipment in the vehicle.
+//		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
+//				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		
+//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
+//                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 
 	/*
@@ -499,37 +523,45 @@ extends TestCase {
         Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		int hammerID = ItemResourceUtil.smallHammerID;
-		int oxygenID = ResourceUtil.oxygenID;
-		int foodID = ResourceUtil.foodID;
-		int waterID = ResourceUtil.waterID;
-		int methaneID = ResourceUtil.methaneID;
-		
-		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-		inv.storeAmountResource(oxygenID, 100D, true);
-		inv.addAmountResourceTypeCapacity(foodID, 100D);
-		inv.storeAmountResource(foodID, 100D, true);
-		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-		inv.storeAmountResource(waterID, waterAmount, true);
-		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-		inv.storeAmountResource(methaneID, 100D, true);
-		inv.storeItemResources(hammerID, 5);
+//		int hammerID = ItemResourceUtil.smallHammerID;
+//		int oxygenID = ResourceUtil.oxygenID;
+//		int foodID = ResourceUtil.foodID;
+//		int waterID = ResourceUtil.waterID;
+//		int methaneID = ResourceUtil.methaneID;
+//		
+//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
+//		inv.storeAmountResource(oxygenID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(foodID, 100D);
+//		inv.storeAmountResource(foodID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
+//		inv.storeAmountResource(waterID, waterAmount, true);
+//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
+//		inv.storeAmountResource(methaneID, 100D, true);
+//		inv.storeItemResources(hammerID, 5);
 
-		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, 100D);
-		requiredResourcesMap.put(foodID, 100D);
-		requiredResourcesMap.put(waterID, waterAmount);
-		requiredResourcesMap.put(methaneID, 100D);
-		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
+//		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
+//		requiredResourcesMap.put(oxygenID, 100D);
+//		requiredResourcesMap.put(foodID, 100D);
+//		requiredResourcesMap.put(waterID, waterAmount);
+//		requiredResourcesMap.put(methaneID, 100D);
+//		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
-		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
+//		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		// Check if there are enough resources in the vehicle.
+//		assertFalse("Resources not fully loaded", LoadVehicleGarage.isFullyLoadedWithResources(
+//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
+
+		// Check if there is enough equipment in the vehicle.
+		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
+				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+
+//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
+//                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 }
