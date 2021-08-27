@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-
 public class Commander implements Serializable {
 
 	/** default serial id. */
@@ -27,7 +25,7 @@ public class Commander implements Serializable {
     private String gender;
     private String job;
     private String countryStr = "";
-    private String sponsorStr = ReportingAuthorityFactory.MS_CODE;    
+    private String sponsorStr = "";    
     
     public String getFullName() {
     	if (firstName == null && lastName == null)

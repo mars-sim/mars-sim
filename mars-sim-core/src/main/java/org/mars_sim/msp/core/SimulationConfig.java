@@ -175,7 +175,6 @@ public class SimulationConfig implements Serializable {
 
 	/** hidden constructor. */
 	private SimulationConfig() {
-		raFactory = new ReportingAuthorityFactory();
 	}
 
 
@@ -1089,7 +1088,8 @@ public class SimulationConfig implements Serializable {
 	 * load the default config files
 	 */
 	private void loadDefaultConfiguration() {
-//			logger.config("Loading xml files...");
+		raFactory = new ReportingAuthorityFactory();
+
 		// Load simulation document
 		simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 		// Load subset configuration classes.

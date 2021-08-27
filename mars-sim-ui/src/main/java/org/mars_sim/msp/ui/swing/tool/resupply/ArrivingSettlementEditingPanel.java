@@ -192,7 +192,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(sponsorTitleLabel);
 
 		// Create sponsor CB
-		Collection<String> codes = SimulationConfig.instance().getReportingAuthorityFactory().getSupportedCodes();
+		Collection<String> codes = SimulationConfig.instance().getReportingAuthorityFactory().getItemNames();
 		sponsorCB = new JComboBoxMW<String>(codes.toArray(new String[codes.size()]));
 		if (settlement != null) {
 			sponsorCB.setSelectedItem(settlement.getSponsorCode());

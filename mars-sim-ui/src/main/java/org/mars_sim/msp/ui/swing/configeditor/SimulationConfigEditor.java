@@ -204,7 +204,7 @@ public class SimulationConfigEditor {
 					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
-					ReportingAuthority ra = raFactory.getAuthority(sponsorCC);
+					ReportingAuthority ra = raFactory.getItem(sponsorCC);
 					List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
 					Collections.shuffle(candidateNames);
 					candidateNames.removeAll(usedNames);
@@ -777,7 +777,7 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : raFactory.getSupportedCodes()) {
+		for (String s : raFactory.getItemNames()) {
 			sponsorCB.addItem(s);
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
@@ -987,9 +987,8 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this, crewConfig, raFactory);
+			crewEditor = new CrewEditor(this, crewConfig, raFactory, personConfig);
 		} 
-		
 		else {
 			crewEditor.getJFrame().setVisible(true);
 		}
@@ -1055,8 +1054,9 @@ public class SimulationConfigEditor {
 	 * @return settlement configuration.
 	 */
 	private InitialSettlement determineNewDefaultSettlement() {
-			
-		String sponsor = ReportingAuthorityFactory.MS_CODE;
+		
+		// Get any known Reporting Authority
+		String sponsor = raFactory.getItemNames().iterator().next();
 		String template = determineNewSettlementTemplate();
 		Coordinates location = determineNewSettlementLocation();
 		
@@ -1141,7 +1141,7 @@ public class SimulationConfigEditor {
 	 * @return
 	 */
 	private String tailorSettlementNameBySponsor(String sponsor, int index) {
-		ReportingAuthority ra = raFactory.getAuthority(sponsor);
+		ReportingAuthority ra = raFactory.getItem(sponsor);
 
 		List<String> usedNames = new ArrayList<>();
 		

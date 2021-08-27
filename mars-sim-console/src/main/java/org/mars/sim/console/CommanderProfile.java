@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.BiConsumer;
@@ -30,7 +31,6 @@ import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 
 /**
@@ -78,10 +78,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	
     	// Get Country list from known PersonConfig
     	PersonConfig pc = config.getPersonConfig();
-    	countryList = pc.getKnownCountries();
+    	countryList = new ArrayList<>(pc.getKnownCountries());
+    	Collections.sort(countryList);
     	
     	ReportingAuthorityFactory raFactory = config.getReportingAuthorityFactory();
-        authorities = new ArrayList<>(raFactory.getSupportedCodes());
+        authorities = new ArrayList<>(raFactory.getItemNames());
 	}
 
     private void setChoices(String... choices) {

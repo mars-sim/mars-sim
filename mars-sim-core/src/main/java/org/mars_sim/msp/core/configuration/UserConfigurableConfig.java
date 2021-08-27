@@ -145,6 +145,14 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 	
 	/**
+	 * Add an items that has been explicitly created to the control list.
+	 * @param newItem
+	 */
+	protected void addItem(T newItem) {
+		knownItems.put(newItem.getName(), newItem);
+	}
+	
+	/**
 	 * Delete the item.
 	 * @param name
 	 */

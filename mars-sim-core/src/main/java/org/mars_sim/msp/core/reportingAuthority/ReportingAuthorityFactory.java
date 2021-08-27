@@ -6,12 +6,18 @@
  */
 package org.mars_sim.msp.core.reportingAuthority;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -19,37 +25,119 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This is loaded via the GovernanceConfig for new simulations
  * or derived from the Settlements in a loaded simulation. 
  */
-public final class ReportingAuthorityFactory {
+public final class ReportingAuthorityFactory extends UserConfigurableConfig<ReportingAuthority> {
 	
-	/**
-	 * The code for the Mars Society Reporting Authority which is considered the default.
-	 * This society should always be created.
-	 */
-	public static final String MS_CODE = "MS";
+	private static final String AUTHORITY_EL = "authority";
+	private static final String AUTHORITIES_EL = "authorities";
+	private static final String CODE_ATTR = "code";
+	private static final String MISSION_ATTR = "mission";
+	private static final String MODIFIER_EL = "modifier";
+	private static final String VALUE_ATTR = "value";
+	private static final String DESCRIPTION_ATTR = "description";
+	private static final String SUB_AGENDA_EL = "sub-agenda";
+	private static final String SAMPLES_ATTR = "samples";
+	private static final String FINDINGS_ATTR = "findings";
+	private static final String OBJECTIVE_ATTR = "objective";
+	private static final String AGENDA_EL = "agenda";
+	private static final String AGENDAS_EL = "agendas";
+	private static final String COUNTRY_EL = "country";
+	private static final String NAME_ATTR = "name";
+	private static final String SETTLEMENTNAME_EL = "settlement-name";
+	private static final String ROVERNAME_EL = "rover-name";
 	
-	private Map<String,ReportingAuthority> controls
-			= new HashMap<>();
-	
+	private Map<String,MissionAgenda> agendas;
+
 	public ReportingAuthorityFactory() {
+		super("authority");
 		
+		// Load the defaults
+		loadGovernanceDetails();
+		
+		// Load user defined authorities
+		loadUserDefined();
 	}
 
 	/**
-	 * Lookup the appropriate ReportingAuthority for a AuthorityType.
-	 * @param authority
-	 * @param unit
+	 * Load the Reporting authorities from an external XML
+	 * @param config 
 	 * @return
 	 */
-	public ReportingAuthority getAuthority(String code) {
-		if (controls.isEmpty()) {
-			controls = GovernanceConfig.loadAuthorites();
-		}
-		ReportingAuthority ra = controls.get(code);
-		if (ra == null) {
-			throw new IllegalArgumentException("Have no Reporting Authority for " + code);
-		}
+	private void loadGovernanceDetails() {
+		Document doc = SimulationConfig.instance().parseXMLFileAsJDOMDocument("governance", true);
+
+		agendas = new HashMap<>();
 		
-		return ra;
+		// Load the Agendas into a temp Map
+		Element agendasNode = doc.getRootElement().getChild(AGENDAS_EL);
+		List<Element> agendaNodes = agendasNode.getChildren(AGENDA_EL);
+		for (Element agendaNode : agendaNodes) {
+			String name = agendaNode.getAttributeValue(NAME_ATTR);
+			String objective = agendaNode.getAttributeValue(OBJECTIVE_ATTR);
+			String findings = agendaNode.getAttributeValue(FINDINGS_ATTR);
+			String samples = agendaNode.getAttributeValue(SAMPLES_ATTR);
+
+			// Load sub-agendas
+			List<MissionSubAgenda> subs = new ArrayList<>();
+			List<Element> subNodes = agendaNode.getChildren(SUB_AGENDA_EL);
+			for (Element subNode : subNodes) {
+				String description = subNode.getAttributeValue(DESCRIPTION_ATTR);
+				
+				// Get modifiers
+				Map<MissionType, Integer> modifiers = new HashMap<>();
+				List<Element> modNodes = agendaNode.getChildren(MODIFIER_EL);
+				for (Element modNode : modNodes) {
+					MissionType mission = MissionType.valueOf(modNode.getAttributeValue(MISSION_ATTR));
+					int value = Integer.parseInt(modNode.getAttributeValue(VALUE_ATTR));
+					modifiers.put(mission, value);
+				}
+			
+				subs.add(new MissionSubAgenda(description, modifiers));
+			}	
+				
+			// Add the agenda
+			agendas.put(name, new MissionAgenda(name, objective, subs, findings, samples));
+		}
+	
+		// Load the Reporting authorities
+		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
+		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
+		for (Element authorityNode : authorityNodes) {
+			addItem(parseXMLAuthority(authorityNode));
+		}
+	}
+	
+	/**
+	 * Parse an Authority XML Element and create a Reporting Authority object.
+	 * @param authorityNode
+	 * @return
+	 */
+	private ReportingAuthority parseXMLAuthority(Element authorityNode) {
+		String code = authorityNode.getAttributeValue(CODE_ATTR);
+		String name = authorityNode.getAttributeValue(NAME_ATTR);
+		String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
+		MissionAgenda agenda = agendas.get(agendaName);
+		if (agenda == null) {
+			 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);
+		}
+		 
+		// Get Countries
+		List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
+								.map(a -> a.getAttributeValue(NAME_ATTR))
+								.collect(Collectors.toList());
+		 
+		// Get Settlement names
+		List<String> settlementNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.collect(Collectors.toList());
+
+		// Get Rover names
+		List<String> roverNames = authorityNode.getChildren(ROVERNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.collect(Collectors.toList());
+		
+		return new ReportingAuthority(code, name, agenda,
+													countries, settlementNames,
+													roverNames);
 	}
 	
 	/**
@@ -59,23 +147,27 @@ public final class ReportingAuthorityFactory {
 	 * @param mgr
 	 */
 	public void discoverReportingAuthorities(UnitManager mgr) {
-		// Load the defaults 
-		if (controls.isEmpty()) {
-			controls = GovernanceConfig.loadAuthorites();
-		}
-		
 		// Then overwrite the loaded with those that are active in the simulation
 		for (Settlement s : mgr.getSettlements()) {
 			ReportingAuthority ra = s.getSponsor();
-			controls.put(ra.getName(), ra);
+			addItem(ra);
 		}
 	}
 
 	/**
-	 * Get a list of the support Reporting Authority codes loaded.
-	 * @return
+	 * Convert a Reporting Authority to an XML representation.
 	 */
-	public Collection<String> getSupportedCodes() {
-		return Collections.unmodifiableCollection(controls.keySet());
+	@Override
+	protected Document createItemDoc(ReportingAuthority item) {
+		throw new UnsupportedOperationException("Not supported yet");
+	}
+
+	/**
+	 * Parse a user created XML
+	 */
+	@Override
+	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
+		// User configured XML just contains the Authority node.
+		return parseXMLAuthority(doc.getRootElement());
 	}
 }

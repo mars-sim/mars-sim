@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -397,6 +398,8 @@ public class CrewEditor implements ActionListener {
 
 	private ReportingAuthorityFactory raFactory;
 
+	private PersonConfig pc;
+
 	
 	/**
 	 * Constructor.
@@ -408,10 +411,12 @@ public class CrewEditor implements ActionListener {
 	 */
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor,
 					  UserConfigurableConfig<Crew> config,
-					  ReportingAuthorityFactory raFactory) {
+					  ReportingAuthorityFactory raFactory,
+					  PersonConfig pc) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 		this.raFactory = raFactory;
+		this.pc = pc;
 		
 		createGUI(config);
 	}
@@ -732,7 +737,7 @@ public class CrewEditor implements ActionListener {
 					
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
 		m.addElement(SETTLEMENT_SPONSOR);
-		m.addAll(raFactory.getSupportedCodes());
+		m.addAll(raFactory.getItemNames());
 		return m;
 	}
  
@@ -748,13 +753,13 @@ public class CrewEditor implements ActionListener {
 
 		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
 			// Load all known countries
-			// TODO need PersonConfig
-			sponsorCode = ReportingAuthorityFactory.MS_CODE;
+			model.addAll(pc.getKnownCountries());			
 		}
-		// Load the countries
-		ReportingAuthority ra = raFactory.getAuthority(sponsorCode);
-		for (String country : ra.getCountries()) {
-			model.addElement(country);
+		else 
+		{
+			// Load the countries from RA
+			ReportingAuthority ra = raFactory.getItem(sponsorCode);
+			model.addAll(ra.getCountries());
 		}
 	}
 	

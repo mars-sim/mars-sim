@@ -52,7 +52,7 @@ public class ArrivingSettlementUtil {
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
 				// Seems wrong as the Sponsor should be defined
-				ReportingAuthority ra = raFactory.getAuthority(sponsor);
+				ReportingAuthority ra = raFactory.getItem(sponsor);
 				name = Settlement.generateName(ra);
 			}
 

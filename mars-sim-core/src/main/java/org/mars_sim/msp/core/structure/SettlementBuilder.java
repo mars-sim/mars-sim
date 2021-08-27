@@ -180,7 +180,7 @@ public final class SettlementBuilder {
 		if (sponsor == null) {
 			sponsor = template.getSponsor();
 		}
-		ReportingAuthority ra = raFactory.getAuthority(sponsor);
+		ReportingAuthority ra = raFactory.getItem(sponsor);
 		
 		// Get settlement name
 		String name = spec.getName();
@@ -400,7 +400,7 @@ public final class SettlementBuilder {
 				// Get person's settlement or same sponsor
 				ReportingAuthority sponsor = settlement.getSponsor();
 				if (m.getSponsorCode() != null) {
-					 sponsor = raFactory.getAuthority(m.getSponsorCode());
+					 sponsor = raFactory.getItem(m.getSponsorCode());
 				}
 	
 				String name = m.getName();
