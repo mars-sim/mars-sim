@@ -1,13 +1,13 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?color=blue&label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Commits](https://img.shields.io/github/commit-activity/m/mars-sim/mars-sim?label=commits&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim/master?label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
-[![Download](https://img.shields.io/github/downloads/yt-dlp/yt-dlp/total?style=for-the-badge&color=blue)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+[![Total Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?style=for-the-badge&color=blue)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.github.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.github.mars-sim%3Amars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
-
+[![Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 
 # mars-sim
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that 
