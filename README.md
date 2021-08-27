@@ -1,13 +1,16 @@
-[![Build version](https://img.shields.io/github/v/release/mars-sim/mars-sim?color=blue&label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Commits Per Month](https://img.shields.io/github/commit-activity/m/mars-sim/mars-sim?label=commits&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
-[![Day of Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim/master?label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
-[![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?style=for-the-badge&color=blue)](https://github.com/mars-sim/mars-sim/releases)
+[![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver?color=blue&label=&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.2.0?label=commits&style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
+[![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
+[![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=GitHub%20Downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.github.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.github.mars-sim%3Amars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
-[![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+[![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg?label=SF%20Download&style=flat-square)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+
+
 
 # mars-sim
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that 
