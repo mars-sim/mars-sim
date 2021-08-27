@@ -1338,16 +1338,38 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && sufficientSupplies) {
 			Integer equipmentID = iE.next();
-			
 			String equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
 			
 			int num = requiredEquipment.get(equipmentID);
-			if (vInv.findNumEquipment(equipmentID) < num) {
+			int availableNum = sInv.findNumEquipment(equipmentID);
+			int storedNum = vInv.findNumEquipment(equipmentID);
+			int toLoad = num - storedNum;
+					
+			if (availableNum < num + storedNum) {
 				sufficientSupplies = false;
-				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Cannot load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() 
+						+ " 5. Insufficient settlement supply " + num + "x " + equipmentName
+						+ "  available: " + availableNum + "x "
+						+ "  vehicle stored: " + storedNum + "x "
+						+ "  toLoad: " + toLoad + "x "
+						);
+			}
+			
+			else if (storedNum < num) {
+				logger.info(vehicle, 10_000, vehicle.getMission() 
+						+ " 5. Await loading " + num + "x " + equipmentName
+						+ "  available: " + availableNum + "x "
+						+ "  vehicle stored: " + storedNum + "x "
+						+ "  toLoad: " + toLoad + "x "
+						);
 			}
 			else
-				logger.info(vehicle, 10_000, vehicle.getMission() + " 5. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() 
+						+ " 5. Done loading " + num + "x " + equipmentName
+						+ "  available: " + availableNum + "x "
+						+ "  vehicle stored: " + storedNum + "x "
+						+ "  toLoad: " + toLoad + "x "
+						);
 		}
 
 		// Check that optional equipment is loaded or can't be loaded.
@@ -1363,6 +1385,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 
 			int storedNum = vInv.findNumEquipment(equipmentID);
+			int availableNum = sInv.findNumEquipment(equipmentID);
+			int toLoad = num - storedNum;
+			
 			if (storedNum < num) {
 
 				// Check if enough stored in settlement.
@@ -1372,15 +1397,30 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 				boolean hasStoredSettlement = (storedSettlement >= (num - storedNum));
 
-				if (hasStoredSettlement) {
+				if (!hasStoredSettlement) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Cannot load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() 
+							+ " 6. Insufficient settlement supply " + num + "x " + equipmentName
+							+ "  available: " + availableNum + "x "
+							+ "  vehicle stored: " + storedNum + "x "
+							+ "  toLoad: " + toLoad + "x "
+							);
 				}
 				else
-					logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
+					logger.info(vehicle, 10_000, vehicle.getMission() 
+							+ " 6. Await loading " + num + "x " + equipmentName
+							+ "  available: " + availableNum + "x "
+							+ "  vehicle stored: " + storedNum + "x "
+							+ "  toLoad: " + toLoad + "x "
+							);
 			}
 			if (num > 0)
-				logger.info(vehicle, 10_000, vehicle.getMission() + " 6. Can load " + num + "x " + equipmentName);
+				logger.info(vehicle, 10_000, vehicle.getMission() 
+						+ " 6. Done loading " + num + "x " + equipmentName
+						+ "  available: " + availableNum + "x "
+						+ "  vehicle stored: " + storedNum + "x "
+						+ "  toLoad: " + toLoad + "x "
+						);
 		}
 
 		return sufficientSupplies;
