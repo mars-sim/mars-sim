@@ -1165,10 +1165,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			p.timePassing(pulse);
 		}
 		
-		//Robots are already updated as Equipment ? Seems not so should Robots be based directly on a Unit
-//		for (Robot r : ownedRobots) {
-//			r.timePassing(pulse);
-//		}
+		// Robots are updated here for now. 
+		for (Robot r : ownedRobots) {
+			r.timePassing(pulse);
+		}
 		
 		return true;
 	}

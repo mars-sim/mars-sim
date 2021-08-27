@@ -101,7 +101,7 @@ class MissionDataBean {
 	 * Creates a mission from the mission data.
 	 */
     protected void createMission() {
-    	// TODO: how to resolve the situation when rover is no longer available ?
+    	// Note: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
 	    if (MissionType.AREOLOGY == missionType) {
@@ -123,7 +123,6 @@ class MissionDataBean {
 	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
 	                constructionVehicles);
-	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
 	    }
 
 	    else if (MissionType.COLLECT_ICE == missionType) {
@@ -182,17 +181,6 @@ class MissionDataBean {
 	    missionManager.addMission(mission);
 	}
  
-//	/**
-//	 * Gets mission types.
-//	 * @return array of mission type strings.
-//	 */
-//    protected static String[] getStringTypes() {
-//		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION,
-//				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, METEOROLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION,
-//                MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION, EMERGENCY_SUPPLY_MISSION };
-//		return result;
-//	}
-
 	/**
 	 * Gets mission types.
 	 * @return array of mission type strings.

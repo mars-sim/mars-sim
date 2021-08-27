@@ -967,7 +967,7 @@ public class Inventory implements Serializable {
 						"Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
 						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
-						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
+						+ ", attempted: " + Math.round(amount*1000.0)/1000.0 + " kg");
 			}
 		}
 	}

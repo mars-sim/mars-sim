@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @date 2021-08-15
+ * @date 2021-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -1131,9 +1131,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 				double amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
+				double toLoad = amount - storedAmount;
+				double remainingCap = vInv.getAmountResourceRemainingCapacity(resource, true, false);
+								
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
-					
+				
 					if (resource == ResourceUtil.oxygenID) {
 						// Note: account for occupants inside the vehicle to use up oxygen over time
 						if (storedAmount > .95 * amount) {
@@ -1144,12 +1147,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						}
 					}
 					
-					if (!sufficientSupplies) {
-						double toLoad = amount - storedAmount;
-						double remainingCap = vInv.getAmountResourceRemainingCapacity(resource, true, false);
-						
-						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "1. Insufficient supply of " + amountResource 
+					else {
+						sufficientSupplies = true;
+						logger.info(vehicle, 10_000, "1. Still loading " + amountResource 
 							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
 							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " 
 							+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
@@ -1158,10 +1158,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					}
 				}
 				
-				else
-					logger.info(vehicle, 10_000, "1. Sufficient supply of " + amountResource 
-							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg " 
-							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " );
+				else {
+					sufficientSupplies = true;
+					logger.info(vehicle, 10_000, "1. Done loading " + amountResource 
+							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
+							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " 
+							+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
+							+ "  remainingCap: " + Math.round(remainingCap*10.0)/10.0 + " kg " 
+							);
+				}
 				
 			} 
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
@@ -1176,10 +1181,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				}
-				else
+				else {
+					sufficientSupplies = true;
 					logger.info(vehicle, 10_000, "2. Sufficient supply of " + itemResource
 							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
+				}
 				
 			} else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
@@ -1201,44 +1208,49 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
+				double toLoad = amount - storedAmount;
+				
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					// Check if enough capacity in vehicle.
 					double vehicleCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
-					boolean hasVehicleCapacity = (vehicleCapacity >= (amount - storedAmount));
+					boolean hasVehicleCapacity = (vehicleCapacity >= toLoad);
 
 					// Check if enough stored in settlement.
 					double storedSettlement = sInv.getAmountResourceStored(resource, false);
 					if (settlement.getParkedVehicles().contains(vehicle)) {
 						storedSettlement -= storedAmount;
 					}
-					boolean hasStoredSettlement = (storedSettlement >= (amount - storedAmount));
+									
+					boolean hasStoredSettlement = (storedSettlement >= toLoad);
 
-					if (!hasVehicleCapacity) {
-						double toLoad = amount - storedAmount;
-						
+					if (!hasVehicleCapacity) {			
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "3. Insufficient capacity for " + amountResource 
-								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+						logger.info(vehicle, 10_000, "3. Insufficient vehicle capacity for " + amountResource 
+								+ "  storedAmount: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  storedSettlement: " + Math.round(storedSettlement*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
-								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
+					
 					else if (!hasStoredSettlement) {
-						double toLoad = amount - storedAmount;
-						
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "3. Insufficient supply of " + amountResource 
-								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+						logger.info(vehicle, 10_000, "3. Insufficient settlement supply of " + amountResource 
+								+ "  storedAmount: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
 								+ "  storedSettlement: " + Math.round(storedSettlement*10.0)/10.0+ " kg " 
 								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
-								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
-					else
-						logger.info(vehicle, 10_000, "3. Sufficient supply of " + amountResource 
-								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
-								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " );
+					else {
+						sufficientSupplies = true;
+						logger.info(vehicle, 10_000, "3. Sufficient settlement supply of " + amountResource 
+								+ "  storedAmount: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+								+ "  storedSettlement: " + Math.round(storedSettlement*10.0)/10.0+ " kg " 
+								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+					}
 
 				}
 			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
@@ -1252,6 +1264,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 
 				int storedNum = vInv.getItemResourceNum(resource);
+				int toLoad = num - storedNum;
+				
 				if (storedNum < num) {
 					// Check if enough capacity in vehicle.
 					double vehicleCapacity = vInv.getRemainingGeneralCapacity(false);
@@ -1265,16 +1279,30 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					}
 					boolean hasStoredSettlement = (storedSettlement >= (num - storedNum));
 
-					if (hasVehicleCapacity && hasStoredSettlement) {
+					if (!hasVehicleCapacity) {
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "4. Insufficient supply of " + itemResource
+						logger.info(vehicle, 10_000, "4. Insufficient vehicle capacity of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
-								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
+								+ "  required: " + Math.round(num*10.0)/10.0 + "x"
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + "x "
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
-					else
-						logger.info(vehicle, 10_000, "4. Sufficient supply of " + itemResource
+					else if (!hasStoredSettlement) {
+						sufficientSupplies = false;
+						logger.info(vehicle, 10_000, "4. Insufficient settlement supply of " + itemResource
 								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
-								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
+								+ "  required: " + Math.round(num*10.0)/10.0 + "x"
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + "x "
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+					}
+					else {
+						sufficientSupplies = true;
+						logger.info(vehicle, 10_000, "4. Sufficient settlement supply of " + itemResource
+								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
+								+ "  required: " + Math.round(num*10.0)/10.0 + "x"
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + "x "
+								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
+					}
 
 				}
 			} else {

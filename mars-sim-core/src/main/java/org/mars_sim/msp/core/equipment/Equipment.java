@@ -123,7 +123,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			this.resource = resource;
 			String name = ResourceUtil.findAmountResourceName(resource);
 			if (name != null) {
-				logger.config(this, "Initialized for storing " + name + ".");
+//				logger.config(this, "Initialized for storing " + name + ".");
 			}
 			else {
 				logger.warning(this, "Resource " + resource + " is invalid.");
