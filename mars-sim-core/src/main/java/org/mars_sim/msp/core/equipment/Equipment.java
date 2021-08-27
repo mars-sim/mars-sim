@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -57,7 +56,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private int resource = -1;
 	private double quantity;
 	
-	/** The SalvageInfo instatnce. */	
+	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
@@ -250,48 +249,56 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	
 
 	/**
+	 * Is this equipment empty ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean isEmpty(int resource) {
+		if (this.resource == -1 || (this.resource == resource && this.quantity == 0))
+			return true;
+		
+		return false;
+	}
+
+	/**
 	 * Is this equipment empty ? 
 	 * 
 	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
 	public boolean isEmpty(boolean brandNew) {
-		// if resource is -1, it's never been used before
-		// if it's not brand new, it doesn't matter if source is -1 or not
-		if ((brandNew && resource == -1) || this.quantity == 0)
+		// if resource is -1, it's never been used before	
+		if (brandNew && (resource == -1 && this.quantity == 0)) {
 			return true;
+		}
+		// if it's not brand new, it doesn't matter if source is -1 or not
+		else if (resource == -1 || this.quantity == 0) {
+				return true;	
+		}
 		return false;
 	}	
-	
+
 	public boolean isBrandNew() {
 		if (resource == -1 && this.quantity == 0)
 			return true;
 		return false;
-	}	
-	
+	}
+
 	public boolean isUsed() {
 		if (resource != -1)
 			return true;
 		return false;
-	}	
+	}
 
 	public boolean hasContent() {
 		if (quantity > 0)
 			return true;
 		return false;
-	}	
-	
-	public boolean isEmpty(int resource) {
-		if (resource == -1)
-			return true;
-		if (this.resource == resource || this.quantity == 0)
-			return true;
-		
-		return false;
-	}	
-	
+	}
+
 	public abstract double getTotalCapacity();
-	
+
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

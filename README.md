@@ -1,7 +1,8 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?color=blue&label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Download Mars Simulation Project](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 [![Commits](https://img.shields.io/github/commit-activity/m/mars-sim/mars-sim?label=commits&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim/master?label=&style=for-the-badge)](https://github.com/mars-sim/mars-sim/commits)
+[![Download](https://img.shields.io/github/downloads/yt-dlp/yt-dlp/total?style=for-the-badge&color=blue)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.github.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.github.mars-sim%3Amars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
@@ -39,9 +40,9 @@ as they interact and work with one another. They are there to live, dream, explo
 ---
 
 ## Operation Modeling
-mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to 
-defining operation paradigms and programming models based on the present day technologies that are 
-applicable for the near-term human exploration and settlement on Mars.
+mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich scientific 
+language selected from research journal and paper in defining operation paradigms and programming models 
+that are based on present-day technologies.
 
 For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces 
 structural requirements on buildings. 
