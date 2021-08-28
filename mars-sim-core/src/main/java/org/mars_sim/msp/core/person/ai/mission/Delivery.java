@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Delivery.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -188,17 +188,24 @@ public class Delivery extends DroneMission implements Serializable {
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Delivery(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
+	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], 2, drone);
-
-		Person person = null;
-//		Robot robot = null;
+		super(description, missionType, startingMember, 2, drone);
 
 		outbound = true;
 		doNegotiation = false;
 
+		// Add mission members.
+		Iterator<MissionMember> i = members.iterator();
+		while (i.hasNext()) {
+			MissionMember mm = i.next();
+			if (mm instanceof Person)
+				((Person)mm).getMind().setMission(this);
+			else if (mm instanceof Robot)
+				((Robot)mm).getBotMind().setMission(this);
+		}
+		
 		// Initialize data members
 		setStartingSettlement(startingSettlement);
 
@@ -212,20 +219,6 @@ public class Delivery extends DroneMission implements Serializable {
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
 		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
-
-		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			// TODO Refactor.
-			if (member instanceof Person) {
-				person = (Person) member;
-				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
-			}
-		}
 
 		// Set trade goods.
 		sellLoad = sellGoods;
@@ -245,7 +238,6 @@ public class Delivery extends DroneMission implements Serializable {
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.embarking.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
-			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getDrone() != null) {
 				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");
 			}

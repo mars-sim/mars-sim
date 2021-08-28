@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DeliveryGoodsPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -34,7 +34,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
@@ -42,7 +41,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.GasCanister;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -276,7 +275,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace(System.err);
+//			e.printStackTrace(System.err);
 		}
 		return result;
 	}
@@ -305,14 +304,14 @@ class DeliveryGoodsPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
-				double capacity = ((Equipment)container).getAmountResourceCapacity(resource.getID());
+				Equipment container = EquipmentFactory.createEquipment(containerType, settlement, true);
+				double capacity = container.getAmountResourceCapacity(resource.getID());
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);
 				if (resourceAmount > totalCapacity) {
 					double neededCapacity = resourceAmount - totalCapacity;
 					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
-					String containerName = container.getName().toLowerCase();
+					String containerName = container.getType().toLowerCase();
 					if (neededContainerNum > 1) containerName = containerName + "s";
 					errorMessageLabel.setText(neededContainerNum + " " + containerName + " needed to hold " + resource.getName());
 					result = false;
@@ -323,7 +322,8 @@ class DeliveryGoodsPanel extends WizardPanel {
 					int remainingContainerNum = containerNum - neededContainerNum;
 					containerMap.put(containerType, remainingContainerNum);
 				}
-			}
+			}			
+			// May consider using container for item in future
 		}
 
 		return result;
@@ -450,12 +450,12 @@ class DeliveryGoodsPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
+					int amount = (int) DeliveryUtil.getNumInInventory(good, settlement.getInventory());
 					if (checkForVehicle(good)) amount--;
 					goodsMap.put(good, amount);
 				}
 				catch (Exception e) {
-					e.printStackTrace(System.err);
+//					e.printStackTrace(System.err);
 				}
 			}
 			fireTableDataChanged();

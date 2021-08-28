@@ -63,6 +63,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -805,6 +806,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return CollectionUtils.getRobot(getInventory().getContainedUnits());
 	}
 
+	/**
+	 * Gets a collection of the number of robots of a particular type.
+	 *
+	 * @return Collection of robots
+	 */
+	public Collection<Robot> getRobots(RobotType type) {
+		// using java 8 stream
+		return getRobots().stream()
+				.filter(r -> r.getRobotType() == type)
+				.collect(Collectors.toList());
+	}
+	
 	/**
 	 * Returns true if life support is working properly and is not out of oxygen or
 	 * water.

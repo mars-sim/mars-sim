@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * MembersPanel.java
- * @version 3.2.0 2021-06-20
+ * BotMembersPanel.java
+ * @date 2021-08-27
  * @author Manny Kung
  */
 
@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -45,14 +46,15 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 
 /**
- * A wizard panel to select mission bot members.
+ * A wizard panel for selecting bots.
  */
+@SuppressWarnings("serial")
 class BotMembersPanel
 extends WizardPanel
 implements ActionListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Members";
+	private final static String NAME = "Bots";
 
 	// Data members.
 	private BotsTableModel botsTableModel;
@@ -63,7 +65,7 @@ implements ActionListener {
 	private WebLabel errorMessageLabel;
 	private WebButton addButton;
 	private WebButton removeButton;
-	private WebLabel roverCapacityLabel;
+//	private WebLabel roverCapacityLabel;
 
 	/**
 	 * Constructor
@@ -129,17 +131,17 @@ implements ActionListener {
 									addButton.setEnabled(false);
 								}
 								else {
-									// Check if number of rows exceed rover remaining capacity.
-									if (selectedRows.length > getRemainingRoverCapacity()) {
-										// Display over capacity message and disable add button.
-										errorMessageLabel.setText("Not enough rover capacity to hold selected bots.");
-										addButton.setEnabled(false);
-									}
-									else {
+//									// Check if number of rows exceed rover remaining capacity.
+//									if (selectedRows.length > getRemainingRoverCapacity()) {
+//										// Display over capacity message and disable add button.
+//										errorMessageLabel.setText("Not enough rover capacity to hold selected bots.");
+//										addButton.setEnabled(false);
+//									}
+//									else {
 										// Enable add button.
 										errorMessageLabel.setText(" ");
 										addButton.setEnabled(true);
-									}
+//									}
 								}
 							}
 						}
@@ -200,7 +202,6 @@ implements ActionListener {
 							bots.add((Robot) botMembersTableModel.getUnit(selectedRow));
 						botsTableModel.addRobots(bots);
 						botMembersTableModel.removeRobots(bots);
-						updateRoverCapacityLabel();
 					}
 				});
 		buttonPane.add(removeButton);
@@ -209,9 +210,9 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the rover capacity label.
-		roverCapacityLabel = new WebLabel("Remaining Rover Capacity: ");
-		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(roverCapacityLabel);
+//		roverCapacityLabel = new WebLabel("Remaining Rover Capacity: ");
+//		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		add(roverCapacityLabel);
 
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
@@ -268,14 +269,14 @@ implements ActionListener {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		Collection<MissionMember> members = new ConcurrentLinkedQueue<MissionMember>();
 		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) {
 			members.add((MissionMember) botMembersTableModel.getUnit(x));
 		}
-		getWizard().getMissionData().setMixedMembers(members);
+		getWizard().getMissionData().addMixedMembers(members);
 		return true;
 	}
 
@@ -294,38 +295,6 @@ implements ActionListener {
 	void updatePanel() {
 		botsTableModel.updateTable();
 		botMembersTableModel.updateTable();
-		updateRoverCapacityLabel();
-	}
-
-	/**
-	 * Updates the rover capacity label.
-	 */
-	void updateRoverCapacityLabel() {
-		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.BUILDING_CONSTRUCTION == type) {
-			roverCapacityLabel.setText(" ");
-		}
-		else if (MissionType.BUILDING_SALVAGE == type) { 
-			roverCapacityLabel.setText(" ");
-		}
-		else {
-			roverCapacityLabel.setText("Remaining Rover Capacity: " + getRemainingRoverCapacity());
-		}
-	}
-
-	/**
-	 * Gets the remaining rover capacity.
-	 * @return rover capacity.
-	 */
-	int getRemainingRoverCapacity() {
-		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.BUILDING_CONSTRUCTION == type) return Integer.MAX_VALUE;
-		else if (MissionType.BUILDING_SALVAGE == type) return Integer.MAX_VALUE;
-		else {
-			int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
-			int memberNum = botMembersTableModel.getRowCount();
-			return roverCapacity - memberNum;
-		}
 	}
 
 	/**
@@ -366,7 +335,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = robot.getBotMind().getRobotJob().toString();
+						result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getTypeID();
@@ -398,7 +367,8 @@ implements ActionListener {
 				settlement = missionData.getConstructionSettlement();
 			else if (MissionType.BUILDING_SALVAGE == missionData.getMissionType())
 				settlement = missionData.getSalvageSettlement();
-			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots());
+			// Pick only deliverybot for delivery mission
+			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots(RobotType.DELIVERYBOT));
 			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) units.add(i.next());
 			fireTableDataChanged();
@@ -491,7 +461,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = robot.getBotMind().getRobotJob().toString();
+						result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getTypeID();
@@ -579,7 +549,7 @@ implements ActionListener {
 		for (int selectedRow : selectedRows) robots.add((Robot) botsTableModel.getUnit(selectedRow));
 		botsTableModel.removeRobots(robots);
 		botMembersTableModel.addRobots(robots);
-		updateRoverCapacityLabel();
+//		updateRoverCapacityLabel();
 	}
 
 }

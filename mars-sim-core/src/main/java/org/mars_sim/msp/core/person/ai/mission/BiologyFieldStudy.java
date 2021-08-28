@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BiologyFieldStudy.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -162,7 +162,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	 * @param description        the mission description.
 	 * @throws MissionException if error creating mission.
 	 */
-	public BiologyFieldStudy(Collection<Person> members, Settlement startingSettlement, Person leadResearcher,
+	public BiologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
@@ -186,10 +186,13 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			setMissionCapacity(availableSuitNum);
 
 		// Add mission members.
-		Iterator<Person> i = members.iterator();
-		while (i.hasNext())
-			i.next().getMind().setMission(this);
-
+		Iterator<MissionMember> i = members.iterator();
+		while (i.hasNext()) {
+			MissionMember mm = i.next();
+			if (mm instanceof Person)
+				((Person)mm).getMind().setMission(this);
+		}
+		
 		// Add home settlement
 		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 				getStartingSettlement().getName()));

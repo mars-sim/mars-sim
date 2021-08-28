@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-27
  * @author Scott Davis
  */
 
@@ -44,14 +44,15 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
- * A wizard panel to select mission members.
+ * A wizard panel for selecting settlers.
  */
+@SuppressWarnings("serial")
 class MembersPanel
 extends WizardPanel
 implements ActionListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Members";
+	private final static String NAME = "Settlers";
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
@@ -276,17 +277,11 @@ implements ActionListener {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		//Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		//for (int x = 0; x < membersTableModel.getRowCount(); x++) 
-		//	people.add((Person) membersTableModel.getUnit(x));
-		//getWizard().getMissionData().setMembers(people);
-		
 		Collection<MissionMember> members = new ConcurrentLinkedQueue<MissionMember>();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) {
 			members.add((MissionMember) membersTableModel.getUnit(x));
 		}
-		getWizard().getMissionData().setMixedMembers(members);		
-		
+		getWizard().getMissionData().addMixedMembers(members);			
 		return true;
 	}
 

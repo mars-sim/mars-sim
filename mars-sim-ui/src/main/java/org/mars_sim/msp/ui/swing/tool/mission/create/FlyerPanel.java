@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FlyerPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-27
  * @author Manny Kung
  */
 
@@ -287,13 +287,8 @@ class FlyerPanel extends WizardPanel {
 			Drone vehicle = (Drone) getUnit(row);
 
 			if (column == 7) {
-//                try {
 				if (vehicle.getInventory().getTotalInventoryMass(true) > 0D)
 					result = true;
-//                }
-//                catch (InventoryException e) {
-//                    e.printStackTrace(System.err);
-//                }
 			} else if (column == 8) {
 				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))
 					result = true;
