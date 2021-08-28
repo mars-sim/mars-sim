@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VersionTag.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -108,8 +108,7 @@ public class VersionTag {
 
         	
         } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
         
         System.out.println();

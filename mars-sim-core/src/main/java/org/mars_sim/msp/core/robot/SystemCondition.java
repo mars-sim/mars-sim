@@ -1,19 +1,20 @@
-/**
+/*
  * Mars Simulation Project
  * SystemCondition.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -27,25 +28,18 @@ public class SystemCondition implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
-    /** default logger. */
-    private static final Logger logger = Logger.getLogger(SystemCondition.class.getName());
+    
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
     /** Sleep Habit maximum value. */
-    private static int MAX_WEIGHT = 30;
-    /** Sleep Habit Map resolution. */
-    //private static int SLEEP_MAP_RESOLUTION = 20;
-
-    private static double INFLATION = 1.15;
-
+//    private static int MAX_WEIGHT = 30;
+//    private static double INFLATION = 1.15;
 
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
     /** Life support maximum value. */
     private static int MAX_VALUE = 1;
-
-    /** Stress jump resulting from being in an accident. */
-    //public static final double ACCIDENT_STRESS = 40D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
     
@@ -89,10 +83,9 @@ public class SystemCondition implements Serializable {
 
         try {
         	robotBatteryDrainTime = robotConfig.getLowPowerModeStartTime() * 1000D;
-            //System.out.println("robotBatteryDrainTime : "+ Math.round(robotBatteryDrainTime*10.0)/10.0);
         }
         catch (Exception e) {
-            e.printStackTrace(System.err);
+          	logger.log(Level.SEVERE, "Cannot config low power mode start time: "+ e.getMessage());
         }
     }
 

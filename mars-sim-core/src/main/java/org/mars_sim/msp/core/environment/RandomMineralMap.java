@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * MineralMap.java
- * @version 3.2.0 2021-06-20
+ * RandomMineralMap.java
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -36,20 +36,17 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * A randomly generated mineral map of Mars.
  */
-//@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class RandomMineralMap implements Serializable, MineralMap {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static String CLASS_NAME = "org.mars_sim.msp.core.mars.RandomMineralMap";
 	private static final Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
 
 	private static final int W = 300;
 	private static final int H = 150;
 	
 	// Topographical Region Strings
-	
 	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
 	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
 	private static final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
@@ -143,7 +140,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error creating random mineral map.", e);
-			e.printStackTrace();
 		}
 	}
 

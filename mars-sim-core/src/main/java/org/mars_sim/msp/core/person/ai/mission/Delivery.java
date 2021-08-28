@@ -897,7 +897,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+          	logger.log(Level.SEVERE, "Cannot estimate delivery profit: "+ e.getMessage());
 			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
 			endMission();
 		}

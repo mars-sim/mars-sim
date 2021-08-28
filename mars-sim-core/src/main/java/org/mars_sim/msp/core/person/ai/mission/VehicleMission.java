@@ -368,7 +368,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
 					setVehicle(selected);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.severe(selected, "Cannot set the best vehicle: ", e);
 				}
 			}
 

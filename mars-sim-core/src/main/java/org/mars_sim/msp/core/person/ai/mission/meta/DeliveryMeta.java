@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DeliveryMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -58,8 +58,8 @@ public class DeliveryMeta implements MetaMission {
 		double missionProbability = 0D;
 
 		// Check if person is in a settlement.
-//		if (person.isInSettlement()) {
-			// Check if mission is possible for person based on their circumstance.
+
+		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
 		if (settlement.isFirstSol())
@@ -74,19 +74,10 @@ public class DeliveryMeta implements MetaMission {
 				|| RoleType.COMMANDER == roleType
 				) {
 			
-//			try {
-				// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
+				// Note: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 				// Inventory
 				// It happens only when this sim is a loaded saved sim.
 				missionProbability = getSettlementProbability(settlement); 
-
-//			} catch (Exception e) {
-//				logger.log(Level.SEVERE,
-//						person + " can't compute the exact need for delivery mission now at " + settlement + ". ", e);
-//				e.printStackTrace();
-//
-//				return 0;
-//			}
 			
 		} else {
 			missionProbability = 0;
@@ -124,12 +115,7 @@ public class DeliveryMeta implements MetaMission {
 	public double getSettlementProbability(Settlement settlement) {
 
 		double missionProbability = 0;
-		
-//		if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
-//        	missionProbability = 1;
-//        else
-//			return 0;
-		
+
 		// Check for the best delivery settlement within range.
 		double deliveryProfit = 0D;
 		
@@ -152,37 +138,25 @@ public class DeliveryMeta implements MetaMission {
 				if (timeDiff < FREQUENCY) {
 					deliveryProfit = profitInfo.profit;
 					useCache = true;
-//					logger.info(settlement, 30_000, "Use DeliveryProfitInfo cache.");
 				}
 			} else {
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-//				useCache = true;
-//				logger.info(settlement, 30_000, "Setting up new DeliveryProfitInfo.");
 			}
 
 			if (!useCache) {
-//					double startTime = System.currentTimeMillis();
+
 				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
-//					double endTime = System.currentTimeMillis();
-//					logger.info(settlement, 30_000, 
-////							" getBestDeliveryProfit: " + (endTime - startTime)
-////							+ " ms "
-//							"Best delivery profit: " + Math.round(deliveryProfit*10.0)/10.0 + " VP");
+
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
 			}
 			
-//			if (deliveryProfit > 0)
-//				logger.info(settlement, drone.getNickName() + " available for delivery.");
-			
+	
 		} catch (Exception e) {
 			if (person != null)
-				logger.log(Level.SEVERE, person + "Issues with DeliveryUtil.", e);
-//			else if (robot != null)
-//				logger.log(Level.SEVERE, robot + "can't find drones at settlement.", e);
-			e.printStackTrace();
+				logger.log(Level.SEVERE, person + "Issues with DeliveryUtil: ", e);
 			return 0;
 		}
 
@@ -192,7 +166,6 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}
 
-//		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 
    		// Check for # of embarking missions.
@@ -203,8 +176,6 @@ public class DeliveryMeta implements MetaMission {
 		else if (numThisMission > 1)
 			return 0;	
 		
-
-//		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
 		missionProbability *= settlement.getNumCitizens() / f2 / 2D;
@@ -215,11 +186,6 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability *= (crowding + 1);
 		}
 
-//        if (missionProbability > 0)
-//        	logger.info(settlement, "DeliveryMeta: " +
-//				 Math.round(missionProbability*100D)/100D);
-        
 		return missionProbability;
 	}
-	
 }

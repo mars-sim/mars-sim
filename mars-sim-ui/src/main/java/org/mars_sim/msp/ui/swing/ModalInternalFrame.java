@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ModalInternalFrame.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.awt.event.MouseEvent;
+import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JTextField;
@@ -26,6 +27,9 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public abstract class ModalInternalFrame extends JInternalFrame {
 
+    /** default logger. */
+    private static final Logger logger = Logger.getLogger(ModalInternalFrame.class.getName());
+    
 	// Data members
 	boolean modal = false;
 
@@ -128,7 +132,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 				}
 			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.config("Problem in startModal's EventQueue" + e.getMessage());
 		}
 	}
 

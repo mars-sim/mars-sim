@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
@@ -23,8 +22,6 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
-import org.apache.commons.io.IOUtils;
-import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -133,7 +130,7 @@ public class UIConfig {
 					logger.config("Can't delete ui_settings.xml since it's not found."); 
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.config("Can't delete ui_settings.xml: " + e.getMessage()); 
 			}
 
 		}

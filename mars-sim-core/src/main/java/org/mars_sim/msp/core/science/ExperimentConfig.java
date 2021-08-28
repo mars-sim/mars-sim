@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExperimentConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -12,17 +12,24 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+
+import org.mars_sim.msp.core.logging.SimLogger;
  
 public class ExperimentConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ExperimentConfig.class.getName());
+
+		
 	private static final String JSON_FILE = "/json/experiments.json";
     
     private Package p;
@@ -45,7 +52,7 @@ public class ExperimentConfig implements Serializable {
         try {
 			fis.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+        	logger.log(Level.SEVERE, "Cannot close json file: "+ e1.getMessage());
 		}
          
         // Retrieve package from JsonObject
@@ -66,10 +73,10 @@ public class ExperimentConfig implements Serializable {
                 String exp = child.getString("experiment");
                 String num = child.getString("number");
 	        	p.createExperiment(exp, num);
-//	            System.out.println(exp + " : " + num);
 	        }
         } catch (Exception e1) {
-			e1.printStackTrace();
+        	logger.log(Level.SEVERE, "Cannot get json objects: "+ e1.getMessage());
+
 		}
      
     }

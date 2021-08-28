@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -51,10 +51,8 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
 
-	// private static final int BLUR_SIZE = 7;
-
-	public static final int WIDTH = 530;// 512;
-	public static final int HEIGHT = 630;//605;
+	public static final int WIDTH = 530;
+	public static final int HEIGHT = 630;
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
@@ -63,7 +61,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 
-	// private static final String TITLE = Msg.getString("icon.title");
 	private static final String ONE_SPACE = " ";
 	private static final String TWO_SPACES = "  ";
 	private static final String DEAD = "Dead";
@@ -72,13 +69,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	private static final String MILLISOLS = " millisols)";
 	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
 	private static final String ONE_SPACE_SHIFT = " Shift";
-	// private static final String STATUS = "Status (click to open/close)";
-	// private static final String DETAILS = "Details";
-	// private static final String STATUS_ICON = Msg.getString("icon.status");
-	// private static final String DETAILS_ICON = Msg.getString("icon.details");
 
 	// Data members
-//	private int themeCache = -1;
+
 	private boolean hasDescription;
 	
 	private String oldRoleString = "";
@@ -107,8 +100,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/** Unit for this window. */
 	protected Unit unit;
 
-//	private static ImageIcon icon = MainWindow.getLanderIcon();
-	
 	/**
 	 * Constructor
 	 *
@@ -282,17 +273,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //			try {
 //				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 //			} catch (ClassNotFoundException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
 //			} catch (InstantiationException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
 //			} catch (IllegalAccessException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
 //			} catch (UnsupportedLookAndFeelException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
 //			}
 //			
 //			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
@@ -363,8 +346,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
 		
-		// TODO: add focusListener to play sounds and alert users of critical conditions.
-		// TODO: disabled in SVN while in development
+		// Add focusListener to play sounds and alert users of critical conditions.
+		// Disabled in SVN while in development
 		// this.addInternalFrameListener(new
 		// UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
 		
@@ -555,8 +538,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		return selected;
 	}
 	
-//	public abstract void tabChanged(boolean reloadSearch);
-	
 	/**
 	 * Prepares unit window for deletion.
 	 */
@@ -573,6 +554,5 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		shiftLabel = null;
 		desktop = null;
 		unit = null;
-//		mainScene = null;
 	}
 }

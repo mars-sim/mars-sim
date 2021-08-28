@@ -1,12 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * TendGreenhouseMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.logging.Level;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -25,6 +28,9 @@ public class TendGreenhouseMeta extends MetaTask {
 
     private static final double VALUE = 4D;
     
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
@@ -74,8 +80,7 @@ public class TendGreenhouseMeta extends MetaTask {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
-            	//logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
+            	logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
             }
 
         }
@@ -108,8 +113,7 @@ public class TendGreenhouseMeta extends MetaTask {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
-                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
+                logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
             }
 
 

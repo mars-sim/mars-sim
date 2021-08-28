@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JavaH2Database.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -74,7 +74,6 @@ public class JavaH2Database
 		} catch (SQLException ex) {
             var lgr = Logger.getLogger(JavaH2Database.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
-			ex.printStackTrace();
 		}
     }
     
@@ -83,29 +82,24 @@ public class JavaH2Database
      
         Connection H2DBConnection = null;
          
-        try
-        {
+        try {
             H2DBConnection = DriverManager.getConnection(DATABASE_CONNECTION, DATABASE_USER, DATABASE_PASSWORD);
              
             return H2DBConnection;
         } 
-        catch (SQLException ex) 
-        {
-            System.out.println(ex.toString());
-            
-            throw new IllegalStateException("Can not create connection", ex);
+        catch (SQLException ex) {
+            System.out.println("Can not create connection: " + ex.toString());
         }
-
+        
+		return H2DBConnection;
     }
     
 	//Insert a new record into our SETTLERS table
-	public static void insertRecordInTableUsingStatement() 
-	{
+	public static void insertRecordInTableUsingStatement() {
 	    //Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	     
-	    try (Statement statement = connection.createStatement())
-	    {
+	    try (Statement statement = connection.createStatement())  {
 	        //Set auto commit to false  
 	        connection.setAutoCommit(false);
 	         
@@ -119,16 +113,14 @@ public class JavaH2Database
 	        //Commit the record to the DB table
 	        connection.commit();
 	    }
-	    catch(Exception ex) 
-	    {
+	    catch(Exception ex) {
 	        System.out.println(ex.toString());
 	    }
 	         
 	}
 
 	//Insert a new record into our SETTLERS table
-	public static void insertRecordInTableUsingPreparedStatement() 
-	{
+	public static void insertRecordInTableUsingPreparedStatement()  {
 	    //Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	     

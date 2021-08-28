@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingSalvageMissionMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -119,7 +119,6 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 	            } catch (Exception e) {
 	                logger.log(Level.SEVERE,
 	                        "Error getting salvage construction site by a person.", e);
-	                e.printStackTrace();
 	            	return 0;
 	            }
 	

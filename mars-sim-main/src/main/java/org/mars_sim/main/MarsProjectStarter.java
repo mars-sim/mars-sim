@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MarsProjectStarter.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -294,11 +294,11 @@ public class MarsProjectStarter {
             outputConsumer.join();
 
         } catch (IOException e) {
-            e.printStackTrace();
+        	System.out.println("I/O issues: " + e.getMessage());
         } catch (InterruptedException e1) {
-        	e1.printStackTrace();
+        	System.out.println("Interrupt issues: " + e1.getMessage());
         } catch (Exception e2) {
-        	e2.printStackTrace();        	
+        	System.out.println("Other issues: " + e2.getMessage());       	
         }
     }
 }

@@ -856,7 +856,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Problems in lifeSupportCheck(): " + e.getMessage());
 		}
 		
 		return true;
@@ -3445,7 +3445,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.severe("Problems in hasEnoughBasicResources(): " + e.getMessage());
 		}
 
 		return true;

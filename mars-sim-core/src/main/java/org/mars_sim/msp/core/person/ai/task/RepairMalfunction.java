@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -302,7 +302,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					result = malfunction;
 				}
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
+				logger.log(entity, Level.WARNING, 2000, "Problems in top container unit's malfunction: " + e.getMessage());
 			}
 		}
 
@@ -316,7 +316,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 						result = malfunction;
 					}
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
+					logger.log(entity, Level.WARNING, 2000, "Problems in general malfunction's repair parts: " + e.getMessage());
 				}
 			}
 		}

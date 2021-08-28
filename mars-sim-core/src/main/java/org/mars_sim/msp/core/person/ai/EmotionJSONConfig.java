@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EmotionJSONConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -10,16 +10,23 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.robot.SystemCondition;
  
 public class EmotionJSONConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(EmotionJSONConfig.class.getName());
+
     public static final String JSON_FILE="/json/emotions.json";
     
     private String[] emotional_state_names = {
@@ -81,7 +88,7 @@ public class EmotionJSONConfig implements Serializable {
         try {
 			fis.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot close json file :" + e1.getMessage());
 		}
          
         //Retrieve data from JsonObject and create Employee bean
@@ -103,7 +110,7 @@ public class EmotionJSONConfig implements Serializable {
 	        	e.setEmotions(innerJsonObject.getInt(emotional_state_names[i]), i);
 	        }
         } catch (Exception e1) {
-			e1.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot get json int objects: " + e1.getMessage());
 		}
         
         settler.setEmotion(e);

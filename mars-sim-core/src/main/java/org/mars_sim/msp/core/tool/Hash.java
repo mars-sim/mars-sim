@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Hash.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
 
 public enum Hash {
 
@@ -41,7 +44,7 @@ public enum Hash {
             }
             return digest.digest();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Problem in Hash's checksum(): " + e.getMessage());
         }
         return null;
     }
@@ -75,8 +78,7 @@ public enum Hash {
 	         
 	       return sb.toString();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            System.out.println("Problem in Hash's getChecksumString(): " + e.getMessage());
 		}
     	
     	// Return empty hash

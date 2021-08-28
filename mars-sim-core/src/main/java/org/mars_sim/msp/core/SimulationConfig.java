@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -224,7 +224,7 @@ public class SimulationConfig implements Serializable {
 		try {
 			loadDefaultConfiguration();
 		} catch (Exception e) {
-			e.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage());
 		}
 
 	}
@@ -258,32 +258,21 @@ public class SimulationConfig implements Serializable {
 		Path xmlPath = fileSys.getPath(xmlLoc.getPath());
         Path versionPath = fileSys.getPath(versionLoc.getPath());
         Path exceptionPath = fileSys.getPath(exceptionLoc.getPath());
-//		Path backupPath = fileSys.getPath(backupLoc.getPath());
-		
-//		System.out.println("  versionLoc : " + versionLoc.exists());
-//		System.out.println("      xmlLoc : " + xmlLoc.exists());
-//		System.out.println("exceptionLoc : " + exceptionLoc.exists());
-//		System.out.println("   backupLoc : " + backupLoc.exists());
-//		
-//		System.out.println("  versionPath : " + versionPath.toFile().exists());
-//		System.out.println("      xmlPath : " + xmlPath.toFile().exists());
-//		System.out.println("exceptionPath : " + exceptionPath.toFile().exists());	
-//		System.out.println("   backupPath : " + backupPath.toFile().exists());
-		
+
 		// Query if the xml folder exists in user home directory
 		// Query if the xml version matches
 		// If not, copy all xml over
 
         boolean xmlDirExist = xmlPath.toFile().exists();
 		
-		// if "xml" exits as a file, delete it
+		// Note: if "xml" exits as a file, delete it
 		if (xmlDirExist && xmlLoc.isFile()) {
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLoc +  "'" 
 					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(xmlLoc);
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot access xml folder: " + e.getMessage());
 			}
 		}
 		
@@ -312,9 +301,9 @@ public class SimulationConfig implements Serializable {
 					    }				    
 				    }
 				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+		          	logger.log(Level.SEVERE, "Cannot find version.txt : " + e.getMessage());
 				} catch (IOException e) {
-					e.printStackTrace();
+		          	logger.log(Level.SEVERE, "Cannot access version.txt : " + e.getMessage());
 				}
 			}
 			
@@ -323,9 +312,9 @@ public class SimulationConfig implements Serializable {
 					// Need to figure out how to make use of 
 					// exception.txt for tracking user's made changes in xml
 				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+		          	logger.log(Level.SEVERE, "Cannot find exception.txt : " + e.getMessage());
 				} catch (IOException e) {
-					e.printStackTrace();
+		          	logger.log(Level.SEVERE, "Cannot access exception.txt : " + e.getMessage());
 				}
 			}
 		}
@@ -349,11 +338,6 @@ public class SimulationConfig implements Serializable {
 				"The version.txt is invalid.");
 			invalid = true;
 		}
-		
-//		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
-//			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-//					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
-//		}
 		
 		if (xmlDirExist) {			
 			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {		
@@ -411,16 +395,12 @@ public class SimulationConfig implements Serializable {
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
 						}
 					}		
-//					if (buildText.equals("") || isNotNumber(buildText) || !sameBuild)
-//						// delete the version.txt file 
-//						versionFile.delete();
-	
+
 					// delete everything in the xml folder
-	//				FileUtils.deleteDirectory(xmlLocation);
 					xmlDirDeleted = deleteDirectory(xmlLoc);
 	
 				} catch (IOException e) {
-					e.printStackTrace();
+		          	logger.log(Level.SEVERE, "Issues with build folder or backup folder: " + e.getMessage());
 				}
 			}
 		}
@@ -439,7 +419,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
 				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
 			
 			lines = new ArrayList<>();
@@ -448,7 +428,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
 				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
 		}
 		
@@ -459,7 +439,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
 				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
 		}
 		if (!exceptionLoc.exists()) {	
@@ -469,7 +449,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
 				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
 		}
 	}

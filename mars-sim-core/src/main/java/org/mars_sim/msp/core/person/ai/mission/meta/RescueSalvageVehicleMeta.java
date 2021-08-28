@@ -1,12 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * RescueSalvageVehicleMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.logging.Level;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
@@ -24,6 +27,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RescueSalvageVehicleMeta implements MetaMission {
    
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
+
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
@@ -67,13 +73,10 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 }
             }
             catch (Exception e) {
-    			e.printStackTrace();
+              	logger.log(Level.SEVERE, "Cannot find a vehicle: "+ e.getMessage());
     			return 0;
             }
-
-//            System.out.println("RescueSalvageVehicleMeta - vehicleTarget : " + vehicleTarget.getName()
-//            		+ "   missionProbability 1: " + missionProbability);
-            
+    
             // Check if available rover.
             if (!RoverMission.areVehiclesAvailable(settlement, true)) {
                 return 0;

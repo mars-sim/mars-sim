@@ -223,7 +223,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc,
 					airlockExteriorXLoc, airlockExteriorYLoc);
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.log(Level.SEVERE, "Problem instantiating new vehicle air lock: ", e);	
 		}
 	}
 

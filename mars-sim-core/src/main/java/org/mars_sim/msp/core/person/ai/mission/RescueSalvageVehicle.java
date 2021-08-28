@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -203,13 +203,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			// TODO refactor
 			if (member instanceof Person) {
 				person = (Person) member;
 				person.getMind().setMission(this);
 			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
 			}
 		}
 
@@ -233,10 +230,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	protected boolean isUsableVehicle(Vehicle vehicle) {
 		if (vehicle != null) {
 			boolean usable = true;
-
-//			 if (vehicleTarget == null)
-//			 vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(),
-//			 getVehicle().getRange());
 
 			// Filter off the vehicleTarget as the candidate vehicle to be used for rescue
 			if (vehicleTarget != null && vehicleTarget.equals(vehicle))
@@ -449,22 +442,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		if (rover.getTowedVehicle() != null) {
 			Vehicle towedVehicle = rover.getTowedVehicle();
-//
-//			// Place this vehicle near settlement vicinity
-////			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
-//			// Store towing and towed vehicle in settlement.
-//			disembarkSettlement.getInventory().storeUnit(towedVehicle);		
-//
-//			// Add towed vehicle to a garage if available.
-//	        boolean	garaged = false;
-//	        if (towedVehicle.getGarage() == null) 
-//	        	garaged = BuildingManager.addToGarage((GroundVehicle) towedVehicle, disembarkSettlement);
-//
-//			// Make sure the rover chasis is not overlapping a building structure in the settlement map
-//	        if (!garaged)
-//	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
-	                
-			// towedVehicle.determinedSettlementParkedLocationAndFacing();
+
 	    	logger.log(towedVehicle, Level.INFO, 0, "Has been towed to " + disembarkSettlement.getName());
 
 			String issue = "";
@@ -479,8 +457,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						this, 
 						issue,
 					this.getTypeID(), 
-					towedVehicle.getName(), // person.getName(),
-					person.getLocationTag().getImmediateLocation(), // .getVehicle().getName(),
+					towedVehicle.getName(),
+					person.getLocationTag().getImmediateLocation(), 
 					person.getLocationTag().getLocale(),
 					person.getAssociatedSettlement().getName()
 					);
@@ -504,8 +482,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						
 						// Retrieve the person if he/she is dead
 						p.transfer(towedVehicle, disembarkSettlement);
-//						towedVehicle.getInventory().retrieveUnit(p);
-//						disembarkSettlement.getInventory().storeUnit(p);
 						
 						int id = disembarkSettlement.getIdentifier();
 						BuildingManager.addToMedicalBuilding(p, id);
@@ -590,9 +566,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<Vehicle>();
 
 		// Find all available vehicles.
-		// Iterator<Vehicle> iV = unitManager.getVehicles().iterator();
-		// while (iV.hasNext()) {
-		for (Vehicle vehicle : unitManager.getVehicles()) {// = iV.next();
+		for (Vehicle vehicle : unitManager.getVehicles()) {
 			if (vehicle.isBeaconOn() && !isVehicleAlreadyMissionTarget(vehicle)) {
 				emergencyBeaconVehicles.add(vehicle);
 
@@ -640,7 +614,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		if (missionManager == null)
 			missionManager = Simulation.instance().getMissionManager();
-		// MissionManager manager = Simulation.instance().getMissionManager();
+
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext() && !result) {
 			Mission mission = i.next();
@@ -781,7 +755,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	public double getMissionQualification(MissionMember member) {
 		double result = 0D;
 
-//        if (isCapableOfMission(member)) {
 		result = super.getMissionQualification(member);
 
 		if (member instanceof Person) {
@@ -792,7 +765,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				result += 1D;
 			}
 		}
-//        }
 
 		return result;
 	}
@@ -857,14 +829,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link HistoricalEventManager}
-//	 */
-//	public static void justReloaded(HistoricalEventManager event) {
-//		eventManager = event;
-//	}
 	
 	@Override
 	public void destroy() {

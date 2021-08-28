@@ -753,8 +753,7 @@ public class Farming extends Function implements Serializable {
 	
 			// Call timePassing on each crop.
 			Iterator<Crop> i = crops.iterator();
-	//		List<Crop> harvestedCrops = null;
-	
+
 			while (i.hasNext()) {
 				Crop crop = i.next();
 				
@@ -762,8 +761,7 @@ public class Farming extends Function implements Serializable {
 					crop.timePassing(pulse, productionLevel);
 				
 				} catch (Exception e) {
-					logger.log(null, building, Level.WARNING, 1000, crop.getCropName() + " ran into issues ", e);
-					e.printStackTrace();
+					logger.log(building.getSettlement(), building, Level.WARNING, 1000, crop.getCropName() + " ran into issues ", e);
 				}
 				
 				// Remove old crops.

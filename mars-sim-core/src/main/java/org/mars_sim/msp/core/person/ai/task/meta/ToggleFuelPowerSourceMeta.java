@@ -1,15 +1,20 @@
-/**
+/*
  * Mars Simulation Project
  * ToggleFuelPowerSourceMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -23,6 +28,9 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class ToggleFuelPowerSourceMeta extends MetaTask {
 
+    /** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ToggleFuelPowerSourceMeta.class.getName());
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
@@ -45,47 +53,17 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
     	double result = 0D;
         
 		// A person can remotely toggle the fuel power source.
-
         if (person.isInSettlement()) {
-        	
-            // Probability affected by the person's stress and fatigue.
-//            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
-//            	return 0;
-            
+        
 	    	Settlement settlement = person.getSettlement();
-	        
-//	        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
-//	        // and if he has to do a EVA to repair a broken vehicle.
-//	
-//	        // Check for radiation events
-//	    	boolean[]exposed = settlement.getExposed();
-//	
-//	
-//			if (exposed[2]) {
-//				// SEP can give lethal dose of radiation
-//	            return 0;
-//			}
-//	
-//	        // Check if an airlock is available
-//	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-//	    		return 0;
-	
-	        //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-	        //double millisols = clock.getMillisol();
-	        
-	        // Check if it is getting dark
-	        //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        //if (surface.getSolarIrradiance(person.getCoordinates()) < 60D && millisols > 500) {
-	        //    if (!surface.inDarkPolarRegion(person.getCoordinates()))
-	        //       return 0;
-	        //}
 	
 	        boolean isEVA = false;        
-//	
+
 	        try {
 	            Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);
 	            if (building != null) {
 	                FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
+	                
 	                isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 	                double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
 	                double baseProb = diff * 10000D;
@@ -102,25 +80,11 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	            }
 	        }
 	        catch (Exception e) {
-	            e.printStackTrace(System.err);
+				logger.severe(person, "Trouble calling performTask(): ", e);
 	        }
-//	
-//	        if (isEVA) {
-//	            // Crowded settlement modifier
-//	            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity()) {
-//	                result *= 2D;
-//	            }
-//	        }
+
 	
 	        result = applyPersonModifier(result, person);
-	        
-//	    	if (exposed[0]) {
-//				result = result/2D;// Baseline can give a fair amount dose of radiation
-//			}
-//	
-//	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-//				result = result/4D;
-//			}
 	
 	        if (result < 0) result = 0;
 
