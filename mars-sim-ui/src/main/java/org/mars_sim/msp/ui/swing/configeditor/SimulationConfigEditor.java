@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
+import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
@@ -84,25 +85,25 @@ import com.alee.managers.style.StyleId;
 public class SimulationConfigEditor {
 
 	/**
-	 * Adapter for the CreConfig to appear as a ComboModel
+	 * Adapter for the UserConfigurableConfig to appear as a ComboModel
 	 */
-	private final class CrewComboModel implements ComboBoxModel<String> {
+	private final class UserConfigurableComboModel implements ComboBoxModel<String> {
 
-		private UserConfigurableConfig<Crew> crewConfig;
-		private String selectedCrew = null;
+		private UserConfigurableConfig<? extends UserConfigurable> config;
+		private String selectedItem = null;
 
-		public CrewComboModel(UserConfigurableConfig<Crew> crewConfig) {
-			this.crewConfig = crewConfig;
+		public UserConfigurableComboModel(UserConfigurableConfig<? extends UserConfigurable> config) {
+			this.config = config;
 		}
 
 		@Override
 		public int getSize() {
-			return crewConfig.getItemNames().size();
+			return config.getItemNames().size();
 		}
 
 		@Override
 		public String getElementAt(int index) {
-			return crewConfig.getItemNames().get(index);
+			return config.getItemNames().get(index);
 		}
 
 		@Override
@@ -115,12 +116,12 @@ public class SimulationConfigEditor {
 
 		@Override
 		public void setSelectedItem(Object anItem) {
-			this.selectedCrew = (String) anItem;
+			this.selectedItem = (String) anItem;
 		}
 
 		@Override
 		public Object getSelectedItem() {
-			return this.selectedCrew;
+			return this.selectedItem;
 		}
 	}
 	
@@ -654,6 +655,8 @@ public class SimulationConfigEditor {
 	private Scenario selectedScenario;
 	private ScenarioConfig scenarioConfig;
 
+	private AuthorityEditor authorityEditor;
+
 	/**
 	 * Constructor
 	 * @param config the simulation configuration.
@@ -777,16 +780,14 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : raFactory.getItemNames()) {
-			sponsorCB.addItem(s);
-		}
+		sponsorCB.setModel(new UserConfigurableComboModel(raFactory));
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
 		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
-		crewCB.setModel(new CrewComboModel(crewConfig));
+		crewCB.setModel(new UserConfigurableComboModel(crewConfig));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 		
 		// Create combo box for editing template column in settlement table.
@@ -870,8 +871,8 @@ public class SimulationConfigEditor {
 			}
 
 			@Override
-			protected Scenario createItem(String newName) {
-				return finalizeSettlementConfig(newName);
+			protected Scenario createItem(String newName, String newDescription) {
+				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
 		bottomPanel.add(control.getPane(), BorderLayout.WEST);
@@ -907,7 +908,8 @@ public class SimulationConfigEditor {
 					f.setVisible(false);
 					
 					// Recalculate the Scenario in case user has made unsaved changes 
-					selectedScenario = finalizeSettlementConfig(control.getSelectItemName());
+					selectedScenario = finalizeSettlementConfig(control.getSelectItemName(),
+																control.getDescription());
 					
 					// Close simulation config editor
 					closeWindow();
@@ -916,9 +918,17 @@ public class SimulationConfigEditor {
 		});
 
 		bottomButtonPanel.add(startButton);
-		//bottomButtonPanel.add(new JLabel("    "));
 		 
-		// Edit Alpha Crew button.
+		// Edit Authority button.
+		JButton authorityButton = new JButton("  Edit Authorities  "); //$NON-NLS-1$
+		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
+		authorityButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				editAuthorities();
+			}
+		});
+		
+		// Edit Crew button.
 		JButton crewButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		crewButton.addActionListener(new ActionListener() {
@@ -939,6 +949,7 @@ public class SimulationConfigEditor {
         });
 
 		bottomButtonPanel.add(cb);
+		bottomButtonPanel.add(authorityButton);
 		bottomButtonPanel.add(crewButton);
 		
 		// Force a load of the default Scenario
@@ -981,6 +992,18 @@ public class SimulationConfigEditor {
 	}
 
 	/**
+	 * Edits Authorities.
+	 */
+	private void editAuthorities() {
+		if (authorityEditor == null) {
+			authorityEditor = new AuthorityEditor(this, raFactory);
+		} 
+		else {
+			authorityEditor.getJFrame().setVisible(true);
+		}
+	}
+	
+	/**
 	 * Edits team profile.
 	 * 
 	 * @param crew
@@ -1002,9 +1025,9 @@ public class SimulationConfigEditor {
 	/**
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
-	private Scenario finalizeSettlementConfig(String newName) {
+	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		return new Scenario(newName, "", is, false);
+		return new Scenario(name, description, is, false);
 	}
 
 	/**

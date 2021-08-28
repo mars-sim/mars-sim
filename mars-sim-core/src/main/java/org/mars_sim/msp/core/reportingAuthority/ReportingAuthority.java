@@ -36,7 +36,7 @@ implements UserConfigurable, Serializable {
 
 	private boolean predefined;
  
-	ReportingAuthority(String name, String description,
+	public ReportingAuthority(String name, String description,
 							  MissionAgenda agenda, List<String> countries,
 							  List<String> names, List<String> vehicleNames) {
 		this.description  = description;
@@ -90,17 +90,10 @@ implements UserConfigurable, Serializable {
 		return description;
 	}
 
-
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	@Override
 	public boolean isBundled() {
 		return predefined;
 	}
-
 	
 	/**
 	 * Get the countries associated to this Authority.

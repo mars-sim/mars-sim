@@ -24,16 +24,12 @@ public class Crew implements UserConfigurable {
 
 	private boolean bundled;
 	
-	public Crew(String name, boolean bundled) {
+	public Crew(String name, String description, boolean bundled) {
 		this.name = name;
+		this.description = description;
 		this.bundled = bundled;
 	}
 
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 	@Override
 	public String getDescription() {
 		return description;

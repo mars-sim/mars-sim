@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,26 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	 */
 	@Override
 	protected Document createItemDoc(ReportingAuthority item) {
-		throw new UnsupportedOperationException("Not supported yet");
+		Element authorityNode = new Element(AUTHORITY_EL);
+		authorityNode.setAttribute(CODE_ATTR, item.getName());
+		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
+		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getObjectiveName());			
+		 
+		// Get Countries
+		addList(authorityNode, COUNTRY_EL, item.getCountries());
+		addList(authorityNode, SETTLEMENTNAME_EL, item.getSettlementNames());
+		addList(authorityNode, ROVERNAME_EL, item.getVehicleNames());
+		
+		return new Document(authorityNode);
+	}
+
+	private void addList(Element authorityNode, String elName, List<String> items) {
+		for (String s : items) {
+			Element el = new Element(elName);
+			el.setAttribute(NAME_ATTR, s);
+			authorityNode.addContent(el);
+		}
+		
 	}
 
 	/**
@@ -169,5 +189,24 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
 		return parseXMLAuthority(doc.getRootElement());
+	}
+
+	/**
+	 * Get the names of the known Mission Agendas
+	 * @return
+	 */
+	public List<String> getAgendaNames() {
+		List<String> result = new ArrayList<>(agendas.keySet());
+		Collections.sort(result);
+		return result;
+	}
+
+	/**
+	 * Find a defined Mission Agenda by name
+	 * @param name
+	 * @return
+	 */
+	public MissionAgenda getAgenda(String name) {
+		return agendas.get(name);
 	}
 }

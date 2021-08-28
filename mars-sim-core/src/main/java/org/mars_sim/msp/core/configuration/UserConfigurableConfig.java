@@ -66,7 +66,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param itemPrefix The prefix to add when saving to an item,
 	 */
 	protected UserConfigurableConfig(String itemPrefix) {
-		this.itemPrefix = itemPrefix;
+		this.itemPrefix = itemPrefix + "_";
 	}
 	
 	/**

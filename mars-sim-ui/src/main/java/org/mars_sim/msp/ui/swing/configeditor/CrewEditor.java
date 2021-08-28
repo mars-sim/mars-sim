@@ -495,8 +495,8 @@ public class CrewEditor implements ActionListener {
 			}
 
 			@Override
-			protected Crew createItem(String newName) {
-				return commitChanges(newName);
+			protected Crew createItem(String newName, String newDescription) {
+				return commitChanges(newName, newDescription);
 			}
 		};
 		
@@ -543,7 +543,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Commits the changes to the crew profiles
 	 */
-	private Crew commitChanges(String name) {
+	private Crew commitChanges(String name, String description) {
 		if (crewPanels.isEmpty()) {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			JOptionPane.showMessageDialog(f, 
@@ -553,7 +553,7 @@ public class CrewEditor implements ActionListener {
 			return null;
 		}
 		
-		Crew newCrew = new Crew(name, false);
+		Crew newCrew = new Crew(name, description, false);
 		for (MemberPanel mp : crewPanels) {
 			// Find member
 			Member m = mp.toMember();

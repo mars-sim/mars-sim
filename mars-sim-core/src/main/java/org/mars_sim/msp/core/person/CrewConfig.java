@@ -24,7 +24,7 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 
 	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
-	private static final String CREW_PREFIX = "crew_";
+	private static final String CREW_PREFIX = "crew";
 	
 	// Element or attribute names
 	private static final String CREW_COFIG = "crew-configuration";
@@ -95,8 +95,7 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 			desc = "";
 		}
 		
-		Crew roster = new Crew(name, predefined);
-		roster.setDescription(desc);
+		Crew roster = new Crew(name, desc, predefined);
 		Element personList = crewEl.getChild(CREW_LIST);
 		List<Element> personNodes = personList.getChildren(PERSON);
 		for (Element personElement : personNodes) {

@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.structure.InitialSettlement;
  */
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
-	private static final String PREFIX = "scenario_";
+	private static final String PREFIX = "scenario";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
 	private static final String SETTLEMENT_EL = "settlement";
 	private static final String CREW_ATTR = "crew";
