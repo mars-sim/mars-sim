@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AreologyStudyFieldWork.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,11 +9,10 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -30,10 +29,8 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger logger = Logger.getLogger(AreologyStudyFieldWork.class.getName());
-
-	private static String sourceName = logger.getName();
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(AreologyStudyFieldWork.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
@@ -82,7 +79,8 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 
 		// Determine location for field work.
 		Point2D fieldWorkLoc = determineFieldWorkLocation();
-		setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
+		if (fieldWorkLoc != null)
+			setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
 
 		// Add task phases
 		addPhase(FIELD_WORK);
@@ -133,15 +131,14 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 				return false;
 
 			if (isGettingDark(person)) {
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " due to getting too dark "
-								+ " at " + person.getCoordinates().getFormattedString());
+				logger.log(person, Level.FINE, 5_000,
+						" ended " + person.getTaskDescription() + " due to getting too dark "
+						+ " at " + person.getCoordinates().getFormattedString());
 				return false;
 			}
 
 			// Check if person's medical condition will not allow task.
-			return !(person.getPerformanceRating() < .3D);
+			return (person.getPerformanceRating() >= .3D);
 		}
 
 		return true;
@@ -199,9 +196,6 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 
 		// Add experience points
 		addExperience(time);
-
-		LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person.getName() + " was doing " + person.getTaskDescription() + ".");
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);

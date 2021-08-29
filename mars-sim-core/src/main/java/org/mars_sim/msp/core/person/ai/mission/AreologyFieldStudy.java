@@ -153,7 +153,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 	 * @param description        the mission description.
 	 * @throws MissionException if error creating mission.
 	 */
-	public AreologyFieldStudy(Collection<Person> members, Settlement startingSettlement, Person leadResearcher,
+	public AreologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
@@ -173,11 +173,13 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		}
 
 		// Add mission members.
-		Iterator<Person> i = members.iterator();
+		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
-			i.next().getMind().setMission(this);
+			MissionMember mm = i.next();
+			if (mm instanceof Person)
+				((Person)mm).getMind().setMission(this);
 		}
-
+		
 		// Add home settlement
 		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 				getStartingSettlement().getName()));

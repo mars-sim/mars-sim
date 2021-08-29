@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -72,19 +72,11 @@ public class TradeMeta implements MetaMission {
 					|| RoleType.COMMANDER == roleType
 					) {
 			
-//				try {
-					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
+					// Note: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
 					missionProbability = getSettlementProbability(settlement);
-	
-//				} catch (Exception e) {
-//					logger.log(Level.SEVERE,
-//							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
-//					e.printStackTrace();
-//	
-//					return 0;
-//				}
+
 				
 			} else {
 				missionProbability = 0;
@@ -171,9 +163,6 @@ public class TradeMeta implements MetaMission {
 		} catch (Exception e) {
 			if (person != null)
 				logger.log(Level.SEVERE, person + "Issues with TradeUtil.", e);
-//			else if (robot != null)
-//				logger.log(Level.SEVERE, robot + "can't find vehicles at settlement.", e);
-			e.printStackTrace();
 			return 0;
 		}
 

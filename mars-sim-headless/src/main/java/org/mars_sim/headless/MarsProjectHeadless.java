@@ -1,10 +1,8 @@
-/**
+/*
  * Mars Simulation Project
  * MarsProjectHeadless.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 
 package org.mars_sim.headless;
@@ -224,7 +222,7 @@ public class MarsProjectHeadless {
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
 
-		Logger.getLogger("").setLevel(Level.ALL);//.FINE);
+		Logger.getLogger("").setLevel(Level.ALL);
 
 		new File(SimulationFiles.getLogDir()).mkdirs();
 

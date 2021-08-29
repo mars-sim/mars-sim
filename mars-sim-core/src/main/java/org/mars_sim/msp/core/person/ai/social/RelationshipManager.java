@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.social;
@@ -149,7 +149,7 @@ public class RelationshipManager implements Serializable {
 			Relationship relationship = new Relationship(person1, person2, relationshipType);
 			relationshipGraph.addEdge(relationship, person1.getIdentifier(), person2.getIdentifier(), false);
 		} catch (NoSuchNodeException e) {
-			e.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot instantiate relationship: "+ e.getMessage());
 		}
 	}
 

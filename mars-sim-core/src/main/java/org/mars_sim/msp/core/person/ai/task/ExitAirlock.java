@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -1097,9 +1096,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				
 			} catch (Exception e) {
-				logger.log(person, Level.SEVERE, 4_000,
-						"Could not get new action: ", e);
-				e.printStackTrace(System.err);
+				logger.log(person, Level.SEVERE, 4_000, "Could not get new action: ", e);
 			}
 
 			return false;

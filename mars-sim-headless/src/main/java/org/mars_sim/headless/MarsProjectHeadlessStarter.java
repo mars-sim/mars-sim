@@ -1,10 +1,8 @@
-/**
+/*
  * Mars Simulation Project
  * MarsProjectHeadlessStarter.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 
 package org.mars_sim.headless;
@@ -285,11 +283,11 @@ public class MarsProjectHeadlessStarter {
             outputConsumer.join();
 
         } catch (IOException e) {
-            e.printStackTrace();
+        	System.out.println(e.getMessage());
         } catch (InterruptedException e1) {
-        	e1.printStackTrace();
+        	System.out.println(e1.getMessage());
         } catch (Exception e2) {
-        	e2.printStackTrace();        	
+        	System.out.println(e2.getMessage());      	
         }
     }
 }

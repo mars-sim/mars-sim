@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CommanderInfo.java
- * @version 3.1.0 2018-09-24
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -142,7 +142,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        try {
 				saveProfile();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.severe("Problems saving the profile: " + e.getMessage());
 			}
     	}
     	else {

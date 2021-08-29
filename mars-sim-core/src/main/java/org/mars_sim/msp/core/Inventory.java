@@ -956,12 +956,7 @@ public class Inventory implements Serializable {
 							+ " cannot be fully stored. Excess: " 
 							+ Math.round(remainingAmount*100.0)/100.0 + " kg.");
 				}
-				
-//				if (resource == ResourceUtil.oxygenID) {
-////					logger.config(getOwner(), "oxygen remainingStorageCapacity: " + remainingStorageCapacity);
-//					logger.config(getOwner(), "oxygen remainingAmount: " + remainingAmount);
-//				}
-				
+						
 				// Fire inventory event.
 				Unit o = getOwner();
 				if (o != null) {
@@ -972,7 +967,7 @@ public class Inventory implements Serializable {
 						"Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
 						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
-						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
+						+ ", attempted: " + Math.round(amount*1000.0)/1000.0 + " kg");
 			}
 		}
 	}
@@ -1761,35 +1756,10 @@ public class Inventory implements Serializable {
 			}
 		}
 		return null;
-	}	
-	
-//	/**
-//	 * Does this inventory have a bag in storage.
-//	 * 
-//	 * @param empty does it need to be empty ?
-//	 * @return the instance of SpecimenBox or null if none.
-//	 */
-//	public boolean hasABag(boolean empty) {
-//		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-//			for (Integer id : containedUnitIDs) {
-//				Equipment e = unitManager.getEquipmentByID(id);
-//				if (e instanceof Bag) {
-//					if (empty) {
-//						// It must be empty inside
-//						if (e.isEmpty()) {
-//							return true;
-//						}
-//					}
-//					else
-//						return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}	
+	}
 	
 	/**
-	 * Does this inventory have a a bag in storage.
+	 * Does this inventory have a bag for holding a particular resource in storage.
 	 * 
 	 * @param empty does it need to be empty ?
 	 * @return the instance of SpecimenBox or null if none.
@@ -2279,8 +2249,7 @@ public class Inventory implements Serializable {
 						int resourceID = e.getResource();
 						double quantity = e.getQuanity();
 						double containerAmount = e.getAmountResourceStored(resourceID);
-						if (resourceID != -1 && quantity > 0 &&
-							containerAmount > 0 &&
+						if (resourceID != -1 && quantity > 0 && containerAmount > 0 &&
 							getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
 							e.retrieveAmountResource(resourceID, containerAmount);
 							storeAmountResource(resourceID, containerAmount, false);

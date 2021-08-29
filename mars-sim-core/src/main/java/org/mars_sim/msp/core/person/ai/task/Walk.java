@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Walk.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -97,7 +97,6 @@ public class Walk extends Task implements Serializable {
 		if (person.isInSettlement()) {
 
 			// Walk to random inhabitable building at settlement.
-			//Building currentBuilding = BuildingManager.getBuilding(person);
 			List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 			if (buildingList.size() > 0) {
 				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -195,34 +194,12 @@ public class Walk extends Task implements Serializable {
 
 			endTask();
 			return;
-//			person.getMind().getTaskManager().clearAllTasks();
-			
-//			if (person != null) {
-//				int rand1 = RandomUtil.getRandomInt(6);
-//				if (rand1 == 0)
-//					person.getMind().getTaskManager().addTask(new EatMeal(person), false);
-//				else if (rand1 < 3)
-//					person.getMind().getTaskManager().addTask(new Relax(person), false);
-////				else 
-////					person.getMind().getTaskManager().addTask(new Sleep(person));
-//			}
 		} 
 		
 		else if (!canWalkAllSteps(person, walkingSteps)) {
 			logger.log(person, Level.SEVERE, 4_000, "Could not walk all steps.");
 			endTask();
 			return;
-//			person.getMind().getTaskManager().clearAllTasks();
-
-//			if (person != null) {
-//				int rand1 = RandomUtil.getRandomInt(6);
-//				if (rand1 == 0)
-//					person.getMind().getTaskManager().addTask(new EatMeal(person), false);
-//				else if (rand1 < 3)
-//					person.getMind().getTaskManager().addTask(new Relax(person), false);
-////				else 
-////					person.getMind().getTaskManager().addTask(new Sleep(person));
-//			}
 		}
 
 		// Initialize task phase.
@@ -483,7 +460,7 @@ public class Walk extends Task implements Serializable {
 		try {
 			walkingSteps = new WalkingSteps(person, xLoc, yLoc, zLoc, interiorObject);
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+          	logger.log(Level.SEVERE, "Cannot instantiate walking steps: "+ e.getMessage());
 		}
 
 		if (walkingSteps != null)

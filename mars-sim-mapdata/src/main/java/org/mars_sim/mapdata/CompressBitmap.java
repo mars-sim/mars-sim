@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CompressBitmap.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -52,8 +52,7 @@ public class CompressBitmap {
 		try {
 			data = fromBitsetFileToArray(filename);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			 System.out.println(e1.getMessage());
 		}
         
         System.out.println("Compressing "+data.length+" integers");
@@ -85,8 +84,7 @@ public class CompressBitmap {
         try {
 			zipStats(filename);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("zipStats has issues: " + e.getMessage());
 		}
 
 

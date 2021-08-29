@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DecompressXZ.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -45,17 +45,16 @@ public class DecompressXZ {
 		    
 		}
 		catch (IOException ioe){
-		    ioe.printStackTrace();
+			System.out.println("Problems calling decompressMapData(): " + ioe.getMessage());
 		} 
   	}
   	
   	public DecompressXZ(String s) {
 		try {
 		    decompressMapData(s, false);
-
 		}
 		catch (IOException ioe){
-		    ioe.printStackTrace();
+			System.out.println("Problems calling decompressMapData() with string " + s + ": " + ioe.getMessage());
 		} 
   	}
   	
@@ -180,7 +179,6 @@ public class DecompressXZ {
 	                  } catch (NullPointerException e) {
 	                      System.err.println("XZDecDemo: Cannot open " + name + ": "
 	                                         + e.getMessage());
-	                      e.printStackTrace();
 	                      System.exit(1);
 	
 	                  } finally {
@@ -194,7 +192,6 @@ public class DecompressXZ {
 	      } catch (FileNotFoundException e) {
 	          System.err.println("XZDecDemo: Cannot find the file " + name + ": "
 	                             + e.getMessage());
-	          e.printStackTrace();
 	          System.exit(1);
 	
 	      } catch (EOFException e) {

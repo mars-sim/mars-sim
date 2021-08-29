@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.MarsSurface;
@@ -444,7 +445,7 @@ public class UnitManager implements Serializable, Temporal {
 		} 
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-			ee.printStackTrace();
+            logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage());
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting

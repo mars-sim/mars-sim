@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -360,7 +360,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 					mostCapacity = remainingCapacity;
 				}
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
+	          	logger.log(Level.SEVERE, "Problems calling getAmountResourceRemainingCapacity(): "+ e.getMessage());
 			}
 		}
 

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Settlement.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-25
  * @author Scott Davis
  */
 
@@ -63,6 +63,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -494,22 +495,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
-//				
-//		double elevation = terrainProfile[0];
-//		double gradient = terrainProfile[1];		
-//		
-//		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
-//		
-//		if (iceCollectionRate < 0)
-//			iceCollectionRate = 0;
-//		
-//		logger.info(this + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-//		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
-//		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+				
+//		Note: to check elevation, do this -> double elevation = terrainProfile[0];
+//		Note: to check gradient, do this ->double gradient = terrainProfile[1];		
 		
 		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
-		logger.config("Done iceCollectionRate");
-		
+	
 		final double GEN_MAX = 1_000_000;
 		// Initialize the general storage capacity for this settlement
 		getInventory().addGeneralCapacity(GEN_MAX);
@@ -527,8 +518,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Stores limited amount of oxygen in this settlement
 		getInventory().storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN, false);
 		
-		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-		logger.config(this, "oxygen amount: " + amount);		
+		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);	
 		
 		final double INITIAL_FREE_CAP = 1_000;
 		// Initialize a limited storage capacity for each resource
@@ -537,16 +527,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		
 		// Initialize building manager
-		buildingManager = new BuildingManager(this);
-//		logger.config("Done BuildingManager()");
-		
+		buildingManager = new BuildingManager(this);	
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
 		
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
-//		logger.config("Done GoodsManager()");
-		
+	
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
 		
@@ -555,19 +542,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
-//		logger.config("Done ThermalSystem()");
-		
+	
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
-//		logger.config("Done ChainOfCommand()");
-		
+
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
-//		logger.config("Done CompositionOfAir()");
-		
+	
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
@@ -622,13 +606,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return a map
 	 */
 	private Map<Building, List<Building>> createAdjacentBuildingMap() {
-//		adjacentBuildingMap.clear();
 		if (adjacentBuildingMap == null)
 			adjacentBuildingMap = new ConcurrentHashMap<>();
 		for (Building b : buildingManager.getBuildings()) {
 			List<Building> connectors = createAdjacentBuildings(b);
-			// if (b == null)
-			// System.out.println("b = null");
 			adjacentBuildingMap.put(b, connectors);
 		}
 
@@ -826,6 +807,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
+	 * Gets a collection of the number of robots of a particular type.
+	 *
+	 * @return Collection of robots
+	 */
+	public Collection<Robot> getRobots(RobotType type) {
+		// using java 8 stream
+		return getRobots().stream()
+				.filter(r -> r.getRobotType() == type)
+				.collect(Collectors.toList());
+	}
+	
+	/**
 	 * Returns true if life support is working properly and is not out of oxygen or
 	 * water.
 	 * 
@@ -861,12 +854,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
 				return false;
 			}
-			// result = false;
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Problems in lifeSupportCheck(): " + e.getMessage());
 		}
+		
 		return true;
-		// return result;
 	}
 
 	/**
@@ -890,14 +883,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
-//			logger.info(this, "oxygenLeft: " + oxygenLeft); 
+
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
-			// CompositionOfAir
-			// is doing it for all inhabitants once per frame.
+			// CompositionOfAir is doing it for all inhabitants once per frame.
 			getInventory().retrieveAmountResource(oxygenID, oxygenTaken);
-//			getInventory().addAmountDemandTotalRequest(oxygenID);
+
 			getInventory().addAmountDemand(oxygenID, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
@@ -907,14 +899,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			getInventory().storeAmountResource(co2ID, carbonDioxideProvided, true);
-//			getInventory().addAmountSupply(co2ID, carbonDioxideProvided);
 
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing O2/removing CO2 ", e);
 		}
 
 		return oxygenTaken;
-		// return oxygenTaken * (malfunctionManager.geOxygenFlowModifier() / 100D);
 	}
 
 	/**
@@ -933,15 +923,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (waterTaken > MIN) {
 				Storage.retrieveAnResource(waterTaken, waterID, getInventory(), true);
 				getInventory().retrieveAmountResource(waterID, waterTaken);
-//				getInventory().addAmountDemandTotalRequest(waterID);
-//				getInventory().addAmountDemand(waterID, waterTaken);
 			}
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing H2O needs: ", e);
 		}
 
 		return waterTaken;
-//		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 
 	/**
@@ -1025,7 +1012,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		
 		// If settlement is overcrowded, increase inhabitant's stress.
-		// TODbooleanO: should the number of robots be accounted for here?
+		// should the number of robots be accounted for here?
 
 		double time = pulse.getElapsed();
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
@@ -1039,13 +1026,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		doCropsNeedTending(pulse);
 		
-		// TODO: what to take into consideration the presence of robots ?
+		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off ?
 		
 		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 			powerGrid.setPowerMode(PowerMode.POWER_UP);
-		// TODO: check if POWER_UP is necessary
+		// check if POWER_UP is necessary
 		// Question: is POWER_UP a prerequisite of FULL_POWER ?
 
 		powerGrid.timePassing(pulse);
@@ -1091,8 +1078,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
-//			// Updates the goods manager 
-//			updateGoodsManager(pulse);
+			// May update the goods manager updateGoodsManager(pulse);
 
 			int cycles = settlementConfig.getTemplateID();
 			int remainder = msol % cycles;
@@ -1145,6 +1131,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 
+			// Note: will need to reenable calling 
+			// computeOxygenProbability and computeMethaneProbability
+			
 			// if (remainder == 15) {
 			// oxygenProbabilityValue = computeOxygenProbability();
 			// }
@@ -1153,8 +1142,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// methaneProbabilityValue = computeMethaneProbability();
 			// }
 		}
-
-		// updateRegistry();
 
 		compositionOfAir.timePassing(pulse);
 
@@ -1173,12 +1160,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			createAdjacentBuildingMap();
 		}
 	
-		/**
-		 * Construction Sites are passive
-		for (ConstructionSite s : constructionManager.getConstructionSites()) {
-			s.timePassing(time);
-		}
-		*/
+		//  Construction Sites are passive
+//		for (ConstructionSite s : constructionManager.getConstructionSites()) {
+//			s.timePassing(time);
+//		}
+		
 		
 		for (Equipment e : ownedEquipment) {
 			e.timePassing(pulse);
@@ -1191,9 +1177,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		for (Person p : citizens) {
 			p.timePassing(pulse);
 		}
-		/**
-		 * Robots are already updated as Equipment ? Seems not so should Robots be based directly on a Unit
-		 */
+		
+		// Robots are updated here for now. 
 		for (Robot r : ownedRobots) {
 			r.timePassing(pulse);
 		}
@@ -1216,7 +1201,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		Building result = null;
 
 		if (person.isInSettlement()) {
-			// BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> b = person.getSettlement().getBuildingManager()
 					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 			b = BuildingManager.getNonMalfunctioningBuildings(b);
@@ -1256,16 +1240,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		for (Building building : buildingList) {
 			LivingAccommodations quarters = building.getLivingAccommodations();
-//			boolean notFull = quarters.getNumEmptyActivitySpots() > 0;//quarters.getRegisteredSleepers() < quarters.getBedCap();
+
 			// Check if an unmarked bed is wanted
 			if (unmarked) {
 				if (quarters.hasAnUnmarkedBed()) {// && notFull) {
 					result.add(building);
 				}
 			}
-//			else if (notFull) {
-//				result.add(building);
-//			}
 		}
 
 		return result;
@@ -1372,7 +1353,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private void performEndOfDayTasks(MarsClock marsNow) {
 		int solElapsed = marsNow.getMissionSol();
 
-		// getFoodEnergyIntakeReport();
 		reassignWorkShift();
 
 		tuneJobDeficit();
@@ -1423,47 +1403,33 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Reassigns the work shift for all
 	 */
 	public void reassignWorkShift() {
-		// TODO: should call this method at, say, 800 millisols, not right at 1000
+		// Should call this method at, say, 800 millisols, not right at 1000
 		// millisols
-		Collection<Person> people = citizens;// getIndoorPeople();
+		Collection<Person> people = citizens;
 		int pop = people.size();
 
-//		int nShift = 0;
-//
-//		if (pop == 1) {
-//			nShift = 1;
-//		} else if (pop < UnitManager.THREE_SHIFTS_MIN_POPULATION) {
-//			nShift = 2;
-//		} else {// if pop => 6
-//			nShift = 3;
-//		}
+		for (Person p : people) {
 
-//		if (numShiftsCache != nShift) {
-//			numShiftsCache = nShift;
+			// Skip the person who is dead or is on a mission
+			if (!p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead()
+					&& p.getMind().getMission() == null) {
 
-			for (Person p : people) {
+				assignWorkShift(p, pop);
+			}
+			
+			// Just for sanity check for those on a vehicle mission
+			// Note: shouldn't be needed this way but currently, when currently when
+			// starting a trade mission,
+			// the code fails to change a person's work shift to On-call.
+			else if (p.getMind().getMission() != null && p.isInVehicle()) {
 
-				// Skip the person who is dead or is on a mission
-				if (!p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead()
-						&& p.getMind().getMission() == null) {
+				ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
-					assignWorkShift(p, pop);
+				if (oldShift != ShiftType.ON_CALL) {
+					p.setShiftType(ShiftType.ON_CALL);
 				}
-				
-				// Just for sanity check for those on a vehicle mission
-				// Note: shouldn't be needed this way but currently, when currently when
-				// starting a trade mission,
-				// the code fails to change a person's work shift to On-call.
-				else if (p.getMind().getMission() != null && p.isInVehicle()) {
-
-					ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
-					if (oldShift != ShiftType.ON_CALL) {
-						p.setShiftType(ShiftType.ON_CALL);
-					}
-				}
-			} // end of people for loop
-//		} // end of for loop
+			}
+		} // end of people for loop
 	}
 
 	/**
@@ -1480,7 +1446,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
 		if (isAstronomer) {
-			// TODO: find the darkest time of the day
+			// Find the darkest time of the day
 			// and set work shift to cover time period
 
 			// For now, we may assume it will usually be X or Z, NOT Y
@@ -1488,27 +1454,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
 
 				ShiftType newShift = ShiftType.X;
-				
-//				boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
-//				boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
-//				// TODO: Instead of throwing a dice,
-//				// take the shift that has less sunlight
-//				int rand;
-//				ShiftType newShift = null;
-//
-//				if (x_ok && z_ok) {
-//					rand = RandomUtil.getRandomInt(1);
-//					if (rand == 0)
-//						newShift = ShiftType.X;
-//					else
-//						newShift = ShiftType.Z;
-//				}
-//
-//				else if (x_ok)
-//					newShift = ShiftType.X;
-//
-//				else if (z_ok)
-//					newShift = ShiftType.Z;
 
 				p.setShiftType(newShift);
 			}
@@ -1525,11 +1470,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			ShiftType newShift = getAnEmptyWorkShift(pop);
 
 			int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-			// TODO: should find the person with the highest tendency to take this shift
+			// Should find the person with the highest tendency to take this shift
 
 			// if the person just came back from a mission, he would have on-call shift
 			if (oldShift == ShiftType.ON_CALL) {
-				// TODO: check a person's sleep habit map and request changing his work shift
+				// Check a person's sleep habit map and request changing his work shift
 				// to avoid taking a work shift that overlaps his sleep hour
 
 				if (newShift != oldShift) {// sanity check
@@ -1626,8 +1571,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// Added clearing of weather data map
 			weather.clearMap();
-			// logger.info(name + " : Compacted the settlement's supply demand data &
-			// cleared weather data.");
 		}
 	}
 
@@ -1665,7 +1608,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			boolean sameSettlement) {
 		Collection<Person> people = new ArrayList<>();
 		Iterator<Person> i;
-		// TODO: set up rules that allows
+		// Set up rules that allows
 
 		if (sameSettlement) {
 			// could be either radio (non face-to-face) conversation, don't care
@@ -1692,9 +1635,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 									people.add(person);
 							}
 						} else if (task instanceof HaveConversation) {
-							// boolean isOff =
-							// person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-							// if (isOff)
+
 							if (!person.equals(initiator))
 								people.add(person);
 						}
@@ -1703,16 +1644,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 				else {
 					// may be radio (non face-to-face) conversation
-					// if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+
 					if (checkIdle) {
 						if (isIdleTask(task)) {
 							if (!person.equals(initiator))
 								people.add(person);
 						}
 					} else if (task instanceof HaveConversation) {
-						// boolean isOff =
-						// person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-						// if (isOff)
+
 						if (!person.equals(initiator))
 							people.add(person);
 					}
@@ -1775,7 +1714,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
 						person.getYLocation());
 				if (distance < leastDistance) {
-					// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
 					result = building.getEVA().getAirlock();
 					leastDistance = distance;
 				}
@@ -2209,9 +2147,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return collection of vehicles.
 	 */
 	public Collection<Vehicle> getMissionVehicles() {
-//		return getAllAssociatedVehicles().stream()
-//				.filter(v -> v.isReservedForMission())
-//				.collect(Collectors.toList());
 
 		Collection<Vehicle> result = new ArrayList<>();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
@@ -2219,7 +2154,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//			Vehicle vehicle = mission.getVehicle();
 				if ((vehicle != null) 
 						&& !result.contains(vehicle)
 						&& this.equals(vehicle.getAssociatedSettlement()))
@@ -2228,16 +2162,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			
 			else if (mission instanceof BuildingConstructionMission) {
 				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
-				
-//				Iterator<GroundVehicle> ii = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();;
-//				while (i.hasNext()) {
-//					GroundVehicle gv = ii.next();
-//				}
+
 			}
 		}
-		
-//		System.out.println(this + "'s Mission Vehicles : " + result);
-
+	
 		return result;
 	}
 
@@ -2816,24 +2744,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Solar energetic particles (SEPs) event
 		double chance2 = RadiationExposure.SEP_PERCENT * ratio * mag_variation2; // 0.122 %
 		// Baseline radiation event
-		double chance0 = 100 - chance1 - chance2; // RadiationExposure.BASELINE_PERCENT * ratio * (variation1 +
-													// variation2); // average 3.53%
+		double chance0 = 100 - chance1 - chance2; 
+		// Note that RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); 
+		// average 3.53%
+		
 		if (chance0 < 0)
 			chance0 = 0;
-
-		// Baseline radiation event
-		// Note: RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA * time / 100D
-		// Assume the baseline radiation can be fully shielded by the EVA suit
-//		if (RandomUtil.lessThanRandPercent(chance0)) {
-//	    	//System.out.println("chance0 : " + chance0);
-//	    	exposed[0] = true;
-//	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//					"[" + name + DETECTOR_GRID + UnitEventType.LOW_DOSE_EVENT.toString() + " is imminent.", null);
-//	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
-//	    }
-//	    else
-//	    	exposed[0] = false;
 
 		// Galactic cosmic rays (GCRs) event
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
@@ -2893,42 +2809,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			waterRationLevel = 1;
 		else if (waterRationLevel > 50)
 			waterRationLevel = 50;
-//				
-//		if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
-//			result = 11;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 64;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .005D)) {
-//			result = 10;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 48;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .01D)) {
-//			result = 9;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 32;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .015D)) {
-//			result = 8;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 24;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .025D)) {
-//			result = 7;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 16;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .05D)) {
-//			result = 6;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 12;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .075D)) {
-//			result = 5;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 8;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
-//			result = 4;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 6;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .125D)) {
-//			result = 3;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 4;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .15D)) {
-//			result = 2;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 3;
-//		} else if (storedWater < (requiredDrinkingWaterOrbit * .2D)) {
-//			result = 1;
-//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 2;
-//		}		
-//		waterRationLevel = result;
 	}
 
 	/**
@@ -2947,8 +2827,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		goodsManager.setResearchFactor(1);
 		goodsManager.setTransportationFactor(1);
 		goodsManager.setTradeFactor(1);
-		// goodsManager.setTourismFactor(1);
-		// goodsManager.setFreeMarketFactor(1);
 
 		if (objectiveType == ObjectiveType.CROP_FARM) {
 			goodsManager.setCropFarmFactor(lvl);
@@ -3043,13 +2921,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return "storage shed";
 		else if (objectiveType == ObjectiveType.TOURISM)
 			return "loading dock garage";
-
-		// Future alternatives :
-		// FREE_MARKET
-		// POWER_HUB
-		// RESIDENTIAL_DISTRICT
-		// " bunkhouse" or "outpost hub";
-
 		else
 			return null;
 	}
@@ -3065,7 +2936,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	
 	/**
 	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
-	 * @param now Curretn time
+	 * @param now Current time
 	 */
 	private void doCropsNeedTending(ClockPulse now) {
 
@@ -3113,7 +2984,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		else if (sand_value < 0)
 			return 0;
 
-		int pop = numCitizens;// getAllAssociatedPeople().size();// getCurrentPopulationNum();
+		int pop = numCitizens;
 
 		double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
 		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandID, false);
@@ -3131,17 +3002,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			result = 5 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
 		}
 			
-//		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5) {
-//			result = 20D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
-//		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 2D) {
-//			result = 10D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
-//		} else
-//			result = 5D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
-
 		if (result < 0)
 			result = 0;
 
-//		System.out.println("computeRegolithProbability: " + result);
 		return result;
 	}
 
@@ -3154,7 +3017,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double result = 0;
 
 		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
-//		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
+
 		if (ice_value > ICE_MAX)
 			ice_value = ICE_MAX;
 		if (ice_value < 1)
@@ -3173,7 +3036,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		int pop = numCitizens;
 
-		// TODO: create a task to find local ice and simulate the probability of finding
+		// Create a task to find local ice and simulate the probability of finding
 		// local ice and its quantity
 		if (ice_available < MIN_ICE_RESERVE * pop + ice_value / 10D
 				&& water_available < MIN_WATER_RESERVE * pop + water_value / 10D) {
@@ -3191,14 +3054,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			result = .1 * (MIN_WATER_RESERVE * pop - water_available);
 		}
 		
-//		else if (water_available > MIN_WATER_RESERVE * pop / 1.5) {
-//			result = 2D * result + (MIN_WATER_RESERVE * pop - water_available) / 10;
-//		} else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
-//			result = result + (MIN_WATER_RESERVE * pop - water_available) / 10;
-//		} else
-//			result = .5 * result + (MIN_WATER_RESERVE * pop - water_available) / 10;
-
-//		System.out.println("computeIceProbability: " + result);
 		return result;
 	}
 
@@ -3503,45 +3358,31 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (!RoverMission.areVehiclesAvailable(this, false)) {
 				return false;
 			}
-//			System.out.println("1.  missionProbability is " + missionProbability);
 			// 2. Check if available backup rover.
 			if (!RoverMission.hasBackupRover(this)) {
 				return false;
 			}
-//			System.out.println("2.  missionProbability is " + missionProbability);	
 			// 3. Check if at least 1 person is there
 			// A settlement with <= 4 population can always do DigLocalRegolith task
 			// should avoid the risk of mission.
 			if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
 				return false;
-			}
-//			System.out.println("3.  missionProbability is " + missionProbability);			
+			}		
 			// 4. Check if minimum number of people are available at the settlement.
 			if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
 				return false;
 			}
-//			System.out.println("4.  missionProbability is " + missionProbability);
-			// // Check for embarking missions.
-			// else if (VehicleMission.hasEmbarkingMissions(this)) {
-			// return 0;
-			// }
 
 			// 5. Check if min number of EVA suits at settlement.
 			if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
 				return false;
 			}
-//			System.out.println("5.  missionProbability is " + missionProbability);	
-			// // Check for embarking missions.
-			// else if (getNumCitizens() / 4.0 < VehicleMission.numEmbarkingMissions(this))
-			// {
-			// return 0;
-			// }
 
 			// 6. Check if settlement has enough basic resources for a rover mission.
 			if (!hasEnoughBasicResources(true)) {
 				return false;
 			}
-//			System.out.println("6.  missionProbability is " + missionProbability);	
+	
 			// 7. Check if starting settlement has minimum amount of methane fuel.
 			if (getInventory().getAmountResourceStored(ResourceUtil.methaneID,
 					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
@@ -3555,11 +3396,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
 				return false;
 			}
-
-//			System.out.println("7.  missionProbability is " + missionProbability);			
+		
 			missionProbability = true;
 
-//			System.out.println(this + "  missionProbability is " + missionProbability);
 		}
 
 		return missionProbability;
@@ -3606,18 +3445,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.severe("Problems in hasEnoughBasicResources(): " + e.getMessage());
 		}
 
 		return true;
 	}
 
     public double getIceCollectionRate() {
-//    	if (iceCollectionRate == -1) {
-//			if (terrainElevation == null)
-//				terrainElevation = surfaceFeatures.getTerrainElevation();
-//			iceCollectionRate = terrainElevation.getIceCollectionRate(location);
-//    	}
     	return iceCollectionRate;
     }
     
@@ -3739,9 +3573,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		thermalSystem = null;
 
 		template = null;
-		// if (scientificAchievement != null) {
-		// scientificAchievement.clear();
-		// }
+	
 		scientificAchievement = null;
 	}
 

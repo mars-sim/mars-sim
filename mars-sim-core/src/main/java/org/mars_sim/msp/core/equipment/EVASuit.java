@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -237,7 +237,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot finish life support check: "+ e.getMessage());
 		}
 
 		return true;
@@ -318,8 +318,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}
 
 		getInventory().retrieveAmountResource(ResourceUtil.waterID, waterTaken);
-//		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
-//		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
 
 		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -423,7 +421,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		if (container instanceof Person) {
 			Person person = (Person) container;
 			if (!person.getPhysicalCondition().isDead()) {
-//				setLastOwner(person);
 				malfunctionManager.activeTimePassing(pulse.getElapsed());	
 			}
 		}
@@ -458,7 +455,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO Auto-generated method stub
 		return getContainerUnit().getBuildingLocation();
 	}
 

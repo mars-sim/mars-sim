@@ -231,7 +231,8 @@ implements Serializable {
                         }
                         
                         e.retrieveAmountResource(resource, loadAmount);
-                        topInventory.storeAmountResource(resource, loadAmount, false);
+                        // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
+                        topInventory.storeAmountResource(resource, loadAmount, true);
                         remainingAmountLoading -= loadAmount;
                         amount -= loadAmount;
                     }

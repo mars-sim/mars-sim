@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Coordinates.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -134,14 +134,7 @@ public class Coordinates implements Serializable {
 	 * @param newPhi the new phi angle value for the coordinate
 	 */
 	public void setPhi(double newPhi) {
-//		if (newPhi <= 0D) {
-//			phi = 0D;	
-//		} else if (newPhi > Math.PI) {
-//			phi = Math.PI;
-//		} else {
-//			phi = newPhi;
-//		}
-//		
+	
 		// Make sure phi is between 0 and PI.
 		while (newPhi > Math.PI)
 			newPhi -= Math.PI;
@@ -247,15 +240,6 @@ public class Coordinates implements Serializable {
 
 		return false;
 	}
-
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Coordinates c = (Coordinates) obj;
-//		return (this.phi == c.getPhi()) 
-//				&& (this.theta == c.getTheta());
-//	}
 	
 	/**
 	 * Gets the hash code for this object.
@@ -273,8 +257,8 @@ public class Coordinates implements Serializable {
 	 * @return the arc angle (radians).
 	 */
 	public double getAngle(Coordinates otherCoords) {
-//		return getAngleSLC(otherCoords);
-//		return getAngleVincenty(otherCoords);
+//		Note: May return getAngleSLC(otherCoords);
+//		Note: May return getAngleVincenty(otherCoords);
 		return getAngleHaversine(otherCoords);
 	}
 
@@ -374,7 +358,6 @@ public class Coordinates implements Serializable {
 		double rho = Environment.MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
-//		System.out.println("   c : " + otherCoords + "   this : " + this + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
 		return result;
 	}
 
@@ -397,7 +380,6 @@ public class Coordinates implements Serializable {
 		double rho = Environment.MARS_RADIUS_KM;
 		double angle = c0.getAngle(c1);
 		double result = rho * angle;
-//		System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
 		return result;
 	}
 	
@@ -565,10 +547,8 @@ public class Coordinates implements Serializable {
 		double lat_radian = 0;
 		if (phi < PI_HALF) {
 			lat_radian = PI_HALF - phi;
-			// hemisphere = 1;
 		} else if (phi > PI_HALF) {
 			lat_radian = phi - PI_HALF;
-			// hemisphere = 2;
 		}
 		return lat_radian;
 	}
@@ -817,12 +797,7 @@ public class Coordinates implements Serializable {
 		
 		try {
 			longValue = Double.parseDouble(longitude);
-//			if ((longValue > 360D) || (longValue < 0))
-//				throw new IllegalStateException("Longitude value out of range : " + longValue);
-//			 if ((longValue > 180D) || (longValue < 0)) {
-//			 throw new IllegalStateException("The value of longitude " + longValue + "
-//			 needs to be between 0 and 180 degrees.");
-//			 }
+
 			while (longValue < 0D)
 				longValue += 360; 
 			while (longValue > 360)
@@ -845,7 +820,7 @@ public class Coordinates implements Serializable {
 				throw new IllegalStateException("Longitude number invalid: " + longitude);
 			}
 	
-			// TODO parse longitude depending on locale and validate
+			// Note: parse longitude depending on locale and validate
 			String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
 	
 			if (directionStr.compareToIgnoreCase(shortWest) == 0)

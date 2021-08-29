@@ -1,6 +1,10 @@
-/**
- * @(#)AlphaImageIcon.java	1.0 08/16/10
+/*
+ * Mars Simulation Project
+ * AlphaImageIcon.java
+ * @date 2021-08-28
+ * @author Manny Kung
  */
+
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.AlphaComposite;
@@ -24,8 +28,8 @@ import javax.swing.ImageIcon;
  */
 public class AlphaImageIcon extends ImageIcon {
 
-  private Icon icon;
-  private Image image;
+  private transient Icon icon;
+  private transient Image image;
   private float alpha;
 
   /**
@@ -134,7 +138,7 @@ public class AlphaImageIcon extends ImageIcon {
    * @param y the Y coordinate of the icon's top-left corner
    */
   @Override
-  public void paintIcon(Component c, Graphics g, int x, int y) {
+  public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
     if (icon instanceof ImageIcon) {
       image = ((ImageIcon) icon).getImage();
     } else {

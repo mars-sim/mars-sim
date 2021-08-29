@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -181,7 +181,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 * @param rover               the rover used on the mission.
 	 * @param description         the mission's description.
 	 */
-	public EmergencySupply(Collection<Person> members, Settlement startingSettlement,
+	public EmergencySupply(Collection<MissionMember> members, Settlement startingSettlement,
 			Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
 		super(description, missionType, (Person) members.toArray()[0], MIN_MEMBERS, rover);
@@ -237,9 +237,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		}
 
 		// Add mission members.
-		Iterator<Person> i = members.iterator();
+		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
-			i.next().getMind().setMission(this);
+			MissionMember mm = i.next();
+			if (mm instanceof Person)
+				((Person)mm).getMind().setMission(this);
 		}
 
 		// Add emergency supply mission phases.

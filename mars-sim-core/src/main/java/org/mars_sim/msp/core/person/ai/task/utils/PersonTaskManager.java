@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTaskManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -95,22 +95,12 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
-
-//			 if (person.isInside()) {
-//			 checkForEmergency();
-//			 }
 			
 			try {
 				remainingTime = currentTask.performTask(time);
-//				logger.info(person 
-//						+ " currentTask: " + currentTask.getName()
-//						+ "   performTask(time: " + Math.round(time*1000.0)/1000.0 + ")"
-//						+ "   remainingTime: " + Math.round(remainingTime*1000.0)/1000.0 + "");
+
 			} catch (Exception e) {
-//				LogConsolidated.log(Level.SEVERE, 0, sourceName,
-//						person.getName() + " had trouble calling performTask().", e);
-				e.printStackTrace(System.err);
-//				logger.info(person + " had " + currentTask.getName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+				logger.severe(person, "Trouble calling performTask(): ", e);
 				return remainingTime;
 			}
 			

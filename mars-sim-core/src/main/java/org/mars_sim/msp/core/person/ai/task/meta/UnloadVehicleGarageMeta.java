@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnloadVehicleGarageMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -67,7 +67,6 @@ public class UnloadVehicleGarageMeta extends MetaTask {
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                e.printStackTrace(System.err);
             }
             
             if (result <= 0) result = 0;
@@ -106,13 +105,10 @@ public class UnloadVehicleGarageMeta extends MetaTask {
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-	                e.printStackTrace(System.err);
 	            }
 
-
-	        // Effort-driven task modifier.
-	        result *= robot.getPerformanceRating();
-
+		        // Effort-driven task modifier.
+		        result *= robot.getPerformanceRating();
 	        }
 
         return result;

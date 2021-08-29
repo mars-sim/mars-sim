@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MEGDRMapReader.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -90,18 +90,7 @@ public class MEGDRMapReader {
         return ints;
     }
 	
-	public int[] loadElevation() {
-//		URL url = MEGDRMapReader.class.getResource(FILE);
-//		InputStream inputStream = null;
-//		try {
-//			inputStream = url.openStream();
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-//		InputStream inputStream = ClassLoaderUtil.getResourceAsStream(FILE, MEGDRMapReader.class);	
-		 
+	public int[] loadElevation() {	 
 		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
 
 	    try {
@@ -130,7 +119,7 @@ public class MEGDRMapReader {
 	        inputStream.close();
 	        
 		} catch (IOException e) {
-			e.printStackTrace();
+			 System.out.println("Problems in inputStream: " + e.getMessage());
 		}
 //			
 ////	        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
@@ -167,7 +156,6 @@ public class MEGDRMapReader {
 //	        inputStream.close();
 //	        
 //		} catch (IOException e) {
-//			e.printStackTrace();
 //		}
 			
 //		        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
@@ -180,7 +168,6 @@ public class MEGDRMapReader {
 //        try {
 //			write(OUTPUT, elevation);
 //		} catch (IOException e) {
-//			e.printStackTrace();
 //		}
 //        
 //        write2ByteArray(UNCOMPRESSED, elevation);
@@ -475,8 +462,7 @@ public class MEGDRMapReader {
                 new FileOutputStream(filename))) {
     		stream.write(data);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 System.out.println("Problems in write4ByteArray's FileOutputStream: " + e.getMessage());
 		}
     }
     
@@ -511,8 +497,7 @@ public class MEGDRMapReader {
                 new FileOutputStream(filename))) {
     		stream.write(data);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 System.out.println("Problems in write2ByteArray's FileOutputStream: " + e.getMessage());
 		}
     }
 
@@ -547,7 +532,7 @@ public class MEGDRMapReader {
 	        
 		}
         catch (IOException e) {
-			e.printStackTrace();
+			 System.out.println("Problems in read4ByteArray's FileInputStream: " + e.getMessage());
 		}
    
         System.out.println("int[] reassembled from file. length : " + compressed.length);

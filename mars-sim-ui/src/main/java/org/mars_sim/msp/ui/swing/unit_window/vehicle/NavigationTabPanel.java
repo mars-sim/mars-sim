@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -15,8 +15,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +33,6 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -92,7 +89,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String etaCache;
     
     private VehicleOperator driverCache;
-//    private Set<StatusType> statusCache = new HashSet<>();
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -174,8 +170,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare center map button
 		final ImageIcon centerIcon = new LazyIcon("center").getIcon();
-		centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon);
-//        centerMapButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.centerMap")));//ImageLoader.getIcon("CenterMap")); 
+		centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon); 
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate the vehicle in Navigator Tool");
@@ -268,7 +263,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting estimated total remaining distance.");
-    			e.printStackTrace(System.err);
         	}
         	remainingDistanceLabel = new WebLabel(formatter.format(remainingDistanceCache) + " km", WebLabel.LEFT);
         }
@@ -302,7 +296,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      	
        	// Prepare the driving spring layout.
 		WebPanel drivingSpringPanel = new WebPanel(new SpringLayout());
-//		drivingSpringPanel.setBorder(new MarsPanelBorder());
 		drivingSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
 		mainPanel.add(drivingSpringPanel, BorderLayout.SOUTH);  
         
@@ -311,7 +304,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         drivingSpringPanel.add(statusHeaderLabel);
         
         // Prepare status label
-//        statusCache = vehicle.getStatusTypes();
         statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
         drivingSpringPanel.add(statusLabel);
            
@@ -401,10 +393,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update status label
-//        if (!vehicle.hasSameStatusTypes(statusCache, vehicle.getStatusTypes())) {
-//            statusCache = vehicle.getStatusTypes();
-            statusLabel.setText(vehicle.printStatusTypes());
-//        }
+        statusLabel.setText(vehicle.printStatusTypes());
       
         // Update beacon label
         if (beaconCache != vehicle.isBeaconOn()) {
@@ -499,7 +488,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-    			e.printStackTrace(System.err);
         	}
         }
         else {

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -87,8 +88,7 @@ class MissionDataBean {
     private Person leadResearcher;
     private ScientificStudy study;
     
-	private Collection<MissionMember> mixedMembers;
-	private Collection<Person> members;
+	private Collection<MissionMember> mixedMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
     private List<GroundVehicle> salvageVehicles;
     private Map<Good, Integer> emergencyGoods;
@@ -101,21 +101,21 @@ class MissionDataBean {
 	 * Creates a mission from the mission data.
 	 */
     protected void createMission() {
-    	// TODO: how to resolve the situation when rover is no longer available ?
+    	// Note: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
 	    if (MissionType.AREOLOGY == missionType) {
-	        mission = new AreologyFieldStudy(members, startingSettlement, leadResearcher, study,
+	        mission = new AreologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (MissionType.BIOLOGY == missionType) {
-	        mission = new BiologyFieldStudy(members, startingSettlement, leadResearcher, study,
+	        mission = new BiologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (MissionType.METEOROLOGY == missionType) {
-	        mission = new MeteorologyFieldStudy(members, startingSettlement, leadResearcher, study,
+	        mission = new MeteorologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
@@ -123,7 +123,6 @@ class MissionDataBean {
 	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
 	                constructionVehicles);
-	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
 	    }
 
 	    else if (MissionType.COLLECT_ICE == missionType) {
@@ -139,12 +138,18 @@ class MissionDataBean {
 	    }
 	    
 	    else if (MissionType.DELIVERY == missionType) {
-	        mission = new Delivery(mixedMembers, startingSettlement, destinationSettlement, drone, description,
+	    	Person startingMember = null;
+	    	for (MissionMember mm: mixedMembers) {
+	    		if (mm instanceof Person)
+	    			startingMember = (Person)mm;
+	    	}
+		
+	        mission = new Delivery(startingMember, mixedMembers, startingSettlement, destinationSettlement, drone, description,
 	                sellGoods, buyGoods);
 	    }	 
 	        
 	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
-	        mission = new EmergencySupply(members, startingSettlement, destinationSettlement,
+	        mission = new EmergencySupply(mixedMembers, startingSettlement, destinationSettlement,
 	                emergencyGoods, rover, description);
 	    }
 	    
@@ -182,17 +187,6 @@ class MissionDataBean {
 	    missionManager.addMission(mission);
 	}
  
-//	/**
-//	 * Gets mission types.
-//	 * @return array of mission type strings.
-//	 */
-//    protected static String[] getStringTypes() {
-//		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION,
-//				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, METEOROLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION,
-//                MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION, EMERGENCY_SUPPLY_MISSION };
-//		return result;
-//	}
-
 	/**
 	 * Gets mission types.
 	 * @return array of mission type strings.
@@ -338,24 +332,16 @@ class MissionDataBean {
 	 * Gets the mission members.
 	 * @return the members.
 	 */
-    protected Collection<Person> getMembers() {
-		return members;
-
-	}
-
     protected Collection<MissionMember> getMixedMembers() {
 		return mixedMembers;
 	}
+    
 	/**
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
-    protected void setMembers(Collection<Person> members) {
-		this.members = members;
-	}
-
-    protected void setMixedMembers(Collection<MissionMember> mixedMembers) {
-		this.mixedMembers = mixedMembers;
+    protected void addMixedMembers(Collection<MissionMember> mm) {
+    	this.mixedMembers.addAll(mm);
 	}
 	/**
 	 * Gets the destination settlement.

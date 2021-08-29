@@ -1,8 +1,15 @@
-[![Download Mars Simulation Project](https://img.shields.io/sourceforge/dm/mars-sim.svg)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+[![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.2.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
+[![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
+[![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
+
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.github.mars-sim%3Amars-sim&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.github.mars-sim%3Amars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
+[![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg?label=sf%20download&style=flat-square)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
+
 
 
 # mars-sim
@@ -18,7 +25,7 @@ According to *Encyclopædia Britannica*, a computer simulation is the use of a c
 the dynamic responses of one system by the behavior of another system modeled after it. In essence, 
 a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
 
-mars-sim aims to integrate and  incorporate as many research disciplines (such as physics, chemistry, 
+mars-sim aims to integrate and incorporate as many research disciplines (such as physics, chemistry, 
 biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors 
 of people, social structure, physical and mechanical systems, and environment in the context of 
 developing human settlements on Mars. 
@@ -36,9 +43,9 @@ as they interact and work with one another. They are there to live, dream, explo
 ---
 
 ## Operation Modeling
-mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to 
-defining operation paradigms and programming models based on the present day technologies that are 
-applicable for the near-term human exploration and settlement on Mars.
+mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich scientific 
+language selected from research journal and paper in defining operation paradigms and programming models 
+that are based on present-day technologies.
 
 For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces 
 structural requirements on buildings. 
@@ -198,7 +205,6 @@ Currently, mars-sim does not require JavaFX.
  ```
 Specifically, the official release v3.1.0 to v3.2.0 of mars-sim do not 
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
-
  ```
  
 However, if you want to run any JavaFX apps, make sure you also download and 
@@ -279,7 +285,8 @@ instead of the java version you prefer.
 4. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
 
-5. To check if a particular Oracle version of Java is being *enabled*, 
+5. It's very typical for a machine to have multiple versions of Java installed.
+To check if a particular Oracle version of Java is being *enabled*, 
 start **Java Control Panel (JCP)** in Windows's Control Panel as follows :  
 
 * Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
@@ -289,29 +296,32 @@ start **Java Control Panel (JCP)** in Windows's Control Panel as follows :
 * Click on `View` button to open up another panel window.
 * Click on the checkbox on the `Enable` column to enable or disable any installed versions of Java.
  ```
-Note 5. In JCP, each row represents a version of Java. It's very typical for a machine to 
-have multiple versions of Java installed. Unfortunately, this panel only tracks the 
-official Oracle versions. If you install any openJDK's on your machine, JCP won't 
-be able to recognize them.
+Note 5. In JCP, each row represents a version of Java. Unfortunately, this panel
+only tracks the official Oracle versions. If you install any openJDK's on 
+your machine, JCP won't be able to recognize them.
  ```
- ``` 
-Note 6. To track what versions of openjdk having been installed on your machine. Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html) 
- ``` 
+ 
+6. To track what versions of openjdk have been installed on your machine. 
+Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html)
+
  
 ### Remote Console Connection
 
-To set up true headless mode in your platform, follow the steps in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
+To set up true headless mode in your platform, follow the steps in this 
+[wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
 ---
 
 ## Outreach
-Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) to discuss relevant topics with 
-regard to the development of mars-sim. See also old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
+Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) 
+to discuss relevant topics with regard to the development of mars-sim. See also 
+old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
 
 ---
 
 ## Discussions
-Feel free to start a discussion on a particular topic at our GitHub [Discussion](https://github.com/mars-sim/mars-sim/discussions) page. 
+Feel free to start a discussion on a particular topic at our GitHub 
+[Discussion](https://github.com/mars-sim/mars-sim/discussions) page. 
 
 ---
 
@@ -325,8 +335,9 @@ Help us by filling in the info below when submitting an issue :
  - A clear and concise description of what the bug is.
 
 **Affected Area**
- - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, 
- Saving/Loading Sim, System Exceptions in Command Prompt/Terminal, etc..]
+ - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, 
+ Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command 
+ Prompt/Terminal, etc..]
 
 **Expected behaviors**
  - A clear and concise description of what you expected to happen.

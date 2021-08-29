@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PreparingDessert.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -233,53 +233,18 @@ public class PreparingDessert extends Function implements Serializable {
 		int result = 0;
 
 		if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
-			try {
-				LifeSupport lifeSupport = building.getLifeSupport();
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Task task = i.next().getMind().getTaskManager().getTask();
-					if (task instanceof PrepareDessert) {
-						result++;
-					}
+			LifeSupport lifeSupport = building.getLifeSupport();
+			Iterator<Person> i = lifeSupport.getOccupants().iterator();
+			while (i.hasNext()) {
+				Task task = i.next().getMind().getTaskManager().getTask();
+				if (task instanceof PrepareDessert) {
+					result++;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 
 		return result;
 	}
-
-//    /**
-//     * Gets the skill level of the best cook using this facility.
-//     * @return skill level.
-//
-//    public int getBestDessertSkill() {
-//        int result = 0;
-//
-//        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-//            try {
-//                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
-//                Iterator<Person> i = lifeSupport.getOccupants().iterator();
-//                while (i.hasNext()) {
-//                    Person person = i.next();
-//                    Task task = person.getMind().getTaskManager().getTask();
-//                    if (task instanceof CookMeal) {
-//                        int preparingDessertSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-//                        if (preparingDessertSkill > result) {
-//                            result = preparingDessertSkill;
-//                        }
-//                    }
-//                }
-//            }
-//            catch (Exception e) {
-//            	e.printStackTrace();
-//            }
-//        }
-//
-//        return result;
-//    }
-//     */
 
 	/**
 	 * Checks if there are any FreshDessertList in this facility.
@@ -599,10 +564,6 @@ public class PreparingDessert extends Function implements Serializable {
 			// consumeWater();
 			dessertCounterPerSol++;
 
-			// logger.info(producerName + " prepared a serving of " + selectedDessert
-			// + " in " + getBuilding().getBuildingManager().getSettlement().getName()
-			// + " (dessert quality : " + dessertQuality + ")");
-
 			preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
 
 			// Reduce a tiny bit of kitchen's cleanliness upon every meal made
@@ -660,9 +621,6 @@ public class PreparingDessert extends Function implements Serializable {
 									.append(dessert.getName());
 	
 							logger.log(building, Level.INFO, 10000, log.toString());
-	
-							// logger.finest("The dessert has lost its freshness at " +
-							// getBuilding().getBuildingManager().getSettlement().getName());
 						}
 	
 						// Adjust the rate to go down for each dessert that wasn't eaten.
@@ -707,13 +665,13 @@ public class PreparingDessert extends Function implements Serializable {
 	 * @param dessert the dessert to refrigerate.
 	 */
 	public void refrigerateFood(PreparedDessert dessert) {
+		String dessertName = dessert.getName();
 		try {
-			String dessertName = dessert.getName();
 			double mass = getDryMass(dessertName);
 			store(mass, ResourceUtil.findIDbyAmountResourceName(dessertName), "PreparingDessert::refrigerateFood");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot store " + dessertName + ": "+ e.getMessage());
 		}
 	}
 

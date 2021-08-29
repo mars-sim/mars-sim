@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -688,15 +688,6 @@ public class AmountResourceStorage implements Serializable {
 		}
 	}
 
-	public void restoreARs(AmountResource[] ars) {
-		if (typeStorage != null)
-			typeStorage.restoreARs(ars);
-	}
-
-	// public AmountResourceTypeStorage getAmountResourceTypeStorage() {
-	// return typeStorage;
-	// }
-
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -707,8 +698,6 @@ public class AmountResourceStorage implements Serializable {
 		if (phaseStorage != null)
 			phaseStorage.destroy();
 		phaseStorage = null;
-		// if (allStoredResourcesCache != null) allStoredResourcesCache.clear();
-		// allStoredResourcesCache = null;
 
 		allStoredARCache = null;
 	}

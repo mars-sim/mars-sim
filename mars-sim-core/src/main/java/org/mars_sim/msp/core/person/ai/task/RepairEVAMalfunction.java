@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -130,7 +130,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					// Initialize phase
 					addPhase(REPAIRING);
 					
-//					logger.info(person.getName() + " started the RepairEVAMalfunction task.");
 				}
 				else {
 		        	if (person.isOutside())
@@ -176,24 +175,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						result = entity;
 					}
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
+		          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 				}
 			}
-
-			// Check if entity requires an EVA and has any normal malfunctions.
-//			if ((result == null) && requiresEVA(person, entity)) {
-//				Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
-//				while (k.hasNext() && (result == null)) {
-//					Malfunction malfunction = k.next();
-//					try {
-//						if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-//							result = entity;
-//						}
-//					} catch (Exception e) {
-//						e.printStackTrace(System.err);
-//					}
-//				}
-//			}
 		}
 
 		return result;
@@ -280,7 +264,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					result = malfunction;
 				}
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
+	          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 			}
 		}
 
@@ -294,31 +278,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						result = malfunction;
 					}
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
+		          	logger.log(Level.SEVERE, "Problems calling with RepairMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 				}
 			}
 		}
 
 		return result;
 	}
-
-
-//	/**
-//	 * Checks if a malfunction requires EVA repair.
-//	 * 
-//	 * @param malfunction the malfunction.
-//	 * @return true if malfunction requires EVA repair.
-//	 */
-//	private boolean canRepairEVA(Malfunction malfunction) {
-//
-//		boolean result = false;
-//
-//		if (!malfunction.isEVARepairDone()) {
-//			result = true;
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Checks if there are enough repair parts at person's location to fix the
@@ -434,8 +400,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
 	private double repairMalfunctionPhase(double time) {
-//		logger.info(person + "::repairMalfunctionPhase   time :" + time);
-		
+	
 		if (isDone()) {
             if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
@@ -505,7 +470,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					int number = parts.get(id);
 					inv.retrieveItemResources(id, number);
 					malfunction.repairWithParts(id, number, inv);
-//					logger.info(person + " repairWithParts: " + id);
 				}
 			} else {
 	            if (person.isOutside())

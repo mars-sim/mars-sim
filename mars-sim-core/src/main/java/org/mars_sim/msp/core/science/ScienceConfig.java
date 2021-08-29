@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScienceConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
  
@@ -28,6 +30,9 @@ public class ScienceConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ScienceConfig.class.getName());
+
 	private static final String SCIENTIFIC_STUDY = "scientific_study";
 	private static final String JSON = "json";
 	private static final String DIR = "/";
@@ -78,7 +83,7 @@ public class ScienceConfig implements Serializable {
         try {
 			fis.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot close json file: "+ e1.getMessage());
 		}
          
         aveNumCollaborators = jsonObject.getInt("average_num_collaborators");
@@ -109,7 +114,7 @@ public class ScienceConfig implements Serializable {
 	        try {
 				fis.close();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot close json file: "+ e1.getMessage());
 			}
 	         
 	        Subject s = new Subject();
@@ -133,7 +138,7 @@ public class ScienceConfig implements Serializable {
 		        	s.createTopic(t);
 		        }
 	        } catch (Exception e1) {
-				e1.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot get json object: "+ e1.getMessage());
 			}
      
 	        scienceTopics.put(ScienceType.getType(s.getName()), s.getTopics());

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-26
  * @author Scott Davis
  */
 
@@ -101,7 +101,7 @@ public final class EquipmentFactory {
 		if (temp) {
 			e.put(id, newEqm);
 		}
-//		System.out.println(type + " " + e.size());
+
 		return newEqm;
 	}
 	
@@ -131,7 +131,7 @@ public final class EquipmentFactory {
 		if (temp) {
 			e.put(id, newEqm);
 		}
-//		System.out.println(type + " " + e.size());
+
 		return newEqm;
 	}
 

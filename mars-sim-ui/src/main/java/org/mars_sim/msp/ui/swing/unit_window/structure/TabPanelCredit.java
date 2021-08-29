@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelCredit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -213,7 +213,6 @@ extends TabPanel {
 						credit = creditManager.getCredit(thisSettlement, settlement);
 					}
 					catch (Exception e) {
-						e.printStackTrace(System.err);
 					}
 
 					if (column == 1) return Math.round(credit*100.0)/100.0;

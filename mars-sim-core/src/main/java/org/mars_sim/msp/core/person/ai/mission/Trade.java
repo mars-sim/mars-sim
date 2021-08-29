@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Trade.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -1038,7 +1038,7 @@ public class Trade extends RoverMission implements Serializable {
 
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.severe(getVehicle(), "Cannot estimate trade profit: ", e);
 			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
 			endMission();
 		}

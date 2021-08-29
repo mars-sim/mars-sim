@@ -39,8 +39,10 @@ import org.mars_sim.msp.core.SimulationFiles;
  * to file system
  */
 public abstract class UserConfigurableConfig<T extends UserConfigurable> {
-
+	
+	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
+	
 	private static final String BACKUP = ".bak";
 	
 	// Location in the bundles JAR of the default UserConfigurable items
@@ -224,9 +226,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	        try {
 		        document = builder.build(f);
 		    }
-		    catch (JDOMException | IOException e)
-		    {
-		        e.printStackTrace();
+		    catch (JDOMException | IOException e) {
+	          	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
 		    }
 		}
 		
@@ -259,7 +260,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				    logger.config("Old " + itemBackup.getName() + " deleted."); 
 				} 
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName()  + ": " + e.getMessage());
 			}
 			
 			
@@ -268,8 +269,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				FileUtils.moveFile(itemFile, itemBackup);
 			    logger.config(itemFile.getName() + " --> " + itemBackup.getName()); 
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot move " + itemBackup.getName()  + ": "  + e1.getMessage());
 			}
 			
 			try {
@@ -278,7 +278,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				} 
 
 			} catch (IOException e) {
-				e.printStackTrace();
+	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName() + ": " + e.getMessage());
 			}
 		}
 		
@@ -293,7 +293,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			    logger.config("New " + itemFile.getName() + " created and saved."); 
 			    stream.close();
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, "Cannot create " + itemFile.getName() + e.getMessage());
 			}
 		}
 		

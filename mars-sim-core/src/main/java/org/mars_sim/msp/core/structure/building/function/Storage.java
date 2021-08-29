@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Storage.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -302,7 +302,6 @@ public class Storage extends Function implements Serializable {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
 				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
 						"[" + inv.getOwner()
 			    		+ "] Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
@@ -394,7 +393,6 @@ public class Storage extends Function implements Serializable {
 					result = true;
 				}
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
 				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
 	    		+ "] Issues with retrieveAnResource(ar) on "
 						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);

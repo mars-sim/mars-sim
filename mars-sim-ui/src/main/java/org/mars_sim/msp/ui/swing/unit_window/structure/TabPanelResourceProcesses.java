@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -152,10 +152,6 @@ extends TabPanel {
 				processListPanel.add(new ResourceProcessPanel(process, building));
 			}
 		}
-		//    	}
-		//    	catch (BuildingException e) {
-		//    		e.printStackTrace(System.err);
-		//    	}
 	}
 
 	@Override

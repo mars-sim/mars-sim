@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -15,9 +15,6 @@ import java.util.TreeSet;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.foodProduction.FoodType;
-
-//import org.jdom.Document;
-//import org.jdom.Element;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM
@@ -40,8 +37,8 @@ public class AmountResourceConfig implements Serializable {
 	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
 
 	// Data members.
-	private static Set<AmountResource> resourceSet;
-	private static Set<Integer> tissueCultureSet;
+	private static Set<AmountResource> resourceSet = new TreeSet<>();
+	private static Set<Integer> tissueCultureSet = new TreeSet<>();
 
 	/**
 	 * Constructor
@@ -50,8 +47,6 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
-		resourceSet = new TreeSet<>();
-		tissueCultureSet = new TreeSet<>();
 		loadAmountResources(amountResourceDoc);
 	}
 
@@ -61,7 +56,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
-	private void loadAmountResources(Document amountResourceDoc) {
+	private static void loadAmountResources(Document amountResourceDoc) {
 		if (resourceSet == null || resourceSet.isEmpty()) {
 			Element root = amountResourceDoc.getRootElement();
 			List<Element> resourceNodes = root.getChildren(RESOURCE);
@@ -96,12 +91,11 @@ public class AmountResourceConfig implements Serializable {
 				}
 				
 				resourceSet.add(resource);
-	//			System.out.println("resource " + nextID + " " + resource.getName());
-				
+			
 				if (type != null && type.toLowerCase().equals(CROP)) {
 					nextID++;
 					// Create the tissue culture for each crop.
-					// TODO: may set edible to true
+					// Note: may set edible to true
 					AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
 							description, phaseType, lifeSupport, false);
 					tissueCultureSet.add(nextID);
@@ -113,7 +107,6 @@ public class AmountResourceConfig implements Serializable {
 					}
 					
 					resourceSet.add(tissue);
-//					System.out.println("tissue " + nextID + " " + tissue.getName());
 				}
 			}
 		}
@@ -128,10 +121,6 @@ public class AmountResourceConfig implements Serializable {
 		return resourceSet;
 	}
 
-//	public Set<AmountResource> getTissueCultures() {
-//		return tissueCultureSet;
-//	}
-
 	public Set<Integer> getTissueCultures() {
 		return tissueCultureSet;
 	}
@@ -142,5 +131,6 @@ public class AmountResourceConfig implements Serializable {
 
 	public void destroy() {
 		resourceSet = null;
+		tissueCultureSet = null;
 	}
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelGoods.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -195,13 +195,12 @@ public class TabPanelGoods extends TabPanel {
 						return manager.getGoodValuePerItem(good.getID());
 					}
 					catch (Exception e) {
-						e.printStackTrace(System.err);
-						return null;
 					}
 				}
 				else return null;
 			}
-			else return null;
+			
+			return null;
 		}
 
 		public void update() {
