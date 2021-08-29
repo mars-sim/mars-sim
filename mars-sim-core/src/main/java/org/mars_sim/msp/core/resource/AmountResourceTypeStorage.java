@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis 
  */
 
@@ -59,7 +59,7 @@ class AmountResourceTypeStorage implements Serializable {
 		}
 
 		if (typeCapacities == null) {
-			typeCapacities = new ConcurrentHashMap<Integer, ResourceAmount>();
+			typeCapacities = new ConcurrentHashMap<>();
 		}
 
 		if (hasARTypeCapacity(resource)) {
@@ -93,7 +93,7 @@ class AmountResourceTypeStorage implements Serializable {
 		}
 
 		if (typeCapacities == null) {
-			typeCapacities = new ConcurrentHashMap<Integer, ResourceAmount>();
+			typeCapacities = new ConcurrentHashMap<>();
 		}
 
 		double existingCapacity = getAmountResourceTypeCapacity(resource);
@@ -133,9 +133,6 @@ class AmountResourceTypeStorage implements Serializable {
 
 		boolean result = false;
 
-//      if (amountResourceTypeCapacities != null) {
-//   	   result = amountResourceTypeCapacities.containsKey(resource);
-//  	}
 		if (typeCapacities != null) {
 			result = typeCapacities.containsKey(resource);
 		}
@@ -180,7 +177,7 @@ class AmountResourceTypeStorage implements Serializable {
 
 		double result = 0D;
 
-		ResourceAmount storedAmount = getARTypeStoredObject(resource.getID());// getAmountResourceTypeStoredObject(resource);
+		ResourceAmount storedAmount = getARTypeStoredObject(resource.getID());
 		if (storedAmount != null) {
 			result = storedAmount.getAmount();
 		}
@@ -216,9 +213,6 @@ class AmountResourceTypeStorage implements Serializable {
 
 		ResourceAmount result = null;
 
-//        if (amountResourceTypeStored != null) {
-//            result = amountResourceTypeStored.get(resource);
-//        }
 		if (typeStored != null) {
 			result = typeStored.get(resource.getID());
 		}
@@ -281,14 +275,6 @@ class AmountResourceTypeStorage implements Serializable {
 	private void updateTotalAmountResourceTypesStored() {
 
 		double totalAmount = 0D;
-
-//        if (amountResourceTypeStored != null) {
-//            Map<AmountResource, ResourceAmount> tempMap = Collections.unmodifiableMap(amountResourceTypeStored);
-//            Iterator<AmountResource> i = tempMap.keySet().iterator();
-//            while (i.hasNext()) {
-//                totalAmount += tempMap.get(i.next()).getAmount();
-//            }
-//        }
 
 		if (typeStored != null) {
 			Map<Integer, ResourceAmount> tempMap = Collections.unmodifiableMap(typeStored);
@@ -452,7 +438,8 @@ class AmountResourceTypeStorage implements Serializable {
 				totalAmountCacheDirty = true;
 
 				ResourceAmount stored = getAmountResourceTypeStoredObject(resource);
-				stored.setAmount(stored.getAmount() - amount);
+				if (stored != null)
+					stored.setAmount(stored.getAmount() - amount);
 			} else {
 				throw new IllegalStateException("Amount resource (" + resource.getName() + ":" + amount
 						+ ") could not be retrieved from type storage");
@@ -479,7 +466,8 @@ class AmountResourceTypeStorage implements Serializable {
 				totalAmountCacheDirty = true;
 
 				ResourceAmount stored = getARTypeStoredObject(resource);
-				stored.setAmount(stored.getAmount() - amount);
+				if (stored != null)
+					stored.setAmount(stored.getAmount() - amount);
 			} else {
 				throw new IllegalStateException(
 						"Amount resource (" + resource + ":" + amount + ") could not be retrieved from type storage");
@@ -510,70 +498,10 @@ class AmountResourceTypeStorage implements Serializable {
 		}
 	}
 
-	public void restoreARs(AmountResource[] ars) {
-//    	if (amountResourceTypeCapacities != null && !amountResourceTypeCapacities.isEmpty()) {
-//	    	for (AmountResource r : amountResourceTypeCapacities.keySet()) {
-//	    		for (AmountResource ar : ars) {
-//	    			if (r.getName().equals(ar.getName())) {
-//	    				ResourceAmount ra = amountResourceTypeCapacities.get(r);
-//	    				// Replace the old AmountResource reference with the new
-//	    				amountResourceTypeCapacities.put(ar, ra);
-//	    				System.out.println("amountResourceTypeCapacities: " + ar.getName());
-//	    			}
-//	    		}
-//	    	}
-//    	}
-//    	
-//    	if (amountResourceTypeStored != null && !amountResourceTypeStored.isEmpty()) {
-//	    	for (AmountResource r : amountResourceTypeStored.keySet()) {
-//	    		for (AmountResource ar : ars) {
-//	    			if (r.getName().equals(ar.getName())) {
-//	    				ResourceAmount ra = amountResourceTypeStored.get(r);
-//	    				// Replace the old AmountResource reference with the new
-//	    				amountResourceTypeStored.put(ar, ra);
-//	       				System.out.println("amountResourceTypeStored: " + ar.getName());
-//	    			}
-//	    		}
-//	    	}
-//    	}
-//
-//    	if (typeCapacities != null && !typeCapacities.isEmpty()) {
-//	    	for (int r : typeCapacities.keySet()) {
-//	    		for (AmountResource ar : ars) {
-//	    			if (ResourceUtil.findAmountResource(r).getName().equals(ar.getName())) {
-//	    				ResourceAmount ra = typeCapacities.get(r);
-//	    				// Replace the old AmountResource reference with the new
-//	    				typeCapacities.put(r, ra);
-//	    				System.out.println("amountResourceTypeCapacities: " + ar.getName());
-//	    			}
-//	    		}
-//	    	}
-//    	}
-//    	
-//    	if (typeStored != null && !typeStored.isEmpty()) {
-//	    	for (int r : typeStored.keySet()) {
-//	    		for (AmountResource ar : ars) {
-//	    			if (ResourceUtil.findAmountResource(r).getName().equals(ar.getName())) {
-//	    				ResourceAmount ra = typeStored.get(r);
-//	    				// Replace the old AmountResource reference with the new
-//	    				typeStored.put(r, ra);
-//	       				System.out.println("amountResourceTypeStored: " + ar.getName());
-//	    			}
-//	    		}
-//	    	}
-//    	}
-	}
-
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-
-//        if (amountResourceTypeCapacities != null) amountResourceTypeCapacities.clear();
-//        amountResourceTypeCapacities = null;
-//        if (amountResourceTypeStored != null) amountResourceTypeStored.clear();
-//        amountResourceTypeStored = null;
-
 		typeCapacities = null;
 		typeStored = null;
 	}
