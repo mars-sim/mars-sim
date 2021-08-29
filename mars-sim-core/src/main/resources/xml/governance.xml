@@ -30,7 +30,7 @@
 <governance>
 	<!-- Mission agendas that can be used by authorities -->
 	<agendas>
-		<agenda name="AdvancedTechnology"
+		<agenda name="Advanced Technology"
 				objective="Prototyping Advanced Technologies"
 				findings="Updating the report of how advanced technologies may be tested and successfully deployed here."	
 				samples="Mappping the morphology of this local region and where to use as test bed for developing advanced technologies of interest.">
@@ -54,7 +54,7 @@
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
 			</sub-agenda>			
 		</agenda>
-		<agenda name="BuildingColonies"
+		<agenda name="Building Colonies"
 				objective="Building Self-Sustaining Colonies"
 				findings="Updating the report of the best practices in resource utilization."
 				samples="Analyzing various geological and environment factors affecting how one may build several self-sustainable colonies in this region.">
@@ -71,7 +71,7 @@
 				<modifier mission="MINING" value="3"/>
 			</sub-agenda>
 		</agenda>	
-		<agenda name="FindingLife"
+		<agenda name="Finding Life"
 				objective="Finding Life Past and Present on Mars"
 				findings="Updating the report of the oxygen content in the soil samples."
 				samples="Analyzing the soil samples from various sites for the amount of oxygen and water contents.">
@@ -87,7 +87,7 @@
 				<modifier mission="MINING" value="3"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="HealthHazards"
+		<agenda name="Health Hazards"
 				objective="Researching Short and Long Term Health Hazards"
 				findings="Updating the report of the various health hazards for human beings on Mars."
 				samples="Analyzing the soil samples from various sites for possible human health hazards">
@@ -113,7 +113,7 @@
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
 			</sub-agenda> 
 		</agenda>
-		<agenda name="HumanHabits"
+		<agenda name="Human Habits"
 				objective="Determining Human Habitability"
 				findings="Updating the report of the habitability of this local region for human beings."
 				samples="Analyzing soil samples, atmospheric condition dataset and geographical factors of how suitable human beings are to live in this local region.">
@@ -129,7 +129,7 @@
 				<modifier mission="METEOROLOGY" value="3"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="PlanetLife"
+		<agenda name="Planet Life"
 				objective="Making Life Multiplanetary"
 				findings="Updating the report of the best practices in resource utilization."
 				samples="Analyzing various geological and environment factors affecting how we may transform Mars into a more hospitable environment to support lives.">
@@ -158,7 +158,7 @@
 				<modifier mission="TRADE" value="2"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="ProspectMinerals"
+		<agenda name="Prospect Minerals"
 				objective="Prospercting Precious Minerals on Mars"
 				findings="Updating the report of trace mineral content in the collected soil samples."
 				samples="Analyzing the wealth of mineral contents from the colleted soil samples.">
@@ -178,7 +178,7 @@
 				<modifier mission="MINING" value="6"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="ScienceKnowledge"
+		<agenda name="Science Knowledge"
 				objective="Advancing Scientific Knowledge"
 				findings="Updating the report of possible research opportunities in this region."
 				samples="Analyzing the variation of gravity and atmospheric conditions in this local region for the impact of deploying a laser communication array.">
@@ -197,8 +197,8 @@
 				<modifier mission="MINING" value="2"/>
 			</sub-agenda>	
 		</agenda>	
-		<agenda name="SettlingMars"
-				objective="Settling Mars"
+		<agenda name="Settling Mars"
+				objective="Settling on Mars"
 				findings="Updating the report of the local in-situ resources that one can collect and process for immediate uses."
 				samples="Analyzing structural integrity of geological features for building settlements in this region.">
 			<sub-agenda description="Engineer soil capable of hosting and sustaining organic microbial life">
@@ -220,7 +220,7 @@
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="SpaceApplications"
+		<agenda name="Space Applications"
 				objective="Developing Practical Space Applications"
 				findings="Updating the report of possible applied space research in this frontier."
 				samples="Analyzing how this local region may impact the scope of our research of interest.">
@@ -241,7 +241,7 @@
 				<modifier mission="MINING" value="3"/>
 			</sub-agenda>			
 		</agenda>
-		<agenda name="SurfaceOperations"
+		<agenda name="Surface Operations"
 				objective="Pushing Boundaries of Surface Operations"
 				findings="Updating the report of the human factors in surface operations."
 				samples="Analyzing the soil's strength in this local region for the suitability of the spaceport construction.">
@@ -286,7 +286,7 @@
 		the ReportingAuthorityType enum -->
 	<authorities>
 		<authority code="CNSA" name="China National Space Administration"
-					agenda="ProspectMinerals">
+					agenda="Prospect Minerals">
 			<country name="China"/>
 			<settlement-name name="Tian Cheng" />
 			<settlement-name name="Xin Cheng" />
@@ -316,7 +316,7 @@
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
-					agenda="ScienceKnowledge">
+					agenda="Science Knowledge">
 			<country name="Canada"/>
 			<settlement-name name="New Quebec" />
 			<settlement-name name="New Columbia" />
@@ -348,7 +348,7 @@
 			<rover-name name="St Lawrence" />
 		</authority>
 		<authority code="ESA" name="European Space Agency"
-					agenda="SurfaceOperations">
+					agenda="Surface Operations">
 			<country name="Austria"/>
 			<country name="Belgium"/>
 			<country name="Czech Republic"/>
@@ -409,7 +409,7 @@
 		</authority>
 		
 		<authority code="ISRO" name="The Indian Space Research Organisation"
-					agenda="AdvancedTechnology">
+					agenda="Advanced Technology">
 			<country name="India"/>
 			<settlement-name name="New Bengal" />
 			<settlement-name name="New Chennai" />
@@ -434,7 +434,7 @@
 		</authority>
 		
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
-					agenda="SpaceApplications">
+					agenda="Space Applications">
 			<country name="Japan"/>
 			<settlement-name name="New Tokyo" />
 			<settlement-name name="New Seto" />						
@@ -470,7 +470,7 @@
 		</authority>
 										
 		<authority code="MS" name="Mars Society"
-					agenda="SettlingMars">
+					agenda="Settling Mars">
 			<country name="Austria"/>
 			<country name="Belgium"/>
 			<country name="Canada"/>
@@ -538,7 +538,7 @@
 		</authority>	
 		
 		<authority code="NASA" name="National Aeronautics and Space Administration"
-					agenda="FindingLife">
+					agenda="Finding Life">
 			<country name="USA"/>
 			<settlement-name name="Port Braun" />
 			<settlement-name name="Sagan Station" />
@@ -572,7 +572,7 @@
 		</authority>		
 		
 		<authority code="RKA" name="Roscosmos"
-					agenda="HealthHazards">
+					agenda="Health Hazards">
 			<country name="Russia"/>
 			<settlement-name name="Mir Town" />
 			<settlement-name name="Kosmosdrome" />
@@ -599,7 +599,7 @@
 		</authority>	
 		
 		<authority code="SPACEX" name="Space X"
-					agenda="PlanetLife">
+					agenda="Planet Life">
 			<country name="USA"/>
 			<country name="Canada"/>
 			<settlement-name name="MuskVille" />

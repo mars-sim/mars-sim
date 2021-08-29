@@ -76,34 +76,40 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		// Scan the old saved directory to move any saved files
 		// This can be dropped in a later release
 		File savedDir = new File(SimulationFiles.getSaveDir());
-	    for (String oldUserFile : savedDir.list()) {
-	    	if (oldUserFile.startsWith(itemPrefix)
-	    			&& oldUserFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-	    		try {
-	    			File oldPath = new File(SimulationFiles.getSaveDir(), oldUserFile);
-	    			File newPath = new File(SimulationFiles.getUserConfigDir(), oldUserFile);
-					FileUtils.moveFile(oldPath, newPath);
-	    			logger.info("Moving user configuration file " + oldUserFile + " from old location to new");
-
-	    		}
-	    		catch (Exception e) {
-	    			logger.warning("Problem moving old file " + oldUserFile + ": " + e.getMessage());
-	    		}
-	    	}
+		String[] found = savedDir.list();
+		if (found != null) {
+		    for (String oldUserFile : found) {
+		    	if (oldUserFile.startsWith(itemPrefix)
+		    			&& oldUserFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+		    		try {
+		    			File oldPath = new File(SimulationFiles.getSaveDir(), oldUserFile);
+		    			File newPath = new File(SimulationFiles.getUserConfigDir(), oldUserFile);
+						FileUtils.moveFile(oldPath, newPath);
+		    			logger.info("Moving user configuration file " + oldUserFile + " from old location to new");
+	
+		    		}
+		    		catch (Exception e) {
+		    			logger.warning("Problem moving old file " + oldUserFile + ": " + e.getMessage());
+		    		}
+		    	}
+			}
 		}
 	    
 		// Scan saved items folder
 		File configDir = new File(SimulationFiles.getUserConfigDir());
-	    for (String userFile : configDir.list()) {
-	    	if (userFile.startsWith(itemPrefix)
-	    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-	    		try {
-	    			loadItem(userFile, false);
-	    		}
-	    		catch (Exception e) {
-	    			logger.warning("Problem loading user defined item in " + userFile + ": " + e.getMessage());
-	    		}
-	    	}
+		found = configDir.list();
+		if (found != null) {
+		    for (String userFile : configDir.list()) {
+		    	if (userFile.startsWith(itemPrefix)
+		    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+		    		try {
+		    			loadItem(userFile, false);
+		    		}
+		    		catch (Exception e) {
+		    			logger.warning("Problem loading user defined item in " + userFile + ": " + e.getMessage());
+		    		}
+		    	}
+			}
 		}
 	}
 

@@ -48,6 +48,13 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
+	 * Get unique name
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
 	 * Get the overall objective.
 	 * @return
 	 */

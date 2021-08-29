@@ -7,7 +7,8 @@
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -15,14 +16,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
@@ -31,9 +35,7 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.text.WebTextArea;
 import com.alee.laf.window.WebDialog;
 
 /**
@@ -41,22 +43,30 @@ import com.alee.laf.window.WebDialog;
  */
 public class AuthorityEditor  {
 
+	private static final String OBJECTIVE = "Objective: ";
+
+
 	class TextList {
 		private JPanel content;
 		private DefaultListModel<String> model;
 		
 		TextList(String title) {
 			content = new JPanel();
-			content.setBorder(BorderFactory.createTitledBorder(title));
 			content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+			content.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			content.setBorder(BorderFactory.createTitledBorder(title));
 
-			
 			model = new DefaultListModel<String>();
 			JList<String> list = new JList<>(model);
 			content.add(new JScrollPane(list));
 			
+			Box newItemPanel = Box.createHorizontalBox();
+			newItemPanel.add(new JLabel("New Item:"));
 			JTextField newText = new JTextField();
-			content.add(newText);
+			newText.setColumns(20);
+			newText.setMaximumSize(newText.getPreferredSize());
+			newItemPanel.add(newText);
+			content.add(newItemPanel);
 			
 			JPanel controlPanel = new JPanel();
 			JButton addButton = new JButton("Add");
@@ -64,7 +74,8 @@ public class AuthorityEditor  {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					model.addElement(newText.getText());		
+					model.addElement(newText.getText());	
+					newText.setText("");
 				}
 			});
 			controlPanel.add(addButton);
@@ -98,7 +109,7 @@ public class AuthorityEditor  {
 			return items;
 		}
 		
-		public JPanel getContent() {
+		public JComponent getContent() {
 			return content;
 		}
 	}
@@ -115,7 +126,9 @@ public class AuthorityEditor  {
 
 	private JComboBox<String> agendaCB;
 
-	private WebTextArea ta;
+	private JTextArea ta;
+
+	private JLabel agendaObjective;
 
 	
 	/**
@@ -150,30 +163,40 @@ public class AuthorityEditor  {
 		agendaPanel.setLayout(new BoxLayout(agendaPanel, BoxLayout.Y_AXIS));
 		agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda"));
 		agendaCB = new JComboBox<>();
+		agendaCB.setAlignmentX(Component.LEFT_ALIGNMENT);
+		for (String agenda : raFactory.getAgendaNames()) {
+			agendaCB.addItem(agenda);			
+		}
 		agendaCB.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String selected = (String) agendaCB.getSelectedItem();
 				MissionAgenda selectedAgenda = raFactory.getAgenda(selected);
-				ta.clear();
-				ta.append(selectedAgenda.getAgendas().stream()
+				agendaObjective.setText(OBJECTIVE + selectedAgenda.getObjectiveName());
+				ta.setText(selectedAgenda.getAgendas().stream()
 						.map(MissionSubAgenda::getDescription)
-						.collect(Collectors.joining("\n")));
+						.collect(Collectors.joining(".\n- ", "- ", ".")));
 			}
 		});
-		for (String agenda : raFactory.getAgendaNames()) {
-			agendaCB.addItem(agenda);			
-		}
 		agendaPanel.add(agendaCB);
-		agendaPanel.add(new JLabel("Sub Agendas"));
-		ta = new WebTextArea();
+		agendaObjective = new JLabel("");
+		agendaObjective.setAlignmentX(Component.LEFT_ALIGNMENT);
+		agendaPanel.add(agendaObjective);
+		
+		JLabel goals = new JLabel("Goals:");
+		goals.setAlignmentX(Component.LEFT_ALIGNMENT);
+		agendaPanel.add(goals);
+		
+		ta = new JTextArea();
+		ta.setAlignmentX(Component.LEFT_ALIGNMENT);
 		ta.setEditable(false);
-		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
-		ta.setColumns(7);
+		//ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+		ta.setColumns(30);
 		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
 		agendaPanel.add(ta);
-
+		
 		contentPane.add(agendaPanel);
 		
 		// Add List panels
@@ -215,7 +238,7 @@ public class AuthorityEditor  {
 	private void loadAuthority(ReportingAuthority newDisplay) {
 		f.setTitle(TITLE + " - " + newDisplay.getName());
 				
-		agendaCB.setSelectedItem(newDisplay.getMissionAgenda().getObjectiveName());
+		agendaCB.setSelectedItem(newDisplay.getMissionAgenda().getName());
 		countries.loadItems(newDisplay.getCountries());
 		settlementNames.loadItems(newDisplay.getSettlementNames());
 		vehicleNames.loadItems(newDisplay.getVehicleNames());

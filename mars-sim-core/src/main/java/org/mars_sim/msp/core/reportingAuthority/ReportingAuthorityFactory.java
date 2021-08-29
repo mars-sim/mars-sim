@@ -163,7 +163,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		Element authorityNode = new Element(AUTHORITY_EL);
 		authorityNode.setAttribute(CODE_ATTR, item.getName());
 		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
-		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getObjectiveName());			
+		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getName());			
 		 
 		// Get Countries
 		addList(authorityNode, COUNTRY_EL, item.getCountries());
