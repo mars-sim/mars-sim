@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 
 /**
  * This is a logger class similar to Java Logger that is Simulation aware
@@ -202,16 +203,18 @@ public class SimLogger {
 			// First time for this message
 			outputMessage = new StringBuilder(sourceName);
 		}
-	
 
 		// Add body, contents Settlement, Unit nickname message"
 		outputMessage.append(COLON);
 		if (actor == null) {
 			// Actor unknown
-			outputMessage.append("Unknown").append(CLOSED_BRACKET_SPACE);
+			outputMessage.append("").append(CLOSED_BRACKET_SPACE);
 		}
 		else if (actor instanceof Settlement) {
 			// Actor in bracket; it's top level
+			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
+		}
+		else if (actor instanceof ConstructionSite) {
 			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
 		}
 		else {
@@ -220,6 +223,7 @@ public class SimLogger {
 				if (actor instanceof Building) {
 					location = actor.getAssociatedSettlement();
 				}
+				
 				else {
 					location = actor.getContainerUnit();
 				}

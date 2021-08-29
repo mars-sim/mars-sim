@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
  * OGGSoundClip.java
- * @version 3.2.0 2021-06-20
- * @author Lars Naesbye Christensen (complete rewrite for OGG)
- * Based on JOrbisPlayer example source
+ * @date 2021-08-28
+ * @author Lars Naesbye Christensen
  */
 
 package org.mars_sim.msp.ui.swing.sound;
@@ -34,7 +33,7 @@ import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 
 /**
- * A class that creates a sound clip
+ * A class that creates a sound clip. A complete rewrite for OGG based on JOrbisPlayer example source
  */
 public class OGGSoundClip {
 
@@ -95,8 +94,7 @@ public class OGGSoundClip {
 					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + ref));
 			}
 		} catch (IOException e) {
-			// throw new IOException("Couldn't find: " + ref);
-			logger.log(Level.SEVERE, "Couldn't find: " + ref);
+			logger.log(Level.SEVERE, "Couldn't find: " + ref + ": " + e.getMessage());
 		}
 	}
 
@@ -198,11 +196,8 @@ public class OGGSoundClip {
 			}
 
 		} catch (IllegalArgumentException e) {
-			// TODO: how to resolve 'IllegalArgumentException: Master Gain not supported' in
-			// ubuntu ?
-			// e.printStackTrace();
+			// Note: how to resolve 'IllegalArgumentException: Master Gain not supported' in
 			logger.log(Level.SEVERE, "Please ensure sound interface is working. Speakers NOT detected. " + e);
-//			disableSound();
 		}
 
 	}
@@ -303,7 +298,6 @@ public class OGGSoundClip {
 				 try {
 					 playStream(Thread.currentThread());
 				 } catch (Exception e) {
-					 e.printStackTrace();
 					 logger.log(Level.SEVERE, "Can't play the bit stream in play()", e.getMessage());
 				 }
 
@@ -311,10 +305,8 @@ public class OGGSoundClip {
 
 					bitStream.reset();
 				} catch (IOException e) {
-					// e.printStackTrace();
 					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
 							e.getMessage());
-//					disableSound();
 				}
 			};
 		};
@@ -332,34 +324,26 @@ public class OGGSoundClip {
 			bitStream.reset();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "IOException in OGGSoundClip's loop()", e.getMessage());
-			//disableSound();
 			// ignore if no mark
 		}
 
 		playerThread = new Thread() {
 			public void run() {
-				// while (playerThread == Thread.currentThread()) {
 				try {
 					playStream(Thread.currentThread());
 				} catch (Exception e) {
-					// logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a
-					// speaker/headphone? "
+					// Note: "Troubleshooting audio : have you plugged in a speaker/headphone? "
 					// + "Please check your audio source.", e.getMessage());
-					// e.printStackTrace();
 					playerThread = null;
-//					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
-//					disableSound();
+					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
 				}
 
 				try {
 					bitStream.reset();
 				} catch (IOException e) {
-					// e.printStackTrace();
 					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name,
 							e.getMessage());
-//					//disableSound();
 				}
-				// }
 			};
 		};
 		playerThread.setDaemon(true);
@@ -367,12 +351,7 @@ public class OGGSoundClip {
 	}
 
 	public void disableSound() {
-//		if (MainDesktopPane.mainScene != null) {
-//			MainScene.disableSound();
-//		}
-//		else
 		AudioPlayer.disableVolume();
-//		MainMenu.disableSound();
 	}
 
 	/**
@@ -396,6 +375,8 @@ public class OGGSoundClip {
 			if (bitStream != null)
 				bitStream.close();
 		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Cannot close the bitstream: " ,
+					e.getMessage());
 		}
 	}
 

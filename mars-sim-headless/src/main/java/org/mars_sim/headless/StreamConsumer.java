@@ -1,10 +1,8 @@
-/**
+/*
  * Mars Simulation Project
  * StreamConsumer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 
 package org.mars_sim.headless;
@@ -45,7 +43,7 @@ public class StreamConsumer extends Thread {
 				System.out.println(type + line);
 			
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			System.out.println(ioe.getMessage());
 		}
 	}
 }

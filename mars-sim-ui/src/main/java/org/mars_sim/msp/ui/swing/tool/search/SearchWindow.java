@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SearchWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
@@ -18,6 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -56,7 +58,9 @@ import com.alee.laf.text.WebTextField;
 @SuppressWarnings("serial")
 public class SearchWindow
 extends ToolWindow {
-
+	
+	private static final Logger logger = Logger.getLogger(SearchWindow.class.getName());
+	
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$
 
@@ -123,9 +127,7 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-
-//		mapPanel = desktop.getSettlementWindow().getMapPanel();
-		
+	
 		// Initialize locks
 		lockUnitList = false;
 		lockSearchText = false;
@@ -452,9 +454,6 @@ extends ToolWindow {
 	extends DefaultListModel<Unit>
 	implements UnitManagerListener {
 
-		/**
-		 *
-		 */
 		private static final long serialVersionUID = 1L;
 		// Data members.
 		private UnitCategory category;
@@ -497,7 +496,7 @@ extends ToolWindow {
 			clear();
 
 			Collection<? extends Unit> units = null;
-//			UnitManager unitManager = unitManager;
+
 			if (category.equals(UnitCategory.PEOPLE)) {
 
 				if (unitManager.getTotalNumPeople() == 0) {
@@ -505,8 +504,7 @@ extends ToolWindow {
 					try {
 						Thread.sleep(2L);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.log(Level.SEVERE, "Problems in sleep : " + e.getMessage());
 					}
 				}
 				else {

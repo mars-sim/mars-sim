@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SwingHandler.java
- * @version 3.1.0 2018-09-24
+ * @date 2021-08-28
  * @author Manny Kung
  */
 
@@ -31,7 +31,7 @@ public class SwingHandler {
 	private static final Logger logger = Logger.getLogger(SwingHandler.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
-	
+
     private final SwingTextTerminal terminal;
     private final Object dataObject;
 
@@ -162,8 +162,7 @@ public class SwingHandler {
         } catch (ReadAbortedException e) {
             terminal.resetToBookmark("bookmark_" + 0);
         } catch (RuntimeException e) {
-			e.printStackTrace();
-			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
+			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected: ", e);
         }
         
     }
@@ -172,7 +171,7 @@ public class SwingHandler {
         try {
             return dataObject.getClass().getField(fieldName);
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Unknown field: " + fieldName);
+            throw new IllegalArgumentException("Unknown field: " + fieldName + ": " + e.getMessage());
         }
     }
 
@@ -181,7 +180,7 @@ public class SwingHandler {
         try {
             return (V) getField(fieldName).get(dataObject);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot retrieve value of " + fieldName, e);
+            throw new IllegalArgumentException("Cannot retrieve value of " + fieldName + ": " + e.getMessage());
         }
     }
 
@@ -189,7 +188,7 @@ public class SwingHandler {
         try {
             getField(fieldName).set(dataObject, value);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot set value of " + fieldName, e);
+            throw new IllegalArgumentException("Cannot set value of " + fieldName + ": " + e.getMessage());
         }
     }
 }

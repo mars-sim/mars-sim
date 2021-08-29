@@ -304,7 +304,7 @@ public class MarsProject {
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
 
-		Logger.getLogger("").setLevel(Level.FINE);
+//		Logger.getLogger("").setLevel(Level.FINE);
 
 		/*
 		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so

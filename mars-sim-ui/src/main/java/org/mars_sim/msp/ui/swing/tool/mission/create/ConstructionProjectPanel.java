@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -35,6 +35,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -52,8 +53,12 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
  * A wizard panel for selecting the mission's
  * construction project information.
  */
+@SuppressWarnings("serial")
 class ConstructionProjectPanel extends WizardPanel {
 
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(ConstructionProjectPanel.class.getName());
+	
     /** The wizard panel name. */
     private final static String NAME = "Construction Project";
 
@@ -66,6 +71,7 @@ class ConstructionProjectPanel extends WizardPanel {
     private MaterialsTableModel materialsTableModel;
     private JTable materialsTable;
     private CreateMissionWizard wizard;
+    
     /**
      * Constructor.
      * @param wizard the create mission wizard.
@@ -305,7 +311,8 @@ class ConstructionProjectPanel extends WizardPanel {
                         errorMessageTextPane.setText(" ");
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+        			logger.severe(getConstructionSettlement(), 
+        					"Error with construction materials: ", e);
                 }
             }
         } 
@@ -386,7 +393,8 @@ class ConstructionProjectPanel extends WizardPanel {
                     s.append(Msg.HTML_STOP); //$NON-NLS1$
                     result = s.toString();
                 } catch (Exception e) {
-                    e.printStackTrace(System.err);
+        			logger.severe(getConstructionSettlement(), 
+        					"Error with setting up tooltip: ", e);
                 }
             }
         }
@@ -452,7 +460,8 @@ class ConstructionProjectPanel extends WizardPanel {
                             projectListModel.addElement(info);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace(System.err);
+        			logger.severe(getConstructionSettlement(), 
+        					"Error checking construction stage info: ", e);
                 }
             } else if (selectedSite.contains(" - Under Construction")) {
             	if (wizard.getMissionBean().getMixedMembers() == null)
@@ -501,7 +510,8 @@ class ConstructionProjectPanel extends WizardPanel {
                                 projectListModel.addElement(stageInfo);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace(System.err);
+            			logger.severe(getConstructionSettlement(), 
+            					"Error checking construction stage info: ", e);
                     }
                 }
             }
@@ -714,15 +724,16 @@ class ConstructionProjectPanel extends WizardPanel {
 
             Inventory inv = getConstructionSettlement().getInventory();
             String selectedSite = (String) siteList.getSelectedValue();
+            // Get construction site.
+            Settlement settlement = getConstructionSettlement();
+            
             if (info != null) {
                 
                 if (selectedSite.indexOf(" Unfinished") > 0) {
+                    
                     try {
                         // For site with stage under construction, display remaining
                         // construction resources and parts.
-                        
-                        // Get construction site.
-                        Settlement settlement = getConstructionSettlement();
                         ConstructionManager manager = settlement.getConstructionManager();
                         ConstructionSite site = null;
                         int selectedSiteIndex = siteList.getSelectedIndex();
@@ -792,7 +803,8 @@ class ConstructionProjectPanel extends WizardPanel {
                                 numVehiclesAvailable, true));
                     }
                     catch (Exception e) {
-                        e.printStackTrace(System.err);
+            			logger.severe(settlement, 
+            					"Error checking construction stage info: ", e);
                     }
                 }
                 else {
@@ -854,7 +866,8 @@ class ConstructionProjectPanel extends WizardPanel {
                                 "light utility vehicle", numVehiclesRequired,
                                 numVehiclesAvailable, true));
                     } catch (Exception e) {
-                        e.printStackTrace(System.err);
+            			logger.severe(settlement, 
+            					"Error preparing for construction resources: ", e);
                     }
                 }
             }

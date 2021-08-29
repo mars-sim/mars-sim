@@ -206,7 +206,6 @@ public class InteractiveTerm {
 	        }        
 		
 		} catch(RuntimeException e) {
-			e.printStackTrace();
 			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
 		}
 		

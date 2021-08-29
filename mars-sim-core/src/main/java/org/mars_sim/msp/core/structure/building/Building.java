@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2021-08-20
+ * @date 2021-08-28
  * @author Scott Davis
  */
 
@@ -1201,7 +1201,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Checks for possible meteorite impact for this building
 	 */
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
-//		logger.info(this, "Checking on the possibility of a meteorite impact."); 
 		// check for the passing of each day
 
 		int moment_of_impact = 0;
@@ -1211,11 +1210,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
 		double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
-//	 		logger.info(nickName + " : " + Math.round(probability*1_000_000D)/1_000_000D + " %.");
 		// probability is in percentage unit between 0% and 100%
 		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
-//				 		logger.info("Sensors just picked up the new probability of a meteorite impact for " + nickName
-//				 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
 			isImpactImminent = true;
 			// set a time for the impact to happen any time between 0 and 1000 milisols
 			moment_of_impact = RandomUtil.getRandomInt(1000);
