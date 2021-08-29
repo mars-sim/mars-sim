@@ -51,7 +51,6 @@ public class VehicleConfig implements Serializable {
 	private final String CAPACITY = "capacity";
 	private final String RESOURCE = "resource";
 	private final String VALUE = "value";
-	private final String SPONSOR = "sponsor";
 	private final String SICKBAY = "sickbay";
 	private final String LAB = "lab";
 	private final String TECH_LEVEL = "tech-level";
@@ -68,8 +67,6 @@ public class VehicleConfig implements Serializable {
 	private final String INTERIOR_Y_LOCATION = "interior-yloc";
 	private final String EXTERIOR_X_LOCATION = "exterior-xloc";
 	private final String EXTERIOR_Y_LOCATION = "exterior-yloc";
-	private final String ROVER_NAME_LIST = "rover-name-list";
-	private final String ROVER_NAME = "rover-name";
 	private final String ACTIVITY = "activity";
 	private final String ACTIVITY_SPOT = "activity-spot";
 	private final String OPERATOR_TYPE = "operator";
@@ -77,7 +74,6 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private Map<String, List<String>> roverNames;
 	private Map<String, VehicleDescription> map;
 
 	private List<String> attachmentNames = null;
@@ -89,7 +85,6 @@ public class VehicleConfig implements Serializable {
 	 */
 	public VehicleConfig(Document vehicleDoc) {
 		loadVehicleSpecs(vehicleDoc);
-		loadRoverNameList(vehicleDoc);
 	}
 
 	/**
@@ -599,44 +594,6 @@ public class VehicleConfig implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets a map of rover names and its sponsor.
-	 * 
-	 * @return a map
-	 * @throws Exception if XML parsing error.
-	 */
-	public List<String> getRoverNameList(String sponsorCode) {
-		return roverNames.getOrDefault(sponsorCode, Collections.emptyList());
-	}
-
-	/**
-	 * Gets a map of rover names and its sponsor.
-	 * 
-	 * @return a map
-	 * @throws Exception if XML parsing error.
-	 */
-	private void loadRoverNameList(Document vehicleDoc) {
-		if (roverNames != null) {
-			return;
-		}
-		
-		Map<String,List<String>> newNames =
-				new HashMap<>();
-		
-		Element l = vehicleDoc.getRootElement().getChild(ROVER_NAME_LIST);
-		List<Element> names = l.getChildren(ROVER_NAME);
-
-		for (Element e : names) {
-			String name = e.getAttributeValue(VALUE);
-			String sponsor = e.getAttributeValue(SPONSOR);
-			
-			List<String> vNames = 
-					newNames.computeIfAbsent(sponsor, k -> new ArrayList<String>());
-			vNames.add(name);
-		}
-		
-		roverNames = Collections.unmodifiableMap(newNames);
-	}
 
 		
 	/**
@@ -645,9 +602,6 @@ public class VehicleConfig implements Serializable {
 	public void destroy() {
 		if (map != null) {
 			map = null;
-		}
-		if (roverNames != null) {
-			roverNames = null;
 		}
 	}
 

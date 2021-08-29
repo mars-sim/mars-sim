@@ -3542,23 +3542,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return null;
 	}
 	
-	/**
-	 * Generate a unique name for the Settlement
-	 * @return
-	 */
-	public static String generateName(ReportingAuthority sponsor) {
-		List<String> remainingNames = new ArrayList<>(
-				settlementConfig.getSettlementNameList(sponsor.getCode()));
-	
-		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(s -> s.getName()).collect(Collectors.toList());
-	
-		remainingNames.removeAll(usedNames);
-		int idx = RandomUtil.getRandomInt(remainingNames.size());
-		
-		return remainingNames.get(idx);
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -3594,4 +3577,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		scientificAchievement = null;
 	}
 
+	/**
+	 * Generate a unique name for the Settlement
+	 * @return
+	 */
+	public static String generateName(ReportingAuthority sponsor) {
+		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
+	
+		List<String> usedNames = unitManager.getSettlements().stream()
+							.map(s -> s.getName()).collect(Collectors.toList());
+	
+		remainingNames.removeAll(usedNames);
+		int idx = RandomUtil.getRandomInt(remainingNames.size());
+		
+		return remainingNames.get(idx);
+	}
 }

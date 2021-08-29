@@ -77,8 +77,6 @@ public class SettlementConfig implements Serializable {
 	private static final String LATITUDE = "latitude";
 	private static final String POPULATION = "population";
 	private static final String NUM_OF_ROBOTS = "number-of-robots";
-	private static final String SETTLEMENT_NAME_LIST = "settlement-name-list";
-	private static final String SETTLEMENT_NAME = "settlement-name";
 	private static final String VALUE = "value";
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
@@ -104,11 +102,6 @@ public class SettlementConfig implements Serializable {
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private Map<Integer, String> templateMap = new HashMap<>();
 
-	// A map of sponsor and its list of settlement names
-	private Map<String, List<String>> settlementNamesBySponsor = new HashMap<>();
-	// A map of sponsor's name and list of phases
-	private Map<String, List<String>> phasesMapBySponsor = new HashMap<>();
-
 	/**
 	 * Constructor.
 	 * 
@@ -121,7 +114,6 @@ public class SettlementConfig implements Serializable {
 		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
 		loadMissionControl(settlementDoc);
 		loadLifeSupportRequirements(settlementDoc);
-		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
 		loadNewArrivingSettlements(settlementDoc);
 	}
@@ -259,24 +251,6 @@ public class SettlementConfig implements Serializable {
 			} else
 				templateMap.put(templateID, settlementTemplateName);
 			
-			// Add settlementTemplateName to the phasesMap
-			if (phasesMapBySponsor.containsKey(sponsor)) {
-				List<String> phaseList = phasesMapBySponsor.get(sponsor);
-				if (phaseList == null) {
-					phaseList = new ArrayList<>();
-				}
-				if (!phaseList.contains(settlementTemplateName)) {
-					phaseList.add(settlementTemplateName);
-				}
-				phasesMapBySponsor.put(sponsor, phaseList);
-				
-			} else {
-				List<String> phaseList = new ArrayList<>();
-				phaseList.add(settlementTemplateName);
-				phasesMapBySponsor.put(sponsor, phaseList);
-			}
-//			System.out.println("loadSettlementTemplates::phasesMap " + phasesMap);
-
 			// Obtains the default population
 			int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 			// Obtains the default numbers of robots
@@ -529,41 +503,6 @@ public class SettlementConfig implements Serializable {
 	}
 
 	/**
-	 * Load settlement names.
-	 * 
-	 * @param settlementDoc DOM document with settlement configuration.
-	 * @throws Exception if XML error.
-	 */
-	private void loadSettlementNames(Document settlementDoc) {
-		Element root = settlementDoc.getRootElement();
-		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);
-		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
-		for (Element settlementNameElement : settlementNameNodes) {
-			String name = settlementNameElement.getAttributeValue(VALUE);
-			String sponsor = settlementNameElement.getAttributeValue(SPONSOR);
-
-			// (Skipped) match sponsor to the corresponding element in sponsor list
-			// load names list
-			List<String> oldlist = settlementNamesBySponsor.get(sponsor);
-			// add the settlement name
-			if (oldlist == null) { // oldlist.isEmpty()
-				// This sponsor does not exist yet
-				List<String> newlist = new ArrayList<>();
-				newlist.add(name);
-				settlementNamesBySponsor.put(sponsor, newlist);
-			} else {
-				if (oldlist.contains(name)) {
-					throw new IllegalStateException("Duplicated settlement name : " + name);
-				}
-				else {
-					oldlist.add(name);
-					settlementNamesBySponsor.put(sponsor, oldlist);
-				}
-			}
-		}
-	}
-
-	/**
 	 * Obtains the key of a value in a particular map
 	 * 
 	 * @param map
@@ -764,31 +703,6 @@ public class SettlementConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of possible settlement names.
-	 * 
-	 * @param sponsor2 the string name of the sponsor
-	 * @return list of settlement names as strings
-	 */
-	public List<String> getSettlementNameList(String sponsorCode) {
-		return settlementNamesBySponsor.getOrDefault(sponsorCode, new ArrayList<String>());
-	}
-	
-	/**
-	 * Gets a list of phase names.
-	 * 
-	 * @param sponsor the string name of the sponsor
-	 * @return list of phase names as strings
-	 */
-	public List<String> getPhaseNameList(String sponsor) {
-		return phasesMapBySponsor.getOrDefault(sponsor, new ArrayList<String>());
-	}
-	
-	
-	public Map<Integer, String> getTemplateMap() {
-		return templateMap;
-	}
-	
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -798,8 +712,6 @@ public class SettlementConfig implements Serializable {
 		}
 		settlementTemplates.clear();
 		settlementTemplates = null;
-		settlementNamesBySponsor.clear();
-		settlementNamesBySponsor = null;
 		templateMap.clear();
 		templateMap = null;
 	}

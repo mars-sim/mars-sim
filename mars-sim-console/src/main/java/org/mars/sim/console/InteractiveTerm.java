@@ -277,20 +277,20 @@ public class InteractiveTerm {
 		
 	    marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *               Site Selection               * * *" 
+        		+ "           * * *               Scenario Selection               * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
         		+ System.lineSeparator()
 				+ "0. Exit"
         		+ System.lineSeparator()
-				+ "1. Open site editor"
+				+ "1. Open Scenario editor"
 				+ System.lineSeparator()
 				+ "2. Proceed to start the sim"
 				+ System.lineSeparator()
 				+ "3. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "NOTE: the Console Editon does not come with the Site Editor."
+				+ "NOTE: the Console Editon does not come with the Scenario Editor."
 				+ System.lineSeparator()
 				);
 		
@@ -307,14 +307,14 @@ public class InteractiveTerm {
         else if ((GameManager.site).equals("1")) {
         	if (consoleEdition) {
 				marsTerminal.print(System.lineSeparator());
-				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
+				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Scenario Editor.");	
 				marsTerminal.print(System.lineSeparator());
 				
 				siteChoice = 0;
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
-				marsTerminal.print("Loading the Site Editor...");
+				marsTerminal.print("Loading the Scenario Editor...");
 //				marsTerminal.print(System.lineSeparator());
 				
 				siteChoice = 1;
@@ -370,7 +370,7 @@ public class InteractiveTerm {
 				+ "4. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "Note 1: By default the alpha crew (as defined in crew.xml) is Enabled unless being changed."
+				+ "Note 1: By default the loading of crews is Enabled."
 				+ System.lineSeparator()
 //				+ "Note 2: Console Editon does NOT have the Site Editor."
 //				+ System.lineSeparator()
@@ -447,12 +447,12 @@ public class InteractiveTerm {
 
         marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *  Sandbox Mode - Crew and Site Selection  * * *" 
+        		+ "           * * *  Sandbox Mode - Crew and Scenario Selection  * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
 				+ "0. Exit"
         		+ System.lineSeparator()
-				+ "1. Open site editor"
+				+ "1. Open Scenario editor"
 				+ System.lineSeparator()
 				+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
 				+ System.lineSeparator()
@@ -463,7 +463,7 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "Note 1: By default the crews are loaded. Choose 2 to enable/disable."
 				+ System.lineSeparator()
-				+ "Note 2: The Console Editon does not come with the Site Editor."
+				+ "Note 2: The Console Editon does not come with the Scenario Editor."
 				+ System.lineSeparator()
 				);
 		
@@ -488,7 +488,7 @@ public class InteractiveTerm {
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
-				marsTerminal.print("Loading the Site Editor...");
+				marsTerminal.print("Loading the Scenario Editor...");
 //				marsTerminal.println(System.lineSeparator());
 				
 				sandboxCfg = 1;

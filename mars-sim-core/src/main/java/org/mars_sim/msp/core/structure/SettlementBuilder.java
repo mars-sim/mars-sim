@@ -72,6 +72,7 @@ public final class SettlementBuilder {
 	private PersonConfig personConfig;
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
+	private ReportingAuthorityFactory raFactory;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
@@ -81,6 +82,7 @@ public final class SettlementBuilder {
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.personConfig = simConfig.getPersonConfig();
 		this.robotConfig = simConfig.getRobotConfiguration();
+		this.raFactory = simConfig.getReportingAuthorityFactory();
 	}
 
 	/**
@@ -178,7 +180,7 @@ public final class SettlementBuilder {
 		if (sponsor == null) {
 			sponsor = template.getSponsor();
 		}
-		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+		ReportingAuthority ra = raFactory.getItem(sponsor);
 		
 		// Get settlement name
 		String name = spec.getName();
@@ -345,7 +347,7 @@ public final class SettlementBuilder {
 			Person person = null;
 			
 			// This is random and may change on each call
-			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
+			String country = sponsor.getDefaultCountry();
 
 			// Make sure settlement name isn't already being used.
 			String fullname = Person.generateName(country, gender);
@@ -398,8 +400,7 @@ public final class SettlementBuilder {
 				// Get person's settlement or same sponsor
 				ReportingAuthority sponsor = settlement.getSponsor();
 				if (m.getSponsorCode() != null) {
-					 sponsor = ReportingAuthorityFactory.getAuthority(
-											m.getSponsorCode());
+					 sponsor = raFactory.getItem(m.getSponsorCode());
 				}
 	
 				String name = m.getName();

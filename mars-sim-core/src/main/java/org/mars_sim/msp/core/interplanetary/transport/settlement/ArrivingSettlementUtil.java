@@ -27,7 +27,6 @@ public class ArrivingSettlementUtil {
 	/** Average transit time for arriving settlements from Earth to Mars (sols). */
 	public static int AVG_TRANSIT_TIME = 250;
 
-	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	
 	/**
@@ -40,7 +39,8 @@ public class ArrivingSettlementUtil {
 	/**
 	 * Create the initial arriving settlements from the settlement configuration.
 	 */
-	public static List<ArrivingSettlement> createInitialArrivingSettlements() {
+	public static List<ArrivingSettlement> createInitialArrivingSettlements(SettlementConfig settlementConfig,
+			ReportingAuthorityFactory raFactory) {
 
 		List<ArrivingSettlement> arrivingSettlements = new ArrayList<ArrivingSettlement>();
 
@@ -52,7 +52,7 @@ public class ArrivingSettlementUtil {
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
 				// Seems wrong as the Sponsor should be defined
-				ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+				ReportingAuthority ra = raFactory.getItem(sponsor);
 				name = Settlement.generateName(ra);
 			}
 

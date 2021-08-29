@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -392,9 +393,12 @@ public class CrewEditor implements ActionListener {
 	private JPanel scrollPane;
 	
 	private List<MemberPanel> crewPanels = new ArrayList<>();
-	//private CrewConfig crewConfig;
 
 	private SimulationConfigEditor simulationConfigEditor;
+
+	private ReportingAuthorityFactory raFactory;
+
+	private PersonConfig pc;
 
 	
 	/**
@@ -405,9 +409,14 @@ public class CrewEditor implements ActionListener {
 	 * @param simulationConfigEditor
 	 *            SimulationConfigEditor
 	 */
-	public CrewEditor(SimulationConfigEditor simulationConfigEditor, UserConfigurableConfig<Crew> config) {
+	public CrewEditor(SimulationConfigEditor simulationConfigEditor,
+					  UserConfigurableConfig<Crew> config,
+					  ReportingAuthorityFactory raFactory,
+					  PersonConfig pc) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
+		this.raFactory = raFactory;
+		this.pc = pc;
 		
 		createGUI(config);
 	}
@@ -486,8 +495,8 @@ public class CrewEditor implements ActionListener {
 			}
 
 			@Override
-			protected Crew createItem(String newName) {
-				return commitChanges(newName);
+			protected Crew createItem(String newName, String newDescription) {
+				return commitChanges(newName, newDescription);
 			}
 		};
 		
@@ -534,7 +543,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Commits the changes to the crew profiles
 	 */
-	private Crew commitChanges(String name) {
+	private Crew commitChanges(String name, String description) {
 		if (crewPanels.isEmpty()) {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			JOptionPane.showMessageDialog(f, 
@@ -544,7 +553,7 @@ public class CrewEditor implements ActionListener {
 			return null;
 		}
 		
-		Crew newCrew = new Crew(name, false);
+		Crew newCrew = new Crew(name, description, false);
 		for (MemberPanel mp : crewPanels) {
 			// Find member
 			Member m = mp.toMember();
@@ -728,7 +737,7 @@ public class CrewEditor implements ActionListener {
 					
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
 		m.addElement(SETTLEMENT_SPONSOR);
-		m.addAll(ReportingAuthorityFactory.getSupportedCodes());
+		m.addAll(raFactory.getItemNames());
 		return m;
 	}
  
@@ -744,13 +753,13 @@ public class CrewEditor implements ActionListener {
 
 		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
 			// Load all known countries
-			// TODO need PersonConfig
-			sponsorCode = ReportingAuthorityFactory.MS_CODE;
+			model.addAll(pc.getKnownCountries());			
 		}
-		// Load the countries
-		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsorCode);
-		for (String country : ra.getCountries()) {
-			model.addElement(country);
+		else 
+		{
+			// Load the countries from RA
+			ReportingAuthority ra = raFactory.getItem(sponsorCode);
+			model.addAll(ra.getCountries());
 		}
 	}
 	

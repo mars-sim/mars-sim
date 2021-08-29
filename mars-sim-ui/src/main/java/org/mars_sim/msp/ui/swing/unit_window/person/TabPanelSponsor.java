@@ -89,7 +89,7 @@ extends TabPanel {
 		if (sponsor != null) {
 		    sponsorTF.setText(sponsor.getCode()); 
 			TooltipManager.setTooltip (sponsorTF, 
-					sponsor.getName(),
+					sponsor.getDescription(),
 					TooltipWay.down);
 		}
 		sponsorTF.setEditable(false);

@@ -35,11 +35,6 @@ public class Scenario implements UserConfigurable {
 	}
 
 	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	@Override
 	public String getName() {
 		return name;
 	}

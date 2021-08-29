@@ -18,12 +18,6 @@ public interface UserConfigurable {
 	String getDescription();
 
 	/**
-	 * Update the description.
-	 * @param description
-	 */
-	void setDescription(String description);
-
-	/**
 	 * Get the unique name of this configurable item.
 	 * @return
 	 */

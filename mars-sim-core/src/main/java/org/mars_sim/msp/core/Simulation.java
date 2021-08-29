@@ -376,7 +376,8 @@ public class Simulation implements ClockListener, Serializable {
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
-		transportManager = new TransportManager();
+		transportManager = new TransportManager(simulationConfig.getSettlementConfiguration(),
+												simulationConfig.getReportingAuthorityFactory());
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -640,7 +641,8 @@ public class Simulation implements ClockListener, Serializable {
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
 	
 		// Rediscover the MissionControls
-		ReportingAuthorityFactory.discoverReportingAuthorities(unitManager);
+		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
+		rf.discoverReportingAuthorities(unitManager);
 		
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);

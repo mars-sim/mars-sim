@@ -108,7 +108,7 @@ public class SimulationBuilder {
 	}
 
 	public void setSponsor(String optionValue) {
-		authority = ReportingAuthorityFactory.getAuthority(optionValue);
+		authority = simulationConfig.getReportingAuthorityFactory().getItem(optionValue);
 	}
 
 	public void setDiagnostics(String modules) {
@@ -254,8 +254,8 @@ public class SimulationBuilder {
 		logger.config("Java Version Interim Element = "+version.interim());
 		logger.config("  Java Patch Element Version = "+version.patch());
 		logger.config(" Java Update Element Version = "+version.update());
-		logger.config("          Java Version Build = "+version.build().get());
-		logger.config("  Java additional build Info = "+version.optional().get());
+		logger.config("          Java Version Build = "+version.build().orElse(0));
+		logger.config("  Java additional build Info = "+version.optional().orElse("None"));
 		logger.config("       Java Pre-Release Info = "+version.pre().orElse("NA"));
 		logger.config("-----------------------------------------------------------");
 		// Load xml files
@@ -294,7 +294,6 @@ public class SimulationBuilder {
 					ScenarioConfig config = new ScenarioConfig();
 					bootstrap = config.getItem(defaultName);
 				}
-				logger.config("Using Scenario '" + bootstrap.getName() + "'");
 				builder.createInitialSettlements(bootstrap);
 			}
 		}
@@ -342,12 +341,12 @@ public class SimulationBuilder {
 		if (authority == null) {
 			// Use the default on the template
 			String sponsorCode = settlementTemplate.getSponsor();
-			authority = ReportingAuthorityFactory.getAuthority(sponsorCode);
+			authority = simulationConfig.getReportingAuthorityFactory().getItem(sponsorCode);
 		}
 		
 		// Create a random name
 		String settlementName = "New Settlement";
-		List<String> settlementNames = settlementConfig.getSettlementNameList(authority.getCode());
+		List<String> settlementNames = authority.getSettlementNames();
 		if (!settlementNames.isEmpty()) {
 			int size = settlementNames.size();
 			int rand = RandomUtil.getRandomInt(size-1);

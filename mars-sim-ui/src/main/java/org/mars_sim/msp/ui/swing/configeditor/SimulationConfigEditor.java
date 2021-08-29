@@ -55,11 +55,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
+import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -83,25 +85,25 @@ import com.alee.managers.style.StyleId;
 public class SimulationConfigEditor {
 
 	/**
-	 * Adapter for the CreConfig to appear as a ComboModel
+	 * Adapter for the UserConfigurableConfig to appear as a ComboModel
 	 */
-	private final class CrewComboModel implements ComboBoxModel<String> {
+	private final class UserConfigurableComboModel implements ComboBoxModel<String> {
 
-		private UserConfigurableConfig<Crew> crewConfig;
-		private String selectedCrew = null;
+		private UserConfigurableConfig<? extends UserConfigurable> config;
+		private String selectedItem = null;
 
-		public CrewComboModel(UserConfigurableConfig<Crew> crewConfig) {
-			this.crewConfig = crewConfig;
+		public UserConfigurableComboModel(UserConfigurableConfig<? extends UserConfigurable> config) {
+			this.config = config;
 		}
 
 		@Override
 		public int getSize() {
-			return crewConfig.getItemNames().size();
+			return config.getItemNames().size();
 		}
 
 		@Override
 		public String getElementAt(int index) {
-			return crewConfig.getItemNames().get(index);
+			return config.getItemNames().get(index);
 		}
 
 		@Override
@@ -114,12 +116,12 @@ public class SimulationConfigEditor {
 
 		@Override
 		public void setSelectedItem(Object anItem) {
-			this.selectedCrew = (String) anItem;
+			this.selectedItem = (String) anItem;
 		}
 
 		@Override
 		public Object getSelectedItem() {
-			return this.selectedCrew;
+			return this.selectedItem;
 		}
 	}
 	
@@ -143,7 +145,6 @@ public class SimulationConfigEditor {
 
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
-		private String sponsorCache;
 		
 		/**
 		 * Hidden Constructor.
@@ -189,7 +190,7 @@ public class SimulationConfigEditor {
 							
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
-					if (sponsorCC == info.sponsor) {
+					if (sponsorCC.equals(info.sponsor)) {
 						hasSponsor = true;
 					}
 				}
@@ -204,18 +205,13 @@ public class SimulationConfigEditor {
 					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
-					List<String> candidateNames = settlementConfig.getSettlementNameList(sponsorCC);
+					ReportingAuthority ra = raFactory.getItem(sponsorCC);
+					List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
 					Collections.shuffle(candidateNames);
-					for (String c: candidateNames) {
-						for (String u: usedNames) {
-							if (!c.equalsIgnoreCase(u)) {
-								// Change the 1st settlement's name to this country's preferred name
-								settlementInfoList.get(0).name = c;
-							}			
-						}
-						break;
+					candidateNames.removeAll(usedNames);
+					if (!candidateNames.isEmpty()) {
+						settlementInfoList.get(0).name = candidateNames.get(0);
 					}
-					
 					logger.config( 
 							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
 				}
@@ -363,10 +359,10 @@ public class SimulationConfigEditor {
 						break;
 						
 					case SPONSOR_COL:
-						info.sponsor = (String) aValue;
-						if (sponsorCache != info.sponsor) {
-							sponsorCache = info.sponsor;
-							String newName = tailorSettlementNameBySponsor(info.sponsor);
+						String newSponsor = (String) aValue;
+						if (!info.sponsor.equals(newSponsor)) {
+							info.sponsor = newSponsor;
+							String newName = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
 							if (newName != null) {
 								info.name = newName;
 							}
@@ -395,8 +391,7 @@ public class SimulationConfigEditor {
 						String latStr = ((String) aValue).trim();
 						double doubleLat = 0;
 						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-						dir1.toUpperCase();
-						if (dir1.toUpperCase().equalsIgnoreCase("N") || dir1.toUpperCase().equalsIgnoreCase("S")) {
+						if (dir1.equalsIgnoreCase("N") || dir1.equalsIgnoreCase("S")) {
 							if (latStr.length() > 2) {
 								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
 								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
@@ -417,8 +412,7 @@ public class SimulationConfigEditor {
 						String longStr = ((String) aValue).trim();
 						double doubleLong = 0;
 						String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
-						dir2.toUpperCase();
-						if (dir2.toUpperCase().equalsIgnoreCase("E") || dir2.toUpperCase().equalsIgnoreCase("W")) {
+						if (dir2.equalsIgnoreCase("E") || dir2.equalsIgnoreCase("W")) {
 							if (longStr.length() > 2) {
 								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
 								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
@@ -650,16 +644,19 @@ public class SimulationConfigEditor {
 	private CrewEditor crewEditor;
 	
 	private GameMode mode;
-	private  SettlementConfig settlementConfig;
-	private  PersonConfig personConfig;
-	
+	private SettlementConfig settlementConfig;
+	private PersonConfig personConfig;
+	private ReportingAuthorityFactory raFactory;
+
 	private boolean completed = false;
 	private boolean useCrew = true;
 	private UserConfigurableConfig<Crew> crewConfig;
 
 	private Scenario selectedScenario;
 	private ScenarioConfig scenarioConfig;
-	
+
+	private AuthorityEditor authorityEditor;
+
 	/**
 	 * Constructor
 	 * @param config the simulation configuration.
@@ -667,12 +664,12 @@ public class SimulationConfigEditor {
 	public SimulationConfigEditor(SimulationConfig config) {
 
 		// Initialize data members.
+		raFactory = config.getReportingAuthorityFactory();
 		settlementConfig = config.getSettlementConfiguration();
 		personConfig = config.getPersonConfig();
 		crewConfig = new CrewConfig();
 		scenarioConfig = new ScenarioConfig();
 
-		
 		hasError = false;
 
 		try {
@@ -783,16 +780,14 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : ReportingAuthorityFactory.getSupportedCodes()) {
-			sponsorCB.addItem(s);
-		}
+		sponsorCB.setModel(new UserConfigurableComboModel(raFactory));
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
 		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
-		crewCB.setModel(new CrewComboModel(crewConfig));
+		crewCB.setModel(new UserConfigurableComboModel(crewConfig));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 		
 		// Create combo box for editing template column in settlement table.
@@ -876,8 +871,8 @@ public class SimulationConfigEditor {
 			}
 
 			@Override
-			protected Scenario createItem(String newName) {
-				return finalizeSettlementConfig(newName);
+			protected Scenario createItem(String newName, String newDescription) {
+				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
 		bottomPanel.add(control.getPane(), BorderLayout.WEST);
@@ -913,7 +908,8 @@ public class SimulationConfigEditor {
 					f.setVisible(false);
 					
 					// Recalculate the Scenario in case user has made unsaved changes 
-					selectedScenario = finalizeSettlementConfig(control.getSelectItemName());
+					selectedScenario = finalizeSettlementConfig(control.getSelectItemName(),
+																control.getDescription());
 					
 					// Close simulation config editor
 					closeWindow();
@@ -922,9 +918,17 @@ public class SimulationConfigEditor {
 		});
 
 		bottomButtonPanel.add(startButton);
-		//bottomButtonPanel.add(new JLabel("    "));
 		 
-		// Edit Alpha Crew button.
+		// Edit Authority button.
+		JButton authorityButton = new JButton("  Edit Authorities  "); //$NON-NLS-1$
+		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
+		authorityButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				editAuthorities();
+			}
+		});
+		
+		// Edit Crew button.
 		JButton crewButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		crewButton.addActionListener(new ActionListener() {
@@ -945,6 +949,7 @@ public class SimulationConfigEditor {
         });
 
 		bottomButtonPanel.add(cb);
+		bottomButtonPanel.add(authorityButton);
 		bottomButtonPanel.add(crewButton);
 		
 		// Force a load of the default Scenario
@@ -987,15 +992,26 @@ public class SimulationConfigEditor {
 	}
 
 	/**
+	 * Edits Authorities.
+	 */
+	private void editAuthorities() {
+		if (authorityEditor == null) {
+			authorityEditor = new AuthorityEditor(this, raFactory);
+		} 
+		else {
+			authorityEditor.getJFrame().setVisible(true);
+		}
+	}
+	
+	/**
 	 * Edits team profile.
 	 * 
 	 * @param crew
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this, crewConfig);
+			crewEditor = new CrewEditor(this, crewConfig, raFactory, personConfig);
 		} 
-		
 		else {
 			crewEditor.getJFrame().setVisible(true);
 		}
@@ -1009,9 +1025,9 @@ public class SimulationConfigEditor {
 	/**
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
-	private Scenario finalizeSettlementConfig(String newName) {
+	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		return new Scenario(newName, "", is, false);
+		return new Scenario(name, description, is, false);
 	}
 
 	/**
@@ -1061,74 +1077,17 @@ public class SimulationConfigEditor {
 	 * @return settlement configuration.
 	 */
 	private InitialSettlement determineNewDefaultSettlement() {
-			
-		String sponsor = ReportingAuthorityFactory.MS_CODE;
+		
+		// Get any known Reporting Authority
+		String sponsor = raFactory.getItemNames().iterator().next();
 		String template = determineNewSettlementTemplate();
 		Coordinates location = determineNewSettlementLocation();
 		
-		return new InitialSettlement(determineNewSettlementName(sponsor),
+		return new InitialSettlement(tailorSettlementNameBySponsor(sponsor,
+										settlementTableModel.getRowCount()),
 				sponsor, template, 
 				determineNewSettlementPopulation(template),
 				determineNewSettlementNumOfRobots(template), location, null);
-	}
-
-	/**
-	 * Determines a new settlement's name.
-	 * 
-	 * @return name.
-	 */
-	private String determineNewSettlementName(String sponsor) {
-		String result = null;
-
-		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
-		List<String> settlementNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsor));
-		// Randomly shuffle settlement name list first.
-		Collections.shuffle(settlementNames);
-		
-		Iterator<String> i = settlementNames.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					// Label it as being used already in the table.
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-				break;
-			}
-		}
-
-		// If no name found, create numbered settlement name: "Settlement 1",
-		// "Settlement 2", etc.
-		int count = 1;
-		while (result == null) {
-			String name = Msg.getString("SimulationConfigEditor.settlement", //$NON-NLS-1$
-					Integer.toString(count));
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-			}
-
-			count++;
-		}
-
-		return result;
 	}
 
 	/**
@@ -1204,8 +1163,9 @@ public class SimulationConfigEditor {
 	 * @param sponsor
 	 * @return
 	 */
-	private String tailorSettlementNameBySponsor(String sponsor) {
-		
+	private String tailorSettlementNameBySponsor(String sponsor, int index) {
+		ReportingAuthority ra = raFactory.getItem(sponsor);
+
 		List<String> usedNames = new ArrayList<>();
 		
 		// Add configuration settlements from table data.
@@ -1216,11 +1176,11 @@ public class SimulationConfigEditor {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<String>(settlementConfig.getSettlementNameList(sponsor));
+		List<String> candidateNames = new ArrayList<String>(ra.getSettlementNames());
 		candidateNames.removeAll(usedNames);
 
 		if (candidateNames.isEmpty())
-			return "[Type in a name]";
+			return "Settlement #" + index;
 		else
 			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
 	}

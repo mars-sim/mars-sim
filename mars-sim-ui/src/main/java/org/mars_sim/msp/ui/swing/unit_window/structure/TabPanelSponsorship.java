@@ -99,7 +99,7 @@ extends TabPanel {
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
 		TooltipManager.setTooltip (sponsorTF, 
-				ra.getName(),
+				ra.getDescription(),
 				TooltipWay.down);
 		infoPanel.add(sponsorTF);
 		

@@ -125,7 +125,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	 * @param newName
 	 * @return
 	 */
-	protected abstract T createItem(String newName);
+	protected abstract T createItem(String newName, String newDescription);
 
 	/**
 	 * Takes the actions from the button being clicked on
@@ -180,11 +180,10 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 					JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result2 == JOptionPane.YES_OPTION) {
-				T newSelected = createItem(selected.getName());
+				T newSelected = createItem(selected.getName(),
+										   descriptionTF.getText());
 
 				if (newSelected != null) {
-					newSelected.setDescription(descriptionTF.getText());
-
 					selected = newSelected;
 					config.saveItem(selected);
 				}
@@ -198,9 +197,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 
 			// Create new Crew
 			if ((newName != null) && (newName.length() > 0)) {
-				T newSelected = createItem(newName);
+				T newSelected = createItem(newName, descriptionTF.getText());
 				if (newSelected != null) {
-					newSelected.setDescription(descriptionTF.getText());
 					config.saveItem(newSelected); 
 
 					itemCB.addElement(newName);
@@ -222,6 +220,14 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		return (String) itemCB.getSelectedItem();
 	}
 
+	/**
+	 * Entered description
+	 * @return
+	 */
+	public String getDescription() {
+		return descriptionTF.getText();
+	}
+	
 	public JPanel getPane() {
 		return buttonPane;
 	}

@@ -269,6 +269,10 @@ public class UIConfig {
 	 * @return location.
 	 */
 	public Point getMainWindowLocation() {
+		if (root == null) {
+			return new Point(0, 0);
+		}
+		
 		try {
 			Element mainWindow = root.getChild(MAIN_WINDOW);
 			int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));

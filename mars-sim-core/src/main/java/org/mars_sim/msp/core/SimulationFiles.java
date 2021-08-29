@@ -13,8 +13,16 @@ import java.io.File;
  * A singleton that controls where the simulation files reside on the file system
  */
 public class SimulationFiles {
+	private static final String USERCONFIG_DIR = "conf";
+	private static final String HOME_DIR = ".mars-sim";
+	private static final String BACKUP_DIR = "backup";
+	private static final String SAVE_DIR = "saved";
+	private static final String XML_DIR = "xml";
+	private static final String AUTOSAVE_DIR = "autosave";
+	private static final String LOG_DIR = "logs";
+	
 	private static String dataDir = System.getProperty("user.home") + //$NON-NLS-1$
-					File.separator + Msg.getString("Simulation.homeFolder");
+					File.separator + HOME_DIR;
 	/**
 	 * Private constructor prevents instantiation
 	 */
@@ -29,23 +37,28 @@ public class SimulationFiles {
 		return dataDir;
 	}
 	
+	public static String getUserConfigDir() {
+		return dataDir + File.separator + USERCONFIG_DIR;
+	}
+	
+	
 	public static String getBackupDir() {
-		return dataDir + File.separator + Msg.getString("Simulation.backupFolder"); //$NON-NLS-1$
+		return dataDir + File.separator + BACKUP_DIR;
 	}
 	
 	public static String getSaveDir() {
-		return dataDir + File.separator + Msg.getString("Simulation.saveDir"); //$NON-NLS-1$
+		return dataDir + File.separator + SAVE_DIR;
 	}
 	
 	public static String getXMLDir() {
-		return dataDir + File.separator + Msg.getString("Simulation.xmlFolder"); //$NON-NLS-1$
+		return dataDir + File.separator + XML_DIR;
 	}
 	
 	public static String getAutoSaveDir() {
-		return dataDir + File.separator + Msg.getString("Simulation.saveDir.autosave"); //$NON-NLS-1$
+		return dataDir + File.separator + AUTOSAVE_DIR;
 	}
 
 	public static String getLogDir() {
-		return dataDir + File.separator + Msg.getString("Simulation.logDir"); //$NON-NLS-1$
+		return dataDir + File.separator + LOG_DIR;
 	}
 }

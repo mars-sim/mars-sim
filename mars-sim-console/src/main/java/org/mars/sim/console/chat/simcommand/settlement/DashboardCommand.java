@@ -45,7 +45,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	 */
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
 
-		response.appendLabeledString("Sponsor", settlement.getSponsor().getName());
+		response.appendLabeledString("Sponsor", settlement.getSponsor().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
 		response.appendLabeledString("Location", settlement.getCoordinates().getCoordinateString());
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
