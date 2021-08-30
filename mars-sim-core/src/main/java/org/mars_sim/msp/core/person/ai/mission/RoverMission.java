@@ -956,27 +956,27 @@ public abstract class RoverMission extends VehicleMission {
 
 		// For now, comment out loading dessert
 		// Note: need to figure out why dessert cannot be loaded onto a vehicle
-		int dessertID = -1;
-		// Initialize dessert resources if necessary.
-		if (dessertResources == null) {
-			dessertID = determineDessertResources();
-		}
-
-		if (dessertID != -1) {
-			// Add any dessert resources to optional resources to load.
-			Iterator<Integer> i = dessertResources.keySet().iterator();
-			while (i.hasNext()) {
-				Integer dessert = i.next();
-				double amount = dessertResources.get(dessert);
-
-				if (result.containsKey(dessert)) {
-					double initialAmount = (double) result.get(dessert);
-					amount += initialAmount;
-				}
-
-				result.put(dessert, amount);
-			}
-		}
+//		int dessertID = -1;
+//		// Initialize dessert resources if necessary.
+//		if (dessertResources == null) {
+//			dessertID = determineDessertResources();
+//		}
+//
+//		if (dessertID != -1) {
+//			// Add any dessert resources to optional resources to load.
+//			Iterator<Integer> i = dessertResources.keySet().iterator();
+//			while (i.hasNext()) {
+//				Integer dessert = i.next();
+//				double amount = dessertResources.get(dessert);
+//
+//				if (result.containsKey(dessert)) {
+//					double initialAmount = (double) result.get(dessert);
+//					amount += initialAmount;
+//				}
+//
+//				result.put(dessert, amount);
+//			}
+//		}
 		
 		return result;
 	}

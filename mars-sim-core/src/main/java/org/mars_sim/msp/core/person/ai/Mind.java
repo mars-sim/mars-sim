@@ -489,7 +489,6 @@ public class Mind implements Serializable, Temporal {
 		// The previous code was using an extra random that did not add any value because the extra weight was always 0
 		Mission newMission = missionManager.getNewMission(person);
 		if (newMission != null) {
-			missionManager.addMission(newMission);
 			setMission(newMission);
 		}
 	}

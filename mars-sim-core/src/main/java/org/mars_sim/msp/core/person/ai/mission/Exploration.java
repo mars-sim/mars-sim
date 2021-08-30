@@ -793,10 +793,12 @@ public class Exploration extends RoverMission implements Serializable {
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
 	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
-
+		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
+		
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 
 		// Determining the actual traveling range.
+		double limit = 0;
 		double range = roverRange;
 		double timeRange = getTripTimeRange(tripTimeLimit);
 		if (timeRange < range) {
@@ -821,7 +823,8 @@ public class Exploration extends RoverMission implements Serializable {
 		for (int x = 1; x < numSites; x++) {
 			if (remainingRange > 1D) {
 				Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-				siteDistance = RandomUtil.getRandomDouble(remainingRange);
+				limit = range / 4D;
+				siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 				newLocation = currentLocation.getNewLocation(direction, siteDistance);
 				unorderedSites.add(newLocation);
 				currentLocation = newLocation;
@@ -866,7 +869,6 @@ public class Exploration extends RoverMission implements Serializable {
 			}
 		} else {
 			sites = unorderedSites;
-			// double totalDistance = getTotalDistance(startingLocation, unorderedSites);
 		}
 
 		int explorationSiteNum = 1;

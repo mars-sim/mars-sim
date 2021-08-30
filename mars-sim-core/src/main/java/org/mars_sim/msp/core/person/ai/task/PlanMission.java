@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PlanMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-29
  * @author Manny Kung
  */
 
@@ -85,11 +85,9 @@ public class PlanMission extends Task implements Serializable {
 					// Walk to the dining building.
 					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
 				}
-//				else {
-//					// work anywhere
-//				}				
+				// work anywhere		
 			}
-			// TODO: add other workplace if administration building is not available
+			// Note: add other workplace if administration building is not available
 
 		} // end of roleType
 		else {
@@ -99,7 +97,7 @@ public class PlanMission extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(SELECTING);
-//		addPhase(GATHERING);
+
 		addPhase(SUBMITTING);
 		
 		setPhase(SELECTING);
@@ -164,21 +162,16 @@ public class PlanMission extends Task implements Serializable {
 		
 		Mission mission = person.getMind().getMission();
 		
-		if (mission instanceof VehicleMission) {
+		if (mission instanceof VehicleMission && !mission.isDone()) {
 			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " + mission.getTypeID() + ".");
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();
-//			mission.setPhase(VehicleMission.REVIEWING);
 				// Note: the plan will go up the chain of command
 				// 1. takeAction() in Mind will call mission.performMission(person) 
 				// 2. performMission() in Mission will lead to calling  performPhase() in VehicleMission
 				// 3. performPhase() in VehicleMission will call requestApprovalPhase() 
 				// 4. requestReviewPhase() in VehicleMission will call requestApprovalPhase() in Mission
 		}
-				
-//		if (mission != null) {
-//			// if the mission is approved/accepted after submission  
-//		}
 		
 		// Add experience
 		addExperience(time); 

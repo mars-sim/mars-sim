@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionManager.java
- * @date 2021-08-15
+ * @date 2021-08-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -290,7 +290,10 @@ public class MissionManager implements Serializable, Temporal {
 
 		if (!onGoingMissions.contains(newMission)) {
 			onGoingMissions.add(newMission);
-
+			
+			// Iterate mission identifer
+			newMission.iterateIdentifer();
+			
 			// Update listeners.
 			if (listeners == null) {
 				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
@@ -303,10 +306,9 @@ public class MissionManager implements Serializable, Temporal {
 				}
 			}
 
-			// recordMission(newMission);
-
 			logger.config("Added '" + newMission.getTypeID() + "' mission.");
 		}
+		
 	}
 
 	/**
@@ -358,16 +360,13 @@ public class MissionManager implements Serializable, Temporal {
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			} else {
-				//missionProbCache.put(metaMission, 0D);
 				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
 						+ probability);
 			}
-//			if (probability > 0)
-//				System.out.println(person + " " + metaMission.getName() + " is " + probability);
+
 		}	
 
 		if (totalProbCache == 0D) {
-			//throw new IllegalStateException(person + " has zero total mission probability weight.");
 			logger.log(Level.FINEST, person + " has zero total mission probability weight. No mission selected.");
 			
 			return null;
@@ -395,7 +394,7 @@ public class MissionManager implements Serializable, Temporal {
 
 		// Construct the mission
 		result = selectedMetaMission.constructInstance(person);
-
+		
 		return result;
 	}
 
@@ -609,12 +608,18 @@ public class MissionManager implements Serializable, Temporal {
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
 		
-		Person p = plan.getMission().getStartingPerson();
+		Mission mission = plan.getMission();
+		Person p = mission.getStartingPerson();
 		
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + p.getLocale() + "] On Sol " 
 				+ historicalMissions.getCurrentSol() + ", " + p.getName() + " put together a mission plan.");
 		historicalMissions.addData(plan);
+		
+		// Add this mission only after the mission plan has been submitted for review.
+		addMission(mission);
+		
+		
 	}
 	
 	
@@ -624,7 +629,6 @@ public class MissionManager implements Serializable, Temporal {
 	 * @param mission
 	 */
 	public void requestMissionApproving(MissionPlanning plan) {
-//		logger.info(plan.getMission().getStartingMember() + " was supposed to call requestMissionApproval()");
 		addMissionPlanning(plan);
 	}
 	

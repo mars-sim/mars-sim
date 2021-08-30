@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mission.java
- * @date 2021-08-15
+ * @date 2021-08-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -188,7 +188,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
 		// Initialize data members
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
@@ -261,6 +261,10 @@ public abstract class Mission implements Serializable, Temporal {
 
 	}
 
+	public void iterateIdentifer() {
+		this.identifier = getNextIdentifier();
+	}
+	
 	/**
 	 * Gets the date filed timestamp of the mission.
 	 * 
