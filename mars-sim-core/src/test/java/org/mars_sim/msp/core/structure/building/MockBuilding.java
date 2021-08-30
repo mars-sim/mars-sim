@@ -15,37 +15,6 @@ public class MockBuilding extends Building {
 	/* default logger. */
 	private static final Logger logger = Logger.getLogger(Building.class.getName());
 	
-	/** The unit count for this building. */
-//	private static int uniqueCount = Unit.FIRST_BUILDING_UNIT_ID;
-	/** Unique identifier for this settlement. */
-//	private int identifier;
-	
-//	private BuildingManager manager;
-	
-//	/**
-//	 * Must be synchronised to prevent duplicate ids being assigned via different
-//	 * threads.
-//	 * 
-//	 * @return
-//	 */
-//	private static synchronized int getNextIdentifier() {
-//		return uniqueCount++;
-//	}
-	
-//	/**
-//	 * Get the unique identifier for this settlement
-//	 * 
-//	 * @return Identifier
-//	 */
-//	public int getIdentifier() {
-//		return identifier;
-//	}
-//	
-//	public void incrementID() {
-//		// Gets the identifier
-//		this.identifier = getNextIdentifier();
-//	}
-	
     public MockBuilding() {
     	super();
     }
@@ -60,11 +29,9 @@ public class MockBuilding extends Building {
 			throw new IllegalArgumentException("Bulding manager can not be null");
 		}
 		manager.addMockBuilding(this);
-		 
-//		this.manager = manager;
+
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
-		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
     
@@ -73,13 +40,10 @@ public class MockBuilding extends Building {
 		buildingType = "Mock Type";
 		super.changeName("Mock Building");
 				
-//		sim.getUnitManager().addBuildingID(this);
 		unitManager.addUnit(this);
 
-//		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
-		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
 

@@ -42,7 +42,16 @@ public class Drone extends Flyer implements Serializable {
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
 	/** Comparison to indicate a small but non-zero amount. */
-	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+//	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+	
+	private static int[] resources = {
+			ResourceUtil.oxygenID,
+			ResourceUtil.waterID,
+			ResourceUtil.methaneID
+	};
+	
+	private Map<Integer, Number> emptyMap = new HashMap<>();
+	private Map<Integer, Number> loadingResourcesMap;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -104,31 +113,30 @@ public class Drone extends Flyer implements Serializable {
 						
 						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
 							double time = pulse.getElapsed();
-							double transferSpeed = 20; // Assume 20 kg per msol
+							double transferSpeed = 10; // Assume 10 kg per msol
 							
-							Map<Integer, Number> emptyMap = new HashMap<>();
-							Map<Integer, Number> map = rm.getResourcesNeededForRemainingMission(true);
+							if (loadingResourcesMap == null)
+								loadingResourcesMap = rm.getResourcesNeededForRemainingMission(true);
 							double amountLoading = time * transferSpeed;
 							
-							if (map.get(ResourceUtil.methaneID) != null) {
-							// Transfer methane needed
-								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.methaneID, amountLoading);
-								if (!isFullyLoaded)
-									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.methaneID, true); 
-							}
-													
-							if (map.get(ResourceUtil.oxygenID) != null) {
-								// Transfer oxygen needed							
-								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.oxygenID, amountLoading);
-								if (!isFullyLoaded)
-									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.oxygenID, true); 
-							}
-							
-							if (map.get(ResourceUtil.waterID) != null) {
-								// Transfer water needed
-								boolean isFullyLoaded = rm.canTransfer(ResourceUtil.waterID, amountLoading);
-								if (!isFullyLoaded)
-									rm.loadAmountResource(map, emptyMap, amountLoading, ResourceUtil.waterID, true); 
+							for (int id: resources) {
+								if (loadingResourcesMap.get(id) != null) {
+									double needed = loadingResourcesMap.get(id).doubleValue();
+									if (needed > 0) {
+										double diff = needed - amountLoading;
+										if (diff <= 0) {
+											diff = 0;
+											amountLoading = needed;
+										}
+										double req = rm.getResourcesNeededForRemainingMission(true).get(id).doubleValue();
+										boolean isFullyLoaded = rm.canTransfer(id, amountLoading, req);
+										if (!isFullyLoaded) {
+											// Load this resource
+											rm.loadAmountResource(rm.getResourcesNeededForRemainingMission(true), emptyMap, amountLoading, id, true); 
+											loadingResourcesMap.put(id, diff);
+										}
+									}
+								}
 							}
 						}
 					}

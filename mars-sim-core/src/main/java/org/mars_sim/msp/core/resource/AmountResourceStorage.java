@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 
 /**
@@ -29,6 +30,7 @@ public class AmountResourceStorage implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(AmountResourceStorage.class.getName());
 
 	// Domain members
+	private Unit owner;
 	private AmountResourceTypeStorage typeStorage = null;
 	private AmountResourcePhaseStorage phaseStorage = null;
 
@@ -38,6 +40,10 @@ public class AmountResourceStorage implements Serializable {
 	private transient double totalResourcesStored = 0D;
 	private transient boolean totalResourcesStoredDirty = true;
 
+	public AmountResourceStorage(Unit owner) {
+		this.owner = owner;
+	}
+	
 	public boolean isEmpty() {
 		if (allStoredARCache == null)
 			return true;
@@ -474,16 +480,16 @@ public class AmountResourceStorage implements Serializable {
 						allStoredResourcesCacheDirty = true;
 						totalResourcesStoredDirty = true;
 					} else {
-						logger.severe("Amount resource " + resource + " of amount: " + amount
-								+ " to store.  Amount remaining capacity: "
-								+ getAmountResourceRemainingCapacity(resource) + " remaining: " + remainingAmount);
+						logger.severe(owner, 30_000, amount + " kg " + resource
+							+ " could not be stored.  Remaining capacity: " + getAmountResourceRemainingCapacity(resource)
+							+ " remaining: " + remainingAmount);
 					}
 				}
 			}
 
 			if (!storable)
-				throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount
-						+ " could not be stored in inventory.");
+				logger.severe(owner, 30_000, amount + " kg " + resource
+					+ " could not be stored.  Remaining capacity: " + getAmountResourceRemainingCapacity(resource));
 		}
 	}
 
@@ -544,17 +550,16 @@ public class AmountResourceStorage implements Serializable {
 						allStoredResourcesCacheDirty = true;
 						totalResourcesStoredDirty = true;
 					} else {
-						logger.severe("Amount resource " + ResourceUtil.findAmountResource(resource) + " of amount: " + amount
-								+ " to store.  Amount remaining capacity: " + getARRemainingCapacity(resource)
-								+ " remaining: " + remainingAmount);
+						logger.severe(owner, 30_000, amount + " kg " + ResourceUtil.findAmountResource(resource)
+							+ " could not be stored.  Remaining capacity: " + getARRemainingCapacity(resource)
+							+ " remaining: " + remainingAmount);
 					}
 				}
 			}
 
 			if (!storable)
-				throw new IllegalStateException(
-						"Amount resource: " + ResourceUtil.findAmountResource(resource) 
-						+ " of amount: " + amount + " could not be stored in inventory.");
+				logger.severe(owner, 30_000, amount + " kg " + ResourceUtil.findAmountResource(resource)
+					+ " could not be stored.  Remaining capacity: " + getARRemainingCapacity(resource));
 		}
 	}
 
@@ -608,16 +613,16 @@ public class AmountResourceStorage implements Serializable {
 			if (remainingAmount == 0D) {
 				retrievable = true;
 			} else {
-				logger.severe("Amount resource " + resource + " of amount: " + amount
-						+ " needed to retrieve.  Amount stored: " + amountStored + " remaining: " + remainingAmount);
+				logger.severe(owner, 30_000, amount + " kg " + resource
+						+ " could not be retrieved.  Amount stored: " + amountStored + " remaining: " + remainingAmount);
 			}
 		} else {
-			logger.severe("Amount resource " + resource + " of amount: " + amount
-					+ " needed to retrieve.  Amount stored: " + amountStored);
+			logger.severe(owner, 30_000, amount + " kg " + resource
+					+ " could not be retrieved.  Amount stored: " + amountStored);
 		}
 
 		if (!retrievable) {
-			throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount
+			logger.severe(owner, 30_000, amount + " kg " + resource
 					+ " could not be retrieved from inventory.");
 		}
 	}

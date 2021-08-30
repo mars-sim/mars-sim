@@ -119,7 +119,7 @@ public class Inventory implements Serializable {
 	private Integer ownerID;
 
 	/** Resource storage. */
-	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
+	private AmountResourceStorage resourceStorage;
 	
 	private static UnitManager unitManager;
 
@@ -522,7 +522,7 @@ public class Inventory implements Serializable {
 		setAmountResourceCapacityCacheDirty(resource);
 		// Initialize resource storage if necessary.
 		if (resourceStorage == null) {
-			resourceStorage = new AmountResourceStorage();
+			resourceStorage = new AmountResourceStorage(owner);
 		}
 		resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
 	}
@@ -551,10 +551,7 @@ public class Inventory implements Serializable {
 //		}
 		// Set capacity cache to dirty because capacity values are changing.
 		setAmountResourceCapacityCacheDirty(resource);
-		// Initialize resource storage if necessary.
-//		if (resourceStorage == null) {
-//			resourceStorage = new AmountResourceStorage();
-//		}
+
 		if (resourceStorage != null) 
 			resourceStorage.removeAmountResourceTypeCapacity(resource, capacity);
 	}
@@ -570,7 +567,7 @@ public class Inventory implements Serializable {
 		setAmountResourceCapacityCacheAllDirty(false);
 		// Initialize resource storage if necessary.
 		if (resourceStorage == null) {
-			resourceStorage = new AmountResourceStorage();
+			resourceStorage = new AmountResourceStorage(owner);
 		}
 		resourceStorage.addAmountResourcePhaseCapacity(phase, capacity);
 	}
@@ -2265,8 +2262,8 @@ public class Inventory implements Serializable {
 		}
 			
 		} else {
-			logger.log(unit, Level.SEVERE, 30_000, "Could not be stored.");
-			 stored = false;
+			logger.severe(unit, 30_000, "Could not be stored.");
+			stored = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 //			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
 		}

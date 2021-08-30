@@ -71,7 +71,7 @@ public abstract class Mission implements Serializable, Temporal {
 	public static final int MAX_CAP = 8;
 
 	// Global mission identifier
-	private static int missionIdentifer = 0;
+	private static int missionIdentifer = 1;
 
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.

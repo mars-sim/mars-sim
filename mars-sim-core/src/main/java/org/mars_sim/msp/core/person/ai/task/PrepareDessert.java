@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PrepareDessert.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -79,7 +79,7 @@ public class PrepareDessert extends Task implements Serializable {
 		// Walk to kitchen building.
 		walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.PREPARING_DESSERT, false);
 
-		boolean isAvailable = kitchen.getAListOfDesserts().size() > 0;
+		boolean isAvailable = kitchen.getListDessertsToMake().size() > 0;
 		// Check if enough desserts have been prepared at the kitchen for this meal
 		// time.
 		boolean enoughDessert = kitchen.getMakeNoMoreDessert();

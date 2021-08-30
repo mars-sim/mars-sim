@@ -24,7 +24,6 @@ public class TestItemResource extends TestCase {
         SimulationConfig.instance().loadConfig();
         
         // initialize 
-        //new ItemResource();
        	ResourceUtil.getInstance();
         resources = ItemResourceUtil.getItemResources();
         
@@ -57,9 +56,6 @@ public class TestItemResource extends TestCase {
     }
 
     public void testGetItemResourcesContents() {
-        //assertFalse(resources.contains(hammer));
-        //assertFalse(resources.contains(socketWrench));
-        //assertFalse(resources.contains(pipeWrench));
         assertTrue(resources.contains(hammer));
         assertTrue(resources.contains(socketWrench));
         assertTrue(resources.contains(pipeWrench));

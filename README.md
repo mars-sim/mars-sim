@@ -20,7 +20,8 @@ modeling and simulation details than a typical PC strategy game.
 ---
 
 ## Simulation
-mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars. 
+mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars.
+ 
 According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent 
 the dynamic responses of one system by the behavior of another system modeled after it. In essence, 
 a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
@@ -30,9 +31,10 @@ biology, economics, psychology, and social science) as possible to simulate the 
 of people, social structure, physical and mechanical systems, and environment in the context of 
 developing human settlements on Mars. 
 
-A settler will be a computer agent possessing certain prescribed attributes, dynamic properties and 
-the external characteristics imposed on it. Each one makes weighted decisions and interacts with one 
-another to produce unexpected results in a sandbox world.
+mars-sim models each settler as an intelligent agent which possess, to varying degrees, autonomy, and mobility. 
+It is a symbolic model of reality, given a capacity to learn from experience and an ability to 
+cooperate with other agents and systems. A settler has prescribed attributes and skills and makes 
+weighted decisions and interacts with one another to produce unexpected results in a sandbox world.
 
 For instance, each settler is assigned with a job, a role, having technical 
 [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural 
@@ -95,16 +97,18 @@ Our third example is the [Radiation Modeling](https://github.com/mars-sim/mars-s
 ---
  
 ## Settlement Development 
-Player may build numerous settlements spreading across the surface of Mars. Each settlement has a 
-*[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a 
+One of the goals of mars-sim is to populate the surface of Mars with human settlements.
+Each settlement has an initial sponsor to guide its development but will eventually develop 
+its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and  
 *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  
 
-As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of 
+mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has 6 basic types of 
 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. 
-A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base is constructed 
-under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base is designated as 
-*Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot* near sites with 
-high mineral concentration.
+A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base 
+is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base 
+is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
+near sites with high mineral concentrations. Depending on its country or origin and/or sponsor, 
+each level of template may vary in the numbers and types of building it contains. 
 
 ---
 

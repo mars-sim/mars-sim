@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PrepareDessertMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-08-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -69,7 +69,7 @@ public class PrepareDessertMeta extends MetaTask {
                 PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
 
                 // Check if there are enough ingredients to prepare a dessert.
-                int numGoodRecipes = kitchen.getAListOfDesserts().size();
+                int numGoodRecipes = kitchen.getListDessertsToMake().size();
 
                 // Check if enough desserts have been prepared at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getMakeNoMoreDessert();
@@ -105,7 +105,7 @@ public class PrepareDessertMeta extends MetaTask {
                PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
 
                // Check if there are enough ingredients to prepare a dessert.
-               int numGoodRecipes = kitchen.getAListOfDesserts().size();
+               int numGoodRecipes = kitchen.getListDessertsToMake().size();
 
                // Check if enough desserts have been prepared at kitchen for this meal time.
                boolean enoughMeals = kitchen.getMakeNoMoreDessert();

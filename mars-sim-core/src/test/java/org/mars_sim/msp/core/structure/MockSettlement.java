@@ -9,11 +9,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 
+@SuppressWarnings("serial")
 public class MockSettlement extends Settlement {
 
 	/* default logger. */
 	private static final Logger logger = Logger.getLogger(MockSettlement.class.getName());
-	
 	
 	private Simulation sim = Simulation.instance();
 
@@ -35,8 +35,6 @@ public class MockSettlement extends Settlement {
 
         // Initialize building manager
         buildingManager = new BuildingManager(this, "Mock Settlement");
-//        Building b = new MockBuilding(buildingManager);
-//        buildingManager.addMockBuilding(b);
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,

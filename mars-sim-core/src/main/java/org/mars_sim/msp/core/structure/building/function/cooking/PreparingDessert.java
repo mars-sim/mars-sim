@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * PreparingDessert.java
- * @date 2021-08-28
+ * @date 2021-08-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -86,6 +87,17 @@ public class PreparingDessert extends Function implements Serializable {
 	private static int foodWasteID = ResourceUtil.foodWasteID;
 	public static int NaClOID = ResourceUtil.NaClOID;
 
+	public static int[] availableDessertsID = {
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[0]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[1]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[2]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[3]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[4]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[5]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[6])
+	};
+	
+	
 	public static AmountResource[] availableDessertsAR = { 
 			ResourceUtil.findAmountResource(availableDesserts[0]),
 			ResourceUtil.findAmountResource(availableDesserts[1]),
@@ -93,7 +105,8 @@ public class PreparingDessert extends Function implements Serializable {
 			ResourceUtil.findAmountResource(availableDesserts[3]),
 			ResourceUtil.findAmountResource(availableDesserts[4]),
 			ResourceUtil.findAmountResource(availableDesserts[5]),
-			ResourceUtil.findAmountResource(availableDesserts[6]) };
+			ResourceUtil.findAmountResource(availableDesserts[6])
+	};
 
 	// Arbitrary percent of dry mass of the corresponding dessert/beverage.
 	public static double[] dryMass = { 0.10, 0.05, 0.02, 0.02, 0.20, 0.4, 0.3, };
@@ -415,19 +428,18 @@ public class PreparingDessert extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets a list of all desserts available at the settlement.
+	 * Gets a list of all desserts that can be made at the settlement.
 	 * 
 	 * @return list of dessert names.
 	 */
-	public List<String> getAListOfDesserts() {
-		// TODO : turn this list into an array to speed up the operation
-		List<String> dessertList = new CopyOnWriteArrayList<>(); // ArrayList<String>();
+	public List<String> getListDessertsToMake() {
+		// Note : turn this list into an array to speed up the operation
+		List<String> dessertList = new ArrayList<>();
 
 		// Put together a list of available dessert
-		// for(String n : availableDesserts) {
 		for (int i = 0; i < NUM_DESSERTS; i++) {
 			double amount = dryMass[i];
-			/// System.out.println("PreparingDessert : it's " + availableDesserts[i]);
+
 			boolean isAvailable = false;
 			if (amount > MIN)
 				isAvailable = retrieve(amount, availableDessertsAR[i].getID(), false);
@@ -436,7 +448,6 @@ public class PreparingDessert extends Function implements Serializable {
 				isWater_av = retrieve(dessertMassPerServing - amount, waterID, false);
 
 			if (isAvailable && isWater_av) {
-				// System.out.println("n is available");
 				dessertList.add(availableDesserts[i]);
 			}
 		}
@@ -485,7 +496,7 @@ public class PreparingDessert extends Function implements Serializable {
 			} else {
 				// List<String> dessertList = getAListOfDesserts();
 				// selectedDessert = makeADessert(getADessert(dessertList));
-				selectedDessert = makeADessert(getADessert(getAListOfDesserts()), worker);
+				selectedDessert = makeADessert(getADessert(getListDessertsToMake()), worker);
 			}
 		}
 
@@ -690,6 +701,20 @@ public class PreparingDessert extends Function implements Serializable {
 		return getNumCooks() * 10D;
 	}
 
+	/**
+	 * Checks if this resource id is a dessert id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static boolean isADessert(int id) {
+		for (int i: availableDessertsID) {
+			if (id == i)
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public double getMaintenanceTime() {
 		return cookCapacity * 10D;
