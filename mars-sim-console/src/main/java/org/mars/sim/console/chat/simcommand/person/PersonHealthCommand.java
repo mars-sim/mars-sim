@@ -14,8 +14,10 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.health.Complaint;
 
 /** 
  * Reports on a Persons health
@@ -27,12 +29,15 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	private static final String HUNGER = "Hunger";
 	private static final String THIRST = "Thirst";
 	private static final String STRESS = "Stress";
+	private static final String PROBLEMS = "Health problems";
+
 
 	private static final List<String> CHARACTERISTICS = List.of(
 													FATIGUE, 
 													HUNGER,
 													STRESS,
-													THIRST);
+													THIRST,
+													PROBLEMS);
 
 	public PersonHealthCommand() {
 		super("h", "health", "About health");
@@ -94,31 +99,58 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			if (choice < 0) {
 				return;
 			}
-			
-			int newValue = context.getIntInput("New value:");
-			
-			context.println("Setting characteristic " + CHARACTERISTICS.get(choice)
-							+ " to the new value " + newValue);
-			switch(CHARACTERISTICS.get(choice)) {
-			case FATIGUE:
-				pc.setFatigue(newValue);
-				break;
-				
-			case STRESS:
-				pc.setStress(newValue);
-				break;
-				
-			case HUNGER:
-				pc.setHunger(newValue);
-				break;
-				
-			case THIRST:
-				pc.setThirst(newValue);
-				break;
 	
-			default:
-				context.println("Do not understand");
+			String choosen = CHARACTERISTICS.get(choice);
+			if (choosen.equals(PROBLEMS)) {
+				addHealthProblem(context, pc);
+			}
+			else {
+				// Simple numeric value
+	 			int newValue = context.getIntInput("New value:");
+				
+				context.println("Setting characteristic " + CHARACTERISTICS.get(choice)
+								+ " to the new value " + newValue);
+				switch(CHARACTERISTICS.get(choice)) {
+				case FATIGUE:
+					pc.setFatigue(newValue);
+					break;
+					
+				case STRESS:
+					pc.setStress(newValue);
+					break;
+					
+				case HUNGER:
+					pc.setHunger(newValue);
+					break;
+					
+				case THIRST:
+					pc.setThirst(newValue);
+					break;
+		
+				default:
+					context.println("Do not understand");
+				}
 			}
 		}
+	}
+	
+	/**
+	 * Add a new medical proble, to a person
+	 * @param context
+	 * @param pc
+	 */
+	private void addHealthProblem(Conversation context, PhysicalCondition pc) {
+	
+		// Choose one
+		List<Complaint> complaints = SimulationConfig.instance().getMedicalConfiguration().getComplaintList();
+		List<String> problems = complaints.stream().map(c -> c.getType().getName()).collect(Collectors.toList());
+		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new health complaint");
+		if (choice <= 0) {
+			return;
+		}
+	
+		Complaint choosen = complaints.get(choice);
+		context.println("Adding new Complaint " + choosen.getType().getName());
+		pc.addMedicalComplaint(choosen);
 	}
 }

@@ -60,15 +60,4 @@ public enum ComplaintType {
 	public String toString() {
 		return this.name;
 	}
-
-	public static ComplaintType fromString(String name) {
-		if (name != null) {
-			for (ComplaintType b : ComplaintType.values()) {
-				if (name.equalsIgnoreCase(b.name)) {
-					return b;
-				}
-			}
-		}
-		return null;
-	}
 }

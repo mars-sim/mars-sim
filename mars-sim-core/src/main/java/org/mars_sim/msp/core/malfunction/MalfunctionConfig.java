@@ -226,10 +226,10 @@ public class MalfunctionConfig implements Serializable {
 						.getChildren(MEDICAL_COMPLAINT);
 
 				for (Element medicalComplaintElement : medicalComplaintNodes) {
-					String complaintName = medicalComplaintElement.getAttributeValue(NAME);
+					String complaintName = medicalComplaintElement.getAttributeValue(NAME).toUpperCase().replace(' ', '_');
 					double complaintProbability = Double.parseDouble(
 							medicalComplaintElement.getAttributeValue(PROBABILITY));
-					medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
+					medicalComplaints.put(ComplaintType.valueOf(complaintName), complaintProbability);
 				}
 			}
 

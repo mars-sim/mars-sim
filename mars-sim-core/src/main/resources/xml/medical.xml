@@ -109,7 +109,7 @@
 
 		<!-- A pulled/muscle is a minor and common medical complaint. -->
 		<!-- It affects performance but does not require medical treatment. -->
-		<medical-complaint name="Pulled Muscle/Tendon">
+		<medical-complaint name="Pull Muscle/Tendon">
 			<seriousness value="1" />
 			<recovery-time value="2.0" />
 			<probability value="3.0" />

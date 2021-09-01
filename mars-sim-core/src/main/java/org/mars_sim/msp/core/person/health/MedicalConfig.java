@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.health;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -161,11 +160,9 @@ public class MedicalConfig implements Serializable {
 		Element medicalComplaintList = root.getChild(MEDICAL_COMPLAINT_LIST);
 		List<Element> medicalComplaints = medicalComplaintList.getChildren(MEDICAL_COMPLAINT);
 		
-		for (Element medicalComplaint : medicalComplaints) {
-			String complaintName = "";
-				
+		for (Element medicalComplaint : medicalComplaints) {				
 			// Get name.
-			complaintName = medicalComplaint.getAttributeValue(NAME);
+			String complaintName = medicalComplaint.getAttributeValue(NAME).toUpperCase().replace(' ', '_');
 			
 			//TODO: Converted all complaint String names to ComplaintType
 			
@@ -217,55 +214,49 @@ public class MedicalConfig implements Serializable {
 			    throw new IllegalStateException("treatment: " + treatmentStr + " could not be found in treatment list");
 
 			// Get the degrade complaint. (optional)
-			String degradeComplaint = "";
+			ComplaintType degradeComplaint = null;
 
 			Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
 
 			if (degradeComplaintElement != null) {
-			    degradeComplaint = degradeComplaintElement.getAttributeValue(VALUE);
+			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
+			    degradeComplaint = getComplaintFromString(degradeComplaintName);
 			}
 
-			Complaint complaint = new Complaint(ComplaintType.fromString(complaintName), seriousness, 
+			Complaint complaint = new Complaint(getComplaintFromString(complaintName), seriousness, 
 			        degradeTime * 1000D, recoveryTime * 1000D, probability, 
-			        treatment, ComplaintType.fromString(degradeComplaint), performance, bedRestRecovery);
+			        treatment, degradeComplaint, performance, bedRestRecovery);
 
-//			System.out.println("ComplaintName is " + complaintName);
-//			System.out.println("ComplaintType is " + ComplaintType.fromString(complaintName).getName());
 			newList2.add(complaint);
 		}
-		
-		// Build the global list in a temp to avoid access before it is built
-		List<Complaint> newList3 = new ArrayList<Complaint>(newList2);
 
 		// Fill in degrade complaint objects based on complaint names.
 		for (Complaint complaint : newList2) {
-			ComplaintType degradeComplaintName = complaint.getNextPhaseStr();
+			ComplaintType degradeComplaint = complaint.getNextPhaseStr();
 			
-			if (degradeComplaintName != null) {//.length() != 0) {
-				Iterator<Complaint> j = newList3.iterator();
-                while (j.hasNext()) {
-                    Complaint degradeComplaint = j.next();
-                    //if (degradeComplaint.getType().equals(degradeComplaintName))
-                    if (degradeComplaint.getType() == degradeComplaintName)
-                    	complaint.setNextComplaint(degradeComplaint);
+			if (degradeComplaint != null) {
+				for (Complaint secondComplaint : newList2) {
+                    if (secondComplaint.getType() == degradeComplaint)
+                    	complaint.setNextComplaint(secondComplaint);
                 }
 				
 				if (complaint.getNextPhase() == null){ 
-					throw new IllegalStateException("Degrade complaint " + degradeComplaintName +
+					throw new IllegalStateException("Degrade complaint " + degradeComplaint +
 						" cannot be found in medical complaint list.");
 				}
 			}
-	
-			// Add complaint to newList2.
-			newList3.add(complaint);
 		}
 		
 		// Assign the newList2 now built
-		complaintList = Collections.unmodifiableList(newList3);
-
+		complaintList = Collections.unmodifiableList(newList2);
 	}
     
-    /**
+    private static ComplaintType getComplaintFromString(String name) {
+		name = name.toUpperCase().replaceAll("\\s|/", "_");
+		return ComplaintType.valueOf(name);
+	}
+
+	/**
      * Prepare the object for garbage collection.
      */
     public void destroy() {
