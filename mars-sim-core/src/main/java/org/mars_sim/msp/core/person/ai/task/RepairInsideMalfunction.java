@@ -38,13 +38,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
  */
-public class RepairMalfunction extends Task implements Repair, Serializable {
+public class RepairInsideMalfunction extends Task implements Repair, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RepairMalfunction.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(RepairInsideMalfunction.class.getName());
 
 	/** Task name */
 	static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
@@ -64,14 +64,12 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	
 	private Malfunction malfunction;
 
-	private MalfunctionRepairWork required;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param person the person to perform the task
 	 */
-	public RepairMalfunction(Person person) {
+	public RepairInsideMalfunction(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D + RandomUtil.getRandomDouble(10D));
 
@@ -87,32 +85,23 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			addPersonOrRobotToMalfunctionLocation(entity);
 			
 			// Get an emergency malfunction.
-			required = MalfunctionRepairWork.EMERGENCY;
-			malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
-			if (malfunction == null) {
-				//	Get a general malfunction.
-				malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
-				required = MalfunctionRepairWork.GENERAL;
-			}
-			
-			if ((malfunction != null) && (malfunction.numRepairerSlotsEmpty(required) > 0)) {
+			malfunction = entity.getMalfunctionManager().getMostSeriousInsideMalfunction();
+			if ((malfunction != null) && (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
 				
-				String chief = malfunction.getChiefRepairer(required);
-				String deputy = malfunction.getDeputyRepairer(required);
+				String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.INSIDE);
+				String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.INSIDE);
 				String myName = person.getName();
 				if (chief == null) {
-					logger.info(person, "Was appointed as the chief repairer handling the " + required.getName()
-							+ " work for '" 
+					logger.info(person, "Was appointed as the chief repairer handling the inside work for '" 
 							+ malfunction.getName() + "' on "
 							+ entity.getNickName());
-					 malfunction.setChiefRepairer(required, myName);						
+					 malfunction.setChiefRepairer(MalfunctionRepairWork.INSIDE, myName);						
 				}
 				else if ((deputy == null) && !chief.equals(myName)) {
-					logger.info(person, "Was appointed as the deputy repairer handling the " + required.getName() 
-							+ " work for '" 
+					logger.info(person, "Was appointed as the deputy repairer handling the inside work for '"
 							+ malfunction.getName() + "' on "
 							+ entity.getNickName());
-					malfunction.setDeputyRepairer(required, myName);
+					malfunction.setDeputyRepairer(MalfunctionRepairWork.INSIDE, myName);
 				}
 				// Initialize phase
 				addPhase(REPAIRING);
@@ -121,7 +110,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				logger.log(person, Level.FINEST, 500, "Was about to repair malfunction.");
 
 				// Add time to reserved a slot
-				malfunction.addWorkTime(required, 0D, person.getName());
+				malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, 0D, person.getName());
 			}
 			else {
 				logger.warning(person, "Can not find a Malfunction to work on for "
@@ -135,7 +124,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		}
 	}
 
-	public RepairMalfunction(Robot robot) {
+	public RepairInsideMalfunction(Robot robot) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D);
 		
@@ -237,7 +226,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		}
 
 		// Add work to malfunction.
-		malfunction.addWorkTime(required, workTime, worker.getName());
+		malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
 
 		// Add experience
 		addExperience(time);
@@ -246,12 +235,11 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getNickName());
 		
 		// Is the whole malfunction completed
-		if (malfunction.isWorkDone(required)) {
-			logger.log(worker, Level.INFO, 1_000, "Wrapped up the " + required.getName()
-						+ " Repair of '"
+		if (malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
+			logger.log(worker, Level.INFO, 1_000, "Wrapped up the inside work for '"
 						+ malfunction.getName()	+ "' in "+ entity
 						+ String.format(WORK_FORMAT,
-								malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)));
+								malfunction.getCompletedWorkTime(MalfunctionRepairWork.INSIDE)));
 			endTask();
 		}
 		
@@ -308,7 +296,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 		// Check if entity needs no EVA and has any normal malfunctions.
 		if ((result == null) && !hasEVA(person, entity)) {
-			Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
+			Iterator<Malfunction> k = manager.getAllInsideMalfunctions().iterator();
 			while (k.hasNext() && (result == null)) {
 				Malfunction malfunction = k.next();
 				try {
@@ -345,11 +333,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
             	continue;
             }
             
-			if (entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null
-					|| entity.getMalfunctionManager().getMostSeriousGeneralMalfunction() != null) { 
-//				!requiresEVA(robot, entity) && 
-//				hasMalfunction(robot, entity)) {
-					result = entity;
+			if (entity.getMalfunctionManager().getMostSeriousInsideMalfunction() != null) {
+				result = entity;
 			}
 		}
 
@@ -556,8 +541,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	@Override
 	protected void clearDown() {
 		// Leaving the repair effort
-		if (malfunction != null && required != null) {
-			malfunction.leaveWork(required, worker.getName());
+		if (malfunction != null) {
+			malfunction.leaveWork(MalfunctionRepairWork.INSIDE, worker.getName());
 		}
 	}
 	

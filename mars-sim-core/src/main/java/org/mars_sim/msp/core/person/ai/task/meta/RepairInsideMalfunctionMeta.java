@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -18,7 +16,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
@@ -30,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RepairMalfunction task.
  */
-public class RepairMalfunctionMeta extends MetaTask {
+public class RepairInsideMalfunctionMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -38,7 +36,7 @@ public class RepairMalfunctionMeta extends MetaTask {
 
 	private static final double WEIGHT = 300D;
 	
-    public RepairMalfunctionMeta() {
+    public RepairInsideMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.STRENGTH);
@@ -47,7 +45,7 @@ public class RepairMalfunctionMeta extends MetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new RepairMalfunction(person);
+        return new RepairInsideMalfunction(person);
     }
 
     @Override
@@ -65,10 +63,10 @@ public class RepairMalfunctionMeta extends MetaTask {
             	result = computeProbability(person.getSettlement(), person);
             else {
             	// Get the malfunctioning entity.
-            	Malfunctionable entity = RepairMalfunction.getMalfunctionEntity(person);
+            	Malfunctionable entity = RepairInsideMalfunction.getMalfunctionEntity(person);
     			
     			if (entity != null) {
-    				Malfunction malfunction = RepairMalfunction.getMalfunction(person, entity);
+    				Malfunction malfunction = RepairInsideMalfunction.getMalfunction(person, entity);
     						
     				if (malfunction == null) {
     						return 0;
@@ -92,10 +90,8 @@ public class RepairMalfunctionMeta extends MetaTask {
 
         double result = 0D;
         // Add probability for all malfunctionable entities in person's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            
+        for (Malfunctionable entity : MalfunctionFactory.getMalfunctionables(settlement)) {
+
             if (unit instanceof Robot && entity instanceof Vehicle) {
             	// Note that currently robot cannot go outside and board a vehicle
             	continue;
@@ -103,28 +99,14 @@ public class RepairMalfunctionMeta extends MetaTask {
             
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (manager.hasMalfunction()) {
-	            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
-	            while (j.hasNext()) {
-	                Malfunction malfunction = j.next();
+	            for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
 	                double initialResult = scoreMalfunction(malfunction);
 	                if ((initialResult > 0) &&
-	                		RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+	                		RepairInsideMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
 	                	initialResult += WEIGHT;
 	                }
 	                
 	                result += initialResult;
-	            }
-	            
-	            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
-	            while (k.hasNext()) {
-	                Malfunction malfunction = k.next();
-	                double initialResult = scoreMalfunction(malfunction);
-	                if ((initialResult > 0) &&
-	                		RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-	                	initialResult += WEIGHT;
-	                }
-	                result += initialResult;
-
 	            }
             }
         }
@@ -136,25 +118,18 @@ public class RepairMalfunctionMeta extends MetaTask {
      * @param malfunction
      * @return
      */
-    private static double scoreMalfunction(Malfunction malfunction) {
-    	boolean available = false;
-    
-    	// Emergency work takes precedence; must be complete first
-        if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
-        	available = (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EMERGENCY) > 0);
-        }
-        else if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL)
-        	&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.GENERAL) > 0)) {
-        	available = true;
-        }
-	
-        return (available ? WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D)
-        				: 0D);
+    private static double scoreMalfunction(Malfunction malfunction) {    
+    	double result = 0D;
+		if (malfunction.isWorkNeeded(MalfunctionRepairWork.INSIDE)
+				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
+	        result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
+		}
+		return result;
     }
     
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new RepairMalfunction(robot);
+        return new RepairInsideMalfunction(robot);
 	}
 
 	@Override
