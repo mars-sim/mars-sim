@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * EmergencySupplyPanel.java
  * @date 2021-09-04
@@ -55,6 +55,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 /**
  * A wizard panel for getting emergency supplies information.
  */
+@SuppressWarnings("serial")
 public class EmergencySupplyPanel extends WizardPanel {
 
 	// Data members.
