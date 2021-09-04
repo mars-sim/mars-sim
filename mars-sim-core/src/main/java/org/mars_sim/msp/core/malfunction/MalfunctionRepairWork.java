@@ -11,10 +11,9 @@ package org.mars_sim.msp.core.malfunction;
  * The different types of repair work required for a Malfunction.
  */
 public enum MalfunctionRepairWork {
-	GENERAL("General"),
-	EMERGENCY("Emergency"),
+	INSIDE("Inside"),
 	EVA("EVA");
-	
+
 	private String name;
 	
 	private MalfunctionRepairWork(String name) {

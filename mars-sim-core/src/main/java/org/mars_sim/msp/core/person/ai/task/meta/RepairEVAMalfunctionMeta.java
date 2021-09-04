@@ -53,12 +53,6 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
         
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)
 			return 0;
-			
-//		boolean returnFromMission = false;
-//		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
-//		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY) {
-//			returnFromMission = true;
-//		}
         		
         if (person.isInVehicle()) {
         	// Get the malfunctioning entity.
@@ -67,11 +61,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 			if (entity != null) {
 				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
 						
-				if ((malfunction == null)
-						|| (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) == 0)) {
-					return 0;
-				}
-				else if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+				if (malfunction != null) {
 					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
 				}
 			}
@@ -127,15 +117,10 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 			// Check if entity has any EVA malfunctions.
-			Iterator<Malfunction> j = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
-			while (j.hasNext()) {
-				double score = 0;
-				Malfunction malfunction = j.next();
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-					score = WEIGHT;
-					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-						score += WEIGHT;
-					}
+			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
+				double score = WEIGHT;
+				if (RepairEVAMalfunction.hasRepairParts(settlement, malfunction)) {
+					score += WEIGHT;
 				}
 				result += score;
 			}

@@ -570,5 +570,4 @@ public class Malfunction implements Serializable {
 	public void destroy() {
 		repairParts = null;
 	}
-
 }

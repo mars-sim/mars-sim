@@ -237,31 +237,7 @@ public class DeathInfo implements Serializable {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-			if (malfunctionMgr.hasEmergencyMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-				if (m != null && m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasEVAMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
-				if (m != null && m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasGeneralMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousGeneralMalfunction();
-				if (m != null && m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasMalfunction()) {
+			if (malfunctionMgr.hasMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
 				if (m != null && m.getSeverity() > severity) { // why java.lang.NullPointerException ?
 					mostSerious = m;
@@ -308,31 +284,7 @@ public class DeathInfo implements Serializable {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-			if (malfunctionMgr.hasEmergencyMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-				if (m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasEVAMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
-				if (m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasGeneralMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousGeneralMalfunction();
-				if (m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-
-			else if (malfunctionMgr.hasMalfunction()) {
+			if (malfunctionMgr.hasMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
 				if (m.getSeverity() > severity) {
 					mostSerious = m;

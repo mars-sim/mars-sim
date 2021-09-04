@@ -12,15 +12,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -29,10 +28,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an
@@ -44,10 +39,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(RepairEVAMalfunction.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
@@ -61,9 +53,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 	/** The malfunction to be repaired. */
 	private Malfunction malfunction;
-
-	/** True if repairing the EVA part of the malfunction. */
-	private boolean isEVAMalfunction;
 
 	/** The container unit the person started the mission in. */
 	private Unit containerUnit;
@@ -89,8 +78,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				malfunction = getMalfunction(person, entity);
 				
 				if (malfunction != null) {
-					isEVAMalfunction = malfunction.isWorkNeeded(MalfunctionRepairWork.EVA);
-		
 					setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
 							entity.getNickName())); // $NON-NLS-1$
 		
@@ -108,17 +95,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.EVA);
 
 					if (chief == null || chief.equals("")) {
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + entity.getLocale() + "] " + person 
-								+ " was appointed as the chief repairer handling the EVA Repair for '" 
+						logger.info(person, "Was appointed as the chief repairer handling the EVA for "
 								+ malfunction.getName() + "' on "
 								+ entity.getNickName() + ".");
 						 malfunction.setChiefRepairer(MalfunctionRepairWork.EVA, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + entity.getLocale() + "] " + person 
-								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
+						logger.info(person, "Was appointed as the deputy repairer handling the EVA for " 
 								+ malfunction.getName() + "' on "
 								+ entity.getNickName() + ".");
 						malfunction.setDeputyRepairer(MalfunctionRepairWork.EVA, person.getName());
@@ -166,76 +149,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			MalfunctionManager manager = entity.getMalfunctionManager();
 
 			// Check if entity has any EVA malfunctions.
-			Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+			Iterator<Malfunction> j = manager.getAllEVAMalfunctions().iterator();
 			while (j.hasNext() && (result == null)) {
 				Malfunction malfunction = j.next();
 				try {
-					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
+					if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
 							malfunction)) {
 						result = entity;
 					}
 				} catch (Exception e) {
-		          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
+		          	logger.severe("Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 				}
 			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Check if a malfunctionable entity requires an EVA to repair.
-	 * 
-	 * @param person the person doing the repair.
-	 * @param entity the entity with a malfunction.
-	 * @return true if entity requires an EVA repair.
-	 */
-	public static boolean hasEVA(Person person, Malfunctionable entity) {
-
-		boolean result = false;
-
-		if (entity instanceof Vehicle) {
-			// Requires EVA repair on outside vehicles that the person isn't inside.
-			Vehicle vehicle = (Vehicle) entity;
-			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
-			boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
-			if (outsideVehicle && personNotInVehicle) {
-				result = true;
-			}
-		} 
-		
-		else if (entity instanceof Building) {
-			// Note: a building always has external structures that need EVA repair
-			result = true;			
-//			// Requires EVA repair on uninhabitable buildings.
-//			Building building = (Building) entity;
-//			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-//				result = true;
-//			}
-		}
-
-		return result;
-	}
-
-	public static boolean hasEVA(Malfunctionable entity) {
-
-		boolean result = false;
-
-		if (entity instanceof Vehicle) {
-			// Requires EVA repair on outside vehicles that the person isn't inside.
-			Vehicle vehicle = (Vehicle) entity;
-			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
-			if (outsideVehicle) {
-				result = true;
-			}
-		} else if (entity instanceof Building) {
-			// Note: a building always has external structures that need EVA repair
-			result = true;			
-//			// Requires EVA repair on uninhabitable buildings.
-//			Building building = (Building) entity;
-//			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-//				result = true;
-//			}
 		}
 
 		return result;
@@ -255,7 +180,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
 		// Check if entity has any EVA malfunctions.
-		Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+		Iterator<Malfunction> j = manager.getAllEVAMalfunctions().iterator();
 		while (j.hasNext() && (result == null)) {
 			Malfunction malfunction = j.next();
 			try {
@@ -267,22 +192,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 			}
 		}
-
-		// Check if entity requires an EVA and has any normal malfunctions.
-		if ((result == null) && hasEVA(person, entity)) {
-			Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
-			while (k.hasNext() && (result == null)) {
-				Malfunction malfunction = k.next();
-				try {
-					if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-						result = malfunction;
-					}
-				} catch (Exception e) {
-		          	logger.log(Level.SEVERE, "Problems calling with RepairMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
-				}
-			}
-		}
-
 		return result;
 	}
 
@@ -303,11 +212,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return hasRepairParts(containerUnit, malfunction);
 	}
 
-	public static boolean hasRepairPartsForMalfunction(Settlement settlement, Malfunction malfunction) {
-
-		return hasRepairParts(settlement, malfunction);
-	}
-
+	/**
+	 * Does a container have the parts required in stock ?
+	 * @param containerUnit
+	 * @param malfunction
+	 * @return
+	 */
 	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
 
 		boolean result = true;
@@ -483,7 +393,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
-		if (isEVAMalfunction && !malfunction.isWorkDone(MalfunctionRepairWork.EVA) ) {
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA) ) {
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 		
@@ -494,11 +404,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		checkForAccident(time);
 
 		// Check if there are no more malfunctions.
-		if (isEVAMalfunction && malfunction.isWorkNeeded(MalfunctionRepairWork.EVA)
-				&& malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " wrapped up the EVA Repair of " + malfunction.getName() 
+		if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+			logger.info(person, "Wrapped up the EVA of " + malfunction.getName() 
 					+ " in "+ entity + " ("
 					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
             if (worker.isOutside()) {

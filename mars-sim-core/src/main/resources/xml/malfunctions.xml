@@ -1,22 +1,19 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE malfunction-list [
 	<!ELEMENT malfunction-list (malfunction*)>
-	<!ELEMENT malfunction (severity, probability, repair-time?, emergency-repair-time?, 
-	eva-repair-time?, system-list, effect-list?, medical-complaint-list?, repair-parts-list?)>
+	<!ELEMENT malfunction (severity, probability, repair-inside?, repair-eva?, 
+	system-list, effect-list?, medical-complaint-list?, repair-parts-list?)>
 	<!ATTLIST malfunction name CDATA #REQUIRED>
 	<!ELEMENT severity EMPTY>
 	<!ATTLIST severity value CDATA #REQUIRED>
 	<!ELEMENT probability EMPTY>
 	<!ATTLIST probability value CDATA #REQUIRED>
-	<!ELEMENT repair-time EMPTY>
-	<!ATTLIST repair-time value CDATA #REQUIRED>
-	<!ATTLIST repair-time repairers CDATA #IMPLIED>
-	<!ELEMENT emergency-repair-time EMPTY>
-	<!ATTLIST emergency-repair-time value CDATA #REQUIRED>
-	<!ATTLIST emergency-repair-time repairers CDATA #IMPLIED>
-	<!ELEMENT eva-repair-time EMPTY>
-	<!ATTLIST eva-repair-time value CDATA #REQUIRED>
-	<!ATTLIST eva-repair-time repairers CDATA #IMPLIED>
+	<!ELEMENT repair-inside EMPTY>
+	<!ATTLIST repair-inside time CDATA #REQUIRED>
+	<!ATTLIST repair-inside repairers CDATA #IMPLIED>
+	<!ELEMENT repair-eva EMPTY>
+	<!ATTLIST repair-eva time CDATA #REQUIRED>
+	<!ATTLIST repair-eva repairers CDATA #IMPLIED>
 	<!ELEMENT system-list (system+)>
 	<!ELEMENT system EMPTY>
 	<!ATTLIST system name CDATA #REQUIRED>
@@ -57,14 +54,8 @@
 		<probability value="5.0" />
 
 		<!-- The average general (non-EVA) repair time. (millisols) (optional) -->
-		<repair-time value="20.0" />
-
-		<!-- The average emergency repair time. (millisols) (optional) -->
-		<emergency-repair-time value="10.0" />
-
-		<!-- The average EVA repair time. (millisols) (optional) -->
-		<eva-repair-time value="0.0" />
-
+		<repair-inside time="30.0" />
+		
 		<!-- Note: each of the expected repair time above will be 
              computed based on a gaussian curve when this malfunction occurs. -->
 		     
@@ -121,8 +112,7 @@
 	<malfunction name="Vehicle Fire">
 		<severity value="60" />
 		<probability value="2.0" />
-		<repair-time value="50.0" />
-		<emergency-repair-time value="10.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="rover" />
 		</system-list>
@@ -150,8 +140,7 @@
 	<malfunction name="Class A Fire">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="10.0" repairers="4"/>
+		<repair-inside time="40.0" repairers="4"/>
 		<system-list>
 			<system name="waste disposal" />		
 			<system name="life support" />
@@ -178,8 +167,7 @@
 	<malfunction name="Class B Fire">
 		<severity value="80" />
 		<probability value="2" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="20.0" repairers="5"/>
+		<repair-inside time="30.0" repairers="5"/>
 		<system-list>
 			<system name="cooking" />		
 			<system name="farming" />
@@ -213,8 +201,7 @@
 	<malfunction name="Class C Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="40.0" repairers="6"/>
+		<repair-inside time="40.0" repairers="6"/>
 		<system-list>
 			<system name="power generation" />		
 			<system name="power storage" />	
@@ -246,8 +233,7 @@
 	<malfunction name="Class D Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="40.0" repairers="6"/>
+		<repair-inside time="30.0" repairers="6"/>
 		<system-list>
 			<system name="research" />		
 			<system name="storage" />
@@ -282,8 +268,7 @@
 	<malfunction name="Class K Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="40.0" />
+		<repair-inside time="40.0"/>
 		<system-list>
 			<system name="cooking" />		
 			<system name="food production" />
@@ -317,7 +302,7 @@
 	<malfunction name="Rover Damaged Wheel">
 		<severity value="65" />
 		<probability value="5.0" />
-		<eva-repair-time value="50.0" />
+		<repair-eva time="50.0" />
 		<system-list>
 			<system name="rover" />
 		</system-list>
@@ -335,7 +320,7 @@
 	<malfunction name="LUV Damaged Wheel">
 		<severity value="65" />
 		<probability value="5.0" />
-		<eva-repair-time value="50.0" />
+		<repair-eva time="50.0" />
 		<system-list>
 			<system name="light utility vehicle" />
 		</system-list>
@@ -353,8 +338,7 @@
 	<malfunction name="Fuel Leak">
 		<severity value="50" />
 		<probability value="3.0" />
-		<emergency-repair-time value="100.0" />
-		<eva-repair-time value="50.0" />
+		<repair-eva time="60.0" />
 		<system-list>
 			<system name="vehicle" />
 			<system name="fuel heating source" />
@@ -378,8 +362,7 @@
 	<malfunction name="Generator Problems">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="50.0" />
-		<emergency-repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="vehicle" />
 			<system name="power generation" />
@@ -405,7 +388,7 @@
 	<malfunction name="Vehicle Power Failure">
 		<severity value="40" />
 		<probability value="2.0" />
-		<repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="vehicle" />
 		</system-list>
@@ -427,7 +410,7 @@
 	<malfunction name="Power System Failure">
 		<severity value="40" />
 		<probability value="3.0" />
-		<repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="power storage" />
 			<system name="power generation" />
@@ -450,7 +433,7 @@
 	<malfunction name="EVA Power Failure">
 		<severity value="40" />
 		<probability value="3.0" />
-		<repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="EVA Suit" />
 		</system-list>
@@ -470,8 +453,8 @@
 	<malfunction name="Communication System Failure">
 		<severity value="35" />
 		<probability value="5.0" />
-		<repair-time value="50.0" />
-		<eva-repair-time value="50.0" />
+		<repair-inside time="50.0" />
+		<repair-eva time="50.0" />
 		<system-list>
 			<system name="vehicle" />
 			<system name="robot" />				
@@ -494,8 +477,8 @@
 	<malfunction name="Navigation System Failure">
 		<severity value="15" />
 		<probability value="2.0" />
-		<repair-time value="50.0" />
-		<eva-repair-time value="20.0" />
+		<repair-inside time="50.0" />
+		<repair-eva time="20.0" />
 		<system-list>
 			<system name="rover" />
 		</system-list>
@@ -513,7 +496,7 @@
 	<malfunction name="Rover Control Malfunction">
 		<severity value="35" />
 		<probability value="2.0" />
-		<repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="rover" />
 		</system-list>
@@ -531,7 +514,7 @@
 	<malfunction name="LUV Control Malfunction">
 		<severity value="35" />
 		<probability value="2.0" />
-		<repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="light utility vehicle" />
 		</system-list>
@@ -549,7 +532,7 @@
 	<malfunction name="Water Leak">
 		<severity value="50" />
 		<probability value="3.0" />
-		<emergency-repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="rover" />
 			<system name="living accommodations" />
@@ -576,8 +559,7 @@
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
 		<probability value="3.0" />
-		<repair-time value="20.0" />
-		<emergency-repair-time value="20.0" />
+		<repair-inside time="30.0" />
 		<system-list>
 			<system name="EVA suit" />
 		</system-list>
@@ -597,8 +579,7 @@
 	<malfunction name="Water Contamination">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="living accommodations" />
 			<system name="farming" />
@@ -629,8 +610,7 @@
 	<malfunction name="Food Contamination">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="cooking" />
 			<system name="rover" />
@@ -657,8 +637,7 @@
 	<malfunction name="Chemical Spill">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="farming" />
 			<system name="manufacture" />
@@ -684,8 +663,7 @@
 	<malfunction name="Suit Tear">
 		<severity value="70" />
 		<probability value="2.0" />
-		<repair-time value="5.0" />
-		<emergency-repair-time value="5.0" />
+		<repair-inside time="5.0" />
 		<system-list>
 			<system name="EVA suit" />
 		</system-list>
@@ -704,7 +682,7 @@
 	<malfunction name="EVA Radio Failure">
 		<severity value="5" />
 		<probability value="5.0" />
-		<repair-time value="5.0" />
+		<repair-inside time="5.0" />
 		<system-list>
 			<system name="EVA suit" />
 		</system-list>
@@ -721,7 +699,7 @@
 	<malfunction name="Electrical Short">
 		<severity value="10" />
 		<probability value="1.0" />
-		<repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="robot" />			
 			<system name="rover" />
@@ -745,8 +723,7 @@
 	<malfunction name="Motor Failure">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="50.0" />
-		<emergency-repair-time value="50.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="robot" />		
 			<system name="rover" />		
@@ -765,8 +742,7 @@
 	<malfunction name="Fuel Pump Failure">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="100.0" />
 		<system-list>
 			<system name="rover" /> 
 			<system name="fuel power source" /> 			
@@ -785,8 +761,7 @@
 	<malfunction name="Water Pump Failure">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />	
+		<repair-inside time="80.0" />
 		<system-list>
 			<system name="living accommodations" />
 			<system name="farming" />
@@ -804,8 +779,7 @@
 	<malfunction name="Carbon Dioxide Pump Failure">
 		<severity value="15" />
 		<probability value="2.0" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
+		<repair-inside time="80.0" />
 		<system-list>
 			<system name="living accommodations" />
 			<system name="farming" />		
@@ -822,8 +796,7 @@
 	<malfunction name="Kitchen Oven Failure">
 		<severity value="35" />
 		<probability value=".5" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
+		<repair-inside time="80.0" />
 		<system-list>
 			<system name="cooking" />
 		</system-list>
@@ -839,8 +812,7 @@
 	<malfunction name="Ventilation Fan Failure">
 		<severity value="40" />
 		<probability value=".5" />
-		<repair-time value="40.0" />
-		<emergency-repair-time value="20.0" />
+		<repair-inside time="40.0" />
 		<system-list>
 			<system name="cooking" />
 			<system name="life support" />			
@@ -859,8 +831,7 @@
 	<malfunction name="Kitchen Stove Failure">
 		<severity value="40" />
 		<probability value=".5" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
+		<repair-inside time="80.0" />
 		<system-list>
 			<system name="cooking" />
 		</system-list>
@@ -877,8 +848,7 @@
 	<malfunction name="Kitchen Autoclave Failure">
 		<severity value="40" />
 		<probability value=".5" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
+		<repair-inside time="80.0" />
 		<system-list>
 			<system name="cooking" />
 		</system-list>
@@ -900,8 +870,7 @@
 	<malfunction name="Kitchen Refrigerator Failure">
 		<severity value="45" />
 		<probability value=".5" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="200.0" />
 		<system-list>
 			<system name="cooking" />
 		</system-list>
@@ -921,8 +890,7 @@
 	<malfunction name="Kitchen Microwave Failure">
 		<severity value="40" />
 		<probability value="1.0" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="200.0" />
 		<system-list>
 			<system name="cooking" />
 		</system-list>
@@ -942,8 +910,7 @@
 	<malfunction name="Solar Parabolic Mirror Failure">
 		<severity value="30" />
 		<probability value="1.0" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100.0" />
+		<repair-inside time="200.0" />
 		<system-list>
 			<system name="solar heating source" />
 		</system-list>
@@ -960,8 +927,7 @@
 	<malfunction name="LED Lighting Kit Failure">
 		<severity value="10" />
 		<probability value="1.0" />
-		<repair-time value="50.0" />
-		<emergency-repair-time value="25.0" />
+		<repair-inside time="50.0" />
 		<system-list>
 			<system name="cooking" />
 			<system name="farming" />
@@ -983,8 +949,7 @@
 	<malfunction name="Mushroom Containment Kit Failure">
 		<severity value="30" />
 		<probability value="1.0" />
-		<repair-time value="20.0" />
-		<emergency-repair-time value="10" />
+		<repair-inside time="20.0" />
 		<system-list>
 			<system name="farming" />
 		</system-list>
@@ -1009,8 +974,7 @@
 	<malfunction name="Laser Sintering 3D Printer Failure">
 		<severity value="50" />
 		<probability value="3.0" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100" />
+		<repair-inside time="200.0" />
 		<system-list>
 			<system name="manufacture" />
 		</system-list>
@@ -1038,8 +1002,7 @@
 	<malfunction name="Fuel Cell Stack Failure">
 		<severity value="30" />
 		<probability value="1.0" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100" />
+		<repair-inside time="200.0" />
 		<system-list>
 			<system name="rover" />
 			<system name="fuel power source" />
@@ -1068,8 +1031,8 @@
 	<malfunction name="Meteorite Impact Damage">
 		<severity value="70" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
-		<emergency-repair-time value="100.0" />
-		<eva-repair-time value="100.0" />
+		<repair-inside time="200.0" />
+		<repair-eva time="100.0" />
 		<system-list>
 			<system name="Building" />		
 		</system-list>
