@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SpecimenContainer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.resource.PhaseType;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 

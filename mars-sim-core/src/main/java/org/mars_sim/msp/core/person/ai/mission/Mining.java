@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Mining.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 
@@ -18,8 +18,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.logging.SimLogger;

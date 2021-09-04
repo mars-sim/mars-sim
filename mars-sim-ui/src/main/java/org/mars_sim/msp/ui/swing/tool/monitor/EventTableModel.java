@@ -96,6 +96,8 @@ public class EventTableModel extends AbstractTableModel
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 
+	private String header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
+	
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
 
@@ -363,12 +365,7 @@ public class EventTableModel extends AbstractTableModel
 	}
 
 	public synchronized void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
-//		if (desktop.getMainScene() != null) {
-//			eventAdded(index, se);
-//		}
-//		else {
-			eventAdded(index, he);
-//		}
+		eventAdded(index, he);
 	}
 	
 	/**
@@ -378,222 +375,209 @@ public class EventTableModel extends AbstractTableModel
 	 */
 	public synchronized void eventAdded(int index, SimpleEvent event) {
 
-//		if (mainSceneMenu == null) {
-//			try {
-//				mainSceneMenu = desktop.getMainScene().getMainSceneMenu();
-//			} catch (NullPointerException e) {
-//			}
-//
-//		} 
-//		if (mainSceneMenu != null) {
+		updateCachedEvents();
 
-			updateCachedEvents();
+		if (!noFiring && index == 0 && event != null) {
 
-			if (!noFiring && index == 0 && event != null) {
+			// reset willNotify to false
+			boolean willNotify = false;
+			int type = -1;
 
-				// reset willNotify to false
-				boolean willNotify = false;
-				int type = -1;
+			String header = null;
+			String message = null;
+			String cause = eventManager.getWhat(event.getWhat());
+			String during = (eventManager.getWhileDoing(event.getWhileDoing()));
+			String who = eventManager.getWho(event.getWho());
+			String location0 = eventManager.getLoc0(event.getLoc0());
+			String location1 = eventManager.getLoc1(event.getLoc1());
+			
+			HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
+			EventType eventType = EventType.int2enum(event.getType());
+			
+			if (category == HistoricalEventCategory.MALFUNCTION) {
 
-				String header = null;
-				String message = null;
-				String cause = eventManager.getWhat(event.getWhat());
-				String during = (eventManager.getWhileDoing(event.getWhileDoing()));
-				String who = eventManager.getWho(event.getWho());
-				String location0 = eventManager.getLoc0(event.getLoc0());
-				String location1 = eventManager.getLoc1(event.getLoc1());
+				during = during.toLowerCase();
 				
-				HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
-				EventType eventType = EventType.int2enum(event.getType());
+				if (during.equals("n/a"))
+					during = "while ";
+				else
+					during = "while " + during;
 				
-				if (category == HistoricalEventCategory.MALFUNCTION) {
+				header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
-					during = during.toLowerCase();
-					
-					if (during.equals("n/a"))
-						during = "while ";
-					else
-						during = "while " + during;
-					
-					header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
-
-					// Only display notification window when malfunction has occurred, not when
-					// fixed.
-					if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
-						during.replace("do ", "doing ");
-						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " reported the malfunction " + during + ".";
-						willNotify = true;
-					}
-
-					else if (eventType == EventType.MALFUNCTION_PROGRAMMING_ERROR) {
-						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " may have caused the malfunction due to software quality control issues " + during + ".";
-						willNotify = true;
-					}
-					
-					else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
-						message = who + " reported " + cause + " in " + location0 + " at " + location1 + ".";
-						willNotify = true;
-					}
-
-					else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
-						if (who.toLowerCase().equals("none"))
-							message = "No one witnessed " + cause + " in " + location0 + " at "
-									+ location1+ ".";
-						else
-							message = who + " got traumatized by " + cause + during 
-								+ " in " + location0 + " at " + location1+ ".";
-						willNotify = true;
-					}
-
-					type = 0;
-
+				// Only display notification window when malfunction has occurred, not when
+				// fixed.
+				if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
+					during.replace("do ", "doing ");
+					message = cause + " in " + location0 + " at " + location1 + ". " + who
+							+ " reported the malfunction " + during + ".";
+					willNotify = true;
 				}
 
-				else if (category == HistoricalEventCategory.MEDICAL) {
+				else if (eventType == EventType.MALFUNCTION_PROGRAMMING_ERROR) {
+					message = cause + " in " + location0 + " at " + location1 + ". " + who
+							+ " may have caused the malfunction due to software quality control issues " + during + ".";
+					willNotify = true;
+				}
+				
+				else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
+					message = who + " reported " + cause + " in " + location0 + " at " + location1 + ".";
+					willNotify = true;
+				}
 
-					cause = cause.toLowerCase();
-					during = during.toLowerCase();
+				else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
+					if (who.toLowerCase().equals("none"))
+						message = "No one witnessed " + cause + " in " + location0 + " at "
+								+ location1+ ".";
+					else
+						message = who + " got traumatized by " + cause + during 
+							+ " in " + location0 + " at " + location1+ ".";
+					willNotify = true;
+				}
 
-					header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
+				type = 0;
+			}
 
-					if (eventType == EventType.MEDICAL_STARTS) {
+			else if (category == HistoricalEventCategory.MEDICAL) {
 
-						String phrase = "";
-						
-						if (cause.equalsIgnoreCase("starvation"))
-							phrase = " is starving";
-						else if (cause.equalsIgnoreCase("cold"))
-							phrase = " caught a cold";
-						else if (cause.equalsIgnoreCase("flu"))
-							phrase = " caught the flu";
-						else if (cause.equalsIgnoreCase("fever"))
-							phrase = " has a fever";
-						else if (cause.equalsIgnoreCase("decompression"))
-							phrase = " is suffering from decompression";
-						else if (cause.equalsIgnoreCase("dehydration"))
-							phrase = " is suffering from dehydration";
-						else if (cause.equalsIgnoreCase("freezing"))
-							phrase = " is freezing";
-						else if (cause.equalsIgnoreCase("heat stroke"))
-							phrase = " is suffering from a heat stroke";
-						else if (cause.equalsIgnoreCase("suffocation"))
-							phrase = " is suffocating";
-						else if (cause.equalsIgnoreCase("laceration"))
-							phrase = " suffered laceration";
-						else if (cause.equalsIgnoreCase("pulled muscle/tendon"))
-							phrase = " had a pulled muscle";
-						else
-							phrase = " is complaining about the " + cause;//" is suffering from ";
-						
-						willNotify = true;
-						
-						if (!during.equals("sleeping"))
-							during = "falling asleep";
-						if (!location0.equals("outside on Mars"))
-							location0 = " in " + location0;
-						message = who + phrase + " while " + during + location0 + " at " + location1;
+				cause = cause.toLowerCase();
+				during = during.toLowerCase();
 
-					} else if (eventType == EventType.MEDICAL_DEATH) {
+				header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
 
-						willNotify = true;
-						if (!location0.equals("outside on Mars"))
-							location0 = " in " + location0;
-						message = who + " died from " + cause + location0 + " at " + location1;
-						
-					} else if (eventType == EventType.MEDICAL_TREATED) {
+				if (eventType == EventType.MEDICAL_STARTS) {
 
-						willNotify = true;
-						if (!location0.equals("outside on Mars"))
-							location0 = " in " + location0;
-						message = who + " was being treated for " + cause + location0 + " at " + location1;
-						
+					String phrase = "";
+					
+					if (cause.equalsIgnoreCase("starvation"))
+						phrase = " is starving";
+					else if (cause.equalsIgnoreCase("cold"))
+						phrase = " caught a cold";
+					else if (cause.equalsIgnoreCase("flu"))
+						phrase = " caught the flu";
+					else if (cause.equalsIgnoreCase("fever"))
+						phrase = " has a fever";
+					else if (cause.equalsIgnoreCase("decompression"))
+						phrase = " is suffering from decompression";
+					else if (cause.equalsIgnoreCase("dehydration"))
+						phrase = " is suffering from dehydration";
+					else if (cause.equalsIgnoreCase("freezing"))
+						phrase = " is freezing";
+					else if (cause.equalsIgnoreCase("heat stroke"))
+						phrase = " is suffering from a heat stroke";
+					else if (cause.equalsIgnoreCase("suffocation"))
+						phrase = " is suffocating";
+					else if (cause.equalsIgnoreCase("laceration"))
+						phrase = " suffered laceration";
+					else if (cause.equalsIgnoreCase("pulled muscle/tendon"))
+						phrase = " had a pulled muscle";
+					else
+						phrase = " is complaining about the " + cause;//" is suffering from ";
+					
+					willNotify = true;
+					
+					if (!during.equals("sleeping"))
+						during = "falling asleep";
+					if (!location0.equals("outside on Mars"))
+						location0 = " in " + location0;
+					message = who + phrase + " while " + during + location0 + " at " + location1;
+
+				} else if (eventType == EventType.MEDICAL_DEATH) {
+
+					willNotify = true;
+					if (!location0.equals("outside on Mars"))
+						location0 = " in " + location0;
+					message = who + " died from " + cause + location0 + " at " + location1;
+					
+				} else if (eventType == EventType.MEDICAL_TREATED) {
+
+					willNotify = true;
+					if (!location0.equals("outside on Mars"))
+						location0 = " in " + location0;
+					message = who + " was being treated for " + cause + location0 + " at " + location1;
+					
 //					} else if (eventType == EventType.MEDICAL_CURED) {
 //
 //						willNotify = true;
 //						message = who + " was cured from " + cause + " in " + location0 + " at " + location1;
-					}
-
-					type = 1;
-
 				}
 
-				else if (category == HistoricalEventCategory.MISSION) {
+				type = 1;
 
-					header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
-
-					// Only display notification window when malfunction has occurred, not when
-					// fixed.
-				
-					if (eventType == EventType.MISSION_RESCUE_PERSON
-							|| eventType == EventType.MISSION_SALVAGE_VEHICLE
-							|| eventType == EventType.MISSION_RENDEZVOUS) {
-						message = who + " is " + during
-							+ " from " + location0 + " at " + location1;
-						willNotify = true;
-					}
-					else if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-							|| eventType == EventType.MISSION_EMERGENCY_BEACON_OFF
-							|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
-//							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
-							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY) {
-						message = who + " has " + Conversion.setFirstWordLowercase(cause) 
-							+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
-						willNotify = true;
-					}
-
-					type = 2;
-			
-				}
-
-				else if (category == HistoricalEventCategory.HAZARD) {
-
-					if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
-						
-						header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
-
-						if (who.toLowerCase().equals("none"))
-							message = "There is a " + eventType.getName() + " in " + location0 + " at " + location1
-									+ ". Fortunately, no one was hurt.";
-						else
-							message = who + " was rattled by the " + eventType.getName() + " while " 
-									+ Conversion.setFirstWordLowercase(during) + " in " + location0
-									+ " at " + location1;
-						willNotify = true;
-					}
-
-					else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
-						
-						header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$
-						willNotify = true;
-						message = who + " was exposed to " + cause.replace("Dose", "dose") 
-								+ " radiation while " + during + " in "
-								+ location0 + " at " + location1;
-					}
-
-					type = 3;
-
-				}
-
-				if (willNotify) {
-					if (!messageCache.contains(message)) {
-						messageCache.add(0, message);
-						if (messageCache.size() > MSG_CACHE)
-							messageCache.remove(messageCache.size() - 1);
-					}
-					else 
-						willNotify = false;
-				}
-				
-			
-				// Use controlsfx's notification window for javaFX UI
-				if (willNotify);
-				
-//					Platform.runLater(new NotifyFXLauncher(header, message, type));
 			}
-//		}
 
+			else if (category == HistoricalEventCategory.MISSION) {
+
+				header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
+
+				// Only display notification window when malfunction has occurred, not when
+				// fixed.
+			
+				if (eventType == EventType.MISSION_RESCUE_PERSON
+						|| eventType == EventType.MISSION_SALVAGE_VEHICLE
+						|| eventType == EventType.MISSION_RENDEZVOUS) {
+					message = who + " is " + during
+						+ " from " + location0 + " at " + location1;
+					willNotify = true;
+				}
+				else if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
+						|| eventType == EventType.MISSION_EMERGENCY_BEACON_OFF
+						|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
+//							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
+						|| eventType == EventType.MISSION_MEDICAL_EMERGENCY) {
+					message = who + " has " + Conversion.setFirstWordLowercase(cause) 
+						+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
+					willNotify = true;
+				}
+
+				type = 2;
+		
+			}
+
+			else if (category == HistoricalEventCategory.HAZARD) {
+
+				if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
+					
+					header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
+
+					if (who.toLowerCase().equals("none"))
+						message = "There is a " + eventType.getName() + " in " + location0 + " at " + location1
+								+ ". Fortunately, no one was hurt.";
+					else
+						message = who + " was rattled by the " + eventType.getName() + " while " 
+								+ Conversion.setFirstWordLowercase(during) + " in " + location0
+								+ " at " + location1;
+					willNotify = true;
+				}
+
+				else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
+					
+					header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$
+					willNotify = true;
+					message = who + " was exposed to " + cause.replace("Dose", "dose") 
+							+ " radiation while " + during + " in "
+							+ location0 + " at " + location1;
+				}
+
+				type = 3;
+
+			}
+
+			if (willNotify) {
+				if (!messageCache.contains(message)) {
+					messageCache.add(0, message);
+					if (messageCache.size() > MSG_CACHE)
+						messageCache.remove(messageCache.size() - 1);
+				}
+				else 
+					willNotify = false;
+			}
+			
+		
+			// Use controlsfx's notification window for javaFX UI
+			if (willNotify);
+//					Platform.runLater(new NotifyFXLauncher(header, message, type));
+		}
 	}
 
 	/**

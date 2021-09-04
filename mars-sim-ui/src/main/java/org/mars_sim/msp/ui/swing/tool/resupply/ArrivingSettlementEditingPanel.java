@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ArrivingSettlementEditingPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -51,7 +51,6 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -63,12 +62,8 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 /**
  * A panel for creating or editing an arriving settlement.
  */
+@SuppressWarnings("serial")
 public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
 	// Data members
 	private String errorString = new String();

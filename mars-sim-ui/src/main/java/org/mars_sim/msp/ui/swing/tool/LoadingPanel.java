@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LoadingPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Manny Kung
  */
 
@@ -18,6 +18,7 @@ public class LoadingPanel {
 	static final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 	JFrame frame = new JFrame("JLayer With Animated Gif");
 
+	@SuppressWarnings("serial")
 	public LoadingPanel() {
 		JPanel panel = new JPanel() {
 

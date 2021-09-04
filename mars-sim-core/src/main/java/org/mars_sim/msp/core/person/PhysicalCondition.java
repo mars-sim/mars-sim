@@ -1008,7 +1008,7 @@ public class PhysicalCondition implements Serializable {
 			if (hasComplaint(complaint)) {
 
 				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
-						|| ct == ComplaintType.PULL_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
+						|| ct == ComplaintType.PULLED_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
 					if (person.getTaskDescription().toLowerCase().contains("assist")
 							|| person.getTaskDescription().toLowerCase().contains("compil")
 							|| person.getTaskDescription().toLowerCase().contains("peer")
@@ -1065,7 +1065,7 @@ public class PhysicalCondition implements Serializable {
 						if (tendency > 2)
 							tendency = 2;
 
-						if (ct == ComplaintType.PULL_MUSCLE_TENDON 
+						if (ct == ComplaintType.PULLED_MUSCLE_TENDON 
 								|| ct == ComplaintType.BROKEN_BONE) {
 							// Note: at the time of workout, pulled muscle can happen
 							// Note: how to make a person less prone to pulled muscle while doing other tasks
@@ -1188,7 +1188,7 @@ public class PhysicalCondition implements Serializable {
 				phrase = "Suffocating.";
 			else if (type == ComplaintType.LACERATION)
 				phrase = "Had a laceration.";
-			else if (type == ComplaintType.PULL_MUSCLE_TENDON)
+			else if (type == ComplaintType.PULLED_MUSCLE_TENDON)
 				phrase = "Pulled a muscle.";
 			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 				phrase = "Collapsed under high fatigue.";

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @date 2021-08-20
+ * @date 2021-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.logging.DiagnosticsManager;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;

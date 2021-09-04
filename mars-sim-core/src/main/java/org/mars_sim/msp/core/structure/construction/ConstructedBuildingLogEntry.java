@@ -15,7 +15,9 @@ import java.io.Serializable;
  */
 public class ConstructedBuildingLogEntry implements Serializable {
 
-    // Data members.
+	private static final long serialVersionUID = 1L;
+	
+	// Data members.
     private String buildingName;
     private MarsClock builtTime;
     

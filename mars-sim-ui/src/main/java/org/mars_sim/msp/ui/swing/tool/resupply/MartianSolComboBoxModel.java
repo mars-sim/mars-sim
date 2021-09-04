@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MartianSolComboBoxModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.time.MarsClockFormat;
 /**
  * A combo box model for Martian sols.
  */
+@SuppressWarnings("serial")
 public class MartianSolComboBoxModel
 extends DefaultComboBoxModel<Integer> {
 
