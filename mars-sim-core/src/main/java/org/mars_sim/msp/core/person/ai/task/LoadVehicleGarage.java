@@ -1143,6 +1143,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					
 					if (resource == ResourceUtil.oxygenID
 							|| resource == ResourceUtil.waterID
+							|| resource == ResourceUtil.methaneID
 							|| resource == ResourceUtil.foodID
 							|| PreparingDessert.isADessert(resource)
 							) {
@@ -1226,6 +1227,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					
 					if (resource == ResourceUtil.oxygenID
 							|| resource == ResourceUtil.waterID
+							|| resource == ResourceUtil.methaneID							
 							|| resource == ResourceUtil.foodID
 							|| PreparingDessert.isADessert(resource)
 							) {
@@ -1267,7 +1269,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								+ "  required: " + Math.round(req*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
-						// For now, if settlement doesn't have enough, 
+						// For now, if settlement doesn't have enough, let go of loading
 						sufficientSupplies = true;
 					}
 					

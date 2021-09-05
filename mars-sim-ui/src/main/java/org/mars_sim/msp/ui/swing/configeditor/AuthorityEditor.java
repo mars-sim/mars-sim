@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AuthorityEditor.java
- * @version 3.2.2 2021-08-27
+ * @date 2021-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.configeditor;

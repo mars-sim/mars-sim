@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * MissionAgendaFactory.java
- * @version 3.2.0 2021-06-21
+ * ReportingAuthorityFactory.java
+ * @date 2021-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.reportingAuthority;

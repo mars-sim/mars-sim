@@ -213,12 +213,12 @@ public class SimulationConfigEditor {
 						settlementInfoList.get(0).name = candidateNames.get(0);
 					}
 					logger.config( 
-							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
+							"The 1st settlement's sponsor be matched to the commander's sponsor.");
 				}
 				
 				else {
 					logger.config( 
-							"The commander's sponsor will sponsor one of the settlements in the site editor.");
+							"The commander's sponsor will match one of the settlements' sponsor in the site editor.");
 				}
 			}
 				

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Scott Davis
  */
 
@@ -93,16 +93,7 @@ public final class ManufactureUtil {
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
 		return getAllManufactureProcesses().stream()
 				.filter(s -> s.getTechLevelRequired() <= techLevel)
-    	        .collect(Collectors.toList());		
-//		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-//		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
-//		while (i.hasNext()) {
-//			ManufactureProcessInfo process = i.next();
-//			if (process.getTechLevelRequired() <= techLevel)
-//				result.add(process);
-//		}
-//
-//		return result;
+    	        .collect(Collectors.toList());
 	}
 
 	/**
@@ -156,15 +147,6 @@ public final class ManufactureUtil {
 		return getAllManufactureProcesses().stream()
 				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
-//		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-//		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
-//		while (i.hasNext()) {
-//			ManufactureProcessInfo process = i.next(); //java.util.ConcurrentModificationException
-//			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
-//				result.add(process);
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -180,15 +162,6 @@ public final class ManufactureUtil {
 		return manufactureConfig.getSalvageList().stream()
 				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
     	        .collect(Collectors.toList());
-//		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
-//		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList().iterator();
-//		while (i.hasNext()) {
-//			SalvageProcessInfo process = i.next();
-//			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
-//				result.add(process);
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -202,16 +175,6 @@ public final class ManufactureUtil {
 		return manufactureConfig.getSalvageList().stream()
 				.filter(s -> s.getTechLevelRequired() <= techLevel)
     	        .collect(Collectors.toList());
-//		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
-//		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
-//				.iterator();
-//		while (i.hasNext()) {
-//			SalvageProcessInfo process = i.next();
-//			if (process.getTechLevelRequired() <= techLevel)
-//				result.add(process);
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -235,7 +198,6 @@ public final class ManufactureUtil {
 			outputsValue += getManufactureProcessItemValue(j.next(), settlement, true);
 
 		// Subtract power value.
-//		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
