@@ -1607,6 +1607,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			double amountLoading, Integer resource, boolean required) {
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = vehicle.getSettlement().getInventory();
+		String resourceName = ResourceUtil.findAmountResourceName(resource);
 		
 		double amountNeededTotal = 0D;
 		if (required) {
@@ -1634,7 +1635,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (required) {
 					canLoad = false;
 					loadingErrorMsg = "Not enough available for loading " 
-							+ ResourceUtil.findAmountResourceName(resource)
+							+ resourceName
 							+ Math.round(amountNeeded * 100D) / 100D 
 							+ " kg. Settlement has "
 							+ Math.round(settlementStored * 100D) / 100D
@@ -1666,7 +1667,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						if (remainingCapacity <= SMALL_AMOUNT_COMPARISON) {
 							logger.warning(vehicle, "Not enough capacity for loading " 
 									+ Math.round(amountNeeded * 100D) / 100D + " kg "
-									+ ResourceUtil.findAmountResourceName(resource) 
+									+ resourceName
 									+ ". Vehicle remaining cap: "
 									+ Math.round(remainingCapacity * 100D) / 100D + " kg.");
 						}
@@ -1685,20 +1686,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								
 								logger.warning(vehicle,	"Allow loading only " 
 										+ Math.round(remainingCapacity * 100D) / 100D + " kg "
-										+ ResourceUtil.findAmountResourceName(resource) 
+										+ resourceName
 										+ ".");
 
 								// Load resource from settlement inventory to vehicle inventory.
 								try {
 									// Take resource from the settlement
 									sInv.retrieveAmountResource(resource, excess1);
-									// Store resource to the vehicle
+									// Store resource in the vehicle
 									vInv.storeAmountResource(resource, excess1, false);
 									// Track amount demand
 									sInv.addAmountDemand(resource, excess1);
 									
 								} catch (Exception e) {
-									logger.severe(vehicle, "Cannot load from settlement to vehicle: ", e);
+									logger.severe(vehicle, "A. Cannot transfer from settlement to vehicle: ", e);
 								}						
 							}
 						}
@@ -1719,12 +1720,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (canLoad) {
 				// Load resource from settlement inventory to vehicle inventory.
 				try {
+					// Take resource from the settlement
 					sInv.retrieveAmountResource(resource, resourceAmount);
+					// Store resource in the vehicle
 					vInv.storeAmountResource(resource, resourceAmount, false);
-					
+					// Track amount demand
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
-					logger.severe(vehicle, "Cannot load from settlement to vehicle: ", e);
+					logger.severe(vehicle, "B. Cannot transfer from settlement to vehicle: ", e);
 				}
 				amountLoading -= resourceAmount;
 			}
@@ -1748,12 +1751,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				if (amountToRemove > SMALL_AMOUNT_COMPARISON) {
 					try {
+						// Take resource from the vehicle
 						vInv.retrieveAmountResource(resource, amountToRemove);
+						// Store resource in the settlement
 						sInv.storeAmountResource(resource, amountToRemove, true);
 
 					} catch (Exception e) {
-						logger.warning(vehicle, "Failed to return the excessive " 
-								+ ResourceUtil.findAmountResourceName(resource) + ".");
+						logger.warning(vehicle, "Failed to return " 
+								+ amountToRemove + " kg "
+								+ resourceName + ".");
 					}
 				}
 			}

@@ -393,9 +393,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Temporarily remove rover from settlement so that inventory doesn't get mixed
 			// in.
 			Inventory sInv = settlement.getInventory();
-			boolean roverInSettlement = false;
+			boolean vehicleInSettlement = false;
 			if (sInv.containsUnit(vehicle)) {
-				roverInSettlement = true;
+				vehicleInSettlement = true;
 				sInv.retrieveUnit(vehicle);
 			}
 			else { // if the rover is no longer in the settlement, end the task
@@ -409,17 +409,17 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 			
 			// Load resources
-//			try {
+			try {
 				if (amountLoading > 0D) {
 					amountLoading = vehicleMission.loadResources(amountLoading, 
 							requiredResources, optionalResources);
 				}
-//			} catch (Exception e) {
-//				logger.severe(vehicle, "Error in loading resources: " + e.getMessage());
-//			}
+			} catch (Exception e) {
+				logger.severe(person, 20_000L, "Troubles loading resources: ", e);
+			}
 	
 			// Put rover back into settlement.
-			if (roverInSettlement) {
+			if (vehicleInSettlement) {
 				sInv.storeUnit(vehicle);
 			}
 	

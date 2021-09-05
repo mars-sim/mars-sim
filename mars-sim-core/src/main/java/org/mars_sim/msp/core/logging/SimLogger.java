@@ -427,6 +427,17 @@ public class SimLogger {
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
+	 * @param e
+	 */
+	public void severe(Loggable actor, long timeBetweenLogs, String string, Exception e) {
+		log(null, actor, Level.SEVERE, timeBetweenLogs, string, e);
+	}
+	
+	/**
+	 * Helper method just to log a severe message.
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
 	 */
 	public void severe(Loggable actor, long timeBetweenLogs, String string) {
 		log(null, actor, Level.SEVERE, timeBetweenLogs, string, null);
