@@ -213,13 +213,13 @@ implements Serializable {
         	Equipment e = i.next();
         	
             if (e instanceof Container) { 
-            	int resource = e.getResource();
-                if (resource != -1) {
+            	int resourceID = e.getResource();
+                if (resourceID != -1) {
                 	// resourceID = -1 means the container has not been initialized
-                    double amount = e.getAmountResourceStored(resource);
+                    double amount = e.getAmountResourceStored(resourceID);
                     // Move resource in container to top inventory if possible.
                     double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
-                            resource, false, false);
+                            resourceID, false, false);
                     if (topRemainingCapacity > 0D) {
                         double loadAmount = topRemainingCapacity;
                         if (loadAmount > amount) {
@@ -230,9 +230,9 @@ implements Serializable {
                             loadAmount = remainingAmountLoading;
                         }
                         
-                        e.retrieveAmountResource(resource, loadAmount);
+                        e.retrieveAmountResource(resourceID, loadAmount);
                         // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
-                        topInventory.storeAmountResource(resource, loadAmount, true);
+                        topInventory.storeAmountResource(resourceID, loadAmount, true);
                         remainingAmountLoading -= loadAmount;
                         amount -= loadAmount;
                     }
@@ -244,12 +244,12 @@ implements Serializable {
                         while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
                         	Equipment otherUnit = k.next();
                             if (otherUnit != e && otherUnit instanceof Container) {
-                                double otherAmount = otherUnit.getAmountResourceStored(resource);
+                                double otherAmount = otherUnit.getAmountResourceStored(resourceID);
                                 if (otherAmount > 0D) {
-                                    double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resource);
+                                    double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
                                     if (otherRemainingCapacity > 0D) {
                                         double loadAmount = otherRemainingCapacity;
-                                        amount = e.getAmountResourceStored(resource);
+                                        amount = e.getAmountResourceStored(resourceID);
                                         
                                         if (loadAmount > amount) {
                                             loadAmount = amount;
@@ -259,8 +259,8 @@ implements Serializable {
                                             loadAmount = remainingAmountLoading;
                                         }
                                         
-                                        e.retrieveAmountResource(resource, loadAmount);
-                                        otherUnit.storeAmountResource(resource, loadAmount);
+                                        e.retrieveAmountResource(resourceID, loadAmount);
+                                        otherUnit.storeAmountResource(resourceID, loadAmount);
                                         remainingAmountLoading -= loadAmount;
                                         amount -= loadAmount;
                                     }

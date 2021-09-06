@@ -840,7 +840,7 @@ public class Inventory implements Serializable {
 									unitStorageAmount = remainingCap;
 								}
 								if (unitStorageAmount > 0D) {
-									e.storeAmountResource(resourceID, unitStorageAmount);
+									e.storeAmountResource(storedResourceID, unitStorageAmount);
 									remainingAmount -= unitStorageAmount;
 								}
 							}
@@ -935,7 +935,7 @@ public class Inventory implements Serializable {
 									unitStorageAmount = remainingCap;
 								}
 								if (unitStorageAmount > 0D) {
-									e.storeAmountResource(resourceID, unitStorageAmount);
+									e.storeAmountResource(resource, unitStorageAmount);
 									remainingAmount -= unitStorageAmount;
 								}	
 							}
