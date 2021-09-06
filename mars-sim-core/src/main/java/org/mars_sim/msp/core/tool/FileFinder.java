@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FileFinder.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Manny Kung
  */
 
@@ -28,17 +28,16 @@ public class FileFinder {
     }
 
     private static void listFiles(String file, URL url) throws Exception {
-        try (ZipInputStream zip = new ZipInputStream(url.openStream())) {
-          while(true) {
-            ZipEntry e = zip.getNextEntry();
-            if (e == null)
-              break;
-            String name = e.getName();
-            if (name.endsWith(file)) {
-                System.out.println(url.toString() + " -> " + name);
-            }
-          }
-        }
-    }
-
+    	try (ZipInputStream zip = new ZipInputStream(url.openStream())) {
+    		while(true) {
+    			ZipEntry e = zip.getNextEntry();
+    			if (e == null)
+    				break;
+    			String name = e.getName();
+    			if (name.endsWith(file)) {
+    				System.out.println(url.toString() + " -> " + name);
+    			}
+    		}
+    	}
+	}
 }

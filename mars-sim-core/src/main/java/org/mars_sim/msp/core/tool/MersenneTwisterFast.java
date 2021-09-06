@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MersenneTwisterFast.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * <h3>MersenneTwister and MersenneTwisterFast</h3>
@@ -1284,7 +1284,10 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable {
 		long ms;
 		System.out.println("\nTime to test grabbing 100000000 ints");
 
-		Random rr = new Random(SEED);
+		SecureRandom rr = new SecureRandom();
+		byte rb[] = new byte[20];
+		rr.nextBytes(rb);
+		
 		xx = 0;
 		ms = System.currentTimeMillis();
 		for (j = 0; j < 100000000; j++)

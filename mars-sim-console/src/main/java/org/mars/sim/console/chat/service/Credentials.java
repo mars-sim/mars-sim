@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Credentials.java
- * @version 3.1.2 2020-12-30
+ * @date 2021-09-05
  * @author Barry Evans
  */
 
@@ -22,9 +22,6 @@ import java.util.Map;
  */
 public class Credentials implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	// The default admin user name
@@ -63,11 +60,10 @@ public class Credentials implements Serializable{
 	 */
 	private boolean save() {
 		try (FileOutputStream output = new FileOutputStream(backingFile)) {
-			ObjectOutputStream outStream = new ObjectOutputStream(output);
-			
+			ObjectOutputStream outStream = new ObjectOutputStream(output);		
 			outStream.writeObject(this);	
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error setting up output stream for writing object: " + e);
 			return false;
 		}
 		return true;
@@ -93,7 +89,7 @@ public class Credentials implements Serializable{
 			cred.backingFile = source;
 			return cred;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Error loading credentials: " + e);
 		}
 		return null;
 	}

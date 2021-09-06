@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TableWaitLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Manny Kung
  */
 
@@ -76,7 +76,6 @@ public class TableWaitLayer {
 							try {
 								text = get();
 							} catch (Exception ex) {
-								ex.printStackTrace();
 								text = "Exception";
 							}
 						}
