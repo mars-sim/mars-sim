@@ -515,7 +515,7 @@ public class SimulationConfigEditor {
 				
 				if (settlement.crew != null) {
 					if (usedCrews.contains(settlement.crew)) {
-						setError("The same Crew is used multiple times");
+						setError(Msg.getString("SimulationConfigEditor.error.duplicateCrew"));
 					}
 					else {
 						usedCrews.add(settlement.crew);
