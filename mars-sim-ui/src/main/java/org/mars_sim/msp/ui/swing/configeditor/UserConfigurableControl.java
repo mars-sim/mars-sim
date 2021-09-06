@@ -40,7 +40,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	
 	private JButton saveButton;
 	private JButton delButton;
-	
+	private JButton saveAsButton;
+
 	private DefaultComboBoxModel<String> itemCB;
 
 	private WebTextField descriptionTF;
@@ -80,10 +81,10 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		buttonPane.add(saveButton);		
 
 		// Create save new crew button.
-		JButton newButton = new JButton("Save as New");
-		newButton.setActionCommand(SAVE_NEW);
-		newButton.addActionListener(this);
-		buttonPane.add(newButton);
+		saveAsButton = new JButton("Save as New");
+		saveAsButton.setActionCommand(SAVE_NEW);
+		saveAsButton.addActionListener(this);
+		buttonPane.add(saveAsButton);
 
 		// Create save new crew button.
 		delButton = new JButton("Delete");
@@ -242,5 +243,14 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		
 		// Set the CB after the internal item to stop the dialog popping up
 		itemCB.setSelectedItem(newSelection);
+	}
+
+	/**
+	 * Control whether the current config can be saved
+	 * @param b
+	 */
+	public void allowSaving(boolean saveAllowed) {
+		saveButton.setEnabled(!selected.isBundled() && saveAllowed);
+		saveAsButton.setEnabled(saveAllowed);
 	}
 }

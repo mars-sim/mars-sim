@@ -404,8 +404,6 @@ public class SimulationConfigEditor {
 						else {
 							info.latitude = (String) aValue;
 						}
-						checkLat(info.latitude);
-						checkRepeatingLatLon();
 						break;
 
 					case LON_COL:
@@ -425,8 +423,6 @@ public class SimulationConfigEditor {
 						else {
 							info.longitude = (String) aValue;
 						}
-						checkLon(info.longitude);
-						checkRepeatingLatLon();
 						break;
 					}
 				}
@@ -478,10 +474,9 @@ public class SimulationConfigEditor {
 		 */
 		private void checkForAllErrors() {
 			clearError();
-
-			Iterator<SettlementInfo> i = settlementInfoList.iterator();
-			while (i.hasNext()) {
-				SettlementInfo settlement = i.next();
+			
+			Set<String> usedCrews = new HashSet<>();
+			for(SettlementInfo settlement : settlementInfoList) {
 
 				// Check that settlement name is valid.
 				if ((settlement.name == null) || (settlement.name.isEmpty())) {
@@ -517,7 +512,18 @@ public class SimulationConfigEditor {
 				}
 
 				checkLatLon(settlement);
+				
+				if (settlement.crew != null) {
+					if (usedCrews.contains(settlement.crew)) {
+						setError("The same Crew is used multiple times");
+					}
+					else {
+						usedCrews.add(settlement.crew);
+					}
+				}
 			}
+			
+			checkRepeatingLatLon();
 		}
 
 		/**
@@ -526,54 +532,16 @@ public class SimulationConfigEditor {
 		 * @param settlement
 		 */
 		private void checkLatLon(SettlementInfo settlement) {
-			boolean hasError = true;
 			String error0 = Coordinates.checkLat(settlement.latitude);
 			if (error0 != null)
 				setError(error0);
-			else
-				hasError = false;
 			
-			if (!hasError) {
-				String error1 = Coordinates.checkLon(settlement.longitude);
-				if (error1 != null)
-					setError(error1);
-				else
-					hasError = false;
-				
-			if (!hasError)	
-				clearError();
-			}
-			
-//			checkLat(settlement);
-//			checkLon(settlement);
-		}
-		
-		/**
-		 * Check for the validity of the input latitude and longitude
-		 * 
-		 * @param settlement
-		 */
-		private void checkLat(String latitude) {
-			String error = Coordinates.checkLat(latitude);
-			if (error != null)
-				setError(error);
-			else
-				clearError();
-		}
-		
-		/**
-		 * Check for the validity of the input latitude and longitude
-		 * 
-		 * @param settlement
-		 */
-		private void checkLon(String longitude) {
-			String error = Coordinates.checkLon(longitude);
-			if (error != null)
-				setError(error);
-			else
-				clearError();
-		}
+			String error1 = Coordinates.checkLon(settlement.longitude);
+			if (error1 != null)
+				setError(error1);
 
+		}
+		
 		/***
 		 * Checks for any repeating latitude and longitude
 		 */
@@ -656,6 +624,8 @@ public class SimulationConfigEditor {
 	private ScenarioConfig scenarioConfig;
 
 	private AuthorityEditor authorityEditor;
+
+	private UserConfigurableControl<Scenario> configControl;
 
 	/**
 	 * Constructor
@@ -863,10 +833,11 @@ public class SimulationConfigEditor {
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 		
 		// Create the config control
-		UserConfigurableControl<Scenario> control = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
+		configControl = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
 
 			@Override
 			protected void displayItem(Scenario newDisplay) {
+				clearError();
 				settlementTableModel.loadDefaultSettlements(newDisplay);
 			}
 
@@ -875,7 +846,7 @@ public class SimulationConfigEditor {
 				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
-		bottomPanel.add(control.getPane(), BorderLayout.WEST);
+		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
 
 		
 		// Create the bottom button panel.
@@ -908,8 +879,8 @@ public class SimulationConfigEditor {
 					f.setVisible(false);
 					
 					// Recalculate the Scenario in case user has made unsaved changes 
-					selectedScenario = finalizeSettlementConfig(control.getSelectItemName(),
-																control.getDescription());
+					selectedScenario = finalizeSettlementConfig(configControl.getSelectItemName(),
+																configControl.getDescription());
 					
 					// Close simulation config editor
 					closeWindow();
@@ -953,7 +924,7 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(crewButton);
 		
 		// Force a load of the default Scenario
-		control.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
+		configControl.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
 		
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -1059,6 +1030,7 @@ public class SimulationConfigEditor {
 			hasError = true;
 			errorLabel.setText(errorString);
 			startButton.setEnabled(false);
+			configControl.allowSaving(false);
 		}
 	}
 
@@ -1066,9 +1038,12 @@ public class SimulationConfigEditor {
 	 * Clears all edit-check errors.
 	 */
 	private void clearError() {
-		hasError = false;
-		errorLabel.setText(""); //$NON-NLS-1$
-		startButton.setEnabled(true);
+		if (hasError) {
+			hasError = false;
+			errorLabel.setText(""); //$NON-NLS-1$
+			startButton.setEnabled(true);
+			configControl.allowSaving(true);
+		}
 	}
 
 	/**
