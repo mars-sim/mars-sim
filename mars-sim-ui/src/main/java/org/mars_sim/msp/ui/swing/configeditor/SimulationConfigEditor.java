@@ -424,6 +424,9 @@ public class SimulationConfigEditor {
 						else {
 							info.latitude = (String) aValue;
 						}
+						String latError = Coordinates.checkLat(info.latitude);
+						if (latError != null)
+							setError(latError);
 						break;
 
 					case LON_COL:
@@ -443,6 +446,9 @@ public class SimulationConfigEditor {
 						else {
 							info.longitude = (String) aValue;
 						}
+						String lonError = Coordinates.checkLon(info.longitude);
+						if (lonError != null)
+							setError(lonError);
 						break;
 					}
 				}
