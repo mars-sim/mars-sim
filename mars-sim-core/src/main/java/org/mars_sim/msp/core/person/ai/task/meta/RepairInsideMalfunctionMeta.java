@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -102,7 +103,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 	            for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
 	                double initialResult = scoreMalfunction(malfunction);
 	                if ((initialResult > 0) &&
-	                		RepairInsideMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+	                		RepairHelper.hasRepairParts(settlement, malfunction)) {
 	                	initialResult += WEIGHT;
 	                }
 	                

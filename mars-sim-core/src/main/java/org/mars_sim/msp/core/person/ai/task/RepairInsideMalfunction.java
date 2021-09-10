@@ -8,27 +8,22 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -88,30 +83,13 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			// Get an emergency malfunction.
 			malfunction = entity.getMalfunctionManager().getMostSeriousInsideMalfunction();
 			if ((malfunction != null) && (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
+
+				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.INSIDE, entity);
 				
-				String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.INSIDE);
-				String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.INSIDE);
-				String myName = person.getName();
-				if (chief == null) {
-					logger.info(person, "Was appointed as the chief repairer handling the inside work for '" 
-							+ malfunction.getName() + "' on "
-							+ entity.getNickName());
-					 malfunction.setChiefRepairer(MalfunctionRepairWork.INSIDE, myName);						
-				}
-				else if ((deputy == null) && !chief.equals(myName)) {
-					logger.info(person, "Was appointed as the deputy repairer handling the inside work for '"
-							+ malfunction.getName() + "' on "
-							+ entity.getNickName());
-					malfunction.setDeputyRepairer(MalfunctionRepairWork.INSIDE, myName);
-				}
 				// Initialize phase
 				addPhase(REPAIRING);
 				setPhase(REPAIRING);
-	
-				logger.log(person, Level.FINEST, 500, "Was about to repair malfunction.");
 
-				// Add time to reserved a slot
-				malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, 0D, person.getName());
 			}
 			else {
 				logger.warning(person, "Can not find a Malfunction to work on for "
@@ -201,20 +179,13 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		
 		if (malfunction != null) {
 			// Add repair parts if necessary.
-			if (hasRepairPartsForMalfunction(worker, malfunction)) {
+			if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
 				setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
 						entity.getNickName())); // $NON-NLS-1$
 				
 				Unit containerUnit = worker.getTopContainerUnit();
 				if (!worker.isOutside()) {
-					Inventory inv = containerUnit.getInventory();
-
-					for( Entry<Integer, Integer> part : malfunction.getRepairParts().entrySet()) {
-						Integer id = part.getKey();
-						int number = part.getValue();
-						inv.retrieveItemResources(id, number);
-						malfunction.repairWithParts(id, number, inv);
-					}
+					RepairHelper.claimRepairParts(containerUnit, malfunction);
 				}
 			}
 		}
@@ -275,18 +246,14 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 */
 	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
 
-		Malfunction result = null;
-
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
 		// Check if entity has any malfunctions.
-		Iterator<Malfunction> j = manager.getMalfunctions().iterator();
-		while (j.hasNext() && (result == null)) {
-			Malfunction malfunction = j.next();
+		for(Malfunction malfunction : manager.getMalfunctions()) {
 			try {
-				if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
+				if (RepairHelper.hasRepairParts(person.getTopContainerUnit(),
 						malfunction)) {
-					result = malfunction;
+					return malfunction;
 				}
 			} catch (Exception e) {
 				logger.log(entity, Level.WARNING, 2000, "Problems in top container unit's malfunction: " + e.getMessage());
@@ -294,13 +261,11 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		// Check if entity needs no EVA and has any normal malfunctions.
-		if ((result == null) && !hasEVA(person, entity)) {
-			Iterator<Malfunction> k = manager.getAllInsideMalfunctions().iterator();
-			while (k.hasNext() && (result == null)) {
-				Malfunction malfunction = k.next();
+		if (!hasEVA(person, entity)) {
+			for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
 				try {
-					if (hasRepairPartsForMalfunction(person, malfunction)) {
-						result = malfunction;
+					if (RepairHelper.hasRepairParts(person, malfunction)) {
+						return malfunction;
 					}
 				} catch (Exception e) {
 					logger.log(entity, Level.WARNING, 2000, "Problems in general malfunction's repair parts: " + e.getMessage());
@@ -308,10 +273,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			}
 		}
 
-		if (manager.hasMalfunction() && (result == null)) {
+		if (manager.hasMalfunction()) {
 			logger.log(entity, Level.WARNING, 2000, "No parts available for any malfunction");
 		}
-		return result;
+		return null;
 	}
 
 	/**
@@ -338,23 +303,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		return result;
-	}
-
-	/**
-	 * Checks if there are enough repair parts at person's location to fix the
-	 * malfunction.
-	 * 
-	 * @param person        the person checking.
-	 * @param containerUnit the unit the person is doing an EVA from.
-	 * @param malfunction   the malfunction.
-	 * @return true if enough repair parts to fix malfunction.
-	 */
-	public static boolean hasRepairPartsForMalfunction(Person person, Unit containerUnit, Malfunction malfunction) {
-
-		if (person == null)
-			throw new IllegalArgumentException("person is null");
-
-		return hasRepairParts(containerUnit, malfunction);
 	}
 
 	
@@ -396,136 +344,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 */
 	private boolean hasMalfunction(Malfunctionable entity) {
 		return entity.getMalfunctionManager().hasMalfunction();
-	}
-
-	/**
-	 * Checks if the repair parts are available
-	 * 
-	 * @param containerUnit
-	 * @param malfunction
-	 * @return
-	 */
-	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
-
-		boolean result = true;
-
-		if (containerUnit == null)
-			throw new IllegalArgumentException("containerUnit is null");
-
-		if (malfunction == null)
-			throw new IllegalArgumentException("malfunction is null");
-
-		Inventory inv = containerUnit.getInventory();
-
-		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-		Iterator<Integer> i = repairParts.keySet().iterator();
-		while (i.hasNext() && result) {
-			Integer part = i.next();
-			int number = repairParts.get(part);
-			if (inv.getItemResourceNum(part) < number) {
-				inv.addItemDemand(part, number);
-				result = false;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if there are enough repair parts at person's location to fix the
-	 * malfunction.
-	 * 
-	 * @param worker      the person checking.
-	 * @param malfunction the malfunction.
-	 * @return true if enough repair parts to fix malfunction.
-	 */
-	public static boolean hasRepairPartsForMalfunction(Worker worker, Malfunction malfunction) {
-		if (worker == null) {
-			throw new IllegalArgumentException("worker is null");
-		}
-		if (malfunction == null) {
-			throw new IllegalArgumentException("malfunction is null");
-		}
-
-		boolean result = false;
-		Unit containerUnit = worker.getTopContainerUnit();
-
-		if (!worker.isOutside()) {
-			result = true;
-			Inventory inv = containerUnit.getInventory();
-
-			Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-			Iterator<Integer> i = repairParts.keySet().iterator();
-			while (i.hasNext() && result) {
-				Integer part = i.next();
-				int number = repairParts.get(part);
-				if (inv.getItemResourceNum(part) < number) {
-					inv.addItemDemand(part, number);
-					result = false;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if there are enough repair parts at person's location to fix the
-	 * malfunction.
-	 * 
-	 * @param settlement      the settlement checking.
-	 * @param malfunction the malfunction.
-	 * @return true if enough repair parts to fix malfunction.
-	 */
-	public static boolean hasRepairPartsForMalfunction(Settlement settlement, Malfunction malfunction) {
-		if (malfunction == null) {
-			throw new IllegalArgumentException("malfunction is null");
-		}
-
-		boolean result = true;
-	
-		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-		Iterator<Integer> i = repairParts.keySet().iterator();
-		while (i.hasNext() && result) {
-			Integer part = i.next();
-			int number = repairParts.get(part);
-			if (settlement.getInventory().getItemResourceNum(part) < number) {
-				settlement.getInventory().addItemDemand(part, number);
-				result = false;
-			}
-		}
-
-		return result;
-	}
-	
-	public static boolean hasRepairPartsForMalfunction(Robot robot, Malfunction malfunction) {
-		if (robot == null) {
-			throw new IllegalArgumentException("robot is null");
-		}
-		if (malfunction == null) {
-			throw new IllegalArgumentException("malfunction is null");
-		}
-
-		boolean result = false;
-		Unit containerUnit = robot.getTopContainerUnit();
-
-		if (!(containerUnit instanceof MarsSurface)) {
-			result = true;
-			Inventory inv = containerUnit.getInventory();
-
-			Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-			Iterator<Integer> i = repairParts.keySet().iterator();
-			while (i.hasNext() && result) {
-				Integer part = i.next();
-				int number = repairParts.get(part);
-				if (inv.getItemResourceNum(part) < number) {
-					inv.addItemDemand(part, number);
-					result = false;
-				}
-			}
-		}
-
-		return result;
 	}
 
 

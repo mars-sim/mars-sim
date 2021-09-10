@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -538,7 +539,7 @@ public class Malfunction implements Serializable {
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getRepairParts() {
-		return new HashMap<Integer, Integer>(repairParts);
+		return Collections.unmodifiableMap(repairParts);
 	}
 
 	/**

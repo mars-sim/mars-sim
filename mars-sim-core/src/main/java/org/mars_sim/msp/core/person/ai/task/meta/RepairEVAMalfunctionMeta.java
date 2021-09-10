@@ -6,13 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -113,14 +112,12 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
 		// Add probability for all malfunctionable entities in person's local.
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
+		for(Malfunctionable entity : MalfunctionFactory.getMalfunctionables(settlement)) {
 			// Check if entity has any EVA malfunctions.
 			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
 				if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) > 0) {
 					double score = WEIGHT;
-					if (RepairEVAMalfunction.hasRepairParts(settlement, malfunction)) {
+					if (RepairHelper.hasRepairParts(settlement, malfunction)) {
 						score += WEIGHT;
 					}
 					result += score;
