@@ -118,11 +118,13 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 			Malfunctionable entity = i.next();
 			// Check if entity has any EVA malfunctions.
 			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
-				double score = WEIGHT;
-				if (RepairEVAMalfunction.hasRepairParts(settlement, malfunction)) {
-					score += WEIGHT;
+				if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) > 0) {
+					double score = WEIGHT;
+					if (RepairEVAMalfunction.hasRepairParts(settlement, malfunction)) {
+						score += WEIGHT;
+					}
+					result += score;
 				}
-				result += score;
 			}
 		}
 

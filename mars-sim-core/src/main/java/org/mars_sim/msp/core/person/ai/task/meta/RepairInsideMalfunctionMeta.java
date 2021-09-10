@@ -120,7 +120,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
      */
     private static double scoreMalfunction(Malfunction malfunction) {    
     	double result = 0D;
-		if (malfunction.isWorkNeeded(MalfunctionRepairWork.INSIDE)
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
 				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
 	        result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
 		}

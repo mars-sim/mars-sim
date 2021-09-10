@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -208,11 +209,9 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				if (!worker.isOutside()) {
 					Inventory inv = containerUnit.getInventory();
 
-					Map<Integer, Integer> parts = malfunction.getRepairParts();
-					Iterator<Integer> j = parts.keySet().iterator();
-					while (j.hasNext()) {
-						Integer id = j.next();
-						int number = parts.get(id);
+					for( Entry<Integer, Integer> part : malfunction.getRepairParts().entrySet()) {
+						Integer id = part.getKey();
+						int number = part.getValue();
 						inv.retrieveItemResources(id, number);
 						malfunction.repairWithParts(id, number, inv);
 					}

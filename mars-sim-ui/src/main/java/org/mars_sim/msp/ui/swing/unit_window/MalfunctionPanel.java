@@ -107,7 +107,7 @@ extends WebPanel {
 	 */
 	public void update() {
 		// Update name label.
-		boolean eva = malfunction.isWorkNeeded(MalfunctionRepairWork.EVA);
+		boolean eva = !malfunction.isWorkDone(MalfunctionRepairWork.EVA);
 		boolean emer = malfunction.getSeverity() >= EMERGENCY_MALFUNCTION;
 
 		if (eva && emer) {

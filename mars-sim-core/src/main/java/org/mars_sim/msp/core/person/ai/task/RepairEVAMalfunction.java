@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -371,13 +373,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		
 		if (person != null) {
 			if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
-				Map<Integer, Integer> parts = new ConcurrentHashMap<>(malfunction.getRepairParts());
+				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
 				Iterator<Integer> j = parts.keySet().iterator();
 				// Add repair parts if necessary.
 				Inventory inv = containerUnit.getInventory();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					int number = parts.get(id);
+				for( Entry<Integer, Integer> part : malfunction.getRepairParts().entrySet()) {
+					Integer id = part.getKey();
+					int number = part.getValue();
 					inv.retrieveItemResources(id, number);
 					malfunction.repairWithParts(id, number, inv);
 				}
