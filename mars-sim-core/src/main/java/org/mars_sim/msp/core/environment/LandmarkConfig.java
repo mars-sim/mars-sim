@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LandmarkConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -15,7 +15,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.environment.MineralMapConfig.MineralType;
 
 /**
  * Provides configuration information about landmarks. Uses a DOM document to

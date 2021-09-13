@@ -151,8 +151,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		else {
 			String name = ResourceUtil.findAmountResourceName(resource);
 			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-			logger.warning(this, "Invalid request. Not for " + name 
-					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			logger.warning(this, "Invalid request for storing " + name 
+					+ ". Already have " + Math.round(this.quantity* 10.0)/10.0 + " kg " + storedResource + ".");
 			return quantity;
 		}
 	}

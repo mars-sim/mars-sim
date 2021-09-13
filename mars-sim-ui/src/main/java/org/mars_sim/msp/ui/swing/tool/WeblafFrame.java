@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WeblafFrame.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Manny Kung
  */
 
@@ -22,15 +22,13 @@ public class WeblafFrame
         {
             public void run ()
             {
-//                WebLookAndFeel.install ();
-//                UIManagers.initialize();
 
         		try {
         			// use the weblaf skin
         			WebLookAndFeel.install();
         			UIManagers.initialize();
         		} catch (Exception ex) {
-        			ex.printStackTrace();
+        			System.out.println("Error in initiating weblaf: " + ex);
         		}
         		
                 JFrame frame = new JFrame ( "Test" );

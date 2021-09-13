@@ -1,14 +1,13 @@
 /*
  * Mars Simulation Project
  * ResourceProcessing.java
- * @date 2021-08-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 

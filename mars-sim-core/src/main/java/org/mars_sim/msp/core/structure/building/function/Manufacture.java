@@ -477,24 +477,18 @@ public class Manufacture extends Function implements Serializable {
 		
 		if (!premature) {
 			// Produce outputs.
-			// WARNING : The UnitManager instance will be stale after loading from a saved
-			// sim
-			// It will fail to run methods in Settlement and without any warning as to why
-			// that it fails.
-
 			Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
 			while (j.hasNext()) {
 				ManufactureProcessItem item = j.next();
 				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-//						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());						
 						double amount = item.getAmount();
 						double capacity = inv.getAmountResourceRemainingCapacity(id, true, false);
 						if (item.getAmount() > capacity) {
 							double overAmount = item.getAmount() - capacity;
-							logger.fine("Not enough storage capacity to store " + overAmount + " of " + item.getName()
+							logger.severe("Not enough storage capacity to store " + overAmount + " of " + item.getName()
 									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
 							amount = capacity;
 						}
@@ -508,7 +502,7 @@ public class Manufacture extends Function implements Serializable {
 					else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
+						int id = part.getID();
 						int num = (int) item.getAmount();
 						double mass = num * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
@@ -575,14 +569,8 @@ public class Manufacture extends Function implements Serializable {
 		else {
 
 			// Premature end of process. Return all input materials.
-			// TODO: should some resources be consumed and irreversible ? 
+			// Note: should some resources be consumed and irreversible ? 
 			
-			// WARNING : The UnitManager instance will be stale after loading from a saved
-			// sim
-			// It will fail to run methods in Settlement and without any warning as to why
-			// that it fails.
-//			UnitManager unitManager = Simulation.instance().getUnitManager();
-
 			Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
 			while (j.hasNext()) {
 				ManufactureProcessItem item = j.next();
@@ -594,8 +582,9 @@ public class Manufacture extends Function implements Serializable {
 						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 						if (item.getAmount() > capacity) {
 							double overAmount = item.getAmount() - capacity;
-							logger.severe("Not enough storage capacity to store " + overAmount + " of " + item.getName()
-									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
+							logger.severe("Premature ending '" +  process.getInfo().getName() + "'. "
+									+ "Not enough storage capacity to store " + overAmount + " of " + item.getName()
+									+ " at " + settlement.getName());
 							amount = capacity;
 						}
 						inv.storeAmountResource(resource, amount, true);
@@ -620,7 +609,6 @@ public class Manufacture extends Function implements Serializable {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement, false);
-//							inv.storeUnit(equipment);
 							unitManager.addUnit(equipment);
 						}
 					} 

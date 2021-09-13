@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ChainOfCommand.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Manny Kung
  */
 
@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on

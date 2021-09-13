@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HelpGenerator.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author stpa
  */
 
@@ -1110,8 +1110,7 @@ public class HelpGenerator {
 					.toURI()
 				).getAbsolutePath();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Error in getAbsPath", e);
 		}
 		
 		return absPath;

@@ -393,9 +393,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Temporarily remove rover from settlement so that inventory doesn't get mixed
 			// in.
 			Inventory sInv = settlement.getInventory();
-			boolean roverInSettlement = false;
+			boolean vehicleInSettlement = false;
 			if (sInv.containsUnit(vehicle)) {
-				roverInSettlement = true;
+				vehicleInSettlement = true;
 				sInv.retrieveUnit(vehicle);
 			}
 			else { // if the rover is no longer in the settlement, end the task
@@ -409,17 +409,17 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 			
 			// Load resources
-//			try {
+			try {
 				if (amountLoading > 0D) {
 					amountLoading = vehicleMission.loadResources(amountLoading, 
 							requiredResources, optionalResources);
 				}
-//			} catch (Exception e) {
-//				logger.severe(vehicle, "Error in loading resources: " + e.getMessage());
-//			}
+			} catch (Exception e) {
+				logger.severe(person, 20_000L, "Troubles loading resources: ", e);
+			}
 	
 			// Put rover back into settlement.
-			if (roverInSettlement) {
+			if (vehicleInSettlement) {
 				sInv.storeUnit(vehicle);
 			}
 	
@@ -1143,6 +1143,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					
 					if (resource == ResourceUtil.oxygenID
 							|| resource == ResourceUtil.waterID
+							|| resource == ResourceUtil.methaneID
 							|| resource == ResourceUtil.foodID
 							|| PreparingDessert.isADessert(resource)
 							) {
@@ -1226,6 +1227,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					
 					if (resource == ResourceUtil.oxygenID
 							|| resource == ResourceUtil.waterID
+							|| resource == ResourceUtil.methaneID							
 							|| resource == ResourceUtil.foodID
 							|| PreparingDessert.isADessert(resource)
 							) {
@@ -1267,7 +1269,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								+ "  required: " + Math.round(req*10.0)/10.0+ " kg " 
 								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
 								+ "  vehicleCapacity: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
-						// For now, if settlement doesn't have enough, 
+						// For now, if settlement doesn't have enough, let go of loading
 						sufficientSupplies = true;
 					}
 					

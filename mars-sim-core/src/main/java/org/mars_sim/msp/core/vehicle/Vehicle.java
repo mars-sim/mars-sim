@@ -359,7 +359,11 @@ public abstract class Vehicle extends Unit
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
-				
+		
+		// Set the general capacity of the inventory to cargoCapacity
+		getInventory().addGeneralCapacity(cargoCapacity);
+		
+		
 //		logger.config(vehicleType 
 //					+ " -            peak power : " + Math.round(peakPower*100.0)/100.0 + " kW");
 //		logger.config(vehicleType 

@@ -89,21 +89,36 @@ public class SimulationConfigEditor {
 	 */
 	private final class UserConfigurableComboModel implements ComboBoxModel<String> {
 
+		private static final String BLANK = "";
 		private UserConfigurableConfig<? extends UserConfigurable> config;
 		private String selectedItem = null;
+		private boolean allowNoSelect;
 
-		public UserConfigurableComboModel(UserConfigurableConfig<? extends UserConfigurable> config) {
+		public UserConfigurableComboModel(UserConfigurableConfig<? extends UserConfigurable> config,
+											boolean allowNoSelect) {
 			this.config = config;
+			this.allowNoSelect = allowNoSelect;
 		}
 
+		private List<String> getPossibles() {
+			List<String> results = config.getItemNames();
+
+			if (allowNoSelect) {
+				List<String> bigResults = new ArrayList<>();
+				bigResults.add(BLANK);
+				bigResults.addAll(results);
+				results = bigResults;
+			}
+			return results;
+		}
 		@Override
 		public int getSize() {
-			return config.getItemNames().size();
+			return getPossibles().size();
 		}
 
 		@Override
 		public String getElementAt(int index) {
-			return config.getItemNames().get(index);
+			return getPossibles().get(index);
 		}
 
 		@Override
@@ -116,7 +131,12 @@ public class SimulationConfigEditor {
 
 		@Override
 		public void setSelectedItem(Object anItem) {
-			this.selectedItem = (String) anItem;
+			if (anItem == null || BLANK.equals(anItem)) {
+				this.selectedItem = null;
+			}
+			else {
+				this.selectedItem = (String) anItem;
+			}
 		}
 
 		@Override
@@ -213,12 +233,12 @@ public class SimulationConfigEditor {
 						settlementInfoList.get(0).name = candidateNames.get(0);
 					}
 					logger.config( 
-							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
+							"The 1st settlement's sponsor be matched to the commander's sponsor.");
 				}
 				
 				else {
 					logger.config( 
-							"The commander's sponsor will sponsor one of the settlements in the site editor.");
+							"The commander's sponsor will match one of the settlements' sponsor in the site editor.");
 				}
 			}
 				
@@ -404,8 +424,9 @@ public class SimulationConfigEditor {
 						else {
 							info.latitude = (String) aValue;
 						}
-						checkLat(info.latitude);
-						checkRepeatingLatLon();
+						String latError = Coordinates.checkLat(info.latitude);
+						if (latError != null)
+							setError(latError);
 						break;
 
 					case LON_COL:
@@ -425,8 +446,9 @@ public class SimulationConfigEditor {
 						else {
 							info.longitude = (String) aValue;
 						}
-						checkLon(info.longitude);
-						checkRepeatingLatLon();
+						String lonError = Coordinates.checkLon(info.longitude);
+						if (lonError != null)
+							setError(lonError);
 						break;
 					}
 				}
@@ -478,10 +500,10 @@ public class SimulationConfigEditor {
 		 */
 		private void checkForAllErrors() {
 			clearError();
-
-			Iterator<SettlementInfo> i = settlementInfoList.iterator();
-			while (i.hasNext()) {
-				SettlementInfo settlement = i.next();
+			
+			Set<Coordinates> usedCoordinates = new HashSet<>();
+			Set<String> usedCrews = new HashSet<>();
+			for(SettlementInfo settlement : settlementInfoList) {
 
 				// Check that settlement name is valid.
 				if ((settlement.name == null) || (settlement.name.isEmpty())) {
@@ -515,100 +537,29 @@ public class SimulationConfigEditor {
 						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
 					}
 				}
-
-				checkLatLon(settlement);
-			}
-		}
-
-		/**
-		 * Check for the validity of the input latitude and longitude
-		 * 
-		 * @param settlement
-		 */
-		private void checkLatLon(SettlementInfo settlement) {
-			boolean hasError = true;
-			String error0 = Coordinates.checkLat(settlement.latitude);
-			if (error0 != null)
-				setError(error0);
-			else
-				hasError = false;
-			
-			if (!hasError) {
-				String error1 = Coordinates.checkLon(settlement.longitude);
-				if (error1 != null)
-					setError(error1);
-				else
-					hasError = false;
 				
-			if (!hasError)	
-				clearError();
-			}
-			
-//			checkLat(settlement);
-//			checkLon(settlement);
-		}
-		
-		/**
-		 * Check for the validity of the input latitude and longitude
-		 * 
-		 * @param settlement
-		 */
-		private void checkLat(String latitude) {
-			String error = Coordinates.checkLat(latitude);
-			if (error != null)
-				setError(error);
-			else
-				clearError();
-		}
-		
-		/**
-		 * Check for the validity of the input latitude and longitude
-		 * 
-		 * @param settlement
-		 */
-		private void checkLon(String longitude) {
-			String error = Coordinates.checkLon(longitude);
-			if (error != null)
-				setError(error);
-			else
-				clearError();
-		}
-
-		/***
-		 * Checks for any repeating latitude and longitude
-		 */
-		private void checkRepeatingLatLon() {
-			// Ensure the latitude/longitude is not being taken already in the table by
-			// another settlement
-			boolean repeated = false;
-			int size = settlementTableModel.getRowCount();
-			
-			Set<Coordinates> coordinatesSet = new HashSet<>();
-			
-			for (int x = 0; x < size; x++) {
-
-				String latStr = ((String) (settlementTableModel.getValueAt(x, LAT_COL))).trim().toUpperCase();
-				String longStr = ((String) (settlementTableModel.getValueAt(x, LON_COL))).trim().toUpperCase();				
+				String latError = Coordinates.checkLat(settlement.latitude);
+				if (latError != null)
+					setError(latError);
+				String lonError = Coordinates.checkLon(settlement.longitude);
+				if (lonError != null)
+					setError(lonError);
 				
-				if (latStr == null || latStr.length() < 2) {
-					setError(Msg.getString("Coodinates.error.latitudeMissing")); //$NON-NLS-1$
-					return;
+				// Only check duplicate if no errors
+				if ((latError == null) && (lonError == null)) {
+					Coordinates c = new Coordinates(settlement.latitude, settlement.longitude);
+					if (!usedCoordinates.add(c))
+						setError(Msg.getString("Coordinates.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
 				}
-
-				if (longStr == null || longStr.length() < 2) {
-					setError(Msg.getString("Coodinates.error.longitudeMissing")); //$NON-NLS-1$
-					return;
+				
+				if (settlement.crew != null) {
+					if (usedCrews.contains(settlement.crew)) {
+						setError(Msg.getString("SimulationConfigEditor.error.duplicateCrew"));
+					}
+					else {
+						usedCrews.add(settlement.crew);
+					}
 				}
-
-				Coordinates c = new Coordinates(latStr, longStr);
-				if (!coordinatesSet.add(c))
-					repeated = true;
-
-			}
-
-			if (repeated) {
-				setError(Msg.getString("Coodinates.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
-				return;
 			}
 		}
 	}
@@ -656,6 +607,8 @@ public class SimulationConfigEditor {
 	private ScenarioConfig scenarioConfig;
 
 	private AuthorityEditor authorityEditor;
+
+	private UserConfigurableControl<Scenario> configControl;
 
 	/**
 	 * Constructor
@@ -780,14 +733,14 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		sponsorCB.setModel(new UserConfigurableComboModel(raFactory));
+		sponsorCB.setModel(new UserConfigurableComboModel(raFactory, false));
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
 		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
-		crewCB.setModel(new UserConfigurableComboModel(crewConfig));
+		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 		
 		// Create combo box for editing template column in settlement table.
@@ -818,7 +771,6 @@ public class SimulationConfigEditor {
 
 		// Create add settlement button.
 		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
-//		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -829,7 +781,6 @@ public class SimulationConfigEditor {
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
-//		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
 		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -837,21 +788,6 @@ public class SimulationConfigEditor {
 			}
 		});
 		configurationButtonInnerTopPanel.add(removeButton);
-
-		// Create configuration button inner bottom panel.
-		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
-		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
-
-		// Create default button.
-		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
-		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
-		defaultButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				settlementTableModel.loadDefaultSettlements(selectedScenario);
-			}
-		});
-		configurationButtonInnerBottomPanel.add(defaultButton);
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
@@ -863,10 +799,11 @@ public class SimulationConfigEditor {
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 		
 		// Create the config control
-		UserConfigurableControl<Scenario> control = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
+		configControl = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
 
 			@Override
 			protected void displayItem(Scenario newDisplay) {
+				clearError();
 				settlementTableModel.loadDefaultSettlements(newDisplay);
 			}
 
@@ -875,7 +812,7 @@ public class SimulationConfigEditor {
 				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
-		bottomPanel.add(control.getPane(), BorderLayout.WEST);
+		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
 
 		
 		// Create the bottom button panel.
@@ -893,7 +830,6 @@ public class SimulationConfigEditor {
 		
 		// Create the start button.
 		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.addActionListener(new ActionListener() {
 
@@ -908,8 +844,8 @@ public class SimulationConfigEditor {
 					f.setVisible(false);
 					
 					// Recalculate the Scenario in case user has made unsaved changes 
-					selectedScenario = finalizeSettlementConfig(control.getSelectItemName(),
-																control.getDescription());
+					selectedScenario = finalizeSettlementConfig(configControl.getSelectItemName(),
+																configControl.getDescription());
 					
 					// Close simulation config editor
 					closeWindow();
@@ -938,7 +874,7 @@ public class SimulationConfigEditor {
 		});
 
 		// Set a check box for enabling/disable the alpha crew button
-		JCheckBox cb = new JCheckBox("Load Crews");
+		JCheckBox cb = new JCheckBox(Msg.getString("SimulationConfigEditor.button.useCrews"));
 		cb.setSelected(useCrew);
 		cb.addItemListener(new ItemListener() {
 
@@ -953,7 +889,7 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(crewButton);
 		
 		// Force a load of the default Scenario
-		control.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
+		configControl.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
 		
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -970,8 +906,8 @@ public class SimulationConfigEditor {
 			}
 		});
 		
-		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
-		rootPane.setDefaultButton(defaultButton);
+		JRootPane rootPane = SwingUtilities.getRootPane(startButton); 
+		rootPane.setDefaultButton(startButton);
 	}
 	
 
@@ -1059,6 +995,7 @@ public class SimulationConfigEditor {
 			hasError = true;
 			errorLabel.setText(errorString);
 			startButton.setEnabled(false);
+			configControl.allowSaving(false);
 		}
 	}
 
@@ -1066,9 +1003,12 @@ public class SimulationConfigEditor {
 	 * Clears all edit-check errors.
 	 */
 	private void clearError() {
-		hasError = false;
-		errorLabel.setText(""); //$NON-NLS-1$
-		startButton.setEnabled(true);
+		if (hasError) {
+			hasError = false;
+			errorLabel.setText(""); //$NON-NLS-1$
+			startButton.setEnabled(true);
+			configControl.allowSaving(true);
+		}
 	}
 
 	/**

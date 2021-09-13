@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Scott Davis
  */
 
@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The TerrainElevation class represents the surface terrain of the virtual
  * Mars. It provides information about elevation and terrain ruggedness and 
  * calculate ice collection rate at a location on its vast surface.
- *
  */
 public class TerrainElevation implements Serializable {
 
@@ -65,24 +64,14 @@ public class TerrainElevation implements Serializable {
 	private static final double ALBOR_THOLUS_PHI = 1.245184; 
 	private static final double ALBOR_THOLUS_THETA = 2.615812;
 
-//	private static final double NORTH_POLE_PHI = 0; 
-//	private static final double NORTH_POLE_THETA = 0;
-//
-//	private static final double SOUTH_POLE_PHI = Math.PI; 
-//	private static final double SOUTH_POLE_THETA = 0;
-	
 	private static MapData mapdata;
 	
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
-	
-//	private static SurfaceFeatures surfaceFeatures;
-	
+
 	/**
 	 * Constructor
 	 */
-//	@JsonIgnoreProperties
 	public TerrainElevation() {
-//		System.out.println(new Coordinates(1.27, 0.82).toString());
 	}
 
 	/**
@@ -275,8 +264,8 @@ public class TerrainElevation implements Serializable {
 		
 		double rate = 1;
 		
-		// TODO: Add seasonal variation for north and south hemisphere
-		// TODO: The collection rate may be increased by relevant scientific studies 
+		// Note: Add seasonal variation for north and south hemisphere
+		// Note: The collection rate may be increased by relevant scientific studies 
 		
 		if (latitude < 60 && latitude > -60) {
 			// The steeper the slope, the harder it is to retrieve the ice deposit
@@ -310,11 +299,11 @@ public class TerrainElevation implements Serializable {
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
 		if (s != null) {
 			nameLoc = s.getName();
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
 					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
 					"[" + nameLoc + "]         Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
 					"[" + nameLoc + "]       Ice Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
 		}
 		

@@ -347,7 +347,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					requiredResources, optionalResources);
 			}
 		} catch (Exception e) {
-			logger.severe(person, "Load resources", e);
+			logger.severe(person, 20_000L, "Troubles loading resources: ", e);
 		}
 
 		// Resume from previous and put rover back into settlement.

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TransportManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;

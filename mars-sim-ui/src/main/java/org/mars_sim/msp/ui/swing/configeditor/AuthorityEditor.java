@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AuthorityEditor.java
- * @version 3.2.2 2021-08-27
+ * @date 2021-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -61,7 +62,7 @@ public class AuthorityEditor  {
 			content.add(new JScrollPane(list));
 			
 			Box newItemPanel = Box.createHorizontalBox();
-			newItemPanel.add(new JLabel("New Item:"));
+			newItemPanel.add(new JLabel("New " + title + " :"));
 			JTextField newText = new JTextField();
 			newText.setColumns(20);
 			newText.setMaximumSize(newText.getPreferredSize());
@@ -69,7 +70,8 @@ public class AuthorityEditor  {
 			content.add(newItemPanel);
 			
 			JPanel controlPanel = new JPanel();
-			JButton addButton = new JButton("Add");
+			JButton addButton = new JButton(Msg.getString("AuthorityEditor.button.add"));
+			addButton.setToolTipText(Msg.getString("AuthorityEditor.tooltop.add", title));
 			addButton.addActionListener(new ActionListener() {
 				
 				@Override
@@ -80,7 +82,8 @@ public class AuthorityEditor  {
 			});
 			controlPanel.add(addButton);
 
-			JButton removeButton = new JButton("Remove");
+			JButton removeButton = new JButton(Msg.getString("AuthorityEditor.button.remove"));
+			removeButton.setToolTipText(Msg.getString("AuthorityEditor.tooltop.remove"));
 			removeButton.addActionListener(new ActionListener() {
 				
 				@Override
@@ -164,6 +167,7 @@ public class AuthorityEditor  {
 		agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda"));
 		agendaCB = new JComboBox<>();
 		agendaCB.setAlignmentX(Component.LEFT_ALIGNMENT);
+		agendaCB.setToolTipText(Msg.getString("AuthorityEditor.button.agenda"));
 		for (String agenda : raFactory.getAgendaNames()) {
 			agendaCB.addItem(agenda);			
 		}
@@ -200,11 +204,11 @@ public class AuthorityEditor  {
 		contentPane.add(agendaPanel);
 		
 		// Add List panels
-		countries = new TextList("Countries");
+		countries = new TextList(Msg.getString("AuthorityEditor.country"));
 		contentPane.add(countries.getContent());
-		settlementNames = new TextList("Settlements");
+		settlementNames = new TextList(Msg.getString("AuthorityEditor.settlement"));
 		contentPane.add(settlementNames.getContent());
-		vehicleNames = new TextList("Vehicle Names");
+		vehicleNames = new TextList(Msg.getString("AuthorityEditor.vehicle"));
 		contentPane.add(vehicleNames.getContent());
 		
 		// Create button panel.

@@ -1,13 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

@@ -65,8 +65,6 @@ import com.alee.laf.text.WebTextField;
 import com.alee.laf.window.WebDialog;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.style.StyleId;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.CoreSwingUtils;
 import com.alee.utils.swing.extensions.DocumentEventRunnable;
 
@@ -114,7 +112,7 @@ public class CrewEditor implements ActionListener {
 			webSwitch.setSwitchComponents(
 					"M", 
 					"F");
-			TooltipManager.setTooltip(webSwitch, "Choose male or female", TooltipWay.down);
+			webSwitch.setToolTipText("Choose male or female");
 			WebPanel genderPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
 			genderPanel.add(new WebLabel(" Gender : "));
 			genderPanel.add(webSwitch);
@@ -162,7 +160,7 @@ public class CrewEditor implements ActionListener {
 			
 			// Job
 			jobCB = setUpCB(2);// 2 = Job
-			TooltipManager.setTooltip(jobCB, "Choose the job of this person", TooltipWay.down);
+			jobCB.setToolTipText("Choose the job of this person");
 			jobCB.setMaximumRowCount(8);
 			displayPanel.add(jobCB);
 			
@@ -172,8 +170,7 @@ public class CrewEditor implements ActionListener {
 			sponsorCB.setWidePopup(true);
 			sponsorCB.setPreferredWidth(PANEL_WIDTH);
 			sponsorCB.setMaximumWidth(PANEL_WIDTH);
-		    			
-			TooltipManager.setTooltip(sponsorCB, "Choose the sponsor of this person", TooltipWay.down);
+			sponsorCB.setToolTipText("Choose the sponsor of this person");
 			sponsorCB.setMaximumRowCount(8);
 			displayPanel.add(sponsorCB);
 
@@ -182,7 +179,7 @@ public class CrewEditor implements ActionListener {
 		    
 			// Country
 			countryCB = setUpCB(3); // 3 = Country
-			TooltipManager.setTooltip(countryCB, "Choose the country of origin of this person", TooltipWay.down);
+			countryCB.setToolTipText("Choose the country of origin of this person");
 			countryCB.setMaximumRowCount(8);
 			displayPanel.add(countryCB);
 			
@@ -586,7 +583,7 @@ public class CrewEditor implements ActionListener {
                     public void run() {
                         final String text = tf.getText();
                         if (text.length() == 0) {
-                        	overlayLabel.setToolTip("This name textfield cannot be blank !", TooltipWay.right);
+                        	overlayLabel.setToolTipText("This name textfield cannot be blank !");
                             if (overlay.getOverlayCount() == 0){
                                 overlay.addOverlay(
                                         new AlignedOverlay(

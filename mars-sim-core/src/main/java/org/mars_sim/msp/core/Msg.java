@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -77,35 +78,6 @@ public class Msg {
 		
 	}
 
-	/*
-	 * replaces all occurrences of "{0}" with the given parameter.
-	 * @param key {@link String}
-	 * @param param1 {@link String}
-	 * @return {@link String}
-	 *
-	 */
-//	public static String getString(
-//		final String key,
-//		final String param1
-//	) {
-//		return getString(key)
-//		.replace("{0}",param1);
-//	}
-
-	/*
-	 * replaces all occurrences of "{0}" with the given parameter.
-	 * @param key {@link String}
-	 * @param param1 {@link Integer}
-	 * @return {@link String}
-	 *
-     */
-//	public static String getString(
-//		final String key,
-//		final int param1
-//	) {
-//		return getString(key)
-//		.replace("{0}",Integer.toString(param1));
-//	}
 
 	/**
 	 * replaces all occurrences of "{n}" (with n an integer)
@@ -115,51 +87,9 @@ public class Msg {
 	 * @return
 	 */
 	public static String getString(final String key, final Object... args) {
-		String s = getString(key);
-		int i = 0;
-		for (Object arg : args) {
-			s = s.replace(
-				"{" + i + "}",
-				arg.toString()
-			);
-			i++;
-		}
-		return s;
+		// Richer formatting rules using built in Message Format class
+		return MessageFormat.format(getString(key), args);
 	}
-	
-	/*
-	 * replaces all occurrences of "{0}" with the given parameter.
-	 * @param key {@link String}
-	 * @param param1 {@link Double}
-	 * @return {@link String}
-	 *
-	 */
-//	public static String getString(
-//		final String key,
-//		final double param1
-//	) {
-//		return getString(key)
-//		.replace("{0}",Double.toString(param1));
-//	}
-
-	/*
-	 * replaces all occurrences of "{0}" with the given parameter.
-	 * replaces all occurrences of "{1}" with the given second parameter.
-	 * @param key {@link String}
-	 * @param param1 {@link String}
-	 * @param param2 {@link String}
-	 * @return {@link String}
-	 *
-	 */
-//	public static String getString(
-//		final String key,
-//		final String param1,
-//		final String param2
-//	) {
-//		return getString(key)
-//		.replace("{0}",param1)
-//		.replace("{1}",param2);
-//	}
 
 	public static boolean getBool(String key) {
 		try {

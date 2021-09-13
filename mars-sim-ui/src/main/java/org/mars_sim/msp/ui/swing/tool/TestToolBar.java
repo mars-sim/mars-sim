@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TestToolBar.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Manny Kung
  */
 
@@ -17,7 +17,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,6 +25,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 public class TestToolBar {
@@ -41,7 +41,7 @@ public class TestToolBar {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                    ex.printStackTrace();
+        			System.out.println("Error in initiating look and feel ui manager: " + ex);
                 }
 
                 JButton manage = new JButton("Manage");
@@ -73,13 +73,12 @@ public class TestToolBar {
             setLayout(new BorderLayout());
                
             try {
-                ImageIcon yourImage = new ImageIcon(TestToolBar.class.getResource(MainWindow.LANDER_PNG));
-                Image image = yourImage.getImage();
-//                Image image = ImageLoader.getImage(MainWindow.LANDER_PNG);
+//                ImageIcon yourImage = new ImageIcon(TestToolBar.class.getResource(MainWindow.LANDER_PNG));
+//                Image image = yourImage.getImage();
+                Image image = ImageLoader.getImage(MainWindow.LANDER_PNG);
                 bgImg = (BufferedImage) image;
-//                bgImg = ImageIO.read(new File("...")); 
             } catch (Exception ex) {
-                ex.printStackTrace();
+    			System.out.println("Error loading the image: " + ex);
             }
         }
 
@@ -99,7 +98,6 @@ public class TestToolBar {
                 g2d.dispose();
             }
         }
-
     }
 
     public class CustomToolBar extends JToolBar {
@@ -116,6 +114,5 @@ public class TestToolBar {
                 ((JButton) comp).setContentAreaFilled(false);
             }
         }
-
     }
 }

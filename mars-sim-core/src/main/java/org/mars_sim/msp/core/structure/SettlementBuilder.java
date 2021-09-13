@@ -6,11 +6,14 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.mars_sim.msp.core.Coordinates;
@@ -391,6 +394,11 @@ public final class SettlementBuilder {
 			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}
 		
+		// Check for any duplicate full Name
+		Collection<Person> people = unitManager.getPeople();
+		List<String> existingfullnames = people.stream()
+				.map(Person::getName).collect(Collectors.toList());
+
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 		
 		// Create all configured people.
@@ -403,9 +411,16 @@ public final class SettlementBuilder {
 					 sponsor = raFactory.getItem(m.getSponsorCode());
 				}
 	
+				// Check name
 				String name = m.getName();
+				if (existingfullnames.contains(name)) {
+					// Should not happen so a cheap fix in place
+					logger.warning("Person already called " + name);
+					name = crew.getName() + " Member" + settlement.getNumCitizens();
+				}
 				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
-					
+				existingfullnames.add(name);
+				
 				// Get person's gender or randomly determine it if not configured.
 				GenderType gender = m.getGender();
 				if (gender == null) {

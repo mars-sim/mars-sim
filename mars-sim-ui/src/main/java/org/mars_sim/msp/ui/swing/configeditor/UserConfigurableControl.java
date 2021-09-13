@@ -19,6 +19,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 
@@ -36,11 +37,13 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	private static final String LOAD = "load";
 	private static final String SAVE_NEW = "new";
 	private static final String SAVE = "save";
+	private static final String UNDO = "undo";
 	private static final String DELETE = "delete";
 	
 	private JButton saveButton;
 	private JButton delButton;
-	
+	private JButton saveAsButton;
+
 	private DefaultComboBoxModel<String> itemCB;
 
 	private WebTextField descriptionTF;
@@ -59,38 +62,50 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		this.buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		this.buttonPane.setBorder(BorderFactory.createTitledBorder(itemType));
 		
-		// Crew name selection
-		buttonPane.add(new WebLabel("Loaded :"));
+		// Item name selection
+		buttonPane.add(new WebLabel(Msg.getString("UserConfigurableControl.label.load") + " :"));
 		itemCB = new DefaultComboBoxModel<>();
 		itemCB.addAll(0, config.getItemNames());
 		JComboBox<String> crewSelector = new JComboBox<>(itemCB) ;
+		crewSelector.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.load", itemType));
 		crewSelector.addActionListener(this);
 		crewSelector.setActionCommand(LOAD);
 		buttonPane.add(crewSelector);
 		
 		// Description field
-		buttonPane.add(new WebLabel("   Description : "));
+		buttonPane.add(new WebLabel(Msg.getString("UserConfigurableControl.label.description") + " : "));
 		descriptionTF = new WebTextField(15);
+		descriptionTF.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.description", itemType));
 		buttonPane.add(descriptionTF);
 		
-		// Create save crew button.
-		saveButton = new JButton("Save");
+		// Create save button.
+		saveButton = new JButton(Msg.getString("UserConfigurableControl.button.save"));
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand(SAVE);
+		saveButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.save", itemType));
 		buttonPane.add(saveButton);		
 
-		// Create save new crew button.
-		JButton newButton = new JButton("Save as New");
-		newButton.setActionCommand(SAVE_NEW);
-		newButton.addActionListener(this);
-		buttonPane.add(newButton);
+		// Create save as new button.
+		saveAsButton = new JButton(Msg.getString("UserConfigurableControl.button.saveas"));
+		saveAsButton.setActionCommand(SAVE_NEW);
+		saveAsButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.saveas", itemType));
+		saveAsButton.addActionListener(this);
+		buttonPane.add(saveAsButton);
 
-		// Create save new crew button.
-		delButton = new JButton("Delete");
+		// Create delete button.
+		delButton = new JButton(Msg.getString("UserConfigurableControl.button.delete"));
 		delButton.setActionCommand(DELETE);
+		delButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.delete", itemType));
 		delButton.addActionListener(this);
 		buttonPane.add(delButton);
-
+		
+		// Create save new crew button.
+		JButton undoButton = new JButton(Msg.getString("UserConfigurableControl.button.undo"));
+		undoButton.setActionCommand(UNDO);
+		undoButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.undo"));
+		undoButton.addActionListener(this);
+		buttonPane.add(undoButton);
+		
 		String initialChoice = config.getItemNames().get(0);
 		selectItem(initialChoice);
 	}
@@ -101,7 +116,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	 */
 	private void selectItem(String newName) {
 		T newSelection = config.getItem(newName);
-		if ((selected== null) || !newSelection.getName().equals(selected.getName())) {
+		if ((selected == null) || !newSelection.getName().equals(selected.getName())) {
 			selected = newSelection;
 		
 			displayItem(selected);
@@ -139,14 +154,29 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 			if (!selected.getName().equalsIgnoreCase(loadItem)) {
 				JDialog.setDefaultLookAndFeelDecorated(true);
 				int result = JOptionPane.showConfirmDialog(parent, 
-								"Are you sure you want to reload the " + itemType + " '" + loadItem + "' ? " + System.lineSeparator()
+								"Are you sure you want to load the " + itemType + " '" + loadItem + "' ? " + System.lineSeparator()
 								+ "All the changes made will be lost.",
-								"Confirm Reloading " + itemType,
-								JOptionPane.YES_NO_CANCEL_OPTION);
+								"Confirm Loading " + itemType,
+								JOptionPane.YES_NO_OPTION);
 				
 				if (result == JOptionPane.YES_OPTION) {
 					selectItem(loadItem);
 				}
+			}
+			break;
+			
+		case UNDO: 
+			String currentItem = (String) itemCB.getSelectedItem();
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			int undoConfirm = JOptionPane.showConfirmDialog(parent, 
+							"Are you sure you want to reload the " + itemType + " '" + currentItem + "' ? " + System.lineSeparator()
+							+ "All the changes made will be lost.",
+							"Confirm Reloading " + itemType,
+							JOptionPane.YES_NO_OPTION);
+			
+			if (undoConfirm == JOptionPane.YES_OPTION) {
+				selected = null; // Clear selection to force reload
+				selectItem(currentItem);
 			}
 			break;
 			
@@ -156,7 +186,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 							"Are you sure you want to delete the " + itemType + " '" + selected.getName() + "' ? " + System.lineSeparator()
 							+ "All the changes made will be lost.",
 							"Confirm Delete " + itemType,
-							JOptionPane.YES_NO_CANCEL_OPTION);
+							JOptionPane.YES_NO_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
 				String oldItem = selected.getName();
@@ -177,7 +207,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 					+ "the simulation you are setting up, choose " + System.lineSeparator()
 					+ "'Commit Change' instead." + System.lineSeparator(),
 					"Confirm Saving " + itemType,
-					JOptionPane.YES_NO_CANCEL_OPTION);
+					JOptionPane.YES_NO_OPTION);
 			
 			if (result2 == JOptionPane.YES_OPTION) {
 				T newSelected = createItem(selected.getName(),
@@ -242,5 +272,14 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		
 		// Set the CB after the internal item to stop the dialog popping up
 		itemCB.setSelectedItem(newSelection);
+	}
+
+	/**
+	 * Control whether the current config can be saved
+	 * @param b
+	 */
+	public void allowSaving(boolean saveAllowed) {
+		saveButton.setEnabled(!selected.isBundled() && saveAllowed);
+		saveAsButton.setEnabled(saveAllowed);
 	}
 }

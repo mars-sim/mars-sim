@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SimLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Barry Evans
  */
 
@@ -422,6 +422,17 @@ public class SimLogger {
 		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
 	}
 
+	/**
+	 * Helper method just to log a severe message.
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 * @param e
+	 */
+	public void severe(Loggable actor, long timeBetweenLogs, String string, Exception e) {
+		log(null, actor, Level.SEVERE, timeBetweenLogs, string, e);
+	}
+	
 	/**
 	 * Helper method just to log a severe message.
 	 * @param actor

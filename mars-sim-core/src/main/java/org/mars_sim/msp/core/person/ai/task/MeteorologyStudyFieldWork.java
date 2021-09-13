@@ -255,7 +255,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 				
-				int randomNum = RandomUtil.getRandomInt(ResourceUtil.rockIDs.length);
+				int randomNum = RandomUtil.getRandomInt((ResourceUtil.rockIDs).length);
 				int randomRock = ResourceUtil.rockIDs[randomNum];
 				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
 				

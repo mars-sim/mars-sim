@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomUtil.java
- * @date 2021-08-28
+ * @date 2021-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.tool;

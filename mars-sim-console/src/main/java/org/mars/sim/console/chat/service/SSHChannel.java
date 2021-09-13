@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SSHChannel.java
- * @version 3.1.2 2020-12-30
+ * @date 2021-09-05
  * @author Barry Evans
  */
 
@@ -165,7 +165,6 @@ public class SSHChannel implements UserChannel, Command {
 			        }
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
 				completed = true;
 			}
         }

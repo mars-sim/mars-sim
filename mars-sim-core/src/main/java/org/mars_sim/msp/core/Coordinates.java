@@ -886,17 +886,14 @@ public class Coordinates implements Serializable {
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
-				logger.warning(2_000, "The latitude [" + s + "] is missing the direction sign.");
 				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
 			}
 
-			if (!(s.endsWith(Msg.getString("direction.northShort")) //$NON-NLS-1$ //$NON-NLS-2$
-					|| s.endsWith(Msg.getString("direction.southShort"))) //$NON-NLS-1$ //$NON-NLS-2$
+			if (!(s.endsWith(shortNorth) //$NON-NLS-1$ //$NON-NLS-2$
+					|| s.endsWith(shortSouth)) //$NON-NLS-1$ //$NON-NLS-2$
 				) { 
 				return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
-						Msg.getString("direction.northShort"), //$NON-NLS-1$
-						Msg.getString("direction.southShort") //$NON-NLS-1$
-				);
+						shortNorth, shortSouth);
 			} else {
 				String numLatitude = s.substring(0, s.length() - 1);
 				try {

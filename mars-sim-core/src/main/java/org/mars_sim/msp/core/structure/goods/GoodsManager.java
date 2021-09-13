@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -56,7 +56,6 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -411,6 +410,7 @@ public class GoodsManager implements Serializable, Temporal {
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.co2ID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.coID));			
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.sandID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.greyWaterID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.blackWaterID));
@@ -418,7 +418,7 @@ public class GoodsManager implements Serializable, Temporal {
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.eWasteID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.toxicWasteID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.cropWasteID));
-			// TODO: add vehicles to this list ?
+			// Note: add vehicles to this list ?
 		}
 		return exclusionBuyList;
 	}
