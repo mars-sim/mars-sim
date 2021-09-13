@@ -42,14 +42,14 @@ public final class RepairHelper {
 		String deputy = malfunction.getDeputyRepairer(type);
 		String myName = repairer.getName();
 		if (chief == null) {
-			logger.info(repairer, "Was appointed as the chief repairer handling the " 
+			logger.fine(repairer, "Was appointed as the chief repairer handling the " 
 					+ type.getName() + " work for '" 
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
 			 malfunction.setChiefRepairer(type, myName);						
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
-			logger.info(repairer, "Was appointed as the deputy repairer handling the "
+			logger.fine(repairer, "Was appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '" 
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());

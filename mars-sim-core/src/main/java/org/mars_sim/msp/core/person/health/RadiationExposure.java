@@ -236,8 +236,8 @@ public class RadiationExposure implements Serializable, Temporal {
 	private static MarsClock marsClock;
 
 	
-	public RadiationExposure(PhysicalCondition condition) {
-		this.person = condition.getPerson();
+	public RadiationExposure(Person person, PhysicalCondition condition) {
+		this.person = person;
 		// this.condition = condition;
 		dose = new double[3][3];
 	}
