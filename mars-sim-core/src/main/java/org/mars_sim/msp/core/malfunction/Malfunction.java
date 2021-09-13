@@ -8,8 +8,11 @@
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -33,6 +36,34 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class Malfunction implements Serializable {
 
 	/**
+	 * Description of Repairer's effort
+	 */
+	public static class Repairer {
+		private String worker;
+		private boolean active;
+		private double workTime;
+		
+		private Repairer(String worker, boolean active, double workTime) {
+			super();
+			this.worker = worker;
+			this.active = active;
+			this.workTime = workTime;
+		}
+
+		public String getWorker() {
+			return worker;
+		}
+
+		public boolean isActive() {
+			return active;
+		}
+
+		public double getWorkTime() {
+			return workTime;
+		}
+	}
+	
+	/**
 	 * Records the effort spent of fixing one phase of the malfunction.
 	 */
 	private static final class RepairWork implements Serializable {
@@ -46,14 +77,15 @@ public class Malfunction implements Serializable {
 		int desiredWorkers;
 		
 		/** The map for storing how much work time the repairers spent in fixing this malfunction. */
-		Map<String, Double> repairersWorkTime;
-
-		public int leavers = 0;
+		Map<String, Double> activeWorkers;
+		Map<String, Double> previousWorkers;
 		
 		public RepairWork(double actualEffort, int desiredWorkers) {
 			workExpected = actualEffort;
 			this.desiredWorkers = desiredWorkers;
-			repairersWorkTime = new HashMap<>();
+			activeWorkers = new HashMap<>();
+			previousWorkers = new HashMap<>();
+
 		}
 
 		public boolean isCompleted() {
@@ -61,8 +93,52 @@ public class Malfunction implements Serializable {
 		}
 
 		public int getAvailableSlots() {
-			return Math.max(desiredWorkers - (repairersWorkTime.size() + leavers),
-							0);
+			return desiredWorkers - activeWorkers.size();
+		}
+
+		/**
+		 * Worker leaves the repair
+		 * @param name
+		 * @return If the worker was active
+		 */
+		public boolean leaveWork(String name) {
+			if (activeWorkers.containsKey(name)) {
+				previousWorkers.put(name, activeWorkers.remove(name));
+				return true;
+			}
+			return false;
+		}
+
+		/**
+		 * Add some repair time for a worker
+		 * @param repairer
+		 * @param time
+		 */
+		public void addTime(String repairer, double time) {
+			double previousTime = 0D;
+			if (activeWorkers.containsKey(repairer)) {
+				previousTime = activeWorkers.get(repairer);
+			}
+			else if (previousWorkers.containsKey(repairer)) {
+				previousTime = previousWorkers.remove(repairer);
+			}
+
+			activeWorkers.put(repairer, previousTime + time);	
+		}
+
+		/**
+		 * Get the repairers effort. For non-active works add a "*"
+		 * @return
+		 */
+		public List<Repairer> getEffort() {
+			List<Repairer> result = new ArrayList<>();
+			for(Entry<String, Double> entry : activeWorkers.entrySet()) {
+				result.add(new Repairer(entry.getKey(), true, entry.getValue()));
+			}			
+			for(Entry<String, Double> entry : previousWorkers.entrySet()) {
+				result.add(new Repairer(entry.getKey(), false, entry.getValue()));
+			}
+			return result;
 		}
 	}
 	
@@ -254,16 +330,6 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Does this malfunction require Repair ?
-	 * @param type Type of work
-
-	 * @return true if it does
-	 */
-	public boolean isWorkNeeded(MalfunctionRepairWork type) {
-		return work.containsKey(type);
-	}
-
-	/**
 	 * Is the work repair done ?
 	 * @param type Type of work
 	 * @return true if work type repair is done
@@ -346,37 +412,28 @@ public class Malfunction implements Serializable {
 		}
 		else {
 			// if this malfunction has repair work
-			double t0 = w.workExpected;
-			double t = w.workCompleted;
-			if (t0 > 0) {
-				if (t == 0) {
+			if (!w.isCompleted()) {
+				if (w.workCompleted == 0) {
 					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 							getUniqueIdentifer() + " - " + workType + " repair work initiated by " + repairer + ".");
 				}
 				
-				t += time;
-				
-				// Add randomness to the expected work time
-				t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01));
-				
-				if (t0 > 0)
-					w.workExpected = t0;
-				else
-					t0 = w.workExpected;
-			
-				w.workCompleted = t;
+				// How much can be used
+				double workLeft = w.workExpected - w.workCompleted;
+				if (workLeft > time) {
+					// Use all time
+					remaining = 0;
+					w.workCompleted += time;
+				}
+				else {
+					// Some left
+					remaining = time - workLeft;
+					w.workCompleted = w.workExpected;
+					time = workLeft;
+				}
 				
 				// Add effort from the worker
-				Map<String, Double> repairersWorkTime = w.repairersWorkTime;
-				if (repairersWorkTime.containsKey(repairer)) {
-					repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
-				} else {
-					repairersWorkTime.put(repairer, time);
-				}
-				
-				if (t > t0) {
-					remaining = t - t0;
-				}
+				w.addTime(repairer, time);
 			}
 		}
 		
@@ -390,13 +447,9 @@ public class Malfunction implements Serializable {
 	 */
 	public void leaveWork(MalfunctionRepairWork required, String name) {
 		RepairWork w = getWorkType(required);
-		if (w.repairersWorkTime.containsKey(name)) {
-			w.leavers++;
-		
-			if (!w.isCompleted()) {
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+		if (w.leaveWork(name) && !w.isCompleted()) {
+			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					getUniqueIdentifer() + " repairer " + name + " leaving the scene.");
-			}
 		}
 	}
 	
@@ -407,7 +460,7 @@ public class Malfunction implements Serializable {
 	 */
 	public String getMostProductiveRepairer() {
 		// Collate all values
-		Map<String, Double> totalWork = work.values().stream().flatMap(w -> w.repairersWorkTime.entrySet().stream())
+		Map<String, Double> totalWork = work.values().stream().flatMap(w -> w.activeWorkers.entrySet().stream())
 			.collect(Collectors.toMap(Map.Entry::getKey,
 								  Map.Entry::getValue,
 								  (v1, v2) -> Double.sum(v1, v2)));
@@ -428,9 +481,9 @@ public class Malfunction implements Serializable {
 	 * @return 
 	 * @return Work effort by repairer
 	 */
-	public Map<String, Double> getRepairersEffort(MalfunctionRepairWork type) {
+	public List<Repairer> getRepairersEffort(MalfunctionRepairWork type) {
 		RepairWork w = getWorkType(type);
-		return w.repairersWorkTime;
+		return w.getEffort();
 	}
 	
 	/**
@@ -486,7 +539,7 @@ public class Malfunction implements Serializable {
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getRepairParts() {
-		return new HashMap<Integer, Integer>(repairParts);
+		return Collections.unmodifiableMap(repairParts);
 	}
 
 	/**
@@ -542,17 +595,12 @@ public class Malfunction implements Serializable {
 		return mostTraumatized;
 	}
 
-	public int getIncidentNum() {
-		return incidentNum;
-	}
-	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Malfunction m = (Malfunction) obj;
-		return this.incidentNum == m.getIncidentNum()
-				&& this.getName().equals(m.getName());
+		return this.incidentNum == m.incidentNum;
 	}
 
 	/**
@@ -561,8 +609,7 @@ public class Malfunction implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (1 + incidentNum);
-		hashCode *= (1 + definition.getSeverity());
+		int hashCode = (1 + incidentNum) % 32;
 		return hashCode;
 	}
 	
@@ -570,5 +617,4 @@ public class Malfunction implements Serializable {
 	public void destroy() {
 		repairParts = null;
 	}
-
 }

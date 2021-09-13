@@ -32,6 +32,8 @@ import com.alee.laf.progressbar.WebProgressBar;
 public class MalfunctionPanel
 extends WebPanel {
 
+	private static final int EMERGENCY_MALFUNCTION = 80;
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -67,10 +69,6 @@ extends WebPanel {
 
 		// Prepare name label.
 		nameLabel = new WebLabel(malfunction.getName(), WebLabel.CENTER);
-		if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
-			nameLabel.setText(malfunction.getName() + " - Emergency");
-			nameLabel.setForeground(Color.red);
-		}
 		add(nameLabel);
 
 		// Prepare repair pane.
@@ -99,6 +97,9 @@ extends WebPanel {
 
 		// Add tooltip.
 		setToolTipText(getToolTipString());
+		
+		// Apply the current malfunciton
+		update();
 	}
 
 	/**
@@ -106,25 +107,18 @@ extends WebPanel {
 	 */
 	public void update() {
 		// Update name label.
-		int eva = 0;
-		int emer = 0;
-		if (!malfunction.isWorkNeeded(MalfunctionRepairWork.EMERGENCY)) {
-			emer = 1;		
-		}
-		
-		if (!malfunction.isWorkNeeded(MalfunctionRepairWork.EVA)) {
-			eva = 1;
-		}
-		
-		if (eva == 1 && emer == 1) {
+		boolean eva = !malfunction.isWorkDone(MalfunctionRepairWork.EVA);
+		boolean emer = malfunction.getSeverity() >= EMERGENCY_MALFUNCTION;
+
+		if (eva && emer) {
 			nameLabel.setText(malfunction.getName() + "- Emergency & EVA");
 			nameLabel.setForeground(Color.red);
 		}
-		else if (eva == 1) {
+		else if (eva) {
 			nameLabel.setText(malfunction.getName() + "- EVA");
 			nameLabel.setForeground(Color.blue);
 		}		
-		else if (emer == 1) {
+		else if (emer) {
 			nameLabel.setText(malfunction.getName() + "- Emergency");	
 			nameLabel.setForeground(Color.red);
 		}

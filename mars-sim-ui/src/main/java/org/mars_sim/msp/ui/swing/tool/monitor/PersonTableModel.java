@@ -320,7 +320,7 @@ public class PersonTableModel extends UnitTableModel {
 				String performanceString = PhysicalCondition.getPerformanceStatus(performance);
 				performanceItemMap.put(PERFORMANCE, performanceString);
 
-				String emotionString = condition.getPerson().getMind().getEmotion().getDescription();
+				String emotionString = person.getMind().getEmotion().getDescription();
 				performanceItemMap.put(EMOTION, emotionString);
 
 				performanceValueCache.put(newUnit, performanceItemMap);

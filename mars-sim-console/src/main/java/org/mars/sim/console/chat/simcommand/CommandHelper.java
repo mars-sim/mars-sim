@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -270,9 +271,10 @@ public class CommandHelper {
 											   m.getDesiredRepairers(rw)));
 				
 				// Workers
-				response.appendTableHeading("Repairer", PERSON_WIDTH, "Work (millisol)");
-				for (Entry<String, Double> effort : m.getRepairersEffort(rw).entrySet()) {
-					response.appendTableRow(effort.getKey(), effort.getValue());
+				response.appendTableHeading("Repairer", PERSON_WIDTH,
+											"Active", "Work (millisol)");
+				for (Repairer effort : m.getRepairersEffort(rw)) {
+					response.appendTableRow(effort.getWorker(), effort.isActive(), effort.getWorkTime());
 				}
 			}
 		}

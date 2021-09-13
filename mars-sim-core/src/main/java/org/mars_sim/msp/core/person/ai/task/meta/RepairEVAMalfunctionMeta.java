@@ -6,13 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -53,12 +52,6 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
         
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)
 			return 0;
-			
-//		boolean returnFromMission = false;
-//		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
-//		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY) {
-//			returnFromMission = true;
-//		}
         		
         if (person.isInVehicle()) {
         	// Get the malfunctioning entity.
@@ -67,11 +60,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 			if (entity != null) {
 				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
 						
-				if ((malfunction == null)
-						|| (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) == 0)) {
-					return 0;
-				}
-				else if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+				if (malfunction != null) {
 					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
 				}
 			}
@@ -123,21 +112,16 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
 		// Add probability for all malfunctionable entities in person's local.
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
+		for(Malfunctionable entity : MalfunctionFactory.getMalfunctionables(settlement)) {
 			// Check if entity has any EVA malfunctions.
-			Iterator<Malfunction> j = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
-			while (j.hasNext()) {
-				double score = 0;
-				Malfunction malfunction = j.next();
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-					score = WEIGHT;
-					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
+				if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) > 0) {
+					double score = WEIGHT;
+					if (RepairHelper.hasRepairParts(settlement, malfunction)) {
 						score += WEIGHT;
 					}
+					result += score;
 				}
-				result += score;
 			}
 		}
 

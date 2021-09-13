@@ -206,35 +206,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 		return !malfunctions.isEmpty();
 	}
 
-	/**
-	 * Checks if entity has any emergency malfunctions.
-	 * 
-	 * @return true if emergency malfunction
-	 */
-	public boolean hasEmergencyMalfunction() {
-		boolean result = false;
-
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY))
-					return true;
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Checks if entity has any general malfunctions.
 	 * 
 	 * @return true if general malfunction
 	 */
-	public boolean hasGeneralMalfunction() {
+	public boolean hasInsideMalfunction() {
 		boolean result = false;
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL))
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
 					return true;
 			}
 		}
@@ -292,41 +275,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the most serious emergency malfunction the entity has.
-	 * 
-	 * @return malfunction
-	 */
-	public Malfunction getMostSeriousEmergencyMalfunction() {
-
-		Malfunction result = null;
-		double highestSeverity = 0D;
-
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)
-						&& malfunction.getSeverity() > highestSeverity) {
-					highestSeverity = malfunction.getSeverity();
-					result = malfunction;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Gets the most serious general malfunction the entity has.
 	 * 
 	 * @return malfunction
 	 */
-	public Malfunction getMostSeriousGeneralMalfunction() {
+	public Malfunction getMostSeriousInsideMalfunction() {
 
 		Malfunction result = null;
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL)
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -342,30 +302,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @return list of malfunctions.
 	 */
-	public List<Malfunction> getGeneralMalfunctions() {
-		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
+	public List<Malfunction> getAllInsideMalfunctions() {
+		List<Malfunction> result = new ArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL))
+			if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
 		return result;
 	}
 
-	/**
-	 * Gets a list of all emergency malfunctions sorted by highest severity first.
-	 * 
-	 * @return list of malfunctions.
-	 */
-	public List<Malfunction> getEmergencyMalfunctions() {
-		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
-		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY))
-				result.add(malfunction);
-		}
-		Collections.sort(result, new MalfunctionSeverityComparator());
-		return result;
-	}
 	
 	/**
 	 * Gets the most serious EVA malfunction the entity has.
@@ -395,8 +341,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @return list of malfunctions.
 	 */
-	public List<Malfunction> getEVAMalfunctions() {
-		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
+	public List<Malfunction> getAllEVAMalfunctions() {
+		List<Malfunction> result = new ArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 				result.add(malfunction);
@@ -738,34 +684,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 				logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity");
 			} 
-//
-//			if (tempWaterFlowModifier < 0D) {
-//				waterFlowModifier += tempWaterFlowModifier * time;
-//				if (waterFlowModifier < 0)
-//					waterFlowModifier = 0;
-//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
-//								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-//			} 
-//
-//			if (tempAirPressureModifier < 0D) {
-//				airPressureModifier += tempAirPressureModifier * time;
-//				if (airPressureModifier < 0)
-//					airPressureModifier = 0;
-//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
-//								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-//			} 
-//
-//			// temp mod can be above 0 or below zero
-//			if (tempTemperatureModifier != 0D) {
-//				temperatureModifier += tempTemperatureModifier * time;
-//				if (temperatureModifier < 0)
-//					temperatureModifier = 0;
-//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
-//								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-//			}
 		}
 	}
 
@@ -779,13 +697,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed() && !malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
-					Map<Integer, Double> effects = malfunction.getResourceEffects();
-					Iterator<Integer> i2 = effects.keySet().iterator();
-					while (i2.hasNext()) {
-						Integer resource = i2.next();
-						double amount = effects.get(resource);
-						double amountDepleted = amount * time;
+				if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
+					// Resources are depleted according to how much of the repair is remaining
+					double remaining = (100.0 - malfunction.getPercentageFixed())/100D;
+					for( Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
+						Integer resource = entry.getKey();
+						double amount = entry.getValue();
+						double amountDepleted = amount * time * remaining;
 						Inventory inv = entity.getInventory();
 						double amountStored = inv.getAmountResourceStored(resource, false);
 

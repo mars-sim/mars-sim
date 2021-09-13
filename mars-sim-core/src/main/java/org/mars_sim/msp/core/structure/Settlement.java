@@ -1798,15 +1798,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		List<Building> depressurizedBldgs = new ArrayList<>();
 		List<Building> selectedPool = new ArrayList<>();
 		
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			if (building.getEVA().getAirlock().isPressurized()
-					|| building.getEVA().getAirlock().isPressurizing())
-				pressurizedBldgs.add(building);
-			else if (building.getEVA().getAirlock().isDepressurized()
-					|| building.getEVA().getAirlock().isDepressurizing())
-				depressurizedBldgs.add(building);
+		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
+			Airlock airlock = airlockBdg.getEVA().getAirlock();
+			if (airlock.isPressurized()	|| airlock.isPressurizing())
+				pressurizedBldgs.add(airlockBdg);
+			else if (airlock.isDepressurized() || airlock.isDepressurizing())
+				depressurizedBldgs.add(airlockBdg);
 		}
 		
 		if (pressurizedBldgs.size() > 1) {
@@ -1829,11 +1826,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return null;
 		}
 		
+		// Search the closest of the buildings
 		double leastDistance = Double.MAX_VALUE;
-
-		Iterator<Building> ii = selectedPool.iterator();
-		while (i.hasNext()) {
-			Building building = ii.next();
+		for(Building building : selectedPool) {
 			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), xLocation,

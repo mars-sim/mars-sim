@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -445,17 +446,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	    	logger.log(towedVehicle, Level.INFO, 0, "Has been towed to " + disembarkSettlement.getName());
 
-			String issue = "";
-			if (vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction() != null)
-				issue = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction().getName();
-			if (issue == null && vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null)
-				issue = vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction().getName();
-
-			if (!issue.equals("")) {
+	    	Malfunction serious = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction();
+			if (serious != null) {
 				HistoricalEvent salvageEvent = new MissionHistoricalEvent(
 						EventType.MISSION_SALVAGE_VEHICLE, 
 						this, 
-						issue,
+						serious.getName(),
 					this.getTypeID(), 
 					towedVehicle.getName(),
 					person.getLocationTag().getImmediateLocation(), 

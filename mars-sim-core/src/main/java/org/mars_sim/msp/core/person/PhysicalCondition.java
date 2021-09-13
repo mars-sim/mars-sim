@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -71,8 +72,6 @@ public class PhysicalCondition implements Serializable {
 	
 	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
 	public static final double MENTAL_BREAKDOWN = 100D;
-	/** The amount of fatigue for the collapse to occur [millisols]. */
-	private static final double COLLAPSE_IMMINENT = 3000D;
 	/** Stress jump resulting from being in an accident. */
 	public static final double ACCIDENT_STRESS = 10D;
 	/** The food reserve factor. */
@@ -98,8 +97,6 @@ public class PhysicalCondition implements Serializable {
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static final double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
-	/** A decimal number a little bigger than zero for comparing doubles. */
-	private static final double SMALL_AMOUNT = 0.001;
 	
 	private static final double h2o_consumption;
 	private static final double minimum_air_pressure;
@@ -107,21 +104,18 @@ public class PhysicalCondition implements Serializable {
 	private static final double max_temperature;
 	private static final double food_consumption;
 	private static final double dessert_consumption;
-	private static final double highFatigueCollapseChance;
-	private static final double stressBreakdownChance;
 
-	public static final String WELL = "Well";
-	public static final String DEAD = "Dead";
-	public static final String DEAD_COLON = "Dead : ";
-	public static final String SICK_COLON = "Sick : ";
-	public static final String TBD = "(To be determined)";
-	public static final String SUICIDE = "Suicide";
-	public static final String INSTRUCTED = " committed suicide as instructed.";
+	private static final String WELL = "Well";
+	private static final String DEAD_COLON = "Dead : ";
+	private static final String SICK_COLON = "Sick : ";
+	private static final String TBD = "(To be determined)";
+	private static final String SUICIDE = "Suicide";
+	private static final String INSTRUCTED = " committed suicide as instructed.";
 	
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 	
-	private static double o2_consumption;
+	private static final double o2_consumption;
 	
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
@@ -219,9 +213,6 @@ public class PhysicalCondition implements Serializable {
 	
 	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
-//	private static Complaint depression;
-//	private static Complaint panicAttack;
-//	private static Complaint highFatigue;
 	private static Complaint radiationPoisoning;
 
 	private static Complaint dehydration;
@@ -251,17 +242,11 @@ public class PhysicalCondition implements Serializable {
 		max_temperature = personConfig.getMaxTemperature();
 		food_consumption = personConfig.getFoodConsumptionRate();
 		dessert_consumption = personConfig.getDessertConsumptionRate();
-
-		stressBreakdownChance = personConfig.getStressBreakdownChance();
-		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
 		
 		medicalManager = sim.getMedicalManager();
 		
 		// Set health instances
 		if (medicalManager != null) {		
-//			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-//			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
 			dehydration = medicalManager.getDehydration();
 			starvation = medicalManager.getStarvation();
@@ -287,7 +272,7 @@ public class PhysicalCondition implements Serializable {
 		
 		alive = true;
 
-		radiation = new RadiationExposure(this);
+		radiation = new RadiationExposure(newPerson, this);
 		radiation.initializeWithRandomDose();
 
 		deathDetails = null;
@@ -408,13 +393,15 @@ public class PhysicalCondition implements Serializable {
                     || person.getTaskDescription().toLowerCase().contains("rest")
                     || person.getTaskDescription().toLowerCase().contains("sleep");
 			
+            double currentO2Consumption = 0D;
 			if (restingTask)
-				o2_consumption = personConfig.getLowO2ConsumptionRate();
+				currentO2Consumption = personConfig.getLowO2ConsumptionRate();
 			else
-				o2_consumption = personConfig.getNominalO2ConsumptionRate();
+				currentO2Consumption = personConfig.getNominalO2ConsumptionRate();
 				
 			// Check life support system
-			checkLifeSupport(time, support);
+			checkLifeSupport(time, currentO2Consumption, support);
+			
 			// Update radiation counter
 			radiation.timePassing(pulse);
 			// Update the existing health problems
@@ -541,12 +528,13 @@ public class PhysicalCondition implements Serializable {
 	 * Checks on the life support
 	 * 
 	 * @param time
+	 * @param currentO2Consumption 
 	 * @param support
 	 */
-	private void checkLifeSupport(double time, LifeSupportInterface support) {
+	private void checkLifeSupport(double time, double currentO2Consumption, LifeSupportInterface support) {
 		if (time > 0) {
 			try {
-				if (lackOxygen(support, o2_consumption * (time / 1000D)))
+				if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
 					logger.log(person, Level.SEVERE, 60_000, "Reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
 					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal air pressure.");
@@ -997,7 +985,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
-		List<Complaint> result = new CopyOnWriteArrayList<Complaint>();
+		List<Complaint> result = new ArrayList<>();
 		List<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
@@ -1165,36 +1153,7 @@ public class PhysicalCondition implements Serializable {
 					
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
-
-			String phrase = "";
-
-			if (type == ComplaintType.STARVATION)
-				phrase = "Starving.";
-			else if (type == ComplaintType.DEHYDRATION)
-				phrase = "Dehydrated.";
-			else if (type == ComplaintType.COLD)
-				phrase = "Caught a cold.";
-			else if (type == ComplaintType.FLU)
-				phrase = "Caught the flu.";
-			else if (type == ComplaintType.FEVER)
-				phrase = "Having a fever.";
-			else if (type == ComplaintType.DECOMPRESSION)
-				phrase = "Suffering from decompression.";
-			else if (type == ComplaintType.FREEZING)
-				phrase = "Freezing.";
-			else if (type == ComplaintType.HEAT_STROKE)
-				phrase = "Suffering from heat stroke.";
-			else if (type == ComplaintType.SUFFOCATION)
-				phrase = "Suffocating.";
-			else if (type == ComplaintType.LACERATION)
-				phrase = "Had a laceration.";
-			else if (type == ComplaintType.PULLED_MUSCLE_TENDON)
-				phrase = "Pulled a muscle.";
-			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-				phrase = "Collapsed under high fatigue.";
-
-			logger.log(person, Level.INFO, 60_000, phrase);
-
+			logger.log(person, Level.INFO, 60_000, type.getName());
 			recalculatePerformance();
 		}
 	}
@@ -1517,24 +1476,24 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void recalculatePerformance() {
 
-		double tempPerformance = 1.0D;
+		double maxPerformance = 1.0D;
 
 		serious = null;
 
 		// Check the existing problems. find most serious problem and how it
-		// affects performance
-		Iterator<HealthProblem> iter = problems.iterator();
-		while (iter.hasNext()) {
-			HealthProblem problem = iter.next();
+		// affects performance. This is the performace baseline
+		for(HealthProblem problem : problems) {
 			double factor = problem.getPerformanceFactor();
-			if (factor < tempPerformance) {
-				tempPerformance = factor;
+			if (factor < maxPerformance) {
+				maxPerformance = factor;
 			}
 
 			if ((serious == null) || (serious.getIllness().getSeriousness() < problem.getIllness().getSeriousness())) {
 				serious = problem;
 			}
 		}
+
+		double tempPerformance = maxPerformance;
 
 		// High thirst reduces performance.
 		if (thirst > 800D) {
@@ -1571,6 +1530,10 @@ public class PhysicalCondition implements Serializable {
 			tempPerformance -= 400_000 / kJoules * ENERGY_PERFORMANCE_MODIFIER / 4;
 		}
 
+		// The adjusted performance can not be more than the baseline max
+		if (tempPerformance > maxPerformance) {
+			tempPerformance = maxPerformance;
+		}
 		setPerformanceFactor(tempPerformance);
 
 	}
@@ -1832,15 +1795,6 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public static double getDessertConsumptionRate() {
 		return dessert_consumption;
-	}
-
-	/**
-	 * Gets the person with this physical condition
-	 * 
-	 * @return
-	 */
-	public Person getPerson() {
-		return person;
 	}
 
 	public RadiationExposure getRadiationExposure() {
