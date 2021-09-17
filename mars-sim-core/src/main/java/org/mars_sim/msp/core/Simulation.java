@@ -287,6 +287,8 @@ public class Simulation implements ClockListener, Serializable {
 	public void testRun() {		
 		Simulation sim = Simulation.instance();
 		ResourceUtil.getInstance();
+		
+		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
@@ -311,6 +313,10 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 		
+		simulationConfig = SimulationConfig.instance();
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+											   medicalManager, eventManager,
+											   simulationConfig.getPartConfiguration());
 		
 		Unit.setUnitManager(unitManager);
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
