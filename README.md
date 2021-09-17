@@ -156,40 +156,15 @@ planetary surface.
 
 ---
 
-## Website
-For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
-
----
-
-## Wiki
-* Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub. 
-
----
-
-## Supported Platforms
-* Windows
-* MacOS
-* Linux
-
----
-
-## Download 
-Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).  
-
-Also, see the previous and official release version at 
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/).
-
-If you like, click on the SF's button below to automatically sense the correct OS platform to download. 
-
-[![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
-
-
-
----
-
 ## Getting Started
 
 ### Prerequisites
+
+<a href="https://foojay.io/today/works-with-openjdk">
+   <img align="right" 
+        src="https://github.com/foojayio/badges/raw/main/works_with_openjdk/Works-with-OpenJDK.png"   
+        width="100">
+</a>
 
 Currently, mars-sim supports Java 11. We will transition to Java 17 as 
 JDK 17 is the next long-term support (LTS) release.
@@ -308,8 +283,9 @@ your machine, JCP won't be able to recognize them.
 6. To track what versions of openjdk have been installed on your machine. 
 Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html)
 
+---
  
-### Remote Console Connection
+## Remote Console Connection
 
 To set up true headless mode in your platform, follow the steps in this 
 [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
@@ -384,8 +360,38 @@ Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/m
 
 ---
 
+
+## Website
+For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
+
+---
+
+## Wiki
+* Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub. 
+
+---
+
+## Supported Platforms
+* Windows
+* MacOS
+* Linux
+
+---
+
 ## Official Codebase
 * https://github.com/mars-sim/mars-sim
+
+---
+
+## Download 
+Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).  
+
+Also, see the previous and official release version at 
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/).
+
+If you like, click on the SF's button below to automatically sense the correct OS platform to download. 
+
+[![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 
 ---
 

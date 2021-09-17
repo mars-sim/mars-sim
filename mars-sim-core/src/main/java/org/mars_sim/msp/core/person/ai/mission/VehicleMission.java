@@ -570,15 +570,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public final boolean isVehicleLoaded() {
 		if (vehicle == null) {
-			throw new IllegalStateException(getPhase() + ": vehicle is null.");
+			throw new IllegalStateException(getPhase().getName() + ": vehicle is null.");
 		}
 
 		try {
 			return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 					getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
 		} catch (Exception e) {
-			throw new IllegalStateException(getPhase().getName(), e);
+			logger.severe(vehicle, "Cannot test if this vehicle is fully loaded: ", e);
 		}
+		
+		return true;
 	}
 
 	/**
@@ -964,11 +966,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = getEstimatedTotalDistance();
+		double distance = getEstimatedTotalRemainingDistance(); // getEstimatedTotalDistance();
 		if (distance > 0) {
 			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " 
 					+ Math.round(distance * 10.0)/10.0 + " km.");
-			return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+			return getResourcesNeededForTrip(useMargin, distance);
 		}
 		
 		return new HashMap<>();
@@ -1516,11 +1518,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			double remainingCap = vehicle.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
 			
 			if (storedAmount < (req - SMALL_AMOUNT_COMPARISON)) {
-				sufficientSupplies = false;
 
 				// Note: account for occupants inside the vehicle to use up resources over time
 				if (storedAmount > .95 * req) {
-					sufficientSupplies = true;
 					logger.info(vehicle, 10_000, "Within .95 margin for " + resourceString
 						+ " ->  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg " 
 						+ "  required: " + Math.round(req*10.0)/10.0 + " kg " 
@@ -1530,7 +1530,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				
 				else {
-					logger.info(vehicle, 10_000, "Await loading " + resourceString 
+					sufficientSupplies = false;
+					logger.info(vehicle, 10_000, "Not enough " + resourceString 
 						+ " ->  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
 						+ "  required: " + Math.round(req*10.0)/10.0 + " kg " 
 						+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg " 
@@ -1921,7 +1922,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 				result.put(containerID, numContainers);				
-			}  
+			} 
 			
 			// Note: containers are NOT designed to hold parts 
 			// Parts do not need a container. Any exceptions for that ? 

@@ -1091,10 +1091,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		boolean sufficientSupplies = true;
 
 		// Check if there are enough resources in the vehicle.
-		sufficientSupplies = isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement);
+		if (!requiredResources.isEmpty() && !optionalResources.isEmpty())
+			sufficientSupplies = isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement);
 
 		// Check if there is enough equipment in the vehicle.
-		if (sufficientSupplies) {
+		if (sufficientSupplies && !requiredEquipment.isEmpty() && !optionalEquipment.isEmpty()) {
 			sufficientSupplies = isFullyLoadedWithEquipment(requiredEquipment, optionalEquipment, vehicle, settlement);
 		}
 

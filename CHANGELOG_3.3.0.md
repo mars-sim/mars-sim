@@ -5,7 +5,7 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.3.0 (build ____) - 2021-__-__
+## v3.3.0 (build 6184) - 2021-09-14
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -15,11 +15,13 @@ Copyright (C) 2021 Scott Davis
 4. Refine vehicle modeling. Give rovers and delivery drones acceleration profile. 
 5. Sort Parts by type.
 6. Define countries and sponsors to xml instead of hard-coding them.
-
+7. Define scenarios.
 
 ### UI IMPROVEMENT :
 
 1. Add back the Orbit Viewer showing a graphical representation of the solar system
+2. Add Authority Editor.
+3. Add Scenario Editor.
 
 ### FIXES :
 
@@ -28,6 +30,7 @@ Copyright (C) 2021 Scott Davis
 3. Fix drone delivery.
 4. Fix switching vehicle operator.
 5. Adopt Sonarcloud for improving code quality.
+6. Correct repairers from not being able to stop repairing. 
 
 ------------------------------------------|---------------------
 ## v3.2.0 (build 5916) - 2021-07-06

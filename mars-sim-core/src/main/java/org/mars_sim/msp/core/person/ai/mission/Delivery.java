@@ -303,7 +303,6 @@ public class Delivery extends DroneMission implements Serializable {
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} 
 		
-		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
 			setPhaseDescription(

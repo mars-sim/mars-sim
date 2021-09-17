@@ -112,7 +112,6 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
-//		logger.info(startingMember + " had started RoverMission");
 	}
 
 	/**

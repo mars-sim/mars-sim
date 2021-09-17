@@ -431,6 +431,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 		}
 		
+        // Add experience points
+        addExperience(time);
+
 		return 0;
 	}
 
@@ -1094,10 +1097,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		boolean sufficientSupplies = true;
 
 		// Check if there are enough resources in the vehicle.
-		sufficientSupplies = isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement);
+		if (!requiredResources.isEmpty() && !optionalResources.isEmpty())
+			sufficientSupplies = isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement);
 
 		// Check if there is enough equipment in the vehicle.
-		if (sufficientSupplies)
+		if (sufficientSupplies && !requiredEquipment.isEmpty() && !optionalEquipment.isEmpty())
 			sufficientSupplies = isFullyLoadedWithEquipment(requiredEquipment, optionalEquipment, vehicle, settlement);
 
 		return sufficientSupplies;
@@ -1284,6 +1288,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 				
 				else {
+					sufficientSupplies = true;
 					logger.info(vehicle, 10_000, "4. Done loading " + amountResource 
 							+ " ->  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
 							+ "  required: " + Math.round(req*10.0)/10.0 + " kg " 
@@ -1347,6 +1352,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 				
 				else {
+					sufficientSupplies = true;
 					logger.info(vehicle, 10_000, "5. Done loading " + itemResource
 							+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
 							+ "  required: " + Math.round(req*10.0)/10.0 + "x"
@@ -1399,7 +1405,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (storedNum < num) {
 				sufficientSupplies = false;
 				logger.info(vehicle, 10_000, vehicle.getMission() 
-						+ " 5. Await loading " + num + "x " + equipmentName
+						+ " 6. Await loading " + num + "x " + equipmentName
 						+ "  available: " + availableNum + "x "
 						+ "  vehicle stored: " + storedNum + "x "
 						+ "  toLoad: " + toLoad + "x "
@@ -1408,7 +1414,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			
 			else
 				logger.info(vehicle, 10_000, vehicle.getMission() 
-						+ " 5. Done loading " + num + "x " + equipmentName
+						+ " 6. Done loading " + num + "x " + equipmentName
 						+ "  available: " + availableNum + "x "
 						+ "  vehicle stored: " + storedNum + "x "
 						+ "  toLoad: " + toLoad + "x "
@@ -1442,7 +1448,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (hasStoredSettlement) {
 					logger.info(vehicle, 10_000, vehicle.getMission() 
-					+ " 5. Await loading " + num + "x " + equipmentName
+					+ " 7. Await loading " + num + "x " + equipmentName
 					+ "  available: " + availableNum + "x "
 					+ "  vehicle stored: " + storedNum + "x "
 					+ "  toLoad: " + toLoad + "x "
@@ -1451,7 +1457,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				
 				else {
 					logger.info(vehicle, 10_000, vehicle.getMission() 
-					+ " 5. Insufficient settlement supply " + num + "x " + equipmentName
+					+ " 7. Insufficient settlement supply " + num + "x " + equipmentName
 					+ "  available: " + availableNum + "x "
 					+ "  vehicle stored: " + storedNum + "x "
 					+ "  toLoad: " + toLoad + "x "
@@ -1461,7 +1467,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			
 			else {
 				logger.info(vehicle, 10_000, vehicle.getMission() 
-				+ " 5. Done loading " + num + "x " + equipmentName
+				+ " 7. Done loading " + num + "x " + equipmentName
 				+ "  available: " + availableNum + "x "
 				+ "  vehicle stored: " + storedNum + "x "
 				+ "  toLoad: " + toLoad + "x "

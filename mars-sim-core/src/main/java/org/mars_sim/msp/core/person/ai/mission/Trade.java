@@ -312,11 +312,7 @@ public class Trade extends RoverMission implements Serializable {
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
+		}
 		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
@@ -342,6 +338,7 @@ public class Trade extends RoverMission implements Serializable {
 		} else if (LOAD_GOODS.equals(getPhase())) {
 			performLoadGoodsPhase(member);
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
+			computeEstimatedTotalDistance();
 			performTradeEmbarkingPhase(member);
 		}
 	}

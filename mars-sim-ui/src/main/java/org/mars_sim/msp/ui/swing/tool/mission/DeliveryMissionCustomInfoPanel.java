@@ -209,7 +209,7 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		 */
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Good";
-			else return "Amount";
+			else return "# or kg";
 		}
 
 		/**

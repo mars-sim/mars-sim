@@ -129,8 +129,8 @@ public class Drone extends Flyer implements Serializable {
 											amountLoading = needed;
 										}
 										double req = rm.getResourcesNeededForRemainingMission(true).get(id).doubleValue();
-										boolean isFullyLoaded = rm.canTransfer(id, amountLoading, req);
-										if (!isFullyLoaded) {
+										boolean canTransfer = rm.canTransfer(id, amountLoading, req);
+										if (canTransfer) {
 											// Load this resource
 											rm.loadAmountResource(rm.getResourcesNeededForRemainingMission(true), emptyMap, amountLoading, id, true); 
 											loadingResourcesMap.put(id, diff);

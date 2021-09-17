@@ -193,7 +193,7 @@ public class DroneMission extends VehicleMission {
 		if (member instanceof Person) {
 			Person person = (Person) member;
 			Drone d = (Drone) getDrone();
-			// TODO: should it check for fatigue only ?
+			// Note : should it check for fatigue
 //			if (person.getFatigue() < 750) {
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
@@ -209,8 +209,6 @@ public class DroneMission extends VehicleMission {
 		else if (member instanceof Robot) {
 			Robot robot = (Robot) member;
 			Drone d = (Drone) getDrone();
-			// TODO: should it check for fatigue only ?
-//			if (person.getFatigue() < 750) {
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),
