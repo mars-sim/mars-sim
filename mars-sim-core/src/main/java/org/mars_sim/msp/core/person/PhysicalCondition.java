@@ -98,12 +98,13 @@ public class PhysicalCondition implements Serializable {
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static final double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
 	
-	private static final double h2o_consumption;
-	private static final double minimum_air_pressure;
-	private static final double min_temperature;
-	private static final double max_temperature;
-	private static final double food_consumption;
-	private static final double dessert_consumption;
+	private static final double O2_CONSUMPTION;
+	private static final double H2O_CONSUMPTION;
+	private static final double MIN_AIR_PRESSURE;
+	private static final double MIN_TEMPERATURE;
+	private static final double MAX_TEMPERATURE;
+	private static final double FOOD_CONSUMPTION;
+	private static final double DESSERT_CONSUMPTION;
 
 	private static final String WELL = "Well";
 	private static final String DEAD_COLON = "Dead : ";
@@ -115,7 +116,6 @@ public class PhysicalCondition implements Serializable {
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 	
-	private static final double o2_consumption;
 	
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
@@ -176,7 +176,6 @@ public class PhysicalCondition implements Serializable {
 
 	private double bodyMassDeviation;
 
-	private String name;
 	/** Person owning this physical. */
 	private Person person;
 	/** Details of persons death. */
@@ -234,14 +233,14 @@ public class PhysicalCondition implements Serializable {
 			
 		personConfig = SimulationConfig.instance().getPersonConfig();
 		
-		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-		o2_consumption = personConfig.getNominalO2ConsumptionRate();
+		H2O_CONSUMPTION = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+		O2_CONSUMPTION = personConfig.getNominalO2ConsumptionRate();
 
-		minimum_air_pressure = personConfig.getMinAirPressure();
-		min_temperature = personConfig.getMinTemperature();
-		max_temperature = personConfig.getMaxTemperature();
-		food_consumption = personConfig.getFoodConsumptionRate();
-		dessert_consumption = personConfig.getDessertConsumptionRate();
+		MIN_AIR_PRESSURE = personConfig.getMinAirPressure();
+		MIN_TEMPERATURE = personConfig.getMinTemperature();
+		MAX_TEMPERATURE = personConfig.getMaxTemperature();
+		FOOD_CONSUMPTION = personConfig.getFoodConsumptionRate();
+		DESSERT_CONSUMPTION = personConfig.getDessertConsumptionRate();
 		
 		medicalManager = sim.getMedicalManager();
 		
@@ -265,14 +264,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public PhysicalCondition(Person newPerson) {
 		person = newPerson;
-		name = newPerson.getName();
 		
 		circadian = person.getCircadianClock();
 		naturalAttributeManager = person.getNaturalAttributeManager();
 		
 		alive = true;
 
-		radiation = new RadiationExposure(newPerson, this);
+		radiation = new RadiationExposure(newPerson);
 		radiation.initializeWithRandomDose();
 
 		deathDetails = null;
@@ -305,9 +303,9 @@ public class PhysicalCondition implements Serializable {
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;		
 		// Assume a person drinks 10 times a day, each time ~375 mL
-		waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
+		waterConsumedPerServing = H2O_CONSUMPTION * bodyMassDeviation / 10D; // about .3 kg per serving
 
-		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
+		foodDryMassPerServing = FOOD_CONSUMPTION / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
 		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
 
@@ -393,7 +391,7 @@ public class PhysicalCondition implements Serializable {
                     || person.getTaskDescription().toLowerCase().contains("rest")
                     || person.getTaskDescription().toLowerCase().contains("sleep");
 			
-            double currentO2Consumption = 0D;
+            double currentO2Consumption;
 			if (restingTask)
 				currentO2Consumption = personConfig.getLowO2ConsumptionRate();
 			else
@@ -536,9 +534,9 @@ public class PhysicalCondition implements Serializable {
 			try {
 				if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
 					logger.log(person, Level.SEVERE, 60_000, "Reported lack of oxygen.");
-				if (badAirPressure(support, minimum_air_pressure))
+				if (badAirPressure(support, MIN_AIR_PRESSURE))
 					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal air pressure.");
-				if (badTemperature(support, min_temperature, max_temperature))
+				if (badTemperature(support, MIN_TEMPERATURE, MAX_TEMPERATURE))
 					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal temperature.");
 				
 			} catch (Exception e) {
@@ -1276,7 +1274,7 @@ public class PhysicalCondition implements Serializable {
 				reading = "High Temperature";
 				unit = " C";
 			}
-			String s = reading + " sensor triggered.  Affected: " + name
+			String s = reading + " sensor triggered. "
 					+ "  Actual: " + Math.round(actual*decimals)/decimals + unit
 					+ "  Required: " + Math.round(required*decimals)/decimals + unit;
 			logger.log(person, Level.SEVERE, 60_000, s);
@@ -1760,7 +1758,7 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getOxygenConsumptionRate() {
-		return o2_consumption;
+		return O2_CONSUMPTION;
 	}
 
 	/**
@@ -1770,7 +1768,7 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getWaterConsumptionRate() {
-		return h2o_consumption;
+		return H2O_CONSUMPTION;
 	}
 
 	public double getWaterConsumedPerServing() {
@@ -1784,7 +1782,7 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getFoodConsumptionRate() {
-		return food_consumption;
+		return FOOD_CONSUMPTION;
 	}
 
 	/**
@@ -1794,7 +1792,7 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getDessertConsumptionRate() {
-		return dessert_consumption;
+		return DESSERT_CONSUMPTION;
 	}
 
 	public RadiationExposure getRadiationExposure() {

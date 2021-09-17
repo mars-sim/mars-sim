@@ -13,20 +13,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.BodyRegionType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -35,10 +33,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(RadiationExposure.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(RadiationExposure.class.getName());
 
 	/*
 	 * Curiosity's Radiation Assessment Detector (RAD). Note: Mars rover Curiosity
@@ -199,10 +194,9 @@ public class RadiationExposure implements Serializable, Temporal {
 	// Career whole-body effective dose limits, per NCRP guidelines. */
 	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
-	private static final String WAS = " was ";
 	private static final String EXPOSED_TO = "exposed to ";
 	private static final String DOSE = " mSv dose of radiation";
-	private static final String EVA_OPERATION = " during an EVA operation near ";
+	private static final String EVA_OPERATION = " during an EVA operation.";
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
@@ -228,7 +222,6 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
 	private double[][] dose;
 
-	// private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private Person person;
@@ -236,9 +229,8 @@ public class RadiationExposure implements Serializable, Temporal {
 	private static MarsClock marsClock;
 
 	
-	public RadiationExposure(Person person, PhysicalCondition condition) {
+	public RadiationExposure(Person person) {
 		this.person = person;
-		// this.condition = condition;
 		dose = new double[3][3];
 	}
 
@@ -547,27 +539,24 @@ public class RadiationExposure implements Serializable, Temporal {
 			}
 
 			if (totalExposure > 0) {
-				// String loc = "Outside";
-				String coord = person.getCoordinates().getFormattedString();
-				String str = person.getName() + WAS + EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0;
+				String str = EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0
+							+ DOSE;
 
 				if (person.getVehicle() == null)
 					// if a person steps outside of the vehicle
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + coord + "] " + str + DOSE + EVA_OPERATION + coord, null);
+					logger.info(person, str + EVA_OPERATION);
 				else {
 					String activity = "";
 					if (person.getMind().getMission() != null)
 						activity = person.getMind().getMission().getTypeID();
 					else
 						activity = person.getTaskDescription();
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + coord + "] " + str + DOSE + " while " + activity, null);
+					logger.info(person, str + " while " + activity);
 				}
 
 				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE, 
 						eventMap,
-						"Dose of " + Math.round(totalExposure * 10000.0) / 10000.0 + " mSv",
+						Math.round(totalExposure * 10000.0) / 10000.0 + DOSE,
 						person.getTaskDescription(), 
 						person.getName(), person.getLocationTag().getImmediateLocation(),
 						person.getLocationTag().getLocale(),

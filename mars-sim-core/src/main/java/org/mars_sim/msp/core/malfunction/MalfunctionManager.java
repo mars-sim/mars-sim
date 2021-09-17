@@ -22,8 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -40,6 +38,7 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -134,15 +133,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 	
-	// The static instances
-	private static SimulationConfig simconfig = SimulationConfig.instance();
-	private static Simulation sim = Simulation.instance();
-	
 	private static MasterClock masterClock;
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
 	private static HistoricalEventManager eventManager;
+	private static PartConfig partConfig;
 	
 	// NOTE : each building has its own MalfunctionManager
 
@@ -169,15 +165,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		currentWearLifeTime = wearLifeTime;
 		
 		currentWearCondition = 100D;
-
-		masterClock = sim.getMasterClock();
-		if (masterClock != null)
-			// Note that this if above is for maven test, or else NullPointerException
-			currentTime = masterClock.getMarsClock();
-			
-		medic = sim.getMedicalManager();
-		factory = sim.getMalfunctionFactory();
-		eventManager = sim.getEventManager();
 	}
 
 	/**
@@ -303,7 +290,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllInsideMalfunctions() {
-		List<Malfunction> result = new ArrayList<Malfunction>();
+		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
 				result.add(malfunction);
@@ -342,7 +329,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllEVAMalfunctions() {
-		List<Malfunction> result = new ArrayList<Malfunction>();
+		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 				result.add(malfunction);
@@ -923,7 +910,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			partsNeededForMaintenance = new ConcurrentHashMap<>();
 		partsNeededForMaintenance.clear();
 
-		for(MaintenanceScope maintenance : simconfig.getPartConfiguration().getMaintenance(scopes)) {
+		for(MaintenanceScope maintenance : partConfig.getMaintenance(scopes)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
 				int id = maintenance.getPart().getID();
@@ -933,8 +920,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 				partsNeededForMaintenance.put(id, number);
 			}	
 		}
-		
-
 	}
 
 	/**
@@ -1094,11 +1079,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param m {@link MedicalManager}	 
 	 * @param e {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf, MedicalManager m, HistoricalEventManager e) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf,
+										   MedicalManager m, HistoricalEventManager e, PartConfig pc) {
 		masterClock = c0;
 		currentTime = c1;
-		sim = Simulation.instance();
-		simconfig = SimulationConfig.instance();
+		partConfig = pc;
 		factory = mf;
 		medic = m;
 		eventManager = e;

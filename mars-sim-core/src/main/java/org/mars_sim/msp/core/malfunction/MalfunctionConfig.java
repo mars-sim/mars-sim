@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -103,7 +105,24 @@ public class MalfunctionConfig implements Serializable {
 			// just in case if another thread is being created
 			return;
 		}
-			
+		
+		// Build list of potential known systems
+		Set<String> knownSystems = Arrays.stream(FunctionType.values())
+									.map(i -> i.getName().toLowerCase())
+									.collect(Collectors.toSet());
+		knownSystems.addAll(Arrays.stream(SystemType.values())
+							.map(i -> i.getName().toLowerCase())
+							.collect(Collectors.toSet()));
+		knownSystems.addAll(Arrays.stream(HeatSourceType.values())
+							.map(i -> i.getName().toLowerCase())
+							.collect(Collectors.toSet()));		
+		knownSystems.addAll(Arrays.stream(PowerSourceType.values())
+							.map(i -> i.getName().toLowerCase())
+							.collect(Collectors.toSet()));	
+		knownSystems.addAll(Arrays.stream(VehicleType.values())
+							.map(i -> i.getName().toLowerCase())
+							.collect(Collectors.toSet()));	
+		
 		// Build the global list in a temp to avoid access before it is built
 		List<MalfunctionMeta> newList = new ArrayList<>();
 
@@ -133,51 +152,14 @@ public class MalfunctionConfig implements Serializable {
 			List<Element> systemNodes = entityListElement.getChildren(SYSTEM_EL);
 
 			for (Element systemElement : systemNodes) {
-				boolean exist = false;
-				String sys_name = Conversion.capitalize(systemElement.getAttributeValue(NAME_ATTR));
-				for (FunctionType f : FunctionType.values()) {
-					if (sys_name.equalsIgnoreCase(f.getName())) {
-						systems.add(sys_name.toLowerCase());
-						exist = true;
-					}
+				String sysName = Conversion.capitalize(systemElement.getAttributeValue(NAME_ATTR)).toLowerCase();
+				if (knownSystems.contains(sysName)) {
+					systems.add(sysName);
 				}
-				if (!exist) {
-					for (SystemType s : SystemType.values()) {
-						if (sys_name.equalsIgnoreCase(s.getName())) {
-							systems.add(sys_name.toLowerCase());
-							exist = true;
-						}
-					}
-				}
-				if (!exist) {
-					for (HeatSourceType h : HeatSourceType.values()) {
-						if (sys_name.equalsIgnoreCase(h.getName())) {
-							systems.add(sys_name.toLowerCase());
-							exist = true;
-						}
-					}
-				}
-				if (!exist) {
-					for (PowerSourceType p : PowerSourceType.values()) {
-						if (sys_name.equalsIgnoreCase(p.getName())) {
-							systems.add(sys_name.toLowerCase());
-							exist = true;
-						}
-					}
-				}
-				if (!exist) {
-					for (VehicleType t : VehicleType.values()) {
-						if (sys_name.equalsIgnoreCase(t.getName())) {
-							systems.add(sys_name.toLowerCase());
-							exist = true;
-						}
-					}
-				}
-				if (!exist) {
+				else {
 					throw new IllegalStateException(
-							"The system name '" + sys_name + "' in malfunctions.xml is NOT recognized.");
+							"The system name '" + sysName + "' in malfunctions.xml is NOT recognized.");
 				}
-
 			}
 
 			// Get effects.
