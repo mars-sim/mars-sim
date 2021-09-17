@@ -387,7 +387,9 @@ public class Simulation implements ClockListener, Serializable {
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 
 		// Initialize instances prior to UnitManager initiatiation		
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+											   medicalManager, eventManager,
+											   simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
 		RadiationExposure.initializeInstances(marsClock);
 		
@@ -645,7 +647,9 @@ public class Simulation implements ClockListener, Serializable {
 		rf.discoverReportingAuthorities(unitManager);
 		
 		RelationshipManager.initializeInstances(unitManager);
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+											   medicalManager, eventManager,
+											   simulationConfig.getPartConfiguration());
 		TransportManager.initializeInstances(eventManager);
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);

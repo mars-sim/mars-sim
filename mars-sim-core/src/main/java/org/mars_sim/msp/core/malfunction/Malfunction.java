@@ -77,8 +77,8 @@ public class Malfunction implements Serializable {
 		int desiredWorkers;
 		
 		/** The map for storing how much work time the repairers spent in fixing this malfunction. */
-		Map<String, Double> activeWorkers;
-		Map<String, Double> previousWorkers;
+		private Map<String, Double> activeWorkers;
+		private Map<String, Double> previousWorkers;
 		
 		public RepairWork(double actualEffort, int desiredWorkers) {
 			workExpected = actualEffort;
@@ -609,8 +609,7 @@ public class Malfunction implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (1 + incidentNum) % 32;
-		return hashCode;
+		return (1 + incidentNum) % 32;
 	}
 	
 	
