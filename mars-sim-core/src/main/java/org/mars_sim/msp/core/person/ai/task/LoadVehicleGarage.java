@@ -149,43 +149,41 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
 
 		vehicleMission = getMissionNeedingLoading();
-		if (vehicleMission != null) {
-			vehicle = vehicleMission.getVehicle();
-			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-			requiredResources = vehicleMission.getRequiredResourcesToLoad();
-			optionalResources = vehicleMission.getOptionalResourcesToLoad();
-			requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
-			optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
-		
-			settlement = robot.getSettlement();
-			if (settlement == null) {
-				endTask();
-				return;
-			}
-
-			// If vehicle is in a garage, add robot to garage.
-			Building garageBuilding = BuildingManager.getBuilding(vehicle);
-			if (garageBuilding != null) {
-				// Walk to garage.
-				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE,
-														 false);
-			}
-
-			// End task if vehicle or garage not available.
-			if ((vehicle == null) || (garageBuilding == null)) {
-				endTask();
-				return;
-			}
-
-			// Initialize task phase
-			addPhase(LOADING);
-			setPhase(LOADING);
-		} 
-		
-		else {
+		if (vehicleMission == null) {
 			endTask();
 			return;
 		}
+			
+		vehicle = vehicleMission.getVehicle();
+		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
+		requiredResources = vehicleMission.getRequiredResourcesToLoad();
+		optionalResources = vehicleMission.getOptionalResourcesToLoad();
+		requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
+		optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
+	
+		settlement = robot.getSettlement();
+		if (settlement == null) {
+			endTask();
+			return;
+		}
+
+		// If vehicle is in a garage, add robot to garage.
+		Building garageBuilding = BuildingManager.getBuilding(vehicle);
+		if (garageBuilding != null) {
+			// Walk to garage.
+			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE,
+													 false);
+		}
+
+		// End task if vehicle or garage not available.
+		if ((vehicle == null) || (garageBuilding == null)) {
+			endTask();
+			return;
+		}
+
+		// Initialize task phase
+		addPhase(LOADING);
+		setPhase(LOADING);
 	}
 
 	/**
@@ -410,7 +408,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			
 			// Load resources
 			try {
-				if (amountLoading > 0D) {
+				if (vehicleMission != null && amountLoading > 0D) {
 					amountLoading = vehicleMission.loadResources(amountLoading, 
 							requiredResources, optionalResources);
 				}

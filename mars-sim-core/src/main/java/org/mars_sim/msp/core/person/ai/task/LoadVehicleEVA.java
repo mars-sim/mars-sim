@@ -138,35 +138,21 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 		
 		vehicleMission = getMissionNeedingLoading();
-		if ((vehicle == null) && (vehicleMission != null)) {
-			vehicle = vehicleMission.getVehicle();
+		if (vehicleMission == null) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return;
+		}		
 			
-			if (vehicle != null) {
-				
-				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+		vehicle = vehicleMission.getVehicle();
+		if (vehicle != null) {
+			
+			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
-				// Add the rover to a garage if possible.
-				if (settlement.getBuildingManager().addToGarage(vehicle)) {
-					// no need of doing EVA
-		        	if (person.isOutside())
-		        		setPhase(WALK_BACK_INSIDE);
-		        	else
-		        		endTask();
-		        	return;
-				}
-
-				requiredResources = vehicleMission.getRequiredResourcesToLoad();
-				optionalResources = vehicleMission.getOptionalResourcesToLoad();
-				requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
-				optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
-				// Determine location for loading.
-				Point2D loadingLoc = determineLoadingLocation();
-				setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
-	
-				// Initialize task phase
-				addPhase(LOADING);
-			}
-			else {
+			// Add the rover to a garage if possible.
+			if (settlement.getBuildingManager().addToGarage(vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -174,14 +160,25 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	        		endTask();
 	        	return;
 			}
-		
+
+			requiredResources = vehicleMission.getRequiredResourcesToLoad();
+			optionalResources = vehicleMission.getOptionalResourcesToLoad();
+			requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
+			optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
+			// Determine location for loading.
+			Point2D loadingLoc = determineLoadingLocation();
+			setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
+
+			// Initialize task phase
+			addPhase(LOADING);
 		}
 		else {
+			// no need of doing EVA
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
-			return;
+        	return;
 		}
 	}
 
@@ -342,7 +339,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		// Load resources
 		try {
-			if (amountLoading > 0D) {
+			if (vehicleMission != null && amountLoading > 0D) {
 				amountLoading = vehicleMission.loadResources(amountLoading, 
 					requiredResources, optionalResources);
 			}
