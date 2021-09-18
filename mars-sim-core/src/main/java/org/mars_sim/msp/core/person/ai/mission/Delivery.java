@@ -483,9 +483,7 @@ public class Delivery extends DroneMission implements Serializable {
 						if (RandomUtil.lessThanRandPercent(50)) {
 							if (isInAGarage()) {
 								assignTask(person,
-									new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
-													getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-													getOptionalEquipmentToLoad()));
+									new LoadVehicleGarage(person, this));
 
 							} else {
 								// Check if it is day time.

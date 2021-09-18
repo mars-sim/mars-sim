@@ -273,9 +273,7 @@ public class DroneMission extends VehicleMission {
 								if (isDroneInAGarage) {
 									// TODO Refactor.
 									assignTask(person,
-												new LoadVehicleGarage(person, v,
-														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+												new LoadVehicleGarage(person, this));
 								} else {
 									// Check if it is day time.
 //										if (!EVAOperation.isGettingDark(person)) {

@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -574,7 +575,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 
 		try {
-			return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
+			return LoadingController.isFullyLoaded(getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 					getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
 		} catch (Exception e) {
 			logger.severe(vehicle, "Cannot test if this vehicle is fully loaded: ", e);

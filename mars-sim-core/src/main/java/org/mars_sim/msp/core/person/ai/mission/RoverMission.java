@@ -365,9 +365,7 @@ public abstract class RoverMission extends VehicleMission {
 								if (!hasAnotherMission && isRoverInAGarage) {
 
 									assignTask(person,
-												new LoadVehicleGarage(person, v,
-														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+												new LoadVehicleGarage(person, this));
 								} else {
 									// Check if it is day time.
 									assignTask(person, new LoadVehicleEVA(person, v,

@@ -1116,7 +1116,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			throw new IllegalArgumentException("vehicle is null");
 		}
 		
-		return LoadVehicleGarage.isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement); 
+		return LoadingController.isFullyLoadedWithResources(requiredResources, optionalResources, vehicle, settlement); 
 	}
 
 	/**
@@ -1136,6 +1136,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			throw new IllegalArgumentException("vehicle is null");
 		}
 
-		return LoadVehicleGarage.isFullyLoadedWithEquipment(requiredEquipment, optionalEquipment, vehicle, settlement); 
+		return LoadingController.isFullyLoadedWithEquipment(requiredEquipment, optionalEquipment, vehicle, settlement); 
 	}
 }
