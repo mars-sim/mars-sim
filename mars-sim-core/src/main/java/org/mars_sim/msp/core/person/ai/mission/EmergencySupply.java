@@ -504,9 +504,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 							// Check if it is day time.
 							if (EVAOperation.isGettingDark(person)) {
 								assignTask(person,
-										new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
-												getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-												getOptionalEquipmentToLoad()));
+										new LoadVehicleEVA(person, this));
 							}
 						}
 					}

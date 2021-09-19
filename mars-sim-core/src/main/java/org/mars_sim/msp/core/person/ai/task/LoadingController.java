@@ -51,9 +51,6 @@ public class LoadingController implements Serializable {
 	private Settlement settlement;
 	private Vehicle vehicle;
 
-
-	private boolean loadCompleted = false;
-
 	/**
 	 * Define the Vehicle Mission that controls the loading
 	 * @param vehicleMission
@@ -109,11 +106,11 @@ public class LoadingController implements Serializable {
 			sInv.storeUnit(vehicle);
 		}
 
-		// If load is not already completed check the amounts
-		loadCompleted = loadCompleted || isFullyLoaded(requiredResources, optionalResources, 
+		// Should the load stop for this worker? Either fully loaded or did not
+		// use load amount (that means load couldn't complete it
+		return (amountLoading > 0) || isFullyLoaded(requiredResources, optionalResources, 
 				requiredEquipment, optionalEquipment, 
 				vehicle, settlement);
-		return loadCompleted;
 	}
 
 	/**
@@ -173,14 +170,11 @@ public class LoadingController implements Serializable {
 								loaded++;
 							} else {
                     			logger.warning(vehicle,"Cannot store " + eq);
-								loadCompleted = true;
 							}
 						}
 					}
 
 					array = null;
-				} else {
-					loadCompleted = true;
 				}
 			} else {
 
@@ -257,7 +251,6 @@ public class LoadingController implements Serializable {
 							loaded++;
 						} else {
                 			logger.warning(vehicle, "Cannot store " + eq);
-							loadCompleted = true;
 						}
 					}
 				}

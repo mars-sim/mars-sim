@@ -103,8 +103,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
-	/** True if vehicle has been loaded. */
-	protected boolean loadedFlag = false;
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 	/** Total traveled distance. */
@@ -121,6 +119,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private MissionMember startingMember;
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
+	/** Details of the loading operation */
+	private LoadingController loadingPlan;
 
 	/** Caches */
 	protected transient Map<Integer, Integer> equipmentNeededCache;
@@ -231,6 +231,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return vehicleCache;
 	}	
 	
+	public LoadingController getLoadingPlan() {
+		if (loadingPlan == null) {
+			loadingPlan = new LoadingController(this, getAssociatedSettlement());
+		}
+		
+		return loadingPlan;
+	}
 	
 	/**
 	 * Sets the vehicle for this mission.

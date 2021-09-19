@@ -118,7 +118,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 													 FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-			loadController = new LoadingController(vehicleMission, settlement);
+			loadController = vehicleMission.getLoadingPlan();
 			
 			// Initialize task phase
 			addPhase(LOADING);

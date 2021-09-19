@@ -489,9 +489,7 @@ public class Delivery extends DroneMission implements Serializable {
 								// Check if it is day time.
 								if (!EVAOperation.isGettingDark(person)) {
 										assignTask(person,
-												new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
-														getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-														getOptionalEquipmentToLoad()));
+												new LoadVehicleEVA(person, this));
 								}
 							}
 							
