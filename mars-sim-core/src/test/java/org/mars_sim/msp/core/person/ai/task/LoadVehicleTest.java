@@ -390,8 +390,8 @@ extends TestCase {
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 	
 		// Check if there are enough resources in the vehicle.
-		assertTrue("Resources fully loaded", LoadingController.isFullyLoadedWithResources(
-				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
+//		assertTrue("Resources fully loaded", LoadingController.isFullyLoadedWithResources(
+//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
 
 		// Check if there is enough equipment in the vehicle.
 		assertTrue("Equipment fully loaded", LoadingController.isFullyLoadedWithEquipment(
@@ -440,8 +440,8 @@ extends TestCase {
 //		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		// Check if there are enough resources in the vehicle.
-		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
-				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
+//		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
+//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
 
 		// Check if there is enough equipment in the vehicle.
 //		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
@@ -498,8 +498,8 @@ extends TestCase {
 //		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		// Check if there are enough resources in the vehicle.
-		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
-				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
+//		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
+//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
 
 		// Check if there is enough equipment in the vehicle.
 //		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(

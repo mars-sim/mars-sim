@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -41,17 +39,6 @@ public class Drone extends Flyer implements Serializable {
 	public static final double MISSION_RANGE_FACTOR = 1.9;
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
-	/** Comparison to indicate a small but non-zero amount. */
-//	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
-	
-	private static int[] resources = {
-			ResourceUtil.oxygenID,
-			ResourceUtil.waterID,
-			ResourceUtil.methaneID
-	};
-	
-	private Map<Integer, Number> emptyMap = new HashMap<>();
-	private Map<Integer, Number> loadingResourcesMap;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -115,29 +102,7 @@ public class Drone extends Flyer implements Serializable {
 							double time = pulse.getElapsed();
 							double transferSpeed = 10; // Assume 10 kg per msol
 							
-							if (loadingResourcesMap == null)
-								loadingResourcesMap = rm.getResourcesNeededForRemainingMission(true);
-							double amountLoading = time * transferSpeed;
-							
-							for (int id: resources) {
-								if (loadingResourcesMap.get(id) != null) {
-									double needed = loadingResourcesMap.get(id).doubleValue();
-									if (needed > 0) {
-										double diff = needed - amountLoading;
-										if (diff <= 0) {
-											diff = 0;
-											amountLoading = needed;
-										}
-										double req = rm.getResourcesNeededForRemainingMission(true).get(id).doubleValue();
-										boolean canTransfer = rm.canTransfer(id, amountLoading, req);
-										if (canTransfer) {
-											// Load this resource
-											rm.loadAmountResource(rm.getResourcesNeededForRemainingMission(true), emptyMap, amountLoading, id, true); 
-											loadingResourcesMap.put(id, diff);
-										}
-									}
-								}
-							}
+							rm.getLoadingPlan().backgroundLoad(time * transferSpeed);
 						}
 					}
 				}

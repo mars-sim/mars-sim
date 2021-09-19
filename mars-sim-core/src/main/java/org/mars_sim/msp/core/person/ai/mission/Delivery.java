@@ -579,66 +579,6 @@ public class Delivery extends DroneMission implements Serializable {
 //		}
 	}
 
-	/**
-	 * Gets the type of vehicle in a load.
-	 * 
-	 * @param buy true if buy load, false if sell load.
-	 * @return vehicle type or null if none.
-	 */
-	private String getLoadVehicleType(boolean buy) {
-		String result = null;
-
-		Map<Good, Integer> load = null;
-		if (buy) {
-			load = buyLoad;
-		} else {
-			load = sellLoad;
-		}
-
-		Iterator<Good> i = load.keySet().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getCategory().equals(GoodCategory.VEHICLE)) {
-				result = good.getName();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the initial load vehicle.
-	 * 
-	 * @param vehicleType the vehicle type string.
-	 * @param buy         true if buying load, false if selling load.
-	 * @return load vehicle.
-	 */
-	private Vehicle getInitialLoadVehicle(String vehicleType, boolean buy) {
-		Vehicle result = null;
-
-		if (vehicleType != null) {
-			Settlement settlement = null;
-			if (buy) {
-				settlement = tradingSettlement;
-			} else {
-				settlement = getStartingSettlement();
-			}
-
-			Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
-				if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
-					if ((vehicle != getVehicle()) && !vehicle.isReserved() && isEmpty) {
-						result = vehicle;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
 	@Override
 	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
@@ -748,31 +688,6 @@ public class Delivery extends DroneMission implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the trader for the mission.
-	 * 
-	 * @return the trader.
-	 */
-	private Person getMissionDelivery() {
-		Person bestDeliveryr = null;
-		int bestDeliverySkill = -1;
-
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-				if (tradeSkill > bestDeliverySkill) {
-					bestDeliverySkill = tradeSkill;
-					bestDeliveryr = person;
-				}
-			}
-		}
-
-		return bestDeliveryr;
 	}
 
 	/**
