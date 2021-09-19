@@ -139,7 +139,7 @@ public class ExplorationMeta implements MetaMission {
 		}
 
         if (missionProbability > 0)
-        	logger.info("ExplorationMeta's probability : " +
+        	logger.info("ExplorationMeta's probability: " +
 				 Math.round(missionProbability*100D)/100D);
 		
 		return missionProbability;
@@ -147,13 +147,11 @@ public class ExplorationMeta implements MetaMission {
 
 	@Override
 	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }
