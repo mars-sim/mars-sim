@@ -4505,15 +4505,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand value
 	 */
 	public double getAmountDemandValue(int id) {
-//		try {
 		if (amountDemandCache.containsKey(id))
 			return amountDemandCache.get(id);
 		else
 			logger.severe(settlement,
 					" - Amount resource " + ResourceUtil.findAmountResourceName(id) + "(" + id + ")" + " not valid.");
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, e.getMessage());
-//		}
 		return 1;
 	}
 
@@ -4524,27 +4520,19 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand value
 	 */
 	public double getEquipmentDemandValue(int id) {
-//		try {
 		if (equipmentDemandCache.containsKey(id))
 			return equipmentDemandCache.get(id);
 		else
 			logger.severe(settlement,
 					" - Equipment " + EquipmentType.convertID2Type(id) + "(" + id + ")" + " not valid.");
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, e.getMessage());
-//		}
 		return 5;
 	}
 
 	public double getVehicleDemandValue(int id) {
-//		try {
 		if (vehicleDemandCache.containsKey(id))
 			return vehicleDemandCache.get(id);
 		else
 			logger.severe(settlement, " - Vehicle " + VehicleType.convertID2Type(id) + "(" + id + ")" + " not valid.");
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, e.getMessage());
-//		}
 		return 10;
 	}
 

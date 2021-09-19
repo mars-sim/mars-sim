@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleFuelPowerSourceMeta.java
- * @date 2021-08-28
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -31,6 +31,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
 
+	private static final double FACTOR = 10_000D;
+	
     public ToggleFuelPowerSourceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -53,22 +55,19 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
         
 	    	Settlement settlement = person.getSettlement();
 	
-	        boolean isEVA = false;        
-
 	        try {
 	            Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);
 	            if (building != null) {
 	                FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
 	                
-	                isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 	                double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
-	                double baseProb = diff * 10000D;
-	                if (baseProb > 1000D) {
-	                    baseProb = 1000D;
+	                double baseProb = diff * FACTOR;
+	                if (baseProb > 10000) {
+	                    baseProb = 10000;
 	                }
 	                result += baseProb;
 	
-	                if (!isEVA) {
+	                if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 	                    // Factor in building crowding and relationship factors.
 	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
 	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
@@ -76,7 +75,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	            }
 	        }
 	        catch (Exception e) {
-				logger.severe(person, "Trouble calling performTask(): ", e);
+				logger.severe(person, "Trouble with getting the difference for a fuel power source: ", e);
 	        }
 
 	

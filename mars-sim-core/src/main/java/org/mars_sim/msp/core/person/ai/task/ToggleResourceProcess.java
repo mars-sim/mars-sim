@@ -263,10 +263,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public static double getResourcesValueDiff(Settlement settlement, ResourceProcess process) {
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);
-		double diff = outputValue - inputValue;
+		double diff = (outputValue - inputValue) / inputValue;
 
 		// Subtract power required per millisol.
-//		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 		diff -= powerValue;
@@ -275,7 +274,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			diff *= -1D;
 		}
 
-		// Check if settlement doesn't have one or more of the input resources.
+		// Check if settlement is missing one or more of the input resources.
 		if (isEmptyInputResourceInProcess(settlement, process)) {
 			if (process.isProcessRunning()) {
 				diff = 1D;
@@ -311,19 +310,33 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				useResource = false;
 			}
 			if (useResource) {
-				double value = settlement.getGoodsManager().getAmountDemandValue(resource);
+				// Gets the demand for this resource
+				double demand = settlement.getGoodsManager().getAmountDemandValue(resource);
 				double rate = 0D;
+				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
+				double remain = settlement.getInventory().getAmountResourceRemainingCapacity(resource,
+						true, false);
+//				double stored = cap - remain;
+		
 				if (input) {
 					rate = process.getMaxInputResourceRate(resource);
+
+					// For input value, the higher the stored, 
+					if (rate > remain) {
+						rate = remain;
+					}
+					result += (rate / demand);
+
 				} else {
 					rate = process.getMaxOutputResourceRate(resource);
-					double storageCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(resource,
-							true, false);
-					if (rate > storageCapacity) {
-						rate = storageCapacity;
+
+					// For output value, the 
+					if (rate > remain) {
+						rate = remain;
 					}
+					result += (rate * demand);
+
 				}
-				result += (value * rate);
 			}
 		}
 
@@ -347,6 +360,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				double stored = settlement.getInventory().getAmountResourceStored(resource, false);
 				if (stored == 0D) {
 					result = true;
+					break;
 				}
 			}
 		}
