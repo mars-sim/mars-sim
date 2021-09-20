@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CookedMeal.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;

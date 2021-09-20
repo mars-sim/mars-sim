@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DestinationSettlementPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import java.util.Iterator;
 /**
  * This is a wizard panel for selecting the mission destination settlement.
  */
+@SuppressWarnings("serial")
 class DestinationSettlementPanel extends WizardPanel {
 
 	/** Wizard panel name. */

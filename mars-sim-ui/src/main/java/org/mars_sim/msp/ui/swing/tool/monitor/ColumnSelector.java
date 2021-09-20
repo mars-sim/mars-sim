@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ColumnSelector.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -32,7 +32,7 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
  * This window displays a list of columns from the specified model.
  * The columns displayed depends upon the final chart being rendered.
  */
-//2015-10-18 Switched from extending JDialog to JinternalFrame
+@SuppressWarnings("serial")
 public class ColumnSelector
 extends ModalInternalFrame {
 

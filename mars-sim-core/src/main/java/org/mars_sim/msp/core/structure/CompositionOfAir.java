@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CompositionOfAir.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -39,16 +39,16 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final String GREENHOUSE = "greenhouse";
+//	private static final String GREENHOUSE = "greenhouse";
 
 	public static final double C_TO_K = 273.15;
 
 	private static final double AIRLOCK_VOLUME_IN_LITER = 
 			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
-	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
+//	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
 
-	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = .05;
+//	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = .05;
 
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 

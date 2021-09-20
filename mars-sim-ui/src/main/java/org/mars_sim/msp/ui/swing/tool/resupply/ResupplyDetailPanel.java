@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -54,6 +54,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A panel showing a selected resupply mission details.
  */
+@SuppressWarnings("serial")
 public class ResupplyDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {

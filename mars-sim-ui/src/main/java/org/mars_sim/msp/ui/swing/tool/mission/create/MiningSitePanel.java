@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -55,6 +55,7 @@ import com.alee.laf.table.WebTable;
 /**
  * A wizard panel for the mining site.
  */
+@SuppressWarnings("serial")
 public class MiningSitePanel extends WizardPanel {
 
 	/** Wizard panel name. */
@@ -79,7 +80,6 @@ public class MiningSitePanel extends WizardPanel {
 	private WebLabel errorMessageLabel;
 	private ExploredLocation selectedSite;
 	private DefaultTableModel concentrationTableModel;
-
 
 	/**
 	 * Constructor

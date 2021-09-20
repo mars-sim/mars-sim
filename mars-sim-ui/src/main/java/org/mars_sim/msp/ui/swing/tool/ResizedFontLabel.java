@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /** @see http://stackoverflow.com/questions/8281886 */
+@SuppressWarnings("serial")
 public class ResizedFontLabel extends JLabel {
 
     private static final int SIZE = 128;

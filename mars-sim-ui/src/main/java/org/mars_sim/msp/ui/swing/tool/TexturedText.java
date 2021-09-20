@@ -1,12 +1,11 @@
-/**
+/*
  * Mars Simulation Project
  * TexturedText.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool;
-
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,6 +23,7 @@ import javax.swing.JPanel;
 
 import com.alee.laf.WebLookAndFeel;
 
+@SuppressWarnings("serial")
 public class TexturedText extends JPanel {
   public void paint(Graphics g) {
     Graphics2D g2 = (Graphics2D) g;

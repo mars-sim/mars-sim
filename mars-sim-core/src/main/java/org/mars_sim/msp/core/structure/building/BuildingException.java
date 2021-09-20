@@ -12,7 +12,9 @@ package org.mars_sim.msp.core.structure.building;
  */
 public class BuildingException extends Exception {
    
-    /**
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Default constructor
      *
      * @param message the exception message.

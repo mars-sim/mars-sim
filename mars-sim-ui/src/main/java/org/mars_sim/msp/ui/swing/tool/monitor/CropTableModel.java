@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
  * The CropTableModel that maintains a list of crop related objects. It maps
  * food related info into Columns.
  */
+@SuppressWarnings("serial")
 public class CropTableModel extends UnitTableModel {
 
 	/** default logger. */
@@ -56,13 +57,6 @@ public class CropTableModel extends UnitTableModel {
 
 	private final static int FIRST_CROP_CAT = CROPS + 1;
 
-	private String name = null;
-	private int numHouse = 0;
-
-	// private List<CropCategoryType> cropCategoryTypes = new
-	// ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
-
-	// 2014-11-25 Added NUMCROPTYPE
 	private static int numCropCat = CropCategoryType.values().length;// = 14
 	/** The number of Columns. */
 	private static int column_count = numCropCat + 3;
@@ -140,8 +134,6 @@ public class CropTableModel extends UnitTableModel {
 				catMap.put(n, name);
 			}
 		}
-
-		// updateBuildings();
 	}
 
 	public void updateMaps() {
@@ -178,7 +170,6 @@ public class CropTableModel extends UnitTableModel {
 	 * @param String cropCat
 	 * @return a position number
 	 */
-	// Called by getTotalNumforCropGroup() which in terms was called by getValueAt()
 	public int getCategoryNum(String cat) {
 		return CropCategoryType.valueOf(cat.toUpperCase()).ordinal();
 	}
@@ -195,10 +186,8 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	private Integer getValueAtCropCat(int rowIndex, int cropColumn) {
 		int catNum = cropColumn - FIRST_CROP_CAT;
-		// logger.info("getValueAtColumn() : groupNumber : "+groupNumber);
 		List<Integer> cropCache = cropCatMap.get(buildings.get(rowIndex));
 		Integer numCrop = cropCache.get(catNum);
-		// logger.info("numCrop is " + numCrop);
 		return numCrop;
 	}
 
@@ -209,17 +198,10 @@ public class CropTableModel extends UnitTableModel {
 	 * @param columnIndex Column index of the cell.
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		// logger.info("getValueAt() : Just Entered ");
-		// logger.info("rowIndex : " + rowIndex );
-		// logger.info("columnIndex : " + columnIndex);
-
 		Object result = null;
 
 		int num = getRowCount();
 		if (rowIndex < num) {
-
-			// Settlement settle = (Settlement)getUnit(rowIndex);
-			// BuildingManager bMgr = settle.getBuildingManager();
 
 			try {
 				switch (columnIndex) {
@@ -256,21 +238,12 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Gets the number of units in the model.
-	 * 
+	 * Overload the super class (UnitTableModel)'s getUnitNumber()
 	 * @return number of units.
 	 */
-	// Overload the super class (UnitTableModel)'s getUnitNumber()
 	protected int getUnitNumber() {
 		int result = 0;
 		if (totalNumCropMap != null && !totalNumCropMap.isEmpty()) {
-
-//			Iterator<Map.Entry<Settlement, Integer>> i = cropMap.entrySet().iterator();
-//			if(i.hasNext()){
-//				Map.Entry<Settlement, Integer> entry = i.next();
-//				int value = entry.getValue();
-//				result = result + value;
-//			}
-
 			for (Integer value : totalNumCropMap.values()) {
 				result = result + (int) value;
 			}
@@ -288,7 +261,6 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	public String getCountString() {
 		return " " + Msg.getString("CropTableModel.countingCrops", Integer.toString(getUnitNumber())
-//				getUnitNumber()
 		);
 	}
 
@@ -298,37 +270,8 @@ public class CropTableModel extends UnitTableModel {
 	 * @return the number of Units in the super class.
 	 */
 	public int getRowCount() {
-		// return super.getUnitNumber();
-		// int sum = 0;
-		// for (Settlement s : unitManager.getSettlements()) {
-		// List<Building> ghs =
-		// s.getBuildingManager().getBuildings(BuildingFunction.FARMING);
-		// sum += ghs.size();
-		// }
-		// for (Building b : buildings) {
-		// Farming f = (Farming) b.getFunction(BuildingFunction.FARMING);
-		// sum += f.getCrops().size();
-		// }
 		return buildings.size();
-		// return sum;
 	}
-
-//	/**
-//	 * Gets the number of units in the model.
-//	 * @return number of units.
-//
-//	// Overload UnitTableModel's getUnitNumber()
-//	protected int getNumSettlement() {
-//		int size = 0;
-//		if(getRefreshSize()){
-//			size = getUnits() == null ? 0 : getSize();
-//			setRefreshSize(false);
-//		}
-//		//        if (units != null) return units.size();
-//		//    	else return 0;
-//		setSize(size);
-//		return size;
-//	}
 
 	/**
 	 * Gets the total numbers of all crops in a greenhouse building
@@ -340,7 +283,7 @@ public class CropTableModel extends UnitTableModel {
 	public int getTotalNumOfAllCrops(Building b) {
 		int num = 0;
 
-		Farming farm = b.getFarming();// (Farming) b.getFunction(FunctionType.FARMING);
+		Farming farm = b.getFarming();
 		num += farm.getCrops().size();
 
 		totalNumCropMap.put(b, num);
@@ -362,42 +305,23 @@ public class CropTableModel extends UnitTableModel {
 		for (int i = 0; i < numCropCat; i++)
 			intList.add(0);
 
-		// Settlement settle = (Settlement) newUnit;
-		// BuildingManager bMgr = settle.getBuildingManager();
-		// List<Building> greenhouses = bMgr.getBuildings(BuildingFunction.FARMING);
-		// Iterator<Building> i = greenhouses.iterator();
-
-		// while (i.hasNext()) {
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		try {
-			// Building greenhouse = i.next();
 			Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
 			List<Crop> cropsList = farm.getCrops();
 			int kk = 0;
-			// logger.info("setUpNewCropCache() : cropsList.size is " + cropsList.size() ) ;
 			Iterator<Crop> k = cropsList.iterator();
 			while (k.hasNext()) {
 				kk++;
-				// logger.info("setUpNewCropCache() : kk is " + kk ) ;
 				Crop crop = k.next();
 				int id = crop.getCropTypeID();
 				String catName = cropConfig.getCropCategoryType(id).getName();
-				// logger.info("setUpNewCropCache() : testCat is " + testCat ) ;
 				int num = getCategoryNum(catName);
-				// logger.info("setUpNewCropCache() : num is " + num ) ;
 				int val = intList.get(num) + 1;
-				// logger.info("setUpNewCropCache() : val is " + val ) ;
 				intList.set(num, val);
-				// logger.info("setUpNewCropCache() : intList.get(" + num + ") : " +
-				// intList.get(num));
 			}
 		} catch (Exception e) {
 		}
-		// }
-
-		// logger.info("setUpNewCropCache() : intList.toString() : " +
-		// intList.toString());
-
 		return intList;
 	}
 
@@ -430,20 +354,14 @@ public class CropTableModel extends UnitTableModel {
 		} 
 		
 		else if (eventType == UnitEventType.CROP_EVENT) {
-			// logger.info("unitUpdate() : CROP_EVENT");
-			// logger.info("unitUpdate() : eventType : " + eventType.toString());
-			// TODO: check with total Crops get updated
-			// columnNum = CROPS; // = 2
 			Crop crop = (Crop) target;
 			int id = crop.getCropTypeID();
 			String catName = cropConfig.getCropCategoryType(id).getName();
-			// logger.info("unitUpdate() : cropCat is " + cropCat);
 
 			try {
 				int tempColumnNum = -1;
 
 				tempColumnNum = getCategoryNum(catName);
-				// logger.info(" tempColumnNum : " + tempColumnNum);
 
 				if (tempColumnNum > -1 && unitIndex > -1) {
 					// Only update cell if value as int has changed.
@@ -461,11 +379,9 @@ public class CropTableModel extends UnitTableModel {
 				}
 			} catch (Exception e) {
 			}
-		} // end of else if (eventType == UnitEventType.CROP_EVENT) {
+		}
 		if (columnNum > -1) {
 			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));
-			// Exception in thread "pool-5-thread-2" java.lang.NoSuchMethodError:
-			// org.mars_sim.msp.ui.swing.tool.monitor.CropTableModel$FoodTableCellUpdater.<init>(Lorg/mars_sim/msp/ui/swing/tool/monitor/CropTableModel;IILorg/mars_sim/msp/ui/swing/tool/monitor/CropTableModel$1;)V
 
 		}
 	}
@@ -478,8 +394,8 @@ public class CropTableModel extends UnitTableModel {
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		int result = 0;
-		// recompute only the total number of cropType having cropCategory = cropCat
-		// examine match the CropType within List<CropType> having having cropCategory
+		// Recompute only the total number of cropType having cropCategory = cropCat
+		// Examine match the CropType within List<CropType> having having cropCategory
 		Settlement settle = (Settlement) unit;
 		BuildingManager bMgr = settle.getBuildingManager();
 		List<Building> greenhouses = bMgr.getBuildings(FunctionType.FARMING);
@@ -489,7 +405,7 @@ public class CropTableModel extends UnitTableModel {
 		while (i.hasNext()) {
 			try {
 				Building greenhouse = i.next();
-				Farming farm = greenhouse.getFarming();// (Farming) greenhouse.getFunction(FunctionType.FARMING);
+				Farming farm = greenhouse.getFarming();
 				List<Crop> cropsList = farm.getCrops();
 
 				Iterator<Crop> j = cropsList.iterator();
@@ -497,7 +413,6 @@ public class CropTableModel extends UnitTableModel {
 					Crop crop = j.next();
 					int id = crop.getCropTypeID();
 					String catName = cropConfig.getCropCategoryType(id).getName();
-					// System.out.println("type is " + type);
 					if (catName.equals(cropCat))
 						total++;
 				}
@@ -505,8 +420,6 @@ public class CropTableModel extends UnitTableModel {
 			}
 		}
 		result = total;
-		// logger.info("getNewNumCropAtSameCat() : cropCat : " + cropCat + ", total : "
-		// + total);
 		return result;
 	}
 
@@ -525,13 +438,12 @@ public class CropTableModel extends UnitTableModel {
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
-		// logger.info("addUnit() : just entered in " + newUnit);
 		if (cropCatMap == null)
 			cropCatMap = new ConcurrentHashMap<Building, List<Integer>>();
 		// if cropCache does not a record of the settlement
 		if (!paddedSettlements.contains(newUnit)) {
 			try {// Setup a cropCache and cropMap in CropTableModel
-					// All crops are to be newly added to the settlement
+				// All crops are to be newly added to the settlement
 				updateMaps();
 
 				for (Building b : buildings) {
@@ -542,7 +454,6 @@ public class CropTableModel extends UnitTableModel {
 			}
 		}
 		super.addUnit(newUnit);
-		// logger.info("addUnit() : leaving " );
 	}
 
 	/**
@@ -552,10 +463,7 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	protected void removeUnit(Unit oldUnit) {
 		if (paddedSettlements.contains(oldUnit)) {
-			// List<Integer> cropCache = unitCache.get(oldUnit);
-			// TODO: need to check if this way can remove the unit and cropCache
-			// cropCache.clear();
-			// cropCache.remove(oldUnit);
+
 			updateMaps();
 
 			for (Building b : buildings) {
@@ -597,7 +505,6 @@ public class CropTableModel extends UnitTableModel {
 	public void destroy() {
 		super.destroy();
 
-		// UnitManager unitManager = Simulation.instance().getUnitManager();
 		unitManager.removeUnitManagerListener(unitManagerListener);
 		unitManagerListener = null;
 
@@ -642,13 +549,9 @@ public class CropTableModel extends UnitTableModel {
 				
 				if (unit instanceof Settlement) {
 					if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-						addUnit(unit);
-						// updateBuildings();
-						// logger.info(unit + " has just entered");
+						addUnit(unit);		
 					} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
 						removeUnit(unit);
-						// updateBuildings();
-						// logger.info(unit + " has just entered");
 					}
 				}
 			}

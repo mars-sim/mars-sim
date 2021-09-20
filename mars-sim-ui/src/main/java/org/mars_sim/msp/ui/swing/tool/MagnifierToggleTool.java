@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MagnifierToggleTool.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -40,6 +40,7 @@ import java.awt.event.ActionListener;
  *
  * @author Mikle Garin
  */
+@SuppressWarnings("serial")
 public final class MagnifierToggleTool extends WebPanel
 {
     /**

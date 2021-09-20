@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ import java.util.List;
 /**
  * This is a wizard panel for selecting exploration sites for the mission.
  */
+@SuppressWarnings("serial")
 class ExplorationSitesPanel extends WizardPanel {
 
 	/** Wizard panel name. */

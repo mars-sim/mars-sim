@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -34,6 +34,7 @@ import com.alee.laf.panel.WebPanel;
  * TODO externalize strings
  */
 
+@SuppressWarnings("serial")
 public class ResupplyWindow
 extends ToolWindow
 implements ListSelectionListener {

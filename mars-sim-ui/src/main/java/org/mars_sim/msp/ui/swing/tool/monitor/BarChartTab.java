@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BarChartTab.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -41,6 +41,7 @@ import org.jfree.data.general.AbstractSeriesDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+@SuppressWarnings("serial")
 class BarChartTab
 extends MonitorTab {
 

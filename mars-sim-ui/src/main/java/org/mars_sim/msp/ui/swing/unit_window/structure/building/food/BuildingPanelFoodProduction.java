@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelFoodProduction.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -50,6 +50,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A building panel displaying the foodProduction building function.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 	private static int processStringWidth = 60;

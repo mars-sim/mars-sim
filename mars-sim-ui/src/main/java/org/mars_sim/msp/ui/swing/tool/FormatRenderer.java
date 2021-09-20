@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FormatRenderer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 /*
  *	Use a formatter to format the cell Object
  */
+@SuppressWarnings("serial")
 public class FormatRenderer extends DefaultTableCellRenderer
 {
 	private Format formatter;

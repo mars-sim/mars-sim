@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UpTimer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.time;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 
 /**
@@ -22,18 +21,18 @@ public class UpTimer implements Serializable {
 	private static final long serialVersionUID = -4992839027918134952L;
 
 	/** Initialized logger. */
-    private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
+//    private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
 
-	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
+//	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 
 	/** The time limit (ms) allowed between time pulses. */
-	private static final long TIME_LIMIT = 1_000L;
+//	private static final long TIME_LIMIT = 1_000L;
 
 	private static final String DAY = "d ";
-	private static final String HR = "h ";
-	private static final String MIN = "m ";
-	private static final String SEC = "s ";
-	private static final String ZERO = "0";
+//	private static final String HR = "h ";
+//	private static final String MIN = "m ";
+//	private static final String SEC = "s ";
+//	private static final String ZERO = "0";
 
 	private static final long SECS_PER_MIN = 60;
 	private static final long HOURS_PER_DAY = 24;

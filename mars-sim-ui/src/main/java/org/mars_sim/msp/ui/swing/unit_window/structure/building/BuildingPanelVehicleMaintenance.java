@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelVehicleMaintenance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -35,6 +35,7 @@ import javax.swing.JList;
  * The BuildingPanelVehicleMaintenance class is a building function panel representing 
  * the vehicle maintenance capabilities of the building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelVehicleMaintenance
 extends BuildingFunctionPanel
 implements MouseListener {

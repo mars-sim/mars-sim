@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * SpotlightLayterUI.java
- * @version 3.2.0 2021-06-20
+ * SpotlightLayerUI.java
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 import com.alee.laf.panel.WebPanel;
 
+@SuppressWarnings("serial")
 public class SpotlightLayerUI extends LayerUI<WebPanel> {
 
 	//private static final long serialVersionUID = 1L;

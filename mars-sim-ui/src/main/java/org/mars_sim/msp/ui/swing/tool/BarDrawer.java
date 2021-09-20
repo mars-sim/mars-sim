@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BarDrawer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -33,9 +33,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- *
  * @author Administrator
  */
+@SuppressWarnings("serial")
 public class BarDrawer extends TexturedPanel {
 
     private int colorIndex;

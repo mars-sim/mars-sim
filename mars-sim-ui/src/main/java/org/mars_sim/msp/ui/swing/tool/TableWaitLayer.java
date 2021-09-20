@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TableWaitLayer.java
- * @date 2021-09-05
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -23,9 +23,11 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
+@SuppressWarnings("serial")
 public class TableWaitLayer {
 	private final String[] columnNames = { "String", "Integer", "Boolean" };
 	private final Object[][] data = { { "aaa", 12, true }, { "bbb", 5, false }, { "ccc", 9, false }, };
+
 	private final DefaultTableModel model = new DefaultTableModel(data, columnNames) {
 		@Override
 		public Class<?> getColumnClass(int column) {
@@ -36,6 +38,7 @@ public class TableWaitLayer {
 	private final JButton startButton = new JButton();
 	private final WaitLayerUI layerUI = new WaitLayerUI();
 
+	@SuppressWarnings("serial")
 	public JComponent makeUI() {
 		startButton.setAction(new AbstractAction("start") {
 			@Override

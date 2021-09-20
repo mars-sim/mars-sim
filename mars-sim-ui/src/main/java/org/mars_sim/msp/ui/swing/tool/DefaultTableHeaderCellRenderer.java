@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DefaultTableHeaderCellRenderer.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -33,6 +33,7 @@ import javax.swing.table.JTableHeader;
  *
  * @author Darryl
  */
+@SuppressWarnings("serial")
 public class DefaultTableHeaderCellRenderer extends DefaultTableCellRenderer {
 
   /**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ArrivingSettlementDetailPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -36,6 +36,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel showing a selected arriving settlement details.
  */
+@SuppressWarnings("serial")
 public class ArrivingSettlementDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {

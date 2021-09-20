@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DesktopScrollPane.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -52,6 +52,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 
+@SuppressWarnings("serial")
 public class DesktopScrollPane extends JScrollPane {
 
     private JDesktopPane desktopPane;

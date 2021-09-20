@@ -17,8 +17,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.robot.SystemCondition;
- 
+
 public class EmotionJSONConfig implements Serializable {
 
 	/** default serial id. */
