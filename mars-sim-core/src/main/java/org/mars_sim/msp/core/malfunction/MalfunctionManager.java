@@ -263,17 +263,20 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the most serious general malfunction the entity has.
+	 * Malfunction must need work of the specified work type and
+	 * have worker slots vacent.
 	 * 
 	 * @return malfunction
 	 */
-	public Malfunction getMostSeriousInsideMalfunction() {
+	public Malfunction getMostSeriousMalfunctionInNeed(MalfunctionRepairWork work) {
 
 		Malfunction result = null;
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
+				if (!malfunction.isWorkDone(work)
+						&& (malfunction.numRepairerSlotsEmpty(work) > 0)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -296,30 +299,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
-		return result;
-	}
-
-	
-	/**
-	 * Gets the most serious EVA malfunction the entity has.
-	 * 
-	 * @return malfunction
-	 */
-	public Malfunction getMostSeriousEVAMalfunction() {
-
-		Malfunction result = null;
-		double highestSeverity = 0D;
-
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)
-						&& malfunction.getSeverity() > highestSeverity) {
-					highestSeverity = malfunction.getSeverity();
-					result = malfunction;
-				}
-			}
-		}
-
 		return result;
 	}
 
