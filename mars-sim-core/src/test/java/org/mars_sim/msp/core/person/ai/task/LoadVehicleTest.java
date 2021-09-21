@@ -7,23 +7,23 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.MockVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import junit.framework.TestCase;
@@ -31,10 +31,13 @@ import junit.framework.TestCase;
 public class LoadVehicleTest
 extends TestCase {
 
-//	private static final Logger logger = Logger.getLogger(LoadVehicleTest.class.getName());
-
+	// Extra amount to add to resoruce to handle double arithmetic mismatch
+	private static final double EXTRA_RESOURCE = 0.01D;
+	
 	private Settlement settlement = null;
 	private UnitManager unitManager;
+	private Vehicle vehicle;
+	private Person person;
 	
 	@Override
     public void setUp() throws Exception {
@@ -48,517 +51,296 @@ extends TestCase {
 		}
 				
 		// Create test settlement.
-		settlement = new MockSettlement();
-        BuildingManager buildingManager = settlement.getBuildingManager();
-        
-		// Removes all mock buildings and building functions in the settlement.
-		buildingManager.removeAllMockBuildings();
-		
+		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
+		
+		vehicle = new Rover("Test", "Cargo Rover", settlement);
+		unitManager.addUnit(vehicle);
+		
+		person = new Person("Jim Loader", settlement);
+		unitManager.addUnit(person);
+		
+		// Make the person strong to get loading quicker
+		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
     }
 
-	private static final double waterAmount = 400D;
+	/*
+	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
+	 */
+	public void testBackgroundLoading() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ResourceUtil.oxygenID, 10D);
+		requiredResourcesMap.put(ResourceUtil.methaneID, 10D);
+		
+		loadSettlementResources(settlement, requiredResourcesMap);
+		
+		LoadingController controller = new LoadingController(settlement, vehicle,
+															 requiredResourcesMap,
+															 Collections.emptyMap(),
+															 Collections.emptyMap(),
+															 Collections.emptyMap());
+		int loadingCount = 0;
+		while (loadingCount < 100) {
+			controller.backgroundLoad(80);
+			loadingCount++;
+		}
+		assertTrue("Multiple loadings", (loadingCount > 1));
+		assertTrue("Loading controller complete", controller.isCompleted());
+		checkVehicleResources(vehicle, requiredResourcesMap);
+	}
 
-//	private static int oxygenID = ResourceUtil.oxygenID;
-//	private static int waterID = ResourceUtil.waterID;
-//	private static int foodID = ResourceUtil.foodID;
-//	private static int methaneID = ResourceUtil.methaneID;
-//	private static int hammerID = ItemResourceUtil.hammerID;
-//	private static int soymilkID = ResourceUtil.soymilkID;
+	/*
+	 * Test method loading Resource Items
+	 */
+	public void testLoadingItemResources() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
+		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		
+		// Load the manifest
+		testLoading(100, false, requiredResourcesMap, Collections.emptyMap(),
+					   Collections.emptyMap(), Collections.emptyMap());
+	}
+
+
+	/*
+	 * Load with optional resource present
+	 */
+	public void testLoadingOptionalItemResources() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
+		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		
+		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
+		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		
+		testLoadOptionalResources(100, requiredResourcesMap,
+								  optionalResourcesMap,
+								  ItemResourceUtil.printerID);
+	}
 	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-//	public void testLoadingPhase() throws Exception {
-//		Settlement settlement = new MockSettlement();
-//
-//		BuildingManager buildingManager = settlement.getBuildingManager();
-//		MockBuilding building0 = new MockBuilding(buildingManager);
-//        building0.setTemplateID(0);
-//        building0.setName("building 0");
-//        building0.setWidth(9D);
-//        building0.setLength(9D);
-//        building0.setXLocation(0D);
-//        building0.setYLocation(0D);
-//        building0.setFacing(0D);
-//        buildingManager.addMockBuilding(building0);
-//
-//        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
-//        building0.addFunction(new EVA(building0, airlock0));
-//
-//		Person person = new Person(settlement);
-//
-//		Vehicle vehicle = new MockVehicle(settlement);
-//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-//        
-//		Inventory vehicleInv = vehicle.getInventory();
-//
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		int soymilkID = ResourceUtil.soymilkID;
-//
-//		int hammerID = hammer.getID();//ItemResourceUtil.hammerID;
-//		
-//		vehicleInv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		vehicleInv.addAmountResourceTypeCapacity(foodID, 100D);
-//		vehicleInv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		vehicleInv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		vehicleInv.addAmountResourceTypeCapacity(soymilkID, 20D);
-//		vehicleInv.storeAmountResource(soymilkID, 20D, true);
-//		vehicleInv.addGeneralCapacity(100D);
-//
-//		Inventory settlementInv = settlement.getInventory();
-//
-//		settlementInv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		settlementInv.storeAmountResource(oxygenID, 100D, true);
-//		settlementInv.addAmountResourceTypeCapacity(foodID, 100D);
-//		settlementInv.storeAmountResource(foodID, 100D, true);
-//		settlementInv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		settlementInv.storeAmountResource(waterID, waterAmount, true);
-//		settlementInv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		settlementInv.storeAmountResource(methaneID, 100D, true);
-//		settlementInv.addAmountResourceTypeCapacity(soymilkID, 20D);
-//		settlementInv.storeAmountResource(soymilkID, 20D, true);
-//		settlementInv.storeItemResources(hammerID, 5);
-//
-//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-//		resourcesMap.put(oxygenID, 100D);
-//		resourcesMap.put(foodID, 100D);
-//		resourcesMap.put(waterID, waterAmount);
-//		resourcesMap.put(methaneID, 100D);
-//		resourcesMap.put(soymilkID, 20D);
-//		resourcesMap.put(hammerID, Integer.valueOf(5));
-//		
-//		
-//		for (int x = 0; x < 5; x++) {
-//			settlementInv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
-//		}
-//
-//		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-//		requiredResourcesMap.put(oxygenID, 100D);
-//		requiredResourcesMap.put(foodID, 100D);
-//		requiredResourcesMap.put(waterID, waterAmount);
-//		requiredResourcesMap.put(methaneID, 100D);
-//		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
-//
-//		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
-//
-//		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-//		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
-//
-//		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
-//
-//		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, requiredResourcesMap, optionalResourcesMap,
-//		        requiredEquipmentMap, optionalEquipmentMap);
-//		loadVehicle.loadingPhase(10D);
-//
-//		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenBox.class));
-//	}
-
-//	/*
-//	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.hasEnoughSupplies(Settlement, Map, Map)'
-//	 */
-//	public void testHasEnoughSuppliesGood() throws Exception {
-//		Settlement settlement = new MockSettlement();
-//		Inventory inv = settlement.getInventory();
-////        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-//        
-////		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-////		AmountResource food = AmountResource.findAmountResource(FOOD);
-////		AmountResource water = AmountResource.findAmountResource(WATER);
-////		AmountResource methane = AmountResource.findAmountResource(METHANE);
-////		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
-//
-//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		inv.storeAmountResource(oxygenID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(foodID, 200D);
-//		inv.storeAmountResource(foodID, 200D, true);
-//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		inv.storeAmountResource(waterID, waterAmount, true);
-//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		inv.storeAmountResource(methaneID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(soymilkID, 20D);
-//		inv.storeAmountResource(soymilkID, 20D, true);
-//		
-//		inv.storeItemResources(hammer.getID(), 5);
-//
-//		for (int x = 0; x < 5; x++) {
-//			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
-//		}
-//
-//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-//		resourcesMap.put(oxygenID, 100D);
-//		resourcesMap.put(foodID, 200D);
-//		resourcesMap.put(waterID, waterAmount);
-//		resourcesMap.put(methaneID, 100D);
-//		resourcesMap.put(soymilkID, 20D);
-//		resourcesMap.put(hammer.getID(), Integer.valueOf(5));
-//
-//		Map<Integer, Integer> equipmentMap = new HashMap<>();
-////		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-//		equipmentMap.put(EquipmentType.str2int(SpecimenContainer.TYPE), Integer.valueOf(5));
-//		
-//		Vehicle vehicle = new MockVehicle(settlement);
-//
-//		assertTrue("Enough supplies at settlement for trip.",
-//				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
-//	}
+	public void testLoadingAmountResources() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ResourceUtil.foodID, 20D);
+		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
+		
+		// Load the manifest
+		testLoading(200, false, requiredResourcesMap, Collections.emptyMap(),
+					   Collections.emptyMap(), Collections.emptyMap());
+	}
 	
-//	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
-//		Settlement settlement = new MockSettlement();
-//		Inventory inv = settlement.getInventory();
-////        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-//		int hammerID = hammer.getID();
-//		
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		
-//		inv.storeItemResources(hammerID, 5);
-//
-//		for (int x = 0; x < 5; x++) {
-//			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
-//		}
-//
-//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-//		resourcesMap.put(oxygenID, 100D);
-//		resourcesMap.put(foodID, 100D);
-//		resourcesMap.put(waterID, waterAmount);
-//		resourcesMap.put(methaneID, 100D);
-//		resourcesMap.put(hammerID, 5);
-//
-//		Map<Integer, Integer> equipmentMap = new HashMap<>();
-//		equipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), 5);
-//
-//		Vehicle vehicle = new MockVehicle(settlement);
-////		logger.severe("vehicle : " + vehicle);
-//		assertFalse("Not enough amount resource supplies at settlement for trip.",
-//				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
-//	}
-
-//	public void testHasEnoughSuppliesNoItemResources() throws Exception {
-//		Settlement settlement = new MockSettlement();
-//		Inventory inv = settlement.getInventory();
-////        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-//		int hammerID = hammer.getID();
-//
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		
-//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		inv.storeAmountResource(oxygenID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(foodID, 100D);
-//		inv.storeAmountResource(foodID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		inv.storeAmountResource(waterID, waterAmount, true);
-//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		inv.storeAmountResource(methaneID, 100D, true);
-//
-//		for (int x = 0; x < 5; x++) {
-//			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
-//		}
-//
-//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-//		resourcesMap.put(oxygenID, 100D);
-//		resourcesMap.put(foodID, 100D);
-//		resourcesMap.put(waterID, waterAmount);
-//		resourcesMap.put(methaneID, 100D);
-//		resourcesMap.put(hammerID, 5);
-//
-//		Map<Integer, Integer> equipmentMap = new HashMap<>();
-//		equipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), 5);
-//
-//		Vehicle vehicle = new MockVehicle(settlement);
-////		Inventory vInv = vehicle.getInventory();
-////		vInv.addAmountResourceTypeCapacity(oxygenID, 100D);
-////		vInv.storeAmountResource(oxygenID, 100D, true);
-////		vInv.addAmountResourceTypeCapacity(foodID, 100D);
-////		vInv.storeAmountResource(foodID, 100D, true);
-////		vInv.addAmountResourceTypeCapacity(waterID, waterAmount);
-////		vInv.storeAmountResource(waterID, waterAmount, true);
-////		vInv.addAmountResourceTypeCapacity(methaneID, 100D);
-////		vInv.storeAmountResource(methaneID, 100D, true);
-////		vInv.storeItemResources(hammerID, 5);
-//		
-//		assertFalse("Not enough item resource supplies at settlement for trip.",
-//				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
-//	}
-
-//	public void testHasEnoughSuppliesNoEquipment() throws Exception {
-//		Settlement settlement = new MockSettlement();
-//		Inventory inv = settlement.getInventory();
-////        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-//        int hammerID = hammer.getID();
-//        
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		
-//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		inv.storeAmountResource(oxygenID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(foodID, 100D);
-//		inv.storeAmountResource(foodID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		inv.storeAmountResource(waterID, waterAmount, true);
-//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		inv.storeAmountResource(methaneID, 100D, true);
-//
-//		inv.storeItemResources(hammerID, 5);
-//
-//		logger.info("inv's food : " + inv.getAmountResourceStored(foodID, false));
-//		
-//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-//		resourcesMap.put(oxygenID, 100D);
-//		resourcesMap.put(foodID, 100D);
-//		resourcesMap.put(waterID, waterAmount);
-//		resourcesMap.put(methaneID, 100D);
-//		resourcesMap.put(hammerID, 5);
-//
-//		Map<Integer, Integer> equipmentMap = new HashMap<>();
-//		equipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), 5);
-//
-//		Vehicle vehicle = new MockVehicle(settlement);
-////		Inventory vInv = vehicle.getInventory();
-////		vInv.addAmountResourceTypeCapacity(oxygenID, 100D);
-////		vInv.storeAmountResource(oxygenID, 100D, true);
-////		vInv.addAmountResourceTypeCapacity(foodID, 100D);
-////		vInv.storeAmountResource(foodID, 100D, true);
-////		vInv.addAmountResourceTypeCapacity(waterID, waterAmount);
-////		vInv.storeAmountResource(waterID, waterAmount, true);
-////		vInv.addAmountResourceTypeCapacity(methaneID, 100D);
-////		vInv.storeAmountResource(methaneID, 100D, true);
-////		vInv.storeItemResources(hammerID, 5);
-//		
-//		assertFalse("Not enough equipment supplies at settlement for trip.",
-//				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
-//	}
 
 	/*
-	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
+	 * Load with optional resource present
 	 */
-	public void testIsFullyLoadedGood() throws Exception {
-		Vehicle vehicle = new MockVehicle(settlement);
-		unitManager.addUnit(vehicle);
-		
-		Inventory inv = vehicle.getInventory();
-		inv.addGeneralCapacity(100D);
+	public void testLoadingOptionalAmountResources() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
 
-		int hammerID = ItemResourceUtil.smallHammerID;
-		int oxygenID = ResourceUtil.oxygenID;
-		int foodID = ResourceUtil.foodID;
-		int waterID = ResourceUtil.waterID;
-		int methaneID = ResourceUtil.methaneID;
+		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
+		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
 		
-		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-		inv.storeAmountResource(oxygenID, 100D, true);
-		inv.addAmountResourceTypeCapacity(foodID, 100D);
-		inv.storeAmountResource(foodID, 100D, true);
-		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-		inv.storeAmountResource(waterID, waterAmount, true);
-		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-		inv.storeAmountResource(methaneID, 100D, true);
-		inv.storeItemResources(hammerID, 5);
+		testLoadOptionalResources(100, requiredResourcesMap,
+								  optionalResourcesMap,
+								  ResourceUtil.nitrogenID);
+	}
+	
+	/*
+	 * Executes a loading for a manifest and a batch of tests. 
+	 */
+	private void testLoading(int maxCycles, boolean checkOptional,
+			Map<Integer, Number> resourcesManifest,
+			Map<Integer, Number> optionalResourcesManifest,
+			Map<Integer, Integer> equipmentManifest,
+			Map<Integer, Integer> optionalEquipmentManifest) {
 
-		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-			unitManager.addUnit(eqm);
-			inv.storeUnit(eqm);
+		loadSettlementResources(settlement, resourcesManifest);
+		loadSettlementResources(settlement, optionalResourcesManifest);
+		
+		// Load the manifest
+		loadIt(maxCycles, resourcesManifest, optionalResourcesManifest,
+			   equipmentManifest, optionalEquipmentManifest);
+		checkVehicleResources(vehicle, resourcesManifest);
+
+		if (checkOptional) {
+			checkVehicleResources(vehicle, optionalResourcesManifest);
 		}
-
-		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, 100D);
-		requiredResourcesMap.put(foodID, 100D);
-		requiredResourcesMap.put(waterID, waterAmount);
-		requiredResourcesMap.put(methaneID, 100D);
-		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
-
-		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
-
-		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
+		
+		// Reload the same manifest which should complete immediately
+		reload(resourcesManifest, optionalResourcesManifest,
+				   equipmentManifest, optionalEquipmentManifest);
+	}
 	
-		// Check if there are enough resources in the vehicle.
-//		assertTrue("Resources fully loaded", LoadingController.isFullyLoadedWithResources(
-//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
-
-		// Check if there is enough equipment in the vehicle.
-		assertTrue("Equipment fully loaded", LoadingController.isFullyLoadedWithEquipment(
-				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+	/**
+	 * Test loading optional resources where one is missiing
+	 * @param maxCycles
+	 * @param requiredResources Required resources to load
+	 * @param optionalResources Optional resources
+	 * @param missingId Missing resource that should not be loaded
+	 */
+	private void testLoadOptionalResources(int maxCycles,
+			Map<Integer, Number> requiredResources,
+			Map<Integer, Number> optionalResources, int missingId) {
 		
-//		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(
-//				requiredResourcesMap, optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		loadSettlementResources(settlement, requiredResources);
+		setResourcesCapacity(vehicle, requiredResources);
+		
+
+		loadSettlementResources(settlement, optionalResources);
+		setResourcesCapacity(vehicle, optionalResources);
+
+		// Add an extra resource that will not be present
+		var extraOptionalResources = new HashMap<>(optionalResources);
+		extraOptionalResources.put(missingId, 10D);
+
+		loadIt(maxCycles, requiredResources, extraOptionalResources,
+			 Collections.emptyMap(),
+			 Collections.emptyMap());
+
+		checkVehicleResources(vehicle, requiredResources);
+		checkVehicleResources(vehicle, optionalResources);
+		
+		double optionalLoaded;
+		if (missingId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			optionalLoaded = vehicle.getInventory().getAmountResourceStored(missingId, false);
+		}
+		else {
+			optionalLoaded = vehicle.getInventory().getItemResourceNum(missingId);
+		}
+			
+		assertEquals("Optional resource loaded", 0D, optionalLoaded);
+	}
+	
+
+	/**
+	 * Run a reload controller to load this manifest. This expects teh manifest
+	 * to be already satisified by the Vehicle
+	 * @param resourcesManifest
+	 * @param optionalResourcesManifest
+	 * @param equipmentManifest
+	 * @param optionalEquipmentManifest
+	 * @return
+	 */
+	private LoadingController reload(Map<Integer, Number> resourcesManifest,
+			Map<Integer, Number> optionalResourcesManifest,
+			Map<Integer, Integer> equipmentManifest,
+			Map<Integer, Integer> optionalEquipmentManifest) {
+				
+		LoadingController controller = new LoadingController(settlement, vehicle,
+						resourcesManifest,
+						optionalResourcesManifest,
+						equipmentManifest,
+						optionalEquipmentManifest);
+		
+		// Vehicle should already be loaded
+		assertTrue("Vehicle already loaded", controller.isCompleted());
+		assertTrue("Reload completes on first attempt", controller.load(person, 1));
+
+		return controller;
 	}
 
-	/*
-	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
+	/**
+	 * Run a loading controller for a manifest.
+	 * @param resourcesManifest
+	 * @param optionalResourcesManifest
+	 * @param equipmentManifest
+	 * @param optionalEquipmentManifest
+	 * @return
 	 */
-	public void testIsFullyLoadedNoAmountResources() throws Exception {
-		Vehicle vehicle = new MockVehicle(settlement);
-		unitManager.addUnit(vehicle);
+	private LoadingController loadIt(int maxCycles,
+				Map<Integer, Number> resourcesManifest,
+				Map<Integer, Number> optionalResourcesManifest,
+				Map<Integer, Integer> equipmentManifest,
+				Map<Integer, Integer> optionalEquipmentManifest) {
+
+		LoadingController controller = new LoadingController(settlement, vehicle,
+				resourcesManifest,
+				optionalResourcesManifest,
+				equipmentManifest,
+				optionalEquipmentManifest);
 		
-//		int hammerID = ItemResourceUtil.smallHammerID;
-		int oxygenID = ResourceUtil.oxygenID;
-		int foodID = ResourceUtil.foodID;
-		int waterID = ResourceUtil.waterID;
-		int methaneID = ResourceUtil.methaneID;
+		int loadingCount = 0;
+		boolean loaded = false;
+		while (!loaded && (loadingCount < maxCycles)) {
+			loaded  = controller.load(person, 1);
+			loadingCount++;
+		}
+		assertTrue("Multiple loadings", (loadingCount > 1));
+		assertTrue("Load operation not stopped", loaded);
+		assertTrue("Loading controller complete", controller.isCompleted());
 		
-        Inventory inv = vehicle.getInventory();
-		inv.addGeneralCapacity(100D);
-
-//		inv.storeItemResources(hammerID, 5);
-
-//		for (int x = 0; x < 5; x++) {
-//			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-//			unitManager.addUnit(eqm);
-//			inv.storeUnit(eqm);
-//		}
-
-		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, 100D);
-		requiredResourcesMap.put(foodID, 100D);
-		requiredResourcesMap.put(waterID, waterAmount);
-		requiredResourcesMap.put(methaneID, 100D);
-//		requiredResourcesMap.put(hammerID, 5);
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
-
-//		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-//		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
-
-//		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
-
-		// Check if there are enough resources in the vehicle.
-//		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
-//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
-
-		// Check if there is enough equipment in the vehicle.
-//		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
-//				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
-		
-//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-//		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		return controller;
 	}
-
-	/*
-	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
+	
+	/**
+	 * Check if the Vehicle has the Resources defined by a manifest
+	 * @param source
+	 * @param requiredResourcesMap
 	 */
-	public void testIsFullyLoadedNoItemResources() throws Exception {
-//		Settlement settlement = new MockSettlement();
-		Vehicle vehicle = new MockVehicle(settlement);
-		unitManager.addUnit(vehicle);
-
+	private void checkVehicleResources(Vehicle source, Map<Integer, Number> requiredResourcesMap) {
 		Inventory inv = vehicle.getInventory();
-		inv.addGeneralCapacity(100D);
 
-		int hammerID = ItemResourceUtil.smallHammerID;
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		
-//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		inv.storeAmountResource(oxygenID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(foodID, 100D);
-//		inv.storeAmountResource(foodID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		inv.storeAmountResource(waterID, waterAmount, true);
-//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		inv.storeAmountResource(methaneID, 100D, true);
+		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+			int key = resource.getKey();
+			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				String resourceName = ResourceUtil.findAmountResourceName(key);
 
-//		for (int x = 0; x < 5; x++) {
-//			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-//			unitManager.addUnit(eqm);
-//			inv.storeUnit(eqm);
-//		}
-
-		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-//		requiredResourcesMap.put(oxygenID, 100D);
-//		requiredResourcesMap.put(foodID, 100D);
-//		requiredResourcesMap.put(waterID, waterAmount);
-//		requiredResourcesMap.put(methaneID, 100D);
-		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
-
-//		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-//		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
-//
-//		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
-
-		// Check if there are enough resources in the vehicle.
-//		assertFalse("Resources not fully loaded", LoadingController.isFullyLoadedWithResources(
-//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
-
-		// Check if there is enough equipment in the vehicle.
-//		assertFalse("Equipment not fully loaded", LoadVehicleGarage.isFullyLoadedWithEquipment(
-//				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
-		
-//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-//                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+				double stored = inv.getAmountResourceStored(key, false);
+				double expected = resource.getValue().doubleValue();
+				assertLessThan("Vehicle amount resource stored " + resourceName, expected, stored);
+			}
+			else {
+				int stored = inv.getItemResourceNum(key);
+				int expected = resource.getValue().intValue();
+				assertEquals("Vehicle item resource stored " + key, expected, stored);
+			}
+		}
 	}
 
-	/*
-	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
+	private static void assertLessThan(String message, double expected, double stored) {
+		boolean test = expected <= stored;
+		if (!test) {
+			assertTrue(message + ":" + expected + " <= " + stored, test);
+		}
+	}
+
+	/**
+	 * Set the capacity of the Vehicle to support the manifest
+	 * @param target
+	 * @param requiredResourcesMap
 	 */
-	public void testIsFullyLoadedNoEquipment() throws Exception {
-//		Settlement settlement = new MockSettlement();
-		Vehicle vehicle = new MockVehicle(settlement);
-		unitManager.addUnit(vehicle);
-		
-        Inventory inv = vehicle.getInventory();
-		inv.addGeneralCapacity(100D);
+	private void setResourcesCapacity(Vehicle target, Map<Integer, Number> requiredResourcesMap) {
+		Inventory inv = target.getInventory();
 
-//		int hammerID = ItemResourceUtil.smallHammerID;
-//		int oxygenID = ResourceUtil.oxygenID;
-//		int foodID = ResourceUtil.foodID;
-//		int waterID = ResourceUtil.waterID;
-//		int methaneID = ResourceUtil.methaneID;
-//		
-//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-//		inv.storeAmountResource(oxygenID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(foodID, 100D);
-//		inv.storeAmountResource(foodID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-//		inv.storeAmountResource(waterID, waterAmount, true);
-//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-//		inv.storeAmountResource(methaneID, 100D, true);
-//		inv.storeItemResources(hammerID, 5);
+		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+			int key = resource.getKey();
+			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				inv.addAmountResourceTypeCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
+			}
+		}
+	}
+	
+	/**
+	 * Load up a Settlements Amount Resources from a manifest
+	 * @param target
+	 * @param requiredResourcesMap
+	 */
+	private void loadSettlementResources(Settlement target, Map<Integer, Number> requiredResourcesMap) {
+		Inventory settlementInv = settlement.getInventory();
 
-//		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-//		requiredResourcesMap.put(oxygenID, 100D);
-//		requiredResourcesMap.put(foodID, 100D);
-//		requiredResourcesMap.put(waterID, waterAmount);
-//		requiredResourcesMap.put(methaneID, 100D);
-//		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
-
-//		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
-
-		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
-
-		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
-
-		// Check if there are enough resources in the vehicle.
-//		assertFalse("Resources not fully loaded", LoadVehicleGarage.isFullyLoadedWithResources(
-//				requiredResourcesMap, optionalResourcesMap, vehicle, settlement));
-
-		// Check if there is enough equipment in the vehicle.
-		assertFalse("Equipment not fully loaded", LoadingController.isFullyLoadedWithEquipment(
-				requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
-
-//		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
-//                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
+		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+			int key = resource.getKey();
+			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
+				settlementInv.addAmountResourceTypeCapacity(key, amount);
+				settlementInv.storeAmountResource(key, amount, true);
+			}
+			else {
+				settlementInv.storeItemResources(key, resource.getValue().intValue());
+			}	
+		}
 	}
 }

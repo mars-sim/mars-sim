@@ -229,7 +229,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	public LoadingController getLoadingPlan() {
 		if (loadingPlan == null) {
-			loadingPlan = new LoadingController(this, getAssociatedSettlement());
+			loadingPlan = new LoadingController(getAssociatedSettlement(), vehicle,
+												getRequiredResourcesToLoad(),
+												getOptionalResourcesToLoad(),
+												getRequiredEquipmentToLoad(),
+												getOptionalEquipmentToLoad());
 		}
 		
 		return loadingPlan;

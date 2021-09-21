@@ -938,38 +938,6 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
-	@Override
-	public Map<Integer, Number> getOptionalResourcesToLoad() {
-
-		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
-
-		// For now, comment out loading dessert
-		// Note: need to figure out why dessert cannot be loaded onto a vehicle
-//		int dessertID = -1;
-//		// Initialize dessert resources if necessary.
-//		if (dessertResources == null) {
-//			dessertID = determineDessertResources();
-//		}
-//
-//		if (dessertID != -1) {
-//			// Add any dessert resources to optional resources to load.
-//			Iterator<Integer> i = dessertResources.keySet().iterator();
-//			while (i.hasNext()) {
-//				Integer dessert = i.next();
-//				double amount = dessertResources.get(dessert);
-//
-//				if (result.containsKey(dessert)) {
-//					double initialAmount = (double) result.get(dessert);
-//					amount += initialAmount;
-//				}
-//
-//				result.put(dessert, amount);
-//			}
-//		}
-		
-		return result;
-	}
-
 	/**
 	 * Gets EVA suit parts for the trip
 	 * 
@@ -1051,12 +1019,6 @@ public abstract class RoverMission extends VehicleMission {
 		return id;
 	}
 
-	@Override
-	public void endMission() {
-//		logger.info(this.getStartingMember() + " ended the " + this);
-		super.endMission();
-	}
-
 	/**
 	 * Checks if there is an available backup rover at the settlement for the
 	 * mission.
@@ -1110,15 +1072,6 @@ public abstract class RoverMission extends VehicleMission {
 		
 		return true;
 	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link HistoricalEventManager}
-//	 */
-//	public static void justReloaded(HistoricalEventManager event) {
-//		eventManager = event;
-//	}
 	
 	@Override
 	public void destroy() {
