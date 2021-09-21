@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2021-08-28
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -369,19 +369,17 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	public double getTemperature() {
 		double result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
-		double ambient = weather.getTemperature(getCoordinates());
+//		double ambient = weather.getTemperature(getCoordinates());
 
-		// the temperature of the suit will not be lower than the ambient temperature
-		if (result < ambient) {
-			// TODO: add codes to simulate the use of cooling coil to turn on cooler to
+//		if (result < ambient) {
+			// if outside temperature is higher than the EVA normally allowed temp
+			// Note: Add codes to simulate the use of cooling coil to turn on cooler to
 			// reduce the temperature inside the EVA suit.
 			// if cooling coil malfunction, then return ambient only
-			return result;
-			// NOTE: for now, turn off returning ambient until new codes are added.
-			// return ambient;
-		} else {
-			return result;
-		}
+//			return result;
+//		}
+
+		return result;
 	}
 
 //	/**

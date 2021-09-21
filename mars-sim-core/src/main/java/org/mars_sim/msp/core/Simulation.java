@@ -866,6 +866,8 @@ public class Simulation implements ClockListener, Serializable {
 			TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {
           	logger.log(Level.SEVERE, "Cannot sleep : " + e.getMessage());
+          	// Restore interrupted state
+            Thread.currentThread().interrupt();
         }
     }
     

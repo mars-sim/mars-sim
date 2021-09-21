@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -1440,6 +1440,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				}
 			}
 
+			if (shortestLine == null)
+				shortestLine = validLines.get(0);
+			
 			// Create building template with position, facing, width and length for the
 			// connector building.
 			double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());

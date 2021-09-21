@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Preference.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-20
  * @author Manny Kung
  */
 
@@ -106,7 +106,7 @@ public class Preference implements Serializable {
 		FavoriteType hobby = person.getFavorite().getFavoriteActivity();
 		for (MetaTask metaTask : MetaTaskUtil.getPersonMetaTasks()) {
 			// Set them up in random
-			double rand = RandomUtil.getRandomDouble(5.0) - RandomUtil.getRandomDouble(5.0);
+			double rand = RandomUtil.getRandomDouble(-5, 5);
 			
 			// Note: the preference score on a metaTask is modified by a person's natural
 			// attributes

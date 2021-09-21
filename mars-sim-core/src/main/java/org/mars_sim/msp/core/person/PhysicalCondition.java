@@ -291,8 +291,8 @@ public class PhysicalCondition implements Serializable {
 
 		// Note: may incorporate real world parameters such as areal density in g cm−2,
 		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
-		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + (int) es; // pain tolerance
-		musculoskeletal[1] = 50; // muscle health index; 50 being the average
+		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + es; // pain tolerance
+		musculoskeletal[1] = 50D; // muscle health index; 50 being the average
 		musculoskeletal[2] = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
 		
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
@@ -1035,10 +1035,10 @@ public class PhysicalCondition implements Serializable {
 						int msol = pulse.getMarsTime().getMissionSol();
 
 						if (healthLog.get(ct) != null && msol > 3)
-							tendency = 0.5 + healthLog.get(ct) / msol;
+							tendency = 0.5 + 1.0 * healthLog.get(ct) / msol;
 						else
 							tendency = 1.0;
-						double immunity = endurance + strength;
+						double immunity = 1.0 * endurance + strength;
 
 						if (immunity > 100)
 							tendency = .75 * tendency - .25 * immunity / 100.0;

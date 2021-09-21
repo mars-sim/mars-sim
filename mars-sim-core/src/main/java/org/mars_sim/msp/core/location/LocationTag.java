@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LocationTag.java
- * @version 3.2.0 2021-06-20
+ * @vdate 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -208,7 +208,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (r != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
-			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
+			if (p != null && LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
 		} 
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2021-08-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -381,7 +381,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
-		double gym = 2 * getPreference().getPreferenceScore(new WorkoutMeta());
+		double gym = 2D * getPreference().getPreferenceScore(new WorkoutMeta());
 		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
 			gym += RandomUtil.getRandomRegressionInteger(20);
 		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)

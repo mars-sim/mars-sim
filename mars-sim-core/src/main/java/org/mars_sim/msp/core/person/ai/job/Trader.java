@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Trader.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -61,7 +61,7 @@ class Trader extends Job {
 		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
 //		result += result * ((conversation - 50D) / 100D);
 
-		double averageAptitude = experienceAptitude + conversation;
+		double averageAptitude = 1.0 * experienceAptitude + conversation;
 		result += result * ((averageAptitude - 100D) / 100D);
 		
 		return result;

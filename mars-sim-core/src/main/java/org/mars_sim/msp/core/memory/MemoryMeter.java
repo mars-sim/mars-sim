@@ -227,8 +227,10 @@ public class MemoryMeter {
                             return MemoryLayoutSpecification.sizeOf(object);
                     }
                 }
-                return instrumentation.getObjectSize(object);
+                else 
+                	return instrumentation.getObjectSize(object);
         }
+        return 0;
     }
 
     /**

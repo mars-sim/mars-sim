@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Unit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -657,8 +657,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 		else {
 //			logger.warning(this + " is inventory null ?");
-			if (inventory == null) logger.warning(this + " inventory is null ?");
-			inventory.getTotalInventoryMass(false);
+			if (inventory == null) { 
+				logger.warning(this + ": inventory is null. Why?");
+			}
+			else 
+				inventory.getTotalInventoryMass(false);
 			if (invMass == 0)
 				return baseMass;
 		}
