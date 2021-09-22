@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -49,8 +48,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * The amount of resources (kg) one person of average strength can load per
 	 * millisol.
 	 */
-	private static double WATER_NEED = 10D;
-	private static double OXYGEN_NEED = 10D;
+	private static final double WATER_NEED = 10D;
+	private static final double OXYGEN_NEED = 10D;
 
 	// Data members
 	/** The vehicle that needs to be loaded. */
@@ -95,26 +94,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
         	return;
         }
-//        
-//		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(settlement);
-//		
-//		if (roversNeedingEVASuits.size() > 0) {
-//			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
-//			vehicle = roversNeedingEVASuits.get(roverIndex); 
-//			  
-//			requiredResources = new HashMap<Integer, Number>();
-//			requiredResources.put(waterID, WATER_NEED);
-//			requiredResources.put(oxygenID, OXYGEN_NEED);
-//			
-//			optionalResources = new HashMap<Integer, Number>(0);
-//			
-//			requiredEquipment = new HashMap<>(1);
-//			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
-//			
-//			optionalEquipment = new HashMap<>(0);
-//		}
-//		
-		vehicleMission = getMissionNeedingLoading();
+
+		vehicleMission = LoadVehicleGarage.getMissionNeedingLoading(person.getSettlement(),
+																	false);
 		if (vehicleMission == null) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -174,8 +156,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
-		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-		this.vehicle = mission.getVehicle();
+		this.vehicleMission = mission;
 
 		if (!person.isFit()) {
 			if (person.isOutside())
@@ -214,7 +195,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
-	double loadingPhase(double time) {
+	private double loadingPhase(double time) {
 		boolean stopLoading = false;
 		
 		// Check for radiation exposure during the EVA operation.
@@ -227,17 +208,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		stopLoading = stopLoading || (settlement == null || vehicle == null); 
 		stopLoading = stopLoading || settlement.getBuildingManager().isInGarage(vehicle);
-		
-//		logger.log(person, Level.INFO, 20_000, vehicle.getName() + " not in garage.");
-// Why do this? Complete the current Load Task
-//        if (!anyVehiclesNeedEVA(settlement)) {
-//			if (person.isOutside())
-//				setPhase(WALK_BACK_INSIDE);	
-//			else 
-//				endTask();
-//			return 0;
-//        }
-		
 		stopLoading = stopLoading || !person.isFit();
 		
 		// Do the load
@@ -249,6 +219,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			// Check for an accident during the EVA operation.
 			checkForAccident(time);
+			
+			// Used all time
+			time = 0;
 		}
 
 		if (stopLoading) {
@@ -259,42 +232,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return time;
 		}
 		return 0;
-	}
-
-
-
-	/**
-	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
-	 * currently in a garage.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of vehicle missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
-
-		List<Mission> result = new ArrayList<Mission>();
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
-			if (mission instanceof VehicleMission) {
-				if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
-					VehicleMission vm = (VehicleMission) mission;
-					if (vm.hasVehicle()) {
-						Vehicle vehicle = vm.getVehicle();
-						if (settlement == vehicle.getSettlement()) {
-							if (!vm.isVehicleLoaded()) {
-								if (!settlement.getBuildingManager().addToGarage(vehicle)) {
-									result.add(vm);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -325,11 +262,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
 
-		List<Rover> result = new ArrayList<Rover>();
+		List<Rover> result = new ArrayList<>();
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
+		for(Vehicle vehicle : settlement.getParkedVehicles()) {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 				if (!settlement.getBuildingManager().addToGarage(vehicle)) {
@@ -350,24 +285,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets a random vehicle mission loading at the settlement.
-	 * 
-	 * @return vehicle mission.
-	 * @throws Exception if error finding vehicle mission.
-	 */
-	private VehicleMission getMissionNeedingLoading() {
 
-		VehicleMission result = null;
-		List<Mission> loadingMissions = getAllMissionsNeedingLoading(worker.getSettlement());
-
-		if (!loadingMissions.isEmpty()) {
-			int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
-			result = (VehicleMission) loadingMissions.get(index);
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the vehicle being loaded.

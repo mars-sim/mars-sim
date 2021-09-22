@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.Conversation;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
@@ -23,8 +24,10 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -226,6 +229,55 @@ public class CommandHelper {
 
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
 		response.appendNumberedList("Members", names);
+	
+		if ((mission instanceof VehicleMission) 
+				&& mission.getPhase().equals(VehicleMission.EMBARKING)) {
+			response.appendText("Loading Manifest");
+			LoadingController lp = ((VehicleMission) mission).getLoadingPlan();
+			outputResources("Resources", response, lp.getResourcesManifest());	
+			outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
+			outputEquipment("Equipment", response, lp.getEquipmentManifest());	
+			outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
+		}
+	}
+
+	private static void outputEquipment(String title, StructuredResponse response,
+			Map<Integer, Integer> manifest) {
+		if (!manifest.isEmpty()) {
+			response.appendText(title);
+			response.appendTableHeading("Item", 22, "Quantity");
+			
+			for(Entry<Integer, Integer> item : manifest.entrySet()) {
+				response.appendTableRow(EquipmentType.convertID2Type(item.getKey()).getName(),
+						Integer.toString(item.getValue().intValue()));
+			}
+			response.appendBlankLine();
+		}
+	}
+
+	private static void outputResources(String title, StructuredResponse response,
+			Map<Integer, Number> resourcesManifest) {
+		if (!resourcesManifest.isEmpty()) {
+			response.appendText(title);
+			response.appendTableHeading("Item", 30, "Quantity");
+			
+			for(Entry<Integer, Number> item : resourcesManifest.entrySet()) {
+				int id = item.getKey();
+				String quantity;
+				String name;
+				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+					name = ResourceUtil.findAmountResourceName(id);
+					quantity = String.format(KG_FORMAT, item.getValue().doubleValue());
+				}
+				else {
+					name = ItemResourceUtil.findItemResource(id).getName();
+					quantity = Integer.toString(item.getValue().intValue());
+				}	
+				response.appendTableRow(name, quantity);
+			}
+			response.appendBlankLine();
+
+		}
 	}
 
 	/**

@@ -7,6 +7,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -196,7 +197,11 @@ public class LoadingController implements Serializable {
 
 		// Should the load stop for this worker? Either fully loaded or did not
 		// use load amount (that means load couldn't complete it
-		return (amountLoading > 0D) || isCompleted();
+		boolean completed = isCompleted();
+		if (completed) {
+			logger.info(vehicle, "Loading completed by " + worker.getName());
+		}
+		return (amountLoading > 0D) || completed;
 	}
 
 	/**
@@ -301,11 +306,11 @@ public class LoadingController implements Serializable {
 				// Take resource from the settlement
 				sInv.retrieveAmountResource(resource, amountToLoad);
 				// Store resource in the vehicle
-				vInv.storeAmountResource(resource, amountToLoad, false);
+				vInv.storeAmountResource(resource, amountToLoad, true);
 				// Track amount demand
 				sInv.addAmountDemand(resource, amountToLoad);
 			} catch (Exception e) {
-				logger.severe(vehicle, "B. Cannot transfer from settlement to vehicle: ", e);
+				logger.severe(vehicle, "Cannot transfer from settlement to vehicle: ", e);
 				return amountLoading;
 			}			
 		}
@@ -313,11 +318,11 @@ public class LoadingController implements Serializable {
 		// Check if this resource is complete
 		amountNeeded -= amountToLoad;
 		if (amountNeeded <= 0) {
-			logger.info(vehicle, loader + " completed loading amount " + resourceName);
+			logger.fine(vehicle, loader + " completed loading amount " + resourceName);
 			manifest.remove(resource);
 		}
 		else if (!mandatory & usedSupply) {
-			logger.info(vehicle, loader + " optional amount " + resourceName
+			logger.fine(vehicle, loader + " optional amount " + resourceName
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(resource);
 		}
@@ -403,12 +408,12 @@ public class LoadingController implements Serializable {
 		// Check if this resource is complete
 		amountNeeded -= amountToLoad;
 		if (amountNeeded == 0) {
-			logger.info(vehicle, loader + " completed loading item " + p.getName());
+			logger.fine(vehicle, loader + " completed loading item " + p.getName());
 			manifest.remove(id);
 		}
 		// If it's optional and attempted to load something then remove it.
 		else if (!mandatory && usedSupply) {
-			logger.info(vehicle, loader + " optional item " + p.getName()
+			logger.fine(vehicle, loader + " optional item " + p.getName()
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(id);
 		}
@@ -462,12 +467,12 @@ public class LoadingController implements Serializable {
 			
 			// Update the manifest
 			if (amountNeeded == 0) {
-				logger.info(vehicle, "Completed loading equipment " + equipmentType);
+				logger.fine(vehicle, "Completed loading equipment " + equipmentType);
 				manifest.remove(equipmentType);
 			}
-			else if (!mandatory) {
-				// For optional; only make one attempt to load it
-				logger.info(vehicle, "Optional equipment " + equipmentType + " not loaded " + amountNeeded);
+			else if (!mandatory && (amountLoading > 0D)) {
+				// For optional and still have capacity to load so abort
+				logger.fine(vehicle, "Optional equipment " + equipmentType + " not loaded " + amountNeeded);
 				manifest.remove(equipmentType);			
 			}
 			else {
@@ -508,5 +513,21 @@ public class LoadingController implements Serializable {
 		// Manifest is empty so complete
 		return resourcesManifest.isEmpty() && equipmentManifest.isEmpty()
 				&& optionalResourcesManifest.isEmpty() && optionalEquipmentManifest.isEmpty();
+	}
+
+	public Map<Integer, Number> getResourcesManifest() {
+		return Collections.unmodifiableMap(this.resourcesManifest);	
+	}
+	
+	public Map<Integer, Number> getOptionalResourcesManifest() {
+		return Collections.unmodifiableMap(this.optionalResourcesManifest);	
+	}
+	
+	public Map<Integer, Integer> getEquipmentManifest() {
+		return Collections.unmodifiableMap(this.equipmentManifest);	
+	}
+	
+	public Map<Integer, Integer> getOptionalEquipmentManifest() {
+		return Collections.unmodifiableMap(this.optionalEquipmentManifest);	
 	}
 }

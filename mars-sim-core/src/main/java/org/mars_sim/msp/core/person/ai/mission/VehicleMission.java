@@ -1564,7 +1564,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 			// Gets a spare EVA suit for each 4 members in a mission
 			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
-			result.put(EquipmentType.getEVAResourceID(), numEVA);
+			result.put(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), numEVA);
 
 		}
 
