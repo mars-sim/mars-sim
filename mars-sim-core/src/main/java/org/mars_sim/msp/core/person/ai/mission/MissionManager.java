@@ -356,14 +356,14 @@ public class MissionManager implements Serializable, Temporal {
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			double probability = metaMission.getProbability(person);
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+			if (Double.isNaN(probability) || Double.isInfinite(probability)) {
+					logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
+							+ probability);
+			} 
+			else if (probability > 0D) {
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
-			} else {
-				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
-						+ probability);
 			}
-
 		}	
 
 		if (totalProbCache == 0D) {

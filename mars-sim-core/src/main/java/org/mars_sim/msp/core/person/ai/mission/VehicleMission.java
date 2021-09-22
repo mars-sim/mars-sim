@@ -605,6 +605,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (tripTime == 0) {
 			// Disapprove this mission
 			setApproval(false);	
+			logger.warning(settlement, "Has estimated zero trip time");
 			return false;
 		}
 
