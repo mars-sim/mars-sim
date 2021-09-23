@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -230,9 +232,31 @@ public class CommandHelper {
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
 		response.appendNumberedList("Members", names);
 	
+		// Travel mission has aroute
+		if (mission instanceof TravelMission) {
+			TravelMission tm = (TravelMission) mission;
+			int navPoints = tm.getNumberOfNavpoints();
+			if (navPoints > 0) {
+				response.appendText("Itinerary:");
+				response.appendTableHeading("Way Point", 19, "Description");
+				for(int i = tm.getNextNavpointIndex(); i < navPoints; i++) {
+					NavPoint nv = tm.getNavpoint(i);
+					if (nv.isSettlementAtNavpoint()) {
+						response.appendTableRow(nv.getSettlement().getName(), "");
+					}
+					else {
+						response.appendTableRow(nv.getLocation().getCoordinateString(),
+								nv.getDescription());
+					}
+				}
+				response.appendBlankLine();				
+			}
+		}
+		
+		// Vehicle mission has a loading
 		if ((mission instanceof VehicleMission) 
 				&& mission.getPhase().equals(VehicleMission.EMBARKING)) {
-			response.appendText("Loading Manifest");
+			response.appendText("Loading Manifest:");
 			LoadingController lp = ((VehicleMission) mission).getLoadingPlan();
 			outputResources("Resources", response, lp.getResourcesManifest());	
 			outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	

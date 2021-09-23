@@ -647,7 +647,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			result *= factor;
 		}
 
-		double cap = vehicle.getInventory().getAmountResourceCapacity(ResourceUtil.methaneID, false);
+		double cap = vehicle.getInventory().getAmountResourceCapacity(vehicle.getFuelType(), false);
 		if (result > cap)
 			// Make sure the amount requested is less than the max resource cap of this vehicle 
 			result = cap;
