@@ -445,7 +445,7 @@ public class UnitManager implements Serializable, Temporal {
 		} 
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-            logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage());
+            logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting
@@ -699,7 +699,15 @@ public class UnitManager implements Serializable, Temporal {
 
 		@Override
 		public String call() throws Exception {
-			settlement.timePassing(currentPulse);	
+			try {
+				settlement.timePassing(currentPulse);	
+			}
+			catch (RuntimeException rte) {
+				String msg = "Problem with pulse on " + settlement.getName()
+        					  + ": " + rte.getMessage();
+	            logger.log(Level.SEVERE, msg, rte);
+	            return msg;
+			}
 			return settlement.getName() + " completed pulse #" + currentPulse.getId();
 		}
 	}
