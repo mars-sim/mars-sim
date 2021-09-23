@@ -27,7 +27,6 @@ import org.mars.sim.console.chat.service.Credentials;
 import org.mars.sim.console.chat.service.RemoteChatService;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 
 /**
@@ -76,7 +75,7 @@ public class MarsProjectHeadless {
 		boolean startServer = true;
 		int serverPort = 18080;
 
-		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
+		SimulationBuilder builder = new SimulationBuilder();
 		
 		Options options = new  Options();
 		for(Option o : builder.getCmdLineOptions()) {

@@ -76,7 +76,7 @@ public class MarsProject {
 	public void parseArgs(String[] args) {
 		logger.config("List of input args : " + Arrays.toString(args));
 		
-		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
+		SimulationBuilder builder = new SimulationBuilder();
 		
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
