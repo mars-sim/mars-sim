@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Airlock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-25
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
@@ -84,7 +85,7 @@ public abstract class Airlock implements Serializable {
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 	
-	/** People currently in airlock's zone 1, 2 and 3. */
+	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
     private Set<Integer> occupantIDs;
 
 	/** The person currently operating the airlock. */
@@ -98,9 +99,13 @@ public abstract class Airlock implements Serializable {
 
 	/** The lookup map for occupants. */
 	private transient Map<Integer, Person> lookupPerson;
-	
+
+	/** The occupant reservation map. */
+	private Map<Integer, Integer> reservationMap;
+
     protected static UnitManager unitManager; 
     protected static MarsSurface marsSurface;
+    protected static MarsClock marsClock;
     
 	/**
 	 * Constructs an airlock object for a unit.
@@ -124,20 +129,70 @@ public abstract class Airlock implements Serializable {
 		
 		operatorID = Integer.valueOf(-1);
 		
-		lookupPerson = new ConcurrentHashMap<>();
 		occupantIDs = new HashSet<>();
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
-//		operatorPool = new HashSet<>();
 		
-//		if (unit instanceof Building) {
-//			locale = ((Building)unit).getLocale();
-//		}
-//		
-//		else if (unit instanceof Vehicle) {
-//			locale = ((Vehicle)unit).getLocale();
-//		}
+		lookupPerson = new ConcurrentHashMap<>();
+		reservationMap = new ConcurrentHashMap<>();
 	}
+	
+	public boolean hasReservation(int personInt) {
+		if (reservationMap.containsKey(personInt)) {
+			int msol = marsClock.getMillisolInt();
+			int lastMsol = reservationMap.get(personInt);
+			int diff = 0;
+			if (lastMsol > msol)
+				diff = msol + 1000 - lastMsol;
+			else
+				diff = msol - lastMsol;
+			if (diff < 30) {
+				return true;
+			}
+			else {
+				// Note: the reservation will automatically 
+				// be expired after 30 msols.
+				reservationMap.remove(personInt);
+			}
+		}
+		return false;
+	}
+
+	public boolean removeReservation(int personInt) {
+		if (reservationMap.containsKey(personInt)) {
+			reservationMap.remove(personInt);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean addReservation(int personInt) {
+		if (!reservationMap.containsKey(personInt)) {
+			if (reservationMap.size() <= 4) {
+				int msol = marsClock.getMillisolInt();
+				reservationMap.put(personInt, msol);
+				return true;
+			}
+		}
+		else {
+			int msol = marsClock.getMillisolInt();
+			int lastMsol = reservationMap.get(personInt);
+			int diff = 0;
+			if (lastMsol > msol)
+				diff = msol + 1000 - lastMsol;
+			else
+				diff = msol - lastMsol;
+			// If it has been 30 msols since the reservation was made
+			// reserve it again
+			if (diff > 30) {
+				reservationMap.put(personInt, msol);
+				return true;
+			}	
+		}
+
+		return false;
+	}
+
 	
 	/**
 	 * Exits the airlock from either the inside or the outside. Inner
@@ -899,6 +954,24 @@ public abstract class Airlock implements Serializable {
 					electAnOperator(getOperatorPool());
 				}
 			}
+			
+			// Remove any expired entry in reservation map 
+			for (int personInt: reservationMap.keySet()) {
+				if (reservationMap.containsKey(personInt)) {
+					int msol = marsClock.getMillisolInt();
+					int lastMsol = reservationMap.get(personInt);
+					int diff = 0;
+					if (lastMsol > msol)
+						diff = msol + 1000 - lastMsol;
+					else
+						diff = msol - lastMsol;
+					if (diff > 30) {
+						// Note: the reservation will automatically 
+						// be expired after 30 msols.
+						reservationMap.remove(personInt);
+					}
+				}
+			}
 		}
 	}
 
@@ -1195,9 +1268,10 @@ public abstract class Airlock implements Serializable {
 	 * @param um {@link UnitManager}
 	 * @param ms {@link MarsSurface}
 	 */
-	public static void initializeInstances(UnitManager um, MarsSurface ms) {
+	public static void initializeInstances(UnitManager um, MarsSurface ms, MarsClock mc) {
 		unitManager = um;
 		marsSurface = ms;
+		marsClock = mc;
 	}
 	
 	/**
@@ -1213,5 +1287,6 @@ public abstract class Airlock implements Serializable {
 		airlockState = null;
 		unitManager = null;
 	    marsSurface = null;
+	    marsClock = null;
 	}
 }

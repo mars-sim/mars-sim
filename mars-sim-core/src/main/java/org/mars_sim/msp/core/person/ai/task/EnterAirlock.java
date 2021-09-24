@@ -260,7 +260,7 @@ public class EnterAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 
 		logger.log(person, Level.FINE, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
-
+		
 		if (!airlock.isActivated()) {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);

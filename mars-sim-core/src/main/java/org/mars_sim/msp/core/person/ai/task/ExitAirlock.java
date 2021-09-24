@@ -313,6 +313,13 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
+		if (!airlock.hasReservation(person.getIdentifier())) {
+			if (!airlock.addReservation(person.getIdentifier())) {
+				walkAway(person, "Reservation not found");
+				return 0;
+			}
+		}
+
 		if (!isFit()) {
 			walkAway(person, "Not fit for egress");
 			return 0;
@@ -542,8 +549,6 @@ public class ExitAirlock extends Task implements Serializable {
 						canProceed = true;
 
                     // true if the person is already inside the chamber from previous cycle
-                    //						logger.log(person, Level.INFO, 20_000,
-                    //								"called isInZone(2) in " + airlock.getEntity().toString() + ".");
                     if (canProceed && transitionTo(1)) {
 //						logger.log(person, Level.INFO, 20_000, 
 //								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
@@ -591,6 +596,9 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canProceed) {
+			// Remove person from reservation map
+			airlock.removeReservation(person.getIdentifier());
+
 			logger.log(person, Level.FINE, 4_000,
 					"Just entered through the inner door into " 
 					+ airlock.getEntity().toString() + ".");
@@ -1055,7 +1063,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// Ends the sub task 2 within the EnterAirlock task
 		endSubTask2();
-		
+				
 		// Remove all lingering tasks to avoid any unfinished walking tasks
 //		person.getMind().getTaskManager().endSubTask();
 			

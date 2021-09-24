@@ -79,7 +79,7 @@ implements Serializable {
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20, SkillType.AREOLOGY);
-    	
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -104,6 +104,13 @@ implements Serializable {
 	        	ended = true;
 	        	endTask();
 	     		return;
+	        }
+	        else if (!airlock.hasReservation(person.getIdentifier())) {
+	    		if (!airlock.addReservation(person.getIdentifier())) {
+	    	       	ended = true;
+			    	endTask();
+			    	return;
+	    		}
 	        }
      	}
 

@@ -355,15 +355,17 @@ public class Simulation implements ClockListener, Serializable {
 				mars.getWeather(), surfaceFeatures, missionManager);
 		TaskManager.initializeInstances(marsClock);
 		
-		// Initialize serializable managers
+		// Initialize UnitManager instance
 		unitManager = new UnitManager(); 
 		
-		// Build plantary objects
+		// Initialize MarsSurface instance
 		MarsSurface marsSurface = new MarsSurface();
+		// Build objects
 		unitManager.addUnit(marsSurface);
 				
 		Inventory.initializeInstances(unitManager);
-		Airlock.initializeInstances(unitManager, marsSurface);
+		// Initialize the Airlock instance
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 	
 		// Gets the MarsSurface instance
 		Unit.setUnitManager(unitManager);
@@ -605,16 +607,15 @@ public class Simulation implements ClockListener, Serializable {
 		// Restart the autosave scheduler
 		AutosaveScheduler.defaultStart();
 		// Set save type to NONE
-		masterClock.setSaveType();	
+		masterClock.setSaveType();
+
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 
-		Airlock.initializeInstances(unitManager, marsSurface);
-		
+		// Re-initialize the Inventory instance		
 		Inventory.initializeInstances(unitManager);
-	
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance
@@ -623,12 +624,12 @@ public class Simulation implements ClockListener, Serializable {
 		Weather weather = mars.getWeather();
 		// Gets the orbitInfo instance
 		orbit = mars.getOrbitInfo();
-		
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		// Gets he MarsClock instance
 		EarthClock earthClock = masterClock.getEarthClock();
-		
+		// Re-initialize the Airlock instance
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
 		LogConsolidated.initializeInstances(marsClock, earthClock);
