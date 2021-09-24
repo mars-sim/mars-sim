@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,7 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 		
 		lookupPerson = new ConcurrentHashMap<>();
-		reservationMap = new ConcurrentHashMap<>();
+		reservationMap = new HashMap<>();
 	}
 	
 	public boolean hasReservation(int personInt) {
@@ -168,7 +169,10 @@ public abstract class Airlock implements Serializable {
 	
 	public boolean addReservation(int personInt) {
 		if (!reservationMap.containsKey(personInt)) {
+			// Test if the reservation map already has 4 people
 			if (reservationMap.size() <= 4) {
+				// Add this person to the lookup map
+				addPersonID(personInt);
 				int msol = marsClock.getMillisolInt();
 				reservationMap.put(personInt, msol);
 				return true;
@@ -193,6 +197,9 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 
+	public Set<Integer> getReserved() {
+		return reservationMap.keySet();
+	}
 	
 	/**
 	 * Exits the airlock from either the inside or the outside. Inner
@@ -510,27 +517,6 @@ public abstract class Airlock implements Serializable {
 		
 		return "N/A";
 	}
-	
-//	/**
-//	 * Volunteer this person as the operator
-//	 * 
-//	 * @param p
-//	 */
-//	public void volunteerAsOperator(Person p) {
-//		int id = p.getIdentifier();
-//		
-//		// Ensure that the person is in the lookup map
-//		addPersonID(p);	
-//		
-//		if (id > 0 && !occupantIDs.contains(id))
-//			occupantIDs.add(id);
-//		
-//		if (operatorID != id) {
-//			operatorID = id;
-//			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + p.getLocale() + "] "
-//					+ p + " stepped up becoming the operator of the airlock.");
-//		}
-//	}
 
 	/**
      * Gets a set of occupants from a particular zone
@@ -652,82 +638,6 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 	
-//	/**
-//	 * Set new air pressure state, and unlock/open the (inner/outer) door. 
-//	 * Any people inside the airlock proceed to leave the airlock
-//	 * 
-//	 * @return true if airlock was deactivated successfully.
-//	 */
-//	public boolean deactivateAirlock() {
-////		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
-////				+ getEntity() + " was being deactivated.");
-//		
-//		boolean result = false;
-//
-//		if (activated) {
-//			activated = false;
-//
-//			if (AirlockState.DEPRESSURIZING == airlockState) {
-//				setState(AirlockState.DEPRESSURIZED);
-//				outerDoorLocked = false;
-//			} else if (AirlockState.PRESSURIZING == airlockState) {
-//				setState(AirlockState.PRESSURIZED);
-//				innerDoorLocked = false;
-//			} else {
-//				return false;
-//			}
-//
-//			// Occupants are to leave the airlock one by one
-//			// Note: it's critical that leaveAirlock() is called so that a person can 
-//			// have a location state change.
-//			boolean successful = leaveAirlock();
-//			if (successful) {
-//				occupantIDs.clear();
-//				operatorID = Integer.valueOf(-1);
-//				result = true;
-//				remainingCycleTime = CYCLE_TIME;
-//			}
-//			else {
-//				result = false;
-//			}
-//		}
-//
-//		return result;
-//	}
-	
-//	/**
-//	 * Iterates through each occupant to exit the airlock
-//	 * 
-//	 * @param true if the exit is successful
-//	 */
-//	public boolean leaveAirlock() {
-////		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
-////				+ getEntity() + " called leaveAirlock().");
-//		boolean successful = true;
-//		
-//		Iterator<Integer> i = occupantIDs.iterator();
-//		while (i.hasNext()) {
-//			Integer id = i.next();
-//			Person p = getPersonByID(id);
-//	    	if (p == null) {
-//	    		p = unitManager.getPersonByID(id);
-//	    		// Add the person into the lookup map
-//	    		// Note: this is needed for reconstructing the lookup map after loading from the sim.
-//	    		lookupPerson.put(id, p);
-//	    	}
-//	    	
-////			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-////					"[" + p.getLocale() + "] " + p.getName()
-////					+ " reported that " + getEntity() + " had been " 
-////					+ getState().toString().toLowerCase() + ".");
-//			
-//			// Call exitAirlock() in BuildingAirlock or VehicleAirlock
-//			successful = successful && egress(p);
-//		}
-//		
-//		return successful;
-//	}
-//	
 	/**
 	 * Causes a person to do an EVA egress.
 	 * 
@@ -818,22 +728,6 @@ public abstract class Airlock implements Serializable {
 //		logger.log(getEntityName(), Level.FINE, 0, "Set to " + state);
 	}
 
-	/**
-	 * Gets the operator's Person instance
-	 * 
-	 * @return
-	 */
-//	public Person getOperator() {
-//		return getPersonByID(operatorID);
-//	}
-
-//	/**
-//	 * Clears the person airlock operator.
-//	 */
-//	public void clearOperator(Integer id) {
-////		operatorID = Integer.valueOf(-1);
-//		transferOut(id);
-//	}
 
 	/**
 	 * Gets the remaining airlock cycle time.
@@ -1224,10 +1118,6 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public Person getPersonByID(Integer id) {
-//		System.out.print("id is " + id);
-//		System.out.print("    lookupPerson is " + lookupPerson);
-//		System.out.println("    lookupPerson.get(id) is " + lookupPerson.get(id));
-//		logger.config("lookupPerson's size is " + lookupPerson.size());
 		if (lookupPerson == null)
 			lookupPerson = new ConcurrentHashMap<>();
 		if (lookupPerson.get(id) != null)
@@ -1237,21 +1127,9 @@ public abstract class Airlock implements Serializable {
 			return p;
 		}
 	}
-
-//	/**
-//	 * Add a person's ID to the lookup map for person inside the airlock
-//	 * 	
-//	 * @param p
-//	 */
-//	public void addPersonID(Person p) {
-//		if (lookupPerson == null)
-//			lookupPerson = new HashMap<>();
-//		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
-//			lookupPerson.put(p.getIdentifier(), p);
-//	}
 	
 	/**
-	 * Add a person's ID to the lookup map for person inside the airlock
+	 * Add a person's ID to the lookup map
 	 * 	
 	 * @param p
 	 */
@@ -1260,6 +1138,25 @@ public abstract class Airlock implements Serializable {
 			lookupPerson = new ConcurrentHashMap<>();
 		if (p != null && !lookupPerson.containsKey(id))
 			lookupPerson.put(id, p);
+	}
+	
+	/**
+	 * Add a person's ID to the lookup map
+	 * 	
+	 * @param p
+	 */
+	public void addPersonID(int id) {
+		if (lookupPerson == null) {
+			lookupPerson = new ConcurrentHashMap<>();
+			Person p = unitManager.getPersonByID(id);
+			lookupPerson.put(id, p);
+		}
+		else {
+			if (!lookupPerson.containsKey(id)) {
+				Person p = unitManager.getPersonByID(id);
+				lookupPerson.put(id, p);
+			}
+		}
 	}
 	
 	/**
