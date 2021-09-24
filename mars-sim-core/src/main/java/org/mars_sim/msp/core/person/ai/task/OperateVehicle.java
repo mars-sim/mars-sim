@@ -403,8 +403,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
         
         double v_sq = v * v;
-        		
-        double delta_v_squared =  delta_v * delta_v;
         
         double F_initialFriction = 0;
         

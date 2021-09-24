@@ -45,7 +45,14 @@ public final class EquipmentFactory {
 
 	}
 
-	public static Equipment createNewEquipment(String type, Settlement settlement, boolean temp) {
+	/**
+	 * Create a new piece of Equipment. This may be temporary to be shared.
+	 * @param type
+	 * @param settlement
+	 * @param temp
+	 * @return
+	 */
+	public static synchronized Equipment createNewEquipment(String type, Settlement settlement, boolean temp) {
 		// Create the name upfront
 		String newName = Equipment.generateName(type);
 		if (temp) {

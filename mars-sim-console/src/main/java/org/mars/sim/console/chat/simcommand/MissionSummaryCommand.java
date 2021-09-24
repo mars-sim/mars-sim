@@ -11,6 +11,8 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Command to display mission stats
@@ -30,13 +32,20 @@ public class MissionSummaryCommand extends ChatCommand {
 		MissionManager mgr = context.getSim().getMissionManager();
 		
 		StructuredResponse response = new StructuredResponse();
-		response.appendTableHeading("Name",  20, "Type", 19, 
+		response.appendTableHeading("Name",  24,
 									"Phase", 18,
+									"Vehicle", CommandHelper.PERSON_WIDTH,
 									"Settlement", CommandHelper.PERSON_WIDTH);
 		for(Mission m : mgr.getMissions()) {
+			String vName = "";
+			if ((m instanceof VehicleMission)) {
+				VehicleMission vm = (VehicleMission)m;
+				Vehicle v = vm.getVehicle();
+				vName = (v != null ? v.getName() : "");
+			}
 			response.appendTableRow(m.getTypeID(),
-					                m.getMissionType().getName(),
 									m.getPhase().getName(),
+									vName,
 									m.getAssociatedSettlement());
 		}
 

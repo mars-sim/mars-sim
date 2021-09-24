@@ -227,6 +227,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return vehicleCache;
 	}	
 	
+	/**
+	 * Get the current loading plan for this Mission phase.
+	 * If one does not exist then it will be created according to the Mission demands
+	 * @return
+	 */
 	public LoadingController getLoadingPlan() {
 		if (loadingPlan == null) {
 			loadingPlan = new LoadingController(getAssociatedSettlement(), vehicle,
@@ -237,6 +242,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		return loadingPlan;
+	}
+
+	/**
+	 * Clear the previous loading plan. Needed when a vehicle is to be reloaded
+	 */
+	protected void clearLoadingPlan() {
+		loadingPlan = null;
 	}
 	
 	/**

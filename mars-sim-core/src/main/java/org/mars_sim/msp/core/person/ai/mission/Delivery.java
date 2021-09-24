@@ -287,6 +287,7 @@ public class Delivery extends DroneMission implements Serializable {
 		} 
 		
 		else if (UNLOAD_GOODS.equals(getPhase())) {
+			clearLoadingPlan(); // Clear the original loading plan
 			setPhase(LOAD_GOODS);
 			setPhaseDescription(Msg.getString("Mission.phase.loadGoods.description", tradingSettlement.getName())); // $NON-NLS-1$
 		} 
