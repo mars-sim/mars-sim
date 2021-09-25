@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -501,16 +502,9 @@ public abstract class Airlock implements Serializable {
 		if (operatorID.equals(Integer.valueOf(-1)))
 			return "None";
 		else {
-			Person p = null;
-			if (lookupPerson != null)
-				p = lookupPerson.get(operatorID);
-			if (p != null)
+			Person p = getPersonByID(operatorID);
+			if (p != null) {
 				return p.getName();
-			else {
-				p =	getPersonByID(operatorID);
-				if (p != null) {
-					return p.getName();
-				}
 			}
 		}
 		
@@ -846,22 +840,24 @@ public abstract class Airlock implements Serializable {
 			}
 			
 			// Remove any expired entry in reservation map 
-			for (int personInt: reservationMap.keySet()) {
-				if (reservationMap.containsKey(personInt)) {
-					int msol = marsClock.getMillisolInt();
-					int lastMsol = reservationMap.get(personInt);
-					int diff = 0;
-					if (lastMsol > msol)
-						diff = msol + 1000 - lastMsol;
-					else
-						diff = msol - lastMsol;
-					if (diff > 30) {
-						// Note: the reservation will automatically 
-						// be expired after 30 msols.
-						reservationMap.remove(personInt);
-					}
-				}
-			}
+//			Iterator<Integer> i = reservationMap.keySet().iterator();
+//			while (i.hasNext()) {
+//				int personInt = i.next();
+//				if (reservationMap.containsKey(personInt)) {
+//					int msol = marsClock.getMillisolInt();
+//					int lastMsol = reservationMap.get(personInt);
+//					int diff = 0;
+//					if (lastMsol > msol)
+//						diff = msol + 1000 - lastMsol;
+//					else
+//						diff = msol - lastMsol;
+//					if (diff > 30) {
+//						// Note: the reservation will automatically 
+//						// be expired after 30 msols.
+//						reservationMap.remove(personInt);
+//					}
+//				}
+//			}
 		}
 	}
 
@@ -1011,8 +1007,8 @@ public abstract class Airlock implements Serializable {
 	 */
 	public boolean someoneHasNoEVASuit() {
 		for (Integer id: occupantIDs) {
-			Person p = this.getPersonByID(id);
-			if (p.getSuit() == null)
+			Person p = getPersonByID(id);
+			if (p != null && p.getSuit() == null)
 				return true;
 		}
 		return false;
@@ -1114,17 +1110,20 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public Person getPersonByID(Integer id) {
-		if (lookupPerson == null)
+		if (lookupPerson == null) {
+			// Needed when loading from a saved sim since lookupPerson is transient
 			lookupPerson = new HashMap<>();
+			return null;
+		}
+		
 		if (lookupPerson.get(id) != null)
 			return lookupPerson.get(id);
+
+		if (this instanceof BuildingAirlock) {
+			return ((BuildingAirlock)this).getPerson(id);
+		}
 		else {
-			if (this instanceof BuildingAirlock) {
-				return ((BuildingAirlock)this).getPerson(id);
-			}
-			else {
-				return ((VehicleAirlock)this).getAssociatedPerson(id);
-			}
+			return ((VehicleAirlock)this).getAssociatedPerson(id);
 		}
 	}
 	
@@ -1135,6 +1134,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addPersonID(Person p, Integer id) {
 		if (lookupPerson == null)
+			// Needed when loading from a saved sim since lookupPerson is transient
 			lookupPerson = new HashMap<>();
 		if (p != null && !lookupPerson.containsKey(id))
 			lookupPerson.put(id, p);
@@ -1147,9 +1147,10 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addPersonID(int id) {
 		if (lookupPerson == null) {
+			// Needed when loading from a saved sim since lookupPerson is transient
 			lookupPerson = new HashMap<>();
-			Person p = null;
-				
+			
+			Person p = null;	
 			if (this instanceof BuildingAirlock) {
 				p = ((BuildingAirlock)this).getPerson(id);
 			}
