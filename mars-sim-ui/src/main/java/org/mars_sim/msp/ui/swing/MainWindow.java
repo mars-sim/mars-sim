@@ -848,12 +848,14 @@ extends JComponent implements ClockListener {
 	public void createEarthDate() {
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
 		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
-		earthDateField.setPreferredWidth(240);
+//		earthDateField.setPreferredWidth(280);
 		earthDateField.setAllowUserInput(false);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
-		earthDateField.setAlignmentX(.5f);
-		earthDateField.setAlignmentY(.5f);
+//		earthDateField.setAlignmentX(.5f);
+//		earthDateField.setAlignmentY(.5f);
+		earthDateField.setPadding(0, 10, 0, 10);
+		earthDateField.setMargin(0, 0, 0, 0);
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
 		d.setTimeZone(TimeZone.getTimeZone("GMT"));
 		earthDateField.setDateFormat(d); 
@@ -868,13 +870,15 @@ extends JComponent implements ClockListener {
 	}
 	
 	public void createMarsDate() {	
-		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus, 16);
+		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus);
 		marsTimeTF.setEditable(false);
 		marsTimeTF.setFont(ARIAL_FONT);
 		marsTimeTF.setForeground(new Color(150,96,0));
-		marsTimeTF.setAlignmentX(.5f);
-		marsTimeTF.setAlignmentY(.5f);
-		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
+//		marsTimeTF.setAlignmentX(.5f);
+//		marsTimeTF.setAlignmentY(.5f);
+//		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
+		marsTimeTF.setPadding(0, 10, 0, 10);
+		marsTimeTF.setMargin(0, 0, 0, 0);
 		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mars Time (UMT)", TooltipWay.up);
 	}
 	
@@ -1256,7 +1260,7 @@ extends JComponent implements ClockListener {
 		}
 		
 		if (marsTimeTF != null && marsClock != null) {
-			marsTimeTF.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + UMT);
+			marsTimeTF.setText(marsClock.getTrucatedDateTimeStamp() + UMT);
 		}
 		
 	}
