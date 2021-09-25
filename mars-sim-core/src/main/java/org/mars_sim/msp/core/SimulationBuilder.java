@@ -278,7 +278,7 @@ public class SimulationBuilder {
 			SettlementBuilder builder = new SettlementBuilder(sim,
 					simConfig);
 			if (useCrews && crewConfig == null) {
-				logger.info("Created default CrewConfig");
+//				logger.info("Created default CrewConfig");
 				crewConfig = new CrewConfig();
 			}
 			builder.setCrew(crewConfig);
@@ -366,7 +366,7 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Are all the pre-condition defiend to start a simulation.
+	 * Are all the pre-condition defined to start a simulation.
 	 * @return
 	 */
 	public boolean isFullyDefined() {

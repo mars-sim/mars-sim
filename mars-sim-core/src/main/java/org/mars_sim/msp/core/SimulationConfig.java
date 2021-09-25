@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationConfig.java
- * @date 2021-08-28
+ * @date 2021-09-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -78,7 +78,7 @@ public class SimulationConfig implements Serializable {
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
 	public static final String EXCEPTION_FILE = "exception.txt";
 			
-	public static final String XML_FOLDER = "/xml/";
+	public static final String XML_FOLDER = "xml";
 	public static final String XML_EXTENSION = ".xml";
 	private static final String SIMULATION_FILE = "simulation";
 	private static final String PEOPLE_FILE = "people";
@@ -102,7 +102,7 @@ public class SimulationConfig implements Serializable {
 	private static final String QUOTATION_FILE = "quotations";
 	private static final String VALUE = "value";
 
-    public static final String EXPERIMENTS_FILE = "/json/experiments.json";
+    public static final String EXPERIMENTS_FILE = "/" + "json" + "/" + "experiments.json";
     
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -917,7 +917,9 @@ public class SimulationConfig implements Serializable {
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
 	public File getBundledXML(String filename) {
-		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
+//		String fullPathName = SimulationFiles.getXMLDir() + File.separator + filename + XML_EXTENSION;
+//		String fullPathName = File.separator + XML_FOLDER + File.separator + filename + XML_EXTENSION;
+		String fullPathName = "/" + XML_FOLDER + "/" + filename + XML_EXTENSION;
 		
 		File f = new File(SimulationFiles.getXMLDir(), filename + XML_EXTENSION);
 		String checksumOldFile = null;

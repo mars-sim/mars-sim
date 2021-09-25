@@ -5,7 +5,28 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.3.0 (build 61__) - 2021-09-__
+## v3.3.0 (build 6215) - 2021-09-25
+
+### ISSUES ADDRESSED : 
+
+-- remove old releases of junit which are abandoned upstream and add support for junit 5  #81
+-- Task & Building classes are not Serialised #334
+-- Use unmanned drones to deliver goods between settlements #361
+-- MissionTableModel shows invisible rows #374
+-- New Idea: Regolith Processing #376
+-- Malfunction not fixed - repairers are sick or cannot find malfunction #377
+-- Orbit Viewer cannot display from the view point of Mars #387
+-- ClassCast exception starting a RescueMission #401
+-- Support multiple Crews #410
+-- Create a Scenario concept by isolating the initial Settlements #411
+-- Relocate Reporting Authority pre-configured names #412
+-- Optimize UIConfig #414
+-- Equipment constructor can identify the incorrect Settlement #415
+-- 3 methods with highest CPU usage #416
+-- Removing dangling missions #418
+-- Duplicated crew member #434
+-- NPE during loading vehicle #439
+-- Cannot create new player-defined single settlement in command line #442
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -17,6 +38,7 @@ Copyright (C) 2021 Scott Davis
 6. Define countries and sponsors to xml instead of hard-coding them.
 7. Define scenarios.
 8. Revamp malfunction repair. 
+9. Refactor loading mission resources.
 
 ### UI IMPROVEMENT :
 
@@ -29,85 +51,125 @@ Copyright (C) 2021 Scott Davis
 1. Correct extreme value point fluctuation.
 2. Correct no vehicle operator in Delivery drone.
 3. Fix drone delivery.
-4. Fix switching vehicle operator.
-5. Adopt Sonarcloud for improving code quality.
+4. Adopt Sonarcloud for improving code quality.
+
 
 ------------------------------------------|---------------------
 ## v3.2.0 (build 5916) - 2021-07-06
 
+### ISSUES ADDRESSED : 
+
+1. Simulation goes into a loop with PlanMission Task improvement
+#370 by bevans2000 was closed on Jul 2
+
+2. Time Ratio (TR) Adjustment based on the Tick Per Sec (TPS) 
+critical improvement
+#369 by mokun was closed 6 minutes ago
+
+3. Commander's Profile not loading
+#367 by mokun was closed on Jun 21
+
+4. Sponsoring Agencies feature request idea improvement
+#363 by mokun was closed on Aug 3
+
+5. MersenneTwisterFast is not Thread safe bug
+#362 by bevans2000 was closed on Jun 21
+
+6. Person is involved in too many Scientific studies started, 
+research agreement (or friendliness index) between settlements
+improvement
+#359 by bevans2000 was closed on Jul 27
+
+7. Not a collaborator in a scientific study, Sorting in Science
+ Tool, Task.endTask bug improvement
+#357 by mokun was closed on Aug 2
+
+8. Optimise UnitManager Unit improvement
+#355 by bevans2000 was closed on Jul 15
+
+9. Cannot store previous demand Good Value, lightweight Inventory
+bug improvement
+#348 by mokun was closed 6 days ago
+
+10. Modeling of Airlock State and Airlock Operator's responsibility, 
+Vehicular Airlock, Console UI freeze improvement
+#340 by mokun was closed on Jul 11
+
+11. Limiting the size of the heap space bug improvement
+#335 by mokun was closed on Aug 14
+
+12. People stuck trying to enter airlock bug
+#305 by bevans2000 was closed on Jun 23
+
+13. MasterClock is reporting timing errors improvement
+#287 by bevans2000 was closed on Dec 30, 2020
+
+14. Problem find JFreechart in clean build, Java vs. JSON 
+serialization, concurrent thread for each settlement improvement 
+maven test
+#283 by bevans2000 was closed on Jun 23
+
+15. having a form to populate crew.xml; add beta_crew.xml feature 
+request
+#251 by shirishag75 was closed on Jun 20
+
+16. How do I begin? Incompatibilies with Java 13 improvement
+#236 by Ranged was closed on Jun 23
+
+17. Is there a way to have a crew profile saved as well, 
+new /xml folder, edit people.xml, new crew.xml, beta_crew.xml 
+feature request improvement question
+#207 by shirishag75 was closed on Jun 20
+
+18. IllegalStateException. not in a valid location situation to 
+start EVA task OUTSIDE bug
+#14 by larsnaesbye was closed on Jun 16, 2017
+
 ### CORE ENGINE IMPROVEMENTS :
 
 1. Switch back to supporting Java 11 for better compatibility.
- 
 2. Enforce one continuous sleep session as much as possible.
-
 3. Reduce memory footprint by 50% when loading from a saved sim.
-   
 4. Remove the duplicated EVA function in garages. 
-
 5. Refine ice collection rate. Higher above/ below +/-60 deg 
    latitude.
-
 6. Refine/add computing site value/score for collecting ice, 
    regolith, mineral exploration, and mining.
-
 7. Add new job 'psychologist' and new skill/science type 
    'psychology'.
-
 8. Add ability to choose individual destination for each 
    crewman as listed in crew.xml when using Crew Editor. 
-   
 9. Adjust job prospect and refine job assignment for each 
    settlement.
-
 10. Designate Night/Day/Swing shift as XYZ work shift. 
-    Designate Day/Night shift as AB work shift.
-    
+    Designate Day/Night shift as AB work shift. 
 11. Change the start and end time for work shift A 
     (Day shift) and work shift B (Night shift).
-
 12. Add teaching reward and learning points on skills when 
    performing Teach task.
-  
 13. Make a reading task contribute to adding experience points 
     to a skill. 
-
 14. Add settlement and vehicle names tailored to its 
     sponsor/country.
-
 15. Revamp EVA egress and ingress phases to model airlock 
     activities in finer details.
-
 16. Incorporate Weblaf's IconManager for caching svg icons.
-
 17. Add "Engineering" as a new science subject.
-
 18. Record the values of solar irradiance at each settlement.
-
 19. Auto-sense user-edited xml files and back them up when 
     checksum are mismatched. Allow a list of exception 
     xml files.
-   
 20. Logically partition the calling of units by settlement. 
- 
-21. Revamp sending time pulse and clock threading.
-    
+21. Revamp sending time pulse and clock threading.  
 22. Rework acquiring new tasks and remove recursive calls inside Mind.
-
 23. Refactor and expand console capability. Enable SSH connection.
-
 24. Activate the fish farm and enable eating fish.
-
 25. Create BuildingSpec to keep track of building type specifications.
-
 26. Add new task of reporting to mission control.
-
 27. Manage the upper limit of the time ratio (TR) internally based on
     most recent average value of tick per second (TPS).
-
 28. Add Delivery mission and unmanned drone for trading resources
     (Experimental only).
-
 29. Meteorite fragments (upon impacting a settlement) can be found 
     and stored.
 
@@ -116,84 +178,56 @@ Copyright (C) 2021 Scott Davis
 
 1. Provide the exact relationship score and attribute score (in 
    addition to its adjective) in Person Window.
-
 2. Add more levels of zooming in the settlement map.
-
 3. Switch to using svg icons for better scaling and visual 
    consistency in the settlement map.
-   
 4. Add showing the reference coordinates of the settlement map 
    of the mouse pointer.
-
 5. Correct the scaling of the dot size and coordinates of 
    the person/robot in PersonMapLayer and RobotMapLayer at 
-   various zoom level.
-   
+   various zoom level. 
 6. Revamp the design of EVA airlock in its svg image.
-
 7. Add BuildingPanelLiving to show the living accommodation
-   aspects of a building.
-      
+   aspects of a building.   
 8. Show the second subtask's description and phase.       
-
 9. Change size of person/robot/building/vehicle/site label 
    on-the-fly in response to the change of map scale in 
-   settlement map.
-   
-10. Display weather icon and top text banner in settlement map.   
-   
+   settlement map. 
+10. Display weather icon and top text banner in settlement map.    
 11. Display parts in used in each building in Maint tab.
-   
 12. Allow players to assign 'task order' to all settlers in 
-    Command Mode (NOT available in Sandbox Mode).
-    
+    Command Mode (NOT available in Sandbox Mode).  
 13. Provide sunrise, sunset, period of daylight, zenith time, 
-    max sunlight, current sunlight in the settlement map.
-   
+    max sunlight, current sunlight in the settlement map. 
 14. Replace speed/time ratio (TR) slider bar with increase and 
     decrease speed button. 
     
-   
+    
 ### FIXES :
 
 1. Fix OutOfMemoryError when saving sim.
-
 2. Remove extraneous object references that bloat the saved
    sim file.
-
 3. Fix rover embarking from a settlement.
-
 4. Correct major walking bugs in that person frozen in the EVA 
    Airlock building.
-
 5. Account for vehicle emergency while still parking in a 
    settlement.
-
 6. Correct the location of inner and outer door/hatch of 
    EVA Airlock.
- 
 7. Fix retrieving a list of vehicles reserved for mission or 
    on mission.
-
 8. Fix loading the alpha crew in the crew editor.
-
 9. Correct the time consumed when reviewing mission plans.
-
 10. Correct the creation of a list of sites to be explored for 
     mineral content. 
-
 11. Correct the bed assignment.
-
 12. Correctly associate how the availability of 3D printers 
     affect concurrent manufacturing processes. 
-
 13. Sync up the position of the WebSwitch when pausing or 
     resuming the sim.
- 
 14. Fix finding a lab supporting certain science types.
- 
 15. Fix and refactor the use of static references.
-
 16. Fix music mute and volume control. 
  
 ------------------------------------------|---------------------
