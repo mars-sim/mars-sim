@@ -155,7 +155,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember))
+				if (!recruitMembersForMission(startingMember, true))
 					return;
 			}
 		}

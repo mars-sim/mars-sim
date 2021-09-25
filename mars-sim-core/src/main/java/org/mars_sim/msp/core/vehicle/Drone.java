@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -94,15 +95,15 @@ public class Drone extends Flyer implements Serializable {
 				}
 				
 				if (isInSettlement()) {
-				
 					if (mission instanceof VehicleMission) {
-						VehicleMission rm = (VehicleMission)mission;
+						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
 						
-						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+						if ((lp != null) && !lp.isCompleted()) {
 							double time = pulse.getElapsed();
 							double transferSpeed = 10; // Assume 10 kg per msol
-							
-							rm.getLoadingPlan().backgroundLoad(time * transferSpeed);
+							double amountLoading = time * transferSpeed;
+
+							lp.backgroundLoad(amountLoading);
 						}
 					}
 				}

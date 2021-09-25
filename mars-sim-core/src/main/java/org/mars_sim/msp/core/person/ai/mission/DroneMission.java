@@ -455,7 +455,7 @@ public class DroneMission extends VehicleMission {
 	}
 	
 	@Override
-	protected boolean recruitMembersForMission(MissionMember startingMember) {
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
 		// Get all people qualified for the mission.
 		Iterator<Robot> r = startingSettlement.getRobots().iterator();
 		while (r.hasNext()) {
@@ -465,7 +465,7 @@ public class DroneMission extends VehicleMission {
 			}
 		}
 		
-		super.recruitMembersForMission(startingMember);
+		super.recruitMembersForMission(startingMember, sameSettlement);
 
 		return true;
 	}

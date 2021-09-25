@@ -148,7 +148,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			}
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember);
+			recruitMembersForMission(startingMember, true);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -640,23 +640,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		Map<ConstructionStageInfo, Double> stageProfits = values.getNewConstructionStageProfits(site, skill);
 		if (!stageProfits.isEmpty()) {
 			result = RandomUtil.getWeightedRandomObject(stageProfits);
-		}
-
-		return result;
-	}
-
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atSettlement = false;
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == settlement) {
-					atSettlement = true;
-				}
-			}
-			result = atSettlement;
 		}
 
 		return result;

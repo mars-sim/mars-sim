@@ -229,25 +229,33 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/**
 	 * Get the current loading plan for this Mission phase.
-	 * If one does not exist then it will be created according to the Mission demands
 	 * @return
 	 */
 	public LoadingController getLoadingPlan() {
-		if (loadingPlan == null) {
-			loadingPlan = new LoadingController(getAssociatedSettlement(), vehicle,
+		return loadingPlan;
+	}
+
+	/**
+	 * Prepare a loading plan taking resources from a site. If a plan for the same
+	 * site is already in place then it is re-used. 
+	 * @param loadingSite
+	 */
+	public LoadingController prepareLoadingPlan(Settlement loadingSite) {
+		if ((loadingPlan == null) || !loadingPlan.getSettlement().equals(loadingSite)) {
+			logger.info(vehicle, "Prepared a loading plan sourced from " + loadingSite.getName());
+			loadingPlan = new LoadingController(loadingSite, vehicle,
 												getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
 												getOptionalEquipmentToLoad());
 		}
-		
 		return loadingPlan;
 	}
 
 	/**
-	 * Clear the previous loading plan. Needed when a vehicle is to be reloaded
+	 * Clear the current loading plan
 	 */
-	protected void clearLoadingPlan() {
+	public void clearLoadingPlan() {
 		loadingPlan = null;
 	}
 	
@@ -1716,29 +1724,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			return vehicle.getCoordinates();
 		}
 		return super.getCurrentMissionLocation();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		VehicleMission vm = (VehicleMission) obj;
-		return this.getMissionType() == vm.getMissionType()
-				&& this.getMissionID() == vm.getMissionID();
-	}
-	
-	/**
-	 * Gets the hash code for this object.
-	 * 
-	 * @return hash code.
-	 */
-	@Override
-	public int hashCode() {
-		int hashCode = (int)(1 + getIdentifier());
-		hashCode *= super.getMissionType().hashCode();
-		hashCode *= startingMember.hashCode();
-		return hashCode;
 	}
 	
 	@Override

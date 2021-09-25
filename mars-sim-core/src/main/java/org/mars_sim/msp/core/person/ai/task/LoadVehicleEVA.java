@@ -124,7 +124,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	        	return;
 			}
 
-			loadingPlan = vehicleMission.getLoadingPlan();
+			loadingPlan = vehicleMission.prepareLoadingPlan(starter.getAssociatedSettlement());
 			
 			// Determine location for loading.
 			Point2D loadingLoc = determineLoadingLocation();

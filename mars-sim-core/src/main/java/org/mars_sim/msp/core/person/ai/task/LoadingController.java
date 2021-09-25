@@ -166,9 +166,6 @@ public class LoadingController implements Serializable {
 			vehicleInSettlement = true;
 			sInv.retrieveUnit(vehicle);
 		}
-		else { // if the rover is no longer in the settlement, end the loading
-			return true;
-		}
 				
 		// Load equipment
 		if ((amountLoading > 0D) && !equipmentManifest.isEmpty()) {
@@ -529,5 +526,13 @@ public class LoadingController implements Serializable {
 	
 	public Map<Integer, Integer> getOptionalEquipmentManifest() {
 		return Collections.unmodifiableMap(this.optionalEquipmentManifest);	
+	}
+
+	/**
+	 * Settlement providing the resoruces for the load.
+	 * @return
+	 */
+	public Settlement getSettlement() {
+		return settlement;
 	}
 }

@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +56,27 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public abstract class Mission implements Serializable, Temporal {
 
+	// Plain POJO to help score potential mission members
+	private final static class MemberScore {
+		Person candidate;
+		double score;
+		
+		private MemberScore(Person candidate, double personValue) {
+			super();
+			this.candidate = candidate;
+			this.score = personValue;
+		}
+		
+		public double getScore() {
+			return score;
+		}
+
+		@Override
+		public String toString() {
+			return "MemberScore [candidate=" + candidate + ", score=" + score + "]";
+		}
+	}
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
@@ -188,7 +211,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
 		// Initialize data members
-//		this.identifier = getNextIdentifier();
+		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
@@ -261,9 +284,9 @@ public abstract class Mission implements Serializable, Temporal {
 
 	}
 
-	public void iterateIdentifer() {
-		this.identifier = getNextIdentifier();
-	}
+//	public void iterateIdentifer() {
+//		this.identifier = getNextIdentifier();
+//	}
 	
 	/**
 	 * Gets the date filed timestamp of the mission.
@@ -1075,16 +1098,34 @@ public abstract class Mission implements Serializable, Temporal {
 	 * Recruits new members into the mission.
 	 * 
 	 * @param startingMember the mission member starting the mission.
+	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
 	 */
-	protected boolean recruitMembersForMission(MissionMember startingMember) {
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
 		
 		// Get all people qualified for the mission.
-		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
+		Collection<Person> possibles;
+		if (sameSettlement) {
+			possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
+		}
+		else {
+			possibles = unitManager.getPeople();
+		}
+		
+		List<MemberScore> qualifiedPeople = new ArrayList<>();
+		for(Person person : possibles) {
 			if (isCapableOfMission(person)) {
-				qualifiedPeople.add(person);
+				// Determine the person's mission qualification.
+				double qualification = getMissionQualification(person) * 100D;
+
+				// Determine how much the recruiter likes the person.
+				double likability = 50D;
+				if (startingMember instanceof Person) {
+					likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
+				}
+
+				// Check if person is the best recruit.
+				double personValue = (qualification + likability) / 2D;
+				qualifiedPeople.add(new MemberScore(person, personValue));
 			}
 		}
 
@@ -1115,39 +1156,16 @@ public abstract class Mission implements Serializable, Temporal {
 			max--;
 		}
 		
+		// Max can not bigger than mission capacity
+		max = Math.min(max, missionCapacity);
+		
 		// Recruit the most qualified and most liked people first.
-		while (qualifiedPeople.size() > 0) {
-			double bestPersonValue = 0D;
-			Person bestPerson = null;
-			Iterator<Person> j = qualifiedPeople.iterator();
-			while (j.hasNext() 
-					&& (getMembersNumber() < missionCapacity)
-					&& (getMembersNumber() < max)) {
-				Person person = j.next();
-				// Determine the person's mission qualification.
-				double qualification = getMissionQualification(person) * 100D;
-
-				// Determine how much the recruiter likes the person.
-				double likability = 50D;
-				if (startingMember instanceof Person) {
-					likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
-				}
-
-				// Check if person is the best recruit.
-				double personValue = (qualification + likability) / 2D;
-				if (personValue > bestPersonValue) {
-					bestPerson = person;
-					bestPersonValue = personValue;
-				}
-			}
+		qualifiedPeople.sort(Comparator.comparing(MemberScore::getScore, Comparator.reverseOrder()));
+		while (!qualifiedPeople.isEmpty() && (members.size() < max)) {
 
 			// Try to recruit best person available to the mission.
-			if (bestPerson != null) {
-				recruitPerson(startingMember, bestPerson);
-				qualifiedPeople.remove(bestPerson);
-			} else {
-				break;
-			}
+			MemberScore next = qualifiedPeople.remove(0);
+			recruitPerson(startingMember, next.candidate);
 		}
 
 		if (getMembersNumber() < minMembers) {

@@ -254,14 +254,15 @@ public class CommandHelper {
 		}
 		
 		// Vehicle mission has a loading
-		if ((mission instanceof VehicleMission) 
-				&& mission.getPhase().equals(VehicleMission.EMBARKING)) {
-			response.appendText("Loading Manifest:");
+		if (mission instanceof VehicleMission) {
 			LoadingController lp = ((VehicleMission) mission).getLoadingPlan();
-			outputResources("Resources", response, lp.getResourcesManifest());	
-			outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
-			outputEquipment("Equipment", response, lp.getEquipmentManifest());	
-			outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
+			if (!lp.isCompleted()) {
+				response.appendText("Loading from " + lp.getSettlement().getName() + " :");
+				outputResources("Resources", response, lp.getResourcesManifest());	
+				outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
+				outputEquipment("Equipment", response, lp.getEquipmentManifest());	
+				outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
+			}
 		}
 	}
 

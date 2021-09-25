@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -693,17 +694,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 					}
 				}
 				
-				if (isInSettlement()) {
-				
+				if (isInSettlement()) {				
 					if (mission instanceof VehicleMission) {
-						VehicleMission rm = (VehicleMission)mission;
+						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
 						
-						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+						if ((lp != null) && !lp.isCompleted()) {
 							double time = pulse.getElapsed();
 							double transferSpeed = 10; // Assume 10 kg per msol
 							double amountLoading = time * transferSpeed;
 
-							rm.getLoadingPlan().backgroundLoad(amountLoading);
+							lp.backgroundLoad(amountLoading);
 						}
 					}
 					
