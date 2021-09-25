@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CrewConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -38,8 +38,8 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	private static final String COUNTRY = "country";
 
 	private static final String PERSONALITY_TYPE = "personality-type";
-	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
-	private static final String PERSONALITY_TRAIT = "personality-trait";
+//	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
+//	private static final String PERSONALITY_TRAIT = "personality-trait";
 
 	private static final String NAME_ATTR = "name";
 	private static final String DESC_ATTR = "description";

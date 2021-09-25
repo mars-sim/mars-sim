@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.vehicle;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
+@SuppressWarnings("serial")
 public class MockVehicle extends Vehicle {
 
 	public MockVehicle(Settlement settlement) throws Exception {

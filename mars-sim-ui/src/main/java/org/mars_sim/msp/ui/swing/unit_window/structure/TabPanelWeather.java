@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelWeather.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -46,7 +45,7 @@ public class TabPanelWeather
 extends TabPanel {
 	
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
+//	private static final Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
 
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
@@ -54,17 +53,14 @@ extends TabPanel {
 //	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
 
 	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
-	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
+//	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
 	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
 	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
 	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
 	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
 
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
-	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
-
-	 /** default logger.   */
-	//private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	// LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;

@@ -1983,6 +1983,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	/**
+	 * Gets the person by id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Person getPerson(int id) {
+		return peopleWithin.stream()
+				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
+	}
+	
+	/**
+	 * Gets the associated person by id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Person getAssociatedPerson(int id) {
+		return citizens.stream()
+				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
+	}
+	
+	
+	/**
 	 * Removes this person from being within this settlement
 	 * 
 	 * @param p the person

@@ -528,11 +528,12 @@ public class AmountResourceStorage implements Serializable {
 							remainingAmount -= typeStore;
 						}
 					}
-
+					
+					AmountResource ar = ResourceUtil.findAmountResource(resource);
+					PhaseType phase = ar.getPhase();
+					
 					// Store resource in phase storage.
 					if ((phaseStorage != null) && (remainingAmount > 0D)) {
-						AmountResource ar = ResourceUtil.findAmountResource(resource);
-						PhaseType phase = ar.getPhase();
 						
 						double remainingPhaseCapacity = phaseStorage.getAmountResourcePhaseRemainingCapacity(phase);
 						if (remainingPhaseCapacity >= remainingAmount) {
@@ -549,17 +550,23 @@ public class AmountResourceStorage implements Serializable {
 						storable = true;
 						allStoredResourcesCacheDirty = true;
 						totalResourcesStoredDirty = true;
-					} else {
-						logger.severe(owner, 30_000, amount + " kg " + ResourceUtil.findAmountResource(resource)
-							+ " could not be stored.  Remaining capacity: " + getARRemainingCapacity(resource)
-							+ " remaining: " + remainingAmount);
+					} 
+					
+					else {
+						double cap = Math.round(10_000 * phaseStorage.getAmountResourcePhaseCapacity(phase))/10_000;
+						double stored = Math.round(10_000 * phaseStorage.getTotalAmountResourcePhasesStored(true))/10_000;
+						logger.severe(owner, 30_000, 
+							"Cannot store "
+							+ Math.round(10_000 * amount)/10_000 + " kg " + ResourceUtil.findAmountResource(resource)
+							+ ". Cap: " + cap
+							+ " Stored: " + stored);
 					}
 				}
 			}
 
 			if (!storable)
-				logger.severe(owner, 30_000, amount + " kg " + ResourceUtil.findAmountResource(resource)
-					+ " could not be stored.  Remaining capacity: " + getARRemainingCapacity(resource));
+				logger.severe(owner, 30_000, Math.round(10_000 * amount)/10_000 + " kg " + ResourceUtil.findAmountResource(resource)
+					+ " could not be stored.  Remaining cap: " + getARRemainingCapacity(resource));
 		}
 	}
 

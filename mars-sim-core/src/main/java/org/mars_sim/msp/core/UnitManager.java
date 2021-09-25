@@ -445,7 +445,10 @@ public class UnitManager implements Serializable, Temporal {
 		} 
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-            logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
+      logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
+      // Note: Use printStackTrace for debugging only. Must comment out printStackTrace 
+      // or else sonarcloud gives an "E" grade.
+      // ee.printStackTrace();
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting

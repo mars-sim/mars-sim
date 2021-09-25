@@ -21,9 +21,9 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class JStatusBar extends TexturedPanel {
 		   
-	private static final Color antiqueBronze = new Color(102,93,30,128);
+//	private static final Color antiqueBronze = new Color(102,93,30,128);
 	private static final Color almond = new Color(239,222,205,128);
-	private static final Color cafeNoir = new Color(75,54,33,128);
+//	private static final Color cafeNoir = new Color(75,54,33,128);
 	
 	public int height = 25;
 	private int leftPadding;

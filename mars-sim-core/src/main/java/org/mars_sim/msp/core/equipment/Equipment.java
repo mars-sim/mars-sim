@@ -437,7 +437,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return
 	 */
-	public Unit getLastOwner() {
+	public Person getLastOwner() {
 		return unitManager.getPersonByID(lastOwner);
 	}
 

@@ -1,8 +1,7 @@
-/**
-1
+/*
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -40,6 +39,7 @@ import com.alee.managers.style.StyleId;
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
+@SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";

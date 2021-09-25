@@ -69,50 +69,44 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		if (!(containerUnit instanceof MarsSurface)) {
 			// Get the malfunctioning entity.
-			entity = getEVAMalfunctionEntity(person);
-			
-			if (entity != null) {
-				malfunction = getMalfunction(person, entity);
-				
-				if (malfunction != null) {
-					setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
-							entity.getNickName())); // $NON-NLS-1$
-		
-					// Determine location for repairing malfunction.
-					Point2D malfunctionLoc = determineMalfunctionLocation();
-					setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
-					
-					if (!isDone()) {
-			            if (person.isInside()) {
-			            	setPhase(WALK_TO_OUTSIDE_SITE);
-			            }
-					}				
-			
-					RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
-					
-					// Initialize phase
-					addPhase(REPAIRING);					
+			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(person)) {
+				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
+				if (potential != null) {
+					entity = next;
+					malfunction = potential;
+					break; // Stop searching
 				}
-				else {
-		        	if (person.isOutside())
-		        		setPhase(WALK_BACK_INSIDE);
-		        	else
-		        		endTask();
-				}
-				
-			} 
-			else {
-	        	if (person.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
 			}
 		}
-		else 
+
+			
+		// Start if found
+		if (entity != null) {
+			setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
+					entity.getNickName())); // $NON-NLS-1$
+
+			// Determine location for repairing malfunction.
+			Point2D malfunctionLoc = determineMalfunctionLocation();
+			setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+			
+			// Can fail to get a path and Task will be Done
+			if (!isDone()) {
+	            if (person.isInside()) {
+	            	setPhase(WALK_TO_OUTSIDE_SITE);
+	            }				
+	
+				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
+				
+				// Initialize phase
+				addPhase(REPAIRING);
+			}
+		}
+		else {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+		}
 	}
 
 
@@ -215,71 +209,32 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	}
 
 	/**
-	 * Gets a malfunctional entity with a normal malfunction for a user.
-	 * 
-	 * @return malfunctional entity.
-	 */
-	private static boolean hasMalfunction(Person person, Malfunctionable entity) {
-		boolean result = false;
-
-		if (entity.getMalfunctionManager().hasMalfunction())
-			return true;
-		
-		return result;
-	}
-
-	
-	/**
 	 * Perform the repair malfunction phase of the task.
 	 * 
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
 	private double repairMalfunctionPhase(double time) {
-	
-		if (isDone()) {
-            if (person.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            else //if (person.isInside())
-        		endTask();
-            return time;
-		}
-		
+		boolean endTask = isDone();
+
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
-		if (person != null) {
-			// Check if there are no more malfunctions.
-			if (!hasMalfunction(person, entity)) {
-	            if (person.isOutside())
-	            	setPhase(WALK_BACK_INSIDE);
-	            else //if (person.isInside())
-	        		endTask();
-	            return time;
-			}
-		}
-		
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-		
+		endTask |= (isRadiationDetected(time)
+					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));	
+		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
+		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
+		endTask |= (!person.isFit());
+		if (endTask) {
+			// Return all the time
+	        if (worker.isOutside()) {
+	        	setPhase(WALK_BACK_INSIDE);
+	        }
+	        else if (person.isInside()) {
+	    		endTask();
+	        }
+    		return time;
+        }
+	        
 		double workTime = 0;
-
 		if (person != null) {
 			workTime = time;
 		} else if (robot != null) {
@@ -310,7 +265,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
-		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA) ) {
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 		
@@ -327,13 +282,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
             if (worker.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
-            	return workTimeLeft;
             }
             else if (person.isInside()) {
         		endTask();
             }
 		}
-			
+
 		return workTimeLeft;
 	}
 

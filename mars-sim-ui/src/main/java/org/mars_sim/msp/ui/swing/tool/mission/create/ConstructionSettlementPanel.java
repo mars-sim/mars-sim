@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructionSettlementPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -38,6 +38,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 /**
  * A wizard panel for selecting the mission's construction settlement.
  */
+@SuppressWarnings("serial")
 class ConstructionSettlementPanel extends WizardPanel {
 
 	/** The wizard panel name. */

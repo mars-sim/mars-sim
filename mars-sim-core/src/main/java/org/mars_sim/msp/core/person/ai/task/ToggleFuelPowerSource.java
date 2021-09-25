@@ -279,12 +279,11 @@ implements Serializable {
      * @return the total value for the input resources per Sol.
      */
     private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
-
     	int resource = fuelSource.getFuelResourceID();
+    	// Gets the rate [kg/Sol]
         double massPerSol = fuelSource.getFuelConsumptionRate();
-//        Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
+        // Gets the demand for this fuel
         double value = settlement.getGoodsManager().getAmountDemandValue(resource);
-
         return value * massPerSol;
     }
 
@@ -295,13 +294,10 @@ implements Serializable {
      * @return the value of the power generated per Sol.
      */
     private static double getPowerOutputValue(Settlement settlement, FuelPowerSource fuelSource) {
-
         // Get settlement value for kW hr produced.
         double power = fuelSource.getMaxPower();
-//        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
         double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
         double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
-
         return powerValue;
     }
 

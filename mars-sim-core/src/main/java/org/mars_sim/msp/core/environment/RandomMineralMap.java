@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomMineralMap.java
- * @date 2021-08-28
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -181,6 +181,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			topoGrabber.grabPixels();
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, "grabber error" + e);
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 		if ((topoGrabber.status() & ImageObserver.ABORT) != 0)
 			logger.info("grabber error");

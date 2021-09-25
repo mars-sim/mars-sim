@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NotesTabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.logging.Logger;
 
 import javax.swing.border.EmptyBorder;
 
@@ -30,16 +29,11 @@ import com.alee.managers.style.StyleId;
  */
 public class NotesTabPanel extends TabPanel{
 
-//	public NotesTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
-//		super(tabTitle, tabIcon, tabToolTip, unit, desktop);
-//		// TODO Auto-generated constructor stub
-//	}
-
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(NotesTabPanel.class.getName());
+//	private static final Logger logger = Logger.getLogger(NotesTabPanel.class.getName());
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;

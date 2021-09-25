@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WaitLayerUIPanel.java
- * @version 3.1.2 2020-09-02
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -57,7 +57,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 		int cx = w / 2;
 		int cy = h / 2;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g2.setStroke(new BasicStroke(s/4f,  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		g2.setPaint(Color.white);
 		g2.rotate(Math.PI * mAngle / 180, cx, cy);
 		for (int i = 0; i < 12; i++) {

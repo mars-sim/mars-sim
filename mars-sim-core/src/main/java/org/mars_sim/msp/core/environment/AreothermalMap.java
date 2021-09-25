@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AreothermalMap.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -71,6 +71,8 @@ public class AreothermalMap implements Serializable {
 			grabber.grabPixels();
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, "grabber error" + e);
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 		if ((grabber.status() & ImageObserver.ABORT) != 0)
 			logger.severe("grabber error");

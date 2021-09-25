@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -46,6 +46,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A wizard panel for selecting the mission's starting settlement.
  */
+@SuppressWarnings("serial")
 class StartingSettlementPanel extends WizardPanel {
 
 	/** The wizard panel name. */

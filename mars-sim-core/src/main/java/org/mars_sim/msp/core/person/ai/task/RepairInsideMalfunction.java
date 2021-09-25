@@ -68,69 +68,53 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	public RepairInsideMalfunction(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D + RandomUtil.getRandomDouble(10D));
-
-		if (person.isOutside()) {
-			endTask();
-			return;
-		}
-		
-		// Get the malfunctioning entity.
-		entity = getMalfunctionEntity(person);
-		if (entity != null) {
-			// Add person to location of malfunction if possible.
-			addPersonOrRobotToMalfunctionLocation(entity);
-			
-			// Get an emergency malfunction.
-			malfunction = entity.getMalfunctionManager().getMostSeriousInsideMalfunction();
-			if ((malfunction != null) && (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
-
-				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.INSIDE, entity);
-				
-				// Initialize phase
-				addPhase(REPAIRING);
-				setPhase(REPAIRING);
-
-			}
-			else {
-				logger.warning(person, "Can not find a Malfunction to work on for "
-							   + entity.getNickName());
-				endTask();
-			}			
-		}
-		else {
-			logger.warning(person, "Can not find a malfunctioning Entity in my vicinity");
-			endTask();
-		}
+		initRepair();
 	}
+	
 
 	public RepairInsideMalfunction(Robot robot) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D);
-		
-		if (robot.isOutside()) {
+		initRepair();
+	}
+
+	/**
+	 * Find a repair with available slots and register for the work.
+	 */
+	private void initRepair() {
+		if (worker.isOutside()) {
 			endTask();
 			return;
 		}
 		
 		// Get the malfunctioning entity.
-		entity = getMalfunctionEntity(robot);
-		if (entity != null) {
-			// Add robot to location of malfunction if possible.
-			addPersonOrRobotToMalfunctionLocation(entity);
-			
-			// Initialize phase
-			addPhase(REPAIRING);
-			setPhase(REPAIRING);
-
-			logger.log(robot, Level.FINEST, 500, "Was about to repair malfunction.");
-			
-		} else {
-			endTask();
-			return;
+		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+			if (potential != null) {
+				entity = next;
+				malfunction = potential;
+				break; // Stop searching
+			}
 		}
 
+		if (entity != null) {
+			// Add person to location of malfunction if possible.
+			addPersonOrRobotToMalfunctionLocation(entity);
+			
+			// Possible the Task could be aborted due to walking problems
+			if (!isDone()) {
+				RepairHelper.startRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
+				
+				// Initialize phase
+				addPhase(REPAIRING);
+				setPhase(REPAIRING);
+			}
+		}
+		else {
+			logger.warning(worker, "Can not find a Malfunction to work on for in my vicinity");
+			endTask();
+		}
 	}
-
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -155,13 +139,13 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		if (isDone()) {
 			return time;
 		}
-		
-		// Check if there are no more malfunctions.
-		if (!hasMalfunction(entity)) {
+
+		// Someone else has already finished the last part
+		if (malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
 			endTask();
 			return time;
 		}
-
+		
 		double workTime = time;
 		if (worker instanceof Robot) {
 			// A robot moves slower than a person and incurs penalty on workTime
@@ -279,32 +263,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		return null;
 	}
 
-	/**
-	 * Gets a malfunctionable entity with a normal malfunction for a user.
-	 * 
-	 * @param robot the robot.
-	 * @return malfunctionable entity.
-	 */
-	private static Malfunctionable getMalfunctionEntity(Robot robot) {
-		Malfunctionable result = null;
-
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-		while (i.hasNext() && (result == null)) {
-			Malfunctionable entity = i.next();
-			
-            if (entity instanceof Vehicle) {
-            	// Note that currently robot cannot go outside and board a vehicle
-            	continue;
-            }
-            
-			if (entity.getMalfunctionManager().getMostSeriousInsideMalfunction() != null) {
-				result = entity;
-			}
-		}
-
-		return result;
-	}
-
 	
 	/**
 	 * Check if a malfunctionable entity requires an EVA to repair.
@@ -335,17 +293,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 
 		return result;
 	}
-
-	
-	/**
-	 * Gets a malfunctional entity with a normal malfunction for a user.
-	 * 
-	 * @return malfunctional entity.
-	 */
-	private boolean hasMalfunction(Malfunctionable entity) {
-		return entity.getMalfunctionManager().hasMalfunction();
-	}
-
 
 	@Override
 	public Malfunctionable getEntity() {
@@ -387,14 +334,20 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			else if (worker instanceof Robot) {
 				// Note 1 : robot doesn't need life support
 				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
-				if (building.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+				if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
+						|| building.hasFunction(FunctionType.EARTH_RETURN)) {
 					if (worker.getSettlement().getBuildingConnectors(building).size() > 0) {
 						// Walk to malfunctioning building.
-						walkToRandomLocInBuilding(building, false);
+						walkToRandomLocInBuilding(building, true);
 						isWalk = true;
 					}
+					else {
+						logger.warning(worker, "Can not walk inside " + building.getNickName());
+						endTask();
+						return;
+					}
 				} else {
-					walkToRandomLocInBuilding(building, false);
+					walkToRandomLocInBuilding(building, true);
 					isWalk = true;
 				}
 			}
@@ -406,8 +359,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				// Walk to malfunctioning rover.
 				walkToRandomLocInRover((Rover) malfunctionable, true);
 				isWalk = true;
-			} else {
-				// robots are not allowed to enter a rover
 			}
 		}
 

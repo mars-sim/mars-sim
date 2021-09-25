@@ -105,6 +105,13 @@ implements Serializable {
 	        	endTask();
 		      	return;
 	        }
+	        else if (!airlock.hasReservation(person.getIdentifier())) {
+	    		if (!airlock.addReservation(person.getIdentifier())) {
+	    	       	ended = true;
+			    	endTask();
+			    	return;
+	    		}
+	        }
      	}
 
         // Take bags for collecting resource.

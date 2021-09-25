@@ -103,7 +103,11 @@ public class Malfunction implements Serializable {
 		 */
 		public boolean leaveWork(String name) {
 			if (activeWorkers.containsKey(name)) {
-				previousWorkers.put(name, activeWorkers.remove(name));
+				Double previous = activeWorkers.remove(name);
+				// Don't remember worker who never contributed
+				if (previous.doubleValue() > 0D) {
+					previousWorkers.put(name, previous);
+				}
 				return true;
 			}
 			return false;
@@ -168,6 +172,8 @@ public class Malfunction implements Serializable {
 
 	private MalfunctionMeta definition;
 
+	private String name;
+
 	/**
 	 * Create a new Malfunction instance based on a meta definition
 	 *
@@ -179,16 +185,17 @@ public class Malfunction implements Serializable {
 
 		incidentNum = incident;
 		this.definition = definition;
-
-		String idString = getUniqueIdentifer();
-
+		StringBuilder builder = new StringBuilder().append(definition.getName()).append(INCIDENT_NUM)
+				.append(incidentNum);
+		this.name = builder.toString();
+				
 		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
 		for (Entry<MalfunctionRepairWork, EffortSpec> effort : workEffort.entrySet()) {
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-						idString + " - Estimated " + effort.getKey() + " work time: "
+						name + " - Estimated " + effort.getKey() + " work time: "
 								+ Math.round(actualEffort*10.0)/10.0);	
 				work.put(effort.getKey(), new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));				
 			}
@@ -207,7 +214,7 @@ public class Malfunction implements Serializable {
 	private RepairWork getWorkType(MalfunctionRepairWork type) {
 		RepairWork w = work.get(type);
 		if (w == null) {
-			throw new IllegalArgumentException("Malfunction " + getUniqueIdentifer()
+			throw new IllegalArgumentException("Malfunction " + getName()
 							+ " does not need " + type);
 		}
 		return w;
@@ -313,7 +320,9 @@ public class Malfunction implements Serializable {
 	 * @return name of the malfunction
 	 */
 	public String getName() {
-		return definition.getName();
+		StringBuilder builder = new StringBuilder().append(definition.getName()).append(INCIDENT_NUM)
+				.append(incidentNum);
+		return builder.toString();
 	}
 
 	/**
@@ -408,14 +417,14 @@ public class Malfunction implements Serializable {
 		RepairWork w = work.get(workType);
 		double remaining = time;
 		if (w == null) {
-			logger.warning("Malfunction " + getUniqueIdentifer() + " not expecting work " + workType);
+			logger.warning("Malfunction " + name + " not expecting work " + workType);
 		}
 		else {
 			// if this malfunction has repair work
 			if (!w.isCompleted()) {
-				if (w.workCompleted == 0) {
+				if ((w.workCompleted == 0) && (time > 0D)) {
 					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-							getUniqueIdentifer() + " - " + workType + " repair work initiated by " + repairer + ".");
+							name + " - " + workType + " repair work initiated by " + repairer + ".");
 				}
 				
 				// How much can be used
@@ -449,7 +458,7 @@ public class Malfunction implements Serializable {
 		RepairWork w = getWorkType(required);
 		if (w.leaveWork(name) && !w.isCompleted()) {
 			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-					getUniqueIdentifer() + " repairer " + name + " leaving the scene.");
+					name + " repairer " + name + " leaving the scene.");
 		}
 	}
 	
@@ -526,7 +535,7 @@ public class Malfunction implements Serializable {
 				repairParts.put(id, part.getNumber());
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						getUniqueIdentifer() + REPAIR_REQUIRES + part.getName()
+						name + REPAIR_REQUIRES + part.getName()
 						+ QUANTITY + part.getNumber() + CLOSE_B, null);
 			}
 		}
@@ -578,13 +587,7 @@ public class Malfunction implements Serializable {
 	 * Gets the string value for the object.
 	 */
 	public String toString() {
-		return getUniqueIdentifer();
-	}
-	
-	private String getUniqueIdentifer() {
-		StringBuilder builder = new StringBuilder().append(definition.getName()).append(INCIDENT_NUM)
-				.append(incidentNum);
-		return builder.toString();
+		return name;
 	}
 
 	public void setTraumatized(String name) {

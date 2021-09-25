@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Resupply.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -1177,6 +1177,10 @@ public class Resupply implements Serializable, Transportable {
 					shortestLineLength = length;
 				}
 			}
+			
+			// Below is added to satisfy sonarcloud bug only. It's not needed.
+			if (shortestLine == null)
+				shortestLine = validLines.get(0);
 
 			// Create building template with position, facing, width and length for the
 			// connector building.

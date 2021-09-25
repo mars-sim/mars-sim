@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SalvageMissionCustomInfoPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -38,6 +38,7 @@ import com.alee.laf.progressbar.WebProgressBar;
 /**
  * A panel for displaying salvage custom mission information.
  */
+@SuppressWarnings("serial")
 public class SalvageMissionCustomInfoPanel
 extends MissionCustomInfoPanel 
 implements ConstructionListener {

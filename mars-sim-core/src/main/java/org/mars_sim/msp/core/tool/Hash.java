@@ -14,9 +14,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
-
 public enum Hash {
 
     MD5("MD5"),

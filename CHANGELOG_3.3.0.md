@@ -5,7 +5,7 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.3.0 (build 6184) - 2021-09-14
+## v3.3.0 (build 61__) - 2021-09-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -16,6 +16,7 @@ Copyright (C) 2021 Scott Davis
 5. Sort Parts by type.
 6. Define countries and sponsors to xml instead of hard-coding them.
 7. Define scenarios.
+8. Revamp malfunction repair. 
 
 ### UI IMPROVEMENT :
 
@@ -30,7 +31,6 @@ Copyright (C) 2021 Scott Davis
 3. Fix drone delivery.
 4. Fix switching vehicle operator.
 5. Adopt Sonarcloud for improving code quality.
-6. Correct repairers from not being able to stop repairing. 
 
 ------------------------------------------|---------------------
 ## v3.2.0 (build 5916) - 2021-07-06

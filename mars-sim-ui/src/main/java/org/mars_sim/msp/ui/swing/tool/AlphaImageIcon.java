@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AlphaImageIcon.java
- * @date 2021-08-28
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
  * @version 3.2.0 2021-06-20
  * @author Darryl
  */
+@SuppressWarnings("serial")
 public class AlphaImageIcon extends ImageIcon {
 
   private transient Icon icon;

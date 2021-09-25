@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DateDialog.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/
@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 /**
 *  Date Setting Dialog
 */
+@SuppressWarnings("serial")
 public class DateDialog extends ModalInternalFrame {
 			
 	protected JTextField		tfYear;

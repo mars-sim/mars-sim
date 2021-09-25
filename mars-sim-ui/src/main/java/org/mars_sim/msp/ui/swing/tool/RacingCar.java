@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RacingCar.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 
@@ -20,6 +20,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 // https://codereview.stackexchange.com/questions/136692/swing-keybinding-to-control-an-animated-car
+@SuppressWarnings("serial")
 public class RacingCar extends JFrame {
 	
 	public RacingCar() {

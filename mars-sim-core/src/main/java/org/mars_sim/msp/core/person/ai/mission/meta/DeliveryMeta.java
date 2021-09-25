@@ -125,7 +125,7 @@ public class DeliveryMeta implements MetaMission {
 			return 0;
 		}
 		
-		logger.info(settlement, drone.getNickName() + " available for delivery mission.");
+		logger.info(settlement, 10_000L, drone.getNickName() + " available for delivery mission.");
 		
 		try {
 			// Only check every couple of Sols, else use cache.

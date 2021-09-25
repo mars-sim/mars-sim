@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SkillManager.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-20
  * @author Scott Davis
  */
 
@@ -30,15 +30,8 @@ public class SkillManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-//	private static final Logger logger = Logger.getLogger(SkillManager.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+
 	// Data members
-//	/** The person's ID. */
-//	private int personID;
-//	/** The robot's ID. */
-//	private int robotID;
 	/** The person's instance. */
 	private Person person;
 	/** The robot's instance. */
@@ -48,22 +41,13 @@ public class SkillManager implements Serializable {
 	/** A list of the person's skills keyed by name. */
 	private Map<SkillType, Skill> skills;
 
-	/** The unit manager instance. */
-//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	
 	/** Constructor. */
-	public SkillManager(Unit unit) {//, CoreMind coreMind) {
-//		personID = -1;
-//		robotID = -1;
-
-//		this.coreMind = coreMind;
-		
+	public SkillManager(Unit unit) {
+	
 		if (unit instanceof Person) {
 			person = (Person)unit;
-//			personID = ((Person)unit).getIdentifier();
 		} else if (unit instanceof Robot) {
 			robot = (Robot)unit;
-//			robotID = ((Robot)unit).getIdentifier();
 		}
 
 		skills = new ConcurrentHashMap<SkillType, Skill>();
@@ -156,15 +140,15 @@ public class SkillManager implements Serializable {
 				int rand = RandomUtil.getRandomInt(0, 3);
 				
 				if (rand == 0) {
-					skillLevel = getInitialSkillLevel(0, (int)(10 + ageFactor/10));
+					skillLevel = getInitialSkillLevel(0, (int)(10 + ageFactor/10.0));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 1) {
-					skillLevel = getInitialSkillLevel(1, (int)(5 + ageFactor/8));
+					skillLevel = getInitialSkillLevel(1, (int)(5 + ageFactor/8.0));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 2) {
-					skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6));
+					skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6.0));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 //				else if (rand == 3) {

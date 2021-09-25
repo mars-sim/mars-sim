@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -33,6 +33,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel showing information about a manufacturing process.
  */
+@SuppressWarnings("serial")
 public class ManufacturePanel extends WebPanel {
 
 	// Data members

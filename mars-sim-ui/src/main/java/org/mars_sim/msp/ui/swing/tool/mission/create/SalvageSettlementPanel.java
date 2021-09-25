@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * SettlementSettlementPanel.java
- * @version 3.2.0 2021-06-20
+ * SalvageSettlementPanel.java
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -23,6 +23,7 @@ import java.util.Iterator;
 /**
  * A wizard panel for selecting the mission's settlement settlement.
  */
+@SuppressWarnings("serial")
 public class SalvageSettlementPanel
 extends WizardPanel {
 

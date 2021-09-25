@@ -47,12 +47,10 @@ public class SimulationBuilder {
 	private static final String SCENARIO_ARG = "scenario";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
-
-	private SimulationConfig simulationConfig;
 	
 	private int userTimeRatio = 12;
 	private String template;
-	private ReportingAuthority authority = null;
+	private String authorityName = null;
 	private boolean newAllowed = false;
 	private File simFile;
 	private String latitude = null;
@@ -61,9 +59,8 @@ public class SimulationBuilder {
 	private UserConfigurableConfig<Crew> crewConfig;
 	private Scenario bootstrap;
 
-	public SimulationBuilder(SimulationConfig simulationConfig) {
+	public SimulationBuilder() {
 		super();
-		this.simulationConfig = simulationConfig;
 	}
 
 	/**
@@ -107,7 +104,8 @@ public class SimulationBuilder {
 	}
 
 	public void setSponsor(String optionValue) {
-		authority = simulationConfig.getReportingAuthorityFactory().getItem(optionValue);
+		authorityName = optionValue;
+				//simulationConfig.getReportingAuthorityFactory().getItem(optionValue);
 	}
 
 	public void setDiagnostics(String modules) {
@@ -257,9 +255,11 @@ public class SimulationBuilder {
 		logger.config("  Java additional build Info = "+version.optional().orElse("None"));
 		logger.config("       Java Pre-Release Info = "+version.pre().orElse("NA"));
 		logger.config("-----------------------------------------------------------");
-		// Load xml files
-		simulationConfig.loadConfig();
 		
+		// Load xml files but not until arguments parsed since it may change 
+		// the data directory
+		SimulationConfig simConfig = SimulationConfig.instance();
+		simConfig.loadConfig();
 		Simulation sim = Simulation.instance();
 		
 		boolean loaded = false;
@@ -269,14 +269,14 @@ public class SimulationBuilder {
 		
 		InitialSettlement spec = null;
 		if (template != null) {
-			spec = loadSettlementTemplate();
+			spec = loadSettlementTemplate(simConfig);
 		}
 		if (!loaded) {
 			// Create a new simulation
 			sim.createNewSimulation(userTimeRatio); 
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
-											simulationConfig);
+					simConfig);
 			if (useCrews && crewConfig == null) {
 				logger.info("Created default CrewConfig");
 				crewConfig = new CrewConfig();
@@ -331,16 +331,21 @@ public class SimulationBuilder {
 
 	/**
 	 * Loads the prescribed settlement template
+	 * @param simulationConfig 
 	 */
-	private InitialSettlement loadSettlementTemplate() {
+	private InitialSettlement loadSettlementTemplate(SimulationConfig simulationConfig) {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			
 		// Find the template
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(template);	
-		if (authority == null) {
+		ReportingAuthority authority;
+		if (authorityName == null) {
 			// Use the default on the template
 			String sponsorCode = settlementTemplate.getSponsor();
 			authority = simulationConfig.getReportingAuthorityFactory().getItem(sponsorCode);
+		}
+		else {
+			authority = simulationConfig.getReportingAuthorityFactory().getItem(authorityName);
 		}
 		
 		// Create a random name
@@ -354,7 +359,7 @@ public class SimulationBuilder {
 		
 		logger.info("Starting a single Settlement sim using template "+ template
 				+ " with settlement name = " + settlementName);
-		return new InitialSettlement(settlementName, authority.getCode(), template, 
+		return new InitialSettlement(settlementName, authority.getName(), template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),
 									 new Coordinates(latitude, longitude), null);

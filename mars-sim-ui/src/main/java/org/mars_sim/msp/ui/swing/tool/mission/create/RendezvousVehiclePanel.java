@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RendezvousVehiclePanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -45,6 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 /**
  * A wizard panel for selecting a mission rendezvous vehicle.
  */
+@SuppressWarnings("serial")
 class RendezvousVehiclePanel extends WizardPanel {
 
 	/** Wizard panel name. */

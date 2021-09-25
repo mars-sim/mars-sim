@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -24,6 +24,7 @@ import com.alee.laf.label.WebLabel;
  * the heat production of a settlement building.
  */
 //TODO: list individual power source in building tab and the power generated from that source
+@SuppressWarnings("serial")
 public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
@@ -36,8 +37,7 @@ extends BuildingFunctionPanel {
 	private WebLabel heatStatusLabel;
 	/** The heat production label. */
 	private WebLabel productionLabel;
-	/** The heat used label. */
-	//private WebLabel usedLabel;
+
 	/** Decimal formatter. */
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelThermal.decimalFormat")); //$NON-NLS-1$
 
@@ -47,8 +47,7 @@ extends BuildingFunctionPanel {
 	/** The heat production cache. */
 	private double productionCache;
 	/** The heat used cache. */
-	
-	// 2014-10-25 Added heat sources to the building tab
+
 	private ThermalGeneration furnace;
 
 	

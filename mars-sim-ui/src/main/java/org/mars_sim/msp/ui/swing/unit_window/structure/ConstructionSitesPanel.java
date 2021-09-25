@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructionSitesPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -34,6 +34,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * A panel displaying a list of construction sites at a settlement.
  */
+@SuppressWarnings("serial")
 public class ConstructionSitesPanel extends JPanel {
   
     // Data members

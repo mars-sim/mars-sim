@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelPower.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -30,6 +30,7 @@ import com.alee.laf.text.WebTextField;
  * The BuildingPanelPower class is a building function panel representing 
  * the power production and use of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelPower
 extends BuildingFunctionPanel {
 

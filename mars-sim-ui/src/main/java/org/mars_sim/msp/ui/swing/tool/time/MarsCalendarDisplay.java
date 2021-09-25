@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * GlobeDisplay.java
- * @version 3.2.0 2021-06-20
+ * MarsCalendarDisplay.java
+ * @date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.time;
@@ -12,14 +12,12 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.extended.WebComponent;
-import com.alee.managers.style.StyleId;
 
 
 /**
@@ -27,7 +25,7 @@ import com.alee.managers.style.StyleId;
  * {@link TimeWindow} class.
  */
 @SuppressWarnings("serial")
-public class MarsCalendarDisplay extends WebComponent {
+public class MarsCalendarDisplay extends JComponent {
 
 	// Data members
 	/** The Martian clock instance. */
@@ -245,20 +243,11 @@ public class MarsCalendarDisplay extends WebComponent {
 	}
 
 	@Override
-	public StyleId getDefaultStyleId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void updateUI() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String getUIClassID() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

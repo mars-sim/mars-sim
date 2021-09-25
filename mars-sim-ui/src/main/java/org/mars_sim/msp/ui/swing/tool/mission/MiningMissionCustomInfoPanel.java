@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * TradeMissionCustomInfoPanel.java
- * @version 3.2.0 2021-06-20
+ * MiningMissionCustomInfoPanel.java
+ * @date 2021-09-20
  * @author Scott Davis
  */
 
@@ -39,6 +39,7 @@ import com.alee.laf.table.WebTable;
 /**
  * A panel for displaying mining mission information.
  */
+@SuppressWarnings("serial")
 public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	// Data members
