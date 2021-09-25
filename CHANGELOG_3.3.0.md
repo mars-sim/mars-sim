@@ -5,7 +5,7 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.3.0 (build 6215) - 2021-09-25
+## v3.3.0 (build 6218) - 2021-09-25
 
 ### ISSUES ADDRESSED : 
 
@@ -27,6 +27,8 @@ Copyright (C) 2021 Scott Davis
 -- Duplicated crew member #434
 -- NPE during loading vehicle #439
 -- Cannot create new player-defined single settlement in command line #442
+-- Cannot load crew_alpha.xml in windows: File separator issue #446
+-- NPE due to threading in finding dead people #447
 
 ### CORE ENGINE IMPROVEMENTS :
 

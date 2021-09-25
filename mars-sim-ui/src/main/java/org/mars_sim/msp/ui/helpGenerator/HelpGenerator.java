@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HelpGenerator.java
- * @date 2021-09-05
+ * @date 2021-09-25
  * @author stpa
  */
 
@@ -1157,7 +1157,7 @@ public class HelpGenerator {
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/")
+					.append("All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/docs/help/")
 				.toString()
 			);
 		
