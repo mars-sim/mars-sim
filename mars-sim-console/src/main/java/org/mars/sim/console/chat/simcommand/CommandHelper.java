@@ -256,7 +256,7 @@ public class CommandHelper {
 		// Vehicle mission has a loading
 		if (mission instanceof VehicleMission) {
 			LoadingController lp = ((VehicleMission) mission).getLoadingPlan();
-			if (!lp.isCompleted()) {
+			if ((lp != null) && !lp.isCompleted()) {
 				response.appendText("Loading from " + lp.getSettlement().getName() + " :");
 				outputResources("Resources", response, lp.getResourcesManifest());	
 				outputResources("Optional Resources", response, lp.getOptionalResourcesManifest());	
