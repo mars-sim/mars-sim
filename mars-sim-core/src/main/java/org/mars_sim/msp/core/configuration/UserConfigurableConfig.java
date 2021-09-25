@@ -204,8 +204,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			path = SimulationFiles.getXMLDir() + File.separator + DEFAULT_DIR;
 			
-			// Alpha is a bundled XML so needs to be copied out of the CONF sub folder
-			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + File.separator + filename );
+			// Bundled XML files need to be copied out of the CONF sub folder.
+			// Must use the '/' for paths in the classpath.
+			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + "/" + filename );
 			filename += SimulationConfig.XML_EXTENSION;
 		}
 		else { // for user
