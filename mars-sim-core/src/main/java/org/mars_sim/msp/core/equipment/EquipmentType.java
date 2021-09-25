@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,8 +27,6 @@ public enum EquipmentType {
 	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
 
 	private String name;	
-
-	private static Set<EquipmentType> enumSet;
 
 	private static Set<String> nameSet;
 	
@@ -63,20 +60,7 @@ public enum EquipmentType {
 		}
 		return nameSet;
 	}
-	
-	/**
-	 * Gets a set of equipment enums
-	 * 
-	 * @return
-	 */
-	public static Set<EquipmentType> getEnumSet() {
-		if (enumSet == null) {
-			enumSet = new HashSet<EquipmentType>();
-			Collections.addAll(enumSet, EquipmentType.values());
-		}
-		return enumSet;
-	}
-	
+
 	/**
 	 * Gets a set of equipment ids
 	 * 
@@ -107,16 +91,6 @@ public enum EquipmentType {
 	    	}
 		}
 		return -1;
-	}
-	
-	/**
-	 * Obtains the enum type of the equipment with its ordinal id
-	 * 
-	 * @param ordinalID
-	 * @return {@link EquipmentType}
-	 */
-	public static EquipmentType convertOrdinalID2Enum(int ordinalID) {
-		return EquipmentType.values()[ordinalID];
 	}
 	
 	/**
@@ -178,7 +152,13 @@ public enum EquipmentType {
 		return null;
 	}
 	
-	public static int getEVAResourceID() {
-		return EquipmentType.EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+	/**
+	 * COnvert an EquipmentType to the associated resourceID.
+	 * This is not good and Equipment should be referenced by the EquipmentType enum everywhere.
+	 * Needs revisiting
+	 * @return
+	 */
+	public static int getResourceID(EquipmentType type) {
+		return type.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 	}
 }

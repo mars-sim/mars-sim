@@ -247,26 +247,6 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
-	 * Is a member capable of a mission. Standard check plus they must be in the starting Settlement.
-	 */
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atStartingSettlement = false;
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					atStartingSettlement = true;
-				}
-			}
-			result = atStartingSettlement;
-		}
-
-		return result;
-	}
-	
-	/**
 	 * Checks that everyone in the mission is aboard the rover.
 	 * 
 	 * @return true if everyone is aboard
@@ -342,65 +322,55 @@ public abstract class RoverMission extends VehicleMission {
 		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
 		
 		// Load vehicle if not fully loaded.
-		if (!loadedFlag) {
-			if (isVehicleLoaded()) {
-				loadedFlag = true;
-			} else {
-				// Check if vehicle can hold enough supplies for mission.
-				if (isVehicleLoadable()) {
-					
-					if (member.isInSettlement()) {
-						// Load rover
-						// Random chance of having person load (this allows person to do other things
-						// sometimes)
-						if (RandomUtil.lessThanRandPercent(75)) {
-							if (member instanceof Person) {
-								Person person = (Person) member;
-								
-								boolean hasAnotherMission = false; 
-								Mission m = person.getMission();
-								if (m != null && m != this)
-									hasAnotherMission = true; 
-								
-								if (!hasAnotherMission && isRoverInAGarage) {
-
-									assignTask(person,
-												new LoadVehicleGarage(person, v,
-														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-								} else {
-									// Check if it is day time.
-									assignTask(person, new LoadVehicleEVA(person, v,
-													getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-													getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-
-								}
-							}
-						}
-					}
-					else {
+		if (!isVehicleLoaded()) {
+			// Check if vehicle can hold enough supplies for mission.
+			if (isVehicleLoadable()) {
+				
+				if (member.isInSettlement()) {
+					// Load rover
+					// Random chance of having person load (this allows person to do other things
+					// sometimes)
+					if (RandomUtil.lessThanRandPercent(75)) {
 						if (member instanceof Person) {
 							Person person = (Person) member;
 							
-							boolean hasAnotherMission = true; 
+							boolean hasAnotherMission = false; 
 							Mission m = person.getMission();
 							if (m != null && m != this)
 								hasAnotherMission = true; 
 							
-							if (!hasAnotherMission) {
-							// Check if it is day time.
-								assignTask(person, new LoadVehicleEVA(person, v,
-											getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-											getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+							if (!hasAnotherMission && isRoverInAGarage) {
+
+								assignTask(person,
+											new LoadVehicleGarage(person, this));
+							} else {
+								// Check if it is day time.
+								assignTask(person, new LoadVehicleEVA(person, this));
+
 							}
 						}
 					}
-					
-				} else {
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
-					return;
 				}
+				else {
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						
+						boolean hasAnotherMission = true; 
+						Mission m = person.getMission();
+						if (m != null && m != this)
+							hasAnotherMission = true; 
+						
+						if (!hasAnotherMission) {
+						// Check if it is day time.
+							assignTask(person, new LoadVehicleEVA(person, this));
+						}
+					}
+				}
+				
+			} else {
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission();
+				return;
 			}
 		}
 		
@@ -462,7 +432,7 @@ public abstract class RoverMission extends VehicleMission {
 			}
 
 			// If rover is loaded and everyone is aboard, embark from settlement.
-			if (!isDone() && loadedFlag) {
+			if (!isDone()) {
 				
 				// Set the members' work shift to on-call to get ready
 				for (MissionMember m : getMembers()) {
@@ -948,38 +918,6 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
-	@Override
-	public Map<Integer, Number> getOptionalResourcesToLoad() {
-
-		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
-
-		// For now, comment out loading dessert
-		// Note: need to figure out why dessert cannot be loaded onto a vehicle
-//		int dessertID = -1;
-//		// Initialize dessert resources if necessary.
-//		if (dessertResources == null) {
-//			dessertID = determineDessertResources();
-//		}
-//
-//		if (dessertID != -1) {
-//			// Add any dessert resources to optional resources to load.
-//			Iterator<Integer> i = dessertResources.keySet().iterator();
-//			while (i.hasNext()) {
-//				Integer dessert = i.next();
-//				double amount = dessertResources.get(dessert);
-//
-//				if (result.containsKey(dessert)) {
-//					double initialAmount = (double) result.get(dessert);
-//					amount += initialAmount;
-//				}
-//
-//				result.put(dessert, amount);
-//			}
-//		}
-		
-		return result;
-	}
-
 	/**
 	 * Gets EVA suit parts for the trip
 	 * 
@@ -1061,12 +999,6 @@ public abstract class RoverMission extends VehicleMission {
 		return id;
 	}
 
-	@Override
-	public void endMission() {
-//		logger.info(this.getStartingMember() + " ended the " + this);
-		super.endMission();
-	}
-
 	/**
 	 * Checks if there is an available backup rover at the settlement for the
 	 * mission.
@@ -1085,11 +1017,19 @@ public abstract class RoverMission extends VehicleMission {
 		return (availableVehicleNum >= 2);
 	}
 
-	
-
-	@Override
+	/**
+	 * Find members for a mission, for RoverMissions all members must be at the same
+	 * settlement.
+	 * @param startingMember
+	 * @return
+	 */
 	protected boolean recruitMembersForMission(MissionMember startingMember) {
-		super.recruitMembersForMission(startingMember);
+		return recruitMembersForMission(startingMember, true);
+	}
+	
+	@Override
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
+		super.recruitMembersForMission(startingMember, sameSettlement);
 
 		// Make sure there is at least one person left at the starting
 		// settlement.
@@ -1120,15 +1060,6 @@ public abstract class RoverMission extends VehicleMission {
 		
 		return true;
 	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link HistoricalEventManager}
-//	 */
-//	public static void justReloaded(HistoricalEventManager event) {
-//		eventManager = event;
-//	}
 	
 	@Override
 	public void destroy() {

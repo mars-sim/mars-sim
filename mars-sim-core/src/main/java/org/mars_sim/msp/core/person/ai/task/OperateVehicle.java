@@ -65,7 +65,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
     private final static double DESTINATION_BUFFER = .001D;
     
     // The base percentage chance of an accident while operating vehicle per millisol.
-    public static final double BASE_ACCIDENT_CHANCE = .01D; 
+    public static final double BASE_ACCIDENT_CHANCE = .01D;
+
+    // Sometimes a negative speed is calculated due to modifiers
+	private static final double MIN_SPEED = 0.1; 
 	
 	// Data members
 	private double startTripDistance; // The distance (km) to the destination at the start of the trip.
@@ -400,8 +403,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
         
         double v_sq = v * v;
-        		
-        double delta_v_squared =  delta_v * delta_v;
         
         double F_initialFriction = 0;
         
@@ -682,22 +683,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        // Need to convert back and forth between the SI and imperial unit system
 	        // for speed and accel
 	    	nextSpeed = (currentSpeed /3.6 + accel * secTime) * 3.6 + getSpeedSkillModifier();
-	        
-//	    	logger.log(vehicle, Level.INFO, 2_000,
-//					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   ");
 	    	
 	       	if (nextSpeed > maxSpeed)
 	       		nextSpeed = maxSpeed;
-	        
-//	    	logger.log(vehicle, Level.INFO, 2_000,
-//					"2. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-//					);
+	       	else if (nextSpeed < MIN_SPEED) {
+	       		nextSpeed = MIN_SPEED;
+	       	}
     	}
-//    	else 
-//        	logger.log(vehicle, Level.INFO, 2_000,
-//    					"3. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-//    					);
-    	
+
         return nextSpeed;
     }
     
@@ -807,12 +800,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
     	double mod = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
-        if (getEffectiveSkillLevel() <= 5) {
-            mod = 0D - ((baseSpeed / 4D) * ((5D - getEffectiveSkillLevel()) / 5D));
+        int effectiveSkillLevel = getEffectiveSkillLevel();
+        if (effectiveSkillLevel <= 5) {
+            mod = 0D - ((baseSpeed / 4D) * ((5D - effectiveSkillLevel) / 5D));
         }
         else {
             double tempSpeed = baseSpeed;
-            for (int x=0; x < getEffectiveSkillLevel() - 5; x++) {
+            for (int x=0; x < effectiveSkillLevel - 5; x++) {
                 tempSpeed /= 2D;
                 mod += tempSpeed;
             }

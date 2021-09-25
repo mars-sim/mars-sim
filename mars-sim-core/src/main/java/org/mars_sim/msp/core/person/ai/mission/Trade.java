@@ -534,9 +534,7 @@ public class Trade extends RoverMission implements Serializable {
 							if (member instanceof Person) {
 								Person person = (Person) member;
 								assignTask(person,
-										new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
-												getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-												getOptionalEquipmentToLoad()));
+										new LoadVehicleGarage(person, this));
 							}
 						} else {
 							if (member instanceof Person) {
@@ -544,9 +542,7 @@ public class Trade extends RoverMission implements Serializable {
 								// Check if it is day time.
 								if (!EVAOperation.isGettingDark(person)) {
 									assignTask(person,
-											new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
-													getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-													getOptionalEquipmentToLoad()));
+											new LoadVehicleEVA(person, this));
 								}
 							}
 						}

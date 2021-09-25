@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.equipment;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -23,7 +22,7 @@ public final class EquipmentFactory {
 	/** The equipment name set cache. */
 	private static Set<String> equipmentNamesCache;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static UnitManager unitManager;
 	
 	/**
 	 * Private constructor for static factory class.
@@ -46,7 +45,14 @@ public final class EquipmentFactory {
 
 	}
 
-	public static Equipment createNewEquipment(String type, Settlement settlement, boolean temp) {
+	/**
+	 * Create a new piece of Equipment. This may be temporary to be shared.
+	 * @param type
+	 * @param settlement
+	 * @param temp
+	 * @return
+	 */
+	public static synchronized Equipment createNewEquipment(String type, Settlement settlement, boolean temp) {
 		// Create the name upfront
 		String newName = Equipment.generateName(type);
 		if (temp) {
@@ -205,5 +211,13 @@ public final class EquipmentFactory {
 			return SpecimenBox.EMPTY_MASS;
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
+	}
+	
+	/**
+	 * Set up the default Unit Manager to use.
+	 * @param mgr
+	 */
+	public static void initialise(UnitManager mgr) {
+		unitManager = mgr;
 	}
 }

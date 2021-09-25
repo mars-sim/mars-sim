@@ -1159,31 +1159,32 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		} else {
 			createAdjacentBuildingMap();
 		}
-	
-		//  Construction Sites are passive
-//		for (ConstructionSite s : constructionManager.getConstructionSites()) {
-//			s.timePassing(time);
-//		}
 		
-		
-		for (Equipment e : ownedEquipment) {
-			e.timePassing(pulse);
-		}
-		
-		for (Vehicle v : ownedVehicles) {
-			v.timePassing(pulse);
-		}
-		
-		for (Person p : citizens) {
-			p.timePassing(pulse);
-		}
-		
-		// Robots are updated here for now. 
-		for (Robot r : ownedRobots) {
-			r.timePassing(pulse);
-		}
-		
+		// Update owned Units
+		timePassing(pulse, ownedEquipment);
+		timePassing(pulse, ownedVehicles);
+		timePassing(pulse, citizens);
+		timePassing(pulse, ownedRobots);
+
 		return true;
+	}
+	
+	/**
+	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
+	 * to avoid the impact spreading to other units.
+	 * @param pulse
+	 * @param ownedUnits
+	 */
+	private void timePassing(ClockPulse pulse, Collection<? extends Temporal> ownedUnits) {
+		for (Temporal t : ownedUnits) {
+			try {
+				t.timePassing(pulse);
+			}
+			catch (RuntimeException rte) {
+				logger.severe(this, "Problem applying pulse : " + rte.getMessage(),
+						      rte);
+			}
+		}	
 	}
 
 	/**

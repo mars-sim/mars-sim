@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -297,6 +298,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		mars = new Environment(marsClock);
 		unitManager = new UnitManager();
+		EquipmentFactory.initialise(unitManager);
 		
 		// Build plantary objects
 		MarsSurface marsSurface = new MarsSurface();
@@ -357,6 +359,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize UnitManager instance
 		unitManager = new UnitManager(); 
+		EquipmentFactory.initialise(unitManager);
 		
 		// Initialize MarsSurface instance
 		MarsSurface marsSurface = new MarsSurface();
@@ -645,6 +648,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, weather, surfaceFeatures, missionManager);	
 		Unit.setUnitManager(unitManager);
+		EquipmentFactory.initialise(unitManager);
+
 		
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);

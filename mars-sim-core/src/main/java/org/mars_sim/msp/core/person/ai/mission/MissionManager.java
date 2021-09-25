@@ -288,27 +288,28 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("newMission is null");
 		}
 
-		if (!onGoingMissions.contains(newMission)) {
-			onGoingMissions.add(newMission);
-			
-			// Iterate mission identifer
-			newMission.iterateIdentifer();
-			
-			// Update listeners.
-			if (listeners == null) {
-				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
-			}
-
-			synchronized (listeners) {
-				Iterator<MissionManagerListener> i = listeners.iterator();
-				while (i.hasNext()) {
-					i.next().addMission(newMission);
+		synchronized (onGoingMissions) {
+			if (!onGoingMissions.contains(newMission)) {
+				onGoingMissions.add(newMission);
+				
+				// Iterate mission identifer
+				//newMission.iterateIdentifer();
+				
+				// Update listeners.
+				if (listeners == null) {
+					listeners = new CopyOnWriteArrayList<>();
 				}
+	
+				synchronized (listeners) {
+					Iterator<MissionManagerListener> i = listeners.iterator();
+					while (i.hasNext()) {
+						i.next().addMission(newMission);
+					}
+				}
+	
+				logger.config("Added '" + newMission.getTypeID() + "' mission.");
 			}
-
-			logger.config("Added '" + newMission.getTypeID() + "' mission.");
 		}
-		
 	}
 
 	/**
@@ -356,14 +357,14 @@ public class MissionManager implements Serializable, Temporal {
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			double probability = metaMission.getProbability(person);
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+			if (Double.isNaN(probability) || Double.isInfinite(probability)) {
+					logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
+							+ probability);
+			} 
+			else if (probability > 0D) {
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
-			} else {
-				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
-						+ probability);
 			}
-
 		}	
 
 		if (totalProbCache == 0D) {

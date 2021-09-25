@@ -111,12 +111,6 @@ public class Exploration extends RoverMission implements Serializable {
 			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 			explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 			
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-			}
-			
 			// Set mission capacity.
 			if (hasVehicle())
 				setMissionCapacity(getRover().getCrewCapacity());
@@ -127,7 +121,7 @@ public class Exploration extends RoverMission implements Serializable {
 
 			// Create a list of sites to be explored during the stage of mission planning
 			createNewExploredSite();
-			
+
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson))
 				return;
@@ -151,6 +145,12 @@ public class Exploration extends RoverMission implements Serializable {
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
+			// Check if vehicle can carry enough supplies for the mission.
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission();
+			}
+			
 			// Add exploring site phase.
 			addPhase(EXPLORE_SITE);
 

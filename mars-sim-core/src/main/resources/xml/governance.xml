@@ -405,7 +405,7 @@
 			<rover-name name="Merih" />      <!-- Turkish for "Mars" -->	
 			<rover-name name="Sakit" />      <!-- Ancient Turkish for "Mars" -->
 			
-			<rover-name name="Voiture " />	<!-- French for vehicle -->			
+			<rover-name name="Voiture" />	<!-- French for vehicle -->			
 		</authority>
 		
 		<authority code="ISRO" name="The Indian Space Research Organisation"

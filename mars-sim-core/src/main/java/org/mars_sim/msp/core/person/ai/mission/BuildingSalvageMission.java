@@ -118,7 +118,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			}
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember);
+			recruitMembersForMission(startingMember, true);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -519,31 +519,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		unreserveConstructionVehicles();
 	}
 
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			result = false;
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == settlement) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
-	}
-//	@Override
-//	protected boolean isCapableOfMission(Robot robot) {
-//		if (super.isCapableOfMission(robot)) {
-//			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//				if (robot.getSettlement() == settlement)
-//					return true;
-//			}
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Checks if a light utility vehicle (LUV) is available for the mission.

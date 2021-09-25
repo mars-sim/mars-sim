@@ -188,7 +188,8 @@ public class NegotiateDelivery extends Task implements Serializable {
 			}
 		}
 
-		return getTimeCompleted() + time - getDuration();
+		// Will use all the time
+		return 0;
 	}
 
 	/**

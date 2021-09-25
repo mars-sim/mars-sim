@@ -155,7 +155,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember))
+				if (!recruitMembersForMission(startingMember, true))
 					return;
 			}
 		}
@@ -287,6 +287,7 @@ public class Delivery extends DroneMission implements Serializable {
 		} 
 		
 		else if (UNLOAD_GOODS.equals(getPhase())) {
+			clearLoadingPlan(); // Clear the original loading plan
 			setPhase(LOAD_GOODS);
 			setPhaseDescription(Msg.getString("Mission.phase.loadGoods.description", tradingSettlement.getName())); // $NON-NLS-1$
 		} 
@@ -483,17 +484,13 @@ public class Delivery extends DroneMission implements Serializable {
 						if (RandomUtil.lessThanRandPercent(50)) {
 							if (isInAGarage()) {
 								assignTask(person,
-									new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
-													getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-													getOptionalEquipmentToLoad()));
+									new LoadVehicleGarage(person, this));
 
 							} else {
 								// Check if it is day time.
 								if (!EVAOperation.isGettingDark(person)) {
 										assignTask(person,
-												new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
-														getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-														getOptionalEquipmentToLoad()));
+												new LoadVehicleEVA(person, this));
 								}
 							}
 							
@@ -581,66 +578,6 @@ public class Delivery extends DroneMission implements Serializable {
 //				towed.setReservedForMission(false);
 //			}
 //		}
-	}
-
-	/**
-	 * Gets the type of vehicle in a load.
-	 * 
-	 * @param buy true if buy load, false if sell load.
-	 * @return vehicle type or null if none.
-	 */
-	private String getLoadVehicleType(boolean buy) {
-		String result = null;
-
-		Map<Good, Integer> load = null;
-		if (buy) {
-			load = buyLoad;
-		} else {
-			load = sellLoad;
-		}
-
-		Iterator<Good> i = load.keySet().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getCategory().equals(GoodCategory.VEHICLE)) {
-				result = good.getName();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the initial load vehicle.
-	 * 
-	 * @param vehicleType the vehicle type string.
-	 * @param buy         true if buying load, false if selling load.
-	 * @return load vehicle.
-	 */
-	private Vehicle getInitialLoadVehicle(String vehicleType, boolean buy) {
-		Vehicle result = null;
-
-		if (vehicleType != null) {
-			Settlement settlement = null;
-			if (buy) {
-				settlement = tradingSettlement;
-			} else {
-				settlement = getStartingSettlement();
-			}
-
-			Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
-				if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
-					if ((vehicle != getVehicle()) && !vehicle.isReserved() && isEmpty) {
-						result = vehicle;
-					}
-				}
-			}
-		}
-
-		return result;
 	}
 
 	@Override
@@ -752,31 +689,6 @@ public class Delivery extends DroneMission implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the trader for the mission.
-	 * 
-	 * @return the trader.
-	 */
-	private Person getMissionDelivery() {
-		Person bestDeliveryr = null;
-		int bestDeliverySkill = -1;
-
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-				if (tradeSkill > bestDeliverySkill) {
-					bestDeliverySkill = tradeSkill;
-					bestDeliveryr = person;
-				}
-			}
-		}
-
-		return bestDeliveryr;
 	}
 
 	/**

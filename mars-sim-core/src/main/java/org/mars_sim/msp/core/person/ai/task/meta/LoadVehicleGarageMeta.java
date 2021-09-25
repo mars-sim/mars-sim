@@ -57,7 +57,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
             
             // Check all vehicle missions occurring at the settlement.
             try {
-                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement());
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement(), true);
                 int num = missions.size();
                 if (num == 0)
                 	return 0;
@@ -92,7 +92,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
-	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
+	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement(), true);
 	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {

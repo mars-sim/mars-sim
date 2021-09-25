@@ -105,7 +105,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @return description
 	 */
 	protected String getCollectionSiteDescription(int siteNum) {
-		return "prospecting site";
+		return "prospecting site " + siteNum;
 	}
 
 }

@@ -10,10 +10,8 @@ package org.mars_sim.msp.core.vehicle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -31,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -114,15 +113,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private SickBay sickbay;
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
-
-	private static int[] resources = {
-			ResourceUtil.oxygenID,
-			ResourceUtil.waterID,
-			ResourceUtil.methaneID
-	};
-	
-	private Map<Integer, Number> emptyMap = new HashMap<>();
-	private Map<Integer, Number> loadingResourcesMap;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -704,38 +694,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 					}
 				}
 				
-				if (isInSettlement()) {
-				
+				if (isInSettlement()) {				
 					if (mission instanceof VehicleMission) {
-						VehicleMission rm = (VehicleMission)mission;
+						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
 						
-						if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+						if ((lp != null) && !lp.isCompleted()) {
 							double time = pulse.getElapsed();
 							double transferSpeed = 10; // Assume 10 kg per msol
-							
-							if (loadingResourcesMap == null)
-								loadingResourcesMap = rm.getResourcesNeededForRemainingMission(true);
 							double amountLoading = time * transferSpeed;
-							
-							for (int id: resources) {
-								if (loadingResourcesMap.get(id) != null) {
-									double needed = loadingResourcesMap.get(id).doubleValue();
-									if (needed > 0) {
-										double diff = needed - amountLoading;
-										if (diff <= 0) {
-											diff = 0;
-											amountLoading = needed;
-										}
-										double req = rm.getResourcesNeededForRemainingMission(true).get(id).doubleValue();
-										boolean canTransfer = rm.canTransfer(id, amountLoading, req);
-										if (canTransfer) {
-											// Load this resource
-											rm.loadAmountResource(rm.getResourcesNeededForRemainingMission(true), emptyMap, amountLoading, id, true); 
-											loadingResourcesMap.put(id, diff);
-										}
-									}
-								}
-							}
+
+							lp.backgroundLoad(amountLoading);
 						}
 					}
 					
