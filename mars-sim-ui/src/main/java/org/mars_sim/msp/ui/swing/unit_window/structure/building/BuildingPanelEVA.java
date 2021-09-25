@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2021-09-24
+ * @date 2021-09-25
  * @author Manny Kung
  */
 
@@ -53,7 +53,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 	
-	private int capCache;
+//	private int capCache;
 	private int innerDoorCache;
 	private int outerDoorCache;
 	private int occupiedCache;
@@ -88,7 +88,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private Airlock airlock;
 	
 	private static Simulation sim;
-	private static UnitManager unitManager;
 	private static MasterClock masterClock;
 	
 	/**
@@ -114,8 +113,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 			masterClock = sim.getMasterClock();
 		
 		masterClock.addClockListener(this);
-		unitManager = sim.getUnitManager();
-		
+	
 		// Create occupant list model
 		occupantListModel = new ListModel();
 		
@@ -136,7 +134,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(titleLabel);
-
 		
 		// Create capacity label
 //		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
@@ -452,7 +449,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 				list = new ArrayList<>();
 				
 				for (int i: newIntList) {
-					list.add(unitManager.getPersonByID(i));
+					list.add(airlock.getPersonByID(i));
 				}
 
 				Collections.sort(list);

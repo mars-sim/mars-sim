@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -134,7 +133,7 @@ public abstract class Airlock implements Serializable {
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 		
-		lookupPerson = new ConcurrentHashMap<>();
+		lookupPerson = new HashMap<>();
 		reservationMap = new HashMap<>();
 	}
 	
@@ -508,7 +507,7 @@ public abstract class Airlock implements Serializable {
 			if (p != null)
 				return p.getName();
 			else {
-				p = unitManager.getPersonByID(operatorID);
+				p =	getPersonByID(operatorID);
 				if (p != null) {
 					return p.getName();
 				}
@@ -612,10 +611,7 @@ public abstract class Airlock implements Serializable {
 			int evaLevel = -1;
 			for (Integer id : pool) {
 				Person p = 	getPersonByID(id);
-		    	if (p == null) {
-		    		p = unitManager.getPersonByID(id);
-		    		addPersonID(p, id);
-		    	}
+		    	addPersonID(p, id);
 				int level = p.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 				if (level > evaLevel) {
 					selected = p;
@@ -1119,12 +1115,16 @@ public abstract class Airlock implements Serializable {
 	 */
 	public Person getPersonByID(Integer id) {
 		if (lookupPerson == null)
-			lookupPerson = new ConcurrentHashMap<>();
+			lookupPerson = new HashMap<>();
 		if (lookupPerson.get(id) != null)
 			return lookupPerson.get(id);
 		else {
-			Person p = unitManager.getPersonByID(id);
-			return p;
+			if (this instanceof BuildingAirlock) {
+				return ((BuildingAirlock)this).getPerson(id);
+			}
+			else {
+				return ((VehicleAirlock)this).getAssociatedPerson(id);
+			}
 		}
 	}
 	
@@ -1135,7 +1135,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addPersonID(Person p, Integer id) {
 		if (lookupPerson == null)
-			lookupPerson = new ConcurrentHashMap<>();
+			lookupPerson = new HashMap<>();
 		if (p != null && !lookupPerson.containsKey(id))
 			lookupPerson.put(id, p);
 	}
@@ -1147,13 +1147,28 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addPersonID(int id) {
 		if (lookupPerson == null) {
-			lookupPerson = new ConcurrentHashMap<>();
-			Person p = unitManager.getPersonByID(id);
+			lookupPerson = new HashMap<>();
+			Person p = null;
+				
+			if (this instanceof BuildingAirlock) {
+				p = ((BuildingAirlock)this).getPerson(id);
+			}
+			else {
+				p = ((VehicleAirlock)this).getAssociatedPerson(id);
+			}
+
 			lookupPerson.put(id, p);
 		}
 		else {
 			if (!lookupPerson.containsKey(id)) {
-				Person p = unitManager.getPersonByID(id);
+				Person p = null;
+				if (this instanceof BuildingAirlock) {
+					p = ((BuildingAirlock)this).getPerson(id);
+				}
+				else {
+					p = ((VehicleAirlock)this).getAssociatedPerson(id);
+				}
+				
 				lookupPerson.put(id, p);
 			}
 		}

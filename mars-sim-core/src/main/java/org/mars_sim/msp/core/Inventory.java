@@ -1377,7 +1377,15 @@ public class Inventory implements Serializable {
 		Collection<Person> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
-				Person p = unitManager.getPersonByID(id);
+				Person p = null;
+				if (owner instanceof Settlement) {
+					p = ((Settlement)owner).getAssociatedPerson(id);
+				}
+				else if (owner instanceof Vehicle) {
+					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(id);
+				}
+				else 
+					p = unitManager.getPersonByID(id);
 				if (p != null)
 					result.add(p);
 			}
@@ -1394,7 +1402,15 @@ public class Inventory implements Serializable {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
-				Person p = unitManager.getPersonByID(id);
+				Person p = null;
+				if (owner instanceof Settlement) {
+					p = ((Settlement)owner).getAssociatedPerson(id);
+				}
+				else if (owner instanceof Vehicle) {
+					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(id);
+				}
+				else 
+					p = unitManager.getPersonByID(id);
 				if (p != null)
 					result++;
 			}
@@ -1627,7 +1643,7 @@ public class Inventory implements Serializable {
 				Equipment e = unitManager.getEquipmentByID(id);
 				if (e instanceof EVASuit) {
 					suit = (EVASuit)e;
-					if (suit.getLastOwner() != null
+					if (suit.getLastOwnerID() != -1
 							&& suit.getLastOwner().getName().equalsIgnoreCase(person.getName()))
 						return suit;
 				}

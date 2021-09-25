@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-25
  * @author Scott Davis
  */
 
@@ -748,6 +748,15 @@ public class BuildingAirlock extends Airlock {
 		return false;
 	}
 	
+	/**
+	 * Gets the person having this particular id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Person getPerson(int id) {
+		return building.getSettlement().getPerson(id);
+	}
 	
 	public void destroy() {
 	    building = null;

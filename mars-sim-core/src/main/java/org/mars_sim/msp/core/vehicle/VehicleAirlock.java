@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -226,6 +226,16 @@ extends Airlock {
 	@Override
 	public Point2D getAvailableAirlockPosition() {
 		return airlockInsidePos;
+	}
+	
+	/**
+	 * Gets the person having this particular id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Person getAssociatedPerson(int id) {
+		return vehicle.getAssociatedSettlement().getAssociatedPerson(id);
 	}
 	
 	public void destroy() {

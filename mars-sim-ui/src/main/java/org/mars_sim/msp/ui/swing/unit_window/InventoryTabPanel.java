@@ -457,14 +457,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private String getContentOwner(Equipment e) {
 			String s = "";
 			if (e.getType().equalsIgnoreCase(EVASuit.TYPE)) {
-				Person p = (Person) e.getLastOwner();
+				Person p = e.getLastOwner();
 				if (p != null)
 					s = p.getName();	
 			}
 			else if (e instanceof Robot) {
-				Unit u = e.getLastOwner();
-				if (u != null)
-					s = Conversion.capitalize(u.getName() + "  ");
+				Person p = e.getLastOwner();
+				if (p != null)
+					s = p.getName();
 			}
 			else {
 				int resource = e.getResource();

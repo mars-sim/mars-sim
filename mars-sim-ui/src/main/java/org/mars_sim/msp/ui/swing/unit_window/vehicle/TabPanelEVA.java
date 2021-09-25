@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelEVA.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-25
  * @author Manny Kung
  */
 
@@ -29,7 +29,6 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -39,11 +38,11 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
 /**
@@ -51,34 +50,21 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelEVA extends TabPanel implements MouseListener, ClockListener {
-    private static final String UNLOCKED = "UNLOCKED";
-    private static final String LOCKED = "LOCKED";
-
     /** Is UI constructed. */
     private boolean uiDone = false;
 
-//    private int capCache;
-//    private int innerDoorCache;
-//    private int outerDoorCache;
     private int occupiedCache;
     private int emptyCache;
     private double cycleTimeCache;
 
     private String operatorCache = "";
     private String airlockStateCache = "";
-//    private String innerDoorStateCache = "";
-//    private String outerDoorStateCache = "";
 
-//    private WebLabel capLabel;
-//    private WebLabel innerDoorLabel;
-//    private WebLabel outerDoorLabel;
     private WebLabel occupiedLabel;
     private WebLabel emptyLabel;
     private WebLabel operatorLabel;
     private WebLabel airlockStateLabel;
     private WebLabel cycleTimeLabel;
-//    private WebLabel innerDoorStateLabel;
-//    private WebLabel outerDoorStateLabel;
 
     private ListModel listModel;
     private JList<Person> occupants;
@@ -86,13 +72,7 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
 
     private Airlock airlock;
 
-    /** The mission instance. */
-    private Mission mission;
-//    /** The Crewable instance. */
-//    private Crewable crewable;
-
     private static Simulation sim;
-    private static UnitManager unitManager;
     private static MasterClock masterClock;
 
     /**
@@ -112,8 +92,6 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
         if (vehicle instanceof Rover)
         	airlock = ((Rover) vehicle).getAirlock();
 
-        mission = vehicle.getMission();
-
     }
 
     public boolean isUIDone() {
@@ -132,7 +110,6 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
             masterClock = sim.getMasterClock();
 
         masterClock.addClockListener(this);
-        unitManager = sim.getUnitManager();
 
         // Create top panel
         WebPanel topPanel = new WebPanel(new GridLayout(6, 1, 0, 0)); // new FlowLayout(FlowLayout.CENTER));
@@ -146,44 +123,6 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
         titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
         //titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         topPanel.add(titleLabel);
-
-        // Create capacity label
-//		capLabel = new WebLabel(Msg.getString("TabPanelEVA.capacity",
-//				eva.getAirlockCapacity()), WebLabel.CENTER);
-//		topPanel.add(capLabel);
-//
-//        // Create outerDoorLabel
-//        outerDoorLabel = new WebLabel(Msg.getString("TabPanelEVA.outerDoor.number",
-//                airlock.getNumAwaitingOuterDoor()), WebLabel.CENTER);
-//        topPanel.add(outerDoorLabel);
-//
-//        // Create innerDoorLabel
-//        innerDoorLabel = new WebLabel(Msg.getString("TabPanelEVA.innerDoor.number",
-//                airlock.getNumAwaitingInnerDoor()), WebLabel.CENTER);
-//        topPanel.add(innerDoorLabel);
-//
-//
-//        if (eva.getAirlock().isInnerDoorLocked())
-//            innerDoorStateCache = LOCKED;
-//        else {
-//            innerDoorStateCache = UNLOCKED;
-//        }
-//        // Create innerDoorStateLabel
-//        innerDoorStateLabel = new WebLabel(Msg.getString("TabPanelEVA.innerDoor.state",
-//                innerDoorStateCache), WebLabel.CENTER);
-//        topPanel.add(innerDoorStateLabel);
-//
-//
-//        if (eva.getAirlock().isOuterDoorLocked())
-//            outerDoorStateCache = LOCKED;
-//        else {
-//            outerDoorStateCache = UNLOCKED;
-//        }
-//        // Create outerDoorStateLabel
-//        outerDoorStateLabel = new WebLabel(Msg.getString("TabPanelEVA.outerDoor.state",
-//                outerDoorStateCache), WebLabel.CENTER);
-//        topPanel.add(outerDoorStateLabel);
-
 
         // Create occupiedLabel
         occupiedLabel = new WebLabel(Msg.getString("TabPanelEVA.occupied",
@@ -218,14 +157,12 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         TitledBorder title = BorderFactory.createTitledBorder(
                 lowerEtched, " " + Msg.getString("TabPanelEVA.titledBorder") + " ");
-//	      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont(titleFont.deriveFont(Font.ITALIC + Font.BOLD));
 
         // Create occupant panel
         WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         occupantPanel.setBorder(title);
-//		populationDisplayPanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(occupantPanel, BorderLayout.CENTER);
 
         // Create scroll panel for occupant list.
@@ -245,23 +182,6 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
 
     @Override
     public void update() {
-        // Update CapLabel
-//		if (capCache != airlock.getAirlockCapacity()) {
-//			capCache = airlock.getAirlockCapacity();
-//			capLabel.setText(Msg.getString("TabPanelEVA.capacity", capCache));
-//		}
-
-//        // Update innerDoorLabel
-//        if (innerDoorCache != airlock.getNumAwaitingInnerDoor()) {
-//            innerDoorCache = airlock.getNumAwaitingInnerDoor();
-//            innerDoorLabel.setText(Msg.getString("TabPanelEVA.innerDoor.number", innerDoorCache));
-//        }
-//
-//        // Update outerDoorLabel
-//        if (outerDoorCache != airlock.getNumAwaitingOuterDoor()) {
-//            outerDoorCache = airlock.getNumAwaitingOuterDoor();
-//            outerDoorLabel.setText(Msg.getString("TabPanelEVA.outerDoor.number", outerDoorCache));
-//        }
 
         // Update occupiedLabel
         if (occupiedCache != airlock.getNumOccupants()) {
@@ -295,32 +215,6 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
             cycleTimeLabel.setText(Msg.getString("TabPanelEVA.airlock.cycleTime", time));
         }
 
-//        String innerDoorState = "";
-//        if (eva.getAirlock().isInnerDoorLocked())
-//            innerDoorState = LOCKED;
-//        else {
-//            innerDoorState = UNLOCKED;
-//        }
-
-//        // Update innerDoorStateLabel
-//        if (!innerDoorStateCache.equalsIgnoreCase(innerDoorState)) {
-//            innerDoorStateCache = innerDoorState;
-//            innerDoorStateLabel.setText(Msg.getString("TabPanelEVA.innerDoor.state", innerDoorState));
-//        }
-//
-//        String outerDoorState = "";
-//        if (eva.getAirlock().isOuterDoorLocked())
-//            outerDoorState = LOCKED;
-//        else {
-//            outerDoorState = UNLOCKED;
-//        }
-
-//        // Update outerDoorStateLabel
-//        if (!outerDoorStateCache.equalsIgnoreCase(outerDoorState)) {
-//            outerDoorStateCache = outerDoorState;
-//            outerDoorStateLabel.setText(Msg.getString("TabPanelEVA.outerDoor.state", outerDoorState));
-//        }
-
         // Update occupant list
         listModel.update();
         scrollPanel.validate();
@@ -342,7 +236,7 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
             list = new ArrayList<>();
 
             for (int i: intList) {
-                list.add(unitManager.getPersonByID(i));
+                list.add(airlock.getPersonByID(i));
             }
 
             Collections.sort(list);
@@ -380,7 +274,7 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
                 list = new ArrayList<>();
 
                 for (int i: newIntList) {
-                    list.add(unitManager.getPersonByID(i));
+                    list.add(airlock.getPersonByID(i));
                 }
 
                 Collections.sort(list);
@@ -442,34 +336,18 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
         update();
     }
 
-//	/**
-//	 * Action event occurs.
-//	 *
-//	 * @param event the action event
-//	 */
-//	public void actionPerformed(ActionEvent event) {
-//		// If the population monitor button was pressed, create tab in monitor tool.
-//		desktop.addModel(new PersonTableModel((Settlement) unit, true));
-//	}
-
     public void destroy() {
-//		capLabel = null;
-//        innerDoorLabel = null;
-//        outerDoorLabel = null;
+
         occupiedLabel = null;
         emptyLabel = null;
         operatorLabel = null;
         airlockStateLabel = null;
         cycleTimeLabel = null;
-//        innerDoorStateLabel = null;
-//        outerDoorStateLabel = null;
 
         listModel = null;
         occupants = null;
         scrollPanel = null;
 
-
         airlock = null;
-
     }
 }
