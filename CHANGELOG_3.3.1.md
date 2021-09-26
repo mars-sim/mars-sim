@@ -5,6 +5,22 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
+## v3.3.1 (build ____) - 2021-__-__
+
+### ISSUES ADDRESSED : 
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+
+### UI IMPROVEMENT :
+
+
+### FIXES :
+
+
+------------------------------------------|---------------------
+
 ## v3.3.0 (build 6218) - 2021-09-25
 
 ### ISSUES ADDRESSED : 

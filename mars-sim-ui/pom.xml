@@ -7,7 +7,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.3.0</version>
+		<version>3.3.1</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
@@ -142,8 +142,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jide-oss</artifactId>
 			<version>3.7.4</version>
 		</dependency-->
-		<!-- https://github.com/jidesoft/jide-oss/issues/48 
-			 main      -->
+		<!-- See https://github.com/jidesoft/jide-oss/issues/48 for user's build info -->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>

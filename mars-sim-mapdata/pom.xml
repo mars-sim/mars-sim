@@ -6,18 +6,18 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github.mars-sim</groupId>
-		<version>3.3.0</version>
+		<version>3.3.1</version>
 	</parent>
 	<artifactId>mars-sim-mapdata</artifactId>
 	<name>mars-sim-mapdata</name>
 	<dependencies>
-			<!-- http://tukaani.org/xz/java.html 
-				 https://mvnrepository.com/artifact/org.tukaani/xz 
-			: 120 KB Note that 1.8 has issues that affects saving -->
+		<!-- http://tukaani.org/xz/java.html 
+			 https://mvnrepository.com/artifact/org.tukaani/xz : 113 KB 
+			 Note that 1.9 has issues that affects saving -->
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>
-			<version>1.8</version>
+			<version>1.9</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/me.lemire.integercompression/JavaFastPFOR : 196 KB-->
 		<dependency>
@@ -25,11 +25,11 @@
 		    <artifactId>JavaFastPFOR</artifactId>
 		    <version>0.1.12</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.6 MB -->
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.8 MB -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>30.0-jre</version>
+			<version>31.0-jre</version>
 		</dependency>			
 	</dependencies>
 </project>

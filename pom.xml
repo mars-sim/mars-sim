@@ -7,13 +7,13 @@
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.3.0</version>
+	<version>3.3.1</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.3.0</project.version>
+		<project.version>3.3.1</project.version>
 		<junit-jupiter.version>5.7.2</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
         <junit.version>4.13.2</junit.version>
