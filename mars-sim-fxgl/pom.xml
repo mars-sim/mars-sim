@@ -24,6 +24,23 @@
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
+		<!--dependency>
+		    <groupId>org.openjfx</groupId>
+		    <artifactId>javafx</artifactId>
+		    <version>17.0.0.1</version>
+		    <type>pom</type>
+		</dependency-->
+		<dependency>
+			<groupId>com.github.almasb</groupId>
+			<artifactId>fxgl</artifactId>
+			<version>${fxgl.version}</version>
 		</dependency>	
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl-controllerinput</artifactId>
+            <version>${fxgl.version}</version>
+        </dependency>			
 	</dependencies>
 </project>

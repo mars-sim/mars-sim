@@ -1,9 +1,11 @@
 module mars-sim-base {
 
 	requires java.util;
-//    requires javafx;
-	requires javafx.graphics;
-    requires javafx.scene;
+	
+    requires javafx;
+//    requires javafx.base;	
+//	requires javafx.graphics;
+//    requires javafx.scene;
 //    requires javafx.stage.Stage;
 //    requires javafx.application.Application;
 //    requires javafx.application.Platform;
@@ -14,7 +16,8 @@ module mars-sim-base {
 
     requires junit;
 
-    requires mars-sim-main;
+    requires mars-sim-headless;
+    requires mars-sim-fxgl;
     
 	exports mars-sim-base;
 }

@@ -23,18 +23,26 @@
  		</dependency>
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
-			<artifactId>mars-sim-main</artifactId>
+			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		 <!-- -->	
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-fxgl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>com.github.almasb</groupId>
 			<artifactId>fxgl</artifactId>
-			<version>11.17</version>
-		</dependency>		
+			<version>${fxgl.version}</version>
+		</dependency>	
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl-controllerinput</artifactId>
+            <version>${fxgl.version}</version>
+        </dependency>	
+         -->		
 	</dependencies>
 </project>

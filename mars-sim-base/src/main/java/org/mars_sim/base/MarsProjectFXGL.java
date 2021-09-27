@@ -7,14 +7,16 @@
 
 package org.mars_sim.base;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
+//import org.mars_sim.msp.core.Simulation;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
+
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class MarsProjectFXGL extends GameApplication {
 
@@ -27,7 +29,7 @@ public class MarsProjectFXGL extends GameApplication {
 	 * Constructor 
 	 */
 	public MarsProjectFXGL() {
-		logger.config("Starting " + Simulation.title);
+//		logger.config("Starting " + Simulation.title);
 	};
 	
 //	/**
@@ -37,7 +39,8 @@ public class MarsProjectFXGL extends GameApplication {
 //	public void parseArgs(String[] args) {
 //		logger.config("List of input args : " + Arrays.toString(args));
 //	}
-//	
+
+	
 	@Override
 	protected void initSettings(GameSettings settings) {
 		settings.setWidth(1366);// 1024);
@@ -52,14 +55,14 @@ public class MarsProjectFXGL extends GameApplication {
 		settings.setCloseConfirmation(true);	
 	}
 
-//    @Override
-//    protected void initGame() {
-//        FXGL.entityBuilder()
-//                .at(150, 150)
-//                .view(new Rectangle(40, 40, Color.BLUE))
-//                .buildAndAttach();
-//    }
-    
+	  @Override
+	    protected void initGame() {
+	        FXGL.entityBuilder()
+	                .at(150, 150)
+	                .view(new Rectangle(40, 40, Color.BLUE))
+	                .buildAndAttach();
+	    }
+	  
 	public static void main(String[] args) {
 //		MarsProjectFXGL.args = args;
 		launch(args);

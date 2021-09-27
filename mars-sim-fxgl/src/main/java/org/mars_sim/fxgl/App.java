@@ -1,4 +1,4 @@
-package org.mars.sim.fxgl;
+package org.mars_sim.fxgl;
 
 /**
  * Hello world!
