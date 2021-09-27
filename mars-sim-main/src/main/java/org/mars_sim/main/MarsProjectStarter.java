@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.headless.StreamConsumer;
 
 /**
- * MarsProjectStarter is the default main class for the main executable JAR.
+ * MarsProjectStarter is the default class for starting the mars-sim Swing jar.
  * It creates a new virtual machine with logging properties.
  * It isn't used in the webstart release.
  */

@@ -1,0 +1,11 @@
+/target/
+.classpath
+.project
+/.settings/**
+.idea
+.prefs
+/bin/
+/logs/
+/profiles/
+/system/
+/mars-sim-base.iml

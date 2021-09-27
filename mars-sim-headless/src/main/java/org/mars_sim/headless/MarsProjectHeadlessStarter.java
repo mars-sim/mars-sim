@@ -15,9 +15,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * MarsProjectHeadlessStarter is the main class for running the executable
- * JAR in pure console mode. It creates a new virtual machine with logging properties. 
- * It isn't used in the webstart release.
+ * MarsProjectHeadlessStarter is the default class for starting the mars-sim Headless jar. 
+ * It creates a new virtual machine with logging properties. 
  */
 public class MarsProjectHeadlessStarter {
 
