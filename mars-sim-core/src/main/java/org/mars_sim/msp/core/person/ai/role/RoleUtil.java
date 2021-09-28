@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
@@ -32,7 +31,7 @@ public class RoleUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RoleUtil.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(RoleUtil.class.getName());
 	
 	// Define the order of each specialist role in a role prospect array
 	public static final  RoleType[] SPECIALISTS = new RoleType[] {
@@ -56,6 +55,8 @@ public class RoleUtil implements Serializable {
 			RoleType.CHIEF_OF_SAFETY_N_HEALTH,
 			RoleType.CHIEF_OF_SCIENCE,
 			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES};
+	
+	public static final int NUM_CHIEF = CHIEFS.length;
 	
 	private static Map<JobType, Map<RoleType,Double>> roleWeights
 							= new EnumMap<>(JobType.class);

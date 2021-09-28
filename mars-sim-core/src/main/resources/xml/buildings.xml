@@ -303,7 +303,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />		
+				<research-specialty name="CHEMISTRY" />	
+				<research-specialty name="COMPUTING" />			
 				<research-specialty name="ENGINEERING" />			
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
@@ -1806,7 +1807,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Laboratory" width="7.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Laboratory is a modest facility furnished with workbench,
-		instruments, computers and tablets and peer collaboration communication
+		instruments, COMPUTINGs and tablets and peer collaboration communication
 		suites of equipment that enables making scientific inquiries on the frontier of Mars.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
@@ -1822,6 +1823,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="3" capacity="16">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="CHEMISTRY" />		
+				<research-specialty name="COMPUTING" />	
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />				
@@ -2336,8 +2338,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />
+				<research-specialty name="COMPUTING" />
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
+				
 				<activity>
 					<activity-spot xloc="1.45" yloc="1.35" />
 					<activity-spot xloc="-1.45" yloc="1.4" />
@@ -2408,7 +2412,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Research Hab" width="9.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Research Hab is a Lander Hab refitted laboratory
-			building for scientific research. It can be custom-tailored with computer
+			building for scientific research. It can be custom-tailored with COMPUTING
 			systems for	up to four research subjects and has built-in solar panels.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
@@ -2427,7 +2431,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="COMPUTING" />								
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />				
@@ -2763,9 +2768,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />	
-				<research-specialty name="ENGINEERING" />	
-						
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="COMPUTING" />				
+				<research-specialty name="ENGINEERING" />						
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />				
@@ -3057,8 +3062,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="ASTRONOMY" />
-				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="CHEMISTRY" />				
 				<research-specialty name="ENGINEERING" />				
 				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="METEOROLOGY" />				

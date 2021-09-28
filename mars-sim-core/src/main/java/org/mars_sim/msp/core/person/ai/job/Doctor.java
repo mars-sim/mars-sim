@@ -57,8 +57,6 @@ class Doctor extends Job {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-//		System.out.println(person + " doctor : " + Math.round(result*100.0)/100.0);
-
 		return result;
 	}
 

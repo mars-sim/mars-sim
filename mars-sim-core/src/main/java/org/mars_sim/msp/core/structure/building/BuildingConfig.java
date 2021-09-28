@@ -310,7 +310,7 @@ public class BuildingConfig implements Serializable {
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
-			// take care that entries in buildings.xml conform to enum values of {@link
+			// The name of research-specialty in buildings.xml must conform to enum values of {@link
 			// ScienceType}
 			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
 		}
