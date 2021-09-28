@@ -96,7 +96,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 		double missionProbability = 0;
 
-		if (settlement.getMissionBaseProbability(getName()))
+		if (settlement.getMissionBaseProbability(MissionType.TRADE))
         	missionProbability = 1;
         else
 			return 0;
@@ -106,7 +106,7 @@ public class TradeMeta extends AbstractMetaMission {
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
 			
-		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
+		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.TRADE, settlement, false);
 
 		try {
 			if (rover != null) {
@@ -151,7 +151,7 @@ public class TradeMeta extends AbstractMetaMission {
 		}
 
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(getName(), settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRADE, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {

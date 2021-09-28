@@ -102,12 +102,12 @@ public final class DeliveryUtil {
 		Settlement bestSettlement = null;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(Delivery.DEFAULT_DESCRIPTION)) {
+			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(MissionType.DELIVERY)) {
 
 				boolean hasCurrentDeliveryMission = hasCurrentDeliveryMission(startingSettlement, tradingSettlement);
 
 				double settlementRange = Coordinates.computeDistance(tradingSettlement.getCoordinates(), startingSettlement.getCoordinates());
-				boolean withinRange = (settlementRange <= (drone.getRange(Delivery.missionType) * .8D));
+				boolean withinRange = (settlementRange <= (drone.getRange(MissionType.DELIVERY) * .8D));
 
 				if (!hasCurrentDeliveryMission && withinRange) {
 					// double startTime = System.currentTimeMillis();

@@ -404,24 +404,16 @@ public class MissionManager implements Serializable, Temporal {
 	/**
 	 * Gets the number of particular missions that are active
 	 * 
-	 * @param mission
+	 * @param mType
 	 * @param settlement
 	 * @return number
 	 */
-	public int numParticularMissions(String mName, Settlement settlement) {
-		int num = 0;
-		List<Mission> m1 = onGoingMissions;
-		if (!m1.isEmpty()) {		
-			Iterator<Mission> i = m1.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();
-				if (!m.isDone() && mName.equalsIgnoreCase(m.getName())
-						&& settlement == m.getAssociatedSettlement()) {
-					num++;
-				}
-			}
-		}
-		return num;
+	public int numParticularMissions(MissionType mType, Settlement settlement) {
+		return (int) onGoingMissions.stream()
+							.filter(( m ->
+									settlement.equals(m.getAssociatedSettlement())
+									&& (m.getMissionType() == mType)))
+							.count();
 	}
 	
 	/**

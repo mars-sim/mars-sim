@@ -150,7 +150,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}
 
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(getName(), settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.DELIVERY, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {

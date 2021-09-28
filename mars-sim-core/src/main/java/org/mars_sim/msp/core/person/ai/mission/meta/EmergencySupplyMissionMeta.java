@@ -41,7 +41,7 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
         		
             Settlement settlement = person.getSettlement();
         	
-            if (settlement.getMissionBaseProbability(getName()))
+            if (settlement.getMissionBaseProbability(MissionType.EMERGENCY_SUPPLY))
             	missionProbability = 1;
             else
     			return 0;
@@ -56,7 +56,7 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
 	        // Check if person is in a settlement.
 	        if (jobModifier > 0D) {
 
-	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(EmergencySupply.missionType, settlement, false);
+	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.EMERGENCY_SUPPLY, settlement, false);
 	            if (rover != null) {
 	                Settlement targetSettlement = EmergencySupply.findSettlementNeedingEmergencySupplies(
 	                        settlement, rover);
@@ -86,7 +86,7 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
 	            missionProbability = EmergencySupply.BASE_STARTING_PROBABILITY;
 	
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
-	    		int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+	    		int numThisMission = missionManager.numParticularMissions(MissionType.EMERGENCY_SUPPLY, settlement);
 	    		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -356,7 +357,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// 7. proposed route distance (0 to 10 points)
 								int dist = 0;
 								if (m instanceof TravelToSettlement) {
-									int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
+									int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMissionRadius(MissionType.TRAVEL_TO_SETTLEMENT));
 									((TravelToSettlement) m).computeEstimatedTotalDistance();
 									int proposed = (int)(((TravelToSettlement) m).getEstimatedTotalDistance());
 									dist = (int)(1.0 * (max - proposed) / max * 10);

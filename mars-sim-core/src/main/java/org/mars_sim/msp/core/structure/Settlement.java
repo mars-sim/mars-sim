@@ -262,8 +262,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
-	/** Flags that track if each of the 13 missions have been disable. */
-	private boolean[] missionsDisable = new boolean[12];
 
 	/** The average regolith collection rate nearby */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -301,23 +299,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
-	/** The maximum distance (in km) the rovers are allowed to travel. */
-	private double maxMssionRange = 2000;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private double[] missionRange = new double[] {
-			500, // 0. Areo
-			500, // 1. Bio
-			500, // 2. CollectIce
-			500, // 3. CollectRegolith
-			maxMssionRange*2,// 4. Delivery
-			1000,// 5. Emergency
-			500, // 6. Exploration
-			500, // 7. Meteorology
-			500, // 8. Mining
-			1000,// 9. RescueSalvageVehicle
-			maxMssionRange,   // 10. Trade
-			maxMssionRange*2, // 11.TravelToSettlement			
-	};
+	private double[] missionRange = new double[MissionType.values().length];
+	
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
 
@@ -366,6 +350,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Set<OverrideType> processOverrides = new HashSet<>();
 	/** Mission modifiers */
 	private Map<MissionType, Integer> missionModifiers;
+	private Set<MissionType> disabledMissions = new HashSet<>();
 	
 	// Static members	
 	private static final int oxygenID = ResourceUtil.oxygenID;
@@ -455,15 +440,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
-		
-		// Set all mission disable flag to false
-		int size = missionsDisable.length;
-		for (int i=0; i<size; i++) {
-			missionsDisable[i] = false;
-		}
-		
-		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>(); 
-		
+
+		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>(); 		
 	}
 
 	
@@ -570,6 +548,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+		
+		// Set default mission radius
+		missionRange[MissionType.AREOLOGY.ordinal()] = 500D;
+		missionRange[MissionType.BIOLOGY.ordinal()] = 500D;
+		missionRange[MissionType.COLLECT_ICE.ordinal()] = 500D;
+		missionRange[MissionType.COLLECT_REGOLITH.ordinal()] = 500D;
+		missionRange[MissionType.DELIVERY.ordinal()] = 4000D;
+		missionRange[MissionType.EMERGENCY_SUPPLY.ordinal()] = 1000D;
+		missionRange[MissionType.EXPLORATION.ordinal()] = 500D;
+		missionRange[MissionType.METEOROLOGY.ordinal()] = 500D;
+		missionRange[MissionType.MINING.ordinal()] = 500D;
+		missionRange[MissionType.RESCUE_SALVAGE_VEHICLE.ordinal()] = 1000D;
+		missionRange[MissionType.TRADE.ordinal()] = 2000D;
+		missionRange[MissionType.TRAVEL_TO_SETTLEMENT.ordinal()] = 4000D;
 	}
 
 	/**
@@ -3149,45 +3141,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		this.storm = storm;
 	}
 
-	public double getMaxMssionRange() {
-		return maxMssionRange;
-	}
-
-	public void setMaxMssionRange(double value) {
-		maxMssionRange = value;
-	}
-
-	/**
-	 * Gets the allowed traveled distance for a particular type of mission
-	 * 
-	 * @param missionType : see maxMssionRange above 
-	 *        must be a number from 0 to 11;
-	 * 			0 : Areo, 
-	 *		    1 : Bio, 
-	 *		    2 : CollectIce, 
-	 *			3 : CollectRegolith,
-	 *			4 : Delivery, 
-	 *
-	 *			5 : Emergency,
-	 *			6 : Exploration, 
-	 * 			7 : Meteorology, 
-	 *			8 : Mining, 
-     * 			9 : RescueSalvageVehicle, 
-     * 
-	 * 		   10 : Trade,
-	 * 		   11 : TravelToSettlement	
-	 * @return the range [in km]
-	 */
-	public double getMissionRadius(int missionType) {
-		return missionRange[missionType];
-	}
-	
-	public void setMissionRadius(int missionType, double newRange) {
-		missionRange[missionType] = newRange;
-	}
-	
 	public double getMissionRadius(MissionType missionType) {
 		return missionRange[missionType.ordinal()];
+	}
+
+	public void setMissionRadius(MissionType missionType, double newRange) {
+		missionRange[missionType.ordinal()] = newRange;
 	}
 	
 	public boolean hasDesignatedCommander() {
@@ -3304,27 +3263,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	public void setMissionDisable(String missionName, boolean disable) {
-		List<String> names = MissionManager.getMissionNames();
-		int size = missionsDisable.length;
-		for (int i=0; i<size; i++) {
-			if (missionName.equalsIgnoreCase(names.get(i)) 
-					&& missionsDisable[i] == true) {
-				missionsDisable[i] = disable;
-			}
+	public void setMissionDisable(MissionType mission, boolean disable) {
+		if (disable) {
+			disabledMissions.add(mission);
+		}
+		else {
+			disabledMissions.remove(mission);
 		}
 	}
 	
-	public boolean isMissionDisable(String missionName) {
-		List<String> names = MissionManager.getMissionNames();
-		int size = missionsDisable.length;
-		for (int i=0; i<size; i++) {
-			if (missionName.equalsIgnoreCase(names.get(i))) {
-				return missionsDisable[i];
-			}
-		}
-		// by default it's false
-		return false;
+	public boolean isMissionDisable(MissionType mission) {
+		return disabledMissions.contains(mission);
 	}
 	
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -3340,24 +3289,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Calculate the base mission probability used by all missions
 	 * 
-	 * @param missionName the name of the mission calling this method
+	 * @param mission the type of the mission calling this method
 	 * @return probability value
 	 */
-	public boolean getMissionBaseProbability(String missionName) {
+	public boolean getMissionBaseProbability(MissionType mission) {
 
+		if (disabledMissions.contains(mission)) {
+			return false;
+		}
+
+		// If the Settlement mission probably is false; then recheck it
+		// This get reset in the timePulse method
 		if (!missionProbability) {
-			
-			List<String> names = MissionManager.getMissionNames();
-			int size = names.size();
-			// 0. Check if a mission has been overridden
-			for (int i=0; i<size; i++) {
-				if (missionName.equalsIgnoreCase(names.get(i)) 
-					&& missionsDisable[i] == true) {
-//					missionProbability = false;
-					return false;
-				}
-			}
-			
 			missionProbability = isMissionPossible();
 		}
 		

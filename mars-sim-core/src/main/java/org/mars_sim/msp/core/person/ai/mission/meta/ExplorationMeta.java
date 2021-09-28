@@ -70,13 +70,13 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 				
-				if (settlement.getMissionBaseProbability(getName()))
+				if (settlement.getMissionBaseProbability(MissionType.EXPLORATION))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 		   		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
 				
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
@@ -90,7 +90,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	
 				try {
 					// Get available rover.
-					Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Exploration.missionType, settlement, false);
+					Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.EXPLORATION, settlement, false);
 					if (rover != null) {
 						// Check if any mineral locations within rover range and obtain their concentration
 						missionProbability = Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;

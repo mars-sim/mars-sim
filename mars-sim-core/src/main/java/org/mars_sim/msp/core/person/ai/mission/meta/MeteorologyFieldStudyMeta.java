@@ -65,13 +65,13 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
            
- 				if (settlement.getMissionBaseProbability(getName()))
+ 				if (settlement.getMissionBaseProbability(MissionType.METEOROLOGY))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.METEOROLOGY, settlement);
 		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
@@ -83,7 +83,7 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 		
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MeteorologyFieldStudy.missionType, settlement, false);
+	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.METEOROLOGY, settlement, false);
 	                if (rover != null) {
 	
 	                    ScienceType meteorology = ScienceType.METEOROLOGY;
@@ -148,10 +148,6 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 	            }	
 	        }
         }
-		
-        if (missionProbability > 0)
-        	logger.info("MeteorologyStudyFieldMissionMeta's probability : " +
-				 Math.round(missionProbability*100D)/100D);
 		
         return missionProbability;
     }

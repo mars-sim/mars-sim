@@ -60,7 +60,7 @@ public class MiningMeta extends AbstractMetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
         	
-	            if (settlement.getMissionBaseProbability(getName()))
+	            if (settlement.getMissionBaseProbability(MissionType.MINING))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
@@ -80,7 +80,7 @@ public class MiningMeta extends AbstractMetaMission {
 	            	return 0;
 	
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.MINING, settlement);
 		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
@@ -94,7 +94,7 @@ public class MiningMeta extends AbstractMetaMission {
 	    		
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Mining.missionType,
+	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.MINING,
 	                        settlement, false);
 	
 	                if (rover != null) {

@@ -85,26 +85,26 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
         double missionProbability = 0;
         
-        if (settlement.getMissionBaseProbability(getName()))
+        if (settlement.getMissionBaseProbability(MissionType.TRAVEL_TO_SETTLEMENT))
         	missionProbability = 1;
         else
 			return 0;
  
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
-        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(TravelToSettlement.missionType, settlement, false);
+        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(MissionType.TRAVEL_TO_SETTLEMENT, settlement, false);
         if (vehicle != null) {
         	Map<Settlement, Double> desirableSettlements = null;
 			if (unit instanceof Person) {
 				person = (Person) unit;
 	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    person, settlement, vehicle.getRange(TravelToSettlement.missionType));
+	                    person, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
 
 			}
 			else if (unit instanceof Robot) {
 				robot = (Robot) unit;
 	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    robot, settlement, vehicle.getRange(TravelToSettlement.missionType));
+	                    robot, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
 			}
 
             if (desirableSettlements.size() == 0) {
@@ -128,7 +128,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
                 + (topSettlementDesirability / 100D);
 
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(getName(), settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRAVEL_TO_SETTLEMENT, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

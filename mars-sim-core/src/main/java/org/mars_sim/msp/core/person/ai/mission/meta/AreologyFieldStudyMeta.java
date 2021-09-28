@@ -66,13 +66,13 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 			
-				if (settlement.getMissionBaseProbability(getName()))
+				if (settlement.getMissionBaseProbability(MissionType.AREOLOGY))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.AREOLOGY, settlement);
 		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
@@ -81,7 +81,7 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 	    		
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(AreologyFieldStudy.missionType, settlement, false);
+	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.AREOLOGY, settlement, false);
 	                if (rover != null) {
 	
 	                    ScienceType areology = ScienceType.AREOLOGY;
@@ -146,10 +146,6 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 					missionProbability = 0;
 	        }
 	    }
-		
-//        if (missionProbability > 0)
-//        	logger.info("AreologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
 		
         return missionProbability;
     }

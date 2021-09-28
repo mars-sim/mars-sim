@@ -110,7 +110,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+			int numThisMission = missionManager.numParticularMissions(MissionType.RESCUE_SALVAGE_VEHICLE, settlement);
             
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numThisMission + numEmbarked) {

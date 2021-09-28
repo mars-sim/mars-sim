@@ -53,14 +53,14 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {			
 			
-				if (settlement.getMissionBaseProbability(getName()))
+				if (settlement.getMissionBaseProbability(MissionType.COLLECT_ICE))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    		
 	//			missionProbability = getSettlementProbability(settlement);
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-	    		int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
 	    	
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

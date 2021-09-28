@@ -67,13 +67,13 @@ public class BiologyFieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.getMissionBaseProbability(getName()))
+				if (settlement.getMissionBaseProbability(MissionType.BIOLOGY))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	       		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.BIOLOGY, settlement);
 	
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
@@ -82,7 +82,7 @@ public class BiologyFieldStudyMeta extends AbstractMetaMission {
 	    		
 	            try {
 		            // Get available rover.
-		            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(BiologyFieldStudy.missionType, settlement, false);
+		            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.BIOLOGY, settlement, false);
 		            if (rover != null) {
 		
 		                ScienceType biology = ScienceType.BIOLOGY;
@@ -147,10 +147,6 @@ public class BiologyFieldStudyMeta extends AbstractMetaMission {
 					missionProbability = 0;
 	        }
         }
-
-//        if (missionProbability > 0)
-//        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
 
         return missionProbability;
     }
