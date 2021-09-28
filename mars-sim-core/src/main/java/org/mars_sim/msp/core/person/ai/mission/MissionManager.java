@@ -362,6 +362,7 @@ public class MissionManager implements Serializable, Temporal {
 							+ probability);
 			} 
 			else if (probability > 0D) {
+				logger.info("Mission " + metaMission.getName() + " with probability=" + probability);
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}

@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -29,22 +27,17 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A meta mission for the MeteorologyFieldStudy.
  */
-public class MeteorologyFieldStudyMeta implements MetaMission {
-
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
+public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 
     private static final double WEIGHT = 10D;
        
     /** default logger. */
     private static final Logger logger = Logger.getLogger(MeteorologyFieldStudyMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
+    public MeteorologyFieldStudyMeta() {
+    	super(MissionType.METEOROLOGY, "meteorologyFieldStudy");
     }
-
+    
     @Override
     public Mission constructInstance(Person person) {
         return new MeteorologyFieldStudy(person);
@@ -72,13 +65,13 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
            
- 				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+ 				if (settlement.getMissionBaseProbability(getName()))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
 		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
@@ -162,16 +155,4 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
 		
         return missionProbability;
     }
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

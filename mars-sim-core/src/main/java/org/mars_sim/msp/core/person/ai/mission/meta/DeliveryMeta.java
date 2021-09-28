@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -17,8 +16,8 @@ import org.mars_sim.msp.core.person.ai.mission.Delivery.DeliveryProfitInfo;
 import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -26,10 +25,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 /**
  * A meta mission for the delivery mission.
  */
-public class DeliveryMeta implements MetaMission {
-
-	/** Mission name */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
+public class DeliveryMeta extends AbstractMetaMission {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
@@ -39,12 +35,10 @@ public class DeliveryMeta implements MetaMission {
     private static final int VALUE = 1;
     
     private static final double DIVISOR = 10;
-	
-	private Person person;
 
-	@Override
-	public String getName() {
-		return DEFAULT_DESCRIPTION;
+
+	DeliveryMeta() {
+		super(MissionType.DELIVERY, "delivery");
 	}
 
 	@Override
@@ -102,17 +96,8 @@ public class DeliveryMeta implements MetaMission {
 		return missionProbability;
 	}
 
-	@Override
-	public Mission constructInstance(Robot robot) {
-		return null;// new Delivery(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
-	}
-
-	public double getSettlementProbability(Settlement settlement) {
+	
+	private double getSettlementProbability(Settlement settlement) {
 
 		double missionProbability = 0;
 
@@ -155,8 +140,7 @@ public class DeliveryMeta implements MetaMission {
 			
 	
 		} catch (Exception e) {
-			if (person != null)
-				logger.log(Level.SEVERE, person + "Issues with DeliveryUtil: ", e);
+			logger.log(Level.SEVERE, "Issues with DeliveryUtil: ", e);
 			return 0;
 		}
 
@@ -166,7 +150,7 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}
 
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(getName(), settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {

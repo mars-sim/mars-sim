@@ -8,37 +8,31 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A meta mission for the RescueSalvageVehicle mission.
  */
-public class RescueSalvageVehicleMeta implements MetaMission {
+public class RescueSalvageVehicleMeta extends AbstractMetaMission {
    
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
 
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
+    RescueSalvageVehicleMeta() {
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, "rescueSalvageVehicle");
     }
-
+  
     @Override
     public Mission constructInstance(Person person) {
         return new RescueSalvageVehicle(person);
@@ -91,10 +85,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
     	    
             // FIXME : need to know how many extra EVA suits needed in the broken vehicle
-            
-//            System.out.println("RescueSalvageVehicleMeta - vehicleTarget : " + vehicleTarget.getName()
-//    		+ "   missionProbability 2: " + missionProbability);
-            
+
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;
@@ -114,18 +105,12 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             else if (!RoverMission.hasBackupRover(settlement)) {
                 return 0;
             }
-
-//            System.out.println("RescueSalvageVehicleMeta - vehicleTarget : " + vehicleTarget.getName()
-//    		+ "   missionProbability 3: " + missionProbability);
             
     		if (missionProbability <= 0)
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
-	
-//            System.out.println("RescueSalvageVehicleMeta - vehicleTarget : " + vehicleTarget.getName()
-//    		+ "   missionProbability 4: " + missionProbability);
+			int numThisMission = missionManager.numParticularMissions(getName(), settlement);
             
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numThisMission + numEmbarked) {
@@ -156,9 +141,6 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             if (crowding > 0) {
                 missionProbability *= (crowding + 1);
             }
-
-//            System.out.println("RescueSalvageVehicleMeta - vehicleTarget : " + vehicleTarget.getName()
-//    		+ "   missionProbability 5: " + missionProbability);
             
             // Job modifier.
             JobType job = person.getMind().getJob();
@@ -170,22 +152,8 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 				missionProbability = LIMIT;
 			else if (missionProbability < 0)
 				missionProbability = 0;
-			
-//	        System.out.println("RescueSalvageVehicleMeta - probability : " + missionProbability + " at " + settlement.getName());
         }
 
         return missionProbability;
     }
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

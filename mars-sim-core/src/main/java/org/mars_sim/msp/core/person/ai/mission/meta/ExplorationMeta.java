@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
@@ -19,18 +18,15 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A meta mission for the Exploration mission.
  */
-public class ExplorationMeta implements MetaMission {
+public class ExplorationMeta extends AbstractMetaMission {
 
 	/** Mission name */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
-
 	private static final double VALUE = 1.25D;
 
 	private static final int MAX = 200;
@@ -38,11 +34,10 @@ public class ExplorationMeta implements MetaMission {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
-	@Override
-	public String getName() {
-		return DEFAULT_DESCRIPTION;
+	ExplorationMeta() {
+		super(MissionType.EXPLORATION, "exploration");
 	}
-
+	
 	@Override
 	public Mission constructInstance(Person person) {
 		return new Exploration(person);
@@ -75,16 +70,13 @@ public class ExplorationMeta implements MetaMission {
 					return 0;
 				}
 				
-				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+				if (settlement.getMissionBaseProbability(getName()))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 		   		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
-		
-	//			if (numThisMission > 1)	System.out.println(settlement + "  " + NAME + "'s numThisMission : " + numThisMission);
-	//			if (numEmbarked > 1) System.out.println(settlement + "  " + NAME + "'s numEmbarked : " + numEmbarked);
+				int numThisMission = missionManager.numParticularMissions(getName(), settlement);
 				
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
@@ -137,21 +129,7 @@ public class ExplorationMeta implements MetaMission {
 					missionProbability = 0;
  			}
 		}
-
-        if (missionProbability > 0)
-        	logger.info("ExplorationMeta's probability: " +
-				 Math.round(missionProbability*100D)/100D);
 		
 		return missionProbability;
-	}
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
 	}
 }

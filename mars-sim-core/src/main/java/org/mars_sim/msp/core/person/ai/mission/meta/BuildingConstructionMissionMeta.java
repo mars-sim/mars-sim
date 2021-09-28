@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -19,8 +18,8 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -29,20 +28,15 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 /**
  * A meta mission for the BuildingConstructionMission mission.
  */
-public class BuildingConstructionMissionMeta implements MetaMission {
-
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
+    BuildingConstructionMissionMeta() {
+    	super(MissionType.BUILDING_CONSTRUCTION, "buildingConstructionMission");
     }
-
+    
     @Override
     public Mission constructInstance(Person person) {
         return new BuildingConstructionMission(person);
@@ -157,7 +151,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         return missionProbability;
     }
 
-    public double getProbability(Settlement settlement) {
+    private double getProbability(Settlement settlement) {
 
         double result = 0D;
         
@@ -172,63 +166,4 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         //if (result > 1.1) logger.info("probability : "+ result);
         return result;
     }
-    
-    public double getSettlementProbability(Settlement settlement) {
-
-        double result = 0D;
-        
-//        if (marsClock == null)
-//        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//        
-        // No construction until after the x sols of the simulation.
-        if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
-        	return 0;
-        
-        int availablePeopleNum = 0;
-
-        Collection<Person> list = settlement.getIndoorPeople();
-        for (Person member : list) {
-            boolean noMission = !member.getMind().hasActiveMission();
-            boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-            if (noMission && isFit)
-            	availablePeopleNum++;
-        }
-
-        // Check if available light utility vehicles.
-        if (!BuildingConstructionMission.isLUVAvailable(settlement))
-        	return 0;
-
-        // Check if enough available people at settlement for mission.
-        else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
-        	return 0;
-
-        // Check if settlement has construction override flag set.
-        else if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
-        	return 0;
-
-        // Check if min number of EVA suits at settlement.
-    	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
-                BuildingConstructionMission.MIN_PEOPLE) {
-    		return 0;
-        }
-            
-        result = getProbability(settlement);
-        
-        return result;
-    }
-    
-	@Override
-	public Mission constructInstance(Robot robot) {
-        return null;//new BuildingConstructionMission(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
-    }
-	
-//	public static void setInstances(MarsClock c) {
-//		marsClock = c;
-//	}
-	
 }
