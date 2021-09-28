@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TrainingUtils.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 
@@ -58,8 +58,9 @@ public class TrainingUtils {
 	 * specialist RoleTypes.
 	 */
 	private final static void addTraining(Map<KeyClass,Integer> m, TrainingType t,
-										  int agr, int eng, int mis, int log, int res, int saf, int sci) {
+										  int agr, int com, int eng, int mis, int log, int res, int saf, int sci) {
 		m.put(new KeyClass(t, RoleType.AGRICULTURE_SPECIALIST), agr);
+		m.put(new KeyClass(t, RoleType.COMPUTING_SPECIALIST), com);
 		m.put(new KeyClass(t, RoleType.ENGINEERING_SPECIALIST), eng);
 		m.put(new KeyClass(t, RoleType.MISSION_SPECIALIST), mis);
 		m.put(new KeyClass(t, RoleType.LOGISTIC_SPECIALIST), log);
@@ -72,29 +73,29 @@ public class TrainingUtils {
 	
 	static {
 		modifiers = new HashMap<>();
-		addTraining(modifiers, TrainingType.BIOETHICAL, 8, 7, 2, 2, 4, 5, 6);
-		addTraining(modifiers, TrainingType.EXTREME_ENV_OPS, 6, 6, 6, 4, 5, 3, 8); 
-		addTraining(modifiers, TrainingType.NASA_DESERT_RATS, 2, 6, 6, 8, 5, 3, 8); 
-		addTraining(modifiers, TrainingType.SURVIVAL_TRAINING, 6, 2, 4, 8, 7, 5, 3); 
-		addTraining(modifiers, TrainingType.SCUBA_DIVING_MASTER, 0, 2, 5, 8, 6, 6, 2); 
+		addTraining(modifiers, TrainingType.BIOETHICAL, 8, 1, 7, 2, 2, 4, 5, 6);
+		addTraining(modifiers, TrainingType.EXTREME_ENV_OPS, 6, 2, 6, 6, 4, 5, 3, 8); 
+		addTraining(modifiers, TrainingType.NASA_DESERT_RATS, 2, 3, 6, 6, 8, 5, 3, 8); 
+		addTraining(modifiers, TrainingType.SURVIVAL_TRAINING, 6, 1, 2, 4, 8, 7, 5, 3); 
+		addTraining(modifiers, TrainingType.SCUBA_DIVING_MASTER, 0, 1, 2, 5, 8, 6, 6, 2); 
 	
-		addTraining(modifiers, TrainingType.FLIGHT_SAFETY, 0, 6, 4, 4, 2, 8, 5); 		
-		addTraining(modifiers, TrainingType.SEARCH_AND_RESCUE, 1, 3, 8, 8, 4, 7, 1); 
-		addTraining(modifiers, TrainingType.MOUNTAINEERING_MASTER, 1, 2, 7, 9, 4, 8, 2); 
-		addTraining(modifiers, TrainingType.AIRBORNE_AND_RANGER_SCHOOL, 4, 2, 9, 6, 8, 4, 1); 
-		addTraining(modifiers, TrainingType.HAUGHTON_MARS_GEOLOGICAL, 6, 6, 6, 4, 5, 3, 8); 
+		addTraining(modifiers, TrainingType.FLIGHT_SAFETY, 0, 4, 6, 4, 4, 2, 8, 5); 		
+		addTraining(modifiers, TrainingType.SEARCH_AND_RESCUE, 1, 0, 3, 8, 8, 4, 7, 1); 
+		addTraining(modifiers, TrainingType.MOUNTAINEERING_MASTER, 1, 1, 2, 7, 9, 4, 8, 2); 
+		addTraining(modifiers, TrainingType.AIRBORNE_AND_RANGER_SCHOOL, 4, 0, 2, 9, 6, 8, 4, 1); 
+		addTraining(modifiers, TrainingType.HAUGHTON_MARS_GEOLOGICAL, 6, 5, 6, 6, 4, 5, 3, 8); 
 		
-		addTraining(modifiers, TrainingType.HALO_JUMPMASTER, 1, 3, 4, 9, 8, 2, 2); 	
-		addTraining(modifiers, TrainingType.MISHAP_INVESTIGATION, 0, 7, 5, 8, 2, 9, 5); 
-		addTraining(modifiers, TrainingType.MARS_500_C, 6, 4, 6, 4, 5, 2, 7);
-		addTraining(modifiers, TrainingType.MARS_ANALOG_ENVIRONMENT, 7, 5, 6, 4, 5, 2, 8);
-		addTraining(modifiers, TrainingType.UNDERSEA_MISSION, 3, 6, 6, 4, 5, 3, 8); 	
+		addTraining(modifiers, TrainingType.HALO_JUMPMASTER, 1, 0, 3, 4, 9, 8, 2, 2); 	
+		addTraining(modifiers, TrainingType.MISHAP_INVESTIGATION, 0, 3, 7, 5, 8, 2, 9, 5); 
+		addTraining(modifiers, TrainingType.MARS_500_C, 6, 4, 4, 6, 4, 5, 2, 7);
+		addTraining(modifiers, TrainingType.MARS_ANALOG_ENVIRONMENT, 7, 4, 5, 6, 4, 5, 2, 8);
+		addTraining(modifiers, TrainingType.UNDERSEA_MISSION, 3, 3, 6, 6, 4, 5, 3, 8); 	
 		
-		addTraining(modifiers, TrainingType.MILITIARY_DEPLOYMENT, 0, 2, 9, 8, 5, 5, 0); 	
-		addTraining(modifiers, TrainingType.AVIATION_CERTIFICATION, 0, 4, 3, 4, 3, 9, 2);  
-		addTraining(modifiers, TrainingType.ANTARCTICA_EDEN_ISS, 8, 7, 4, 4, 6, 2, 9);   		
-		addTraining(modifiers, TrainingType.MARS_TWO_FINAL_100, 5, 4, 6, 4, 5, 2, 3); 
-		addTraining(modifiers, TrainingType.UNDERGROUND_CAVES_EXPLORATION, 5, 5, 4, 8, 4, 7, 6); 
+		addTraining(modifiers, TrainingType.MILITARY_DEPLOYMENT, 0, 2, 2, 9, 8, 5, 5, 0); 	
+		addTraining(modifiers, TrainingType.AVIATION_CERTIFICATION, 0, 5, 4, 3, 4, 3, 9, 2);  
+		addTraining(modifiers, TrainingType.ANTARCTICA_EDEN_ISS, 8, 5, 7, 4, 4, 6, 2, 9);   		
+		addTraining(modifiers, TrainingType.MARS_TWO_FINAL_100, 5, 5, 4, 6, 4, 5, 2, 3); 
+		addTraining(modifiers, TrainingType.UNDERGROUND_CAVES_EXPLORATION, 5, 3, 5, 4, 8, 4, 7, 6); 
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoleUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.role;
@@ -37,21 +37,23 @@ public class RoleUtil implements Serializable {
 	// Define the order of each specialist role in a role prospect array
 	public static final  RoleType[] SPECIALISTS = new RoleType[] {
 			RoleType.AGRICULTURE_SPECIALIST,
+			RoleType.COMPUTING_SPECIALIST,
 			RoleType.ENGINEERING_SPECIALIST,
 			RoleType.LOGISTIC_SPECIALIST,
 			RoleType.MISSION_SPECIALIST,
-			RoleType.RESOURCE_SPECIALIST,	
+			RoleType.RESOURCE_SPECIALIST,
 			RoleType.SAFETY_SPECIALIST,
-			RoleType.SCIENCE_SPECIALIST	
+			RoleType.SCIENCE_SPECIALIST
 		};
 			
 
 	public static final RoleType[] CHIEFS = new RoleType[] { 
 			RoleType.CHIEF_OF_AGRICULTURE,
-			RoleType.CHIEF_OF_ENGINEERING, 
-			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS, 
+			RoleType.CHIEF_OF_COMPUTING,
+			RoleType.CHIEF_OF_ENGINEERING,
+			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS,
 			RoleType.CHIEF_OF_MISSION_PLANNING,
-			RoleType.CHIEF_OF_SAFETY_N_HEALTH, 
+			RoleType.CHIEF_OF_SAFETY_N_HEALTH,
 			RoleType.CHIEF_OF_SCIENCE,
 			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES};
 	

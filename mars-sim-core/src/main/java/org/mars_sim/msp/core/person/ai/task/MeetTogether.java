@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MeetTogether.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -98,13 +98,8 @@ implements Serializable {
                 for (Person p : ppl) {
                     RoleType type = p.getRole().getType();
 
-                    if (type != null &&  type == RoleType.CHIEF_OF_AGRICULTURE
-                    	|| type == RoleType.CHIEF_OF_ENGINEERING
-                    	|| type == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-                    	|| type == RoleType.CHIEF_OF_MISSION_PLANNING
-                    	|| type == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-                    	|| type == RoleType.CHIEF_OF_SCIENCE
-                    	|| type == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
+                    if (type != null 
+                    	&& RoleType.isChief(roleType)) {
      
                     	if (p.getBuildingLocation() != null)
                     		// if that person is inside the settlement and within a building
@@ -122,14 +117,7 @@ implements Serializable {
                 
             }
             
-            else if (roleType != null && roleType == RoleType.CHIEF_OF_AGRICULTURE
-                	|| roleType == RoleType.CHIEF_OF_ENGINEERING
-                	|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-                	|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-                	|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-                	|| roleType == RoleType.CHIEF_OF_SCIENCE
-                	|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-    	
+            else if (roleType != null && RoleType.isChief(roleType)) {
             	pool = getPool(ppl, roleType);
             }
       	
@@ -161,7 +149,7 @@ implements Serializable {
     }
 
     
-    // TODO: how to use this version of MeetTogether
+    // Note: how to use this version of MeetTogether
     public MeetTogether(Person candidate, Person inviter) {
         // Use Task constructor.
         super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), null, 100D,
@@ -287,6 +275,15 @@ implements Serializable {
     	if (roleType == RoleType.CHIEF_OF_AGRICULTURE) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.AGRICULTURE_SPECIALIST) {
+	            	if (p.getBuildingLocation() != null)
+	            		// if that person is inside the settlement and within a building
+	            		pool.add(p);
+            	}
+            }	
+    	}
+    	else if (roleType == RoleType.CHIEF_OF_COMPUTING) {
+            for (Person p : ppl) {
+            	if (p.getRole().getType() == RoleType.COMPUTING_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
 	            		// if that person is inside the settlement and within a building
 	            		pool.add(p);

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Pilot.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -38,7 +38,7 @@ public class Pilot extends Job {
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(JobType.PILOT, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+		super(JobType.PILOT, Job.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
 				
 		// Add driver-related mission joins.
 

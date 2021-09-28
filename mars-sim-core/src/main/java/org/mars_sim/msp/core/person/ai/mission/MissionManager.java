@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionManager.java
- * @date 2021-08-29
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -680,6 +680,7 @@ public class MissionManager implements Serializable, Temporal {
 			case CHIEF_OF_MISSION_PLANNING:
 				weight = 2D; break;
 			case CHIEF_OF_AGRICULTURE:
+			case CHIEF_OF_COMPUTING:
 			case CHIEF_OF_ENGINEERING:
 			case CHIEF_OF_LOGISTICS_N_OPERATIONS:
 			case CHIEF_OF_SAFETY_N_HEALTH:

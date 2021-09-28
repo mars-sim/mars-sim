@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Technician.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 
@@ -19,7 +19,7 @@ class Technician extends Job {
 	 */
 	public Technician() {
 		// Use Job constructor
-		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
+		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 10.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
 
 		// Add engineer-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Physicist.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -31,7 +31,7 @@ class Physicist extends Job {
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
-		super(JobType.PHYSICIST, Job.buildRoleMap(5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
+		super(JobType.PHYSICIST, Job.buildRoleMap(5.0, 25.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
 
 
 		// Add physicist-related missions.

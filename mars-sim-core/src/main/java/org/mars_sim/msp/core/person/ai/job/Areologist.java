@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Areologist.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -43,7 +43,7 @@ class Areologist extends Job {
 	 */
 	public Areologist() {
 		// Use Job constructor
-		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 
 		// Add areologist-related missions.
 		jobMissionStarts.add(AreologyFieldStudy.class);

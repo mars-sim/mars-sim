@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Meteorologist.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -31,7 +31,7 @@ class Meteorologist extends Job {
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
 			
 		// Add meteorologist-related missions.
 		jobMissionStarts.add(MeteorologyFieldStudy.class);		

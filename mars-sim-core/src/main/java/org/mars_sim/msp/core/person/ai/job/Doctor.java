@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Doctor.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -28,7 +28,7 @@ class Doctor extends Job {
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
-		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add doctor-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);

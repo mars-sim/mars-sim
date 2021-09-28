@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelOrganization.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -83,6 +83,10 @@ public class TabPanelOrganization extends TabPanel {
 	private DefaultMutableTreeNode agricultureSpecialistNode;
 	private DefaultMutableTreeNode agricultureChiefNode;
 
+	private DefaultMutableTreeNode computingNode;
+	private DefaultMutableTreeNode computingSpecialistNode;
+	private DefaultMutableTreeNode computingChiefNode;
+			
 	private DefaultMutableTreeNode engineeringNode;
 	private DefaultMutableTreeNode engineeringSpecialistNode;
 	private DefaultMutableTreeNode engineeringChiefNode;
@@ -254,6 +258,16 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(agricultureSpecialistNode);
 		nodes.add(agricultureChiefNode);
 		
+		computingNode = new DefaultMutableTreeNode("Computing");
+		computingSpecialistNode = new DefaultMutableTreeNode(
+				RoleType.COMPUTING_SPECIALIST.toString());
+		computingChiefNode = new DefaultMutableTreeNode(
+				RoleType.CHIEF_OF_COMPUTING.toString());
+
+		nodes.add(computingNode);
+		nodes.add(computingSpecialistNode);
+		nodes.add(computingChiefNode);
+		
 		engineeringNode = new DefaultMutableTreeNode("Engineering");
 		engineeringSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.ENGINEERING_SPECIALIST.toString());
@@ -326,6 +340,10 @@ public class TabPanelOrganization extends TabPanel {
 			agricultureNode.add(agricultureChiefNode);
 			agricultureNode.add(agricultureSpecialistNode);
 
+			divisionNode.add(computingNode);
+			computingNode.add(computingChiefNode);
+			computingNode.add(computingSpecialistNode);
+			
 			divisionNode.add(engineeringNode);
 			engineeringNode.add(engineeringChiefNode);
 			engineeringNode.add(engineeringSpecialistNode);
@@ -357,6 +375,9 @@ public class TabPanelOrganization extends TabPanel {
 			divisionNode.add(agricultureNode);
 			agricultureNode.add(agricultureSpecialistNode);
 
+			divisionNode.add(computingNode);
+			computingNode.add(computingSpecialistNode);
+			
 			divisionNode.add(engineeringNode);
 			engineeringNode.add(engineeringSpecialistNode);
 
@@ -427,6 +448,11 @@ public class TabPanelOrganization extends TabPanel {
 				agricultureChiefNode.add(new DefaultMutableTreeNode(p));
 			} else if (rt == RoleType.AGRICULTURE_SPECIALIST) {
 				agricultureSpecialistNode.add(new DefaultMutableTreeNode(p));
+				
+			} else if (rt == RoleType.CHIEF_OF_COMPUTING) {
+				computingChiefNode.add(new DefaultMutableTreeNode(p));
+			} else if (rt == RoleType.COMPUTING_SPECIALIST) {
+				computingSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
 			} else if (rt == RoleType.CHIEF_OF_ENGINEERING) {
 				engineeringChiefNode.add(new DefaultMutableTreeNode(p));

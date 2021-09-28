@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Job.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -182,10 +182,11 @@ public abstract class Job {
 	 * @return
 	 */
 	protected static Map<RoleType, Double> buildRoleMap(
-		  double agr, double eng, double mis, double log, double res, double saf, double sci) {
+		  double agr, double com, double eng, double mis, double log, double res, double saf, double sci) {
 		
 		Map<RoleType, Double> m = new EnumMap<>(RoleType.class);
 		m.put(RoleType.AGRICULTURE_SPECIALIST, agr);
+		m.put(RoleType.COMPUTING_SPECIALIST, com);
 		m.put(RoleType.ENGINEERING_SPECIALIST, eng);
 		m.put(RoleType.MISSION_SPECIALIST, mis);
 		m.put(RoleType.LOGISTIC_SPECIALIST, log);

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RecordActivityMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -98,16 +98,8 @@ public class RecordActivityMeta extends MetaTask {
         	else if (roleType == RoleType.SUB_COMMANDER)
         		result -= 50D;
             
-            else if (roleType == RoleType.CHIEF_OF_AGRICULTURE
-            	|| roleType == RoleType.CHIEF_OF_ENGINEERING
-            	|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-            	|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-            	|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-            	|| roleType == RoleType.CHIEF_OF_SCIENCE
-            	|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-            
+	        else if (RoleType.isChief(roleType))
             	result -= 10D;
-            }
         }
         
         if (result < 0) result = 0;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReviewMissionPlan.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -134,13 +134,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	public static boolean isRoleValid(RoleType roleType) {
 		return roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
 				|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
-				|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-				|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-				|| roleType == RoleType.CHIEF_OF_ENGINEERING
-				|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-				|| roleType == RoleType.CHIEF_OF_SCIENCE
-				|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-				|| roleType == RoleType.CHIEF_OF_AGRICULTURE
+				|| RoleType.isChief(roleType)
 				|| roleType == RoleType.MISSION_SPECIALIST;
 	}
 

@@ -170,10 +170,7 @@ public class ChainOfCommand implements Serializable {
 			int popSize = settlement.getNumCitizens();
 
 			if (popSize >= POPULATION_WITH_MAYOR) {
-				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_ENGINEERING
-						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS || key == RoleType.CHIEF_OF_MISSION_PLANNING
-						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH || key == RoleType.CHIEF_OF_SCIENCE
-						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
+				if (RoleType.isChief(key)) {
 					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
@@ -184,10 +181,7 @@ public class ChainOfCommand implements Serializable {
 			}
 
 			else if (popSize >= POPULATION_WITH_CHIEFS) {
-				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_ENGINEERING
-						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS || key == RoleType.CHIEF_OF_MISSION_PLANNING
-						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH || key == RoleType.CHIEF_OF_SCIENCE
-						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
+				if (RoleType.isChief(key)) {
 					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
@@ -624,18 +618,37 @@ public class ChainOfCommand implements Serializable {
 		SkillType skill_2 = null;
 		SkillType skill_3 = null;
 		SkillType skill_4 = null;
-		if (role == RoleType.CHIEF_OF_ENGINEERING) {
-			skill_1 = SkillType.MATERIALS_SCIENCE;
-			skill_2 = SkillType.CONSTRUCTION;
-			skill_3 = SkillType.PHYSICS;
-			skill_4 = SkillType.MECHANICS;
-			specialty = RoleType.ENGINEERING_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_AGRICULTURE) {
+		
+		if (role == RoleType.CHIEF_OF_AGRICULTURE) {
 			skill_1 = SkillType.BOTANY;
 			skill_2 = SkillType.BIOLOGY;
 			skill_3 = SkillType.CHEMISTRY;
 			skill_4 = SkillType.TRADING;
 			specialty = RoleType.AGRICULTURE_SPECIALIST;
+		} else if (role == RoleType.CHIEF_OF_COMPUTING) {
+			skill_1 = SkillType.MATERIALS_SCIENCE;
+			skill_2 = SkillType.MATHEMATICS;
+			skill_3 = SkillType.PHYSICS;
+			skill_4 = SkillType.MECHANICS;
+			specialty = RoleType.COMPUTING_SPECIALIST;
+		} else if (role == RoleType.CHIEF_OF_ENGINEERING) {
+			skill_1 = SkillType.MATERIALS_SCIENCE;
+			skill_2 = SkillType.CONSTRUCTION;
+			skill_3 = SkillType.PHYSICS;
+			skill_4 = SkillType.MECHANICS;
+			specialty = RoleType.ENGINEERING_SPECIALIST;
+		} else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
+			skill_1 = SkillType.PILOTING;
+			skill_2 = SkillType.METEOROLOGY;
+			skill_3 = SkillType.MECHANICS;
+			skill_4 = SkillType.MATHEMATICS;
+			specialty = RoleType.LOGISTIC_SPECIALIST;			
+		} else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
+			skill_1 = SkillType.MATHEMATICS;
+			skill_2 = SkillType.PILOTING;
+			skill_3 = SkillType.MANAGEMENT;
+			skill_4 = SkillType.EVA_OPERATIONS;
+			specialty = RoleType.MISSION_SPECIALIST;
 		} else if (role == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
 			skill_1 = SkillType.EVA_OPERATIONS;
 			skill_2 = SkillType.MEDICINE;
@@ -646,26 +659,14 @@ public class ChainOfCommand implements Serializable {
 			skill_1 = SkillType.AREOLOGY;
 			skill_2 = SkillType.CHEMISTRY;
 			skill_3 = SkillType.PHYSICS;
-			skill_4 = SkillType.MATHEMATICS;
+			skill_4 = SkillType.BIOLOGY;
 			specialty = RoleType.SCIENCE_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
-			skill_1 = SkillType.MATHEMATICS;
-			skill_2 = SkillType.PILOTING;
-			skill_3 = SkillType.MANAGEMENT;
-			skill_4 = SkillType.EVA_OPERATIONS;
-			specialty = RoleType.MISSION_SPECIALIST;
 		} else if (role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 			skill_1 = SkillType.TRADING;
 			skill_2 = SkillType.MATHEMATICS;
 			skill_3 = SkillType.BOTANY;
 			skill_4 = SkillType.COOKING;
 			specialty = RoleType.RESOURCE_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
-			skill_1 = SkillType.PILOTING;
-			skill_2 = SkillType.METEOROLOGY;
-			skill_3 = SkillType.MECHANICS;
-			skill_4 = SkillType.MATHEMATICS;
-			specialty = RoleType.LOGISTIC_SPECIALIST;
 		}
 
 		// compare their scores
@@ -733,6 +734,4 @@ public class ChainOfCommand implements Serializable {
 		roleRegistry = null;
 		settlement = null;
 	}
-
-
 }

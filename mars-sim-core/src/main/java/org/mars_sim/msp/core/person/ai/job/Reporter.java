@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Reporter.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,7 +26,7 @@ class Reporter extends Job {
 	 */
 	public Reporter() {
 		// Use Job constructor.
-		super(JobType.REPORTER, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
+		super(JobType.REPORTER, Job.buildRoleMap(5.0, 0.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
 
 		// Add reporter-related missions.
 		jobMissionStarts.add(Trade.class);

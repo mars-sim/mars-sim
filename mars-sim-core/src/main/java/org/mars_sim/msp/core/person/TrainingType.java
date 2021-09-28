@@ -29,7 +29,7 @@ public enum TrainingType {
 	MARS_ANALOG_ENVIRONMENT				(Msg.getString("TrainingType.analogEnvironment")), //$NON-NLS-1$
 	UNDERSEA_MISSION					(Msg.getString("TrainingType.underseaMission")), //$NON-NLS-1$
 	
-	MILITIARY_DEPLOYMENT				(Msg.getString("TrainingType.militaryDeployment")), //$NON-NLS-1$
+	MILITARY_DEPLOYMENT				(Msg.getString("TrainingType.militaryDeployment")), //$NON-NLS-1$
 	AVIATION_CERTIFICATION				(Msg.getString("TrainingType.aviationCert")), //$NON-NLS-1$
 	ANTARCTICA_EDEN_ISS					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
 	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")), //$NON-NLS-1$

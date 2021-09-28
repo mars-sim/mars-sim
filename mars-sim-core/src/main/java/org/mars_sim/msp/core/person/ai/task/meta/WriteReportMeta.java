@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WriteReportMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -64,16 +64,8 @@ public class WriteReportMeta extends MetaTask {
             	else if (roleType.equals(RoleType.SUB_COMMANDER))
             		result += 20D;
                 
-                else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-                	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-                	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-                	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-                	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-                	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-                	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
-                
+                else if (RoleType.isChief(roleType))
                 	result += 15D;
-                }
                 
 	            else
 	            	result += 10D;

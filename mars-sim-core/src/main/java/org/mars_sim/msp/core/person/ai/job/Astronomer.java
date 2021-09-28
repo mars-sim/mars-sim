@@ -34,7 +34,7 @@ class Astronomer extends Job  {
 	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
-		super(JobType.ASTRONOMER, Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.ASTRONOMER, Job.buildRoleMap(5.0, 20.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 
 
 		// Add astronomer-related missions.

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Chef.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -28,7 +28,7 @@ class Chef extends Job {
 	/** constructor. */
 	public Chef() {
 		// Use Job constructor
-		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
+		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
 
 		// Add chef-related missions.
 		jobMissionJoins.add(BuildingConstructionMission.class);

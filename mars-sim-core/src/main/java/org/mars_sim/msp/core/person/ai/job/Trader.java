@@ -26,7 +26,7 @@ class Trader extends Job {
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
+		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
 
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);

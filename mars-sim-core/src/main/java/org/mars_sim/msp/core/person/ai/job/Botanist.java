@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Botanist.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -36,7 +36,7 @@ extends Job {
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super(JobType.BOTANIST, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
+		super(JobType.BOTANIST, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
 
 
 		// Add botanist-related missions.

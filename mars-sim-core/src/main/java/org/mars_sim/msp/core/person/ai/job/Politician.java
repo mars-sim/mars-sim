@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Politician.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -29,7 +29,7 @@ public class Politician extends Job {
 	 */
 	public Politician() {
 		// Use Job constructor.
-		super(JobType.POLITICIAN, Job.buildRoleMap(15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
+		super(JobType.POLITICIAN, Job.buildRoleMap(15.0, 0.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
 		
 		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);

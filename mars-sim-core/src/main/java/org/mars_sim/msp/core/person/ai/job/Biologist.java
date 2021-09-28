@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Biologist.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -39,7 +39,7 @@ extends Job {
 	 */
 	public Biologist() {
 		// Use Job constructor
-		super(JobType.BIOLOGIST, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.BIOLOGIST, Job.buildRoleMap(20.0, 0.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add biologist-related missions.
 		jobMissionJoins.add(AreologyFieldStudy.class);

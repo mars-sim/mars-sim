@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoleType.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Manny Kung
  */
 
@@ -21,8 +21,10 @@ public enum RoleType {
 	RESOURCE_SPECIALIST					(Msg.getString("RoleType.resourceSpecialist")), //$NON-NLS-1$
 	SAFETY_SPECIALIST					(Msg.getString("RoleType.safetySpecialist")), //$NON-NLS-1$
 	SCIENCE_SPECIALIST					(Msg.getString("RoleType.scienceSpecialist")), //$NON-NLS-1$
+	COMPUTING_SPECIALIST				(Msg.getString("RoleType.computingSpecialist")), //$NON-NLS-1$
 	
 	CHIEF_OF_AGRICULTURE				(Msg.getString("RoleType.chiefOfAgriculture")), //$NON-NLS-1$
+	CHIEF_OF_COMPUTING					(Msg.getString("RoleType.chiefOfComputing")), //$NON-NLS-1$
 	CHIEF_OF_ENGINEERING				(Msg.getString("RoleType.chiefOfEngineering")), //$NON-NLS-1$
 	CHIEF_OF_MISSION_PLANNING			(Msg.getString("RoleType.chiefOfMissionPlanning")), //$NON-NLS-1$
 	CHIEF_OF_LOGISTICS_N_OPERATIONS		(Msg.getString("RoleType.chiefOfLogistics")), //$NON-NLS-1$
@@ -70,5 +72,19 @@ public enum RoleType {
 		}
 		
 		return null;
+	}
+	
+	public static boolean isChief(RoleType roleType) {
+		if (roleType.getName().toLowerCase().contains("chief"))
+			return true;
+		
+		return false;
+	}
+	
+	public static boolean isSpecialist(RoleType roleType) {
+		if (roleType.getName().toLowerCase().contains("specialist"))
+			return true;
+		
+		return false;
 	}
 }

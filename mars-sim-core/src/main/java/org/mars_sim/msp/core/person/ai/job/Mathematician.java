@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Mathematician.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -29,7 +29,7 @@ class Mathematician extends Job {
 	 */
 	public Mathematician() {
 		// Use Job constructor
-		super(JobType.MATHEMATICIAN, Job.buildRoleMap(5.0, 15.0, 15.0, 15.0, 15.0, 5.0, 30.0));
+		super(JobType.MATHEMATICIAN, Job.buildRoleMap(5.0, 25.0, 15.0, 15.0, 15.0, 15.0, 5.0, 30.0));
 			
 		// Add mathematician-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
