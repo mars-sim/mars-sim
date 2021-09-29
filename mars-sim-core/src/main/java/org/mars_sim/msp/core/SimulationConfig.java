@@ -342,11 +342,11 @@ public class SimulationConfig implements Serializable {
 			invalid = true;
 		}
 		
-		if (xmlDirExist) {			
-			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {		
-				try {	
-					if (versionFileExist && !buildText.equals("") && !invalid) {					
-						String s0 = backupDir + File.separator + buildText;		
+		if (xmlDirExist) {
+			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {
+				try {
+					if (versionFileExist && !buildText.equals("") && !invalid) {		
+						String s0 = backupDir + File.separator + buildText;
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/

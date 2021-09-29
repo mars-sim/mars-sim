@@ -71,8 +71,6 @@ class Mathematician extends Job {
 
 		result = (result + population / 20D) / 2.0;
 
-//		System.out.println(settlement + " Mathematician need: " + result);
-		
 		return result;
 	}
 }

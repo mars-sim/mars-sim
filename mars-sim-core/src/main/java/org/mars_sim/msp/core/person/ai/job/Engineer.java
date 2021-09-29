@@ -33,8 +33,6 @@ class Engineer extends Job {
 		// Use Job constructor
 		super(JobType.ENGINEER, Job.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
 
-
-
 		// Add engineer-related missions.
 		jobMissionJoins.add(BuildingConstructionMission.class);
 		
@@ -64,10 +62,8 @@ class Engineer extends Job {
 	
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
-
-//		System.out.println(person + " engineer : " + Math.round(result*100.0)/100.0);
 		
-		return result/2D;
+		return result;
 	}
 
 	/**
@@ -85,14 +81,12 @@ class Engineer extends Job {
 		
 		// Add (tech level * process number / 2) for all manufacture buildings.
 		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
-//		System.out.println(settlement + " # of manu : " + manufactureBuildings.size());
+
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
 			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 10D;
-//			System.out.println("workshop.getTechLevel(): " + workshop.getTechLevel());
-//			System.out.println("workshop.getMaxProcesses(): " + workshop.getMaxProcesses());
 		}
 		
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -106,9 +100,7 @@ class Engineer extends Job {
 		}
 		
 		result = (result + population / 8D) / 2.0;
-		
-//		System.out.println(settlement + " Engineer need: " + result);
-		
+			
 		return result;
 	}
 }

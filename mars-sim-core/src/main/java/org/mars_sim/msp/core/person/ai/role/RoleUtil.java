@@ -9,12 +9,13 @@ package org.mars_sim.msp.core.person.ai.role;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
@@ -31,34 +32,10 @@ public class RoleUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RoleUtil.class.getName());
-	
-	// Define the order of each specialist role in a role prospect array
-	public static final  RoleType[] SPECIALISTS = new RoleType[] {
-			RoleType.AGRICULTURE_SPECIALIST,
-			RoleType.COMPUTING_SPECIALIST,
-			RoleType.ENGINEERING_SPECIALIST,
-			RoleType.LOGISTIC_SPECIALIST,
-			RoleType.MISSION_SPECIALIST,
-			RoleType.RESOURCE_SPECIALIST,
-			RoleType.SAFETY_SPECIALIST,
-			RoleType.SCIENCE_SPECIALIST
-		};
-			
-
-	public static final RoleType[] CHIEFS = new RoleType[] { 
-			RoleType.CHIEF_OF_AGRICULTURE,
-			RoleType.CHIEF_OF_COMPUTING,
-			RoleType.CHIEF_OF_ENGINEERING,
-			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS,
-			RoleType.CHIEF_OF_MISSION_PLANNING,
-			RoleType.CHIEF_OF_SAFETY_N_HEALTH,
-			RoleType.CHIEF_OF_SCIENCE,
-			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES};
-	
 	private static Map<JobType, Map<RoleType,Double>> roleWeights
 							= new EnumMap<>(JobType.class);
+
+	private static List<RoleType> specalistsRoles;
 	
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;
@@ -78,10 +55,24 @@ public class RoleUtil implements Serializable {
 				roleWeights.put(id, j.getRoleProspects());
 			}
 		}
+		
+		// Cache the specialists
+		specalistsRoles = Collections.unmodifiableList(
+							Arrays.stream(RoleType.values())
+								.filter(RoleType::isSpecialist)
+								.collect(Collectors.toList()));
 	}
 	
 	public static boolean isRoleWeightsInitialized() {
         return !roleWeights.isEmpty();
+	}
+	
+	/**
+	 * Return the specialist roles.
+	 * @return
+	 */
+	public static List<RoleType> getSpecialists() {
+		return specalistsRoles;
 	}
 	
 	/**
@@ -92,7 +83,7 @@ public class RoleUtil implements Serializable {
 	 * @return
 	 */
 	public static RoleType findBestRole(Person p) {
-		RoleType selectedRole = null; //specialistRoles[RandomUtil.getRandomInt(RoleType.SEVEN - 1)];
+		RoleType selectedRole = null; 
 		double highestWeight = 0;
 		
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
@@ -100,14 +91,17 @@ public class RoleUtil implements Serializable {
 		Map<RoleType, Double> weights = roleWeights.get(job);
 		
 		// Use a Tree map so entries sorting in increasing order.
-		List<RoleType> roles = new ArrayList<>(Arrays.asList(SPECIALISTS));
+		List<RoleType> roles = new ArrayList<>();
 		int leastNum = 0;
 		RoleType leastFilledRole = null;
-		for (RoleType rt: roles) {
-			int num = chain.getNumFilled(rt);
-			if (leastNum >= num) {
-				leastNum = num;
-				leastFilledRole = rt;
+		for (RoleType rt: RoleType.values()) {
+			if (rt.isSpecialist()) {
+				int num = chain.getNumFilled(rt);
+				if (leastNum >= num) {
+					leastNum = num;
+					leastFilledRole = rt;
+				}
+				roles.add(rt);
 			}
 		}
 		// Remove that role
@@ -199,22 +193,7 @@ public class RoleUtil implements Serializable {
 		return trainingScore;
 		
 	}
-	
-	/**
-	 * Checks if this is a leadership role
-	 * 
-	 * @param role
-	 * @return yes if it is true
-	 */
-	public static boolean isLeadershipRole(RoleType role) {
-		// Is this correct ? Are Specialists leadership ?
-		for (RoleType r : SPECIALISTS) {
-			if (r == role)
-				return false;
-		}
-		return true;
-	}
-	
+
 	/**
 	 * Records the role change and fire the unit update
 	 * 
@@ -228,5 +207,51 @@ public class RoleUtil implements Serializable {
 		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
 		
 		//logger.info(person, "New Role " + roleType.getName());
+	}
+
+	/**
+	 * Take a Chief roletype and return the associated speciality role.
+	 * If the input role is not a Chief a null is returned
+	 * @param roleType
+	 * @return
+	 */
+	public static RoleType getChiefSpeciality(RoleType roleType) {
+		RoleType candidateType = null;
+		switch (roleType) {
+	        case CHIEF_OF_AGRICULTURE:
+	            candidateType = RoleType.AGRICULTURE_SPECIALIST;
+	            break;
+	            
+	        case CHIEF_OF_COMPUTING:
+	        	candidateType = RoleType.COMPUTING_SPECIALIST;
+	        	break;
+	
+	        case CHIEF_OF_ENGINEERING:
+	        	candidateType = RoleType.ENGINEERING_SPECIALIST;
+	        	break;
+	        	
+	        case CHIEF_OF_LOGISTICS_N_OPERATIONS:
+	        	candidateType = RoleType.LOGISTIC_SPECIALIST;
+	        	break;
+	    	
+	        case CHIEF_OF_MISSION_PLANNING:
+	        	candidateType = RoleType.MISSION_SPECIALIST;
+	        	break;
+	        	
+	        case CHIEF_OF_SAFETY_N_HEALTH:
+	        	candidateType = RoleType.SAFETY_SPECIALIST;
+	        	break;
+	        	
+	        case CHIEF_OF_SCIENCE:
+	        	candidateType = RoleType.SCIENCE_SPECIALIST;
+	        	break;
+	        	
+	        case CHIEF_OF_SUPPLY_N_RESOURCES:
+	        	candidateType = RoleType.RESOURCE_SPECIALIST;
+	        	break;
+	        
+	        default:
+	    }
+		return candidateType;
 	}
 }

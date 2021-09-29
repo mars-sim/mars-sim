@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JobType.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-27
  * @author Manny Kung
  */
 
@@ -21,16 +21,17 @@ public enum JobType {
 	
 	CHEF				(Msg.getString("JobType.Chef")), //$NON-NLS-1$
 	CHEMIST				(Msg.getString("JobType.Chemist")), //$NON-NLS-1$
+	COMPUTER_SCIENTIST  (Msg.getString("JobType.ComputerScientist")),  //$NON-NLS-1$
 	DOCTOR				(Msg.getString("JobType.Doctor")), //$NON-NLS-1$
 	ENGINEER			(Msg.getString("JobType.Engineer")), //$NON-NLS-1$
-	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
 	
+	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
 	METEOROLOGIST		(Msg.getString("JobType.Meteorologist")), //$NON-NLS-1$
 	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
 	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
 	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
-	PSYCHOLOGIST		(Msg.getString("JobType.Psychologist")), //$NON-NLS-1$
 	
+	PSYCHOLOGIST		(Msg.getString("JobType.Psychologist")), //$NON-NLS-1$
 	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
 	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
 	TRADER				(Msg.getString("JobType.Trader")), //$NON-NLS-1$
@@ -45,6 +46,7 @@ public enum JobType {
 						JobType.BIOLOGIST,
 						JobType.BOTANIST,
 						JobType.CHEMIST,
+						JobType.COMPUTER_SCIENTIST,
 						JobType.DOCTOR,
 						JobType.MATHEMATICIAN,
 						JobType.METEOROLOGIST,
@@ -81,6 +83,7 @@ public enum JobType {
 								JobType.BIOLOGIST,
 								JobType.BOTANIST,
 								JobType.CHEMIST,
+								JobType.COMPUTER_SCIENTIST,
 								JobType.PHYSICIST);
 							
 					

@@ -60,12 +60,9 @@ public class ReviewJobReassignmentMeta extends MetaTask {
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
         	RoleType roleType = person.getRole().getType();
 
-            if (roleType != null && roleType == RoleType.PRESIDENT
-                	|| roleType == RoleType.MAYOR
-            		|| roleType == RoleType.COMMANDER
-        			|| roleType == RoleType.SUB_COMMANDER
-        	        || RoleType.isChief(roleType)     			
-        			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 4)) {
+            if (roleType != null && (roleType.isCouncil()
+        	        || roleType.isChief()     			
+        			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 4))) {
 
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {

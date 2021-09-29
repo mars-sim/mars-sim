@@ -133,9 +133,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 	
 	public static boolean isRoleValid(RoleType roleType) {
-		return roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
-				|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
-				|| RoleType.isChief(roleType)
+		return roleType.isCouncil()
+				|| roleType.isChief()
 				|| roleType == RoleType.MISSION_SPECIALIST;
 	}
 
@@ -385,12 +384,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									weight = 7;
 								else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
 									weight = 6;
-								else if (role == RoleType.CHIEF_OF_AGRICULTURE
-									|| role == RoleType.CHIEF_OF_ENGINEERING
-									|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-									|| role == RoleType.CHIEF_OF_SCIENCE
-									|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-									)
+								else if (role.isChief())
 									weight = 5;
 								else if (role == RoleType.MISSION_SPECIALIST)
 									weight = 4;

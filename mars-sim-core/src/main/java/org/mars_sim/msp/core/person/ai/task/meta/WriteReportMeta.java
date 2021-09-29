@@ -64,7 +64,7 @@ public class WriteReportMeta extends MetaTask {
             	else if (roleType.equals(RoleType.SUB_COMMANDER))
             		result += 20D;
                 
-                else if (RoleType.isChief(roleType))
+                else if (roleType.isChief())
                 	result += 15D;
                 
 	            else

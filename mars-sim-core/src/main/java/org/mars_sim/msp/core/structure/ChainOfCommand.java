@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ChainOfCommand.java
- * @date 2021-09-04
+ * @date 2021-09-27
  * @author Manny Kung
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,8 +45,6 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_CHIEFS = 17;
 	public static final int POPULATION_WITH_MAYOR = 51;
 
-//	private boolean has7Divisions = false;
-//	private boolean has3Divisions = false;
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry;
 	/** Store the availability of each role. */
@@ -68,9 +65,7 @@ public class ChainOfCommand implements Serializable {
 		
 		roleRegistry = new ConcurrentHashMap<>();
 		roleAvailability = new ConcurrentHashMap<>();
-		
-//		has7Divisions = true;
-		
+
 		// Initialize roleAvailability array once only
 		if (roleAvailability.isEmpty())
 			initializeRoleMaps();
@@ -81,12 +76,11 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void initializeRoleMaps() {
 		int pop = settlement.getInitialPopulation();
-//		System.out.println("" + settlement + " : " + pop);
-		
-		RoleType[] types = RoleUtil.SPECIALISTS;
+	
+		List<RoleType> types = new ArrayList<>(RoleUtil.getSpecialists());
 		
 		// Shuffle the role types randomize
-		Collections.shuffle(Arrays.asList(types));	
+		Collections.shuffle(types);	
 		
 		for (RoleType t : types) {
 			if (!roleAvailability.containsKey(t)) {
@@ -98,16 +92,9 @@ public class ChainOfCommand implements Serializable {
 		}
 		
 		for (int i=0; i < pop; i++) {
-//			if (i < RoleType.SEVEN) {
-//				int num = roleAvailability.get(types[i]);
-//				roleAvailability.put(types[i], num+1);
-////				System.out.println("1. " + types[i] + " : " + (num+1));
-//			}
-//			else {
-				int num = roleAvailability.get(types[i%7]);
-				roleAvailability.put(types[i%7], num+1);
-//				System.out.println("2. " + types[i%7] + " : " + (num+1));
-//			}
+			RoleType rt = types.get(i % types.size());
+			int num = roleAvailability.get(rt);
+			roleAvailability.put(rt, num+1);
 		}
 	}
 	
@@ -120,13 +107,6 @@ public class ChainOfCommand implements Serializable {
 	public boolean isRoleAvailable(RoleType type) {
         return roleAvailability.get(type) > roleRegistry.get(type);
 	}
-	
-//	public boolean areAllRolesFilled() {
-//		int numSpecialists;
-//		int pop = settlement.getNumCitizens();
-//		if (pop > RoleType.SEVEN)
-//			return false;
-//	}
 	
 	/**
 	 * Gets the role availability map
@@ -170,7 +150,7 @@ public class ChainOfCommand implements Serializable {
 			int popSize = settlement.getNumCitizens();
 
 			if (popSize >= POPULATION_WITH_MAYOR) {
-				if (RoleType.isChief(key)) {
+				if (key.isChief()) {
 					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
@@ -181,18 +161,16 @@ public class ChainOfCommand implements Serializable {
 			}
 
 			else if (popSize >= POPULATION_WITH_CHIEFS) {
-				if (RoleType.isChief(key)) {
+				if (key.isChief()) {
 					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
 					electCommanders(pop);
 				}
-
 			}
 			
 			else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
-				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
+				if (key.isChief()) {
 					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
@@ -220,80 +198,6 @@ public class ChainOfCommand implements Serializable {
 			value = roleRegistry.get(key);
 		return value;
 	}
-
-//	/**
-//	 * Sets this settlement to have 3 divisions
-//	 */
-//	public void set3Divisions(boolean value) {
-//		has3Divisions = value;
-//	}
-//
-//	/**
-//	 * Sets this settlement to have 7 divisions
-//	 */
-//	public void set7Divisions(boolean value) {
-//		has7Divisions = value;
-//	}
-
-//	/**
-//	 * Checks if all the roleTypes in a settlement have been filled
-//	 * 
-//	 * @param minimum
-//	 */
-//	public boolean metMinimiumFilled(int minimum) {
-//		boolean result = false;
-//		if (has3Divisions) {
-//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum)
-//				result = true;
-//		} else if (has7Divisions) {
-//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.MISSION_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.AGRICULTURE_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= minimum
-//					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= minimum)
-//				result = true;
-//		}
-//		return result;
-//	}
-
-//	/**
-//	 * Checks if all the roleTypes in a settlement have been filled
-//	 * 
-//	 * @param minimum
-//	 */
-//	public RoleType getMissingSpecialistRole(int minimum) {
-//		if (has3Divisions) {
-//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
-//				return RoleType.SAFETY_SPECIALIST;
-//			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
-//				return RoleType.ENGINEERING_SPECIALIST;
-//			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
-//				return RoleType.RESOURCE_SPECIALIST;
-//		}
-//
-//		else if (has7Divisions) {
-//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
-//				return RoleType.SAFETY_SPECIALIST;
-//			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
-//				return RoleType.ENGINEERING_SPECIALIST;
-//			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
-//				return RoleType.RESOURCE_SPECIALIST;
-//			else if (getNumFilled(RoleType.MISSION_SPECIALIST) < minimum)
-//				return RoleType.MISSION_SPECIALIST;
-//			else if (getNumFilled(RoleType.AGRICULTURE_SPECIALIST) < minimum)
-//				return RoleType.AGRICULTURE_SPECIALIST;
-//			else if (getNumFilled(RoleType.SCIENCE_SPECIALIST) < minimum)
-//				return RoleType.SCIENCE_SPECIALIST;
-//			else if (getNumFilled(RoleType.LOGISTIC_SPECIALIST) < minimum)
-//				return RoleType.LOGISTIC_SPECIALIST;
-//		}
-//
-//		return null;
-//	}
 
 	/**
 	 * Elect the commanders
@@ -382,7 +286,7 @@ public class ChainOfCommand implements Serializable {
 				}
 			}
 		}
-		// TODO: look at other attributes and/or skills when comparing
+		// Note: look at other attributes and/or skills when comparing
 		// individuals
 
 		// Check if this settlement is the designated settlement for 
@@ -401,16 +305,11 @@ public class ChainOfCommand implements Serializable {
 		}
 
 		else {
-			cc.setRole(RoleType.COMMANDER);
-			
-//			RoleUtil.setNewRole(cc, RoleType.COMMANDER);	
+			cc.setRole(RoleType.COMMANDER);	
 		}
 
-		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-			
+		if (pop >= POPULATION_WITH_SUB_COMMANDER) {		
 			cv.setRole(RoleType.SUB_COMMANDER);
-			
-//			RoleUtil.setNewRole(cv, RoleType.SUB_COMMANDER);
 		}
 	}
 	
@@ -485,8 +384,7 @@ public class ChainOfCommand implements Serializable {
 		}
 			
 		while (plist.size() > 0) {
-			List<RoleType> roleList = new ArrayList<>(
-							Arrays.asList(RoleUtil.SPECIALISTS));
+			List<RoleType> roleList = new ArrayList<>(RoleUtil.getSpecialists());
 			// Randomly reorient the order of roleList so that the 
 			// roles to go in different order each time 
 			Collections.shuffle(roleList);
@@ -531,23 +429,25 @@ public class ChainOfCommand implements Serializable {
 	private void establishChiefs() {
 
 		int popSize = settlement.getNumCitizens();
-		RoleType [] chiefs = RoleUtil.CHIEFS;
-		int numChiefs = chiefs.length;
+		boolean electChiefs = false;
 				
 		if (popSize >= POPULATION_WITH_MAYOR) {
-			// Elect chiefs
-			for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
-				if (i < numChiefs && getNumFilled(chiefs[i]) == 0)
-					electChief(chiefs[i]);
-			}
+			electChiefs = true;
 		}
 
 		else if (popSize >= POPULATION_WITH_COMMANDER) {
 			if (popSize >= POPULATION_WITH_CHIEFS) {
-				// Elect chiefs
-				for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
-					if (i < numChiefs && getNumFilled(chiefs[i]) == 0)
-						electChief(chiefs[i]);
+				electChiefs = true;
+			}
+		}
+		
+		if (electChiefs) {
+			// Elect chiefs
+			int i = 0;
+			int maxChiefs = popSize - POPULATION_WITH_CHIEFS + 1;
+			for(RoleType rt : RoleType.values()) {
+				if (rt.isChief() && (i < maxChiefs)) {
+					electChief(rt);
 				}
 			}
 		}
@@ -594,9 +494,7 @@ public class ChainOfCommand implements Serializable {
 		}
 
 		if (mayorCandidate != null) {
-			mayorCandidate.setRole(RoleType.MAYOR);
-			
-//			RoleUtil.setNewRole(mayorCandidate, RoleType.MAYOR);		
+			mayorCandidate.setRole(RoleType.MAYOR);	
 		}
 	}
 
@@ -609,64 +507,81 @@ public class ChainOfCommand implements Serializable {
 	private void electChief(RoleType role) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
-		RoleType specialty = null;
-		Person winner = null;
-		int c_skills = 0;
-		int c_combined = 0;
-
-		SkillType skill_1 = null;
-		SkillType skill_2 = null;
-		SkillType skill_3 = null;
-		SkillType skill_4 = null;
+		if (!role.isChief()) {
+			return;
+		}
 		
-		if (role == RoleType.CHIEF_OF_AGRICULTURE) {
-			skill_1 = SkillType.BOTANY;
-			skill_2 = SkillType.BIOLOGY;
-			skill_3 = SkillType.CHEMISTRY;
-			skill_4 = SkillType.TRADING;
-			specialty = RoleType.AGRICULTURE_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_COMPUTING) {
-			skill_1 = SkillType.MATERIALS_SCIENCE;
-			skill_2 = SkillType.MATHEMATICS;
-			skill_3 = SkillType.PHYSICS;
-			skill_4 = SkillType.MECHANICS;
-			specialty = RoleType.COMPUTING_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_ENGINEERING) {
-			skill_1 = SkillType.MATERIALS_SCIENCE;
-			skill_2 = SkillType.CONSTRUCTION;
-			skill_3 = SkillType.PHYSICS;
-			skill_4 = SkillType.MECHANICS;
-			specialty = RoleType.ENGINEERING_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
-			skill_1 = SkillType.PILOTING;
-			skill_2 = SkillType.METEOROLOGY;
-			skill_3 = SkillType.MECHANICS;
-			skill_4 = SkillType.MATHEMATICS;
-			specialty = RoleType.LOGISTIC_SPECIALIST;			
-		} else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
-			skill_1 = SkillType.MATHEMATICS;
-			skill_2 = SkillType.PILOTING;
-			skill_3 = SkillType.MANAGEMENT;
-			skill_4 = SkillType.EVA_OPERATIONS;
-			specialty = RoleType.MISSION_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
-			skill_1 = SkillType.EVA_OPERATIONS;
-			skill_2 = SkillType.MEDICINE;
-			skill_3 = SkillType.COOKING;
-			skill_4 = SkillType.CONSTRUCTION;
-			specialty = RoleType.SAFETY_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_SCIENCE) {
-			skill_1 = SkillType.AREOLOGY;
-			skill_2 = SkillType.CHEMISTRY;
-			skill_3 = SkillType.PHYSICS;
-			skill_4 = SkillType.BIOLOGY;
-			specialty = RoleType.SCIENCE_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-			skill_1 = SkillType.TRADING;
-			skill_2 = SkillType.MATHEMATICS;
-			skill_3 = SkillType.BOTANY;
-			skill_4 = SkillType.COOKING;
-			specialty = RoleType.RESOURCE_SPECIALIST;
+		RoleType specialty = RoleUtil.getChiefSpeciality(role);
+		Person winner = null;
+		int cSkills = 0;
+		int cCombined = 0;
+
+		List<SkillType> requiredSkills = null;
+		switch(role) {
+		case CHIEF_OF_AGRICULTURE:
+			requiredSkills = List.of(SkillType.BOTANY,
+									SkillType.BIOLOGY,
+									SkillType.CHEMISTRY,
+									SkillType.COOKING,
+									SkillType.TRADING);
+			break;
+			
+		case CHIEF_OF_COMPUTING:
+			requiredSkills = List.of(SkillType.COMPUTING,
+									SkillType.MATHEMATICS,
+									SkillType.PHYSICS,
+									SkillType.ASTRONOMY);
+			break;
+			
+		case CHIEF_OF_ENGINEERING:
+			requiredSkills = List.of(SkillType.MATERIALS_SCIENCE,
+									SkillType.COMPUTING,
+									SkillType.PHYSICS,
+									SkillType.MECHANICS,
+									SkillType.CONSTRUCTION);
+			break;
+			
+		case CHIEF_OF_LOGISTICS_N_OPERATIONS:
+			requiredSkills = List.of(SkillType.PILOTING,
+									SkillType.METEOROLOGY,
+									SkillType.MECHANICS,
+									SkillType.MATHEMATICS,
+									SkillType.COMPUTING);
+			break;
+			
+		case CHIEF_OF_MISSION_PLANNING:
+			requiredSkills = List.of(SkillType.MATHEMATICS,
+									SkillType.PILOTING,
+									SkillType.MANAGEMENT,
+									SkillType.EVA_OPERATIONS,
+									SkillType.COMPUTING);
+			break;
+			
+		case CHIEF_OF_SAFETY_N_HEALTH:
+			requiredSkills = List.of(SkillType.EVA_OPERATIONS,
+									SkillType.MEDICINE,
+									SkillType.CONSTRUCTION,
+									SkillType.BIOLOGY);
+			break;
+
+		case CHIEF_OF_SCIENCE:
+			requiredSkills = List.of(SkillType.AREOLOGY,
+									SkillType.CHEMISTRY,
+									SkillType.PHYSICS,
+									SkillType.BIOLOGY,
+									SkillType.MATHEMATICS,
+									SkillType.COMPUTING);
+			break;
+
+		case CHIEF_OF_SUPPLY_N_RESOURCES:
+			requiredSkills = List.of(SkillType.TRADING,
+									SkillType.MATHEMATICS,
+									SkillType.MANAGEMENT,
+									SkillType.COOKING);
+			break;
+			
+		default:
+			throw new IllegalStateException("Can not process Chief " + role);
 		}
 
 		// compare their scores
@@ -674,42 +589,32 @@ public class ChainOfCommand implements Serializable {
 			SkillManager skillMgr = p.getSkillManager();
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			if (p.getRole().getType() == specialty) {
-				// && (p.getRole().getType() != RoleType.COMMANDER)
-				// && (p.getRole().getType() != RoleType.SUB_COMMANDER)) {
 
-				int p_skills = 6 * skillMgr.getEffectiveSkillLevel(skill_1)
-						+ 5 * skillMgr.getEffectiveSkillLevel(skill_2) + 4 * skillMgr.getEffectiveSkillLevel(skill_3)
-						+ 3 * skillMgr.getEffectiveSkillLevel(skill_4);
+				// Calculate the skill with a decreasing importance
+				int modifier = 5 + requiredSkills.size() - 1;
+				int pSkills = 0;
+				for (SkillType skillType : requiredSkills) {
+					pSkills += (modifier * skillMgr.getEffectiveSkillLevel(skillType));
+					modifier--;
+				}
 
-				int p_combined = mgr.getAttribute(NaturalAttributeType.LEADERSHIP)
+				int pCombined = mgr.getAttribute(NaturalAttributeType.LEADERSHIP)
 						+ mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
 						+ skillMgr.getEffectiveSkillLevel(SkillType.MANAGEMENT);
 				// if this person p has a higher experience score than the
 				// previous cc
-				if (p_skills > c_skills) {
-					c_skills = p_skills;
+				// or experience score match and the combined is higher 
+				if ((pSkills > cSkills)
+						|| ((pSkills == cSkills) && (pCombined > cCombined))) {
+					cSkills = pSkills;
 					winner = p;
-					c_combined = p_combined;
-				}
-				// if this person p has the same experience score as the
-				// previous chief
-				else if (p_skills == c_skills) {
-					// if this person p has a higher combined score in those 4
-					// categories than the previous chief
-					if (p_combined > c_combined) {
-						// this person becomes the chief
-						c_skills = p_skills;
-						winner = p;
-						c_combined = p_combined;
-					}
+					cCombined = pCombined;
 				}
 			}
 		}
 
 		if (winner != null) {
 			winner.setRole(role);
-		
-//			RoleUtil.setNewRole(winner, role);
 		}
 	}
 

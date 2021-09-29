@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JobUtil.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -68,6 +68,7 @@ public final class JobUtil {
 		
 		jobs.add(new Chef());
 		jobs.add(new Chemist());
+		jobs.add(new ComputerScientist());
 		jobs.add(new Doctor());
 		jobs.add(new Engineer());
 		jobs.add(new Mathematician());
@@ -279,7 +280,6 @@ public final class JobUtil {
 	public static double getJobProspect(Unit unit, JobType job, Settlement settlement, boolean isHomeSettlement) {
 		Person person = null;
 		person = (Person) unit;
-
 
 		Job jobSpec = jobSpecs.get(job);
 		double jobCapability = jobSpec.getCapability(person);

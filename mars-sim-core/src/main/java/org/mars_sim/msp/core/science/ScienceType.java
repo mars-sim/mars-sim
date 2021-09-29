@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScienceType.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-09-27
  * @author stpa
  */
 
@@ -23,50 +23,55 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 public enum ScienceType {
 	// the actual enum value is followed by data associated to the value.
 	
-	/** 1. Environmental science of mars. */
+	/** Environmental science of Mars. */
 	AREOLOGY( 
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
 			SkillType.AREOLOGY, JobType.AREOLOGIST),
 
-	/** 2. Keeping track of heavenly bodies. */
+	/** Keeping track of heavenly bodies. */
 	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
 			SkillType.ASTRONOMY, JobType.ASTRONOMER),
 
-	/** 3. Concerned with the processes of life from micro to macro scale. */
+	/** Concerned with the processes of life from micro to macro scale. */
 	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
 			SkillType.BIOLOGY, JobType.BIOLOGIST),
 
-	/** 4. How to grow plants. */
+	/** How to grow plants. */
 	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
 			SkillType.BOTANY, JobType.BOTANIST),
 
-	/** 5. How to mix elements and compounds. */
+	/** How to mix elements and compounds. */
 	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
 			SkillType.CHEMISTRY, JobType.CHEMIST),
 
-	/** 6. How to make stuff. */
+	/** Provides fundamental computing skill. */
+	COMPUTING (Msg.getString("ScienceType.computing"), //$NON-NLS-1$
+			SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
+	
+	/** How to make stuff. */
 	ENGINEERING(Msg.getString("ScienceType.engineering"), //$NON-NLS-1$
 			SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
 
-	/** 7. Provides fundamental basics for all sciences. */
+	/** Provides fundamental basics for all sciences. */
 	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
 			SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
 
-	/** 8. How to tell sick from healthy. */
+	/** How to tell sick from healthy. */
 	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
 			SkillType.MEDICINE, JobType.DOCTOR),
 
-	/** 9. Weather forecasting, climate modeling. */
+	/** Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
 			SkillType.METEOROLOGY, JobType.METEOROLOGIST),
 	
-	/** 10. Laws of nature. Study of forces and mechanics. */
+	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
 			SkillType.PHYSICS, JobType.PHYSICIST),
 
-	/** 11. The Study of the mind and behavior.  */
+	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
 			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
+	
 	
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
@@ -110,6 +115,7 @@ public enum ScienceType {
 		Science biology = collabSciences.get(ScienceType.BIOLOGY);
 		Science botany = collabSciences.get(ScienceType.BOTANY);
 		Science chemistry = collabSciences.get(ScienceType.CHEMISTRY);
+		Science computing = collabSciences.get(ScienceType.COMPUTING);
 		Science engineering = collabSciences.get(ScienceType.ENGINEERING);
 		Science mathematics = collabSciences.get(ScienceType.MATHEMATICS);
 		Science medicine = collabSciences.get(ScienceType.MEDICINE);
@@ -122,6 +128,7 @@ public enum ScienceType {
 		biology.setCollaborativeSciences(new Science[]     { botany, chemistry, mathematics, medicine });
 		botany.setCollaborativeSciences(new Science[]      { biology, chemistry, medicine });
 		chemistry.setCollaborativeSciences(new Science[]   { biology, mathematics, medicine });
+		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
 		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics });
 		medicine.setCollaborativeSciences(new Science[]    { biology, botany, chemistry, mathematics });
 		meteorology.setCollaborativeSciences(new Science[] { chemistry, mathematics, physics });

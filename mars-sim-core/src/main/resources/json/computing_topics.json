@@ -1,0 +1,21 @@
+{
+	"subject": "Computing",
+	"topics": [
+			{"topic": "Autopiloting Surface Vehicles"},				
+			{"topic": "Body Telemetrics"},
+			{"topic": "Bacteria Mutation Modeling"},
+			{"topic": "Drone Delivery Autorouting"},
+			{"topic": "Genetic Algorithm of Martian Satellites Motion"},			
+			{"topic": "Informatics for Martian Society"},
+			{"topic": "Martian Climate Modeling"},
+			{"topic": "Modeling of Local Gravitational Effects"},
+			{"topic": "Modeling of Surface Radiation"},
+			{"topic": "Modeling of In-situ resource processing"},
+			{"topic": "Parts Reliability Modeling"}, 
+			{"topic": "Quantum Communication Network"},
+			{"topic": "Satellites Telemetry Processing"},			
+			{"topic": "Simulation and Modeling of Martian Weather"}, 			
+			{"topic": "Simulation of Microgrid Resiliency"},			
+			{"topic": "Social Simulation"}
+	]
+}
