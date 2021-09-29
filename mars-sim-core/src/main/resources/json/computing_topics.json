@@ -3,7 +3,7 @@
 	"topics": [
 			{"topic": "Autopiloting Surface Vehicles"},				
 			{"topic": "Body Telemetrics"},
-			{"topic": "Bacteria Mutation Modeling"}
+			{"topic": "Bacteria Mutation Modeling"},
 			{"topic": "Drone Delivery Autorouting"},
 			{"topic": "Genetic Algorithm of Martian Satellites Motion"},			
 			{"topic": "Informatics for Martian Society"},
@@ -11,7 +11,7 @@
 			{"topic": "Modeling of Local Gravitational Effects"},
 			{"topic": "Modeling of Surface Radiation"},
 			{"topic": "Modeling of In-situ resource processing"},
-			{"topic": "Parts Reliability Modeling"},	 
+			{"topic": "Parts Reliability Modeling"}, 
 			{"topic": "Quantum Communication Network"},
 			{"topic": "Satellites Telemetry Processing"},			
 			{"topic": "Simulation and Modeling of Martian Weather"}, 			

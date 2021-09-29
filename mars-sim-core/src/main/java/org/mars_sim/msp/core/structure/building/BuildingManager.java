@@ -833,7 +833,12 @@ public class BuildingManager implements Serializable {
 		}
 		
 		for (Building b : buildings) {
-			b.timePassing(pulse);
+			try {
+				b.timePassing(pulse);
+			}
+			catch (RuntimeException rte) {
+				logger.severe(b, "Problem applying pulse to Building", rte);
+			}
 		}
 		return true;
 	}

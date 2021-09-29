@@ -570,14 +570,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (pop > ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
 			roleNames.add(RoleType.SUB_COMMANDER.getName());
-			for (RoleType r : RoleUtil.SPECIALISTS) {
+			for (RoleType r : RoleUtil.getSpecialists()) {
 				roleNames.add(r.getName());
 			}
 		}
 		
 		else if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
-			for (RoleType r : RoleUtil.SPECIALISTS) {
+			for (RoleType r : RoleUtil.getSpecialists()) {
 				roleNames.add(r.getName());
 			}
 		}
@@ -753,13 +753,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			String roleStr = person.getRole().getType().getName();
 			
 			if (!selected.equalsIgnoreCase(roleStr)) {
-				if (RoleUtil.isLeadershipRole(RoleType.getType(selected))) {
+				RoleType rt = RoleType.getType(selected);
+				if (rt.isChief() || rt.isCouncil()) {
 					int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
 							"Are you sure you want to change the role to " + selected + " ?");  
 					if (box == JOptionPane.YES_OPTION) { 
 	//					roleComboBox.setSelectedItem(selected);
 						roleCache = selected;
-						person.getRole().changeRoleType(RoleType.getType(selected));
+						person.getRole().changeRoleType(rt);
 	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 					}
 					else {
@@ -773,7 +774,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (box == JOptionPane.YES_OPTION) { 
 	//					roleComboBox.setSelectedItem(selected);
 						roleCache = selected;
-						person.getRole().changeRoleType(RoleType.getType(selected));
+						person.getRole().changeRoleType(rt);
 	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 					}
 					else {

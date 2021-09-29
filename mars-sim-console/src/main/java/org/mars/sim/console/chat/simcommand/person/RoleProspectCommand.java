@@ -7,7 +7,7 @@
 
 package org.mars.sim.console.chat.simcommand.person;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 
-		List<RoleType> list = Arrays.asList(RoleUtil.SPECIALISTS);
+		List<RoleType> list = new ArrayList<>(RoleUtil.getSpecialists());
 		Collections.sort(list);
 
 		response.appendTableHeading("Role", CommandHelper.ROLE_WIDTH, "Job Score", "Training Score", "Total");

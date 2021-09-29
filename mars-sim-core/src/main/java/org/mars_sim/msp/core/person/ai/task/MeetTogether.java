@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -90,16 +91,13 @@ implements Serializable {
             Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
             RoleType roleType = person.getRole().getType();
             
-            if (roleType != null && roleType == RoleType.PRESIDENT
-                	|| roleType == RoleType.MAYOR
-            		|| roleType == RoleType.COMMANDER
-            		|| roleType == RoleType.SUB_COMMANDER) {
+            if (roleType != null && roleType.isCouncil()) {
             	
                 for (Person p : ppl) {
                     RoleType type = p.getRole().getType();
 
                     if (type != null 
-                    	&& RoleType.isChief(roleType)) {
+                    	&& roleType.isChief()) {
      
                     	if (p.getBuildingLocation() != null)
                     		// if that person is inside the settlement and within a building
@@ -117,7 +115,7 @@ implements Serializable {
                 
             }
             
-            else if (roleType != null && RoleType.isChief(roleType)) {
+            else if (roleType != null && roleType.isChief()) {
             	pool = getPool(ppl, roleType);
             }
       	
@@ -270,81 +268,18 @@ implements Serializable {
      * @return a set of persons
      */
     public Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
+    	RoleType candidateType = RoleUtil.getChiefSpeciality(roleType);
+ 
         Set<Person> pool = new HashSet<Person>();
-    	
-    	if (roleType == RoleType.CHIEF_OF_AGRICULTURE) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.AGRICULTURE_SPECIALIST) {
+        if (candidateType != null) {
+	        for (Person p : ppl) {
+	        	if (p.getRole().getType() == candidateType) {
 	            	if (p.getBuildingLocation() != null)
 	            		// if that person is inside the settlement and within a building
 	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_COMPUTING) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.COMPUTING_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_ENGINEERING) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.ENGINEERING_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }		
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_MISSION_PLANNING) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.MISSION_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.SAFETY_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_SCIENCE) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.SCIENCE_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-    	else if (roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-            for (Person p : ppl) {
-            	if (p.getRole().getType() == RoleType.RESOURCE_SPECIALIST) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-            	}
-            }	
-    	}
-
+	        	}
+	        }	
+        }
     	return pool;
     }
 }

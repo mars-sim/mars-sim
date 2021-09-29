@@ -78,7 +78,7 @@ public class Role implements Serializable {
 		if (newType != oldType) {
 			// Note : if this is a leadership role, only one person should occupy this position 
 			List<Person> predecessors = null;
-			if (RoleUtil.isLeadershipRole(newType)) {
+			if (newType.isChief() || newType.isCouncil()) {
 				// Find a list of predecessors who are occupying this role
 				predecessors = person.getAssociatedSettlement().getChainOfCommand().findPeopleWithRole(newType);
 				if (!predecessors.isEmpty()) {
