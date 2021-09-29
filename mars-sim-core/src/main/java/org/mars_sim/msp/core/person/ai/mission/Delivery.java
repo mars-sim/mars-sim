@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateDelivery;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -362,13 +363,27 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDeliveryNegotiatingPhase(MissionMember member) {
 		if (doNegotiation) {
-//			if (member == getMissionDelivery()) {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
 						profit = estimateDeliveryProfit(buyLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
+					}
+					else {
+						// Check if the caller should be doing negotiation
+						Worker dealer = negotiationTask.getWorker();
+						if (dealer == null) {
+							// Task has not be reinit after a restore
+							logger.warning(member, "Reinit the Negotiation Task");
+							negotiationTask.reinit();
+							dealer = negotiationTask.getWorker();
+						}
+						if (dealer.equals(member)) {
+							// It's the caller so restart and it will be a Person
+							logger.info(member, "Resuming negotiation for " + getTypeID());
+							assignTask((Person)member, negotiationTask);
+						}
 					}
 				} 
 				
@@ -409,7 +424,6 @@ public class Delivery extends DroneMission implements Serializable {
 						}
 					}
 				}
-//			}
 		} else {
 			setPhaseEnded(true);
 		}
