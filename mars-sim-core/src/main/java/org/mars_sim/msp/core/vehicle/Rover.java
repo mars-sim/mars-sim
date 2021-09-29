@@ -844,11 +844,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	public AmountResource getFuelTypeAR() {
-		try {
-			return ResourceUtil.methaneAR;
-		} catch (Exception e) {
-			return null;
-		}
+		return ResourceUtil.methaneAR;
 	}
 
 	/**

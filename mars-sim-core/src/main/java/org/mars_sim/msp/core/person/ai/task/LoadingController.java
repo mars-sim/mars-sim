@@ -489,7 +489,7 @@ public class LoadingController implements Serializable {
 	/**
 	 * This is called in the background from the Drone/Rover time pulse method 
 	 * to load resources. But why is it different to the loadResources above,
-	 * it uses a different defintion of resources needed
+	 * it uses a different definition of resources needed
 	 * @param amountLoading
 	 */
 	public void backgroundLoad(double amountLoading) {
