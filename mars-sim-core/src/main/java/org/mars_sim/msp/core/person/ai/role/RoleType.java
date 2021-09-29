@@ -75,14 +75,14 @@ public enum RoleType {
 	}
 	
 	public static boolean isChief(RoleType roleType) {
-		if (roleType.getName().toLowerCase().contains("chief"))
+		if (roleType.name.toLowerCase().contains("chief"))
 			return true;
 		
 		return false;
 	}
 	
 	public static boolean isSpecialist(RoleType roleType) {
-		if (roleType.getName().toLowerCase().contains("specialist"))
+		if (roleType.name.toLowerCase().contains("specialist"))
 			return true;
 		
 		return false;

@@ -1736,23 +1736,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return airlock or null if none available.
 	 */
 	public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
-		Airlock result = null;
 		Building currentBuilding = BuildingManager.getBuilding(person);
 
 		if (currentBuilding == null) {
-			// throw new IllegalStateException(person.getName() + " is not currently in a
-			// building."); //throw new IllegalStateException(robot.getName() + " is not
-			// currently in a building.");
-			// this major bug is due to getBuilding(robot) above in BuildingManager
-			// what if a person is out there in ERV building for maintenance. ERV building
-			// has no LifeSupport function. currentBuilding will be null
+			// Note: What if a person is out there in ERV building for maintenance ?
+			// ERV building has no LifeSupport function. currentBuilding will be null
 			logger.log(person, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
-		result = getAirlock(currentBuilding, xLocation, yLocation);
-
-		return result;
+		return getAirlock(currentBuilding, xLocation, yLocation);
 	}
 
 	/**
@@ -1764,28 +1757,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return
 	 */
 	public Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
-		Airlock result = null;
 		Building currentBuilding = BuildingManager.getBuilding(robot);
 
 		if (currentBuilding == null) {
-			// throw new IllegalStateException(robot.getName() + " is not currently in a
-			// building.");
-			// this major bug is due to getBuilding(robot) above in BuildingManager
-			// need to refine the concept of where a robot can go. They are thought to need
-			// RoboticStation function to "survive",
-			// much like a person who needs LifeSupport function
+			// Note: need to refine the concept of where a robot can go. They are thought to need
+			// RoboticStation function to "survive", much like a person who needs LifeSupport function
 			logger.log(robot, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
-		result = getAirlock(currentBuilding, xLocation, yLocation);
-
-		return result;
+		return getAirlock(currentBuilding, xLocation, yLocation);
 	}
 
 	
 	/**
-	 * Gets an airlock for an EVA egress, preferably an pressurized airlock
+	 * Gets an airlock for an EVA egress, preferably an pressurized airlock. 
+	 * Consider if the chambers are full and if the reservation is full.
 	 * 
 	 * @param currentBuilding
 	 * @param xLocation
@@ -1827,10 +1814,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return null;
 		}
 		
+
 		// Search the closest of the buildings
 		double leastDistance = Double.MAX_VALUE;
 		for(Building building : selectedPool) {
-			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+			
+			// Select airlock that fulfill either conditions: 
+			// 1. Chambers are NOT full 
+			// 2. Chambers are full but the reservation is NOT full			
+			if ((!chamberFull || (chamberFull && !reservationFull))
+				&& buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), xLocation,
 						yLocation);

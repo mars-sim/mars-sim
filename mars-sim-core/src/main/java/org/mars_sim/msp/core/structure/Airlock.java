@@ -59,6 +59,9 @@ public abstract class Airlock implements Serializable {
 	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 4;
 	
+	/** The maximum number of reservations that can be made for an airlock. */
+	public static final int MAX_RESERVED = 4;
+	
 	/** 
 	 * Available Airlock States
 	 */
@@ -170,7 +173,7 @@ public abstract class Airlock implements Serializable {
 	public boolean addReservation(int personInt) {
 		if (!reservationMap.containsKey(personInt)) {
 			// Test if the reservation map already has 4 people
-			if (reservationMap.size() <= 4) {
+			if (reservationMap.size() <= MAX_RESERVED) {
 				// Add this person to the lookup map
 				addPersonID(personInt);
 				int msol = marsClock.getMillisolInt();
@@ -199,6 +202,13 @@ public abstract class Airlock implements Serializable {
 
 	public Set<Integer> getReserved() {
 		return reservationMap.keySet();
+	}
+	
+	public boolean isReservationFull() {
+		if (reservationMap.size() > MAX_RESERVED - 1) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**
