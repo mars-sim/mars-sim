@@ -7,42 +7,41 @@
 
 package org.mars_sim.msp.core.person.ai.role;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.mars_sim.msp.core.Msg;
 
 public enum RoleType {
 
-	AGRICULTURE_SPECIALIST				(Msg.getString("RoleType.agricultureSpecialist")), //$NON-NLS-1$
-	ENGINEERING_SPECIALIST				(Msg.getString("RoleType.engineeringSpecialist")), //$NON-NLS-1$
-	MISSION_SPECIALIST					(Msg.getString("RoleType.missionSpecialist")), //$NON-NLS-1$
-	LOGISTIC_SPECIALIST					(Msg.getString("RoleType.logisticSpecialist")), //$NON-NLS-1$
-	RESOURCE_SPECIALIST					(Msg.getString("RoleType.resourceSpecialist")), //$NON-NLS-1$
-	SAFETY_SPECIALIST					(Msg.getString("RoleType.safetySpecialist")), //$NON-NLS-1$
-	SCIENCE_SPECIALIST					(Msg.getString("RoleType.scienceSpecialist")), //$NON-NLS-1$
-	COMPUTING_SPECIALIST				(Msg.getString("RoleType.computingSpecialist")), //$NON-NLS-1$
+	AGRICULTURE_SPECIALIST				(RoleLevel.SPECIALIST),
+	ENGINEERING_SPECIALIST				(RoleLevel.SPECIALIST),
+	MISSION_SPECIALIST					(RoleLevel.SPECIALIST),
+	LOGISTIC_SPECIALIST					(RoleLevel.SPECIALIST),
+	RESOURCE_SPECIALIST					(RoleLevel.SPECIALIST),
+	SAFETY_SPECIALIST					(RoleLevel.SPECIALIST),
+	SCIENCE_SPECIALIST					(RoleLevel.SPECIALIST),
+	COMPUTING_SPECIALIST				(RoleLevel.SPECIALIST),
 	
-	CHIEF_OF_AGRICULTURE				(Msg.getString("RoleType.chiefOfAgriculture")), //$NON-NLS-1$
-	CHIEF_OF_COMPUTING					(Msg.getString("RoleType.chiefOfComputing")), //$NON-NLS-1$
-	CHIEF_OF_ENGINEERING				(Msg.getString("RoleType.chiefOfEngineering")), //$NON-NLS-1$
-	CHIEF_OF_MISSION_PLANNING			(Msg.getString("RoleType.chiefOfMissionPlanning")), //$NON-NLS-1$
-	CHIEF_OF_LOGISTICS_N_OPERATIONS		(Msg.getString("RoleType.chiefOfLogistics")), //$NON-NLS-1$
-	CHIEF_OF_SAFETY_N_HEALTH			(Msg.getString("RoleType.chiefOfSafetyHealth")), //$NON-NLS-1$
-	CHIEF_OF_SCIENCE					(Msg.getString("RoleType.chiefOfScience")), //$NON-NLS-1$
-	CHIEF_OF_SUPPLY_N_RESOURCES			(Msg.getString("RoleType.chiefOfSupply")), //$NON-NLS-1$
+	CHIEF_OF_AGRICULTURE				(RoleLevel.CHIEF),
+	CHIEF_OF_COMPUTING					(RoleLevel.CHIEF),
+	CHIEF_OF_ENGINEERING				(RoleLevel.CHIEF),
+	CHIEF_OF_MISSION_PLANNING			(RoleLevel.CHIEF),
+	CHIEF_OF_LOGISTICS_N_OPERATIONS		(RoleLevel.CHIEF),
+	CHIEF_OF_SAFETY_N_HEALTH			(RoleLevel.CHIEF),
+	CHIEF_OF_SCIENCE					(RoleLevel.CHIEF),
+	CHIEF_OF_SUPPLY_N_RESOURCES			(RoleLevel.CHIEF),
 	
-	PRESIDENT							(Msg.getString("RoleType.president")), //$NON-NLS-1$
-	MAYOR								(Msg.getString("RoleType.mayor")), //$NON-NLS-1$
-	COMMANDER							(Msg.getString("RoleType.commander")), //$NON-NLS-1$
-	SUB_COMMANDER						(Msg.getString("RoleType.subCommander")), //$NON-NLS-1$
+	PRESIDENT							(RoleLevel.COUNCIL),
+	MAYOR								(RoleLevel.COUNCIL),
+	COMMANDER							(RoleLevel.COUNCIL),
+	SUB_COMMANDER						(RoleLevel.COUNCIL)
 	;
 	
 	private String name;
+	private RoleLevel level;
 
 	/** hidden constructor. */
-	private RoleType(String name) {
-		this.name = name;
+	private RoleType(RoleLevel level) {
+		this.name = Msg.getString("RoleType." + name().toLowerCase());
+		this.level = level;
 	}
 
 	public final String getName() {
@@ -54,14 +53,7 @@ public enum RoleType {
 		return getName();
 	}
 	
-	/**
-	 * Returns a list of RoleType enum.
-	 */
-	public static List<RoleType> valuesList() {
-		return Arrays.asList(RoleType.values());
-	}
 
-	
 	public static RoleType getType(String name) {
 		if (name != null) {
 	    	for (RoleType r : RoleType.values()) {
@@ -74,17 +66,15 @@ public enum RoleType {
 		return null;
 	}
 	
-	public static boolean isChief(RoleType roleType) {
-		if (roleType.getName().toLowerCase().contains("chief"))
-			return true;
-		
-		return false;
+	public boolean isChief() {
+		return level == RoleLevel.CHIEF;
 	}
 	
-	public static boolean isSpecialist(RoleType roleType) {
-		if (roleType.getName().toLowerCase().contains("specialist"))
-			return true;
-		
-		return false;
+	public boolean isSpecialist() {
+		return level == RoleLevel.SPECIALIST;
+	}
+
+	public boolean isCouncil() {
+		return level == RoleLevel.COUNCIL;
 	}
 }

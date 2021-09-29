@@ -98,13 +98,12 @@ public class RecordActivityMeta extends MetaTask {
         	else if (roleType == RoleType.SUB_COMMANDER)
         		result -= 50D;
             
-	        else if (RoleType.isChief(roleType))
+	        else if (roleType.isChief())
             	result -= 10D;
         }
         
         if (result < 0) result = 0;
-		        
-        //System.out.println("result : " + result);
+		       
         return result;
     }
 }

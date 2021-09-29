@@ -53,12 +53,10 @@ public class MeetTogetherMeta extends MetaTask {
         
         if (person.isInSettlement() && roleType != null) {
 	
-	        if (roleType == RoleType.PRESIDENT
-	                	|| roleType == RoleType.MAYOR
-	            		|| roleType == RoleType.COMMANDER)
+	        if (roleType.isCouncil())
 	        	result += 50D;
 	
-	        else if (RoleType.isChief(roleType))
+	        else if (roleType.isChief())
 	        	result += 30D;
 	 
 	

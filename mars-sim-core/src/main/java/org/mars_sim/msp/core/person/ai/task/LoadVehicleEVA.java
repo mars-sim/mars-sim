@@ -95,7 +95,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         	return;
         }
 
-		vehicleMission = LoadVehicleGarage.getMissionNeedingLoading(person.getSettlement(),
+		vehicleMission = LoadVehicleGarage.getMissionNeedingLoading(settlement,
 																	false);
 		if (vehicleMission == null) {
         	if (person.isOutside())

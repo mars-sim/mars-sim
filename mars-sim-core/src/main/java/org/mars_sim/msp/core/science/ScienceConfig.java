@@ -107,8 +107,14 @@ public class ScienceConfig implements Serializable {
 	        jsonReader = Json.createReader(fis);
 	         
 	        // Get JsonObject from JsonReader
-	        jsonObject = jsonReader.readObject();
-	         
+	        try {
+	        	jsonObject = jsonReader.readObject();
+	        }  
+	        catch (RuntimeException rte) {
+	        	logger.severe("Problem parsing JSON " + fileName);
+	        	throw rte;
+	        }
+	        
 	        // Close IO resource and JsonReader
 	        jsonReader.close();
 	        try {
