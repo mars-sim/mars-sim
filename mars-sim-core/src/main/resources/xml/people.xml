@@ -149,8 +149,8 @@
 
 <people-configuration>
 	<person-attributes>
-		<!-- The base load-carrying capacity of a person in kg -->
-		<base-carrying-capacity value="60" />
+		<!-- The base load-carrying capacity of an adult person in kg. Will be modified by age and attribute of a person -->
+		<base-carrying-capacity value="30" />
 		<!-- The upper average height of a person in cm -->
 		<average-tall-height value="176.5" />
 		<!-- The lower average height of a person in cm -->

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleTest.java
- * @version 3.1.0 2017-01-21
+ * LoadVehicleTest
+ * @date 2021-09-29
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ import junit.framework.TestCase;
 public class LoadVehicleTest
 extends TestCase {
 
-	// Extra amount to add to resoruce to handle double arithmetic mismatch
+	// Extra amount to add to resouRce to handle double arithmetic mismatch
 	private static final double EXTRA_RESOURCE = 0.01D;
 	
 	private Settlement settlement = null;

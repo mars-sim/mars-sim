@@ -77,6 +77,7 @@ public abstract class Function implements Serializable, Temporal {
 		this.building = building;
 		
 		// load any activity hotspots
+		if (buildingConfig == null) System.out.println("buildingConfig is null");
 		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), confType);
 	}
 

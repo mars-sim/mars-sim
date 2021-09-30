@@ -183,7 +183,7 @@ extends TestCase {
 		unitManager.addUnit(suit);
 		suit.setContainerUnit(person);
 		
-		// TODO Shou;dn't the top container be the Settlement ?
+		// Note: Shouldn't the top container be the Settlement ?
 		testContainment(suit, person, person, LocationStateType.ON_PERSON_OR_ROBOT);
 	}
 }

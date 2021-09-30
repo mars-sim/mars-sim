@@ -937,6 +937,9 @@ public class BuildingManager implements Serializable {
 					.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 					.collect(Collectors.toList()));
 			
+			if (list.size() == 0)
+				return;
+			
 			Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
 
 			if (building != null) {
