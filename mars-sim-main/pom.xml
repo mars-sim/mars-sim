@@ -47,8 +47,9 @@
 		</dependency> -->
 	
 	</dependencies>
-	
+
 	<build>
+		<defaultGoal>clean package install</defaultGoal>
 		<plugins>				
 			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
 			<!-- https://www.mojohaus.org/exec-maven-plugin/ -->

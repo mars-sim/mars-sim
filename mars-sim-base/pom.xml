@@ -43,6 +43,6 @@
             <artifactId>fxgl-controllerinput</artifactId>
             <version>${fxgl.version}</version>
         </dependency>	
-         -->		
+         -->	      	
 	</dependencies>
 </project>

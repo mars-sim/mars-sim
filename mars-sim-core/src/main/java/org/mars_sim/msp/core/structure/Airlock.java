@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Airlock.java
- * @date 2021-09-25
+ * @date 2021-09-29
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +101,7 @@ public abstract class Airlock implements Serializable {
     private Set<Integer> awaitingOuterDoor;
 
 	/** The lookup map for occupants. */
-	private transient Map<Integer, Person> lookupPerson;
+//	private transient Map<Integer, Person> lookupPerson;
 
 	/** The occupant reservation map. */
 	private Map<Integer, Integer> reservationMap;
@@ -137,7 +136,7 @@ public abstract class Airlock implements Serializable {
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 		
-		lookupPerson = new HashMap<>();
+//		lookupPerson = new HashMap<>();
 		reservationMap = new HashMap<>();
 	}
 	
@@ -175,7 +174,7 @@ public abstract class Airlock implements Serializable {
 			// Test if the reservation map already has 4 people
 			if (reservationMap.size() <= MAX_RESERVED) {
 				// Add this person to the lookup map
-				addPersonID(personInt);
+//				addPersonID(personInt);
 				int msol = marsClock.getMillisolInt();
 				reservationMap.put(personInt, msol);
 				return true;
@@ -254,7 +253,7 @@ public abstract class Airlock implements Serializable {
 		// List can't tell if the method remove(Object o) should be used.
 
 		// Add the person's ID to the lookup map
-		addPersonID(person, id);
+//		addPersonID(person, id);
 
 		// If the airlock is not full
 		if (!occupantIDs.contains(id) && hasSpace()) {
@@ -615,7 +614,7 @@ public abstract class Airlock implements Serializable {
 			int evaLevel = -1;
 			for (Integer id : pool) {
 				Person p = 	getPersonByID(id);
-		    	addPersonID(p, id);
+//		    	addPersonID(p, id);
 				int level = p.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 				if (level > evaLevel) {
 					selected = p;
@@ -747,7 +746,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public boolean addAwaitingInnerDoor(Person p, Integer id) {
 		// Add the person's ID to the lookup map	
-		addPersonID(p, id);
+//		addPersonID(p, id);
 		
 		return addToZone(awaitingInnerDoor, id);
 	}
@@ -761,7 +760,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public boolean addAwaitingOuterDoor(Person p, Integer id) {		
 		// Add the person's ID to the lookup map
-		addPersonID(p, id);
+//		addPersonID(p, id);
 		
 		return addToZone(awaitingOuterDoor, id);
 	}
@@ -1120,70 +1119,67 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public Person getPersonByID(Integer id) {
-		if (lookupPerson == null) {
-			// Needed when loading from a saved sim since lookupPerson is transient
-			lookupPerson = new HashMap<>();
-			return null;
-		}
-		
-		if (lookupPerson.get(id) != null)
-			return lookupPerson.get(id);
-
-		if (this instanceof BuildingAirlock) {
-			return ((BuildingAirlock)this).getPerson(id);
+		Person p = unitManager.getPersonByID(id);
+		if (p != null) {
+			return p;
 		}
 		else {
-			return ((VehicleAirlock)this).getAssociatedPerson(id);
-		}
-	}
-	
-	/**
-	 * Add a person's ID to the lookup map
-	 * 	
-	 * @param p
-	 */
-	public void addPersonID(Person p, Integer id) {
-		if (lookupPerson == null)
-			// Needed when loading from a saved sim since lookupPerson is transient
-			lookupPerson = new HashMap<>();
-		if (p != null && !lookupPerson.containsKey(id))
-			lookupPerson.put(id, p);
-	}
-	
-	/**
-	 * Add a person's ID to the lookup map
-	 * 	
-	 * @param p
-	 */
-	public void addPersonID(int id) {
-		if (lookupPerson == null) {
-			// Needed when loading from a saved sim since lookupPerson is transient
-			lookupPerson = new HashMap<>();
-			
-			Person p = null;	
 			if (this instanceof BuildingAirlock) {
-				p = ((BuildingAirlock)this).getPerson(id);
+				return ((BuildingAirlock)this).getPerson(id);
 			}
 			else {
-				p = ((VehicleAirlock)this).getAssociatedPerson(id);
-			}
-
-			lookupPerson.put(id, p);
-		}
-		else {
-			if (!lookupPerson.containsKey(id)) {
-				Person p = null;
-				if (this instanceof BuildingAirlock) {
-					p = ((BuildingAirlock)this).getPerson(id);
-				}
-				else {
-					p = ((VehicleAirlock)this).getAssociatedPerson(id);
-				}
-				
-				lookupPerson.put(id, p);
+				return ((VehicleAirlock)this).getAssociatedPerson(id);
 			}
 		}
 	}
+	
+//	/**
+//	 * Add a person's ID to the lookup map
+//	 * 	
+//	 * @param p
+//	 */
+//	public void addPersonID(Person p, Integer id) {
+//		if (lookupPerson == null)
+//			// Needed when loading from a saved sim since lookupPerson is transient
+//			lookupPerson = new HashMap<>();
+//		if (p != null && !lookupPerson.containsKey(id))
+//			lookupPerson.put(id, p);
+//	}
+	
+//	/**
+//	 * Add a person's ID to the lookup map
+//	 * 	
+//	 * @param p
+//	 */
+//	public void addPersonID(int id) {
+//		if (lookupPerson == null) {
+//			// Needed when loading from a saved sim since lookupPerson is transient
+//			lookupPerson = new HashMap<>();
+//			
+//			Person p = null;	
+//			if (this instanceof BuildingAirlock) {
+//				p = ((BuildingAirlock)this).getPerson(id);
+//			}
+//			else {
+//				p = ((VehicleAirlock)this).getAssociatedPerson(id);
+//			}
+//
+//			lookupPerson.put(id, p);
+//		}
+//		else {
+//			if (!lookupPerson.containsKey(id)) {
+//				Person p = null;
+//				if (this instanceof BuildingAirlock) {
+//					p = ((BuildingAirlock)this).getPerson(id);
+//				}
+//				else {
+//					p = ((VehicleAirlock)this).getAssociatedPerson(id);
+//				}
+//				
+//				lookupPerson.put(id, p);
+//			}
+//		}
+//	}
 	
 	/**
 	 * Initializes instances
