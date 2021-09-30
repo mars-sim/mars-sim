@@ -22,12 +22,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,7 +32,6 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -100,6 +94,11 @@ public class Trade extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingMember);
 
+		// Problem setting up the mission
+		if (isDone()) {
+			return;
+		}
+		
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
@@ -481,30 +480,7 @@ public class Trade extends RoverMission implements Serializable {
 
 		// Unload rover if necessary.
 		boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
-		if (!roverUnloaded) {
-			if (member.isInSettlement()) {
-				// Random chance of having person unload (this allows person to do other things
-				// sometimes)
-				if (RandomUtil.lessThanRandPercent(50)) {
-					// TODO Refactor to allow robots.
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						if (isInAGarage()) {
-							assignTask(person, new UnloadVehicleGarage(person, getRover()));
-						} 
-						
-						else {
-							// Check if it is day time.
-							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
-								assignTask(person, new UnloadVehicleEVA(person, getRover()));
-							}
-						}
-					}
-
-					return;
-				}
-			}
-		} else {
+		if (roverUnloaded) {
 			setPhaseEnded(true);
 		}
 	}
@@ -522,33 +498,8 @@ public class Trade extends RoverMission implements Serializable {
 		}
 
 		if (!isDone() && !isVehicleLoaded()) {
-
 			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				if (member.isInSettlement()) {
-					// Random chance of having person load (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (isInAGarage()) {
-							// TODO Refactor.
-							if (member instanceof Person) {
-								Person person = (Person) member;
-								assignTask(person,
-										new LoadVehicleGarage(person, this));
-							}
-						} else {
-							if (member instanceof Person) {
-								Person person = (Person) member;
-								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
-									assignTask(person,
-											new LoadVehicleEVA(person, this));
-								}
-							}
-						}
-					}
-				}
-			} else {
+			if (!isVehicleLoadable()) {
 				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
@@ -1080,5 +1031,32 @@ public class Trade extends RoverMission implements Serializable {
 			equipmentNeededCache = result;
 			return result;
 		}
+	}
+	
+	/**
+	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
+	 * then it can be unloaded.
+	 */
+	@Override
+	public boolean isVehicleUnloadableHere(Settlement settlement) {
+		if (UNLOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleUnloadableHere(settlement);
+	}
+	
+	/**
+	 * Can the mission vehicle be loaded at a Settlement. Must be in
+	 * the LOAD_GOODS phase at the mission trading settlement.
+	 * @param settlement
+	 * @return
+	 */
+	public boolean isVehicleLoadableHere(Settlement settlement) {
+		if (LOAD_GOODS.equals(getPhase())
+				&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleLoadableHere(settlement);
 	}
 }

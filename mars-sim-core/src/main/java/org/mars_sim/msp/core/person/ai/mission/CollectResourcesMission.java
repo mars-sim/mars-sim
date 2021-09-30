@@ -119,72 +119,73 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		// Use RoverMission constructor
 		super(missionName, missionType, startingPerson, minPeople);
-
+		
+		// Problem starting mission
+		if (isDone()) {
+			return;
+		}
+		
 		Settlement s = startingPerson.getSettlement();
 		
-		// If the mission has started and on-going and is NOT done.
-		if (!isDone()) {
+		// Set mission capacity.
+		if (hasVehicle())
+			setMissionCapacity(getRover().getCrewCapacity());
+		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+		if (availableSuitNum < getMissionCapacity())
+			setMissionCapacity(availableSuitNum);
 
-			// Set mission capacity.
-			if (hasVehicle())
-				setMissionCapacity(getRover().getCrewCapacity());
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-			if (availableSuitNum < getMissionCapacity())
-				setMissionCapacity(availableSuitNum);
+		// Initialize data members.
+		s = startingPerson.getSettlement();
 
-			// Initialize data members.
-			s = startingPerson.getSettlement();
+		if (s != null) {
+			setStartingSettlement(s);
 
-			if (s != null) {
-				setStartingSettlement(s);
+			this.resourceID = resourceID;
+			this.siteResourceGoal = siteResourceGoal;
+			this.resourceCollectionRate = resourceCollectionRate;
+			this.containerID = containerID;
+			this.containerNum = containerNum;
 
-				this.resourceID = resourceID;
-				this.siteResourceGoal = siteResourceGoal;
-				this.resourceCollectionRate = resourceCollectionRate;
-				this.containerID = containerID;
-				this.containerNum = containerNum;
+			// Recruit additional members to mission.
+			if (!recruitMembersForMission(startingPerson))
+				return;
 
-				// Recruit additional members to mission.
-				if (!recruitMembersForMission(startingPerson))
-					return;
-
-				// Determine collection sites
-				if (hasVehicle()) {
-					if (resourceID == ResourceUtil.iceID) {		
-						for (int i=0; i < 10; i++) {
-							determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
-								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
-							// Quit if totalSiteScore is > zero
-							if (totalSiteScore > 0) 
-								break;
-							// Re-do the for loop again if totalSiteScore is zero
-							// May try if (i == 9 && totalSiteScore == 0) i = 0;
-						}
-						
-						if (totalSiteScore == 0) {
-							addMissionStatus(MissionStatus.NO_ICE_COLLECTION_SITES);
-							endMission();
-						}
+			// Determine collection sites
+			if (hasVehicle()) {
+				if (resourceID == ResourceUtil.iceID) {		
+					for (int i=0; i < 10; i++) {
+						determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
+							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+						// Quit if totalSiteScore is > zero
+						if (totalSiteScore > 0) 
+							break;
+						// Re-do the for loop again if totalSiteScore is zero
+						// May try if (i == 9 && totalSiteScore == 0) i = 0;
 					}
 					
-					else if (resourceID == ResourceUtil.regolithID) {
-						determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
-							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+					if (totalSiteScore == 0) {
+						addMissionStatus(MissionStatus.NO_ICE_COLLECTION_SITES);
+						endMission();
 					}
 				}
-
-				// Add home settlement
-				addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
-
-				// Check if vehicle can carry enough supplies for the mission.
-				if (hasVehicle() && !isVehicleLoadable()) {
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
+				
+				else if (resourceID == ResourceUtil.regolithID) {
+					determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
+						getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
 				}
+			}
+
+			// Add home settlement
+			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+
+			// Check if vehicle can carry enough supplies for the mission.
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission();
 			}
 		}
 
-		if (s != null) {
+		if (!isDone()) {
 			// Add collecting phase.
 			addPhase(COLLECT_RESOURCES);
 

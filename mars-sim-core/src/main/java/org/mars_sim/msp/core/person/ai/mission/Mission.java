@@ -904,11 +904,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param reason
 	 */
 	public void endMission() {
-		// This should be pushed into the VehicleMission class
-		Vehicle v = startingMember.getVehicle();
-		// Unregister the vehicle
-		if (v != null)
-			v.correctVehicleReservation();	
 		
 		logger.log(startingMember, Level.INFO, 0, "Ended " + getTypeID() + ".");
 
@@ -933,6 +928,15 @@ public abstract class Mission implements Serializable, Temporal {
 			logger.log(startingMember, Level.INFO, 500, status.toString());
 		}
 		
+		// The members are leaving the mission
+		if (members != null && !members.isEmpty()) { 
+			logger.log(startingMember, Level.INFO, 500, "Disbanded mission member(s) : " + members);
+			Iterator<MissionMember> i = members.iterator();
+			while (i.hasNext()) {
+				removeMember(i.next());
+			}
+		}
+		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			if (this instanceof VehicleMission) {
 				setPhase(VehicleMission.COMPLETED);
@@ -942,25 +946,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		else {
-			
-			if (v != null) {
-				if (((Rover)v).getCrewNum() != 0 || !v.getInventory().isEmpty(false)) {
-					addPhase(VehicleMission.DISEMBARKING);
-					setPhase(VehicleMission.DISEMBARKING);
-				}
-				
-				if (v.getSettlement() != null) {
-					// The members are leaving the vehicle
-					if (members != null && !members.isEmpty()) { 
-						logger.log(startingMember, Level.INFO, 500, "Disbanded mission member(s) : " + members);
-						Iterator<MissionMember> i = members.iterator();
-						while (i.hasNext()) {
-							removeMember(i.next());
-						}
-					}
-				}
-			}
-			
 			String s = "";
 			for (MissionStatus ms : missionStatus) {
 				s += ms.getName();
