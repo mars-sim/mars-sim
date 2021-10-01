@@ -761,8 +761,10 @@ public class MasterClock implements Serializable {
 				}
 			});
 		} catch (RejectedExecutionException ree) {
+			// App shutting down
+			Thread.currentThread().interrupt();
 			// Executor is shutdown and cannot complete queued tasks
-			logger.log(Level.SEVERE, "Can't set current pulse on clock listener tasks:  ", ree);
+			logger.log(Level.SEVERE, "Shutting down. Can't set current pulse on clock listener tasks:  ", ree);
 		}
 	}
 

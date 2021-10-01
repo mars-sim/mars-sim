@@ -38,8 +38,9 @@ public class MockBuilding extends Building {
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
 		super(template, manager);
 		buildingType = "Mock Type";
-		super.changeName("Mock Building");
-				
+		setNickName("Mock Building");
+		changeName("Mock Building");
+		
 		unitManager.addUnit(this);
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);

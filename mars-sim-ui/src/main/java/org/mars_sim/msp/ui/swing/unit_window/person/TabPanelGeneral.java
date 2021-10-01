@@ -101,7 +101,7 @@ public class TabPanelGeneral extends TabPanel {
 //		genderNameLabel.setSize(5, 2);
 		infoPanel.add(genderNameLabel);
 
-		// Prepare gender label
+		// Prepare gender textfield
 		String gender = person.getGender().getName();
 		JTextField genderTF = new JTextField(Conversion.capitalize(gender));
 		genderTF.setEditable(false);
@@ -116,7 +116,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		birthDate = person.getBirthDate();
 		
-		// Prepare birthdate and age label
+		// Prepare birthdate and age textfield
 		String birthdate = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
@@ -132,7 +132,7 @@ public class TabPanelGeneral extends TabPanel {
 		birthLocationNameLabel.setSize(5, 2);
 		infoPanel.add(birthLocationNameLabel);
 
-		// Prepare birth location label
+		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
 		//JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
 		JTextField birthLocationTF = new JTextField(Conversion.capitalize(birthLocation));
@@ -145,7 +145,7 @@ public class TabPanelGeneral extends TabPanel {
 		countryNameLabel.setSize(5, 2);
 		infoPanel.add(countryNameLabel);
 
-		// Prepare birth location label
+		// Prepare birth location textfield
 		String country = person.getCountry();
 		JTextField countryTF = new JTextField(Conversion.capitalize(country));
 		countryTF.setEditable(false);
@@ -157,7 +157,7 @@ public class TabPanelGeneral extends TabPanel {
 		weightNameLabel.setSize(5, 2);
 		infoPanel.add(weightNameLabel);
 
-		// Prepare weight label
+		// Prepare weight textfield
 		double baseMass = Math.round(person.getBaseMass()*10.0)/10.0;
 		//JLabel weightLabel = new JLabel(Msg.getString("TabPanelGeneral.kilograms",baseMass), JLabel.RIGHT); //$NON-NLS-1$
 		JTextField weightTF = new JTextField(Msg.getString("TabPanelGeneral.kilograms", baseMass));
@@ -170,7 +170,7 @@ public class TabPanelGeneral extends TabPanel {
 		heightNameLabel.setSize(5, 2);
 		infoPanel.add(heightNameLabel);
 
-		// Prepare height label
+		// Prepare height textfield
 		double baseHeight = Math.round(person.getHeight()*10.0)/10.0;
 		//JLabel heightLabel = new JLabel(Msg.getString("TabPanelGeneral.centimeters", baseHeight), JLabel.RIGHT); //$NON-NLS-1$
 		JTextField heightTF = new JTextField(Msg.getString("TabPanelGeneral.centimeters", baseHeight));
@@ -202,30 +202,32 @@ public class TabPanelGeneral extends TabPanel {
 		BMITF.setColumns(12);
 		infoPanel.add(BMITF);
 
-//		// 8. Prepare MBTI label
-//		JLabel mbtiLabel = new JLabel(Msg.getString("TabPanelGeneral.mbti"), JLabel.RIGHT); //$NON-NLS-1$
-//		mbtiLabel.setSize(5, 2);
-//		infoPanel.add(mbtiLabel);
-//		mbtiLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.label"));//$NON-NLS-1$
-//		
-//		// Prepare height label
-		MBTIPersonality p = person.getMind().getMBTI();
-//		String mbtiType = p.getTypeString();
-//		JTextField mbtiTF = new JTextField(mbtiType);
-//		mbtiTF.setEditable(false);
-//		mbtiTF.setColumns(12);
-//		infoPanel.add(mbtiTF);
+		// Prepare loading cap label
+		JLabel loadCapLabel = new JLabel(Msg.getString("TabPanelGeneral.loadCap"), JLabel.RIGHT); //$NON-NLS-1$
+		loadCapLabel.setSize(5, 2);
+		infoPanel.add(loadCapLabel);
+
+		// Prepare loading textfield
+		int load = (int)person.getInventory().getGeneralCapacity();
+//		System.out.println(person.getName() + " can carry " + load + " kg.");
+		JTextField loadCapTF = new JTextField(load + " kg");
+		loadCapTF.setEditable(false);
+		loadCapTF.setColumns(10);
+		infoPanel.add(loadCapTF);
 		
+		// Use spring panel layout.
+		SpringUtilities.makeCompactGrid(infoPanel,
+		                                8, 2, //rows, cols
+		                                50, 10,        //initX, initY
+		                                10, 3);       //xPad, yPad
+		
+		MBTIPersonality p = person.getMind().getMBTI();
+
 		// Create the text area for displaying the MBTI scores
 		createMBTI(p);
 		// Create the text area for displaying the Big Five scores
 		createBigFive();
-		
-		// Use spring panel layout.
-		SpringUtilities.makeCompactGrid(infoPanel,
-		                                7, 2, //rows, cols
-		                                50, 10,        //initX, initY
-		                                10, 3);       //xPad, yPad
+
 		
 	}
 	

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.mars.sim.console.InteractiveTerm;
+import org.mars_sim.fxgl.First;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
@@ -42,10 +44,6 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.dsl.FXGL;
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class MarsProjectFXGL extends GameApplication {
 
@@ -67,6 +65,8 @@ public class MarsProjectFXGL extends GameApplication {
 	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
+	private First first = new First();
+	
 	/**
 	 * Constructor 
 	 */
@@ -76,26 +76,39 @@ public class MarsProjectFXGL extends GameApplication {
 	
 	@Override
 	protected void initSettings(GameSettings settings) {
-		settings.setWidth(1366);// 1024);
-		settings.setHeight(768);
-//		 settings.setStageStyle(StageStyle.UNDECORATED);
-		settings.setTitle("Mars Simulation Project");
-		settings.setVersion("v3.3.1");
-		settings.setProfilingEnabled(false); // turn off fps
-		settings.setCloseConfirmation(false); // turn off exit dialog
-		settings.setIntroEnabled(false); // turn off intro
-//		settings.setMenuEnabled(false); // turn off menus
-		settings.setCloseConfirmation(true);	
+		first.initSettings(settings);
 	}
 
-	  @Override
-	    protected void initGame() {
-	        FXGL.entityBuilder()
-	                .at(150, 150)
-	                .view(new Rectangle(40, 40, Color.BLUE))
-	                .buildAndAttach();
-	    }
+    @Override
+    protected void initGameVars(Map<String, Object> vars) {
+    	first.initGameVars(vars);
+    }
+    
+	 @Override
+	 protected void initGame() {
+		 first.initGame();
+	}
 	  
+	 @Override
+	 protected void initInput() {
+		 first.initInput();
+	 }
+	 
+	 @Override
+	 protected void initUI() {
+		 first.initUI();
+	 }
+	 
+	 @Override
+	 protected void initPhysics() {
+		 first.initPhysics();
+	 }
+	 
+	 @Override
+	 protected void onUpdate(double tpf) {
+		 first.onUpdate(tpf);
+	 }
+	 
 	/**
 	 * Parse the argument and start the simulation.
 	 * @param args

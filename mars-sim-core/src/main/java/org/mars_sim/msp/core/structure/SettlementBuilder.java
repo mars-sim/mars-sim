@@ -106,7 +106,7 @@ public final class SettlementBuilder {
 	/**
 	 * This create a single fully populated Settlement according to the
 	 * specification. This includes all sub-units, e.g. Vehicles & Persons
-	 * along with any initila Parts & Resources.
+	 * along with any initial Parts & Resources.
 	 * @param spec
 	 * @return
 	 */

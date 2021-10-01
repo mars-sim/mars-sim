@@ -54,7 +54,7 @@ public class JUnitTests extends TestCase {
 
 	/**
 	 * Every JUnit test suite needs at least one test.This one obviously does nothing.
-	 * Any others begining with "test..." will be automatically included as well.
+	 * Any others beginning with "test..." will be automatically included as well.
 	 */
 	public void testNothing() {
 	}

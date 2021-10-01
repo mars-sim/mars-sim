@@ -388,16 +388,50 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			gym += RandomUtil.getRandomRegressionInteger(10);
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-		int carryCap = (int)(gym + personConfig.getBaseCapacity() + weight/6.0 + strength/4.0 + endurance/4.5 
-				+ RandomUtil.getRandomRegressionInteger(10));
+		int baseCap = (int)personConfig.getBaseCapacity();
+		int load = 0;
+		if (age > 4 && age < 8)
+			load = age;
+		else if (age > 7 && age <= 12)
+			load = age * 2;
+		else if (age > 11 && age <= 14)
+			load = (int)(baseCap/3 + age * 2);
+		else if (age > 14 && age <= 18)
+			load = (int)(baseCap/2.5 + age * 1.5);
+		else if (age > 18 && age <= 25)
+			load = (int)(baseCap/2 + 25 - age / 7.5);
+		else if (age > 25 && age <= 35)
+			load = (int)(baseCap + 30 - age / 12.5);
+		else if (age > 35 && age <= 45)
+			load = (int)(baseCap + 25 - age / 10);
+		else if (age > 45 && age <= 55)
+			load = (int)(baseCap/1.25 + 20 - age / 7.5);
+		else if (age > 55 && age <= 65)
+			load = (int)(baseCap/1.5 + 15 - age / 6);
+		else if (age > 65 && age <= 70)
+			load = (int)(baseCap/1.75 + 10 - age / 5);
+		else if (age > 70 && age <= 75)
+			load = (int)(baseCap/2 - age / 4);
+		else if (age > 75 && age <= 80)
+			load = (int)(baseCap/3 - age / 4);
+		else 
+			load = (int)(baseCap/4 - age / 4);
+		
+		int carryCap = Math.max(2, (int)(gym + load + weight/6.0 + (strength - 50)/1.5 + (endurance - 50)/2.0 
+				+ RandomUtil.getRandomRegressionInteger(10)));
+		
+		// Set inventory total mass capacity based on the person's weight and strength.
+		getInventory().addGeneralCapacity(carryCap); 
+		
 //		logger.info(name + " (" + weight + " kg) with strength " + strength 
 //				+ " & endurance " + endurance  
 //				+ " can carry " + carryCap + " kg");
-		
+//		System.out.println(getName() + " age: " + age);
+//		System.out.println(getName() + " load: " + load + " kg.");
+//		System.out.println(getName() + " can carry " + carryCap + " kg.");
+				
 		// Calculate the walking speed modifier
 		caculateWalkSpeedMod();
-		// Set inventory total mass capacity based on the person's weight and strength.
-		getInventory().addGeneralCapacity(carryCap); 
 
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
 

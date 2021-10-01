@@ -2094,19 +2094,19 @@ public class Inventory implements Serializable {
 		Integer unitID = unit.getIdentifier();
 		if (unit != null) {
 			Unit owner = getOwner();
-			
-			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
+			double remain = getRemainingGeneralCapacity(allowDirty);
+			double mass = unit.getMass();
+			if (mass <= remain) {
 				return true;
 			} 
 			
 			else {
-
-				logger.log(unit, Level.SEVERE, 30_000, 
-						"Had a mass of " + Math.round(unit.getMass()*10.0)/10.0 
+				logger.log(owner, unit, Level.SEVERE, 30_000, 
+						"Had a mass of " + Math.round(mass*10.0)/10.0 
 						  + " kg - too much to put on '"
 						  + owner.getName() 
-						  + "' to carry. Remaining Cap : " 
-						  +  Math.round(getRemainingGeneralCapacity(allowDirty)*10.0)/10.0
+						  + "' to carry. Remaining Gen Cap : " 
+						  +  Math.round(remain*10.0)/10.0
 						  + " kg. (Gen Cap : " 
 						  +  Math.round(this.getGeneralCapacity()*10.0)/10.0
 						  + " kg)"
@@ -2392,7 +2392,7 @@ public class Inventory implements Serializable {
 			Inventory containerInv = null;
 			if (cu != null) {
 				containerInv = cu.getInventory();
-//				System.out.println("Inventory : containerInv is " + containerInv);
+
 				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
 					result = containerInv.getRemainingGeneralCapacity(allowDirty);
 				}
