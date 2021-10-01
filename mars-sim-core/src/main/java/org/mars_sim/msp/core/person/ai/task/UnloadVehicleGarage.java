@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -159,7 +160,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Add the rover to a garage if possible
 		if (vehicle != null && settlement.getBuildingManager().addToGarage(vehicle)) {
 			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+			Building garage = BuildingManager.getBuilding(vehicle);
+			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			
@@ -249,7 +251,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && vehicle instanceof Drone && !vehicle.isReserved()) {
+				if (vehicle instanceof Rover && vehicle instanceof Drone && !vehicle.isReserved()
+						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
 						if (settlement.getBuildingManager().addToGarage(vehicle)) {
@@ -294,34 +297,27 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param settlement the settlement.
 	 * @return list of vehicle missions.
 	 */
-	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
+	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
 
-		List<Mission> result = new CopyOnWriteArrayList<Mission>();
+		List<Mission> result = new ArrayList<>();
 
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+		for(Mission mission : missionManager.getMissions()) {
 			if (mission instanceof VehicleMission) {
-				if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
-					VehicleMission vehicleMission = (VehicleMission) mission;
-					if (vehicleMission.hasVehicle()) {
-						Vehicle vehicle = vehicleMission.getVehicle();
-						if (settlement == vehicle.getSettlement()) {
-							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
-							if (peopleOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (settlement.getBuildingManager().addToGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
-								}
-							}
+				VehicleMission vehicleMission = (VehicleMission) mission;
 
-							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
-							if (robotsOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (settlement.getBuildingManager().addToGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
+				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
+					if (vehicleMission.hasVehicle()) {
+						Vehicle vehicle = vehicleMission.getVehicle();					
+						// If no one is in the Vehicle its a candidate
+						if ((vehicle.getInventory().getNumContainedPeople() == 0)
+								|| (vehicle.getInventory().getNumContainedRobots() == 0)) {
+							
+							// If looking for garaged vehicles; then add to garage otherwise
+							// check vehicle is not in garage
+							if (!isFullyUnloaded(vehicle)) {
+								if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
+										|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+									result.add(vehicleMission);
 								}
 							}
 						}
@@ -341,7 +337,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	private VehicleMission getMissionNeedingUnloading() {
 
 		VehicleMission result = null;
-		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement());
+		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement(), true);
 
 		if (unloadingMissions.size() > 0) {
 			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);

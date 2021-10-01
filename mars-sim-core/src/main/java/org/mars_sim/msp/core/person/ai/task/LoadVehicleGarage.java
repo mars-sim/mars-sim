@@ -168,13 +168,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		List<Mission> result = new ArrayList<>();
 		for(Mission mission : missionManager.getMissions()) {
-			if ((mission instanceof VehicleMission)
-					&& VehicleMission.EMBARKING.equals(mission.getPhase())) {
+			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
-				if (vehicleMission.hasVehicle()) {
+				if (vehicleMission.isVehicleLoadableHere(settlement) && vehicleMission.hasVehicle()) {
 					Vehicle vehicle = vehicleMission.getVehicle();
-					if (settlement.equals(vehicle.getSettlement())
-						&& !vehicleMission.isVehicleLoaded()
+					if (!vehicleMission.isVehicleLoaded()
 						&& (!addToGarage || settlement.getBuildingManager().addToGarage(vehicle))) {
 						result.add(vehicleMission);
 					}

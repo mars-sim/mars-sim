@@ -20,12 +20,8 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateDelivery;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,7 +30,6 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -96,7 +91,12 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingMember);
-
+		
+		// Problem starting Mission
+		if (isDone()) {
+			return;
+		}
+		
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
@@ -362,13 +362,27 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDeliveryNegotiatingPhase(MissionMember member) {
 		if (doNegotiation) {
-//			if (member == getMissionDelivery()) {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
 						profit = estimateDeliveryProfit(buyLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
+					}
+					else {
+						// Check if the caller should be doing negotiation
+						Worker dealer = negotiationTask.getWorker();
+						if (dealer == null) {
+							// Task has not be reinit after a restore
+							logger.warning(member, "Reinit the Negotiation Task");
+							negotiationTask.reinit();
+							dealer = negotiationTask.getWorker();
+						}
+						if (dealer.equals(member)) {
+							// It's the caller so restart and it will be a Person
+							logger.info(member, "Resuming negotiation for " + getTypeID());
+							assignTask((Person)member, negotiationTask);
+						}
 					}
 				} 
 				
@@ -409,7 +423,6 @@ public class Delivery extends DroneMission implements Serializable {
 						}
 					}
 				}
-//			}
 		} else {
 			setPhaseEnded(true);
 		}
@@ -440,26 +453,26 @@ public class Delivery extends DroneMission implements Serializable {
 		boolean unloaded = getDrone().getInventory().getTotalInventoryMass(false) == 0D;
 		if (!unloaded) {
 			// Alert the people in the disembarked settlement to unload cargo
-			for (Person person: tradingSettlement.getIndoorPeople()) {
-				if (person.isInSettlement()) {
-					// Random chance of having person unload (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (isInAGarage()) {
-							assignTask(person, new UnloadVehicleGarage(person, getDrone()));
-						} 
-						
-						else {
-							// Check if it is day time.
-							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
-								assignTask(person, new UnloadVehicleEVA(person, getDrone()));
-							}
-						}
-	
-						return;
-					}
-				}
-			}
+//			for (Person person: tradingSettlement.getIndoorPeople()) {
+//				if (person.isInSettlement()) {
+//					// Random chance of having person unload (this allows person to do other things
+//					// sometimes)
+//					if (RandomUtil.lessThanRandPercent(50)) {
+//						if (isInAGarage()) {
+//							assignTask(person, new UnloadVehicleGarage(person, getDrone()));
+//						} 
+//						
+//						else {
+//							// Check if it is day time.
+//							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
+//								assignTask(person, new UnloadVehicleEVA(person, getDrone()));
+//							}
+//						}
+//	
+//						return;
+//					}
+//				}
+//			}
 		} else {
 			setPhaseEnded(true);
 		}
@@ -475,30 +488,7 @@ public class Delivery extends DroneMission implements Serializable {
 		if (!isDone() && !isVehicleLoaded()) {
 
 			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				for (Person person: tradingSettlement.getIndoorPeople()) {
-					if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-						// Random chance of having person load (this allows person to do other things
-						// sometimes)
-						if (RandomUtil.lessThanRandPercent(50)) {
-							if (isInAGarage()) {
-								assignTask(person,
-									new LoadVehicleGarage(person, this));
-
-							} else {
-								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
-										assignTask(person,
-												new LoadVehicleEVA(person, this));
-								}
-							}
-							
-							return;
-						}
-					}
-				}
-			} else {
+			if (!isVehicleLoadable()) {
 				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
@@ -857,5 +847,32 @@ public class Delivery extends DroneMission implements Serializable {
 			equipmentNeededCache = result;
 			return result;
 		}
+	}
+
+	/**
+	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
+	 * then it can be unloaded.
+	 */
+	@Override
+	public boolean isVehicleUnloadableHere(Settlement settlement) {
+		if (UNLOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleUnloadableHere(settlement);
+	}
+	
+	/**
+	 * Can the mission vehicle be loaded at a Settlement. Must be in
+	 * the LOAD_GOODS phase at the mission trading settlement.
+	 * @param settlement
+	 * @return
+	 */
+	public boolean isVehicleLoadableHere(Settlement settlement) {
+		if (LOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleLoadableHere(settlement);
 	}
 }

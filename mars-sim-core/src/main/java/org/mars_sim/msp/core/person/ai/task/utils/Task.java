@@ -832,6 +832,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Who is working on this Task.
+	 * @return
+	 */
+	public Worker getWorker() {
+		return worker;
+	}
+	
+	/**
 	 * Gets the experience modifier when being taught by a teacher.
 	 * 
 	 * @return modifier;

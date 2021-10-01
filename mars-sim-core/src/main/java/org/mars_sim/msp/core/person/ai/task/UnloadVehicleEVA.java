@@ -201,17 +201,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
-	protected double unloadingPhase(double time) {
-//		logger.log(person, Level.INFO, 20_000, "At Unloading Phase for "  + vehicle.getName() + ".");
-		
+	protected double unloadingPhase(double time) {		
 		if (isDone()){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
         }
-			
-//		logger.log(person, Level.INFO, 20_000, "Not done for "  + vehicle.getName() + ".");
 		
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
@@ -220,19 +216,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         	else
         		endTask();
         }
-	
-//		logger.log(person, Level.INFO, 20_000, "Radiation not detected. "  + vehicle.getName() + ".");
 		
         // Check if there is a reason to cut short and return.
-//        if (shouldEndEVAOperation()(
         if (addTimeOnSite(time)){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
         }
-        
-//		logger.log(person, Level.INFO, 20_000, "Has time on Site for "  + vehicle.getName() + ".");
 	
 		if (!person.isFit()) {
 			if (person.isOutside())
@@ -240,8 +231,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         	else
         		endTask();
 		}
-		
-//		logger.log(person, Level.INFO, 20_000, "Is fit for "  + vehicle.getName() + ".");
 
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())
@@ -250,18 +239,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
 			return 0;
 		}
-		
-//		logger.log(person, Level.INFO, 20_000, "no NPE issues for "  + vehicle.getName() + ".");
-
-//		if (!vehicle.isInSettlementVicinity()) {
-//        	if (person.isOutside())
-//        		setPhase(WALK_BACK_INSIDE);
-//        	else
-//        		endTask();
-//			return 0;
-//		}
-		
-//		logger.log(person, Level.INFO, 20_000, "No in vicinity. "  + vehicle.getName() + ".");
 
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
         	if (person.isOutside())
@@ -270,8 +247,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
 			return 0;
 		}
-		
-//		logger.log(person, Level.INFO, 20_000, "Not walking back in. "  + vehicle.getName() + ".");
 		
 		// Determine unload rate.
 		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
@@ -292,8 +267,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				unloadEquipmentInventory(equipment);
 
 				equipment.transfer(vehicleInv, settlementInv);
-//				vehicleInv.retrieveUnit(equipment);
-//				settlementInv.storeUnit(equipment);
 				
 				amountUnloading -= equipment.getMass();
 				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
@@ -445,7 +418,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (!vehicle.isReserved()) {
+				
+				// Find unreserved vehicle parked at their home base. Visiting vehicles
+				// should not unloaded outside a mission
+				if (!vehicle.isReserved() &&
+						(vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
@@ -491,42 +468,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return list of vehicle missions.
 	 */
 	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
-
-		List<Mission> result = new CopyOnWriteArrayList<Mission>();
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
-			if (mission instanceof VehicleMission) {
-				if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
-					VehicleMission vehicleMission = (VehicleMission) mission;
-					if (vehicleMission.hasVehicle()) {
-						Vehicle vehicle = vehicleMission.getVehicle();
-						if (settlement == vehicle.getSettlement()) {
-							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
-							if (peopleOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
-								}
-							}
-
-							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
-							if (robotsOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
+		return UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, false);
 	}
 
 	/**
@@ -537,7 +479,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	private VehicleMission getMissionNeedingUnloading() {
 
 		VehicleMission result = null;
-		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement());
+		List<Mission> unloadingMissions = UnloadVehicleGarage.getAllMissionsNeedingUnloading(worker.getSettlement(), false);
 
 		if (unloadingMissions.size() > 0) {
 			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);

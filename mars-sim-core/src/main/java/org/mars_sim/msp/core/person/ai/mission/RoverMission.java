@@ -503,8 +503,8 @@ public abstract class RoverMission extends VehicleMission {
 		Rover rover = (Rover) v;
 
 		if (v != null) {
-
-			if (v.getSettlement() == null) {
+			Settlement currentSettlement = v.getSettlement();
+			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If rover has not been parked at settlement, park it.
 				disembarkSettlement.getInventory().storeUnit(v);	
 			}
