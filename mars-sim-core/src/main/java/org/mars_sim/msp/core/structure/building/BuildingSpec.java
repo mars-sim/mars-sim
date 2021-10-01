@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingSpec.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-01
  * @author Barry Evans
  */
 
@@ -57,30 +57,39 @@ public class BuildingSpec {
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
 	private static final List<ResourceProcessSpec> EMPTY_RESOURCE = new ArrayList<>();
 	
-	private String name;
-	private double roomTemperature;
-	private int maintenanceTime;
-	private double basePowerDownPowerRequirement;
-	private int wearLifeTime;
-	private double basePowerRequirement;
 	private int baseLevel;
-	private String description;
-	private Map<FunctionType, FunctionSpec> supportedFunctions;
+	private int maintenanceTime;
+	private int wearLifeTime;
+	
+	private double basePowerRequirement;
+	private double basePowerDownPowerRequirement;
+	private double roomTemperature;
+
 	private double length;
 	private double width;
 	private double thickness = WALL_THICKNESS_ALUMINUM;
 	
+	private double computingUnit;
+	private double powerDemand;
+	private double coolingDemand;
+	
+	private double stockCapacity = 0;
+	
+	private String name;
+	private String description;
+	
+	private Map<FunctionType, FunctionSpec> supportedFunctions;
+	
 	// Optional Function details
 	private Map<Integer, Double> storageMap = null;
 	private Map<Integer, Double> initialMap = null;
-	private double stockCapacity = 0;
+
 	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
 
 	private List<Point2D> beds;
-
 	private List<Point2D> parking;
 
 	private List<ScienceType> wasteSpecialties;
@@ -89,8 +98,10 @@ public class BuildingSpec {
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
-			Map<FunctionType,FunctionSpec> supportedFunctions) {
+			Map<FunctionType, FunctionSpec> supportedFunctions) {
+		
 		super();
+		
 		this.name = name;
 		this.description = description;
 		this.width = width;
@@ -113,7 +124,7 @@ public class BuildingSpec {
 	}
 
 	/**
-	 * Get the function detials for this building type.
+	 * Get the function details for this building type.
 	 * @param function
 	 * @return
 	 */
@@ -149,7 +160,7 @@ public class BuildingSpec {
 	public double getBasePowerDownPowerRequirement() {
 		return basePowerDownPowerRequirement;
 	}
-
+	
 	public int getWearLifeTime() {
 		return wearLifeTime;
 	}
@@ -188,6 +199,11 @@ public class BuildingSpec {
 		this.initialMap = initialMap;
 	}
 
+	void setComputation(double computingUnit, double powerDemand, double coolingDemand) {
+		this.computingUnit = computingUnit;
+		this.powerDemand = powerDemand;
+		this.coolingDemand = coolingDemand;
+	}
 
 	public void setHeatSource(List<SourceSpec> heatSourceList) {
 		this.heatSourceList = heatSourceList;
@@ -247,5 +263,29 @@ public class BuildingSpec {
 
 	public void setWasteSpecialties(List<ScienceType> wasteSpecialties) {
 		this.wasteSpecialties = wasteSpecialties;
+	}
+	
+//	public void setComputingPower(double value) {
+//		this.computingPower = value;
+//	}
+//	
+//	public void setPowerDemand(double value) {
+//		this.powerDemand = value;
+//	}
+//	
+//	public void setCoolingDemand(double value) {
+//		this.coolingDemand = value;
+//	}
+	
+	public double getComputingUnit() {
+		return computingUnit;
+	}
+	
+	public double getPowerDemand() {
+		return powerDemand;
+	}
+	
+	public double getCoolingDemand() {
+		return coolingDemand;
 	}
 }

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
@@ -172,6 +173,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private Communication comm;
 	private ThermalGeneration furnace;
 	private PowerGeneration powerGen;
+	private Computation computation;
 	private PowerStorage powerStorage;
 	private LifeSupport lifeSupport;
 	private RoboticStation roboticStation;
@@ -491,6 +493,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return powerGen;
 	}
 
+	public Computation getComputation() {
+		if (computation == null)
+			computation = (Computation) getFunction(FunctionType.COMPUTATION);
+		return computation;
+	}
+
 	public PowerStorage getPowerStorage() {
 		if (powerStorage == null)
 			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
@@ -625,6 +633,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				
 			case COMMUNICATION:
 				buildingFunctions.add(new Communication(this));
+				break;
+				
+			case COMPUTATION:
+				buildingFunctions.add(new Computation(this));
 				break;
 				
 			case COOKING:

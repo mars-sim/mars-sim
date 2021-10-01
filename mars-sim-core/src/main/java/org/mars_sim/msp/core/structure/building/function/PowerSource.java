@@ -94,9 +94,16 @@ implements Serializable {
      */
 	public abstract double getMaintenanceTime();
 
-	// 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory
+	/**
+	 * Removes the power source. e.g. Returns the fuel cell stacks to the inventory
+	 */
 	public abstract void removeFromSettlement();
 	
+	/**
+	 * Sets the time interval
+	 * 
+	 * @param time
+	 */
 	public abstract void setTime(double time);
 	
 	/**

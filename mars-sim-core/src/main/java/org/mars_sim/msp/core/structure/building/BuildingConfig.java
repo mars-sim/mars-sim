@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -111,6 +111,12 @@ public class BuildingConfig implements Serializable {
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
 
+	// Computation
+	private static final String COMPUTATION = "computation";
+	private static final String COMPUTING_UNIT = "computing-unit";
+	private static final String POWER_DEMAND = "power-demand";
+	private static final String COOLING_DEMAND = "cooling-demand";
+	
 	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
 	/**
@@ -212,6 +218,12 @@ public class BuildingConfig implements Serializable {
 			newSpec.setPowerSource(powerSourceList);
 		}
 
+		// Not needed. Done in the FunctionSpecs
+		Element computationElement = functionsElement.getChild(COMPUTATION);
+		if (computationElement != null) {
+			parseComputation(newSpec, computationElement);
+		}
+		
 		Element researchElement = functionsElement.getChild(RESEARCH);
 		if (researchElement != null) {
 			parseResearch(newSpec, researchElement);
@@ -244,7 +256,7 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse the specific Resoruce processing function details
+	 * Parse the specific Resource processing function details
 	 * @param newSpec
 	 * @param resourceProcessingElement
 	 */
@@ -300,6 +312,24 @@ public class BuildingConfig implements Serializable {
 		newSpec.setResourceProcess(resourceProcesses);
 	}
 
+	/**
+	 * Parse a specific computation details
+	 * @param newSpec
+	 * @param computationElement
+	 */
+	private void parseComputation(BuildingSpec newSpec, Element computationElement) {
+		double computingPower = Double.parseDouble(computationElement.getAttributeValue(COMPUTING_UNIT));
+//		newSpec.setComputingPower(computingPower);
+
+		double powerDemand = Double.parseDouble(computationElement.getAttributeValue(POWER_DEMAND));
+//		newSpec.setPowerDemand(powerDemand);
+		
+		double coolingDemand = Double.parseDouble(computationElement.getAttributeValue(COOLING_DEMAND));
+//		newSpec.setCoolingDemand(coolingDemand);
+		
+		newSpec.setComputation(computingPower, powerDemand, coolingDemand);
+	}
+	
 	/**
 	 * Parse a specific research details
 	 * @param newSpec
@@ -373,7 +403,7 @@ public class BuildingConfig implements Serializable {
 		
 		newSpec.setStorage(stockCapacity, storageMap, initialMap);
 	}
-	
+
 	/**
 	 * Parse an list of locations for a building's function. These have a <xloc> & <yloc> structure.
 	 * 
@@ -439,7 +469,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Find a Buliding spec according to the name.
+	 * Find a Building spec according to the name.
 	 * @param buildingType
 	 * @return
 	 */
@@ -500,13 +530,13 @@ public class BuildingConfig implements Serializable {
 	public double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
 		return Double.parseDouble(getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
 	}
-	
+
 	/**
 	 * Gets the capacity for a Function. This capacity usually reference to the number of Unit
 	 * supported by a function but it could be used differently
 	 * 
 	 * @param buildingType the type of the building
-	 * @param function Typ eof function
+	 * @param function Type of function
 	 * @return number of people
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
@@ -518,7 +548,7 @@ public class BuildingConfig implements Serializable {
 	 * Gets the capacity for a Function. This capacity usually reference an amount.
 	 * 
 	 * @param buildingType the type of the building
-	 * @param function Typ eof function
+	 * @param function Type of function
 	 * @return number of people
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
@@ -530,7 +560,7 @@ public class BuildingConfig implements Serializable {
 	 * Gets the tech level for a Function.
 	 * 
 	 * @param buildingType the type of the building
-	 * @param function Typ eof function
+	 * @param function Type of function
 	 * @return number of people
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
@@ -595,6 +625,21 @@ public class BuildingConfig implements Serializable {
 		return getFunctionDoubleProperty(buildingType, FunctionType.LIFE_SUPPORT, HEAT_REQUIRED);
 	}
 
+	public double getComputingUnit(String buildingType) {
+		return getBuildingSpec(buildingType).getComputingUnit();
+//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COMPUTING_UNIT);
+	}
+	
+	public double getPowerDemand(String buildingType) {
+		return getBuildingSpec(buildingType).getPowerDemand();
+//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, POWER_DEMAND);
+	}
+	
+	public double getCoolingDemand(String buildingType) {
+		return getBuildingSpec(buildingType).getCoolingDemand();
+//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COOLING_DEMAND);
+	}
+	
 	/**
 	 * Gets a list of research specialties for the building's lab.
 	 * 
@@ -712,7 +757,6 @@ public class BuildingConfig implements Serializable {
 	public Map<Integer, Double> getStorageCapacities(String buildingType) {
 		return getBuildingSpec(buildingType).getStorage();
 	}
-
 
 	public double getStockCapacity(String buildingType) {
 		return getBuildingSpec(buildingType).getStockCapacity();
