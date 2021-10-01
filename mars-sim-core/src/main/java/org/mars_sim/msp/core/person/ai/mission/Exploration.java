@@ -42,7 +42,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The Exploration class is a mission to travel in a rover to several random
  * locations around a settlement and collect rock samples.
  */
-public class Exploration extends RoverMission implements Serializable {
+public class Exploration extends RoverMission
+	implements Serializable, SiteMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1010,6 +1011,20 @@ public class Exploration extends RoverMission implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Return the average site score of all exploration sites
+	 */
+	@Override
+	public double getTotalSiteScore(Settlement reviewerSettlement) {
+		int count = 0;
+		double siteValue = 0D;
+		for (ExploredLocation e : exploredSites) {
+			count++;
+			siteValue += Mining.getMiningSiteValue(e, reviewerSettlement);
+		}
+		return siteValue / count;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -14,19 +14,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.data.SolListDataLogger;
-import org.mars_sim.msp.core.environment.CollectionSite;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -48,9 +40,7 @@ public class MissionManager implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
 	
 	private static final double PERCENT_PER_SCORE = 10D;
 	/** static mission identifier */
@@ -65,12 +55,7 @@ public class MissionManager implements Serializable, Temporal {
 	private SolListDataLogger<MissionPlanning> historicalMissions;
 	
 	private static List<String> missionNames;
-	private static List<String> travelMissionNames;
 	private static Map<String, Integer> settlementID;
-	private static Set<CollectionSite> collectionSites;
-	
-	// Note : MissionManager is instantiated before MarsClock
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	static {
 		/**
@@ -94,24 +79,6 @@ public class MissionManager implements Serializable, Temporal {
 					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
 					BuildingSalvageMission.DEFAULT_DESCRIPTION
 			);
-		
-		// Missions involving travel
-		travelMissionNames = Arrays.asList(
-					AreologyFieldStudy.DEFAULT_DESCRIPTION,
-					BiologyFieldStudy.DEFAULT_DESCRIPTION,
-					CollectIce.DEFAULT_DESCRIPTION,
-					CollectRegolith.DEFAULT_DESCRIPTION,
-					Delivery.DEFAULT_DESCRIPTION,
-					
-					EmergencySupply.DEFAULT_DESCRIPTION,
-					Exploration.DEFAULT_DESCRIPTION,
-					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
-					Mining.DEFAULT_DESCRIPTION,
-					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
-					
-					Trade.DEFAULT_DESCRIPTION,
-					TravelToSettlement.DEFAULT_DESCRIPTION
-			);
 		}
 	
 	
@@ -125,7 +92,6 @@ public class MissionManager implements Serializable, Temporal {
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolListDataLogger<>(5);
 		settlementID = new ConcurrentHashMap<>();
-		collectionSites = ConcurrentHashMap.newKeySet();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 	}
 
@@ -139,7 +105,7 @@ public class MissionManager implements Serializable, Temporal {
 		return missionIdentifer++;
 	}
 	
-	public static int getSettlementID(String name) {
+	private static int getSettlementID(String name) {
 		if (settlementID.containsKey(name)) {
 			return settlementID.get(name);			
 		}
@@ -152,26 +118,9 @@ public class MissionManager implements Serializable, Temporal {
 	}
 	
 	public String getMissionDesignationString(String settlementName) {
-		return padZeros(getSettlementID(settlementName)+"", 2) + "-" + padZeros(getNextIdentifier()+"", 3);
+		return String.format("%2d-%d3", getSettlementID(settlementName), getNextIdentifier());
 	}
-	
-	public static String padZeros(String s, int numDigital) {
-		String value = "";
-		int size = s.length();
-		int numZeros = numDigital-size;
-		if (numZeros > 0) {
-			for (int i=0; i< numDigital-size; i++)
-				value += "0";
-			value += s;
-		}
-		
-		else 
-			value = "" + s;
-		
-		return value;
-	}
-	
-	
+
 	/**
 	 * Add a listener.
 	 * 
@@ -220,26 +169,10 @@ public class MissionManager implements Serializable, Temporal {
 	 */
 	public List<Mission> getMissions() {
 		if (onGoingMissions != null) {
-			if (GameManager.mode == GameMode.COMMAND) {
-				List<Mission> missions = new ArrayList<Mission>();
-				if (unitManager == null)
-					unitManager = Simulation.instance().getUnitManager();
-				Iterator<Mission> i = onGoingMissions.iterator();
-				while (i.hasNext()) {
-					Mission m = i.next(); 
-					if (m.getAssociatedSettlement().equals(unitManager.getCommanderSettlement()))
-						missions.add(m);
-				}
-				
-				return missions;
-			}
-			else {
-				return Collections.unmodifiableList(onGoingMissions);
-			}
-
+			return Collections.unmodifiableList(onGoingMissions);
 		}
 		else
-			return new ArrayList<Mission>();
+			return Collections.emptyList();
 	}
 
 	/**
@@ -358,18 +291,18 @@ public class MissionManager implements Serializable, Temporal {
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			double probability = metaMission.getProbability(person);
 			if (Double.isNaN(probability) || Double.isInfinite(probability)) {
-					logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
+					logger.severe(person, "Bad mission probability on " + metaMission.getName() + " probability: "
 							+ probability);
 			} 
 			else if (probability > 0D) {
-				logger.info("Mission " + metaMission.getName() + " with probability=" + probability);
+				logger.info(person, "Mission " + metaMission.getName() + " with probability=" + probability);
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}
 		}	
 
 		if (totalProbCache == 0D) {
-			logger.log(Level.FINEST, person + " has zero total mission probability weight. No mission selected.");
+			logger.fine(person, "Has zero total mission probability weight. No mission selected.");
 			
 			return null;
 		}
@@ -605,9 +538,7 @@ public class MissionManager implements Serializable, Temporal {
 		Mission mission = plan.getMission();
 		Person p = mission.getStartingPerson();
 		
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + p.getLocale() + "] On Sol " 
-				+ historicalMissions.getCurrentSol() + ", " + p.getName() + " put together a mission plan.");
+		logger.info(p, "Put together a mission plan for " + plan.getMission().getTypeID());
 		historicalMissions.addData(plan);
 		
 		// Add this mission only after the mission plan has been submitted for review.
@@ -615,8 +546,7 @@ public class MissionManager implements Serializable, Temporal {
 		
 		
 	}
-	
-	
+
 	/**
 	 * Submit a request for approving a mission plan
 	 * 
@@ -631,13 +561,17 @@ public class MissionManager implements Serializable, Temporal {
 	 * 
 	 * @param missionPlan
 	 * @param person
+	 * @param d 
 	 * @param status
 	 */
-	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType newStatus) {
+	public void approveMissionPlan(MissionPlanning missionPlan, Person person,
+								   PlanType newStatus, double threshold) {
 
 		missionPlan.setApproved(person);
 //		missionPlan.setStatus(status);
 		if (missionPlan.getStatus() == PlanType.PENDING) {
+			missionPlan.setPassingScore(threshold);
+
 			if (newStatus == PlanType.APPROVED) {
 				missionPlan.setStatus(PlanType.APPROVED);
 				missionPlan.getMission().setApproval(true);
@@ -692,10 +626,7 @@ public class MissionManager implements Serializable, Temporal {
 		double score = missionPlan.getScore();
 		missionPlan.setScore(score + weight * newScore);
 		
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + missionPlan.getMission().getStartingPerson().getLocationTag().getLocale() + "] " 
-				+ missionPlan.getMission().getStartingPerson().getName() 
-				+ "'s " + missionPlan.getMission().getDescription() 
+		logger.info(reviewer, missionPlan.getMission().getName() 
 				+ " mission planning cumulative score : " + Math.round(missionPlan.getScore()*10.0)/10.0 
 				+ " (" + missionPlan.getPercentComplete() + "% review completed)");
 				
@@ -716,21 +647,7 @@ public class MissionManager implements Serializable, Temporal {
 	public Map<Integer, List<MissionPlanning>> getHistoricalMissions() {
 		return historicalMissions.getHistory();
 	}
-	
-	/**
-	 * Gets a list of all mission names
-	 */
-	public static List<String> getMissionNames() {
-		return missionNames;
-	}
-	
-	/**
-	 * Gets a list of all travel related mission names
-	 */
-	public static List<String> getTravelMissionNames() {
-		return travelMissionNames;
-	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

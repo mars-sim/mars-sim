@@ -732,8 +732,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
 			if (isMissionPlanReady) {
-				requestReviewPhase(member);
 				computeEstimatedTotalDistance();
+				requestReviewPhase(member);
 			}
 		}
 		else if (EMBARKING.equals(getPhase())) {

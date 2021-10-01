@@ -43,7 +43,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Mission for mining mineral concentrations at an explored site.
  */
-public class Mining extends RoverMission {
+public class Mining extends RoverMission
+	implements SiteMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1214,5 +1215,10 @@ public class Mining extends RoverMission {
 		}
 		totalExcavatedMinerals = null;
 		luv = null;
+	}
+
+	@Override
+	public double getTotalSiteScore(Settlement reviewerSettlement) {
+		return getMiningSiteValue(miningSite, reviewerSettlement);
 	}
 }

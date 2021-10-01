@@ -80,7 +80,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 				// Job modifier.
 				JobType job = person.getMind().getJob();
 				if (job != null) {
-					missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(CollectRegolith.class);
+					missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, CollectRegolith.class);
 					// If this town has a tourist objective, divided by bonus
 					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 				}

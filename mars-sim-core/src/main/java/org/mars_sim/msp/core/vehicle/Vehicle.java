@@ -895,7 +895,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public double getRange(MissionType missionType) {
 		
-		int radius = (int)(getAssociatedSettlement().getMissionRadius(missionType));	
+		int radius = getAssociatedSettlement().getMissionRadius(missionType);	
 		double range = 0;
 		Mission mission = getMission();
 		

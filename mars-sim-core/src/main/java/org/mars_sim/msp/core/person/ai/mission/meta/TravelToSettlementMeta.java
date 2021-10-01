@@ -60,7 +60,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	        // Job modifier.
 	        JobType job = person.getMind().getJob();
 	        if (job != null)
-	        	missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(
+	        	missionProbability *= JobUtil.getStartMissionProbabilityModifier(job,
 	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
 			
 			if (missionProbability > LIMIT)

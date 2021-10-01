@@ -48,7 +48,6 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -300,7 +299,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private double[] missionRange = new double[MissionType.values().length];
+	private Map<MissionType,Integer> missionRange = new EnumMap<>(MissionType.class);
 	
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
@@ -554,18 +553,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		
 		// Set default mission radius
-		missionRange[MissionType.AREOLOGY.ordinal()] = 500D;
-		missionRange[MissionType.BIOLOGY.ordinal()] = 500D;
-		missionRange[MissionType.COLLECT_ICE.ordinal()] = 500D;
-		missionRange[MissionType.COLLECT_REGOLITH.ordinal()] = 500D;
-		missionRange[MissionType.DELIVERY.ordinal()] = 4000D;
-		missionRange[MissionType.EMERGENCY_SUPPLY.ordinal()] = 1000D;
-		missionRange[MissionType.EXPLORATION.ordinal()] = 500D;
-		missionRange[MissionType.METEOROLOGY.ordinal()] = 500D;
-		missionRange[MissionType.MINING.ordinal()] = 500D;
-		missionRange[MissionType.RESCUE_SALVAGE_VEHICLE.ordinal()] = 1000D;
-		missionRange[MissionType.TRADE.ordinal()] = 2000D;
-		missionRange[MissionType.TRAVEL_TO_SETTLEMENT.ordinal()] = 4000D;
+		missionRange.put(MissionType.AREOLOGY, 500);
+		missionRange.put(MissionType.BIOLOGY,500);
+		missionRange.put(MissionType.COLLECT_ICE,500);
+		missionRange.put(MissionType.COLLECT_REGOLITH,500);
+		missionRange.put(MissionType.DELIVERY,4000);
+		missionRange.put(MissionType.EMERGENCY_SUPPLY,1000);
+		missionRange.put(MissionType.EXPLORATION, 500);
+		missionRange.put(MissionType.METEOROLOGY, 500);
+		missionRange.put(MissionType.MINING, 500);
+		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, 1000);
+		missionRange.put(MissionType.TRADE, 2000);
+		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, 4000);
 	}
 
 	/**
@@ -3197,12 +3196,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		this.storm = storm;
 	}
 
-	public double getMissionRadius(MissionType missionType) {
-		return missionRange[missionType.ordinal()];
+	public int getMissionRadius(MissionType missionType) {
+		return missionRange.getOrDefault(missionType, 1000);
 	}
 
-	public void setMissionRadius(MissionType missionType, double newRange) {
-		missionRange[missionType.ordinal()] = newRange;
+	public void setMissionRadius(MissionType missionType, int newRange) {
+		missionRange.put(missionType, newRange);
 	}
 	
 	public boolean hasDesignatedCommander() {

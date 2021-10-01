@@ -42,7 +42,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * several random locations around a settlement and collect resources of a given
  * type.
  */
-public abstract class CollectResourcesMission extends RoverMission implements Serializable {
+public abstract class CollectResourcesMission extends RoverMission
+	implements Serializable, SiteMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1007,7 +1008,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * Gets the computed site score of this prospective resource collection mission.
 	 * @return
 	 */
-	public double getTotalSiteScore() {
+	@Override
+	public double getTotalSiteScore(Settlement reviewSettlement) {
 		return totalSiteScore;
 	}
 	

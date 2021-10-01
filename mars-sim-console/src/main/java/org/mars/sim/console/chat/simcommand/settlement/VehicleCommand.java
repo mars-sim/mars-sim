@@ -16,7 +16,6 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -105,18 +104,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 
 			// Print mission name
 			String missionName = "";
-			Mission mission = null;
-			List<Mission> missions = context.getSim().getMissionManager().getMissions();
-			for (Mission m : missions) {
-				if (!m.isDone() && m instanceof VehicleMission) {
-					Vehicle vv = ((VehicleMission) m).getVehicle();
-					if ((vv != null) && vv.getName().equals(v.getName())) {
-						mission = m;
-						missionName = m.getDescription();
-					}
-				}
-			}
-
+			Mission mission = context.getSim().getMissionManager().getMissionForVehicle(v);
 			String personName = ((mission != null) ? 
 									mission.getStartingPerson().getName() : "");
 

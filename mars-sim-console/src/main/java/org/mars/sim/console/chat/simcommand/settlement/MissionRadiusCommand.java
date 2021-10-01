@@ -47,14 +47,12 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 		}
 		else {
 			selected--; // Index is zero based
-			String rangeText = context.getInput("Enter the new mission radius in km");
-			double newRange = 0;
+			String rangeText = context.getInput("Enter the new mission radius in exact km");
 			try {
-				newRange = Double.parseDouble(rangeText);
-				newRange = Math.round(newRange*10.0)/10.0;
+				int newRange = Integer.parseInt(rangeText);
 		
 				MissionType choosen = MissionType.values()[selected];
-				double oldRange = Math.round(settlement.getMissionRadius(choosen)*10.0)/10.0;
+				int oldRange = settlement.getMissionRadius(choosen);
 				settlement.setMissionRadius(choosen, newRange);
 				
 				context.println("Old Mission Radius :  " + oldRange + " km");

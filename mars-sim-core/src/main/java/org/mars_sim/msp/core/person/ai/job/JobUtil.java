@@ -131,17 +131,6 @@ public final class JobUtil {
 		return Collections.unmodifiableCollection(jobSpecs.values());
 	}
 
-	/**
-	 * Gets a list of available jobs in the simulation.
-	 * 
-	 * @return list of jobs
-	 */
-	public static List<RobotJob> getRobotJobs() {
-		if (robotJobs == null)
-			loadRobotJobs();
-		return new CopyOnWriteArrayList<RobotJob>(robotJobs);
-	}
-
 	public static RobotJob getRobotJob(String jobClassName) {
 		if (robotJobs == null)
 			loadRobotJobs();

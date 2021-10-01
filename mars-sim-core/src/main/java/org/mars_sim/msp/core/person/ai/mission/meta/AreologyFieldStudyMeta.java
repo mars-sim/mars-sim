@@ -128,7 +128,7 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 	            JobType job = person.getMind().getJob();
 	            if (job != null) {
 	            	// If this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(AreologyFieldStudy.class) 
+	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, AreologyFieldStudy.class) 
 	                	* (settlement.getGoodsManager().getTourismFactor()
 	                    + settlement.getGoodsManager().getResearchFactor())/1.5;
 	            }
