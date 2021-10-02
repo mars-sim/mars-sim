@@ -9,14 +9,12 @@ package org.mars_sim.msp.core;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import com.google.common.flogger.FluentLogger;
 //  See https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
 //	Do LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
 //	Instead of logger.warn("File: " + f + " not found.", e);
@@ -24,7 +22,6 @@ import com.google.common.flogger.FluentLogger;
 public class LogConsolidated {
 
 	/* Google fluent logger. */
-	private static final FluentLogger flogger = FluentLogger.forEnclosingClass();
 	
 	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
@@ -130,17 +127,6 @@ public class LogConsolidated {
 			logger.log(level, message, t);
 		}
 
-	}
-
-
-	
-	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message) {
-		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message);
-	}
-	
-	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
-
-		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + PROMPT + message, t);
 	}
 	
 	/**
