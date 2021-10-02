@@ -255,8 +255,9 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		@Override
 		protected void updateTable() {
-			if (mission.getSellLoad() != null) {
-				goodsMap = mission.getSellLoad();
+			Map<Good, Integer> newMap = mission.getSellLoad();
+			if (newMap != null) {
+				goodsMap = newMap;
 				goodsList = new ArrayList<Good>(goodsMap.keySet());
 				Collections.sort(goodsList);
 			}
@@ -319,8 +320,9 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		@Override
 		protected void updateTable() {
-			if (mission.getBuyLoad() != null) {
-				goodsMap = mission.getBuyLoad();
+			Map<Good, Integer> newMap = mission.getBuyLoad();
+			if (newMap != null) {
+				goodsMap = newMap;
 				goodsList = new ArrayList<Good>(goodsMap.keySet());
 				Collections.sort(goodsList);
 			}

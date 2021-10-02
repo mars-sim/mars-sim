@@ -1052,6 +1052,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * @param settlement
 	 * @return
 	 */
+	@Override
 	public boolean isVehicleLoadableHere(Settlement settlement) {
 		if (LOAD_GOODS.equals(getPhase())
 				&& settlement.equals(tradingSettlement)) {

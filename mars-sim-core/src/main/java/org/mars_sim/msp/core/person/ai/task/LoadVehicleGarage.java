@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -298,12 +297,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					
 				if (stored < totalNeeded) {
 					if (logger.isLoggable(Level.INFO))
-						logger.log(vehicle, Level.INFO, 5000, "Not having enough "
-								+ ResourceUtil.findAmountResourceName(resource) 
-								+ "; Loaded: " + Math.round(loaded * 100.0) / 100.0 
-								+ "; Needed: " + Math.round(needed * 100.0) / 100.0  
-								+ "; Settlement's need: " + Math.round(settlementNeed* 100.0) / 100.0
-								+ "; Settlement's stored: " + Math.round(stored* 100.0) / 100.0);
+						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
+								loaded, needed, settlementNeed, stored);
 					inv.addAmountDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
@@ -317,12 +312,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				if (inv.getItemResourceNum(resource) < totalNeeded) {
 					int stored = inv.getItemResourceNum(resource);
 					if (logger.isLoggable(Level.INFO))
-						logger.log(vehicle, Level.INFO, 0, "Not having enough "
-								+ Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
-								+ "; Loaded: " + numLoaded
-								+ "; Needed: " + needed   
-								+ "; Settlement's need: " + settlementNeed
-								+ "; Settlement's stored: " + stored);
+						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
+								numLoaded, needed, settlementNeed, stored);
 					inv.addItemDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
@@ -340,13 +331,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
-					String name = Conversion.capitalize(EquipmentType.convertID2Type(equipmentType).toString());
-					logger.log(vehicle, Level.INFO, 0, "Not having enough "
-							+ name 
-							+ "; Loaded: " + numLoaded 
-							+ "; Needed: " + needed 
-							+ "; Settlement's need: " + settlementNeed
-							+ "; Settlement's stored: " + stored);
+					logSettlementShortage(vehicle, EquipmentType.convertID2Type(equipmentType).toString(),
+							numLoaded, totalNeeded, settlementNeed, stored);
 				}
 				return false;
 			}
@@ -358,6 +344,18 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		return true;
 	}
 
+	private final static void logSettlementShortage(Vehicle vehicle, String resource,
+									double numLoaded, double needed, double settlementNeed, double stored) {
+		StringBuilder msg = new StringBuilder();
+		msg.append("Not having enough ")
+			.append(resource) 
+			.append("; Loaded: ").append(numLoaded) 
+			.append("; Needed: ").append(needed)
+			.append("; Settlement's need: ").append(settlementNeed)
+			.append("; Settlement's stored: ").append(stored);
+		logger.info(vehicle, msg.toString());
+	}
+	
 	/**
 	 * Gets the amount of an amount resource that should remain at the settlement.
 	 * 
