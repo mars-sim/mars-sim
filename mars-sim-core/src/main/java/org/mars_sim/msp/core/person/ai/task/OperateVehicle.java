@@ -769,8 +769,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			result = Math.cos(tempAngle);
 		}
 		
-		if (result < 1)
-			logger.info(getVehicle(), 20_000, "getTerrainModifier: " + result);
+//		if (result < 1)
+//			logger.info(getVehicle(), 20_000, "getTerrainModifier: " + result);
 
 		return result;
 	}

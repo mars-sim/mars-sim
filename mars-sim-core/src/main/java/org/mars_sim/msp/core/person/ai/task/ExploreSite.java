@@ -262,7 +262,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			double probability = Math.round((1 + site.getNumEstimationImprovement()) * chance * time *100.0)/100.0;
 			if (probability > .8)
 				probability = .8;
-			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
+//			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 				
@@ -372,7 +372,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
+//		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
 		if (pInv.containsUnitClass(SpecimenBox.class)) {
