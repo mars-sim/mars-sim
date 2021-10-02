@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Storage.java
- * @date 2021-08-28
+ * @date 2021-10-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -11,10 +11,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,11 +28,9 @@ public class Storage extends Function implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
-	private static final Logger logger = Logger.getLogger(Storage.class.getName());
-	// private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ExploreSite.class.getName());
 
 	private Map<Integer, Double> resourceCapacities;
 
@@ -267,9 +265,8 @@ public class Storage extends Function implements Serializable {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.flog(Level.WARNING, 10_000, sourceName + "::" + method, 
-								"[" + s
-					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
+						logger.log(s, Level.WARNING, 10_000, method  
+								+ "Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
 				}
 
@@ -279,9 +276,8 @@ public class Storage extends Function implements Serializable {
 					// capacity to full
 					if (!method.equals(""))
 						method = " at " + method;
-				    LogConsolidated.flog(Level.SEVERE, 30_000, sourceName + method, 
-				    		"[" + inv.getOwner()
-				    		+ "] The storage capacity for " 
+					logger.log(inv.getOwner(), Level.SEVERE, 30_000, method
+				    		+ "The storage capacity for " 
 				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
 					    	+ Math.round(remainingCapacity*10000.0)/10000.0 
 					    	+ " kg can be stored."  
@@ -302,16 +298,15 @@ public class Storage extends Function implements Serializable {
 				}
 
 			} catch (Exception e) {
-				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
-						"[" + inv.getOwner()
-			    		+ "] Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
+				logger.log(inv.getOwner(), Level.SEVERE, 10_000, 
+						"Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
 			if (!method.equals(""))
 				method = " at " + method;
-			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
-    		+ "] Attempting to store non-positive amount of "
+			logger.log(inv.getOwner(), Level.SEVERE, 10_000, 
+					"Attempting to store non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id) + method);
 		}
 
@@ -367,9 +362,8 @@ public class Storage extends Function implements Serializable {
 						// Adjust the grey water filtering rate
 						s.decreaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.flog(Level.WARNING, 1_000, sourceName, 
-								"[" + s
-					    		+ "] Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
+						logger.log(s, Level.WARNING, 1_000,  
+								"Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
 				
 				} else if (amountStored < amount) {
@@ -378,9 +372,8 @@ public class Storage extends Function implements Serializable {
 						inv.retrieveAmountResource(id, amount);
 //						inv.addAmountDemand(id, amount);
 					}
-					LogConsolidated.flog(Level.WARNING, 30_000, sourceName,
-							"[" + inv.getOwner()
-				    		+ "] Ran out of "
+					logger.log(inv.getOwner(), Level.WARNING, 30_000, 
+							"Ran out of "
 							+ ResourceUtil.findAmountResourceName(id) + "."
 							);
 					result = false;
@@ -393,14 +386,14 @@ public class Storage extends Function implements Serializable {
 					result = true;
 				}
 			} catch (Exception e) {
-				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
-	    		+ "] Issues with retrieveAnResource(ar) on "
+				logger.log(inv.getOwner(), Level.SEVERE, 10_000, 
+						"Issues with retrieveAnResource(ar) on "
 						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
-			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
-    		+ "] Attempting to retrieve non-positive amount of "
+			logger.log(inv.getOwner(), Level.SEVERE, 10_000, 
+					"Attempting to retrieve non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id));
 		}
 

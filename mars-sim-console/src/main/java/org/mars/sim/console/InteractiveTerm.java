@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InteractiveTerm.java
- * @date 2021-08-25
+ * @date 2021-10-02
  * @author Manny Kung
  */
 
@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.beryx.textio.TextIO;
@@ -22,7 +21,6 @@ import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 
 /**
@@ -206,7 +204,7 @@ public class InteractiveTerm {
 	        }        
 		
 		} catch(RuntimeException e) {
-			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
+			logger.severe(sourceName + ": RuntimeException detected.");
 		}
 		
 		return menuChoice;

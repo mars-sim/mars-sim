@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SwingHandler.java
- * @date 2021-08-28
+ * @date 2021-10-02
  * @author Manny Kung
  */
 
@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.beryx.textio.InputReader;
@@ -24,7 +23,6 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.StringInputReader;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.LogConsolidated;
 
 public class SwingHandler {
 	
@@ -162,7 +160,7 @@ public class SwingHandler {
         } catch (ReadAbortedException e) {
             terminal.resetToBookmark("bookmark_" + 0);
         } catch (RuntimeException e) {
-			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected: ", e);
+			logger.severe(sourceName + ": RuntimeException detected: ");
         }
         
     }
