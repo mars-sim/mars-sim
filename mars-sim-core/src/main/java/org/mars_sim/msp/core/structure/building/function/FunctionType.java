@@ -14,6 +14,7 @@ public enum FunctionType {
 	ASTRONOMICAL_OBSERVATION	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
 	BUILDING_CONNECTION			(Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
 	COMMUNICATION				(Msg.getString("FunctionType.communication")), //$NON-NLS-1$
+	COMPUTATION					(Msg.getString("FunctionType.computation")), //$NON-NLS-1$
 	COOKING						(Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
 	DINING						(Msg.getString("FunctionType.dining")), //$NON-NLS-1$
 	EARTH_RETURN				(Msg.getString("FunctionType.earthReturn")), //$NON-NLS-1$

@@ -374,8 +374,8 @@ public class DroneMission extends VehicleMission {
 		if (v != null) {
 			// Add vehicle to a garage if available.
 			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-	     
-			if (v.getSettlement() == null) {
+			Settlement currentSettlement = v.getSettlement();
+			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If drone has not been parked at settlement, park it.
 				disembarkSettlement.getInventory().storeUnit(v);	
 			}

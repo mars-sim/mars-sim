@@ -1020,17 +1020,24 @@ public class Inventory implements Serializable {
 						if (unit instanceof Container) {
 							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
-							if (resourceID == resource || resourceID == -1) {
-								double stored = e.getAmountResourceRemainingCapacity(resource);
-								double retrievedAmount = remainingAmount;
-								if (retrievedAmount > stored) {
-									retrievedAmount = stored;
-								}
-								if (retrievedAmount > 0D) {
-									e.retrieveAmountResource(resource, retrievedAmount);
-									remainingAmount -= retrievedAmount;
-								}
+							double quantity = e.getQuanity();
+							double containerAmount = e.getAmountResourceStored(resourceID);
+							if (resourceID != -1 && quantity > 0 && containerAmount > 0 &&
+								getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
+								e.retrieveAmountResource(resourceID, containerAmount);
+								remainingAmount -= containerAmount;
 							}
+//							if (resourceID == resource && resourceID != -1) {
+//								double stored = e.getAmountResourceRemainingCapacity(resource); ?
+//								double retrievedAmount = remainingAmount;
+//								if (retrievedAmount > stored) {
+//									retrievedAmount = stored;
+//								}
+//								if (retrievedAmount > 0D) {
+//									e.retrieveAmountResource(resource, retrievedAmount);
+//									remainingAmount -= retrievedAmount;
+//								}
+//							}
 						}
 					}
 				}
@@ -1190,7 +1197,7 @@ public class Inventory implements Serializable {
 	 */
 	public Set<Integer> getAllItemResourcesStored() {
 
-		if (containedItemResources != null) {
+		if (containedItemResources != null  && !containedItemResources.isEmpty()) {
 			return new HashSet<Integer>(containedItemResources.keySet());
 		}
 		else {
@@ -2208,9 +2215,9 @@ public class Inventory implements Serializable {
 						double quantity = e.getQuanity();
 						double containerAmount = e.getAmountResourceStored(resourceID);
 						if (resourceID != -1 && quantity > 0 && containerAmount > 0 &&
-							getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
-							e.retrieveAmountResource(resourceID, containerAmount);
-							storeAmountResource(resourceID, containerAmount, false);
+								getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
+								e.retrieveAmountResource(resourceID, containerAmount);
+								storeAmountResource(resourceID, containerAmount, false);
 						}
 					}
 	
@@ -2976,7 +2983,7 @@ public class Inventory implements Serializable {
 
 		double tempMass = 0D;
 
-		if (containedItemResources != null) {
+		if (containedItemResources != null && !containedItemResources.isEmpty()) {
 			Set<Entry<Integer, Integer>> es = containedItemResources.entrySet();
 			Iterator<Entry<Integer, Integer>> i = es.iterator();
 			while (i.hasNext()) {

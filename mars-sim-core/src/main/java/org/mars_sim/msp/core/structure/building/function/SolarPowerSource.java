@@ -131,14 +131,10 @@ implements Serializable {
 
 	@Override
 	public void removeFromSettlement() {
-		// TODO Auto-generated method stub
-
 	}
 	
 	@Override
 	public void setTime(double time) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

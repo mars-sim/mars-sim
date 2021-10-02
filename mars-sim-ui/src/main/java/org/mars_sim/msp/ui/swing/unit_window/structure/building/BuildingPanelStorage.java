@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+setPowerDemand * Mars Simulation Project
  * BuildingPanelStorage.java
  * @version 3.2.0 2021-06-20
  * @author Scott Davis

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,12 +21,8 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateDelivery;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,7 +31,6 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -68,8 +64,8 @@ public class Delivery extends DroneMission implements Serializable {
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
 	// Static cache for holding trade profit info.
-	public static final Map<Settlement, DeliveryProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, DeliveryProfitInfo>();
-	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
+	public static final Map<Settlement, DeliveryProfitInfo> TRADE_PROFIT_CACHE = new HashMap<>();
+	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<>();
 
 	static final int MAX_MEMBERS = 1;
 
@@ -96,7 +92,12 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingMember);
-
+		
+		// Problem starting Mission
+		if (isDone()) {
+			return;
+		}
+		
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
@@ -138,7 +139,7 @@ public class Delivery extends DroneMission implements Serializable {
 					desiredBuyLoad = DeliveryUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
 				} else {
 					// Cannot buy from settlement due to credit limit.
-					desiredBuyLoad = new HashMap<Good, Integer>(0);
+					desiredBuyLoad = new HashMap<>();
 				}
 
 				if (credit < DeliveryUtil.SELL_CREDIT_LIMIT) {
@@ -146,7 +147,7 @@ public class Delivery extends DroneMission implements Serializable {
 					sellLoad = DeliveryUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
 				} else {
 					// Will not sell to settlement due to credit limit.
-					sellLoad = new HashMap<Good, Integer>(0);
+					sellLoad = new HashMap<>();
 				}
 
 				// Determine desired trade profit.
@@ -154,9 +155,8 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 
 			// Recruit additional members to mission.
-			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember, true))
-					return;
+			if (!isDone() && !recruitMembersForMission(startingMember, true)) {
+				return;
 			}
 		}
 
@@ -223,7 +223,7 @@ public class Delivery extends DroneMission implements Serializable {
 		// Set trade goods.
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
-		desiredBuyLoad = new HashMap<Good, Integer>(buyGoods);
+		desiredBuyLoad = new HashMap<>(buyGoods);
 		profit = estimateDeliveryProfit(buyLoad);
 		desiredProfit = profit;
 
@@ -247,6 +247,7 @@ public class Delivery extends DroneMission implements Serializable {
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
 	 */
+	@Override
 	protected void determineNewPhase() {
 		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
@@ -320,13 +321,13 @@ public class Delivery extends DroneMission implements Serializable {
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
 		if (TRADE_DISEMBARKING.equals(getPhase())) {
-			performDeliveryDisembarkingPhase(member);
+			performDeliveryDisembarkingPhase();
 		} else if (TRADE_NEGOTIATING.equals(getPhase())) {
 			performDeliveryNegotiatingPhase(member);
 		} else if (UNLOAD_GOODS.equals(getPhase())) {
-			performDestinationUnloadGoodsPhase(member);
+			performDestinationUnloadGoodsPhase();
 		} else if (LOAD_GOODS.equals(getPhase())) {
-			performDestinationLoadGoodsPhase(member);
+			performDestinationLoadGoodsPhase();
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
 			computeEstimatedTotalDistance();
 			performDeliveryEmbarkingPhase(member);
@@ -338,7 +339,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @param member the mission member performing the mission.
 	 */
-	private void performDeliveryDisembarkingPhase(MissionMember member) {
+	private void performDeliveryDisembarkingPhase() {
 		Vehicle v = getVehicle();
 		// If drone is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
@@ -362,13 +363,27 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDeliveryNegotiatingPhase(MissionMember member) {
 		if (doNegotiation) {
-//			if (member == getMissionDelivery()) {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
 						profit = estimateDeliveryProfit(buyLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
+					}
+					else {
+						// Check if the caller should be doing negotiation
+						Worker dealer = negotiationTask.getWorker();
+						if (dealer == null) {
+							// Task has not be reinit after a restore
+							logger.warning(member, "Reinit the Negotiation Task");
+							negotiationTask.reinit();
+							dealer = negotiationTask.getWorker();
+						}
+						if (dealer.equals(member)) {
+							// It's the caller so restart and it will be a Person
+							logger.info(member, "Resuming negotiation for " + getTypeID());
+							assignTask((Person)member, negotiationTask);
+						}
 					}
 				} 
 				
@@ -409,7 +424,6 @@ public class Delivery extends DroneMission implements Serializable {
 						}
 					}
 				}
-//			}
 		} else {
 			setPhaseEnded(true);
 		}
@@ -434,33 +448,10 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void performDestinationUnloadGoodsPhase(MissionMember member) {
+	private void performDestinationUnloadGoodsPhase() {
 
 		// Unload drone if necessary.
-		boolean unloaded = getDrone().getInventory().getTotalInventoryMass(false) == 0D;
-		if (!unloaded) {
-			// Alert the people in the disembarked settlement to unload cargo
-			for (Person person: tradingSettlement.getIndoorPeople()) {
-				if (person.isInSettlement()) {
-					// Random chance of having person unload (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (isInAGarage()) {
-							assignTask(person, new UnloadVehicleGarage(person, getDrone()));
-						} 
-						
-						else {
-							// Check if it is day time.
-							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
-								assignTask(person, new UnloadVehicleEVA(person, getDrone()));
-							}
-						}
-	
-						return;
-					}
-				}
-			}
-		} else {
+		if (getDrone().getInventory().getTotalInventoryMass(false) == 0D) {
 			setPhaseEnded(true);
 		}
 	}
@@ -470,35 +461,12 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void performDestinationLoadGoodsPhase(MissionMember member) {
+	private void performDestinationLoadGoodsPhase() {
 
 		if (!isDone() && !isVehicleLoaded()) {
 
 			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				for (Person person: tradingSettlement.getIndoorPeople()) {
-					if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-						// Random chance of having person load (this allows person to do other things
-						// sometimes)
-						if (RandomUtil.lessThanRandPercent(50)) {
-							if (isInAGarage()) {
-								assignTask(person,
-									new LoadVehicleGarage(person, this));
-
-							} else {
-								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
-										assignTask(person,
-												new LoadVehicleEVA(person, this));
-								}
-							}
-							
-							return;
-						}
-					}
-				}
-			} else {
+			if (!isVehicleLoadable()) {
 				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
@@ -558,29 +526,6 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
-		super.performEmbarkFromSettlementPhase(member);
-	}
-
-	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
-		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
-	}
-
-	@Override
-	public void endMission() {
-		super.endMission();
-
-//		// Unreserve any towed vehicles.
-//		if (getDrone() != null) {
-//			if (getDrone().getTowedVehicle() != null) {
-//				Vehicle towed = getDrone().getTowedVehicle();
-//				towed.setReservedForMission(false);
-//			}
-//		}
-	}
-
-	@Override
 	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
 		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
@@ -602,17 +547,16 @@ public class Delivery extends DroneMission implements Serializable {
 				int num = load.get(good);
 				int id = good.getID();
 				if (result.containsKey(id)) {
-					num += (Integer) result.get(id);
+					num += result.get(id);
 				}
 				result.put(id, num);
 			}
 			
 			else if (good.getCategory() == GoodCategory.CONTAINER) {
-//				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
-				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);
+				int id = good.getID();
 				if (result.containsKey(id)) {
-					num += (Integer) result.get(id);
+					num += result.get(id);
 				}
 				result.put(id, num);
 			}
@@ -624,7 +568,7 @@ public class Delivery extends DroneMission implements Serializable {
 	@Override
 	public Map<Integer, Number> getOptionalResourcesToLoad() {
 
-		Map<Integer, Number> result = new HashMap<>();//super.getOptionalResourcesToLoad();
+		Map<Integer, Number> result = new HashMap<>();
 
 		// Add buy/sell load.
 		Map<Good, Integer> load = null;
@@ -638,16 +582,14 @@ public class Delivery extends DroneMission implements Serializable {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodCategory.AMOUNT_RESOURCE)) {
-//				AmountResource resource = (AmountResource) good.getObject();
-				int id = good.getID();//resource.getID();
+				int id = good.getID();
 				double amount = load.get(good).doubleValue();
 				if (result.containsKey(id)) {
 					amount += (Double) result.get(id);
 				}
 				result.put(id, amount);
 			} else if (good.getCategory().equals(GoodCategory.ITEM_RESOURCE)) {
-//				ItemResource resource = (ItemResource) good.getObject();
-				int id = good.getID();//resource.getID();
+				int id = good.getID();
 				int num = load.get(good);
 				if (result.containsKey(id)) {
 					num += (Integer) result.get(id);
@@ -722,9 +664,9 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getSellLoad() {
 		if (sellLoad != null) {
-			return new HashMap<Good, Integer>(sellLoad);
+			return new HashMap<>(sellLoad);
 		} else {
-			return null;
+			return Collections.emptyMap();
 		}
 	}
 
@@ -735,9 +677,9 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		if (buyLoad != null) {
-			return new HashMap<Good, Integer>(buyLoad);
+			return new HashMap<>(buyLoad);
 		} else {
-			return null;
+			return Collections.emptyMap();
 		}
 	}
 
@@ -757,9 +699,9 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
 		if (desiredBuyLoad != null) {
-			return new HashMap<Good, Integer>(desiredBuyLoad);
+			return new HashMap<>(desiredBuyLoad);
 		} else {
-			return null;
+			return Collections.emptyMap();
 		}
 	}
 
@@ -857,5 +799,33 @@ public class Delivery extends DroneMission implements Serializable {
 			equipmentNeededCache = result;
 			return result;
 		}
+	}
+
+	/**
+	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
+	 * then it can be unloaded.
+	 */
+	@Override
+	public boolean isVehicleUnloadableHere(Settlement settlement) {
+		if (UNLOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleUnloadableHere(settlement);
+	}
+	
+	/**
+	 * Can the mission vehicle be loaded at a Settlement. Must be in
+	 * the LOAD_GOODS phase at the mission trading settlement.
+	 * @param settlement
+	 * @return
+	 */
+	@Override
+	public boolean isVehicleLoadableHere(Settlement settlement) {
+		if (LOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleLoadableHere(settlement);
 	}
 }

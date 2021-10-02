@@ -227,7 +227,8 @@ public class SimulationConfig implements Serializable {
 		try {
 			loadDefaultConfiguration();
 		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage());
+//          	e.printStackTrace();
+          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage(), e);
 		}
 
 	}
@@ -1086,6 +1087,7 @@ public class SimulationConfig implements Serializable {
 		cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
 //		logger.config("cropConfig");
 		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
+//		logger.config("vehicleConfig");
 		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
 //		logger.config("buildingConfig");
 		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);

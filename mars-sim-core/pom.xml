@@ -111,20 +111,6 @@
 		    <artifactId>slf4j-simple</artifactId>
 		    <version>${slf4j.version}</version>
 		</dependency>	
-		<!-- https://mvnrepository.com/artifact/com.google.flogger/flogger
-			 https://github.com/google/flogger 127 KB -->
-		<dependency>
-			<groupId>com.google.flogger</groupId>
-			<artifactId>flogger</artifactId>
-			<version>0.5.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.flogger/flogger-system-backend -->
-		<dependency>
-		    <groupId>com.google.flogger</groupId>
-		    <artifactId>flogger-system-backend</artifactId>
-		    <version>0.5.1</version>
-		    <scope>runtime</scope>
-		</dependency>
 
 		<!-- https://github.com/cbeust/jcommander -->
 		<dependency>
@@ -151,7 +137,7 @@
 		    <artifactId>h2</artifactId>
 		    <version>1.4.200</version>
 		</dependency> -->
-	
+
 	</dependencies>
 
    <build>

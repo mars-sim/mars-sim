@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
@@ -1836,7 +1837,11 @@ public class BuildingManager implements Serializable {
 				case COMMUNICATION:
 					result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
+				case COMPUTATION:
+					result += Computation.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+
 				case COOKING:
 					result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
 					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);

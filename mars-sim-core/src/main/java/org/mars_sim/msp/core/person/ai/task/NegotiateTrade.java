@@ -41,7 +41,7 @@ public class NegotiateTrade extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(NegotiateDelivery.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(NegotiateTrade.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.negotiateTrade"); //$NON-NLS-1$
@@ -91,43 +91,6 @@ public class NegotiateTrade extends Task implements Serializable {
 		addPhase(NEGOTIATING);
 		setPhase(NEGOTIATING);
 	}
-
-//    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
-//            Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
-//
-//        // Use trade constructor.
-//        super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
-//
-//        // Initialize data members.
-//        this.sellingSettlement = sellingSettlement;
-//        this.buyingSettlement = buyingSettlement;
-//        this.rover = rover;
-//        this.soldLoad = soldLoad;
-//        this.buyingTrader = buyingTrader;
-//        this.sellingTrader = sellingTrader;
-//
-//        // Initialize task phase.
-//        addPhase(NEGOTIATING);
-//        setPhase(NEGOTIATING);
-//    }
-//    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
-//            Map<Good, Integer> soldLoad, Robot buyingRobotTrader, Robot sellingRobotTrader) {
-//
-//        // Use trade constructor.
-//        super(NAME, buyingRobotTrader, false, false, STRESS_MODIFIER, true, DURATION);
-//
-//        // Initialize data members.
-//        this.sellingSettlement = sellingSettlement;
-//        this.buyingSettlement = buyingSettlement;
-//        this.rover = rover;
-//        this.soldLoad = soldLoad;
-//        this.buyingRobotTrader = buyingRobotTrader;
-//        this.sellingRobotTrader = sellingRobotTrader;
-//
-//        // Initialize task phase.
-//        addPhase(NEGOTIATING);
-//        setPhase(NEGOTIATING);
-//    }
 
 	/**
 	 * Performs the negotiating phase of the task.
@@ -184,7 +147,7 @@ public class NegotiateTrade extends Task implements Serializable {
 						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
 						);
 			} else {
-				buyLoad = new HashMap<Good, Integer>(0);
+				buyLoad = new HashMap<>();
 			}
 		}
 
@@ -286,7 +249,7 @@ public class NegotiateTrade extends Task implements Serializable {
 
 		experienceAptitude = trader.getNaturalAttributeManager()
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints += newPoints * (experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		trader.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 	}

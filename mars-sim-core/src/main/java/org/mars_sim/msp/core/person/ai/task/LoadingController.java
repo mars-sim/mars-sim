@@ -318,7 +318,7 @@ public class LoadingController implements Serializable {
 			logger.fine(vehicle, loader + " completed loading amount " + resourceName);
 			manifest.remove(resource);
 		}
-		else if (!mandatory & usedSupply) {
+		else if (!mandatory && usedSupply) {
 			logger.fine(vehicle, loader + " optional amount " + resourceName
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(resource);

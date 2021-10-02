@@ -165,11 +165,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (this.resource == resource || this.resource == -1) {
+		if (this.resource == resource) {
 			double diff = this.quantity - quantity;
 			if (diff < 0) {
 				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, "Just retrieved all " + this.quantity + " kg of " 
+				logger.warning(this, 10_000L, "Just retrieved all " + this.quantity + " kg of " 
 						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
 				this.quantity = 0;
 				return diff;
@@ -178,6 +178,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 				this.quantity = diff;
 				return 0;
 			}
+		}
+		else if (this.resource == -1) {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, 10_000L, "Cannot retrieve " + this.quantity + " kg of " 
+					+ name + ". Not being used for storing anything yet.");
+			return 0;
 		}
 		else {
 			String storedResource = ResourceUtil.findAmountResourceName(this.resource);

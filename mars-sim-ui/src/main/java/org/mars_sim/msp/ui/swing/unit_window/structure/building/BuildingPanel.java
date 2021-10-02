@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -206,6 +207,18 @@ public class BuildingPanel extends JPanel {
 			BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 			functionPanels.add(cookingPanel);
 			functionListPanel.add(cookingPanel);
+			// if (isTranslucent)setPanelStyle(powerPanel);
+//			}
+//			catch (BuildingException e) {}
+		}
+		
+		// Prepare cooking panel if building has cooking.
+		if (building.hasFunction(FunctionType.COMPUTATION)) {
+//			try {
+			Computation computation = building.getComputation();
+			BuildingFunctionPanel computationPanel = new BuildingPanelComputation(computation, desktop);
+			functionPanels.add(computationPanel );
+			functionListPanel.add(computationPanel );
 			// if (isTranslucent)setPanelStyle(powerPanel);
 //			}
 //			catch (BuildingException e) {}

@@ -92,42 +92,6 @@ public class NegotiateDelivery extends Task implements Serializable {
 		setPhase(NEGOTIATING);
 	}
 
-//    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
-//            Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
-//
-//        // Use delivery constructor.
-//        super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
-//
-//        // Initialize data members.
-//        this.sellingSettlement = sellingSettlement;
-//        this.buyingSettlement = buyingSettlement;
-//        this.rover = rover;
-//        this.soldLoad = soldLoad;
-//        this.buyingTrader = buyingTrader;
-//        this.sellingTrader = sellingTrader;
-//
-//        // Initialize task phase.
-//        addPhase(NEGOTIATING);
-//        setPhase(NEGOTIATING);
-//    }
-//    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
-//            Map<Good, Integer> soldLoad, Robot buyingRobotTrader, Robot sellingRobotTrader) {
-//
-//        // Use delivery constructor.
-//        super(NAME, buyingRobotTrader, false, false, STRESS_MODIFIER, true, DURATION);
-//
-//        // Initialize data members.
-//        this.sellingSettlement = sellingSettlement;
-//        this.buyingSettlement = buyingSettlement;
-//        this.rover = rover;
-//        this.soldLoad = soldLoad;
-//        this.buyingRobotTrader = buyingRobotTrader;
-//        this.sellingRobotTrader = sellingRobotTrader;
-//
-//        // Initialize task phase.
-//        addPhase(NEGOTIATING);
-//        setPhase(NEGOTIATING);
-//    }
 
 	/**
 	 * Performs the negotiating phase of the task.
@@ -184,7 +148,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
 						);
 			} else {
-				buyLoad = new HashMap<Good, Integer>(0);
+				buyLoad = new HashMap<>();
 			}
 		}
 
@@ -287,7 +251,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 		experienceAptitude = trader.getNaturalAttributeManager()
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints += newPoints * (experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		trader.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 	}

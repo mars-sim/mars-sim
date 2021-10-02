@@ -424,7 +424,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				for (Drone v : list) {
 					if (!v.haveStatusType(StatusType.MAINTENANCE)
 							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-							&& isUsableVehicle(v)) {
+							&& isUsableVehicle(v)
+							&& !v.isReserved()) {
 						result.add(v);
 					}
 				}
@@ -437,7 +438,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (v instanceof Rover
 							&& !v.haveStatusType(StatusType.MAINTENANCE)
 							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-							&& isUsableVehicle(v)) {
+							&& isUsableVehicle(v)
+							&& !v.isReserved()) {
 						result.add(v);
 					}
 				}
@@ -1737,5 +1739,27 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			equipmentNeededCache.clear();
 		}
 		equipmentNeededCache = null;
+	}
+
+	/**
+	 * Can the mission vehicle be unloaded at this Settlement
+	 * @param settlement
+	 * @return
+	 */
+	public boolean isVehicleUnloadableHere(Settlement settlement) {
+		// It is either a local mission unloading
+		return DISEMBARKING.equals(getPhase())
+					&& getAssociatedSettlement().equals(settlement);
+	}
+
+	/**
+	 * Can the mission vehicle be loaded at a Settlement. Must be in
+	 * the EMBARKING phase at the mission starting point.
+	 * @param settlement
+	 * @return
+	 */
+	public boolean isVehicleLoadableHere(Settlement settlement) {
+		return EMBARKING.equals(getPhase())
+					&& getAssociatedSettlement().equals(settlement);
 	}
 }

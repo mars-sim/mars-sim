@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.person.ai.task.utils;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
@@ -18,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public interface Worker extends Loggable {
+public interface Worker extends Loggable, Serializable {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
