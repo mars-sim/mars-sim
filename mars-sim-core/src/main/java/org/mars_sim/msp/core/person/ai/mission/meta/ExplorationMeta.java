@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -35,7 +35,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
 	ExplorationMeta() {
-		super(MissionType.EXPLORATION, "exploration");
+		super(MissionType.EXPLORATION, "exploration",
+					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
 	}
 	
 	@Override
@@ -109,10 +110,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
 				
 				// Job modifier.
-				JobType job = person.getMind().getJob();
-				if (job != null)
-					// It this town has a tourist objective, add bonus
-					missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, Exploration.class)
+				missionProbability *= getLeaderSuitability(person)
 						* (settlement.getGoodsManager().getTourismFactor()
 	               		 + settlement.getGoodsManager().getResearchFactor())/1.5;
 				

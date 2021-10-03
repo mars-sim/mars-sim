@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +16,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -34,7 +34,8 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
     BuildingConstructionMissionMeta() {
-    	super(MissionType.BUILDING_CONSTRUCTION, "buildingConstructionMission");
+    	super(MissionType.BUILDING_CONSTRUCTION, "buildingConstructionMission",
+    			Set.of(JobType.ARCHITECT));
     }
     
     @Override
@@ -127,10 +128,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	            }
 	
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingConstructionMission.class);
-	            }
+	            missionProbability *= getLeaderSuitability(person);
 			}
             
 			if (missionProbability > LIMIT)

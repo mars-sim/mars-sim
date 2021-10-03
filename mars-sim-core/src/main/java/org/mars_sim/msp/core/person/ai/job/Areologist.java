@@ -13,14 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -44,28 +36,6 @@ class Areologist extends Job {
 	public Areologist() {
 		// Use Job constructor
 		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
-
-		// Add areologist-related missions.
-		jobMissionStarts.add(AreologyFieldStudy.class);
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionStarts.add(Exploration.class);
-		jobMissionJoins.add(Exploration.class);
-		
-		jobMissionStarts.add(CollectIce.class);
-		jobMissionJoins.add(CollectIce.class);
-		
-		jobMissionStarts.add(CollectRegolith.class);
-		jobMissionJoins.add(CollectRegolith.class);
-			
-		jobMissionStarts.add(Mining.class);
-		jobMissionJoins.add(Mining.class);
-		
-		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
-		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**

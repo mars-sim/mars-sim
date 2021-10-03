@@ -17,7 +17,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -315,17 +314,5 @@ public final class JobUtil {
 			}
 		}
 		return num;
-	}
-
-	/**
-	 * Facade method to remove the need to lookup a JobSpec to get the 
-	 * start Mission probability.
-	 * @param job
-	 * @param missionClass
-	 * @return
-	 */	
-	public static double getStartMissionProbabilityModifier(JobType job, Class<? extends Mission> missionClass) {
-		Job j = getJobSpec(job);
-		return j.getStartMissionProbabilityModifier(missionClass);
 	}
 }

@@ -27,13 +27,8 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//  private static final Logger logger = Logger.getLogger(CollectRegolith.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			 logger.getName().length());
-
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.COLLECT_REGOLITH;

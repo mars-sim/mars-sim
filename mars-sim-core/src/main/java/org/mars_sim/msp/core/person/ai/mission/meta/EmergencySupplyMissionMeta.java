@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -23,8 +21,10 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class EmergencySupplyMissionMeta extends AbstractMetaMission {
 
-    EmergencySupplyMissionMeta() {
-    	super(MissionType.EMERGENCY_SUPPLY, "emergencySupply");
+    private double jobModifier;
+
+	EmergencySupplyMissionMeta() {
+    	super(MissionType.EMERGENCY_SUPPLY, "emergencySupply", null);
     }
 
     @Override
@@ -47,11 +47,7 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
     			return 0;
     		
 	        // Determine job modifier.
-	        JobType job = person.getMind().getJob();
-	        double jobModifier = 0D;
-	        if (job != null) {
-	            jobModifier = JobUtil.getStartMissionProbabilityModifier(job, EmergencySupply.class);
-	        }
+            jobModifier = getLeaderSuitability(person);
 	
 	        // Check if person is in a settlement.
 	        if (jobModifier > 0D) {

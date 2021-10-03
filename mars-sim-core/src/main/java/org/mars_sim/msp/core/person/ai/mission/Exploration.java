@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -45,6 +47,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class Exploration extends RoverMission
 	implements Serializable, SiteMission {
 
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +56,7 @@ public class Exploration extends RoverMission
 	private static SimLogger logger = SimLogger.getLogger(Exploration.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.EXPLORATION;
@@ -1025,6 +1029,12 @@ public class Exploration extends RoverMission
 		return siteValue / count;
 	}
 	
+	@Override
+	protected Set<JobType> getPreferredPersonJobs() {
+		return PREFERRED_JOBS;
+
+	}
+
 	@Override
 	public void destroy() {
 		super.destroy();

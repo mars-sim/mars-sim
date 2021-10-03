@@ -13,10 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,17 +28,6 @@ class Meteorologist extends Job {
 	public Meteorologist() {
 		// Use Job constructor
 		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
-			
-		// Add meteorologist-related missions.
-		jobMissionStarts.add(MeteorologyFieldStudy.class);		
-		jobMissionJoins.add(MeteorologyFieldStudy.class);
-		
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionStarts.add(Exploration.class);
-		jobMissionJoins.add(Exploration.class);
 	}
 
 	@Override

@@ -6,9 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -25,7 +26,8 @@ public class CollectIceMeta extends AbstractMetaMission {
 	private static final double VALUE = 50D;
    
 	CollectIceMeta() {
-		super(MissionType.COLLECT_ICE, "collectIce");
+		super(MissionType.COLLECT_ICE, "collectIce", 
+				Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
 	}
 	
 	@Override
@@ -76,12 +78,9 @@ public class CollectIceMeta extends AbstractMetaMission {
 	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.COLLECT_ICE));
 	    		
 				// Job modifier.
-				JobType job = person.getMind().getJob();
-				if (job != null) {
-					missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, CollectIce.class);
-					// If this town has a tourist objective, divided by bonus
-					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
-				}
+	    		missionProbability *= getLeaderSuitability(person);
+				// If this town has a tourist objective, divided by bonus
+				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 	
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;

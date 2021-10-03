@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -39,6 +41,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class MeteorologyFieldStudy extends RoverMission implements Serializable {
 
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.METEOROLOGIST);
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +50,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	private static final SimLogger logger = SimLogger.getLogger(MeteorologyFieldStudy.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.METEOROLOGY;
@@ -652,28 +656,14 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			foodAmount += (Double) result.get(foodID);
 		}
 		result.put(foodID, foodAmount);
-
-		// Add the chosen dessert for the journey
-//		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-//	  	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
-//		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION ;
-//	  	// Put together a list of available dessert
-//        for(String n : availableDesserts) {
-//    		AmountResource dessert = AmountResource.findAmountResource(n);
-//        	// match the chosen dessert for the journey
-//            if (result.containsKey(dessert))
-//                dessertAmount += (Double) result.get(dessert);
-//            result.put(dessert, dessertAmount);
-//        }
-
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-//        double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;
-//        if (result.containsKey(dessert1))
-//            dessert1Amount += (Double) result.get(dessert1);
-//        result.put(dessert1, dessert1Amount);
 		return result;
 	}
-
+	
+	@Override
+	protected Set<JobType> getPreferredPersonJobs() {
+		return PREFERRED_JOBS;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

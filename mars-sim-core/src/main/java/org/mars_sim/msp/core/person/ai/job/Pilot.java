@@ -13,17 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -39,39 +28,6 @@ public class Pilot extends Job {
 	public Pilot() {
 		// Use Job constructor
 		super(JobType.PILOT, Job.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
-				
-		// Add driver-related mission joins.
-
-		
-		jobMissionJoins.add(Exploration.class);
-		
-		jobMissionJoins.add(CollectIce.class);
-		
-		jobMissionJoins.add(CollectRegolith.class);
-		
-		jobMissionJoins.add(Trade.class);
-		
-		jobMissionJoins.add(Mining.class);
-		
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionStarts.add(Delivery.class);
-		jobMissionJoins.add(Delivery.class);
-		
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-		
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-		
-		jobMissionStarts.add(EmergencySupply.class);
-		jobMissionJoins.add(EmergencySupply.class);
 	}
 
 	/**

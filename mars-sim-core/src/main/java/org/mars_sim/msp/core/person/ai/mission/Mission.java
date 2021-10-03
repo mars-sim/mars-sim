@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -32,7 +33,6 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -45,8 +45,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 
 /**
@@ -115,8 +113,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 	
 	// Data members
-	/** mission type id */
-	private int missionID;
 	/** Unique identifier */
 	private int identifier;
 	/** The minimum number of members for mission. */
@@ -133,7 +129,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/** True if mission is completed. */
 	private boolean done = false;
 	/** True if the mission has been approved. */
-	protected boolean approved = false;
+	private boolean approved = false;
 	/** True if the mission has been requested. */
 	protected boolean requested = false;
 	
@@ -219,8 +215,6 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		// Create the date filed timestamp
 		createDateFiled();
-			
-		missionID = MissionManager.matchMissionID(missionName);
 		
 		membersMap = new HashMap<>();
 		missionStatus = new CopyOnWriteArrayList<>();
@@ -284,10 +278,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 	}
 
-//	public void iterateIdentifer() {
-//		this.identifier = getNextIdentifier();
-//	}
-	
 	/**
 	 * Gets the date filed timestamp of the mission.
 	 * 
@@ -318,7 +308,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Creates the date filed timestamp of the mission.
 	 */
-	public void createDateFiled() {
+	private void createDateFiled() {
 		if (dateFiled.equals("")) {
 			dateFiled = marsClock.getTrucatedDateTimeStamp();
 			fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
@@ -352,15 +342,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public int getIdentifier() {
 		return identifier;
-	}
-
-	/**
-	 * Generate the type from the Class name. Not ideal.
-	 * 
-	 * @return
-	 */
-	public String getType() {
-		return getClass().getSimpleName();
 	}
 
 	/**
@@ -527,21 +508,6 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines if a mission includes the given person.
-	 * 
-	 * @param person person to be checked
-	 * @return true if person is a part of the mission.
-	 */
-	public final boolean hasPerson(Person person) {
-		for (MissionMember m : members) {
-			if (m.getName().equalsIgnoreCase(person.getName()))
-				return true;
-		}
-		
-		return false;
-	}
-
-	/**
 	 * Gets the number of members in the mission.
 	 * 
 	 * @return number of members.
@@ -593,25 +559,6 @@ public abstract class Mission implements Serializable, Temporal {
 		members.add(member);
 	}
 	
-	/**
-	 * Gets a collection of the people in the mission.
-	 * 
-	 * @return collection of people
-	 */
-	public final Collection<Person> getPeople() {
-		Collection<MissionMember> members = getMembers();
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember m = i.next();
-			if (m instanceof Person) {
-				people.add((Person) m);
-			}
-		}
-
-		return people;
-	}
 
 	/**
 	 * Determines if mission is completed.
@@ -667,14 +614,6 @@ public abstract class Mission implements Serializable, Temporal {
 		return missionType;
 	}
 	
-	/**
-	 * Sets the mission type enum.
-	 * 
-	 * @param missionType
-	 */
-	protected void setMissionType(MissionType missionType) {
-		this.missionType = missionType;
-	}
 	
 	/**
 	 * Gets the mission's description.
@@ -870,27 +809,27 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @param reason
 	 */
-	public void addMissionScore() {
+	private void addMissionScore() {
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			for (MissionMember member : members) {
 				if (member instanceof Person) {
 					Person person = (Person) member;
 					
 					if (!person.isDeclaredDead()) {
-						if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-							person.addMissionExperience(missionID, 3);
-						}
-						else
+						if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
 							// Note : there is a minor penalty for those who are sick 
 							// and thus unable to fully function during the mission
-							person.addMissionExperience(missionID, 3);
-						
-						if (person.equals(startingMember)) {
+							person.addMissionExperience(missionType, 2);
+						}
+						else if (person.equals(startingMember)) {
 							// The mission lead receive extra bonus
-							person.addMissionExperience(missionID, 3);
+							person.addMissionExperience(missionType, 6);
+							
 							// Add a leadership point to the mission lead
 							person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);	
 						}
+						else
+							person.addMissionExperience(missionType, 3);
 					}
 				}
 			}
@@ -1009,7 +948,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @return true if dangerous medical problems
 	 */
-	protected final boolean hasDangerousMedicalProblems() {
+	private final boolean hasDangerousMedicalProblems() {
 		for (MissionMember member : members) {
 			if (member instanceof Person) {
 				Person person = (Person) member;
@@ -1236,22 +1175,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 		return result;
 	}
-
-	public double[] computeAverage(List<Double> list) {
-		double ave = 0;
-		double total = 0;
-		int size = list.size();
-		if (!list.isEmpty()) {
-			for (double i : list) {
-				total += i;
-			}
-			ave = total/size;
-		}
-		else {
-			ave = 0;
-		}
-		return new double[] {size, ave};
-	}
 	
 	/**
 	 * Gets the mission qualification value for the member. Member is qualified in
@@ -1268,29 +1191,20 @@ public abstract class Mission implements Serializable, Temporal {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;
-			
-			// Compute the mission experience score
-			if (person.getMissionExperiences().containsKey(missionID)) {
-				double[] score = new double[2];
-				
-				List<Double> list = person.getMissionExperiences().get(missionID);
-	
-				if (!list.isEmpty()) {
-					score = computeAverage(list);
-					result = score[0] * score[1] /2.0;
-				}
-				else
-					result = 5;
-			}
-			else
-				result = 5;
+			result = Math.max(5,  person.getMissionExperience(missionType));
 			
 			// Get base result for job modifier.
+			Set<JobType> prefered = getPreferredPersonJobs();
 			JobType job = person.getMind().getJob();
-			if (job != null) {
-				result = result + 2 * result * JobUtil.getJobSpec(job).getJoinMissionProbabilityModifier(this.getClass());
+			double jobModifier;
+			if ((prefered != null) && prefered.contains(job)) {
+				jobModifier = 1D;
 			}
-			
+			else {
+				jobModifier = 0.5D;
+			}
+				
+			result = result + 2 * result * jobModifier;			
 		} else if (member instanceof Robot) {
 			Robot robot = (Robot) member;
 
@@ -1302,6 +1216,15 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Get the preferred Job types.
+	 * @return
+	 */
+	protected Set<JobType> getPreferredPersonJobs() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -1356,21 +1279,6 @@ public abstract class Mission implements Serializable, Temporal {
 		return true;
 	}
 
-	/**
-	 * Associate all mission members with a settlement.
-	 * 
-	 * @param settlement the associated settlement.
-	 */
-	public void associateAllMembersWithSettlement(Settlement settlement) {
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person p = (Person) member;
-				settlement.addACitizen(p);
-			}
-		}
-	}
 
 	/**
 	 * Gets the current location of the mission.
@@ -1502,16 +1410,7 @@ public abstract class Mission implements Serializable, Temporal {
 	public void setApproval(boolean value) {
 		approved = value;
 	}
-	
-	/**
-	 * Checks if the mission plan has been approved
-	 * 
-	 * @return
-	 */
-	public boolean isApproved() {
-		return approved;
-	}
-	
+
 	/**
 	 * Returns the mission plan
 	 * 
@@ -1532,16 +1431,6 @@ public abstract class Mission implements Serializable, Temporal {
 		else
 			return null;
 	}
-	
-	/**
-	 * Returns the starting member
-	 * 
-	 * @return {@link MissionMember}
-	 */
-	public MissionMember getStartingMember() {
-		return startingMember;
-	}
-	
 	
 	/**
 	 * Sets the starting member.
@@ -1624,14 +1513,6 @@ public abstract class Mission implements Serializable, Temporal {
 		return priority;
 	}
 	
-	
-	public Vehicle getVehicle() {
-		if (this instanceof VehicleMission) {
-			return ((VehicleMission)this).getVehicle();
-		}
-		return null;	
-	}
-	
 	public String getSettlmentName() {
 		return settlementName;
 	}
@@ -1644,18 +1525,13 @@ public abstract class Mission implements Serializable, Temporal {
 	public boolean canParticipate(MissionMember worker) {
 		return true;
 	}
-	
-	public int getMissionID() {
-		return missionID;
-	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
 		return this.missionType == m.getMissionType()
-				&& missionID == m.getMissionID()
 				&& this.identifier == m.getIdentifier();
 	}
 
@@ -1667,7 +1543,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public int hashCode() {
 		int hashCode = (int)(1 + identifier);
 		hashCode *= missionType.hashCode();
-		hashCode *= startingMember.hashCode();
 		return hashCode;
 	}
 	

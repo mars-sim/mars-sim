@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -34,7 +36,8 @@ public class TradeMeta extends AbstractMetaMission {
     private static final int FREQUENCY = 1000;
 
 	TradeMeta() {
-		super(MissionType.TRADE, "trade");
+		super(MissionType.TRADE, "trade",
+				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
 	}
 
 	@Override

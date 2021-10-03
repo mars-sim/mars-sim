@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,33 +53,8 @@ public class MissionManager implements Serializable, Temporal {
 	/** A history of mission plans by sol. */
 	private SolListDataLogger<MissionPlanning> historicalMissions;
 	
-	private static List<String> missionNames;
 	private static Map<String, Integer> settlementID;
 
-	static {
-		/**
-		 * Creates an array of all missions
-		 */
-		missionNames = Arrays.asList(
-					AreologyFieldStudy.DEFAULT_DESCRIPTION,
-					BiologyFieldStudy.DEFAULT_DESCRIPTION,
-					CollectIce.DEFAULT_DESCRIPTION,
-					CollectRegolith.DEFAULT_DESCRIPTION,
-					Delivery.DEFAULT_DESCRIPTION,
-					
-					EmergencySupply.DEFAULT_DESCRIPTION,
-					Exploration.DEFAULT_DESCRIPTION,
-					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
-					Mining.DEFAULT_DESCRIPTION,
-					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
-					
-					Trade.DEFAULT_DESCRIPTION,
-					TravelToSettlement.DEFAULT_DESCRIPTION,
-					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
-					BuildingSalvageMission.DEFAULT_DESCRIPTION
-			);
-		}
-	
 	
 	/**
 	 * Constructor.
@@ -636,14 +610,6 @@ public class MissionManager implements Serializable, Temporal {
 
 	}
 
-	public static int matchMissionID(String name) {
-		int id = -1;
-		if (missionNames.contains(name)) {
-			id = missionNames.indexOf(name);
-		}
-		return id;
-	}
-	
 	public Map<Integer, List<MissionPlanning>> getHistoricalMissions() {
 		return historicalMissions.getHistory();
 	}

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -41,16 +41,16 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class BiologyFieldStudy extends RoverMission implements Serializable {
 
+	private static final Set<JobType> PREFERRED_JOB = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BiologyFieldStudy.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.BIOLOGY;
@@ -380,11 +380,6 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 		if ((result > 0D) && (member instanceof Person)) {
 			Person person = (Person) member;
 
-			// Get base result for job modifier.
-			JobType job = person.getMind().getJob();
-			if (job != null)
-				result = JobUtil.getJobSpec(job).getJoinMissionProbabilityModifier(this.getClass());
-
 			// Add modifier if person is a researcher on the same scientific study.
 			// ScienceType biology = ScienceType.BIOLOGY;
 			if (study != null) {
@@ -662,6 +657,12 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 		return result;
 	}
 
+	@Override
+	protected Set<JobType> getPreferredPersonJobs() {
+		return PREFERRED_JOB;
+
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

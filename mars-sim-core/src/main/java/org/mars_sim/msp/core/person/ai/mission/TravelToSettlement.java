@@ -41,7 +41,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.TRAVEL_TO_SETTLEMENT;

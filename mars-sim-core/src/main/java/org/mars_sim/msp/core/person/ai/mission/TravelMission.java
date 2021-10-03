@@ -391,8 +391,8 @@ public abstract class TravelMission extends Mission {
 				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
 			
 				if (Double.isNaN(dist)) {
-					logger.severe(getVehicle(), 20_000,
-							"Rover current leg's remaining distance is NaN.");
+					logger.severe(getTypeID() + 
+							": current leg's remaining distance is NaN.");
 					dist = 0;
 				}
 			}
@@ -476,8 +476,7 @@ public abstract class TravelMission extends Mission {
 		
 		// Note: check for Double.isInfinite() and Double.isNaN()
 		if (Double.isNaN(navDist)) {
-			logger.severe(getVehicle(), 20_000,
-						"navDist is NaN.");
+			logger.severe(getTypeID() + " has navDist is NaN.");
 			navDist = 0;
 		}
 		

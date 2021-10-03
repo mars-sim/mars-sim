@@ -13,13 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -37,24 +30,6 @@ public class Chemist extends Job {
 	public Chemist() {
 		// Use Job constructor
 		super(JobType.CHEMIST, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
-
-		// Add chemist-related missions.
-		jobMissionStarts.add(AreologyFieldStudy.class);
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionJoins.add(Exploration.class);
-		
-		jobMissionStarts.add(CollectIce.class);
-		jobMissionJoins.add(CollectIce.class);
-		
-		jobMissionStarts.add(CollectRegolith.class);
-		jobMissionJoins.add(CollectRegolith.class);
-		
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		
-		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	@Override

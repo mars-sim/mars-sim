@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -37,7 +37,8 @@ public class BiologyFieldStudyMeta extends AbstractMetaMission {
     private static final double WEIGHT = 10D;
 
     BiologyFieldStudyMeta() {
-		super(MissionType.BIOLOGY, "biologyFieldStudy");
+		super(MissionType.BIOLOGY, "biologyFieldStudy",
+				Set.of(JobType.BIOLOGIST, JobType.BOTANIST));
 	}
 
     @Override
@@ -126,13 +127,9 @@ public class BiologyFieldStudyMeta extends AbstractMetaMission {
 	            if (crowding > 0) missionProbability *= (crowding + 1);
 	
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	            	// If this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BiologyFieldStudy.class) 
+	            missionProbability *= getLeaderSuitability(person) 
 	                	* (settlement.getGoodsManager().getTourismFactor()
 	                	+ settlement.getGoodsManager().getResearchFactor())/1.5;
-	            }
 	            
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2

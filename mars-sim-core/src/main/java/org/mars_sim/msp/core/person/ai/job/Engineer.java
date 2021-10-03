@@ -13,8 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -33,10 +31,6 @@ class Engineer extends Job {
 		// Use Job constructor
 		super(JobType.ENGINEER, Job.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
 
-		// Add engineer-related missions.
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		
-		jobMissionJoins.add(BuildingSalvageMission.class);
 
 	}
 

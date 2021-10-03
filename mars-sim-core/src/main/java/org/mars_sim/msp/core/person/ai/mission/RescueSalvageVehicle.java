@@ -63,7 +63,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(RescueSalvageVehicle.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.RESCUE_SALVAGE_VEHICLE;

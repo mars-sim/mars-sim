@@ -213,8 +213,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return vehicle or null if none.
 	 */
-	@Override
-	public final Vehicle getVehicle() {
+	public Vehicle getVehicle() {
 		return vehicle;
 	}
 

@@ -10,8 +10,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -30,7 +28,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
 
     RescueSalvageVehicleMeta() {
-    	super(MissionType.RESCUE_SALVAGE_VEHICLE, "rescueSalvageVehicle");
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, "rescueSalvageVehicle", null);
     }
   
     @Override
@@ -143,10 +141,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             }
             
             // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null) {
-                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, RescueSalvageVehicle.class);
-            }
+            missionProbability *= getLeaderSuitability(person);
 
 			if (missionProbability > LIMIT)
 				missionProbability = LIMIT;

@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -31,7 +31,8 @@ public class MiningMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
     MiningMeta() {
-    	super(MissionType.MINING, "mining");
+    	super(MissionType.MINING, "mining",
+    			Set.of(JobType.AREOLOGIST));
     }
     
     @Override
@@ -127,13 +128,9 @@ public class MiningMeta extends AbstractMetaMission {
 				missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
 				
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-					// It this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, Mining.class)
+				missionProbability *= getLeaderSuitability(person)
 	                		* (settlement.getGoodsManager().getTourismFactor()
 	                  		 + settlement.getGoodsManager().getResearchFactor())/1.5;
-	            }
 	
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;

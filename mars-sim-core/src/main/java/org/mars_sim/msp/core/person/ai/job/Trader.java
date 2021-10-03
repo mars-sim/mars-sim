@@ -12,8 +12,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
 
 class Trader extends Job {
@@ -27,16 +25,6 @@ class Trader extends Job {
 	public Trader() {
 		// Use Job constructor.
 		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
-
-		// Add trader-related missions.
-		jobMissionStarts.add(Trade.class);
-		jobMissionJoins.add(Trade.class);
-		jobMissionStarts.add(Delivery.class);
-		jobMissionJoins.add(Delivery.class);
-		
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
 	/**

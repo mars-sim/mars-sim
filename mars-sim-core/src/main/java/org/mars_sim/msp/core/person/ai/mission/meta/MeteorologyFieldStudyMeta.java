@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -35,7 +35,8 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
     private static final Logger logger = Logger.getLogger(MeteorologyFieldStudyMeta.class.getName());
 
     public MeteorologyFieldStudyMeta() {
-    	super(MissionType.METEOROLOGY, "meteorologyFieldStudy");
+    	super(MissionType.METEOROLOGY, "meteorologyFieldStudy",
+    		 Set.of(JobType.METEOROLOGIST));
     }
     
     @Override
@@ -127,25 +128,21 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 	            if (crowding > 0) missionProbability *= (crowding + 1);
 	
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	            	// If this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, MeteorologyFieldStudy.class) 
+	            missionProbability *= getLeaderSuitability(person)
 	                	* (settlement.getGoodsManager().getTourismFactor()
 	                    + settlement.getGoodsManager().getResearchFactor())/1.5;
 	                
-	                if (missionProbability > LIMIT)
-	        			missionProbability = LIMIT;
-	        		
-	        		// if introvert, score  0 to  50 --> -2 to 0
-	        		// if extrovert, score 50 to 100 -->  0 to 2
-	        		// Reduce probability if introvert
-	        		int extrovert = person.getExtrovertmodifier();
-	        		missionProbability += extrovert;	
-	        		
-	        		if (missionProbability < 0)
-	        			missionProbability = 0;		
-	            }	
+                if (missionProbability > LIMIT)
+        			missionProbability = LIMIT;
+        		
+        		// if introvert, score  0 to  50 --> -2 to 0
+        		// if extrovert, score 50 to 100 -->  0 to 2
+        		// Reduce probability if introvert
+        		int extrovert = person.getExtrovertmodifier();
+        		missionProbability += extrovert;	
+        		
+        		if (missionProbability < 0)
+        			missionProbability = 0;		
 	        }
         }
 		

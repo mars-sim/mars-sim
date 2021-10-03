@@ -12,8 +12,6 @@ import java.util.Map;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -31,7 +29,8 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     private static final double LIMIT = 0;
 
 	public TravelToSettlementMeta() {
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, "travelToSettlement");
+		// Anyone can start ??
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, "travelToSettlement", null);
     }
     
     @Override
@@ -58,10 +57,8 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     			return 0;
     		
 	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null)
-	        	missionProbability *= JobUtil.getStartMissionProbabilityModifier(job,
-	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
+    		missionProbability *= getLeaderSuitability(person)
+    				* settlement.getGoodsManager().getTourismFactor();
 			
 			if (missionProbability > LIMIT)
 				missionProbability = LIMIT;

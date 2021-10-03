@@ -6,9 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -27,7 +28,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	public final static int MIN_STARTING_SOL = 1;
 
 	CollectRegolithMeta() {
-		super(MissionType.COLLECT_REGOLITH, "collectRegolith");
+		super(MissionType.COLLECT_REGOLITH, "collectRegolith",
+				Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
 	}
 	
 	@Override
@@ -78,12 +80,10 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.COLLECT_REGOLITH));
 	    		
 				// Job modifier.
-				JobType job = person.getMind().getJob();
-				if (job != null) {
-					missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, CollectRegolith.class);
-					// If this town has a tourist objective, divided by bonus
-					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
-				}
+	    		missionProbability *= getLeaderSuitability(person);
+	    		
+				// If this town has a tourist objective, divided by bonus
+				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 				
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;

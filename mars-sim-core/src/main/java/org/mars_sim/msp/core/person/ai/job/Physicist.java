@@ -32,11 +32,6 @@ class Physicist extends Job {
 	public Physicist() {
 		// Use Job constructor
 		super(JobType.PHYSICIST, Job.buildRoleMap(5.0, 25.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
-
-
-		// Add physicist-related missions.
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	@Override

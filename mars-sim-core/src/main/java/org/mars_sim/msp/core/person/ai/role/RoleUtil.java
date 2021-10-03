@@ -148,7 +148,7 @@ public class RoleUtil implements Serializable {
 			
 			double score = getRolePropectScore(p, role, weights);
 			
-			if (score > bestScore) {
+			if ((bestPerson == null) || (score > bestScore)) {
 				bestScore = score;
 				bestPerson = p;
 			}

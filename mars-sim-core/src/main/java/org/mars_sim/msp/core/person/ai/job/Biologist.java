@@ -13,11 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -40,18 +35,6 @@ extends Job {
 	public Biologist() {
 		// Use Job constructor
 		super(JobType.BIOLOGIST, Job.buildRoleMap(20.0, 0.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
-
-		// Add biologist-related missions.
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionStarts.add(BiologyFieldStudy.class);
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionJoins.add(Exploration.class);
-		
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		
-		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	@Override
