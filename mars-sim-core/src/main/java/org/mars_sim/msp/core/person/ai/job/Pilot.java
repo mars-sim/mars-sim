@@ -38,10 +38,7 @@ public class Pilot extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int drivingSkill = person.getSkillManager().getSkillLevel(SkillType.PILOTING);
-		result = drivingSkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.PILOTING);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
@@ -49,8 +46,6 @@ public class Pilot extends Job {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
-
-//		System.out.println(person + " driver : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}
@@ -77,9 +72,7 @@ public class Pilot extends Job {
 		
 		// Get number of associated vehicles at a settlement.
 		result = (result + settlement.getVehicleNum() / 2.5 + population / 4.0) / 3.0;
-		
-//		System.out.println(settlement + " Pilot need: " + result);
-		
+				
 		return result;
 	}
 }

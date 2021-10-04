@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.building.function.Research;
 
 /**
  * The Engineer class represents an engineer job focusing on repair and
@@ -42,11 +41,9 @@ class Engineer extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
 		int materialsScienceSkill = person.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
 		int mechanicSkill = person.getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill *.25 + materialsScienceSkill * .75;
+		double result = mechanicSkill *.25 + materialsScienceSkill * .75;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
@@ -83,15 +80,7 @@ class Engineer extends Job {
 			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 10D;
 		}
 		
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
-		Iterator<Building> ii = laboratoryBuildings.iterator();
-		while (ii.hasNext()) {
-			Building building = ii.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.ENGINEERING)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
-			}
-		}
+		result += getBuildingScienceDemand(settlement, ScienceType.ENGINEERING, 12D);
 		
 		result = (result + population / 8D) / 2.0;
 			

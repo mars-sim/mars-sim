@@ -28,10 +28,7 @@ extends Job {
 	@Override
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-		result = constructionSkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);

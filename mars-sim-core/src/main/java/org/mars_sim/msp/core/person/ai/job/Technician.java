@@ -20,11 +20,6 @@ class Technician extends Job {
 	public Technician() {
 		// Use Job constructor
 		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 10.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
-
-		// Add engineer-related missions.
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
 	/**
@@ -35,11 +30,9 @@ class Technician extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 1D;
-
 		int materialsScienceSkill = person.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
 		int mechanicSkill = person.getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill *.75 + materialsScienceSkill * .25;
+		double result = mechanicSkill *.75 + materialsScienceSkill * .25;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
@@ -48,7 +41,6 @@ class Technician extends Job {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-//		System.out.println(person + " tech : " + Math.round(result*100.0)/100.0);
 		return result;
 	}
 
@@ -71,9 +63,7 @@ class Technician extends Job {
 		result += settlement.getParkedVehicleNum() / 12D;
 
 		result = (result + population / 8D) / 2.0;
-		
-//		System.out.println(settlement + " Technician need: " + result);
-		
+				
 		return result;
 	}
 }

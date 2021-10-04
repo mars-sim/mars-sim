@@ -96,6 +96,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 25, "Lead", CommandHelper.PERSON_WIDTH);
 
+		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
 
 			String vTypeStr = Conversion.capitalize(v.getVehicleType());
@@ -104,11 +105,14 @@ public class VehicleCommand extends AbstractSettlementCommand {
 
 			// Print mission name
 			String missionName = "";
-			Mission mission = context.getSim().getMissionManager().getMissionForVehicle(v);
-			String personName = ((mission != null) ? 
-									mission.getStartingPerson().getName() : "");
-
-			response.appendTableRow(v.getName(), vTypeStr, missionName, personName);
+			String leader = "";
+			Mission mission = missionMgr.getMissionForVehicle(v);
+			if (mission != null) {
+				leader = mission.getStartingPerson().getName();
+				missionName = mission.getTypeID();
+			}
+			
+			response.appendTableRow(v.getName(), vTypeStr, missionName, leader);
 		}
 		
 		context.println(response.getOutput());

@@ -19,8 +19,8 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public class Politician extends Job {
 	
-	private static double TRADING_RANGE = 1500D;
-	private static double SETTLEMENT_MULTIPLIER = .3D;
+	private static final double TRADING_RANGE = 1500D;
+	private static final double SETTLEMENT_MULTIPLIER = .3D;
 
 	/**
 	 * Constructor.
@@ -38,10 +38,7 @@ public class Politician extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int managerSkill = person.getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
-		result = managerSkill;
+		double result =  person.getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
@@ -93,9 +90,7 @@ public class Politician extends Job {
 		}
 		
 		result = (result + population / 64D) / 2.0;
-		
-//		System.out.println(settlement + " Politician need: " + result);
-		
+				
 		return result;
 	}
 }

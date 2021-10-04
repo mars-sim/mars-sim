@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -15,9 +16,18 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Job class represents a person's job.
@@ -59,7 +69,7 @@ public abstract class Job {
 	 * @return name
 	 */
 	public String getName(GenderType gender) {
-		StringBuffer key = new StringBuffer().append(JOB_STR); // $NON-NLS-1$
+		StringBuilder key = new StringBuilder().append(JOB_STR); // $NON-NLS-1$
 		switch (gender) {
 		case MALE:
 			key.append(MALE_STR);
@@ -71,9 +81,9 @@ public abstract class Job {
 			key.append(UNKNOWN);
 			break; // $NON-NLS-1$
 		}
-		key.append(this.getClass().getSimpleName());
+		key.append(jobType.getName());
 		return Msg.getString(key.toString()); // $NON-NLS-1$
-	};
+	}
 
 	public JobType getType() {
 		return jobType;
@@ -110,7 +120,7 @@ public abstract class Job {
 	 * Build a Map to cover the Specialist RoleTypes.
 	 * @return
 	 */
-	protected static Map<RoleType, Double> buildRoleMap(
+	protected static final Map<RoleType, Double> buildRoleMap(
 		  double agr, double com, double eng, double mis, double log, double res, double saf, double sci) {
 		
 		Map<RoleType, Double> m = new EnumMap<>(RoleType.class);
@@ -128,6 +138,77 @@ public abstract class Job {
 	
 	public Map<RoleType,Double> getRoleProspects() {
 		return jobProspects;
+	}
+
+	protected double getBuildingScienceDemand(Settlement settlement, ScienceType type, double scale) {
+		double result = 0D;
+		
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
+			Research lab = building.getResearch();
+			if (lab.hasSpecialty(type)) {
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / scale);
+			}
+		}	
+		return result;
+	}
+
+	/**
+	 * Calculate the Science demand for Mission on the road. 
+	 * @param settlement
+	 * @param type
+	 * @param scale
+	 * @return
+	 */
+	protected double getMissionScienceDemand(Settlement settlement, ScienceType type, double scale) {
+		double result = 0D;
+		Collection<Vehicle> parked = settlement.getParkedVehicles();
+		
+		for(Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+			if (mission instanceof RoverMission) {
+				Rover rover = ((RoverMission) mission).getRover();
+				if ((rover != null) && !parked.contains(rover)) {
+					result += getRoverScienceScore(rover, type, scale);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Calculate the science demand for all the Parked vehciles at a settlement. 
+	 * @param settlement
+	 * @param type
+	 * @param scale
+	 * @return
+	 */
+	protected double getParkedVehicleScienceDemand(Settlement settlement, ScienceType type, double scale) {
+		double result = 0D;
+		
+		for(Vehicle vehicle : settlement.getParkedVehicles()) {
+			if (vehicle instanceof Rover) {
+				result += getRoverScienceScore((Rover) vehicle, type, scale);
+			}
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Extract the science score from a rover.
+	 * @param rover
+	 * @param type
+	 * @param scale
+	 * @return
+	 */
+	private static double getRoverScienceScore(Rover rover, ScienceType type, double scale) {
+		if (rover.hasLab()) {
+			Lab lab = rover.getLab();
+			if (lab.hasSpecialty(type)) {
+				return (lab.getLaboratorySize() * lab.getTechnologyLevel() / scale);
+			}
+		}
+		return 0D;
 	}
 
 }

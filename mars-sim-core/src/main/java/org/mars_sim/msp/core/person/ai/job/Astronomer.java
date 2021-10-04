@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Research;
 
 /**
  * The Astronomer class represents a job for an astronomer.
@@ -33,10 +32,7 @@ class Astronomer extends Job  {
 
 	@Override
 	public double getCapability(Person person) {
-		double result = 0D;
-
-		int astronomySkill = person.getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
-		result = astronomySkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
@@ -44,8 +40,6 @@ class Astronomer extends Job  {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
-
-//		System.out.println(person + " astro : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}
@@ -59,13 +53,7 @@ class Astronomer extends Job  {
 		BuildingManager manager = settlement.getBuildingManager();
 
 		// Add (labspace * tech level / 2) for all labs with astronomy specialties.
-		Iterator<Building> i = manager.getBuildings(FunctionType.RESEARCH).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.ASTRONOMY))
-				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 16.0;
-		}
+		result += getBuildingScienceDemand(settlement, ScienceType.ASTRONOMY, 16D);
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
 		Iterator<Building> j = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
@@ -76,9 +64,7 @@ class Astronomer extends Job  {
 		}
 
 		result = (result + population / 24D) / 2.0;
-		
-//		System.out.println(settlement + " Astronomer need: " + result);
-		
+				
 		return result;
 	}
 }
