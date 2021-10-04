@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -698,31 +698,21 @@ public class EnterAirlock extends Task implements Serializable {
 					// 2c Transfer the EVA suit from person to entityInv
 					suit.transfer(person, entityInv);
 	
-	//				String loc = person.getLocationTag().getImmediateLocation();
-	
 					// 2d. Return suit to entity's inventory.
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
-	
-					// if (person.getContainerUnit() instanceof MarsSurface) {
-					// LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-					// "[" + person.getLocale() + "] "
-					// + person + " " + loc + " still had MarsSurface as the container unit.");
-					// }
-	
-					Inventory suitInv = suit.getInventory();
-	
-					if (entityInv != null && suitInv != null) {
+
+					if (entityInv != null) {
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 	
 						// 2e. Unloads the resources from the EVA suit to the entityEnv
 						try {
 							// 2e1. Unload oxygen from the suit.
-							double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
+							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
 							double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
 							if (oxygenAmount > oxygenCapacity)
 								oxygenAmount = oxygenCapacity;
 	
-							suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
+							suit.retrieveAmountResource(oxygenID, oxygenAmount);
 							entityInv.storeAmountResource(oxygenID, oxygenAmount, false);
 							entityInv.addAmountSupply(oxygenID, oxygenAmount);
 	
@@ -732,13 +722,13 @@ public class EnterAirlock extends Task implements Serializable {
 						}
 	
 						// 2e2. Unload water from the suit.
-						double waterAmount = suitInv.getAmountResourceStored(waterID, false);
+						double waterAmount = suit.getAmountResourceStored(waterID);
 						double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
 						if (waterAmount > waterCapacity)
 							waterAmount = waterCapacity;
 	
 						try {
-							suitInv.retrieveAmountResource(waterID, waterAmount);
+							suit.retrieveAmountResource(waterID, waterAmount);
 							entityInv.storeAmountResource(waterID, waterAmount, false);
 							entityInv.addAmountSupply(waterID, waterAmount);
 	
@@ -757,8 +747,7 @@ public class EnterAirlock extends Task implements Serializable {
 					else {
 						logger.log(person, Level.WARNING, 4_000,
 								"EVA suit's container has issues in " + airlock.getEntity().toString() 
-								+ ".");
-						
+								+ ".");				
 					}
 				}
 			}

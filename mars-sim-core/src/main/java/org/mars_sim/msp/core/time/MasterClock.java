@@ -647,6 +647,12 @@ public class MasterClock implements Serializable {
 			// Reset saveType back to zero
 			saveType = SaveType.NONE;
 
+			// Store the modified root and its content.
+			SimulationConfig sc = SimulationConfig.instance();
+			if (sc.isStorageManagerRunning())
+				sc.storeRoot();
+			
+			
 			return true;
 		}
 

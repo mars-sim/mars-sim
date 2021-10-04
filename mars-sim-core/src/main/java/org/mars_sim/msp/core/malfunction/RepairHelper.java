@@ -105,7 +105,7 @@ public final class RepairHelper {
 			
 			// Add repair parts if necessary.
 			Inventory inv = containerUnit.getInventory();
-			for( Entry<Integer, Integer> part : parts.entrySet()) {
+			for (Entry<Integer, Integer> part : parts.entrySet()) {
 				Integer id = part.getKey();
 				int number = part.getValue();
 				inv.retrieveItemResources(id, number);

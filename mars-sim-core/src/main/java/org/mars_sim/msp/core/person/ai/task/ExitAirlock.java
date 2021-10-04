@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExitAirlock.java
- * @date 2021-08-28
+ * @date 2021-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -767,7 +767,7 @@ public class ExitAirlock extends Task implements Serializable {
 				hasSuit = true;
 
 			} catch (Exception e) {
-				logger.log(person, Level.WARNING, 4000, 
+				logger.log(person, Level.WARNING, 4_000, 
 						"Could not take " + suit.toString() 
 						+ " or load resources into it.", e);
 			}
@@ -1208,15 +1208,13 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private void loadEVASuit(EVASuit suit) {
 
-		Inventory suitInv = suit.getInventory();		
-		
 		if (!(person.getContainerUnit() instanceof MarsSurface)) {
 			Inventory entityInv = person.getContainerUnit().getInventory();
 			// Warning : if person.getContainerUnit().getInventory() is null, the simulation hang up
 			// person.getContainerUnit() instanceof MarsSurface may alleviate this situation
 			
 			// Fill oxygen in suit from entity's inventory.
-			double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+			double neededOxygen = suit.getAmountResourceRemainingCapacity(oxygenID);
 			double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
 			// Add tracking demand
 			entityInv.addAmountDemandTotalRequest(oxygenID, neededOxygen);
@@ -1226,7 +1224,7 @@ public class ExitAirlock extends Task implements Serializable {
 				takenOxygen = availableOxygen;
 			try {
 				entityInv.retrieveAmountResource(oxygenID, takenOxygen);
-				suitInv.storeAmountResource(oxygenID, takenOxygen, false);
+				suit.storeAmountResource(oxygenID, takenOxygen);
 				// Add tracking demand
 				entityInv.addAmountDemand(oxygenID, takenOxygen);
 			} catch (Exception e) {
@@ -1236,7 +1234,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 	
 			// Fill water in suit from entity's inventory.
-			double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+			double neededWater = suit.getAmountResourceRemainingCapacity(waterID);
 			double availableWater = entityInv.getAmountResourceStored(waterID, false);
 			// Add tracking demand
 			entityInv.addAmountDemandTotalRequest(waterID, neededWater);
@@ -1246,7 +1244,7 @@ public class ExitAirlock extends Task implements Serializable {
 				takenWater = availableWater;
 			try {
 				entityInv.retrieveAmountResource(waterID, takenWater);
-				suitInv.storeAmountResource(waterID, takenWater, false);
+				suit.storeAmountResource(waterID, takenWater);
 				// Add tracking demand
 				entityInv.addAmountDemand(waterID, takenWater);
 			} catch (Exception e) {

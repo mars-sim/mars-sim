@@ -123,8 +123,6 @@ extends TestCase {
 		if (answer1) 
 			System.out.println(name + " can carry 50 kg oxygen and an EVA suit.");
 		
-		assertTrue(name + " can't carry 50 kg oxygen and an EVA suit", answer1);
-		
-		
+		assertTrue(name + " can't carry 50 kg oxygen and an EVA suit", answer1);	
 	}
 }

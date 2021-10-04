@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Equipment.java
- * @date 2021-08-20
+ * @date 2021-10-03
  * @author Scott Davis
  */
 
@@ -83,10 +83,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		// if it's a container, proceed
-		if (equipmentType != null) {
-			// Gets the settlement id
-			associatedSettlementID = settlement.getIdentifier();
+		// Gets the settlement id
+		associatedSettlementID = settlement.getIdentifier();
+		
+		if (equipmentType != null && equipmentType != EquipmentType.EVA_SUIT) {
 			// Stores this equipment into its settlement
 			settlement.getInventory().storeUnit(this);
 			// Add this equipment as being owned by this settlement
@@ -158,7 +158,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	/**
-	 * Retrieve the resource 
+	 * Retrieves the resource 
 	 * 
 	 * @param resource
 	 * @param quantity
@@ -181,19 +181,25 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		}
 		else if (this.resource == -1) {
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, 10_000L, "Cannot retrieve " + this.quantity + " kg of " 
+			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
 					+ name + ". Not being used for storing anything yet.");
 			return 0;
 		}
 		else {
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
 			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "Cannot retrieve " + requestedResource 
-					+ ". Storing " + storedResource + ": " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ Math.round(quantity* 10.0)/10.0 + " kg "
+					+ requestedResource + ".");
 			return quantity;
 		}
 	}
 	
+	/**
+	 * Gets the capacity of this amount resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public double getAmountResourceCapacity(int resource) {
 		if (this.resource == resource || this.resource == -1) {
 			return getTotalCapacity();
@@ -249,11 +255,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		}
 	}
 	
+	/**
+	 * Gets the total weight of the stored resource
+	 * 
+	 * @return
+	 */
 	public double getStoredMass() {
 		return this.quantity;
 	}
 	
-
 	/**
 	 * Is this equipment empty ?
 	 * 
@@ -444,7 +454,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return
 	 */
 	public Person getLastOwner() {
-		return unitManager.getPersonByID(lastOwner);
+		if (lastOwner != -1)
+			return unitManager.getPersonByID(lastOwner);
+		return null;
 	}
 
 	public int getLastOwnerID() {

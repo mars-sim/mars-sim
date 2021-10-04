@@ -271,7 +271,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(EARTHLING);
 
-
 		// Store this person in the settlement
 		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen

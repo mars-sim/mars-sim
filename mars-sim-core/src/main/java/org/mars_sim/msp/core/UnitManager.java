@@ -322,12 +322,10 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}	
 
-
-
-	
 	public void setCommanderId(int commanderID) {
 		this.commanderID = commanderID;
 	}
+	
 	public int getCommanderID() {
 		return commanderID;
 	}

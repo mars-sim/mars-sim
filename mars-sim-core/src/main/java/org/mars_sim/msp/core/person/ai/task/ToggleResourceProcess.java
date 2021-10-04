@@ -313,7 +313,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// Gets the demand for this resource
 				double demand = settlement.getGoodsManager().getAmountDemandValue(resource);
 				double rate = 0D;
-				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
+//				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
 				double remain = settlement.getInventory().getAmountResourceRemainingCapacity(resource,
 						true, false);
 //				double stored = cap - remain;
