@@ -130,7 +130,7 @@ public class MarsProject {
 			}
 
 			// Preload the Config
-			SimulationConfig.instance().loadConfig();
+			simulationConfig.loadConfig();
 			
 			// Get user choices if there is no template defined or a preload
 			if (!builder.isFullyDefined()) {
@@ -180,7 +180,7 @@ public class MarsProject {
 			
 			if (useGUI) {
 				setupMainWindow(false);
-			} 
+			}
 		}
 		catch(Exception e) {
 			// Catch everything

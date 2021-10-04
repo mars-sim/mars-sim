@@ -451,12 +451,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 			return true;
 		}
 
-		Inventory suitInv = suit.getInventory();
-
 		try {
 			// Check if EVA suit is at 15% of its oxygen capacity.
-			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
-			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+			double oxygenCap = suit.getAmountResourceCapacity(ResourceUtil.oxygenID);
+			double oxygen = suit.getAmountResourceStored(ResourceUtil.oxygenID);
 			if (oxygen <= (oxygenCap * .2D)) {
 				logger.log(person, Level.WARNING, 20_000,
 						suit.getName() + " reported less than 20% O2 left when "
@@ -465,8 +463,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 
 			// Check if EVA suit is at 15% of its water capacity.
-			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
-			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
+			double waterCap = suit.getAmountResourceCapacity(ResourceUtil.waterID);
+			double water = suit.getAmountResourceStored(ResourceUtil.waterID);
 			if (water <= (waterCap * .10D)) {
 				logger.log(person, Level.WARNING, 20_000, 
 						suit.getName() + " reported less than 10% water left when "

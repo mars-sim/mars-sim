@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
-import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerInterface;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -3328,7 +3328,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		// Determine the number of containers that are needed.
-		if (Container.class.isAssignableFrom(equipmentClass)) {
+		if (ContainerInterface.class.isAssignableFrom(equipmentClass)) {
 
 			PhaseType containerPhase = ContainerUtil.getContainerPhase(equipmentClass);
 			double containerCapacity = ContainerUtil.getContainerCapacity(equipmentClass);

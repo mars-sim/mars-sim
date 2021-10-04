@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * InventoryUtil.java
- * @version 3.2.1 2021-07-30
+ * @date 2021-10-03
  * @author Manny Kung
  */
 
@@ -53,11 +53,17 @@ public class InventoryUtil {
 				logger.log(p, Level.WARNING, 4_000,
 					suit.getName() + " malfunction and not usable.");
 			}
-			else
+			else {
+//				logger.log(p, Level.INFO, 4_000,
+//						"getGoodEVASuit: " + p + " found " + suit);
 				return suit;
+			}
 		}
 		// If the previous EVA suit has malfunction, get a new one
-		return getGoodEVASuitNResource(inv, p);
+		suit = getGoodEVASuitNResource(inv, p);
+//		logger.log(p, Level.INFO, 4_000,
+//				"getGoodEVASuit: " + p + " found " + suit);
+		return suit;
 	}
 	
 	/**
@@ -83,9 +89,12 @@ public class InventoryUtil {
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
 				if (!malfunction && hasEnoughResources) {			
-					if (p != null && suit.getLastOwner() == p)
+					if (p != null && suit.getLastOwner() == p) {
 						// Prefers to pick the same suit that a person has been tagged in the past
+//						logger.log(p, Level.INFO, 4_000,
+//								"getGoodEVASuitNResource: " + p + " found " + suit);
 						return suit;
+					}
 					else
 						// tag it as good suit for possible use below
 						goodSuits.add(suit);
@@ -127,19 +136,17 @@ public class InventoryUtil {
 	 * @throws Exception if error checking suit resources.
 	 */
 	private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
-
-		Inventory suitInv = suit.getInventory();
 		int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
 		// Check if enough oxygen.
-		double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, true, false);
+		double neededOxygen = suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
 		double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
-//		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+//		double neededWater = getAmountResourceRemainingCapacity(waterID);
 //		double availableWater = entityInv.getAmountResourceStored(waterID, false);
 //		// Make sure there is enough extra water for everyone else.
 //		availableWater -= (neededWater * otherPeopleNum);

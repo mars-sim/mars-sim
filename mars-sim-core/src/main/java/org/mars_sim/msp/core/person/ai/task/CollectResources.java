@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResources.java
- * @date 2021-08-15
+ * @date 2021-10-03
  * @author Scott Davis
  */
 
@@ -366,8 +366,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
-				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, false, false);
-				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.waterID, false, false);
+				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
+				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
 			}
 			double carryCapacity = person.getInventory().getGeneralCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);

@@ -19,10 +19,12 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -35,6 +37,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.mars_sim.msp.core.data.DataRoot;
 import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
@@ -58,6 +61,12 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.tool.Hash;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+import one.microstream.persistence.binary.jdk8.types.BinaryHandlersJDK8;
+import one.microstream.storage.embedded.configuration.types.EmbeddedStorageConfiguration;
+import one.microstream.storage.embedded.types.EmbeddedStorage;
+import one.microstream.storage.embedded.types.EmbeddedStorageFoundation;
+import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 /**
  * Loads the simulation configuration XML files as DOM documents. Provides
@@ -167,6 +176,11 @@ public class SimulationConfig implements Serializable {
 
 	private transient ReportingAuthorityFactory raFactory;	
 
+	/** The DataRoot instance. */
+	private DataRoot root;
+	/** The microstream storage manager instance. */
+	private EmbeddedStorageManager storageManager; 
+	
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Constructors
@@ -176,8 +190,7 @@ public class SimulationConfig implements Serializable {
 	/** hidden constructor. */
 	private SimulationConfig() {
 	}
-
-
+	
 	/**
 	 * Prevents the singleton pattern from being destroyed at the time of
 	 * serialization
@@ -194,24 +207,45 @@ public class SimulationConfig implements Serializable {
 	 * -----------------------------------------------------------------------------
 	 */
 
-	/** Eager Instantiation of Singleton Instance. */
-	private static SimulationConfig instance = new SimulationConfig();
-
-	/*
-	 * -----------------------------------------------------------------------------
-	 * Public Static Methods
-	 * -----------------------------------------------------------------------------
-	 */
+//	/** Eager Instantiation of Singleton Instance. */
+//	private static SimulationConfig instance = new SimulationConfig();
+//
+//	/*
+//	 * -----------------------------------------------------------------------------
+//	 * Public Static Methods
+//	 * -----------------------------------------------------------------------------
+//	 */
+//
+//	/**
+//	 * Gets a singleton instance of the simulation config.
+//	 * 
+//	 * @return SimulationConfig instance
+//	 */
+//	public static SimulationConfig instance() {
+//		return instance;
+//	}
 
 	/**
-	 * Gets a singleton instance of the simulation config.
+	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
+	 * Note: as soon as the instance() method is called the first time, the class is
+	 * loaded into memory and an instance gets created. Advantage: it supports
+	 * multiple threads calling instance() simultaneously with no synchronized
+	 * keyword needed (which slows down the VM)
+	 */
+	private static class SingletonHelper {
+		private static final SimulationConfig INSTANCE = new SimulationConfig();
+	}
+
+	/**
+	 * Gets a Bill Pugh Singleton instance of the SimulationConfig.
 	 * 
 	 * @return SimulationConfig instance
 	 */
 	public static SimulationConfig instance() {
-		return instance;
+		// NOTE: SimulationConfig.instance() is accessible on any threads or by any threads
+		return SingletonHelper.INSTANCE;
 	}
-
+	
 	/**
 	 * Loads all of the configuration files.
 	 * 
@@ -227,16 +261,70 @@ public class SimulationConfig implements Serializable {
 		try {
 			loadDefaultConfiguration();
 		} catch (Exception e) {
-//          	e.printStackTrace();
           	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage(), e);
 		}
+	}
+	
+	
+	public boolean isStorageManagerRunning() {
+		return storageManager.isRunning();
+	}
+	
+	public void startStorageManager() {
+		storageManager.start();
+	}
+	
+	/**
+	 * Creates an {@link EmbeddedStorageManager} and initializes a data root {@link DataRoot} if empty.
+	 */
+	EmbeddedStorageManager createStorageManager() {
+		logger.info("Initializing MicroStream Storage Manager");
+		// Application-specific root instance
+		root = new DataRoot();
+		
+//		System.out.println("0." + root);
+		// Initialize a storage manager ("the database") with the given directory and defaults for everything else.
+//		final EmbeddedStorageManager storageManager = EmbeddedStorage.start(root, Paths.get("MicroStreamData"));
+		storageManager = EmbeddedStorage.start(root, Paths.get(SimulationFiles.getSaveDir()));
+		
+		// print the root to show its loaded content (stored in the last execution).
+//		System.out.println("1." + root);
 
+		// Set content data to the root element, including the time to visualize changes on the next execution.
+		root.setContent("" + new Date());
+		root.prepContent();
+		
+		// print the root to show its loaded content (stored in the last execution).
+//		System.out.println("2." + root);
+		
+		// Store the modified root and its content.
+		storageManager.storeRoot();
+
+		// print the root to show its loaded content (stored in the last execution).
+//		System.out.println("3." + root);
+		
+		return storageManager;
+	}
+		
+
+	/**
+	 * Store the modified root and its content.
+	 */
+	public void storeRoot() {
+		// Set content data to the root element, including the time to visualize changes on the next execution.
+		root.setContent("" + new Date());
+		root.prepContent();
+				
+		// print the root to show its loaded content (stored in the last execution).
+//		System.out.println("4." + root);
+				
+		storageManager.storeRoot();
 	}
 	
 	/**
 	 * Reloads the configurations from the XML files including
 	 * re-checking the XML versions.
-	 * Should need ot be used if the files have changed as Comfig
+	 * Should need to be used if the files have changed as Config
 	 * objects should be immutable.
 	 */
 	public void reloadConfig() {

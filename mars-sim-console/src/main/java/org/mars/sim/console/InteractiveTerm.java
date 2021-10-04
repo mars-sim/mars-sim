@@ -9,6 +9,7 @@ package org.mars.sim.console;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -21,7 +22,12 @@ import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.data.DataRoot;
+
+import one.microstream.storage.embedded.types.EmbeddedStorage;
+
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 
 /**
  * The InteractiveTerm class builds a text-based console interface and handles the interaction with players
@@ -73,7 +79,6 @@ public class InteractiveTerm {
 		
         handler = new SwingHandler(textIO, gm);
         
-       
         if (restart) {
     		loadTerminalMenu();
         }

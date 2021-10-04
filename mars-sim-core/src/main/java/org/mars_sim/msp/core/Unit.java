@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
-import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -184,9 +183,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case EQUIPMENT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			if (name.contains(EVASuit.TYPE)) {
-				this.inventory = new Inventory(this);
-			}
 			break;
 			
 		case PERSON:
@@ -425,13 +421,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public Inventory getInventory() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
-			if (name.contains(EVASuit.TYPE)) {
-				return inventory;
-			}
-			else {
-				logger.severe(this + " cannot use Inventory class anymore! ");
-				return null;
-			}
+			logger.severe(this + " does NOT use Inventory class anymore.");
+			return null;
 		}
 
 		return inventory;
@@ -647,25 +638,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public double getMass() {
 		double invMass = 0;
-//		if (getUnitType() == UnitType.EQUIPMENT) {
-//			if (!name.contains(EVASuit.TYPE)) {
-//				invMass = ((Equipment)this).getStoredMass();
-//			}
-//		}
-		if (this instanceof Container) {
-			invMass = ((Equipment)this).getStoredMass();
+
+		if (inventory == null) { 
+			logger.severe(this + ": inventory is null.");
 		}
-		else {
-//			logger.warning(this + " is inventory null ?");
-			if (inventory == null) { 
-				logger.warning(this + ": inventory is null. Why?");
-			}
-			else 
-				inventory.getTotalInventoryMass(false);
-			if (invMass == 0)
-				return baseMass;
-		}
-		
+		else 
+			invMass = inventory.getTotalInventoryMass(false);
+
 		return baseMass + invMass;
 	}
 
@@ -976,6 +955,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public double getTotalCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
+			if (this instanceof EVASuit)
+				return ((EVASuit)this).getTotalCapacity();
 			return ((Equipment)this).getTotalCapacity();
 		}
 		

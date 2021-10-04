@@ -1,13 +1,15 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2021-09-20
+ * @date 2021-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -19,6 +21,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -76,6 +79,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	public static String GOODTYPE = "EVA Gear";
 	
+	public static final int o2 = ResourceUtil.oxygenID; 
+	public static final int h2o = ResourceUtil.waterID;
+	public static final int co2 = ResourceUtil.co2ID;
+	
 	/** capacity (kg). */
 	public static final double CAPACITY = 250;
 	/** Total gas tank volume of EVA suit (Liter). */
@@ -95,7 +102,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
 	
-	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
 	private static double min_o2_pressure;
 	/** The full O2 partial pressure if at full tank. */
 	private static double fullO2PartialPressure;
@@ -107,6 +113,15 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public static double emptyMass;
 	
 	// Data members
+	/** A list of resource id's it can hold. */
+	private List<Integer> resourceIDs = new ArrayList<>();
+	/** A list of Amount Resources it can hold. */
+	private List<AmountResource> resourceARs = new ArrayList<>();
+	/** A list of the amount of the resources it can hold. */	
+	private List<Double> quantities = new ArrayList<>();
+	/** A list of the capacity of the resources it has. */	
+	private List<Double> capacities = new ArrayList<>();
+	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
@@ -161,23 +176,341 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 
+//		resourceIDs = new ArrayList<>();
+		resourceIDs.add(0, o2); 
+		resourceIDs.add(1, h2o);
+		resourceIDs.add(2, co2);
+		 
+//		resourceARs = new ArrayList<>();
+		resourceARs.add(0, ResourceUtil.oxygenAR); 
+		resourceARs.add(1, ResourceUtil.waterAR);
+		resourceARs.add(2, ResourceUtil.carbonDioxideAR);
+		
+//		quantities = new ArrayList<>();
+		quantities.add(0.0); 
+		quantities.add(0.0);
+		quantities.add(0.0);
+		
+//		capacities = new ArrayList<>();
+		capacities.add(0, OXYGEN_CAPACITY); 
+		capacities.add(1, WATER_CAPACITY);
+		capacities.add(2, CO2_CAPACITY);
+		
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
+//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
+//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
+//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
-		getInventory().addGeneralCapacity(CAPACITY);
+//		getInventory().addGeneralCapacity(CAPACITY);
+
+		settlement.getInventory().storeUnit(this);
+		// Add this equipment as being owned by this settlement
+		settlement.addOwnedEquipment(this);
+	}
+	
+	/**
+	 * Gets a list of supported resources
+	 * 
+	 * @param index
+	 * @return a list of resources
+	 */
+	public List<Integer> getResourceIDs() {
+		return resourceIDs;
+	}
+	
+	
+	/**
+	 * Gets the id of a particular resource
+	 * 
+	 * @param index
+	 * @return Amount Resource id
+	 */
+	public int getResourceID(int index) {
+		return resourceIDs.get(index);
+	}
+	
+	/**
+	 * Gets the AmountResource of a particular resource
+	 * 
+	 * @param index
+	 * @return Amount Resource
+	 */
+	public AmountResource getResourceAR(int index) {
+		return resourceARs.get(index);
+	}
+	
+	/**
+	 * Gets the amount in quantity of a particular resource
+	 * 
+	 * @param index
+	 * @return quantity
+	 */
+	public double getQuanity(int index) {
+		return quantities.get(index);
+	}
+	
+	/**
+	 * Sets the amount in quantity of a particular resource
+	 * 
+	 * @param index
+	 * @param quantity
+	 */
+	public void setQuanity(int index, double quantity) {
+		quantities.set(index, quantity);
+	}
+	
+	/**
+	 * Is this resource supported ?
+	 * 
+	 * @param resource
+	 * @return true if this resource is supported
+	 */
+	public boolean isResourceSupported(int resource) {
+		for (int r: resourceIDs) {
+			if (r == resource)
+				return true;
+		}
 		
+		return false;
+	}
+	
+	/**
+	 * Gets the index of a particular resource
+	 * 
+	 * @param resource
+	 * @return index
+	 */
+	public int getIndex(int resource) {
+		if (resourceIDs != null && !resourceIDs.isEmpty()) {
+			for (int r: resourceIDs) {
+				if (r == resource)
+					return resourceIDs.indexOf(r);
+			}
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Stores the resource
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		
+		if (index != -1) {
+			
+			double newQ = getQuanity(index) + quantity;
+			String name = ResourceUtil.findAmountResourceName(resource);
+			
+			if (newQ > getTotalCapacity()) {
+				double excess = newQ - getTotalCapacity();
+				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
+				setQuanity(index, getTotalCapacity());
+				return excess;
+			}
+			else {
+				setQuanity(index, newQ);
+//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
+				return 0;
+			}
+		}
+		else {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Invalid request for storing " + name + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		
+		if (index != -1) {
+			double q = getQuanity(index);
+			double diff = q - quantity;
+			if (diff < 0) {
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.warning(this, 10_000L, "Just retrieved all " + q + " kg of " 
+						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
+				setQuanity(index, 0);
+				return diff;
+			}
+			else {
+				setQuanity(index, diff);
+				return 0;
+			}
+		}
+		else {
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ Math.round(quantity* 10.0)/10.0 + " kg "+ requestedResource + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		int index = getIndex(resource);
+		
+		if (index != -1) {
+			return getCapacity(index);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		int index = getIndex(resource);
+		
+		if (index != -1) {
+			return getCapacity(index) - this.getQuanity(index);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		int index = getIndex(resource);
+		
+		if (index != -1) {
+			return getQuanity(index);
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	/**
      * Gets the total capacity of resource that this container can hold.
      * @return total capacity (kg).
      */
+	@Override
     public double getTotalCapacity() {
         return CAPACITY;
     }
+	
+	/**
+     * Gets the capacity of this resource that this container can hold.
+     * @return capacity (kg).
+     */
+    public double getCapacity(int resource) {
+        return capacities.get(resource);
+    }
+    
+	/**
+	 * Gets the total weight of the stored resources
+	 * 
+	 * @return
+	 */
+    @Override
+	public double getStoredMass() {
+		double total = 0;
+		if (quantities != null && !quantities.isEmpty()) {
+			for (double m: quantities) {
+				total += m;
+			}
+		}
+		return total;
+	}
+	
+	/**
+	 * Is this suit empty ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean isEmpty(int resource) {
+		if (quantities != null && !quantities.isEmpty()) {
+			for (double m: quantities) {
+				if (m != 0)
+					return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Is this suit empty ? 
+	 * 
+	 * @param brandNew true if it needs to be brand new
+	 * @return
+	 */
+	@Override
+	public boolean isEmpty(boolean brandNew) {
+		if (brandNew) {
+			if (getLastOwnerID() == -1) {				
+				return true;
+			}
+		}
+
+		if (quantities != null && !quantities.isEmpty()) {
+			for (double m: quantities) {
+				if (m > 0)
+					return false;
+			}
+		}
+		
+		return true;
+	}	
+
+	@Override
+	public boolean isBrandNew() {
+		if (getLastOwnerID() == -1)
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean isUsed() {
+		return !isBrandNew();
+	}
+
+	@Override
+	public boolean hasContent() {
+		if (quantities != null && !quantities.isEmpty()) {
+			for (double m: quantities) {
+				if (m > 0)
+					return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Gets the unit's malfunction manager.
@@ -200,13 +533,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
 //			String name = getOwner().getName();
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {				
+			if (getAmountResourceStored(o2) <= massO2MinimumLimit) {				
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 			
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {				
+			if (getAmountResourceStored(h2o) <= 0D) {				
 				logger.log(getOwner(), Level.WARNING, 30_000, 
 						"Ran out of water.");
 //				return false;
@@ -267,7 +600,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// the ISS
 		if (amountRequested > 0) {
 			try {
-				double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+				double oxygenLeft = getAmountResourceStored(o2);
 	//			if (oxygenTaken * 100 > oxygenLeft) {
 	//				// O2 is running out soon
 	//				// Walk back to the building or vehicle
@@ -277,23 +610,20 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 				
 				if (oxygenTaken > oxygenLeft)
 					oxygenTaken = oxygenLeft;
-				if (oxygenTaken > 0) {
-					getInventory().retrieveAmountResource(ResourceUtil.oxygenID, oxygenTaken);
-//					getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
-//					getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
-				}
+				if (oxygenTaken > 0)
+					retrieveAmountResource(o2, oxygenTaken);
+							
 				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
 				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
 				// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g ( 2g/L x .04 x
 				// .5l).
 	
-	//			double carbonDioxideProvided = .04 * .04 * oxygenTaken;
-	//			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
-	//			if (carbonDioxideProvided > carbonDioxideCapacity)
-	//				carbonDioxideProvided = carbonDioxideCapacity;
-	//
-	//			getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
-	//			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+				double carbonDioxideProvided = .04 * .04 * oxygenTaken;
+				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(co2);
+				if (carbonDioxideProvided > carbonDioxideCapacity)
+					carbonDioxideProvided = carbonDioxideCapacity;
+	
+				storeAmountResource(co2, carbonDioxideProvided);
 	
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
@@ -311,13 +641,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-		double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+		double waterLeft = getAmountResourceStored(h2o);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
-		getInventory().retrieveAmountResource(ResourceUtil.waterID, waterTaken);
+		retrieveAmountResource(h2o, waterTaken);
 
 		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -329,13 +659,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	public double getAirPressure() {
 		// Based on some pre-calculation, 
-		
-		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure 
-		
-		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
-		
-		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
-		
+		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure 	
+		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2	
+		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 	
 		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
 		
 		// 66.61 kPa -> 1      kg (full tank O2 pressure)
@@ -343,22 +669,18 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 		
-		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		double oxygenLeft = getAmountResourceStored(h2o);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS 
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			logger.log(this, Level.WARNING, 30_000, 
-					"[" + this.getLocationTag().getLocale() + "] " 
-						+ getOwner().getName() + "'s " 
-						+ this.getName() + " got " + Math.round(oxygenLeft*100.0)/100.0
+			logger.log(this, getOwner(), Level.WARNING, 30_000, 
+					" got " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
 			return pp;
 		}
-
 //		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
-
 		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);	
 	}
 

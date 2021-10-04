@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-03
  * @author Scott Davis
  */
 
@@ -336,11 +336,11 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += bag.getMass();
 			}
 
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
-				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenID, false, false);
-				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterID, false, false);
+				carryMass += suit.getAmountResourceRemainingCapacity(oxygenID);
+				carryMass += suit.getAmountResourceRemainingCapacity(waterID);
 			}
 			double carryCapacity = person.getInventory().getGeneralCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);

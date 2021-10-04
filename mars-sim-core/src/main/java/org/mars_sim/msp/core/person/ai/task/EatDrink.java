@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -880,11 +881,12 @@ public class EatDrink extends Task implements Serializable {
 			double currentThirst = Math.min(thirst, THIRST_CEILING);
 			Unit containerUnit = person.getContainerUnit();
 			Inventory inv = null;
+			EVASuit suit = null;
 			
 			if (containerUnit != null) {			
 				if (containerUnit instanceof MarsSurface) {
 					// Doing EVA outside. Get water from one's EVA suit
-					inv = person.getSuit().getInventory();
+					suit = person.getSuit();
 				}
 				else {
 					// In a vehicle or settlement
@@ -894,7 +896,37 @@ public class EatDrink extends Task implements Serializable {
 			
 			double waterFinal = Math.min(waterEachServing, currentThirst);
 
-			if (inv != null && waterFinal > 0) {
+			if (suit != null && waterFinal > 0) {
+				double new_thirst = (currentThirst - waterFinal) / 10;
+				// Test to see if there's enough water
+				boolean haswater = false;
+				double amount = waterFinal / 1000D;
+
+				if (amount > MIN) {
+					double available = suit.getAmountResourceStored(ResourceUtil.waterID);
+					if (available >= amount)
+						haswater = true;
+				}				
+					
+				if (haswater) {
+					new_thirst = new_thirst - amount * 5_000;
+					if (new_thirst < 0)
+						new_thirst = 0;
+					else if (new_thirst > THIRST_CEILING)
+						new_thirst = THIRST_CEILING;
+					pc.setThirst(new_thirst);
+
+					if (amount > MIN) {
+						suit.retrieveAmountResource(ResourceUtil.waterID, amount);
+						// Track the water consumption
+						person.addConsumptionTime(ResourceUtil.waterID, amount);
+						if (waterOnly)
+							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
+					}
+				}
+			}
+			
+			else if (inv != null && waterFinal > 0) {
 				int level = person.getAssociatedSettlement().getWaterRation();
 				double new_thirst = (currentThirst - waterFinal) / 10;
 				// Test to see if there's enough water
@@ -1073,11 +1105,10 @@ public class EatDrink extends Task implements Serializable {
 				Unit containerUnit = person.getTopContainerUnit();
 				
 				Inventory inv = null;
-				
+
 				if (containerUnit != null) {			
 					if (containerUnit instanceof MarsSurface) {
-						// Get dessert from one's EVA suit
-						inv = person.getSuit().getInventory();
+						// Note: in future, may get dessert drink from one's EVA suit
 					}
 					else {
 						inv = containerUnit.getInventory();

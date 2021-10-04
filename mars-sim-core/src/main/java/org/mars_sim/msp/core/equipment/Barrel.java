@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class Barrel
 extends Equipment
-implements Container, Serializable {
+implements ContainerInterface, Serializable {
 
 	
 	/** default serial id. */

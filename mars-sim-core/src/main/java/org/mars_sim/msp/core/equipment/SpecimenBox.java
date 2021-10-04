@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class SpecimenBox
 extends Equipment
-implements Container, Serializable {
+implements ContainerInterface, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

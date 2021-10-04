@@ -1,7 +1,8 @@
 /*
  * Mars Simulation Project
  * LoadingController.java
- * @date 2021-09-21
+ * @date 2021-10-03
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -32,9 +33,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class LoadingController implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/**

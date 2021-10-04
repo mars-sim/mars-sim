@@ -11,13 +11,18 @@ Copyright (C) 2021 Scott Davis
 
 
 ### CORE ENGINE IMPROVEMENTS :
-
+1. Implement a reservation system for EVA egress.
+2. Add new Computation building function, new Computer Science subject, 
+   new Computer Scientist job, new role and skill.
+3. Make a person's carrying capacity to be age-dependent.
+4. Enable lightweight inventory for EVA suit.
 
 ### UI IMPROVEMENT :
 
 
 ### FIXES :
-
+1. Consider loading/Unloading edge cases for Trading/Delivery.
+2. Resolve stalled delivery negotiation.
 
 ------------------------------------------|---------------------
 

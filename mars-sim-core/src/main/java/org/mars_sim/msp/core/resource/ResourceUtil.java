@@ -213,7 +213,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource methaneAR;
 
 	public static AmountResource coAR;
-
+	
 //	public static AmountResource soilAR;
 	public static AmountResource iceAR;
 //	public static AmountResource compostAR;

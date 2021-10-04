@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MineSite.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -265,6 +265,7 @@ public class MineSite extends EVAOperation implements Serializable {
 				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
 
 			if (luv.getInventory().canStoreUnit(person, false)) {
+				// Duplicated calling of canstoreUnit
 				luv.getInventory().storeUnit(person);
 
 				Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);

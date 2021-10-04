@@ -260,8 +260,13 @@ public class SimulationBuilder {
 		// the data directory
 		SimulationConfig simConfig = SimulationConfig.instance();
 		simConfig.loadConfig();
-		Simulation sim = Simulation.instance();
 		
+		// Initialize storage manager
+		simConfig.createStorageManager();
+//		simConfig.createStorageManager().start();
+		
+		Simulation sim = Simulation.instance();
+			
 		boolean loaded = false;
 		if (simFile != null) {
 			loaded  = loadSimulation();

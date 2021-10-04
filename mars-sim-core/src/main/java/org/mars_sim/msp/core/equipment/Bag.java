@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A bag container for holding solid amount resources.
  */
-public class Bag extends Equipment implements Container, Serializable {
+public class Bag extends Equipment implements ContainerInterface, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
