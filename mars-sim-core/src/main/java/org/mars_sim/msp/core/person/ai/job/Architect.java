@@ -10,8 +10,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -25,23 +23,12 @@ extends Job {
 	public Architect() {
 		// Use Job constructor.
 		super(JobType.ARCHITECT, Job.buildRoleMap(5.0, 20.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0));
-
-		// Add architect-related missions.
-		jobMissionStarts.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		
-		jobMissionStarts.add(BuildingSalvageMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
 	@Override
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-		result = constructionSkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);

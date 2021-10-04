@@ -103,12 +103,12 @@ public final class TradeUtil {
 		Settlement bestSettlement = null;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
+			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(MissionType.TRADE)) {
 
 				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, tradingSettlement);
 
 				double settlementRange = Coordinates.computeDistance(tradingSettlement.getCoordinates(), startingSettlement.getCoordinates());
-				boolean withinRange = (settlementRange <= (rover.getRange(Trade.missionType) * .8D));
+				boolean withinRange = (settlementRange <= (rover.getRange(MissionType.TRADE) * .8D));
 
 				if (!hasCurrentTradeMission && withinRange) {
 					// double startTime = System.currentTimeMillis();

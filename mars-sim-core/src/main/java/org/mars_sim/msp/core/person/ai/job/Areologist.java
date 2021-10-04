@@ -6,31 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Research;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Areologist class represents a job for an areologist, one who studies the
@@ -44,28 +25,6 @@ class Areologist extends Job {
 	public Areologist() {
 		// Use Job constructor
 		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
-
-		// Add areologist-related missions.
-		jobMissionStarts.add(AreologyFieldStudy.class);
-		jobMissionJoins.add(AreologyFieldStudy.class);
-		
-		jobMissionJoins.add(BiologyFieldStudy.class);
-		
-		jobMissionStarts.add(Exploration.class);
-		jobMissionJoins.add(Exploration.class);
-		
-		jobMissionStarts.add(CollectIce.class);
-		jobMissionJoins.add(CollectIce.class);
-		
-		jobMissionStarts.add(CollectRegolith.class);
-		jobMissionJoins.add(CollectRegolith.class);
-			
-		jobMissionStarts.add(Mining.class);
-		jobMissionJoins.add(Mining.class);
-		
-		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
-		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -76,10 +35,7 @@ class Areologist extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 1D;
-
-		int areologySkill = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
-		result = areologySkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
@@ -105,50 +61,15 @@ class Areologist extends Job {
 		int population = settlement.getNumCitizens();
 		
 		// Add (labspace * tech level / 2) for all labs with areology specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 10D);
-			}
-		}
+		result += getBuildingScienceDemand(settlement, ScienceType.AREOLOGY, 10D);
 
 		// Add (labspace * tech level / 2) for all parked rover labs with areology
 		// specialties.
-		Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
-		while (j.hasNext()) {
-			Vehicle vehicle = j.next();
-			if (vehicle instanceof Rover) {
-				Rover rover = (Rover) vehicle;
-				if (rover.hasLab()) {
-					Lab lab = rover.getLab();
-					if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
-					}
-				}
-			}
-		}
+		result += getParkedVehicleScienceDemand(settlement, ScienceType.AREOLOGY, 12D);
 
 		// Add (labspace * tech level / 2) for all labs with areology specialties in
 		// rovers out on missions.
-		// MissionManager missionManager = Simulation.instance().getMissionManager();
-		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (k.hasNext()) {
-			Mission mission = k.next();
-			if (mission instanceof RoverMission) {
-				Rover rover = ((RoverMission) mission).getRover();
-				if ((rover != null) && !settlement.getParkedVehicles().contains(rover)) {
-					if (rover.hasLab()) {
-						Lab lab = rover.getLab();
-						if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
-						}
-					}
-				}
-			}
-		}
+		result += getMissionScienceDemand(settlement, ScienceType.AREOLOGY, 8D);
 
 		result = (result + population / 10D) / 2.0;
 				

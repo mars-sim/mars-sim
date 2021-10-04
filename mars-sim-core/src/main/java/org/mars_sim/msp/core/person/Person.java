@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
@@ -74,7 +76,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  * related to that person and provides information about him/her.
  */
 public class Person extends Unit implements VehicleOperator, MissionMember, Serializable, Temporal {
-
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
@@ -91,9 +93,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private final static String EARTHLING = "Earthling";
 	private final static String ONE_SPACE = " ";
-	
-//	private final static String MARTIAN = "Martian";
-	
+		
 	/** The average height of a person. */
 	private static final double averageHeight;
 	/** The average weight of a person. */
@@ -150,18 +150,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The walking speed modifier. */
 	private double walkSpeedMod = 1.1;
 	
-	/** The birth timestamp of the person. */
-//	private String birthTimeStamp;
 	/** The birthplace of the person. */
 	private String birthplace;
-	/** The person's name. */
-//	private String name;
 	/** The person's first name. */
 	private String firstName;
 	/** The person's last name. */
 	private String lastName;
-//	/** The person's sponsor. */
-//	private String sponsor;
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
@@ -213,7 +207,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's maternal chromosome. */
 	private Map<Integer, Gene> maternal_chromosome;
 	/** The person's mission experiences */
-	private Map<Integer, List<Double>> missionExperiences;
+	private Map<MissionType, Integer> missionExperiences;
 	/** The person's EVA times */
 	private SolMetricDataLogger<String> eVATaskTime;
 	/** The person's water/oxygen consumption */
@@ -334,7 +328,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
-		missionExperiences = new ConcurrentHashMap<>();
+		missionExperiences = new EnumMap<>(MissionType.class);
 		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);
 		// Create the consumption map
@@ -1663,22 +1657,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Adds the mission experience score
 	 * 
-	 * @param id
+	 * @param missionType
 	 * @param score
 	 */
-	public void addMissionExperience(int id, double score) {
-		if (missionExperiences.containsKey(id)) {
-			List<Double> scores = missionExperiences.get(id);
-			scores.add(score);
-//			missionExperiences.get(id).add(score);
-//			// Limit the size of each list to 20
-//			if (scores.size() > 20)
-//				scores.remove(0);
-		} else {
-			List<Double> scores = new CopyOnWriteArrayList<>();
-			scores.add(score);
-			missionExperiences.put(id, scores);
-		}
+	public void addMissionExperience(MissionType missionType, int score) {
+		Integer total = missionExperiences.getOrDefault(missionType, 0);
+		total += score;
+		missionExperiences.put(missionType, total);
 	}
 
 
@@ -1687,8 +1672,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * 
 	 * @return a map of mission experiences
 	 */
-	public Map<Integer, List<Double>> getMissionExperiences() {
-		return missionExperiences;
+	public int getMissionExperience(MissionType missionType) {
+		Integer previous = missionExperiences.get(missionType);
+		if (previous != null) {
+			return previous;
+		}
+		return 0;
 	}
 
 	/**

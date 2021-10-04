@@ -13,8 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -29,10 +27,6 @@ class Chef extends Job {
 	public Chef() {
 		// Use Job constructor
 		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
-
-		// Add chef-related missions.
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -43,14 +37,7 @@ class Chef extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int cookingSkill = person.getSkillManager().getSkillLevel(SkillType.COOKING);
-		result = cookingSkill;
-
-		// int foodProcessingSkill =
-		// person.getMind().getSkillManager().getSkillLevel(SkillType.FOODPROCESSING);
-		// result = foodProcessingSkill;
+		double result =  person.getSkillManager().getSkillLevel(SkillType.COOKING);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
@@ -58,8 +45,6 @@ class Chef extends Job {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
-
-//		System.out.println(person + " chef : " + Math.round(result*100.0)/100.0);
 		
 		return result;
 	}
@@ -87,8 +72,6 @@ class Chef extends Job {
 
 		result = (result + population / 12D) / 2.0;
 		
-//		System.out.println(settlement + " Chef Need: " + result);
-
 		return result;
 	}
 }

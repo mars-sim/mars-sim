@@ -12,8 +12,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -21,8 +19,8 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public class Politician extends Job {
 	
-	private static double TRADING_RANGE = 1500D;
-	private static double SETTLEMENT_MULTIPLIER = .3D;
+	private static final double TRADING_RANGE = 1500D;
+	private static final double SETTLEMENT_MULTIPLIER = .3D;
 
 	/**
 	 * Constructor.
@@ -30,17 +28,6 @@ public class Politician extends Job {
 	public Politician() {
 		// Use Job constructor.
 		super(JobType.POLITICIAN, Job.buildRoleMap(15.0, 0.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
-		
-		// Add Manager-related missions.
-		jobMissionStarts.add(Trade.class);
-		jobMissionJoins.add(Trade.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-
-		// Should mayor be heroic in this frontier world? Yes
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-
 	}
 
 	/**
@@ -51,10 +38,7 @@ public class Politician extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int managerSkill = person.getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
-		result = managerSkill;
+		double result =  person.getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
@@ -106,9 +90,7 @@ public class Politician extends Job {
 		}
 		
 		result = (result + population / 64D) / 2.0;
-		
-//		System.out.println(settlement + " Politician need: " + result);
-		
+				
 		return result;
 	}
 }

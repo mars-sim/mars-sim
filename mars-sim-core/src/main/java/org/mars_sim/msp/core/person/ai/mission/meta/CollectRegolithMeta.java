@@ -6,36 +6,32 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.Msg;
+import java.util.Set;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * A meta mission for the CollectRegolith mission.
  */
-public class CollectRegolithMeta implements MetaMission {
-
-	/** Mission name */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
+public class CollectRegolithMeta extends AbstractMetaMission {
 
 	private static final double VALUE = 10D;
    
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
-	@Override
-	public String getName() {
-		return DEFAULT_DESCRIPTION;
+	CollectRegolithMeta() {
+		super(MissionType.COLLECT_REGOLITH, "collectRegolith",
+				Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
 	}
-
+	
 	@Override
 	public Mission constructInstance(Person person) {
 		return new CollectRegolith(person);
@@ -62,13 +58,13 @@ public class CollectRegolithMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {			
 				
-				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+				if (settlement.getMissionBaseProbability(MissionType.COLLECT_REGOLITH))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    	   		
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-	    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_REGOLITH, settlement);
 	    	
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
@@ -84,12 +80,10 @@ public class CollectRegolithMeta implements MetaMission {
 	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.COLLECT_REGOLITH));
 	    		
 				// Job modifier.
-				JobType job = person.getMind().getJob();
-				if (job != null) {
-					missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(CollectRegolith.class);
-					// If this town has a tourist objective, divided by bonus
-					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
-				}
+	    		missionProbability *= getLeaderSuitability(person);
+	    		
+				// If this town has a tourist objective, divided by bonus
+				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 				
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
@@ -104,32 +98,7 @@ public class CollectRegolithMeta implements MetaMission {
 					missionProbability = 0;
 			}
 		}
-		
-//        if (missionProbability > 0)
-//        	logger.info("CollectRegolithMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
 
 		return missionProbability;
 	}
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link MissionManager}
-//	 */
-//	public static void setInstances(MissionManager m) {
-//		missionManager = m;
-//	}
 }

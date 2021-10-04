@@ -6,43 +6,35 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A meta mission for the Mining mission.
  */
-public class MiningMeta implements MetaMission {
-
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.mining"); //$NON-NLS-1$
+public class MiningMeta extends AbstractMetaMission { 
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-	private static final double FACTOR = 200D;
-	  
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
+    MiningMeta() {
+    	super(MissionType.MINING, "mining",
+    			Set.of(JobType.AREOLOGIST));
     }
-
+    
     @Override
     public Mission constructInstance(Person person) {
         return new Mining(person);
@@ -69,7 +61,7 @@ public class MiningMeta implements MetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
         	
-	            if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            if (settlement.getMissionBaseProbability(MissionType.MINING))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
@@ -89,7 +81,7 @@ public class MiningMeta implements MetaMission {
 	            	return 0;
 	
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.MINING, settlement);
 		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
@@ -103,7 +95,7 @@ public class MiningMeta implements MetaMission {
 	    		
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Mining.missionType,
+	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.MINING,
 	                        settlement, false);
 	
 	                if (rover != null) {
@@ -136,13 +128,9 @@ public class MiningMeta implements MetaMission {
 				missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
 				
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-					// It this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, Mining.class)
+				missionProbability *= getLeaderSuitability(person)
 	                		* (settlement.getGoodsManager().getTourismFactor()
 	                  		 + settlement.getGoodsManager().getResearchFactor())/1.5;
-	            }
 	
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
@@ -158,22 +146,6 @@ public class MiningMeta implements MetaMission {
  			}
         }
 
-//        if (missionProbability > 0)
-//        	logger.info("MiningMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
-		 
         return missionProbability;
     }
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

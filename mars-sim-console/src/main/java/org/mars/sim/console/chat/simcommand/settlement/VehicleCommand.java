@@ -16,7 +16,6 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -97,6 +96,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 25, "Lead", CommandHelper.PERSON_WIDTH);
 
+		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
 
 			String vTypeStr = Conversion.capitalize(v.getVehicleType());
@@ -105,22 +105,14 @@ public class VehicleCommand extends AbstractSettlementCommand {
 
 			// Print mission name
 			String missionName = "";
-			Mission mission = null;
-			List<Mission> missions = context.getSim().getMissionManager().getMissions();
-			for (Mission m : missions) {
-				if (!m.isDone() && m instanceof VehicleMission) {
-					Vehicle vv = ((VehicleMission) m).getVehicle();
-					if ((vv != null) && vv.getName().equals(v.getName())) {
-						mission = m;
-						missionName = m.getDescription();
-					}
-				}
+			String leader = "";
+			Mission mission = missionMgr.getMissionForVehicle(v);
+			if (mission != null) {
+				leader = mission.getStartingPerson().getName();
+				missionName = mission.getTypeID();
 			}
-
-			String personName = ((mission != null) ? 
-									mission.getStartingPerson().getName() : "");
-
-			response.appendTableRow(v.getName(), vTypeStr, missionName, personName);
+			
+			response.appendTableRow(v.getName(), vTypeStr, missionName, leader);
 		}
 		
 		context.println(response.getOutput());

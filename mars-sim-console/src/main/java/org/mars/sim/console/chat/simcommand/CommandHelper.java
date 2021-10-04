@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
@@ -53,8 +54,10 @@ public class CommandHelper {
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
 	public static final String KG_FORMAT = "%.2f kg";
+	public static final String KM_FORMAT = "%.2f km";
+	public static final String PERC_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
-
+	
 	private CommandHelper() {
 		// Do nothing
 	}
@@ -98,10 +101,9 @@ public class CommandHelper {
 		
 		switch(study.getPhase()) {
 		case ScientificStudy.PROPOSAL_PHASE:
-			// Safe to cast because value will always be 100 or less
-			String done = (int) Math.round((100D * study.getProposalWorkTimeCompleted())
-								/ study.getTotalProposalWorkTimeRequired()) + "%";
-			response.appendLabeledString("Completed", done);
+			response.appendLabeledString("Completed",
+					String.format(PERC_FORMAT, (100D * study.getProposalWorkTimeCompleted())
+							/ study.getTotalProposalWorkTimeRequired()));
 			break;
 			
 		case ScientificStudy.INVITATION_PHASE:
@@ -123,9 +125,9 @@ public class CommandHelper {
 			
 		case ScientificStudy.PEER_REVIEW_PHASE:
 			// Safe to cast because value will always be 100 or less
-			String reviewDone = (int) Math.round((100D * study.getPeerReviewTimeCompleted())
-								/ study.getTotalPeerReviewTimeRequired()) + "%";
-			response.appendLabeledString("Completed", reviewDone);
+			response.appendLabeledString("Completed", String.format(PERC_FORMAT,
+											(100D * study.getPeerReviewTimeCompleted())
+													/ study.getTotalPeerReviewTimeRequired()));
 			break;
 			
 		default:
@@ -212,20 +214,34 @@ public class CommandHelper {
 		// Ohhh instanceof ???
 		if (mission instanceof VehicleMission) {
 			v = ((VehicleMission) mission).getVehicle();
-			dist = Math.round(((VehicleMission) mission).getEstimatedTotalDistance() * 10.0) / 10.0;
-			trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
+			dist = ((VehicleMission) mission).getEstimatedTotalDistance();
+			trav = ((VehicleMission) mission).getActualTotalDistanceTravelled();
 		}
 	
 		if (v != null) {
 			response.appendLabeledString("Vehicle", v.getName());
 			response.appendLabeledString("Type", v.getVehicleType());
-			response.appendLabeledString("Est. Dist.", dist + " km");
-			response.appendLabeledString("Travelled", trav + " km");
+			response.appendLabeledString("Est. Dist.", String.format(KM_FORMAT, dist));
+			response.appendLabeledString("Travelled", String.format(KM_FORMAT, trav));
 		}
 		response.appendLabeledString("Phase", mission.getPhaseDescription());
 		MissionPlanning mp = mission.getPlan();
 		if (mp != null) {
-			response.appendLabeledString("Plan Status", mp.getStatus().getName());
+			StringBuilder planMsg = new StringBuilder();
+			PlanType st = mp.getStatus();
+			planMsg.append(st.getName());
+			switch (st) {
+			case PENDING:
+				planMsg.append(' ');
+				planMsg.append(String.format(PERC_FORMAT, mp.getPercentComplete()));
+				break;
+			case APPROVED:
+			case NOT_APPROVED:
+				planMsg.append(" - Score ");
+				planMsg.append(String.format("%.1f out of %.1f", mp.getScore(), mp.getPassingScore()));
+				break;
+			}
+			response.appendLabeledString("Plan Status", planMsg.toString());
 		}
 		response.appendLabeledString("Lead", startingPerson.getName());
 
@@ -312,7 +328,7 @@ public class CommandHelper {
 	 */
 	public static void outputMalfunction(StructuredResponse response, Malfunction m) {
 		response.appendLabelledDigit("Severity", m.getSeverity());
-		response.appendLabelledDigit("Fixed %", (int)m.getPercentageFixed());
+		response.appendLabeledString("Fixed ", String.format(PERC_FORMAT, m.getPercentageFixed()));
 		
 		// Parts
 		Map<Integer, Integer> parts = m.getRepairParts();

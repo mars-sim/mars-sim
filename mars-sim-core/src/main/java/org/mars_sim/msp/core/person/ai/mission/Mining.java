@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -23,6 +24,7 @@ import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
@@ -43,7 +45,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Mission for mining mineral concentrations at an explored site.
  */
-public class Mining extends RoverMission {
+public class Mining extends RoverMission
+	implements SiteMission {
+
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,7 +57,7 @@ public class Mining extends RoverMission {
 	private static SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.MINING;
@@ -107,7 +112,7 @@ public class Mining extends RoverMission {
 	public Mining(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		this.startingPerson = startingPerson;
 		
@@ -1200,6 +1205,11 @@ public class Mining extends RoverMission {
 	}
 	
 	@Override
+	protected Set<JobType> getPreferredPersonJobs() {
+		return PREFERRED_JOBS;
+	}
+
+	@Override
 	public void destroy() {
 		super.destroy();
 
@@ -1214,5 +1224,10 @@ public class Mining extends RoverMission {
 		}
 		totalExcavatedMinerals = null;
 		luv = null;
+	}
+
+	@Override
+	public double getTotalSiteScore(Settlement reviewerSettlement) {
+		return getMiningSiteValue(miningSite, reviewerSettlement);
 	}
 }

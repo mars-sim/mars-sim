@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
-import org.mars_sim.msp.core.structure.building.function.Research;
 
 /**
  * The Doctor class represents a job for an medical treatment expert.
@@ -29,10 +28,6 @@ class Doctor extends Job {
 	public Doctor() {
 		// Use Job constructor
 		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
-
-		// Add doctor-related missions.
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -43,10 +38,7 @@ class Doctor extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int skill = person.getSkillManager().getSkillLevel(SkillType.MEDICINE);
-		result = skill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.MEDICINE);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
@@ -73,15 +65,7 @@ class Doctor extends Job {
 		int population = settlement.getNumCitizens();
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 3D);
-			}
-		}
+		result += getBuildingScienceDemand(settlement, ScienceType.MEDICINE, 3D);
 
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
@@ -93,9 +77,7 @@ class Doctor extends Job {
 		}
 
 		result = (result + population / 8D) / 2.0;
-		
-//		System.out.println(settlement + " Doctor need: " + result);
-		
+				
 		return result;
 	}
 }

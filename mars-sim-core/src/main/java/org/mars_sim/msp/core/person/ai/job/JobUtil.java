@@ -17,7 +17,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -94,7 +93,7 @@ public final class JobUtil {
 	 */
 	private static void loadRobotJobs() {
 		if (robotJobs == null) {
-			robotJobs = new CopyOnWriteArrayList<RobotJob>();
+			robotJobs = new CopyOnWriteArrayList<>();
 			robotJobs.add(new Chefbot());
 			robotJobs.add(new Constructionbot());
 			robotJobs.add(new Deliverybot());
@@ -129,17 +128,6 @@ public final class JobUtil {
 		if (jobSpecs == null)
 			loadJobs();
 		return Collections.unmodifiableCollection(jobSpecs.values());
-	}
-
-	/**
-	 * Gets a list of available jobs in the simulation.
-	 * 
-	 * @return list of jobs
-	 */
-	public static List<RobotJob> getRobotJobs() {
-		if (robotJobs == null)
-			loadRobotJobs();
-		return new CopyOnWriteArrayList<RobotJob>(robotJobs);
 	}
 
 	public static RobotJob getRobotJob(String jobClassName) {
@@ -232,9 +220,7 @@ public final class JobUtil {
 					double rand = RandomUtil.getRandomDouble(0.8);
 					double t = 1.0 * pop / numberOfJobs  + rand;
 					int maxPos = (int)(Math.ceil(t));
-//						logger.config("job : " + job + "  ID: " + job.getJobID());
 					int numPositions = numJobs(job.getType(), settlement);
-//						logger.config(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
 					if (numPositions < maxPos) {
 					// Exclude politician job which is reserved for Mayor only
 						double jobProspect = getJobProspect(person, job.getType(), settlement, true);
@@ -246,8 +232,7 @@ public final class JobUtil {
 				}
 			} 
 		}
-//		logger.info(newJob.getName(GenderType.MALE) + " job prospects : " + newJobProspect);
-//		logger.info(newJob + " : " + newJobProspect);
+
 		return selectedJob;
 	}
 
@@ -278,8 +263,7 @@ public final class JobUtil {
 	 * @return job prospect value (0.0 min)
 	 */
 	public static double getJobProspect(Unit unit, JobType job, Settlement settlement, boolean isHomeSettlement) {
-		Person person = null;
-		person = (Person) unit;
+		Person person = (Person) unit;
 
 		Job jobSpec = jobSpecs.get(job);
 		double jobCapability = jobSpec.getCapability(person);
@@ -326,17 +310,5 @@ public final class JobUtil {
 			}
 		}
 		return num;
-	}
-
-	/**
-	 * Facade method to remove the need to lookup a JobSpec to get the 
-	 * start Mission probability.
-	 * @param job
-	 * @param missionClass
-	 * @return
-	 */	
-	public static double getStartMissionProbabilityModifier(JobType job, Class<? extends Mission> missionClass) {
-		Job j = getJobSpec(job);
-		return j.getStartMissionProbabilityModifier(missionClass);
 	}
 }

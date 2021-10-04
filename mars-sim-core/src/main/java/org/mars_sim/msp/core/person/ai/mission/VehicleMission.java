@@ -213,8 +213,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return vehicle or null if none.
 	 */
-	@Override
-	public final Vehicle getVehicle() {
+	public Vehicle getVehicle() {
 		return vehicle;
 	}
 
@@ -734,8 +733,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
 			if (isMissionPlanReady) {
-				requestReviewPhase(member);
 				computeEstimatedTotalDistance();
+				requestReviewPhase(member);
 			}
 		}
 		else if (EMBARKING.equals(getPhase())) {

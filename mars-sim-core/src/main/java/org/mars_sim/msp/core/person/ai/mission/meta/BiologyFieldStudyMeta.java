@@ -7,20 +7,18 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -29,20 +27,19 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A meta mission for the BiologyFieldStudy.
  */
-public class BiologyFieldStudyMeta implements MetaMission {
+public class BiologyFieldStudyMeta extends AbstractMetaMission {
 
-    /** default logger. */
+
+
+	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BiologyFieldStudyMeta.class.getName());
 
     private static final double WEIGHT = 10D;
-    
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
-    }
+    BiologyFieldStudyMeta() {
+		super(MissionType.BIOLOGY, "biologyFieldStudy",
+				Set.of(JobType.BIOLOGIST, JobType.BOTANIST));
+	}
 
     @Override
     public Mission constructInstance(Person person) {
@@ -71,13 +68,13 @@ public class BiologyFieldStudyMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+				if (settlement.getMissionBaseProbability(MissionType.BIOLOGY))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	       		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+				int numThisMission = missionManager.numParticularMissions(MissionType.BIOLOGY, settlement);
 	
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
@@ -86,7 +83,7 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	    		
 	            try {
 		            // Get available rover.
-		            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(BiologyFieldStudy.missionType, settlement, false);
+		            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.BIOLOGY, settlement, false);
 		            if (rover != null) {
 		
 		                ScienceType biology = ScienceType.BIOLOGY;
@@ -130,13 +127,9 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	            if (crowding > 0) missionProbability *= (crowding + 1);
 	
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	            	// If this town has a tourist objective, add bonus
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BiologyFieldStudy.class) 
+	            missionProbability *= getLeaderSuitability(person) 
 	                	* (settlement.getGoodsManager().getTourismFactor()
 	                	+ settlement.getGoodsManager().getResearchFactor())/1.5;
-	            }
 	            
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
@@ -152,22 +145,6 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	        }
         }
 
-//        if (missionProbability > 0)
-//        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
-
         return missionProbability;
     }
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

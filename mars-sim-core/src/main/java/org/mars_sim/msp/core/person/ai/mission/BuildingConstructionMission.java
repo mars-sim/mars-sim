@@ -66,11 +66,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;

@@ -12,14 +12,12 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
 
 class Trader extends Job {
 	
-	private static double TRADING_RANGE = 500D;
-	private static double SETTLEMENT_MULTIPLIER = 3D;
+	private static final double TRADING_RANGE = 500D;
+	private static final double SETTLEMENT_MULTIPLIER = 3D;
 
 	/**
 	 * Constructor.
@@ -27,16 +25,6 @@ class Trader extends Job {
 	public Trader() {
 		// Use Job constructor.
 		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
-
-		// Add trader-related missions.
-		jobMissionStarts.add(Trade.class);
-		jobMissionJoins.add(Trade.class);
-		jobMissionStarts.add(Delivery.class);
-		jobMissionJoins.add(Delivery.class);
-		
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
 	/**
@@ -47,19 +35,15 @@ class Trader extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int tradingSkill = person.getSkillManager().getSkillLevel(SkillType.TRADING);
-		result = tradingSkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.TRADING);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-//		result += result * ((experienceAptitude - 50D) / 100D);
+		
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
-//		result += result * ((conversation - 50D) / 100D);
 
 		double averageAptitude = 1.0 * experienceAptitude + conversation;
 		result += result * ((averageAptitude - 100D) / 100D);
@@ -85,15 +69,10 @@ class Trader extends Job {
 			if (otherSettlement != settlement) {
 				double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
 				result += TRADING_RANGE / distance * SETTLEMENT_MULTIPLIER / 4.0;
-//				if (distance <= TRADING_RANGE) {
-//					result += SETTLEMENT_MULTIPLIER;
-//				}
 			}
 		}
 
 		result = (result + population / 12D) / 2.0;
-
-//		System.out.println(settlement + " Trader need: " + result);
 		
 		return result;
 	}

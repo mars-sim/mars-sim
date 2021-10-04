@@ -7,18 +7,17 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
@@ -26,20 +25,16 @@ import org.mars_sim.msp.core.structure.construction.SalvageValues;
 /**
  * A meta mission for the BuildingSalvageMission mission.
  */
-public class BuildingSalvageMissionMeta implements MetaMission {
-
-    /** Mission name */
-    private static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.buildingSalvageMission"); //$NON-NLS-1$
+public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
-      
-    @Override
-    public String getName() {
-        return DEFAULT_DESCRIPTION;
-    }
 
+    BuildingSalvageMissionMeta() {
+    	super(MissionType.BUILDING_SALVAGE, "buildingSalvageMission",
+    			Set.of(JobType.ARCHITECT));
+    }
+    
     @Override
     public Mission constructInstance(Person person) {
         return new BuildingSalvageMission(person);
@@ -123,10 +118,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 	            }
 	
 	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingSalvageMission.class);
-	            }
+	            missionProbability *= getLeaderSuitability(person);
 	            
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
@@ -143,15 +135,5 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         }
         
         return missionProbability;
-    }
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-        return null;//new BuildingSalvageMission(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
     }
 }

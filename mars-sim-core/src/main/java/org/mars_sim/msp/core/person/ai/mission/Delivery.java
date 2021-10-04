@@ -46,7 +46,7 @@ public class Delivery extends DroneMission implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(Delivery.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.TRADE;

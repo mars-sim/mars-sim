@@ -12,14 +12,12 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 
 class Reporter extends Job {
 	
-	private static double TRADING_RANGE = 1500D;
-	private static double SETTLEMENT_MULTIPLIER = 1D;
+	private static final double TRADING_RANGE = 1500D;
+	private static final double SETTLEMENT_MULTIPLIER = 1D;
 
 	/**
 	 * Constructor.
@@ -27,14 +25,6 @@ class Reporter extends Job {
 	public Reporter() {
 		// Use Job constructor.
 		super(JobType.REPORTER, Job.buildRoleMap(5.0, 0.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
-
-		// Add reporter-related missions.
-		jobMissionStarts.add(Trade.class);
-		jobMissionJoins.add(Trade.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-
-		// Add missions
 	}
 
 	/**
@@ -45,23 +35,13 @@ class Reporter extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-		
-		int reportSkill = person.getSkillManager().getSkillLevel(SkillType.REPORTING);
-		result = reportSkill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.REPORTING);
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-
-//		if (attributes == null)
-//			attributes = person.getNaturalAttributeManager();
 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result += result * ((experienceAptitude - 50D) / 100D);
-
-		// Add leadership aptitude.
-//		int leadershipAptitude = attributes.getAttribute(NaturalAttributeType.LEADERSHIP);
-//		result += result * ((leadershipAptitude - 50D) / 100D);
 
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
@@ -101,9 +81,7 @@ class Reporter extends Job {
 		}
 
 		result = (result + population / 24D) / 2.0;
-		
-//		System.out.println(settlement + " Reporter need: " + result);
-		
+				
 		return result;
 	}
 }

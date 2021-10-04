@@ -6,20 +6,21 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.Trade.TradeProfitInfo;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -27,21 +28,16 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A meta mission for the Trade mission.
  */
-public class TradeMeta implements MetaMission {
-
-	/** Mission name */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
+public class TradeMeta extends AbstractMetaMission {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
 
     private static final int FREQUENCY = 1000;
-	
-	private Person person;
 
-	@Override
-	public String getName() {
-		return DEFAULT_DESCRIPTION;
+	TradeMeta() {
+		super(MissionType.TRADE, "trade",
+				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
 	}
 
 	@Override
@@ -94,30 +90,16 @@ public class TradeMeta implements MetaMission {
 			if (missionProbability < 0)
 				missionProbability = 0;
 		}
-		
-        if (missionProbability > 0)
-        	logger.info(person, "TradeMeta's probability : " +
-				 Math.round(missionProbability*100D)/100D);
-		 
+
         
 		return missionProbability;
 	}
 
-	@Override
-	public Mission constructInstance(Robot robot) {
-		return null;// new Trade(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
-	}
-
-	public double getSettlementProbability(Settlement settlement) {
+	private double getSettlementProbability(Settlement settlement) {
 
 		double missionProbability = 0;
 
-		if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+		if (settlement.getMissionBaseProbability(MissionType.TRADE))
         	missionProbability = 1;
         else
 			return 0;
@@ -127,7 +109,7 @@ public class TradeMeta implements MetaMission {
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
 			
-		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
+		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.TRADE, settlement, false);
 
 		try {
 			if (rover != null) {
@@ -161,8 +143,7 @@ public class TradeMeta implements MetaMission {
 				}
 			}
 		} catch (Exception e) {
-			if (person != null)
-				logger.log(Level.SEVERE, person + "Issues with TradeUtil.", e);
+			logger.log(Level.SEVERE, "Issues with TradeUtil.", e);
 			return 0;
 		}
 
@@ -173,7 +154,7 @@ public class TradeMeta implements MetaMission {
 		}
 
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRADE, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {

@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
-import org.mars_sim.msp.core.structure.building.function.Research;
 
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
@@ -29,10 +28,6 @@ class Psychologist extends Job {
 	public Psychologist() {
 		// Use Job constructor
 		super(JobType.PSYCHOLOGIST, Job.buildRoleMap(5.0, 0.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
-
-		// Add Psychologist-related missions.
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -43,10 +38,7 @@ class Psychologist extends Job {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
-
-		int skill = person.getSkillManager().getSkillLevel(SkillType.PSYCHOLOGY);
-		result = skill;
+		double result = person.getSkillManager().getSkillLevel(SkillType.PSYCHOLOGY);
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
@@ -56,8 +48,6 @@ class Psychologist extends Job {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
-
-//		System.out.println(person + " doctor : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}
@@ -76,15 +66,7 @@ class Psychologist extends Job {
 		int population = settlement.getNumCitizens();
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.PSYCHOLOGY)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 6D);
-			}
-		}
+		result += getBuildingScienceDemand(settlement, ScienceType.PSYCHOLOGY, 6D);
 
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
@@ -96,9 +78,7 @@ class Psychologist extends Job {
 		}
 
 		result = (result + population / 12D) / 2.0;
-		
-//		System.out.println(settlement + " Psychologist need: " + result);
-		
+				
 		return result;
 	}
 }

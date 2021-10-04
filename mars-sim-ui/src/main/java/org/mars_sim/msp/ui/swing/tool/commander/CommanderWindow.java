@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -509,7 +510,7 @@ public class CommanderWindow extends ToolWindow {
 		r1 = new JRadioButton(CANNOT_INITIATE);
 
 		// Set up initial conditions
-		if (settlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
+		if (settlement.isMissionDisable(MissionType.TRADE)) {
 			r0.setSelected(false);
 			r1.setSelected(true);
 		}
@@ -602,9 +603,9 @@ public class CommanderWindow extends ToolWindow {
 	        JRadioButton button = (JRadioButton) event.getSource();
 	 
 	        if (button == r0) {
-	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, false);
+	        	settlement.setMissionDisable(MissionType.TRADE, false);
 	        } else if (button == r1) {
-	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
+	        	settlement.setMissionDisable(MissionType.TRADE, true);
 	        } else if (button == r2) {
 //	        	SwingUtilities.invokeLater(() -> {
 					System.out.println("r2 selected");

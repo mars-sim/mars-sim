@@ -6,37 +6,30 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.Msg;
+import java.util.Set;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * A meta mission for the CollectIce mission.
  */
-public class CollectIceMeta implements MetaMission {
+public class CollectIceMeta extends AbstractMetaMission {
 
-//	private static final Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
-//	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
-	
-	/** Mission name */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
 	private static final double VALUE = 50D;
    
-	@Override
-	public String getName() {
-		return DEFAULT_DESCRIPTION;
+	CollectIceMeta() {
+		super(MissionType.COLLECT_ICE, "collectIce", 
+				Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
 	}
-
+	
 	@Override
 	public Mission constructInstance(Person person) {
 		return new CollectIce(person);
@@ -62,14 +55,14 @@ public class CollectIceMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {			
 			
-				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+				if (settlement.getMissionBaseProbability(MissionType.COLLECT_ICE))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
 	    		
 	//			missionProbability = getSettlementProbability(settlement);
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-	    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
 	    	
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
@@ -85,12 +78,9 @@ public class CollectIceMeta implements MetaMission {
 	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.COLLECT_ICE));
 	    		
 				// Job modifier.
-				JobType job = person.getMind().getJob();
-				if (job != null) {
-					missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, CollectIce.class);
-					// If this town has a tourist objective, divided by bonus
-					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
-				}
+	    		missionProbability *= getLeaderSuitability(person);
+				// If this town has a tourist objective, divided by bonus
+				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 	
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
@@ -105,31 +95,7 @@ public class CollectIceMeta implements MetaMission {
 					missionProbability = 0;
 			}
 		}
-		
-//		if (missionProbability > 0)
-//			logger.info("CollectIceMeta's probability : " + Math.round(missionProbability*100D)/100D);
 
 		return missionProbability;
 	}
-
-	@Override
-	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link MissionManager}
-//	 */
-//	public static void setInstances(MissionManager m) {
-//		missionManager = m;
-//	}
 }

@@ -20,7 +20,7 @@ public class JobHistory implements Serializable  {
 
 	
     /** The person's job history. */
-    private List<JobAssignment> jobAssignmentList = new ArrayList<JobAssignment>();
+    private List<JobAssignment> jobAssignmentList = new ArrayList<>();
 
 	public List<JobAssignment> getJobAssignmentList() {
 		return jobAssignmentList;
@@ -52,29 +52,27 @@ public class JobHistory implements Serializable  {
 	 * @param addNewJobAssignment
 	 */
     public void saveJob(JobType newJob, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
-    	// at the start of sim OR for a pop <= 4 settlement in which approvedBy = "User"
+    	// at the start of sim OR for a pop less than equal 4 settlement in which approvedBy "User"
     	if (jobAssignmentList.isEmpty()) {
      		jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
     	}
 
     	else if (approvedBy.equals(JobUtil.USER)) {
-    	   	// user approves the flexible job reassignment (for pop <= 4 only)");
+    	   	// user approves the flexible job reassignment (for pop less than 4 only)");
 			// Obtain last entry's lastJobStr
-//    		String lastJobStr = jobAssignmentList.get(last).getJobType();
      		jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
      	}
     	
     	else {
       		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
-    		//String lastJobStr = jobAssignmentList.get(last).getJobType();
     		if (approvedBy.equals(JobUtil.SETTLEMENT)){ // based on the emergent need of the settlement
          	   	jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
     		}
 
-    		else { //if (status.equals(JobAssignmentType.APPROVED)) { // same as checking if addNewJobAssignment is false
+    		else { 
         		//if status used to be Pending
-    			jobAssignmentList.get(last).setAuthorizedBy(approvedBy); // or getRole().toString();
+    			jobAssignmentList.get(last).setAuthorizedBy(approvedBy); 
           		jobAssignmentList.get(last).setStatus(JobAssignmentType.APPROVED);
      		}
     	}

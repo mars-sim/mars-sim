@@ -27,7 +27,8 @@ public class MissionPlanning implements Serializable {
 	private int requestedSol;
 	private double percentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
-	private double qualityScore;
+	private double passingScore = 0;
+
 	
 	private String requestedBy;
 	private String approvedBy;
@@ -136,14 +137,13 @@ public class MissionPlanning implements Serializable {
 		score = value;
 	}
 	
-	public void setQualityScore(double value) {
-		qualityScore = value;
-	}
-	
 	public void setPercentComplete(double value) {
 		percentComplete = value;
 	}
 
+	public void setPassingScore(double threshold) {
+		passingScore = threshold;
+	}
 	
 	public Mission getMission() {
 		return mission;
@@ -165,11 +165,12 @@ public class MissionPlanning implements Serializable {
 		return score;
 	}
 	
-	public double getQualityScore() {
-		return qualityScore;
+	public double getPassingScore() {
+		return passingScore;
 	}
 	
 	public static void initializeInstances(MarsClock c) {
 		clock = c;
 	}
+
 }
