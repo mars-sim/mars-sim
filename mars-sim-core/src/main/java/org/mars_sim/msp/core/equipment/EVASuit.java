@@ -257,7 +257,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @param quantity
 	 */
 	public void setQuanity(int index, double quantity) {
-		quantities.add(index, quantity);
+		quantities.set(index, quantity);
 	}
 	
 	/**

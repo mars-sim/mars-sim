@@ -108,6 +108,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return quantity;
 	}
 	
+
+	/**
+	 * Mass of Equipment is the base mass plus what every it is storing
+	 */
+	@Override
+	public double getMass() {
+		// Note stored mass may be have a differnet implementation in subclasses
+		return getStoredMass() + getBaseMass();
+	}
+
 	/**
 	 * Stores the resource
 	 * 

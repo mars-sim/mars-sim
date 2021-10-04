@@ -638,22 +638,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public double getMass() {
 		double invMass = 0;
-		if (this instanceof Equipment) {
-			if (this instanceof EVASuit)
-				invMass = ((EVASuit)this).getStoredMass();
-			else
-				invMass = ((Equipment)this).getStoredMass();
+
+		if (inventory == null) { 
+			logger.severe(this + ": inventory is null.");
 		}
-		else {
-			if (inventory == null) { 
-				logger.severe(this + ": inventory is null.");
-			}
-			else 
-				inventory.getTotalInventoryMass(false);
-			if (invMass == 0)
-				return baseMass;
-		}
-		
+		else 
+			invMass = inventory.getTotalInventoryMass(false);
+
 		return baseMass + invMass;
 	}
 

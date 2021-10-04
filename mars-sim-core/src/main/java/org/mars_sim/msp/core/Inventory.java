@@ -2153,7 +2153,6 @@ public class Inventory implements Serializable {
 	 */
 	public boolean canStoreUnit(Unit unit, boolean allowDirty) {
 		boolean result = false;
-		Integer unitID = unit.getIdentifier();
 		if (unit != null) {
 			Unit owner = getOwner();
 			double remain = getRemainingGeneralCapacity(allowDirty);
@@ -2176,6 +2175,7 @@ public class Inventory implements Serializable {
 				
 				result = false;
 			}
+			Integer unitID = unit.getIdentifier(); 
 
 			if (unitID.equals(ownerID)) {
 				logger.log(unit, Level.SEVERE, 30_000,
@@ -2329,7 +2329,16 @@ public class Inventory implements Serializable {
 	 * @return true if successful
 	 */
 	public boolean transferUnit(Unit unit, Unit newOwner) {
-		return retrieveUnit(unit, false) && newOwner.getInventory().storeUnit(unit);
+		boolean transferred = false;
+		if (retrieveUnit(unit, false)) {
+			transferred = newOwner.getInventory().storeUnit(unit);
+			if (!transferred) {
+				// Must return the Unit back to the origin.
+				storeUnit(unit);
+			}
+		}
+		
+		return transferred;
 	}
 
 	/**
@@ -2353,7 +2362,7 @@ public class Inventory implements Serializable {
 		
 		Integer id = unit.getIdentifier();
 
-		if (containedUnitIDs.contains(id)) {
+		if ((containedUnitIDs != null) && containedUnitIDs.contains(id)) {
 			
 			setUnitTotalMassCacheDirty();
 
