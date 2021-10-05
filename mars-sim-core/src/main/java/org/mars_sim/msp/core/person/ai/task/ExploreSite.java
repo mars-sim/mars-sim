@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
@@ -288,32 +287,42 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private void improveMineralConcentrationEstimates(double time) {
 		double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel()
 				* ESTIMATE_IMPROVEMENT_FACTOR;
-		if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-			MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
-			Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
-			Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
-			while (i.hasNext()) {
-				String mineralType = i.next();
-				double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-				double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-				double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-				double estimationImprovement = RandomUtil.getRandomDouble(1D * getEffectiveSkillLevel());
-				if (estimationImprovement > estimationDiff)
-					estimationImprovement = estimationDiff;
-				if (estimatedConcentration < actualConcentration)
-					estimatedConcentration += estimationImprovement;
-				else
-					estimatedConcentration -= estimationImprovement;
-				estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
-			}
-
-			// Add to site mineral concentration estimation improvement number.
-			site.addEstimationImprovement();
+		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+			improveSiteEstimates(site, getEffectiveSkillLevel());
+			
 			logger.log(person, Level.INFO, 5_000, 
 					"Exploring at site " + site.getLocation().getFormattedString() 
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");
 		}
+	}
+	
+	/**
+	 * Improve the mineral estimates for a particular site. Reviewer has a certain
+	 * skill rating. 
+	 * @param site
+	 * @param skill
+	 */
+	public static void improveSiteEstimates(ExploredLocation site, int skill) {
+		MineralMap mineralMap = surfaceFeatures.getMineralMap();
+		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
+
+		for(String mineralType : estimatedMineralConcentrations.keySet()) {
+			double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
+			double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
+			double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
+			double estimationImprovement = RandomUtil.getRandomDouble(1D * skill);
+			if (estimationImprovement > estimationDiff)
+				estimationImprovement = estimationDiff;
+			if (estimatedConcentration < actualConcentration)
+				estimatedConcentration += estimationImprovement;
+			else
+				estimatedConcentration -= estimationImprovement;
+			estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
+		}
+
+		// Add to site mineral concentration estimation improvement number.
+		site.addEstimationImprovement();
 	}
 
 	/**

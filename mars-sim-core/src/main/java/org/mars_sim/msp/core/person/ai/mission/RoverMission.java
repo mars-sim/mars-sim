@@ -69,9 +69,9 @@ public abstract class RoverMission extends VehicleMission {
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 500D;
 
-	protected static int OXYGEN_ID = ResourceUtil.oxygenID;
-	protected static int WATER_ID = ResourceUtil.waterID;
-	protected static int FOOD_ID = ResourceUtil.foodID;
+	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int FOOD_ID = ResourceUtil.foodID;
 
 	public static final String PHASE_1 = "phase 1";
 	public static final String MINING = "mining";

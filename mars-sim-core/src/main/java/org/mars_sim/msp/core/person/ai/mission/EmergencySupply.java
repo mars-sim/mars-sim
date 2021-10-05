@@ -70,6 +70,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
+	private static final int METHANE_ID = ResourceUtil.methaneID;
+
 	public static final double BASE_STARTING_PROBABILITY = 20D;
 
 	/** Mission phases. */
@@ -92,7 +94,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private Map<Integer, Integer> emergencyParts;
 
 	// Static members
-	private static int METHANE_ID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor.

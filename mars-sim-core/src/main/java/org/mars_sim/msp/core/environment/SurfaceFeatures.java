@@ -600,10 +600,26 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
 		
 		ExploredLocation result = new ExploredLocation(location, estimatedMineralConcentrations, settlement);
-		exploredLocations.add(result);
+		synchronized (exploredLocations) {
+			exploredLocations.add(result);
+		} 
 		return result;
 	}
 
+	/**
+	 * Check if an explored location already exists
+	 * @param c
+	 * @return
+	 */
+	public ExploredLocation getExploredLocation(Coordinates c) {
+		synchronized (exploredLocations) {
+		return exploredLocations.stream()
+				  .filter(e -> c.equals(e.getLocation()))
+				  .findAny()
+				  .orElse(null);
+		}
+	}
+	
 	/**
 	 * Gets a list of all explored locations on Mars.
 	 * 

@@ -78,7 +78,7 @@ public class Mining extends RoverMission
 	 * The minimum number of mineral concentration estimation improvements for an
 	 * exploration site for it to be considered mature enough to mine.
 	 */
-	private static final int MATURE_ESTIMATE_NUM = 10;
+	public static final int MATURE_ESTIMATE_NUM = 10;
 
 	// Data members
 	private boolean endMiningSite;

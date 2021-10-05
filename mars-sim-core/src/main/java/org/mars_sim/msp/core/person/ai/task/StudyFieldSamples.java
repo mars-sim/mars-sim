@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MarsSurface;
-import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -500,34 +499,12 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
-		if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+		ExploredLocation site = determineExplorationSite();
+		if (site != null) {
+			double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
+			if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+				ExploreSite.improveSiteEstimates(site, getEffectiveSkillLevel());
 
-			// Determine explored site to improve estimations.
-			ExploredLocation site = determineExplorationSite();
-			if (site != null) {
-				MineralMap mineralMap = surfaceFeatures.getMineralMap();
-				Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
-				Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
-				while (i.hasNext()) {
-					String mineralType = i.next();
-					double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-					double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-					double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-					double estimationImprovement = RandomUtil.getRandomDouble(1D * getEffectiveSkillLevel());
-					if (estimationImprovement > estimationDiff) {
-						estimationImprovement = estimationDiff;
-					}
-					if (estimatedConcentration < actualConcentration) {
-						estimatedConcentration += estimationImprovement;
-					} else {
-						estimatedConcentration -= estimationImprovement;
-					}
-					estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
-				}
-
-				// Add to site mineral concentration estimation improvement number.
-				site.addEstimationImprovement();
 				logger.log(worker, Level.FINE, 5_000, "Studying field samples at " + site.getLocation().getFormattedString() 
 						+ ". Estimation Improvement: "
 						+ site.getNumEstimationImprovement());

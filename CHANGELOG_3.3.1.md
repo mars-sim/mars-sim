@@ -23,6 +23,7 @@ Copyright (C) 2021 Scott Davis
 ### FIXES :
 1. Consider loading/Unloading edge cases for Trading/Delivery.
 2. Resolve stalled delivery negotiation.
+3. Exploration Mission revisits existing sites until they reach an evaluation ready for Mining. 
 
 ------------------------------------------|---------------------
 
