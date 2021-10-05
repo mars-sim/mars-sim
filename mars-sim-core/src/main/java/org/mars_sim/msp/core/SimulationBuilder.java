@@ -262,7 +262,7 @@ public class SimulationBuilder {
 		simConfig.loadConfig();
 		
 		// Initialize storage manager
-		simConfig.createStorageManager();
+//		simConfig.createStorageManager();
 //		simConfig.createStorageManager().start();
 		
 		Simulation sim = Simulation.instance();
