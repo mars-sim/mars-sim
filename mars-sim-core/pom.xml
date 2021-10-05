@@ -137,7 +137,7 @@
 		    <artifactId>h2</artifactId>
 		    <version>1.4.200</version>
 		</dependency> -->
-		<!-- https://mvnrepository.com/artifact/one.microstream/microstream-base -->
+		<!-- https://mvnrepository.com/artifact/one.microstream/microstream-base>
 		<dependency>
 		    <groupId>one.microstream</groupId>
 		    <artifactId>microstream-base</artifactId>
@@ -152,7 +152,7 @@
 			<groupId>one.microstream</groupId>
 			<artifactId>microstream-persistence-binary-jdk8</artifactId>
 			<version>05.00.02-MS-GA</version>
-		</dependency>
+		</dependency-->
 	</dependencies>
 
    <build>
