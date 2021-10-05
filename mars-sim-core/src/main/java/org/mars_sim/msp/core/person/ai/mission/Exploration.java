@@ -59,7 +59,7 @@ public class Exploration extends RoverMission
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.EXPLORATION;
+	public static final MissionType MISSION_TYPE = MissionType.EXPLORATION;
 	
 	/** Mission phase. */
 	public static final MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
@@ -90,11 +90,6 @@ public class Exploration extends RoverMission
 	private List<ExploredLocation> exploredSites;
 	/** External flag for ending exploration at the current site. */
 	private boolean endExploringSite;
-
-	// Static members
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
 	
 	/**
 	 * Constructor.
@@ -105,7 +100,7 @@ public class Exploration extends RoverMission
 	public Exploration(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 		
 		Settlement s = startingPerson.getSettlement();
 
@@ -135,7 +130,7 @@ public class Exploration extends RoverMission
 			try {
 				if (hasVehicle()) {
 					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-					determineExplorationSites(getVehicle().getRange(missionType),
+					determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
 					if (explorationSiteCompletion.size() == 0) {
 						addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
@@ -181,7 +176,7 @@ public class Exploration extends RoverMission
 			List<Coordinates> explorationSites, Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -252,7 +247,7 @@ public class Exploration extends RoverMission
 	 */
 	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
 
-		double roverRange = rover.getRange(missionType);
+		double roverRange = rover.getRange(MISSION_TYPE);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -278,7 +273,7 @@ public class Exploration extends RoverMission
 	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
 		Map<String, Double> minerals = new HashMap<>();
 		
-		double roverRange = rover.getRange(missionType);
+		double roverRange = rover.getRange(MISSION_TYPE);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -341,9 +336,6 @@ public class Exploration extends RoverMission
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} 
-		
-//		else if (DISEMBARKING.equals(getPhase()))
-//			endMission(ALL_DISEMBARKED);
 		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
@@ -515,7 +507,7 @@ public class Exploration extends RoverMission
 	 * @return
 	 */
 	public List<Coordinates> getSiteCoordinates() {
-		return ((TravelMission)this).getNavCoordinates();
+		return getNavCoordinates();
 	}
 	
 	/**
@@ -659,21 +651,21 @@ public class Exploration extends RoverMission
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * Mission.OXYGEN_MARGIN
 				* timeSols * crewNum;
-		if (result.containsKey(oxygenID))
-			oxygenAmount += (Double) result.get(oxygenID);
-		result.put(oxygenID, oxygenAmount);
+		if (result.containsKey(OXYGEN_ID))
+			oxygenAmount += (Double) result.get(OXYGEN_ID);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * Mission.WATER_MARGIN
 				* timeSols * crewNum;
-		if (result.containsKey(waterID))
-			waterAmount += (Double) result.get(waterID);
-		result.put(waterID, waterAmount);
+		if (result.containsKey(WATER_ID))
+			waterAmount += (Double) result.get(WATER_ID);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * Mission.FOOD_MARGIN
 				* timeSols * crewNum;
-		if (result.containsKey(foodID))
-			foodAmount += (Double) result.get(foodID);
-		result.put(foodID, foodAmount);
+		if (result.containsKey(FOOD_ID))
+			foodAmount += (Double) result.get(FOOD_ID);
+		result.put(FOOD_ID, foodAmount);
 
 		return result;
 	}
@@ -761,21 +753,21 @@ public class Exploration extends RoverMission
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit)
 			timeLimit = foodTimeLimit;
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;
@@ -1020,6 +1012,10 @@ public class Exploration extends RoverMission
 	 */
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
+		if (exploredSites.isEmpty()) {
+			return 0D;
+		}
+		
 		int count = 0;
 		double siteValue = 0D;
 		for (ExploredLocation e : exploredSites) {

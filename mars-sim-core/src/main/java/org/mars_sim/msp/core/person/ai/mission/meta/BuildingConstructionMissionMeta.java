@@ -47,13 +47,11 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
     public double getProbability(Person person) {
 
         double missionProbability = 0D;
-        
-//        if (marsClock == null)
-//        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-////        
+         
         // No construction until after the x sols of the simulation.
-        if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL) {
         	return 0;
+        }
         
         // Check if person is in a settlement.
         if (person.isInSettlement()) {
@@ -72,13 +70,14 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 							
 				
 	            // Check if settlement has construction override flag set.
-	            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
+	            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
 	            	return 0;
-
+	            }
 	            
 	            // Check if available light utility vehicles.
-	            if (!BuildingConstructionMission.isLUVAvailable(settlement))
+	            if (!BuildingConstructionMission.isLUVAvailable(settlement)) {
 	            	return 0;
+	            }
 	            
 	            int availablePeopleNum = 0;
 	
@@ -91,9 +90,10 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	            }
 	
 	            // Check if enough available people at settlement for mission.
-	            if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
+	            if (availablePeopleNum < BuildingConstructionMission.MIN_PEOPLE) {
 	            	return 0;
-
+	            }
+	            
 	            // Check if min number of EVA suits at settlement.
 	        	if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
 	                    BuildingConstructionMission.MIN_PEOPLE) {
@@ -113,9 +113,10 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 	
 	                    // Modify if construction is the person's favorite activity.
-	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
+	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
 	                        missionProbability *= 1.1D;
-	
+	                    }
+	                    
 	                    if (newSiteProfit > existingSiteProfit) {
 	                        missionProbability = getProbability(settlement);
 	                    }
@@ -145,7 +146,6 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
             
         }
 
-        //if (result > 1.1) logger.info("probability : "+ result);
         return missionProbability;
     }
 
@@ -156,12 +156,11 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
         int numSites = settlement.getConstructionManager().getConstructionSites().size();
 
         // Consider the size of the settlement population
-        int numPeople = settlement.getNumCitizens();//.getIndoorPeopleCount();
+        int numPeople = settlement.getNumCitizens();
         int limit = (int)(2D * numSites - numPeople/24D);
 
-        result = result/Math.pow(10, 2 + limit);// /5D;
+        result = result/Math.pow(10, 2D + limit);
 
-        //if (result > 1.1) logger.info("probability : "+ result);
         return result;
     }
 }

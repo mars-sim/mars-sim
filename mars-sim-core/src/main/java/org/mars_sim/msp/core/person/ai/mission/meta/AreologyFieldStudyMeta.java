@@ -47,14 +47,15 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
     @Override
     public double getProbability(Person person) {
 
-    	if (AreologyFieldStudy.determineStudy(person) == null)
+    	if (AreologyFieldStudy.determineStudy(person) == null) {
 			return 0;
-			
+    	}
+    	
         double missionProbability = 0D;
 
         
-      if (person.isInSettlement()) {
-          Settlement settlement = person.getSettlement();
+        if (person.isInSettlement()) {
+        	Settlement settlement = person.getSettlement();
           
 	        RoleType roleType = person.getRole().getType();
 			
@@ -67,11 +68,13 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 			
-				if (settlement.getMissionBaseProbability(MissionType.AREOLOGY))
+				if (settlement.getMissionBaseProbability(MissionType.AREOLOGY)) {
 	            	missionProbability = 1;
-	            else
+				}
+	            else {
 	    			return 0;
-	    		
+	            }
+				
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.AREOLOGY, settlement);
 		
@@ -89,24 +92,20 @@ public class AreologyFieldStudyMeta extends AbstractMetaMission {
 	
 	                    // Add probability for researcher's primary study (if any).
 	                    ScientificStudy primaryStudy = person.getStudy();
-	                    if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-	                        if (!primaryStudy.isPrimaryResearchCompleted()) {
-	                            if (areology == primaryStudy.getScience()) {
-	                                missionProbability += WEIGHT;
-	                            }
-	                        }
+	                    if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+	                    		&& !primaryStudy.isPrimaryResearchCompleted()
+	                            && (areology == primaryStudy.getScience())) {
+	                    	missionProbability += WEIGHT;
 	                    }
 	
 	                    // Add probability for each study researcher is collaborating on.
 	                    Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 	                    while (i.hasNext()) {
 	                        ScientificStudy collabStudy = i.next();
-	                        if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-	                            if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                                if (areology == collabStudy.getContribution(person)) {
-	                                    missionProbability += WEIGHT/2D;
-	                                }
-	                            }
+	                        if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+	                        		&& !collabStudy.isCollaborativeResearchCompleted(person)
+	                        		&& (areology == collabStudy.getContribution(person))) {
+	                        	missionProbability += WEIGHT/2D;
 	                        }
 	                    }
 	                }

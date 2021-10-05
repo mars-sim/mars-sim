@@ -105,7 +105,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Check for the best delivery settlement within range.
 		double deliveryProfit = 0D;
 		
-		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(Delivery.missionType, settlement, false);
+		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(MissionType.DELIVERY, settlement, false);
 		
 		if (drone == null) {
 			return 0;

@@ -44,7 +44,13 @@ public final class MissionPhase implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		boolean result = (obj != null) && (obj instanceof MissionPhase) && obj.toString().equals(toString());
-        return result;
+		return (obj != null) && (obj instanceof MissionPhase)
+				&& ((MissionPhase)obj).name.equals(name);
+	}
+	
+
+	@Override
+	public int hashCode() {
+		return name.hashCode() % 32;
 	}
 }

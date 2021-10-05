@@ -66,7 +66,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.RESCUE_SALVAGE_VEHICLE;
+	public static final MissionType MISSION_TYPE = MissionType.RESCUE_SALVAGE_VEHICLE;
 	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
@@ -87,10 +87,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	private Vehicle vehicleTarget;
 
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
-
 	/**
 	 * Constructor
 	 * 
@@ -99,7 +95,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	public RescueSalvageVehicle(Person startingPerson) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, MIN_GOING_MEMBERS);
 
 		if (!isDone()) {
 			setStartingSettlement(startingPerson.getSettlement());
@@ -112,7 +108,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			if (hasVehicle()) {
 				
 				if (vehicleTarget == null)
-					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(missionType));
+					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MISSION_TYPE));
 	
 				if (vehicleTarget != null) {
 					
@@ -182,7 +178,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		setStartingSettlement(startingSettlement);
 		this.vehicleTarget = vehicleTarget;
@@ -256,11 +252,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	@Override
 	protected void setVehicle(Vehicle newVehicle) {
 		super.setVehicle(newVehicle);
-		if (getVehicle() == newVehicle) {
-			if (newVehicle.isReservedForMaintenance()) {
-				newVehicle.setReservedForMaintenance(false);
-				newVehicle.removeStatus(StatusType.MAINTENANCE);
-			}
+		if (newVehicle.isReservedForMaintenance()) {
+			newVehicle.setReservedForMaintenance(false);
+			newVehicle.removeStatus(StatusType.MAINTENANCE);
 		}
 	}
 
@@ -299,11 +293,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-			if (rescue) {
-				logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue " + vehicleTarget.getName());
-			} else {
-				logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue " + vehicleTarget.getName());
-			}
+			logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue/salvage " + vehicleTarget.getName());
 		}
 
 		else if (TRAVELLING.equals(getPhase())) {
@@ -529,19 +519,19 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (useBuffer) {
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
-		result.put(oxygenID, oxygenAmount);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
 		if (useBuffer) {
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
-		result.put(waterID, waterAmount);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
 		if (useBuffer) {
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
-		result.put(foodID, foodAmount);
+		result.put(FOOD_ID, foodAmount);
 
 		// Add extra EVA Suits based on how many people to be rescued
 		return result;
@@ -791,7 +781,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange(missionType) >= (settlementDistance * 2D)) {
+								if (vehicle.getRange(MISSION_TYPE) >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}
@@ -815,9 +805,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Map<Integer, Number> result = new HashMap<Integer, Number>(4);
 		Inventory inv = getVehicle().getInventory();
 		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType(), false));
-		result.put(oxygenID, inv.getAmountResourceCapacity(oxygenID, false));
-		result.put(waterID, inv.getAmountResourceCapacity(waterID, false));
-		result.put(foodID, inv.getAmountResourceCapacity(foodID, false));
+		result.put(OXYGEN_ID, inv.getAmountResourceCapacity(OXYGEN_ID, false));
+		result.put(WATER_ID, inv.getAmountResourceCapacity(WATER_ID, false));
+		result.put(FOOD_ID, inv.getAmountResourceCapacity(FOOD_ID, false));
 
 		// Get parts too.
 		result.putAll(getSparePartsForTrip(getEstimatedTotalRemainingDistance()));

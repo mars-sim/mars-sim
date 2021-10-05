@@ -50,7 +50,7 @@ public class Trade extends RoverMission implements Serializable {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.TRADE;
+	private static final MissionType MISSION_TYPE = MissionType.TRADE;
 	
 	/** Mission phases. */
 	public static final MissionPhase TRADE_DISEMBARKING = new MissionPhase(
@@ -92,7 +92,7 @@ public class Trade extends RoverMission implements Serializable {
 	 */
 	public Trade(MissionMember startingMember) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingMember);
 
 		// Problem setting up the mission
 		if (isDone()) {
@@ -193,7 +193,7 @@ public class Trade extends RoverMission implements Serializable {
 	public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		Person person = null;
 //		Robot robot = null;
@@ -829,9 +829,9 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
+				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
 					result = 1;
-				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
+				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
 					result = -1;
 				}
 			}

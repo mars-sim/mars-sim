@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -51,9 +50,6 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.METEOROLOGY;
 	
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
@@ -77,11 +73,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	/** The person leading the meteorology research. */
 	private Person leadResearcher;
 
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
-
-	private static final ScienceType meteorology = ScienceType.METEOROLOGY;
+	private static final ScienceType METEOROLOGY = ScienceType.METEOROLOGY;
 
 	/**
 	 * Constructor.
@@ -92,12 +84,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	public MeteorologyFieldStudy(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, MIN_PEOPLE);
-
-//		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
+		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson, MIN_PEOPLE);
 
 		Settlement s = startingPerson.getSettlement();
 
@@ -126,7 +113,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				determineFieldSite(getVehicle().getRange(missionType), tripTimeLimit);
+				determineFieldSite(getVehicle().getRange(MissionType.METEOROLOGY), tripTimeLimit);
 			}
 
 			// Add home settlement
@@ -166,12 +153,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, leadResearcher, MIN_PEOPLE, rover);
-
-		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
+		super(description, MissionType.METEOROLOGY, leadResearcher, MIN_PEOPLE, rover);
 
 		setStartingSettlement(startingSettlement);
 		this.study = study;
@@ -246,7 +228,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (meteorology == primaryStudy.getScience()) {
+				if (METEOROLOGY == primaryStudy.getScience()) {
 					// Primary study added twice to double chance of random selection.
 					possibleStudies.add(primaryStudy);
 					possibleStudies.add(primaryStudy);
@@ -260,7 +242,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (meteorology == collabStudy.getContribution(researcher)) {
+				if (METEOROLOGY == collabStudy.getContribution(researcher)) {
 					possibleStudies.add(collabStudy);
 				}
 			}
@@ -290,7 +272,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -306,7 +288,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -314,7 +296,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;
@@ -386,7 +368,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 					result += 2D;
 
 					// Check if study's primary science is meteorology.
-					if (meteorology.equals(study.getScience())) {
+					if (METEOROLOGY.equals(study.getScience())) {
 						result += 1D;
 					}
 				} else if (study.getCollaborativeResearchers().contains(person)) {
@@ -394,7 +376,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 					// Check if study collaboration science is in meteorology.
 					ScienceType collabScience = study.getContribution(person);
-					if (meteorology == collabScience) {
+					if (METEOROLOGY == collabScience) {
 						result += 1D;
 					}
 				}
@@ -639,23 +621,23 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenID)) {
-			oxygenAmount += (Double) result.get(oxygenID);
+		if (result.containsKey(OXYGEN_ID)) {
+			oxygenAmount += (Double) result.get(OXYGEN_ID);
 		}
-		result.put(oxygenID, oxygenAmount);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterID)) {
-			waterAmount += (Double) result.get(waterID);
+		if (result.containsKey(WATER_ID)) {
+			waterAmount += (Double) result.get(WATER_ID);
 		}
-		result.put(waterID, waterAmount);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 //				* PhysicalCondition.FOOD_RESERVE_FACTOR;
-		if (result.containsKey(foodID)) {
-			foodAmount += (Double) result.get(foodID);
+		if (result.containsKey(FOOD_ID)) {
+			foodAmount += (Double) result.get(FOOD_ID);
 		}
-		result.put(foodID, foodAmount);
+		result.put(FOOD_ID, foodAmount);
 		return result;
 	}
 	

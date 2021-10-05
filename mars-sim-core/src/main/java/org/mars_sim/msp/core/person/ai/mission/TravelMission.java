@@ -350,12 +350,13 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km)
 	 */
 	public final double getCurrentLegDistance() {
-		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus) && lastStopNavpoint != null
-				&& getNextNavpoint() != null) {
-			return lastStopNavpoint.getLocation().getDistance(getNextNavpoint().getLocation());
-		} else {
-			return 0D;
+		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus) && lastStopNavpoint != null) {
+			NavPoint next = getNextNavpoint();
+			if (next != null) {
+				return lastStopNavpoint.getLocation().getDistance(next.getLocation());
+			}
 		}
+		return 0D;
 	}
 
 	/**
@@ -378,8 +379,9 @@ public abstract class TravelMission extends Mission {
 			
 			Coordinates c1 = null;
 			
-			if (getNextNavpoint() != null) {
-				c1 = getNextNavpoint().getLocation();
+			NavPoint next = getNextNavpoint();
+			if (next != null) {
+				c1 = next.getLocation();
 			}
 			else if (this instanceof TravelToSettlement) {
 				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
@@ -471,7 +473,11 @@ public abstract class TravelMission extends Mission {
 			index = getNextNavpointIndex();
 
 		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-			navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
+			NavPoint prev = getNavpoint(x - 1);
+			NavPoint next = getNavpoint(x); 
+			if ((prev != null) && (next != null)) {
+				navDist += Coordinates.computeDistance(prev.getLocation(), next.getLocation());
+			}
 		}
 		
 		// Note: check for Double.isInfinite() and Double.isNaN()

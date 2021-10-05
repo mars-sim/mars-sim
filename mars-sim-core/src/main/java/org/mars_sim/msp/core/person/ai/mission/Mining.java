@@ -58,9 +58,6 @@ public class Mining extends RoverMission
 	
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.MINING;
 	
 	/** Mission phases */
 	public static final MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
@@ -85,10 +82,6 @@ public class Mining extends RoverMission
 
 	// Data members
 	private boolean endMiningSite;
-//	/** Base amount (kg) of a type of mineral at a site. */
-//	private double mineralAmount = 1000;
-//	/** Amount of time(millisols) to spend at the mining site. */
-//	private double siteTime = 2000D;
 	
 	private ExploredLocation miningSite;
 	private MarsClock miningSiteStartTime;
@@ -98,10 +91,6 @@ public class Mining extends RoverMission
 	
 	private Map<AmountResource, Double> excavatedMinerals;
 	private Map<AmountResource, Double> totalExcavatedMinerals;
-	
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
 
 	/**
 	 * Constructor
@@ -193,7 +182,7 @@ public class Mining extends RoverMission
 			Rover rover, LightUtilityVehicle luv, String description) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		this.startingPerson = this.getStartingPerson();
 		
@@ -836,7 +825,7 @@ public class Mining extends RoverMission
 		double bestValue = 0D;
 
 		try {
-			double roverRange = rover.getRange(missionType);
+			double roverRange = rover.getRange(MissionType.MINING);
 			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;
@@ -920,7 +909,7 @@ public class Mining extends RoverMission
 		// AmountResource food =
 		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -938,7 +927,7 @@ public class Mining extends RoverMission
 		// AmountResource water =
 		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -948,7 +937,7 @@ public class Mining extends RoverMission
 		// AmountResource oxygen =
 		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenConsumptionRate = personConfig.getHighO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;
@@ -1027,22 +1016,22 @@ public class Mining extends RoverMission
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenID)) {
-			oxygenAmount += (Double) result.get(oxygenID);
+		if (result.containsKey(OXYGEN_ID)) {
+			oxygenAmount += (Double) result.get(OXYGEN_ID);
 		}
-		result.put(oxygenID, oxygenAmount);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterID)) {
-			waterAmount += (Double) result.get(waterID);
+		if (result.containsKey(WATER_ID)) {
+			waterAmount += (Double) result.get(WATER_ID);
 		}
-		result.put(waterID, waterAmount);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodID)) {
-			foodAmount += (Double) result.get(foodID);
+		if (result.containsKey(FOOD_ID)) {
+			foodAmount += (Double) result.get(FOOD_ID);
 		}
-		result.put(foodID, foodAmount);
+		result.put(FOOD_ID, foodAmount);
 
 		// Add Soymilk AmountResource dessert1 =
 //		ResourceUtil.findAmountResource("Soymilk"); 

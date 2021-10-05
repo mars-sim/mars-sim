@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -44,7 +43,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.TRAVEL_TO_SETTLEMENT;
+	private static final MissionType MISSION_TYPE = MissionType.TRAVEL_TO_SETTLEMENT;
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -69,7 +68,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	public TravelToSettlement(MissionMember startingMember) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingMember);
 
 		Settlement s = startingMember.getSettlement();
 
@@ -127,13 +126,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.reviewing.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		}
-		// logger.info("Travel to Settlement mission");
 	}
 
 	public TravelToSettlement(Collection<MissionMember> members, Settlement startingSettlement,
 			Settlement destinationSettlement, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		// Initialize data members
 		setStartingSettlement(startingSettlement);
@@ -157,9 +155,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				Robot robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
 			}
 		}
 
@@ -203,9 +198,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 		} 
 		
-//		else if (DISEMBARKING.equals(getPhase()))
-//			endMission(ALL_DISEMBARKED);
-		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
 			setPhaseDescription(
@@ -246,7 +238,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	private Settlement getRandomDestinationSettlement(MissionMember member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange(missionType);
+		double range = getVehicle().getRange(MISSION_TYPE);
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -259,23 +251,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 		return result;
 	}
-//    private Settlement getRandomDestinationSettlement(Robot robot,
-//            Settlement startingSettlement) {
-//
-//        double range = getVehicle().getRange();
-//        Settlement result = null;
-//
-//        // Find all desirable destination settlements.
-//        Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
-//                robot, startingSettlement, range);
-//
-//        // Randomly select a desirable settlement.
-//        if (desirableSettlements.size() > 0) {
-//            result = RandomUtil.getWeightedRandomObject(desirableSettlements);
-//        }
-//
-//        return result;
-//    }
+
 
 	/**
 	 * Gets all possible and desirable destination settlements.
@@ -305,30 +281,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 		return result;
 	}
-//    public static Map<Settlement, Double> getDestinationSettlements(
-//            Robot robot, Settlement startingSettlement, double range) {
-//        Map<Settlement, Double> result = new HashMap<Settlement, Double>();
-//
-//        UnitManager unitManager = startingSettlement.getUnitManager();
-//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//
-//        while (i.hasNext()) {
-//            Settlement settlement = i.next();
-//            double distance = startingSettlement.getCoordinates().getDistance(
-//                    settlement.getCoordinates());
-//            boolean isTravelDestination = isCurrentTravelDestination(settlement);
-//            if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))
-//                    && !isTravelDestination) {
-//
-//                double desirability = getDestinationSettlementDesirability(robot,
-//                        startingSettlement, settlement);
-//                if (desirability > 0D)
-//                    result.put(settlement, desirability);
-//            }
-//        }
-//
-//        return result;
-//    }
 
 	/**
 	 * Checks if a settlement is the destination of a current travel to settlement
@@ -408,7 +360,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				- startingSettlement.getNumCitizens() - 1;
 		int destinationCrowding = destinationSettlement.getPopulationCapacity()
 				- destinationSettlement.getNumCitizens();
-		double crowdingFactor = destinationCrowding - startingCrowding;
+		int crowdingFactor = destinationCrowding - startingCrowding;
 
 		// Determine science achievement factor for destination relative to starting
 		// settlement.
@@ -437,79 +389,11 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				+ (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
 	}
 
-//    private static double getDestinationSettlementDesirability(Robot robot,
-//            Settlement startingSettlement, Settlement destinationSettlement) {
-//
-//        // Determine relationship factor in destination settlement relative to
-//        // starting settlement.
-///*        RelationshipManager relationshipManager = Simulation.instance()
-//                .getRelationshipManager();
-//        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
-//                person, startingSettlement.getAllAssociatedPeople());
-//        double destinationOpinion = relationshipManager
-//                .getAverageOpinionOfPeople(person, destinationSettlement
-//                        .getAllAssociatedPeople());
-//        double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
-//*/
-//        // Determine job opportunities in destination settlement relative to
-//        // starting settlement.
-//        RobotJob currentJob = robot.getBotMind().getRobotJob();
-//        double currentJobProspect = JobManager.getRobotJobProspect(robot,
-//                currentJob, startingSettlement, true);
-//        double destinationJobProspect = 0D;
-//        if (robot.getBotMind().getJobLock())
-//            destinationJobProspect = JobManager.getRobotJobProspect(robot,
-//                    currentJob, destinationSettlement, false);
-//        else
-//            destinationJobProspect = JobManager.getBestRobotJobProspect(robot,
-//                    destinationSettlement, false);
-//        double jobFactor = 0D;
-//        if (destinationJobProspect > currentJobProspect)
-//            jobFactor = 1D;
-//        else if (destinationJobProspect < currentJobProspect)
-//            jobFactor = -1D;
-//
-//        // Determine available space in destination settlement relative to
-//        // starting settlement.
-//        int startingCrowding = startingSettlement.getRobotCapacity()
-//                - startingSettlement.getAllAssociatedRobots().size() - 1;
-//        int destinationCrowding = destinationSettlement.getRobotCapacity()
-//                - destinationSettlement.getAllAssociatedRobots().size();
-//        double crowdingFactor = destinationCrowding - startingCrowding;
-//
-//        // Determine science achievement factor for destination relative to starting settlement.
-///*        double totalScienceAchievementFactor = (destinationSettlement
-//                .getTotalScientificAchievement() - startingSettlement
-//                .getTotalScientificAchievement()) / 10D;
-//        double jobScienceAchievementFactor = 0D;
-//        ScienceType jobScience = ScienceType.getJobScience(robot.getBotMind().getJob());
-//        if (jobScience != null) {
-//            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
-//            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
-//            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
-//        }
-//        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
-//*/
-//
-//        if (destinationCrowding < RoverMission.MIN_PEOPLE) {
-//            return 0;
-//        }
-//
-//        // Return the sum of the factors with modifiers.
-//        return //(relationshipFactor * RELATIONSHIP_MODIFIER)+
-//                (jobFactor * JOB_MODIFIER)
-//                + (crowdingFactor * CROWDING_MODIFIER);
-//                // (scienceAchievementFactor * SCIENCE_MODIFIER)
-//    }
-
 	@Override
 	public double getMissionQualification(MissionMember member) {
-		double result = 0D;
+		double result = super.getMissionQualification(member);
 
-//        if (isCapableOfMission(member)) {
-		result = super.getMissionQualification(member);
-
-//		if (member instanceof Person) {
+		if (member instanceof Person) {
 			Person person = (Person) member;
 
 			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
@@ -546,15 +430,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			if (person.getMind().getJob() == JobType.POLITICIAN) {
 				result += 10D;
 			}
-//		} else if (member instanceof Robot) {
-//			Robot robot = (Robot) member;
-//
-//			// If robot has the "Driver" job, add 1 to their qualification.
-//			if (robot.getBotMind().getRobotJob() instanceof Deliverybot) {
-//				result += 1D;
-//			}
-//		}
-//        }
+        }
 
 		return result;
 	}
@@ -612,9 +488,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
+				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
 					result = 1;
-				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
+				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
 					result = -1;
 				}
 			}

@@ -44,7 +44,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -965,36 +964,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		return result;
 	}
 
-	/**
-	 * Unreserves all construction vehicles used in mission.
-	 */
-	private void unreserveConstructionVehicles() {
-		if (constructionVehicles != null) {
-			Iterator<GroundVehicle> i = constructionVehicles.iterator();
-			while (i.hasNext()) {
-				GroundVehicle vehicle = i.next();
-				vehicle.setReservedForMission(false);
-
-				Inventory vInv = vehicle.getInventory();
-				Inventory sInv = settlement.getInventory();
-
-				// Store construction vehicle in settlement.
-				if (sInv.canStoreUnit(vehicle, false)) {
-					sInv.storeUnit(vehicle);
-				}
-				vehicle.findNewParkingLoc();
-
-				// Store all construction vehicle attachments in settlement.
-				Iterator<Integer> j = vInv.getAllItemResourcesStored().iterator();
-				while (j.hasNext()) {
-					Integer attachmentPart = j.next();
-					int num = vInv.getItemResourceNum(attachmentPart);
-					vInv.retrieveItemResources(attachmentPart, num);
-					sInv.storeItemResources(attachmentPart, num);
-				}
-			}
-		}
-	}
 
 	/*
 	 * Unreserve and store back all LUV attachment parts in settlement.
@@ -1513,34 +1482,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			Point2D position = LocalAreaUtil.getLocalRelativeLocation(xPos, yPos, building);
 			result.add(position);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines the preferred construction building type for a given foundation.
-	 * 
-	 * @param foundationStageInfo the foundation stage info.
-	 * @param constructionSkill   the mission starter's construction skill.
-	 * @return preferred building type or null if none found.
-	 */
-	private String determinePreferredConstructedBuildingType(ConstructionStageInfo foundationStageInfo,
-			int constructionSkill) {
-
-		String result = null;
-
-		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
-		List<String> constructableBuildings = ConstructionUtil.getConstructableBuildingNames(foundationStageInfo);
-		Iterator<String> i = constructableBuildings.iterator();
-		double maxBuildingValue = Double.NEGATIVE_INFINITY;
-		while (i.hasNext()) {
-			String buildingType = i.next();
-			double buildingValue = values.getConstructionStageValue(foundationStageInfo, constructionSkill);
-			if (buildingValue > maxBuildingValue) {
-				maxBuildingValue = buildingValue;
-				result = buildingType;
-			}
 		}
 
 		return result;

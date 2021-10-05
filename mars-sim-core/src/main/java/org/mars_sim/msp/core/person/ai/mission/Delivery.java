@@ -47,9 +47,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.TRADE;
 	
 	/** Mission phases. */
 	public static final MissionPhase TRADE_DISEMBARKING = new MissionPhase(
@@ -91,7 +88,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember);
 		
 		// Problem starting Mission
 		if (isDone()) {
@@ -191,7 +188,7 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, missionType, startingMember, 2, drone);
+		super(description, MissionType.DELIVERY, startingMember, 2, drone);
 
 		outbound = true;
 		doNegotiation = false;
@@ -622,9 +619,11 @@ public class Delivery extends DroneMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
+				double firstRange = firstVehicle.getRange(MissionType.DELIVERY);
+				double secondRange = secondVehicle.getRange(MissionType.DELIVERY);
+				if (firstRange > secondRange) {
 					result = 1;
-				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
+				} else if (firstRange < secondRange) {
 					result = -1;
 				}
 			}

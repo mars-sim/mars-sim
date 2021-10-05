@@ -7,12 +7,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,15 +34,12 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -75,21 +69,16 @@ public abstract class RoverMission extends VehicleMission {
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 500D;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
-//	private static int methaneID = ResourceUtil.methaneID;
+	protected static int OXYGEN_ID = ResourceUtil.oxygenID;
+	protected static int WATER_ID = ResourceUtil.waterID;
+	protected static int FOOD_ID = ResourceUtil.foodID;
 
 	public static final String PHASE_1 = "phase 1";
 	public static final String MINING = "mining";
 	public static final String TRADING = "trading";
 
-	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-
 	// Data members
 	private Settlement startingSettlement;
-	
-	private Map<Integer, Double> dessertResources;
 	
 	/**
 	 * Constructor 1.
@@ -758,7 +747,7 @@ public abstract class RoverMission extends VehicleMission {
 				p.getPhysicalCondition().getHealthSituation(), 
 				p.getTaskDescription(), 
 				p.getName(),
-				r.getNickName(), 
+				(r != null ? r.getNickName() : "Outside"), 
 				p.getLocationTag().getLocale(),
 				p.getAssociatedSettlement().getName()
 				);
@@ -903,17 +892,17 @@ public abstract class RoverMission extends VehicleMission {
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum ;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.OXYGEN_MARGIN;
-		result.put(oxygenID, oxygenAmount);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum ;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.WATER_MARGIN;
-		result.put(waterID, waterAmount);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum ; 
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.FOOD_MARGIN;
-		result.put(foodID, foodAmount);
+		result.put(FOOD_ID, foodAmount);
 
 		return result;
 	}
@@ -950,54 +939,6 @@ public abstract class RoverMission extends VehicleMission {
 		return map;
 	}
 	
-	/**
-	 * Determine an unprepared dessert resource to load on the mission.
-	 */
-	private Integer determineDessertResources() {
-
-		dessertResources = new ConcurrentHashMap<>(1);
-
-		// Determine estimate time for trip.
-		double distance = getEstimatedTotalRemainingDistance();
-		double time = getEstimatedTripTime(true, distance);
-		double timeSols = time / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Determine dessert amount for trip.
-		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols
-				* Mission.DESSERT_MARGIN;
-
-		// Put together a list of available unprepared dessert resources.
-		List<AmountResource> dessertList = new ArrayList<>();
-		// availableDesserts = AmountResource.getArrayOfDessertsAR();
-		for (AmountResource ar : availableDesserts) {
-
-			// See if an unprepared dessert resource is available
-			boolean isAvailable = Storage.retrieveAnResource(dessertAmount, ar, startingSettlement.getInventory(),
-					false);
-			if (isAvailable) {
-				dessertList.add(ar);
-			}
-		}
-
-		// Randomly choose an unprepared dessert resource from the available resources.
-		AmountResource dessertAR = null;
-		if (dessertList.size() > 0) {
-			// only needs one of the dessert with that amount.
-			dessertAR = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
-			// dessert = AmountResource.findAmountResource(dessertName);
-		}
-
-		int id = -1;
-
-		if (dessertAR != null) {
-			id = ResourceUtil.findIDbyAmountResourceName(dessertAR.getName());
-			dessertResources.put(id, dessertAmount);
-		}
-
-		return id;
-	}
 
 	/**
 	 * Checks if there is an available backup rover at the settlement for the

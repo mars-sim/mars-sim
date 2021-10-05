@@ -71,11 +71,10 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 				
-				if (settlement.getMissionBaseProbability(MissionType.EXPLORATION))
-	            	missionProbability = 1;
-	            else
+				if (!settlement.getMissionBaseProbability(MissionType.EXPLORATION)) {
 	    			return 0;
-		   		
+				}
+				
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
 				
@@ -84,8 +83,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 	    			return 0;
 	    		}	
 	    		
-	    		if (numThisMission > 1)
+	    		if (numThisMission > 1) {
 	    			return 0;	
+	    		}
 	    		
 	    		missionProbability = 0;
 	
@@ -95,8 +95,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 					if (rover != null) {
 						// Check if any mineral locations within rover range and obtain their concentration
 						missionProbability = Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;
-						if (missionProbability < 0)
+						if (missionProbability < 0) {
 							missionProbability = 0;
+						}
 					}
 					
 				} catch (Exception e) {
@@ -107,7 +108,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
 				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
 				
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)

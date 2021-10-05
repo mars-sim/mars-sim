@@ -73,10 +73,6 @@ public final class DeliveryUtil {
 	private final static Map<Class<? extends Equipment>, Equipment> containerTypeCache = new HashMap<Class<? extends Equipment>, Equipment>(
 			3);
 
-//	private static int oxygenID = ResourceUtil.oxygenID;
-//	private static int waterID = ResourceUtil.waterID;
-//	private static int foodID = ResourceUtil.foodID;
-
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static CreditManager creditManager = sim.getCreditManager();
@@ -110,11 +106,8 @@ public final class DeliveryUtil {
 				boolean withinRange = (settlementRange <= (drone.getRange(MissionType.DELIVERY) * .8D));
 
 				if (!hasCurrentDeliveryMission && withinRange) {
-					// double startTime = System.currentTimeMillis();
 					double profit = getEstimatedDeliveryProfit(startingSettlement, drone, tradingSettlement);
-					// double endTime = System.currentTimeMillis();
-//					logger.info(startingSettlement, "getEstimatedDeliveryProfit " + (endTime - startTime));
-					if (profit > bestProfit) {
+					if ((bestSettlement == null) || (profit > bestProfit)) {
 						bestProfit = profit;
 						bestSettlement = tradingSettlement;
 					}
@@ -248,10 +241,8 @@ public final class DeliveryUtil {
 			Settlement tradingSettlement) {
 
 		// Determine best buy load.
-		Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, drone,
+		return determineLoad(startingSettlement, tradingSettlement, drone,
 				Double.POSITIVE_INFINITY);
-
-		return buyLoad;
 	}
 
 	/**
@@ -267,10 +258,8 @@ public final class DeliveryUtil {
 			Settlement tradingSettlement) {
 
 		// Determine best sell load.
-		Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, drone,
+		return determineLoad(tradingSettlement, startingSettlement, drone,
 				Double.POSITIVE_INFINITY);
-
-		return sellLoad;
 	}
 
 	/**
@@ -296,11 +285,6 @@ public final class DeliveryUtil {
 
 		double massCapacity = drone.getInventory().getGeneralCapacity();
 
-		// Subtract mission base mass (estimated).
-//		double missionPartsMass = MISSION_BASE_MASS;
-//		if (massCapacity < missionPartsMass)
-//			missionPartsMass = massCapacity;
-//		massCapacity -= missionPartsMass;
 
 		// Determine repair parts for trip.
 		Set<Integer> repairParts = Collections.emptySet();//new HashSet<>();//drone.getMalfunctionManager().getRepairPartProbabilities().keySet();
@@ -560,10 +544,10 @@ public final class DeliveryUtil {
 		boolean limitReached = false;
 		while (!limitReached) {
 
-			double sellingSupplyAmount = sellingInventory - totalDelivered - 1;
+			double sellingSupplyAmount = sellingInventory - totalDelivered - 1D;
 			double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					sellingSupplyAmount);
-			double buyingSupplyAmount = buyingInventory + totalDelivered + 1;
+			double buyingSupplyAmount = buyingInventory + totalDelivered + 1D;
 			double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					buyingSupplyAmount);
 

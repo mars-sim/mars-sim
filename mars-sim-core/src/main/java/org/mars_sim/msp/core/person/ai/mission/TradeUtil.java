@@ -530,10 +530,10 @@ public final class TradeUtil {
 		boolean limitReached = false;
 		while (!limitReached) {
 
-			double sellingSupplyAmount = sellingInventory - totalTraded - 1;
+			double sellingSupplyAmount = sellingInventory - totalTraded - 1D;
 			double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					sellingSupplyAmount);
-			double buyingSupplyAmount = buyingInventory + totalTraded + 1;
+			double buyingSupplyAmount = buyingInventory + totalTraded + 1D;
 			double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					buyingSupplyAmount);
 
@@ -619,7 +619,7 @@ public final class TradeUtil {
 
 			boolean isMissionRover = false;
 			if (good.getCategory() == GoodCategory.VEHICLE) {
-				if (good.getName().toLowerCase() == missionRover.getDescription().toLowerCase()) {
+				if (good.getName().equalsIgnoreCase(missionRover.getDescription())) {
 					if (sellingInventory == 1D)
 						isMissionRover = true;
 				}

@@ -66,11 +66,13 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
            
- 				if (settlement.getMissionBaseProbability(MissionType.METEOROLOGY))
+ 				if (settlement.getMissionBaseProbability(MissionType.METEOROLOGY)) {
 	            	missionProbability = 1;
-	            else
+ 				}
+ 				else {
 	    			return 0;
-	    		
+ 				}
+ 				
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.METEOROLOGY, settlement);
 		
@@ -79,9 +81,10 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 	    			return 0;
 	    		}	
 	    		
-	    		if (numThisMission > 1)
+	    		if (numThisMission > 1) {
 	    			return 0;	
-		
+	    		}
+	    		
 	            try {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.METEOROLOGY, settlement, false);
@@ -121,11 +124,13 @@ public class MeteorologyFieldStudyMeta extends AbstractMetaMission{
 				int f1 = numEmbarked + 1;
 				int f2 = numThisMission + 1;
 				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.METEOROLOGY));
+				missionProbability *= (double) settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.METEOROLOGY));
 				
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-	            if (crowding > 0) missionProbability *= (crowding + 1);
+	            if (crowding > 0) {
+	            	missionProbability *= (crowding + 1);
+	            }
 	
 	            // Job modifier.
 	            missionProbability *= getLeaderSuitability(person)

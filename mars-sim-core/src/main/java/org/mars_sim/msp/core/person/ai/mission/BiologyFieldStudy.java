@@ -52,9 +52,6 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.BIOLOGY;
-	
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
 			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
@@ -75,11 +72,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	/** The person leading the biology research. */
 	private Person leadResearcher;
 
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int foodID = ResourceUtil.foodID;
-
-	private static final ScienceType biology = ScienceType.BIOLOGY;
+	private static final ScienceType BIOLOGY = ScienceType.BIOLOGY;
 
 	/**
 	 * Constructor.
@@ -90,12 +83,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	public BiologyFieldStudy(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
-
-		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
+		super(DEFAULT_DESCRIPTION, MissionType.BIOLOGY, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		Settlement s = startingPerson.getSettlement();
 
@@ -125,7 +113,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				determineFieldSite(getVehicle().getRange(missionType), tripTimeLimit);
+				determineFieldSite(getVehicle().getRange(MissionType.BIOLOGY), tripTimeLimit);
 			}
 
 			// Add home settlement
@@ -166,12 +154,8 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MissionType.BIOLOGY, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
 
-		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
 
 		setStartingSettlement(startingSettlement);
 		this.study = study;
@@ -247,7 +231,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (biology == primaryStudy.getScience()) {
+				if (BIOLOGY == primaryStudy.getScience()) {
 					// Primary study added twice to double chance of random selection.
 					possibleStudies.add(primaryStudy);
 					possibleStudies.add(primaryStudy);
@@ -261,7 +245,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (biology == collabStudy.getContribution(researcher))
+				if (BIOLOGY == collabStudy.getContribution(researcher))
 					possibleStudies.add(collabStudy);
 			}
 		}
@@ -306,14 +290,14 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;
@@ -387,14 +371,14 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 					result += 2D;
 
 					// Check if study's primary science is biology.
-					if (biology == study.getScience())
+					if (BIOLOGY == study.getScience())
 						result += 1D;
 				} else if (study.getCollaborativeResearchers().contains(person)) {
 					result += 1D;
 
 					// Check if study collaboration science is in biology.
 					ScienceType collabScience = study.getContribution(person);
-					if (biology == collabScience)
+					if (BIOLOGY == collabScience)
 						result += 1D;
 				}
 			}
@@ -634,19 +618,19 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenID))
-			oxygenAmount += (Double) result.get(oxygenID);
-		result.put(oxygenID, oxygenAmount);
+		if (result.containsKey(OXYGEN_ID))
+			oxygenAmount += (Double) result.get(OXYGEN_ID);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterID))
-			waterAmount += (Double) result.get(waterID);
-		result.put(waterID, waterAmount);
+		if (result.containsKey(WATER_ID))
+			waterAmount += (Double) result.get(WATER_ID);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodID))
-			foodAmount += (Double) result.get(foodID);
-		result.put(foodID, foodAmount);
+		if (result.containsKey(FOOD_ID))
+			foodAmount += (Double) result.get(FOOD_ID);
+		result.put(FOOD_ID, foodAmount);
 
 //	     AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
 //	     double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;

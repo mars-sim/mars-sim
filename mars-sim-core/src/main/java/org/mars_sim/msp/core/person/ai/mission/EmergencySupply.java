@@ -60,7 +60,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.EMERGENCY_SUPPLY;
+	private static final MissionType MISSION_TYPE = MissionType.EMERGENCY_SUPPLY;
 	
 	// Static members
 	private static final int MAX_MEMBERS = 2;
@@ -92,10 +92,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private Map<Integer, Integer> emergencyParts;
 
 	// Static members
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
+	private static int METHANE_ID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor.
@@ -104,7 +101,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 */
 	public EmergencySupply(Person startingPerson) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
 
 		if (getRover() == null) {
 			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
@@ -184,7 +181,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	public EmergencySupply(Collection<MissionMember> members, Settlement startingSettlement,
 			Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, missionType, (Person) members.toArray()[0], MIN_MEMBERS, rover);
+		super(description, MISSION_TYPE, (Person) members.toArray()[0], MIN_MEMBERS, rover);
 
 		outbound = true;
 
@@ -610,7 +607,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 					// Check if settlement is within rover range.
 					double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
-					if (settlementRange <= (rover.getRange(missionType) * .8D)) {
+					if (settlementRange <= (rover.getRange(MISSION_TYPE) * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.
 						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -694,18 +691,18 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		if (ResourceUtil.findAmountResource(resource).isLifeSupport()) {
 			double amountNeededSol = 0D;
-			if (resource.equals(oxygenID))
+			if (resource.equals(OXYGEN_ID))
 				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
-			if (resource.equals(waterID))
+			if (resource.equals(WATER_ID))
 				amountNeededSol = personConfig.getWaterConsumptionRate();
-			if (resource.equals(foodID))
+			if (resource.equals(FOOD_ID))
 				amountNeededSol = personConfig.getFoodConsumptionRate();
 
 			double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
 			int numPeople = startingSettlement.getNumCitizens();
 			result = numPeople * amountNeededOrbit;
 		} else {
-			if (resource.equals(methaneID)) {
+			if (resource.equals(METHANE_ID)) {
 				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
 				while (i.hasNext()) {
 					double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
@@ -780,62 +777,62 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		Inventory inv = settlement.getInventory();
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
-		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenID, false);
+		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(OXYGEN_ID, false);
 
-		inv.addAmountDemandTotalRequest(oxygenID, oxygenAmountNeeded);
+		inv.addAmountDemandTotalRequest(OXYGEN_ID, oxygenAmountNeeded);
 
-		oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenID);
+		oxygenAmountAvailable += getResourcesOnMissions(settlement, OXYGEN_ID);
 		if (oxygenAmountAvailable < oxygenAmountNeeded) {
 			double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
 			if (oxygenAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				oxygenAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(oxygenID, oxygenAmountEmergency);
+			result.put(OXYGEN_ID, oxygenAmountEmergency);
 		}
 
 		// Determine water amount needed.
 		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
-		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterID, false);
+		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(WATER_ID, false);
 
-		inv.addAmountDemandTotalRequest(waterID, waterAmountNeeded);
+		inv.addAmountDemandTotalRequest(WATER_ID, waterAmountNeeded);
 
-		waterAmountAvailable += getResourcesOnMissions(settlement, waterID);
+		waterAmountAvailable += getResourcesOnMissions(settlement, WATER_ID);
 		if (waterAmountAvailable < waterAmountNeeded) {
 			double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
 			if (waterAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				waterAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(waterID, waterAmountEmergency);
+			result.put(WATER_ID, waterAmountEmergency);
 		}
 
 		// Determine food amount needed.
 		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
-		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodID, false);
+		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(FOOD_ID, false);
 
-		inv.addAmountDemandTotalRequest(foodID, foodAmountNeeded);
+		inv.addAmountDemandTotalRequest(FOOD_ID, foodAmountNeeded);
 
-		foodAmountAvailable += getResourcesOnMissions(settlement, foodID);
+		foodAmountAvailable += getResourcesOnMissions(settlement, FOOD_ID);
 		if (foodAmountAvailable < foodAmountNeeded) {
 			double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
 			if (foodAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				foodAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(foodID, foodAmountEmergency);
+			result.put(FOOD_ID, foodAmountEmergency);
 		}
 
 		// Determine methane amount needed.
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneID, false);
+		double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(METHANE_ID, false);
 
-		inv.addAmountDemandTotalRequest(methaneID, methaneAmountNeeded);
+		inv.addAmountDemandTotalRequest(METHANE_ID, methaneAmountNeeded);
 
-		methaneAmountAvailable += getResourcesOnMissions(settlement, methaneID);
+		methaneAmountAvailable += getResourcesOnMissions(settlement, METHANE_ID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
 			double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
 			if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(methaneID, methaneAmountEmergency);
+			result.put(METHANE_ID, methaneAmountEmergency);
 		}
 
 		return result;
@@ -1032,9 +1029,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
+				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
 					result = 1;
-				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
+				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
 					result = -1;
 				}
 			}

@@ -10,14 +10,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -26,7 +25,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class TravelToSettlementMeta extends AbstractMetaMission {
     
-    private static final double LIMIT = 0;
+    private static final int EARLIEST_SOL_TRAVEL = 28;
+	private static final double LIMIT = 0;
 
 	public TravelToSettlementMeta() {
 		// Anyone can start ??
@@ -41,8 +41,9 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public double getProbability(Person person) {
 
-    	if (marsClock.getMissionSol() < 28)
+    	if (marsClock.getMissionSol() < EARLIEST_SOL_TRAVEL) {
     		return 0;
+    	}
     	
         double missionProbability = 0D;
 
@@ -53,8 +54,9 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
             missionProbability = getMissionProbability(settlement, person);
 
-    		if (missionProbability <= 0)
+    		if (missionProbability <= 0) {
     			return 0;
+    		}
     		
 	        // Job modifier.
     		missionProbability *= getLeaderSuitability(person)
@@ -76,35 +78,21 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
-    private double getMissionProbability(Settlement settlement, Unit unit) {
-    	Person person = null;
-    	Robot robot = null;
-
+    private double getMissionProbability(Settlement settlement, MissionMember member) {
         double missionProbability = 0;
         
-        if (settlement.getMissionBaseProbability(MissionType.TRAVEL_TO_SETTLEMENT))
-        	missionProbability = 1;
-        else
+        if (!settlement.getMissionBaseProbability(MissionType.TRAVEL_TO_SETTLEMENT)) {
 			return 0;
- 
+        }
+        
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(MissionType.TRAVEL_TO_SETTLEMENT, settlement, false);
         if (vehicle != null) {
-        	Map<Settlement, Double> desirableSettlements = null;
-			if (unit instanceof Person) {
-				person = (Person) unit;
-	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    person, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
+        	Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
+                    member, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
 
-			}
-			else if (unit instanceof Robot) {
-				robot = (Robot) unit;
-	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    robot, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
-			}
-
-            if (desirableSettlements.size() == 0) {
+            if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
             	return 0;
             }
 
@@ -120,7 +108,6 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
 
         // Determine mission probability.
-
         missionProbability = TravelToSettlement.BASE_MISSION_WEIGHT
                 + (topSettlementDesirability / 100D);
 

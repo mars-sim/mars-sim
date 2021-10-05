@@ -88,11 +88,6 @@ public abstract class CollectResourcesMission extends RoverMission
 	/** The type of resource to collect. */
 	private Integer resourceID;
 
-	// Static members
-	private static final int OXYGEN = ResourceUtil.oxygenID;
-	private static final int WATER = ResourceUtil.waterID;
-	private static final int FOOD = ResourceUtil.foodID;
-
 	private static final int[] REGOLITH_TYPES = ResourceUtil.REGOLITH_TYPES;
 	
 	protected static TerrainElevation terrainElevation;
@@ -879,19 +874,19 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(OXYGEN))
-			oxygenAmount += (Double) result.get(OXYGEN);
-		result.put(OXYGEN, oxygenAmount);
+		if (result.containsKey(OXYGEN_ID))
+			oxygenAmount += (double) result.get(OXYGEN_ID);
+		result.put(OXYGEN_ID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(WATER))
-			waterAmount += (Double) result.get(WATER);
-		result.put(WATER, waterAmount);
+		if (result.containsKey(WATER_ID))
+			waterAmount += (double) result.get(WATER_ID);
+		result.put(WATER_ID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(FOOD))
-			foodAmount += (Double) result.get(FOOD);
-		result.put(FOOD, foodAmount);
+		if (result.containsKey(FOOD_ID))
+			foodAmount += (double) result.get(FOOD_ID);
+		result.put(FOOD_ID, foodAmount);
 
 		return result;
 	}
@@ -963,21 +958,21 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit)
 			timeLimit = foodTimeLimit;
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;
