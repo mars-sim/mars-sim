@@ -141,7 +141,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 
-	// public static final double SAFETY_PRESSURE = 20;
+	// Initial mission passing score
+	private static final double INITIAL_MISSION_SCORE = 400D;
+	// Hvae a maximum mission score that can be recorded
+	private static final double MAX_MISSION_SCORE = 1000D;
+
 
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
@@ -271,11 +275,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
-	private double minimumPassingScore = 100;
-	/** The trending score for curving the minimum score for mission approval. */
-	private double trendingScore = 30D;
-	/** The recently computed average score of the missions. */
-	private double currentAverageScore = 100;
+	private double minimumPassingScore = INITIAL_MISSION_SCORE;
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 	/** The settlement's current indoor temperature. */
@@ -356,11 +356,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	
 	
 	// Static members	
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int waterID = ResourceUtil.waterID;
-	private static final int co2ID = ResourceUtil.co2ID;
-	private static final int foodID = ResourceUtil.foodID;
-	private static final int methaneID = ResourceUtil.methaneID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -543,7 +543,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
-		missionScores.add(200D);
+		missionScores.add(INITIAL_MISSION_SCORE);
 
 		// Create the water consumption map
 		waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
@@ -877,23 +877,23 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
+			double oxygenLeft = getInventory().getAmountResourceStored(OXYGEN_ID, false);
 
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
 			// CompositionOfAir is doing it for all inhabitants once per frame.
-			getInventory().retrieveAmountResource(oxygenID, oxygenTaken);
+			getInventory().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 
-			getInventory().addAmountDemand(oxygenID, oxygenTaken);
+			getInventory().addAmountDemand(OXYGEN_ID, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
-			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(co2ID, true, false);
+			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(CO2_ID, true, false);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
-			getInventory().storeAmountResource(co2ID, carbonDioxideProvided, true);
+			getInventory().storeAmountResource(CO2_ID, carbonDioxideProvided, true);
 
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing O2/removing CO2 ", e);
@@ -912,12 +912,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getAmountResourceStored(waterID, false);
+			double waterLeft = getInventory().getAmountResourceStored(WATER_ID, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			if (waterTaken > MIN) {
-				Storage.retrieveAnResource(waterTaken, waterID, getInventory(), true);
-				getInventory().retrieveAmountResource(waterID, waterTaken);
+				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
+				getInventory().retrieveAmountResource(WATER_ID, waterTaken);
 			}
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing H2O needs: ", e);
@@ -1072,9 +1072,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			
 			// Check for available airlocks	
 			checkAvailableAirlocks();		
-			
-			// Reduce the recurrent passing score daily to its 90% value
-			minimumPassingScore = minimumPassingScore * .9;
 			
 			// May update the goods manager updateGoodsManager(pulse);
 
@@ -1364,6 +1361,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				
 		// clear estimated orbit repair parts cache value
 		goodsManager.clearOrbitRepairParts();
+		
+		// Decrease the Mission score. 
+		minimumPassingScore *= 0.9D;
 		
 		solCache = solElapsed;
 		
@@ -3130,21 +3130,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true/false
 	 */
 	public boolean passMissionScore(double score) {
-		double total = 0;
-		for (double s : missionScores) {
-			total += s;
-		}
-		currentAverageScore = total / missionScores.size();
-
-		minimumPassingScore = Math.round((currentAverageScore + trendingScore) * 10D) / 10D;
-
-		if (score > currentAverageScore + trendingScore) {
-			trendingScore = (score - currentAverageScore + 2D * trendingScore) / 3D;
-			return true;
-		} else {
-			trendingScore = (currentAverageScore - score + 2D * trendingScore) / 3D;
-			return false;
-		}
+		
+		return (score > minimumPassingScore); 
 	}
 
 	/**
@@ -3162,7 +3149,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param score
 	 */
 	public void saveMissionScore(double score) {
-		missionScores.add(score);
+
+		// Recalculate the new minimum score; minimum score ages in the timePulse method
+		double total = 0;
+		for (double s : missionScores) {
+			total += s;
+		}
+
+		// Simplify how minimum score is calculated. Use of trending scores
+		// seems to make it harder to get missions approved over time
+		minimumPassingScore = total / missionScores.size();
+		
+		// Cap any very large score to protect the average
+		double desiredMax = Math.min(MAX_MISSION_SCORE, minimumPassingScore * 1.5D);
+		missionScores.add(Math.min(score, desiredMax));
 
 		if (missionScores.size() > 20)
 			missionScores.remove(0);
@@ -3449,16 +3449,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		Inventory inv = getInventory();
 
 		try {
-			if (inv.getAmountResourceStored(methaneID, false) < minMethane) {
+			if (inv.getAmountResourceStored(METHANE_ID, false) < minMethane) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(oxygenID, false) < mineOxygen) {
+			if (unmasked && inv.getAmountResourceStored(OXYGEN_ID, false) < mineOxygen) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(waterID, false) < minWater) {
+			if (unmasked && inv.getAmountResourceStored(WATER_ID, false) < minWater) {
 				return false;
 			}
-			if (inv.getAmountResourceStored(foodID, false) < minFood) {
+			if (inv.getAmountResourceStored(FOOD_ID, false) < minFood) {
 				return false;
 			}
 		} catch (Exception e) {

@@ -53,10 +53,13 @@ public class CommandHelper {
 	public static final int TASK_WIDTH = 30;
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
+	
+	// Base value formats for use with String.format
 	public static final String KG_FORMAT = "%.2f kg";
 	public static final String KM_FORMAT = "%.2f km";
 	public static final String PERC_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
+	public static final String KMPH_FORMAT = "%.2f km/h";
 	
 	private CommandHelper() {
 		// Do nothing

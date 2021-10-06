@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -107,7 +108,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
        		if (total - onMission - totalCap > 0) {
 				
 	            // Get all vehicles needing maintenance.
-                Iterator<Vehicle> i = MaintainGroundVehicleEVA.getAllVehicleCandidates(person).iterator();
+                Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true).iterator();
                 while (i.hasNext()) {
                     MalfunctionManager manager = i.next().getMalfunctionManager();
                     double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 50D);

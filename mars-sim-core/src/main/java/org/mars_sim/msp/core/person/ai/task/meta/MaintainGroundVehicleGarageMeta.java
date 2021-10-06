@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -18,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -34,9 +33,6 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
-
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
 
     public MaintainGroundVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -58,87 +54,13 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
-            
+			result = getSettlementProbability(person);
+
 			Settlement settlement = person.getAssociatedSettlement();
-			
-			try {
-				// Get all vehicles requiring maintenance.
-				Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person).iterator();
-				while (i.hasNext()) {
-					Vehicle vehicle = i.next();
-					MalfunctionManager manager = vehicle.getMalfunctionManager();
-					
-					boolean hasMalfunction = manager.hasMalfunction();
-					if (hasMalfunction)
-						return 0;
-					
-					boolean hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
-					if (!hasParts)
-						return 0;
-					
-					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-					boolean minTime = (effectiveTime >= 1000D);
-					if (minTime) {
-						double entityProb = effectiveTime / 50D;
-						if (entityProb > 100D) {
-							entityProb = 100D;
-						}
-						result += entityProb;
-					}
-					
-		            int num = settlement.getIndoorPeopleCount();
-	                result = result + result * num / settlement.getPopulationCapacity();
-	                
-				}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "getProbability()", e);
-			}
-			
-			// Determine if settlement has available space in garage.
-			boolean garageSpace = false;
-			boolean needyVehicleInGarage = false;
-			int available = 0;
-			int totalCap = 0;
-						
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
-					.iterator();
-			while (j.hasNext() && !garageSpace) {
-				try {
-					Building building = j.next();
-					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
-					totalCap += garage.getVehicleCapacity();
-					available += (garage.getVehicleCapacity() - garage.getCurrentVehicleNumber());
-					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-						garageSpace = true;
-						break;
-					}
-
-					Iterator<Vehicle> i = garage.getVehicles().iterator();
-					while (i.hasNext()) {
-						if (i.next().isReservedForMaintenance()) {
-							needyVehicleInGarage = true;
-							break;
-						}
-					}
-				} catch (Exception e) {
-				}
-			}
-
-			if (!garageSpace) {
-				return 0D;
-			}
-
-			if (!needyVehicleInGarage) {
-				return 0D;
-			}
-			
-			int total = settlement.getVehicleNum(); 
-			int onMission = settlement.getMissionVehicles().size();
 			
             int num = settlement.getIndoorPeopleCount();
             result = result 
-            		+ result * num / settlement.getPopulationCapacity() / 4D
-            		+ result * (total - onMission - (totalCap - available)) / 2.5;
+            		+ result * num / settlement.getPopulationCapacity() / 4D;
             
 			result *= settlement.getGoodsManager().getTransportationFactor();
 
@@ -160,63 +82,8 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 		if (robot.isInSettlement() && robot.getRobotType() == RobotType.REPAIRBOT) {
 
-			try {
-				// Get all vehicles requiring maintenance.
-				Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(robot).iterator();
-				while (i.hasNext()) {
-					Vehicle vehicle = i.next();
-					MalfunctionManager manager = vehicle.getMalfunctionManager();
-					boolean hasMalfunction = manager.hasMalfunction();
-					if (hasMalfunction)
-						return 0;
-					
-					boolean hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
-					if (!hasParts)
-						return 0;
-					
-					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-					boolean minTime = (effectiveTime >= 1000D);
-					if (hasParts && minTime) {
-						double entityProb = effectiveTime / 50D;
-						if (entityProb > 100D) {
-							entityProb = 100D;
-						}
-						result += entityProb;
-					}
-				}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "getProbability()", e);
-			}
-
-			// Determine if settlement has available space in garage.
-			boolean garageSpace = false;
-			boolean needyVehicleInGarage = false;
-
-			Settlement settlement = robot.getSettlement();
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
-					.iterator();
-			while (j.hasNext() && !garageSpace) {
-				try {
-					Building building = j.next();
-					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
-					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-						garageSpace = true;
-					}
-
-					Iterator<Vehicle> i = garage.getVehicles().iterator();
-					while (i.hasNext()) {
-						if (i.next().isReservedForMaintenance()) {
-							needyVehicleInGarage = true;
-						}
-					}
-				} catch (Exception e) {
-				}
-			}
-
-			if (!garageSpace && !needyVehicleInGarage) {
-				result = 0D;
-			}
-
+			result = getSettlementProbability(robot);
+			
 			// Effort-driven task modifier.
 			result *= robot.getPerformanceRating();
 
@@ -232,6 +99,58 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 		}
 
+		return result;
+	}
+	
+	private double getSettlementProbability(Worker mechanic) {
+		double result = 0D;
+		
+		for( Vehicle vehicle : MaintainGroundVehicleGarage.getAllVehicleCandidates(mechanic, false)) {
+			MalfunctionManager manager = vehicle.getMalfunctionManager();
+			boolean hasMalfunction = manager.hasMalfunction();
+			if (hasMalfunction)
+				return 0;
+			
+			boolean hasParts = Maintenance.hasMaintenanceParts(mechanic, vehicle);
+			if (!hasParts)
+				return 0;
+			
+			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+			boolean minTime = (effectiveTime >= 1000D);
+			if (hasParts && minTime) {
+				double entityProb = effectiveTime / 50D;
+				if (entityProb > 100D) {
+					entityProb = 100D;
+				}
+				result += entityProb;
+			}
+		}
+
+		// Determine if settlement has available space in garage.
+		boolean garageSpace = false;
+		boolean needyVehicleInGarage = false;
+
+		Settlement settlement = mechanic.getSettlement();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
+				.iterator();
+		while (j.hasNext() && !garageSpace) {
+			Building building = j.next();
+			VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+			if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+				garageSpace = true;
+			}
+
+			Iterator<Vehicle> i = garage.getVehicles().iterator();
+			while (i.hasNext()) {
+				if (i.next().isReservedForMaintenance()) {
+					needyVehicleInGarage = true;
+				}
+			}
+		}
+
+		if (!garageSpace && !needyVehicleInGarage) {
+			result = 0D;
+		}
 		return result;
 	}
 }

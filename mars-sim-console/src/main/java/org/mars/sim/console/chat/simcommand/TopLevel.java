@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
+import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.command.ExpertCommand;
 import org.mars.sim.console.chat.command.HelpCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
@@ -37,11 +38,20 @@ public class TopLevel extends InteractiveChatCommand {
 																	new SpeedCommand());
 	// The command group for Simulation commands
 	public static final String SIMULATION_GROUP = "Simulation";
+	private static final String PROMPT_SEED = "MarsNet";
 
 	public TopLevel() {
 		// Toplevel does not need a keyword or short command
-		super(SIMULATION_GROUP, null, null, "Top level command", "MarsNet", COMMON_COMMANDS);
+		super(SIMULATION_GROUP, null, null, "Top level command", PROMPT_SEED, COMMON_COMMANDS);
 
 		setIntroduction(PREAMBLE);
+	}
+	
+	@Override
+	public String getPrompt(Conversation context) {
+		StringBuilder prompt = new StringBuilder();
+		prompt.append(context.getSim().getMasterClock().getMarsClock().getTrucatedDateTimeStamp());
+		prompt.append(' ').append(PROMPT_SEED);
+		return prompt.toString();
 	}
 }

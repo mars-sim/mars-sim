@@ -122,7 +122,7 @@ public class Conversation implements UserOutbound {
 			
 	      	try {
 	        	// Get input
-				String prompt = current.getPrompt() + " > ";
+				String prompt = current.getPrompt(this) + " > ";
 	        	String input = getInput(prompt);
 	        	options = null; // Remove any auto complete options once user executes
 	        	

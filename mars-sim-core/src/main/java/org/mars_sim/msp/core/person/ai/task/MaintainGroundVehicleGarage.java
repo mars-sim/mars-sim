@@ -7,12 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -69,7 +70,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public MaintainGroundVehicleGarage(Worker unit) {
-		super(NAME, unit, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 10D + RandomUtil.getRandomDouble(40D));
+		super(NAME, unit, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D);
 
 		if (unit instanceof Person) {
 			Person lperson = (Person) unit;
@@ -207,17 +208,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				inv.addItemDemand(part, number);
 			}
 		} else {
-			vehicle.setReservedForMaintenance(false);
-	        vehicle.removeStatus(StatusType.MAINTENANCE);
-	        
-			if (vehicle instanceof Crewable) {
-				Crewable crewableVehicle = (Crewable) vehicle;
-				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-					garage.removeVehicle(vehicle);
-				}
-			} else {
-				garage.removeVehicle(vehicle);
-			}
 			endTask();
 			return time;
 		}
@@ -241,17 +231,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-			// logger.info(person.getName() + " finished " + description);
-			vehicle.setReservedForMaintenance(false);
-			vehicle.removeStatus(StatusType.MAINTENANCE);
-			if (vehicle instanceof Crewable) {
-				Crewable crewableVehicle = (Crewable) vehicle;
-				if (crewableVehicle.getCrewNum() == 0) {
-					garage.removeVehicle(vehicle);
-				}
-			} else {
-				garage.removeVehicle(vehicle);
-			}
+			logger.info(worker, "Completed maintenance on " + vehicle.getName());
 			endTask();
 		}
 
@@ -261,50 +241,44 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		return 0D;
 	}
 
-	/**
-	 * Gets all ground vehicles requiring maintenance in a local garage.
-	 * 
-	 * @param person person checking.
-	 * @return collection of ground vehicles available for maintenance.
-	 */
-	public static Collection<Vehicle> getAllVehicleCandidates(Person person) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-
-		if (person.isInSettlement()) {
-			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
-			while (vI.hasNext()) {
-				Vehicle vehicle = vI.next();
-				if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
-					result.add(vehicle);
+	@Override
+	protected void clearDown() {
+		if (vehicle != null) {
+			vehicle.setReservedForMaintenance(false);
+	        vehicle.removeStatus(StatusType.MAINTENANCE);
+	        
+			if (vehicle instanceof Crewable) {
+				Crewable crewableVehicle = (Crewable) vehicle;
+				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+					garage.removeVehicle(vehicle);
 				}
+			} else {
+				garage.removeVehicle(vehicle);
 			}
 		}
-
-		return result;
+		super.clearDown();
 	}
 
 	/**
-	 * Gets all ground vehicles requiring maintenance in a local garage.
+	 * Gets all ground vehicles requiring maintenance. Candidate list be filtered
+	 * for just outside Vehicles.
 	 * 
-	 * @param robot robot checking.
+	 * @param mechanic Worker checking.
+	 * @param mustBeOutside
 	 * @return collection of ground vehicles available for maintenance.
 	 */
-	public static Collection<Vehicle> getAllVehicleCandidates(Robot robot) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-
-		Settlement settlement = robot.getSettlement();
-        if (settlement != null) {
-            Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
-			while (vI.hasNext()) {
-				Vehicle vehicle = vI.next();
-				if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
-					result.add(vehicle);
-				}
-			}
+	public static List<Vehicle> getAllVehicleCandidates(Worker mechanic, boolean mustBeOutside) {
+		Settlement home = mechanic.getSettlement();
+		if (home != null) {
+			// Vehicle must not be reserved for Mission nor maintenance
+			return home.getParkedVehicles().stream()
+				.filter(v -> (v instanceof GroundVehicle && !v.isReserved()
+								&& (!mustBeOutside || !v.isInVehicleInGarage())))
+				.collect(Collectors.toList());
 		}
-
-		return result;
+		return Collections.emptyList();
 	}
+
 
 	/**
 	 * Gets a ground vehicle that requires maintenance in a local garage. Returns
@@ -313,17 +287,17 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 * @param person person checking.
 	 * @return ground vehicle
 	 */
-	private GroundVehicle getNeedyGroundVehicle(Person person) {
+	private GroundVehicle getNeedyGroundVehicle(Worker mechanic) {
 
 		GroundVehicle result = null;
 
 		// Find all vehicles that can be maintained.
-		Collection<Vehicle> availableVehicles = getAllVehicleCandidates(person);
+		List<Vehicle> availableVehicles = getAllVehicleCandidates(mechanic, false);
 
 		// Populate vehicles and probabilities.
-		Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
+		Map<Vehicle, Double> vehicleProb = new HashMap<>(availableVehicles.size());
 		for (Vehicle vehicle : availableVehicles) {
-			double prob = getProbabilityWeight(vehicle);
+			double prob = getProbabilityWeight(vehicle, mechanic);
 			if (prob > 0D) {
 				vehicleProb.put(vehicle, prob);
 			}
@@ -335,7 +309,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		if (result != null) {
-            if (person.getSettlement().getBuildingManager().addToGarage(result)) {
+            if (!worker.getSettlement().getBuildingManager().addToGarage(result)) {
             	result = null;
             }
             else {
@@ -348,56 +322,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	}
 
 	/**
-	 * Gets a ground vehicle that requires maintenance in a local garage. Returns
-	 * null if none available.
-	 * 
-	 * @param person person checking.
-	 * @return ground vehicle
-	 */
-	private GroundVehicle getNeedyGroundVehicle(Robot robot) {
-
-		GroundVehicle result = null;
-
-		// Find all vehicles that can be maintained.
-		Collection<Vehicle> availableVehicles = getAllVehicleCandidates(robot);
-
-		// Populate vehicles and probabilities.
-		Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
-		for (Vehicle vehicle : availableVehicles) {		
-//            if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
-	            double prob = getProbabilityWeight(vehicle);
-	            if (prob > 0D) {
-	                vehicleProb.put(vehicle, prob);
-	            }
-//			}
-		}
-
-		// Randomly determine needy vehicle.
-		if (!vehicleProb.isEmpty()) {
-			result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
-	        
-            if (result != null) {
-            	
-	            if (BuildingManager.isInAGarage(result)) {
-	            	result = null;
-	            }
-	            else {
-	                setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail",
-	                        result.getName())); //$NON-NLS-1$
-	            }
-	        }
-		}
-
-		return result;
-	}
-
-	/**
 	 * Gets the probability weight for a vehicle.
 	 * 
 	 * @param vehicle the vehicle.
 	 * @return the probability weight.
 	 */
-	private double getProbabilityWeight(Vehicle vehicle) {
+	public static double getProbabilityWeight(Vehicle vehicle, Worker mechanic) {
 		double result = 0D;
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
@@ -408,13 +338,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		if (hasMalfunction)
 			return 0;
 
-		boolean hasParts = false;
-		if (person != null) {
-			hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
-		} else {
-			hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
-		}
-		if (!hasParts)
+		if (!Maintenance.hasMaintenanceParts(mechanic, vehicle)) 
 			return 0;
 		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();

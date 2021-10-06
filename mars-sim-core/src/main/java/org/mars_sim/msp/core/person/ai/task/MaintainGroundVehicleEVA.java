@@ -8,11 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -20,13 +19,11 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -211,10 +208,7 @@ implements Serializable {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
-        if (finishedMaintenance) {
-        	vehicle.setReservedForMaintenance(false);
-            vehicle.removeStatus(StatusType.MAINTENANCE);
-        }
+
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
                 addTimeOnSite(time)) {
@@ -267,6 +261,19 @@ implements Serializable {
         return 0D;
     }
 
+
+    /**
+     * Release the vehicle
+     */
+	@Override
+	protected void clearDown() {
+        if (vehicle != null) {
+        	vehicle.setReservedForMaintenance(false);
+            vehicle.removeStatus(StatusType.MAINTENANCE);
+        }
+		super.clearDown();
+	}
+	
     @Override
     protected void checkForAccident(double time) {
 
@@ -276,39 +283,6 @@ implements Serializable {
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         checkForAccident(vehicle, time, 0.001D, skill, vehicle.getName());
-    }
-
-    /**
-     * Gets the vehicle  the person is maintaining.
-     * Returns null if none.
-     * 
-     * @return entity
-     */
-    public Malfunctionable getVehicle() {
-        return vehicle;
-    }
-
-    /**
-     * Gets all ground vehicles requiring maintenance that are parked outside the settlement.
-     *
-     * @param person person checking.
-     * @return collection of ground vehicles available for maintenance.
-     */
-    public static Collection<Vehicle> getAllVehicleCandidates(Person person) {
-        Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-
-        Settlement settlement = person.getSettlement();
-        if (settlement != null) {
-            Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
-            while (vI.hasNext()) {
-                Vehicle vehicle = vI.next();
-                if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
-                    result.add(vehicle);
-                }
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -324,15 +298,15 @@ implements Serializable {
         Vehicle result = null;
 
         // Find all vehicles that can be maintained.
-        Collection<Vehicle> availableVehicles = getAllVehicleCandidates(person);
+        List<Vehicle> availableVehicles = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true);
 
         // Populate vehicles and probabilities.
-        Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
+        Map<Vehicle, Double> vehicleProb = new HashMap<>(availableVehicles.size());
         Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
             if (!vehicle.getSettlement().getBuildingManager().addToGarage(vehicle)) {
-	            double prob = getProbabilityWeight(vehicle);
+	            double prob = MaintainGroundVehicleGarage.getProbabilityWeight(vehicle, person);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
 	            }
@@ -356,41 +330,5 @@ implements Serializable {
         }
 
         return result;
-    }
-
-    /**
-     * Gets the probability weight for a vehicle.
-     * 
-     * @param vehicle the vehicle.
-     * @return the probability weight.
-     * @throws Exception if error determining probability weight.
-     */
-    private double getProbabilityWeight(Vehicle vehicle) {
-		double result = 0D;
-		MalfunctionManager manager = vehicle.getMalfunctionManager();
-		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
-		if (tethered)
-			return 0;
-		
-		boolean hasMalfunction = manager.hasMalfunction();
-		if (hasMalfunction)
-			return 0;
-
-		boolean hasParts = false;
-		if (person != null) {
-			hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
-		} else {
-			hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
-		}
-		if (!hasParts)
-			return 0;
-		
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		boolean minTime = (effectiveTime >= 1000D);
-
-		if (minTime) {
-			result = effectiveTime;
-		}
-		return result;
     }
 }

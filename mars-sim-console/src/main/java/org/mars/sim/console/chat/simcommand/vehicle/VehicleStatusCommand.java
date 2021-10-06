@@ -9,7 +9,9 @@ package org.mars.sim.console.chat.simcommand.vehicle;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -44,7 +46,7 @@ public class VehicleStatusCommand extends ChatCommand {
 		buffer.appendLabeledString("Status", source.printStatusTypes());
 		buffer.appendLabeledString("Settlement", source.getAssociatedSettlement().getName());
 		buffer.appendLabeledString("Location", source.getCoordinates().getFormattedString());
-		buffer.appendLabeledString("Speed", String.format("%.2f km/h", source.getSpeed()));
+		buffer.appendLabeledString("Speed", String.format(CommandHelper.KMPH_FORMAT, source.getSpeed()));
 		buffer.appendLabeledString("Reserved",
 					(source.isReservedForMission() ? "Yes" : "No"));
 		VehicleOperator operator = source.getOperator();
@@ -60,10 +62,10 @@ public class VehicleStatusCommand extends ChatCommand {
 			buffer.appendLabeledString("Mission Lead", m.getStartingPerson().getName());
 
 			if (m instanceof VehicleMission) {
-				double dist = Math.round(((VehicleMission) m).getEstimatedTotalDistance() * 10.0) / 10.0;
-				double trav = Math.round(((VehicleMission) m).getActualTotalDistanceTravelled() * 10.0) / 10.0;
-				buffer.appendLabeledString("Proposed Dist.", (dist + " km"));
-				buffer.appendLabeledString("Travelled", (trav + " km"));
+				double dist = ((VehicleMission) m).getEstimatedTotalDistance();
+				double trav = ((VehicleMission) m).getActualTotalDistanceTravelled();
+				buffer.appendLabeledString("Proposed Dist.", String.format(CommandHelper.KM_FORMAT, dist));
+				buffer.appendLabeledString("Travelled", String.format(CommandHelper.KM_FORMAT, trav));
 			}
 		} 
 
@@ -74,6 +76,11 @@ public class VehicleStatusCommand extends ChatCommand {
 			buffer.appendLabeledString("Towing", ((Rover) source).getTowedVehicle().getName());
 		}
 
+		// Maintenance details
+		MalfunctionManager mm = source.getMalfunctionManager();
+		buffer.appendLabeledString("Active since maint.", String.format(CommandHelper.MILLISOL_FORMAT, mm.getEffectiveTimeSinceLastMaintenance()));
+		buffer.appendLabeledString("Odometer", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));
+		
 		context.println(buffer.getOutput());
 		return true;
 	}
