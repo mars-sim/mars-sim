@@ -17,12 +17,10 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission to do meteorology research at a remote field location for a scientific
@@ -255,60 +252,6 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the time limit of the trip based on life support capacity.
-	 * 
-	 * @param useBuffer use time buffer in estimation if true.
-	 * @return time (millisols) limit.
-	 * @throws MissionException if error determining time limit.
-	 */
-	public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
-
-		Inventory vInv = rover.getInventory();
-
-		double timeLimit = Double.MAX_VALUE;
-
-		// Check food capacity as time limit.
-		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
-		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-		if (foodTimeLimit < timeLimit) {
-			timeLimit = foodTimeLimit;
-		}
-
-		// Check dessert1 capacity as time limit.
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-//        double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D;
-//        double dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false);
-//        double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
-//        if (dessert1TimeLimit < timeLimit)
-//            timeLimit = dessert1TimeLimit;
-
-		// Check water capacity as time limit.
-		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
-		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-		if (waterTimeLimit < timeLimit) {
-			timeLimit = waterTimeLimit;
-		}
-
-		// Check oxygen capacity as time limit.
-		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
-		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-		if (oxygenTimeLimit < timeLimit) {
-			timeLimit = oxygenTimeLimit;
-		}
-
-		// Convert timeLimit into millisols and use error margin.
-		timeLimit = (timeLimit * 1000D);
-		if (useBuffer) {
-			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
-		}
-
-		return timeLimit;
 	}
 
 	/**
@@ -619,25 +562,8 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 		int crewNum = getPeopleNumber();
 
-		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(OXYGEN_ID)) {
-			oxygenAmount += (Double) result.get(OXYGEN_ID);
-		}
-		result.put(OXYGEN_ID, oxygenAmount);
-
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(WATER_ID)) {
-			waterAmount += (Double) result.get(WATER_ID);
-		}
-		result.put(WATER_ID, waterAmount);
-
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-//				* PhysicalCondition.FOOD_RESERVE_FACTOR;
-		if (result.containsKey(FOOD_ID)) {
-			foodAmount += (Double) result.get(FOOD_ID);
-		}
-		result.put(FOOD_ID, foodAmount);
+		// Determine life support supplies needed for site visit
+		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
 		return result;
 	}
 	

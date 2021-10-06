@@ -14,7 +14,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -30,7 +29,7 @@ public class Storage extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ExploreSite.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(Storage.class.getName());
 
 	private Map<Integer, Double> resourceCapacities;
 
@@ -61,12 +60,6 @@ public class Storage extends Function implements Serializable {
 
 		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
 		inv.addGeneralCapacity(stockCapacity);
-
-		// Initialize stock capacities for all resource
-//		 for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
-//			 if (!building.getBuildingType().toLowerCase().contains("storage bin"))
-//				 inv.addAmountResourceTypeCapacity(ar, stockCapacity);
-//		 }
 
 		// Obtains initial resources map for this building.
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());

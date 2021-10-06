@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -514,24 +513,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		int peopleNum = getRescuePeopleNum(vehicleTarget);
 
-		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum * Mission.OXYGEN_MARGIN;
-		if (useBuffer) {
-			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		}
-		result.put(OXYGEN_ID, oxygenAmount);
-
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
-		if (useBuffer) {
-			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		}
-		result.put(WATER_ID, waterAmount);
-
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
-		if (useBuffer) {
-			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		}
-		result.put(FOOD_ID, foodAmount);
+		// Determine life support supplies needed for to support rescued people
+		addLifeSupportResources(result, peopleNum, timeSols, useBuffer);
 
 		// Add extra EVA Suits based on how many people to be rescued
 		return result;

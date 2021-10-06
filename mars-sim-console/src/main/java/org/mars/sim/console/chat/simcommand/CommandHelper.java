@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -229,23 +230,30 @@ public class CommandHelper {
 		}
 		response.appendLabeledString("Phase", mission.getPhaseDescription());
 		MissionPlanning mp = mission.getPlan();
-		if (mp != null) {
+		if ((mp != null) && (mp.getStatus() == PlanType.PENDING)) {
 			StringBuilder planMsg = new StringBuilder();
 			PlanType st = mp.getStatus();
 			planMsg.append(st.getName());
-			switch (st) {
-			case PENDING:
-				planMsg.append(' ');
-				planMsg.append(String.format(PERC_FORMAT, mp.getPercentComplete()));
-				break;
-			case APPROVED:
-			case NOT_APPROVED:
-				planMsg.append(" - Score ");
-				planMsg.append(String.format("%.1f out of %.1f", mp.getScore(), mp.getPassingScore()));
-				break;
-			}
+			planMsg.append(' ');
+			planMsg.append(String.format(PERC_FORMAT, mp.getPercentComplete()));
+
 			response.appendLabeledString("Plan Status", planMsg.toString());
 		}
+		
+		// Most significant date
+		MissionPhase phase = mission.getPhase();
+		if (phase.equals(VehicleMission.REVIEWING)
+				|| phase.equals(VehicleMission.EMBARKING)) {
+			response.appendLabeledString("Date Filed", mission.getDateFiled());
+		}
+		else if (phase.equals(VehicleMission.COMPLETED)
+				|| phase.equals(VehicleMission.INCOMPLETED)) {
+			response.appendLabeledString("Date Returned", mission.getDateReturned());
+		}
+		else {
+			response.appendLabeledString("Date Embarked", mission.getDateEmbarked());
+		}
+		
 		response.appendLabeledString("Lead", startingPerson.getName());
 
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
@@ -28,7 +27,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -590,24 +588,8 @@ public class Exploration extends RoverMission
 
 		int crewNum = getPeopleNumber();
 
-		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
-				* timeSols * crewNum;
-		if (result.containsKey(OXYGEN_ID))
-			oxygenAmount += (Double) result.get(OXYGEN_ID);
-		result.put(OXYGEN_ID, oxygenAmount);
-
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
-				* timeSols * crewNum;
-		if (result.containsKey(WATER_ID))
-			waterAmount += (Double) result.get(WATER_ID);
-		result.put(WATER_ID, waterAmount);
-
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
-				* timeSols * crewNum;
-		if (result.containsKey(FOOD_ID))
-			foodAmount += (Double) result.get(FOOD_ID);
-		result.put(FOOD_ID, foodAmount);
+		// Add the maount for the site visits
+		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
 
 		return result;
 	}
@@ -678,48 +660,6 @@ public class Exploration extends RoverMission
 			equipmentNeededCache = result;
 			return result;
 		}
-	}
-
-	/**
-	 * Gets the time limit of the trip based on life support capacity.
-	 * 
-	 * @param useBuffer use time buffer in estimation if true.
-	 * @return time (millisols) limit.
-	 * @throws MissionException if error determining time limit.
-	 */
-	public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
-
-		Inventory vInv = rover.getInventory();
-
-		double timeLimit = Double.MAX_VALUE;
-
-		// Check food capacity as time limit.
-		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
-		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-		if (foodTimeLimit < timeLimit)
-			timeLimit = foodTimeLimit;
-
-		// Check water capacity as time limit.
-		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
-		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-		if (waterTimeLimit < timeLimit)
-			timeLimit = waterTimeLimit;
-
-		// Check oxygen capacity as time limit.
-		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
-		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-		if (oxygenTimeLimit < timeLimit)
-			timeLimit = oxygenTimeLimit;
-
-		// Convert timeLimit into millisols and use error margin.
-		timeLimit = (timeLimit * 1000D);
-		if (useBuffer)
-			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
-
-		return timeLimit;
 	}
 
 	/**

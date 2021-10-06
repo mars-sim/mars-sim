@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The CollectResourcesMission class is a mission to travel in a rover to
@@ -872,21 +870,8 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		int crewNum = getPeopleNumber();
 
-		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(OXYGEN_ID))
-			oxygenAmount += (double) result.get(OXYGEN_ID);
-		result.put(OXYGEN_ID, oxygenAmount);
-
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(WATER_ID))
-			waterAmount += (double) result.get(WATER_ID);
-		result.put(WATER_ID, waterAmount);
-
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(FOOD_ID))
-			foodAmount += (double) result.get(FOOD_ID);
-		result.put(FOOD_ID, foodAmount);
+		// Determine life support supplies needed for collection.
+		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
 
 		return result;
 	}
@@ -941,48 +926,6 @@ public abstract class CollectResourcesMission extends RoverMission
 		if (useBuffer)
 			timePerPerson *= EVA_COLLECTION_OVERHEAD;
 		return timePerPerson / getPeopleNumber();
-	}
-
-	/**
-	 * Gets the time limit of the trip based on life support capacity.
-	 * 
-	 * @param useBuffer use time buffer in estimation if true.
-	 * @return time (millisols) limit.
-	 * @throws MissionException if error determining time limit.
-	 */
-	public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
-
-		Inventory vInv = rover.getInventory();
-
-		double timeLimit = Double.MAX_VALUE;
-
-		// Check food capacity as time limit.
-		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
-		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-		if (foodTimeLimit < timeLimit)
-			timeLimit = foodTimeLimit;
-
-		// Check water capacity as time limit.
-		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
-		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-		if (waterTimeLimit < timeLimit)
-			timeLimit = waterTimeLimit;
-
-		// Check oxygen capacity as time limit.
-		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
-		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-		if (oxygenTimeLimit < timeLimit)
-			timeLimit = oxygenTimeLimit;
-
-		// Convert timeLimit into millisols and use error margin.
-		timeLimit = (timeLimit * 1000D);
-		if (useBuffer)
-			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
-
-		return timeLimit;
 	}
 
 	@Override

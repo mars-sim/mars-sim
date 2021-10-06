@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -892,66 +891,6 @@ public class Mining extends RoverMission
 		return result;
 	}
 
-	/**
-	 * Gets the time limit of the trip based on life support capacity.
-	 * 
-	 * @param useBuffer use time buffer in estimation if true.
-	 * @return time (millisols) limit.
-	 * @throws MissionException if error determining time limit.
-	 */
-	private static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
-
-		Inventory vInv = rover.getInventory();
-
-		double timeLimit = Double.MAX_VALUE;
-
-		// Check food capacity as time limit.
-		// AmountResource food =
-		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
-		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
-		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-		if (foodTimeLimit < timeLimit) {
-			timeLimit = foodTimeLimit;
-		}
-
-		// Check dessert1 capacity as time limit.
-//        AmountResource dessert1 = ResourceUtil.findAmountResource("Soymilk");
-//        double dessert1ConsumptionRate = personConfig.getFoodConsumptionRate() / 6D;
-//        double dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false);
-//        double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
-//        if (dessert1TimeLimit < timeLimit)
-//            timeLimit = dessert1TimeLimit;
-
-		// Check water capacity as time limit.
-		// AmountResource water =
-		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
-		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
-		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-		if (waterTimeLimit < timeLimit) {
-			timeLimit = waterTimeLimit;
-		}
-
-		// Check oxygen capacity as time limit.
-		// AmountResource oxygen =
-		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenConsumptionRate = personConfig.getHighO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
-		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-		if (oxygenTimeLimit < timeLimit) {
-			timeLimit = oxygenTimeLimit;
-		}
-
-		// Convert timeLimit into millisols and use error margin.
-		timeLimit = (timeLimit * 1000D);
-		if (useBuffer) {
-			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
-		}
-
-		return timeLimit;
-	}
-
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		if (equipmentNeededCache != null) {
@@ -1014,33 +953,8 @@ public class Mining extends RoverMission
 
 		int crewNum = getPeopleNumber();
 
-		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(OXYGEN_ID)) {
-			oxygenAmount += (Double) result.get(OXYGEN_ID);
-		}
-		result.put(OXYGEN_ID, oxygenAmount);
-
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(WATER_ID)) {
-			waterAmount += (Double) result.get(WATER_ID);
-		}
-		result.put(WATER_ID, waterAmount);
-
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(FOOD_ID)) {
-			foodAmount += (Double) result.get(FOOD_ID);
-		}
-		result.put(FOOD_ID, foodAmount);
-
-		// Add Soymilk AmountResource dessert1 =
-//		ResourceUtil.findAmountResource("Soymilk"); 
-//		double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; 
-//		if (result.containsKey(dessert1)) 
-//			dessert1Amount += (Double)
-//		result.get(dessert1); 
-//		result.put(dessert1, dessert1Amount);
-		
+		// Determine life support supplies needed for mining activity.
+		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
 		return result;
 	}
 

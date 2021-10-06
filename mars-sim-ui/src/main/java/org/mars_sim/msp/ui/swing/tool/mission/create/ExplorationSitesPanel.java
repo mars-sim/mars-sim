@@ -7,35 +7,52 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.map.*;
+import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
+import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
+import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
+import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
+import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.NavpointEditLayer;
+import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
+import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This is a wizard panel for selecting exploration sites for the mission.
@@ -315,7 +332,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		Rover rover = getWizard().getMissionData().getRover();
 		int memberNum = getWizard().getMissionData().getMixedMembers().size();
 		try {
-			return CollectResourcesMission.getTotalTripTimeLimit(rover, memberNum, true);
+			return RoverMission.getTotalTripTimeLimit(rover, memberNum, true);
 		} catch (Exception e) {
 			return 0D;
 		}

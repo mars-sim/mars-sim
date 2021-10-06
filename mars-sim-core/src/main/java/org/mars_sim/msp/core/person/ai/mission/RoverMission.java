@@ -10,16 +10,15 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -56,9 +55,7 @@ public abstract class RoverMission extends VehicleMission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(RoverMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(RoverMission.class.getName());
 	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
@@ -294,7 +291,7 @@ public abstract class RoverMission extends VehicleMission {
 			
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+			logger.warning(member, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
 			endMission();
@@ -395,9 +392,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 				
 					else { // this crew member cannot find the walking steps to enter the rover
-						LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-									+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+						logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 								v.getName()));
 
 					}
@@ -409,9 +404,7 @@ public abstract class RoverMission extends VehicleMission {
 				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
 					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
 				} else {
-					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
-							"[" + robot.getLocationTag().getLocale() + "] " 
-								+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
+					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 							v.getName()));
 //							logger.warning(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 //									v.getName()));
@@ -485,9 +478,8 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param disembarkSettlement
 	 */
 	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
-		LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-				"[" + v.getLocationTag().getLocale() + "] " + v.getName() 
-				+ " was being disemabarked at " + disembarkSettlement.getName() + ".");
+		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
+					+ " triggered by " + member.getName() +  ".");
 		
 		Rover rover = (Rover) v;
 
@@ -513,10 +505,7 @@ public abstract class RoverMission extends VehicleMission {
 	        
 			for (Person p : rover.getCrew()) {
 				if (p.isDeclaredDead()) {
-					
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-							+ "'s body had been retrieved from rover " + v.getName() + ".");
+					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}
 				
 				else {
@@ -585,14 +574,10 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	private void unloadCargo(Person p, Rover rover) {
 		
-		boolean hasAnotherMission = true; 
 		Mission m = p.getMission();
-		if (m != null && m != this)
-			hasAnotherMission = true; 
-		
-		if (hasAnotherMission)
-			return;
-		
+		if (m != null && !m.equals(this))
+			return; 
+
 		if (RandomUtil.lessThanRandPercent(50)) {
 			if (isInAGarage()) {
 				assignTask(p, new UnloadVehicleGarage(p, rover));
@@ -603,9 +588,7 @@ public abstract class RoverMission extends VehicleMission {
 				if (!EVAOperation.isGettingDark(p)) {
 					assignTask(p, new UnloadVehicleEVA(p, rover));
 				}
-			}
-			
-//			return;	
+			}			
 		}	
 	}
 	
@@ -637,8 +620,7 @@ public abstract class RoverMission extends VehicleMission {
 					// Checks to see if the person has an EVA suit	
 					if (!InventoryUtil.goodEVASuitAvailable(rover.getInventory(), p)) {
 
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-										+ p + " could not find a working EVA suit and needed to wait.");
+						logger.warning(p, "Could not find a working EVA suit and needed to wait.");
 					
 						// If the person does not have an EVA suit	
 						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
@@ -651,8 +633,7 @@ public abstract class RoverMission extends VehicleMission {
 								
 								suit.transfer(disembarkSettlement, rover);
 							
-								LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-										+ p + " received a spare EVA suit from the settlement.");
+								logger.warning(p, "Received a spare EVA suit from the settlement.");
 							}
 						}
 					}
@@ -661,16 +642,12 @@ public abstract class RoverMission extends VehicleMission {
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
-						LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, 
-								"[" + disembarkSettlement.getName() + "] "
-								+ p.getName() + " still had strength left and would help unload cargo.");
+						logger.info(p, 20_000, "Still had strength left and would help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}
 					else {
-						LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, 
-								"[" + disembarkSettlement.getName() + "] "
-								+ p.getName() + " had no more strength and walked back to the settlement.");
+						logger.info(p, 20_000, "Has no more strength and walked back to the settlement.");
 						// walk back home
 						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					}
@@ -683,19 +660,15 @@ public abstract class RoverMission extends VehicleMission {
 					// Note: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
 					// This person needs to be rescued.
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-							"[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
+					logger.info(p, 
+							 Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
 					
 					// Initiate an rescue operation
 					// Note: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, p, disembarkSettlement);
 					
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-							"[" + disembarkSettlement.getName() + "] "
-							+ p.getName() 
-							+ " was transported to ("
+					logger.info(p, "Transported to ("
 							+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
 							+ Math.round(p.getYLocation()*10.0)/10.0 + ") in "
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
@@ -886,25 +859,38 @@ public abstract class RoverMission extends VehicleMission {
 		// Determine estimate time for trip.
 		double time = getEstimatedTripTime(useBuffer, distance);
 		double timeSols = time / 1000D;
-		int crewNum = getPeopleNumber();
+		
+		addLifeSupportResources(result, getPeopleNumber(), timeSols, useBuffer);
+		
+		return result;
+	}
+	
+	/**
+	 * add life support resources to a map to support a number of peopel for a number of days.
+	 * @param result
+	 * @param crewNum
+	 * @param timeSols
+	 * @param useBuffer
+	 */
+	protected static void addLifeSupportResources(Map<Integer, Number> result,
+												  int crewNum, double timeSols,
+												  boolean useBuffer) {
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum ;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.OXYGEN_MARGIN;
-		result.put(OXYGEN_ID, oxygenAmount);
+		result.merge(OXYGEN_ID, oxygenAmount, (a,b) -> (a.doubleValue() + b.doubleValue()));
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum ;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.WATER_MARGIN;
-		result.put(WATER_ID, waterAmount);
+		result.merge(WATER_ID, waterAmount, (a,b) -> (a.doubleValue() + b.doubleValue()));
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum ; 
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin() * Mission.FOOD_MARGIN;
-		result.put(FOOD_ID, foodAmount);
-
-		return result;
+		result.merge(FOOD_ID, foodAmount, (a,b) -> (a.doubleValue() + b.doubleValue()));
 	}
 
 	/**
@@ -956,6 +942,52 @@ public abstract class RoverMission extends VehicleMission {
 				availableVehicleNum++;
 		}
 		return (availableVehicleNum >= 2);
+	}
+
+	/**
+	 * Gets the time limit of the trip based on life support capacity.
+	 * 
+	 * @param useBuffer use time buffer in estimation if true.
+	 * @return time (millisols) limit.
+	 * @throws MissionException if error determining time limit.
+	 */
+	public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
+	
+		Inventory vInv = rover.getInventory();
+	
+		double timeLimit = Double.MAX_VALUE;
+	
+		// Check food capacity as time limit.
+		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
+		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
+		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
+		if (foodTimeLimit < timeLimit) {
+			timeLimit = foodTimeLimit;
+		}
+	
+		// Check water capacity as time limit.
+		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
+		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
+		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
+		if (waterTimeLimit < timeLimit) {
+			timeLimit = waterTimeLimit;
+		}
+	
+		// Check oxygen capacity as time limit.
+		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
+		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
+		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
+		if (oxygenTimeLimit < timeLimit) {
+			timeLimit = oxygenTimeLimit;
+		}
+	
+		// Convert timeLimit into millisols and use error margin.
+		timeLimit = (timeLimit * 1000D);
+		if (useBuffer) {
+			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
+		}
+	
+		return timeLimit;
 	}
 
 	/**

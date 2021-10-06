@@ -433,7 +433,7 @@ public class EatDrink extends Task implements Serializable {
 					remainingTime = time - eatingTime;
 				}
 
-				if (cumulativeProportion > foodConsumptionRate) {
+				if (cumulativeProportion >= foodConsumptionRate) {
 					endTask();
 					return remainingTime;
 				}
@@ -477,7 +477,7 @@ public class EatDrink extends Task implements Serializable {
 					// Eat cooked meal.
 					eatCookedMeal(eatingTime);
 					
-					if (cumulativeProportion > cookedMeal.getDryMass()) {
+					if (cumulativeProportion >= cookedMeal.getDryMass()) {
 						endTask();
 					}
 									
@@ -633,10 +633,8 @@ public class EatDrink extends Task implements Serializable {
 		// Proportion of food being eaten over this time period.
 		double proportion = person.getEatingSpeed() * eatingTime;
 
-		if (cumulativeProportion > foodConsumptionRate) {
-			double excess = cumulativeProportion - foodConsumptionRate;
-			cumulativeProportion = cumulativeProportion - excess;
-			proportion = proportion - excess;
+		if ((cumulativeProportion + proportion) > foodConsumptionRate) {
+			proportion = foodConsumptionRate - cumulativeProportion;
 		}
 		
 //		logger.info(person + "  proportion: " + proportion);
