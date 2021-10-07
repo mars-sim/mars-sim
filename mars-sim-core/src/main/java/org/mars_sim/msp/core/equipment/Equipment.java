@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.equipment;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -79,19 +78,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		salvageInfo = null;
 		
 		lastOwner = -1;
-		
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
-		
-		if (equipmentType != null && equipmentType != EquipmentType.EVA_SUIT) {
-			// Stores this equipment into its settlement
-			settlement.getInventory().storeUnit(this);
-			// Add this equipment as being owned by this settlement
-			settlement.addOwnedEquipment(this);
-		}
 	}
 
 	@Override

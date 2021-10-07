@@ -55,8 +55,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			PhysicalCondition pc = person.getPhysicalCondition();
 			
 			double energy = Math.round(pc.getEnergy()*10.0)/10.0;
-	        double stress = Math.round(pc.getStress()*10.0)/10.0;
-	        double perf = Math.round(pc.getPerformanceFactor()*1_000.0)/10.0;
+	        double stress = pc.getStress();
+	        double perf = pc.getPerformanceFactor()*100D;
 	                
 			String h = !pc.isHungry() ? "(Not Hungry)" : "(Hungry)";
 			String t = !pc.isThirsty() ? "(Not Thirsty)" : "(Thirsty)";
@@ -65,8 +65,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			responseText.appendLabeledString("Hunger", String.format(CommandHelper.MILLISOL_FORMAT, pc.getHunger()) + " " + h);
 			responseText.appendLabeledString("Energy", energy + " kJ");
 			responseText.appendLabeledString("Fatigue", String.format(CommandHelper.MILLISOL_FORMAT, pc.getFatigue()));		
-			responseText.appendLabeledString("Performance", perf + " %");
-			responseText.appendLabeledString("Stress", stress + " %");		
+			responseText.appendLabeledString("Performance", String.format(CommandHelper.PERC_FORMAT, perf));
+			responseText.appendLabeledString("Stress",  String.format(CommandHelper.PERC_FORMAT, stress));		
 			responseText.appendLabeledString("Surplus Ghrelin", String.format(CommandHelper.MILLISOL_FORMAT,
 											person.getCircadianClock().getSurplusGhrelin()));
 			responseText.appendLabeledString("Surplus Leptin", String.format(CommandHelper.MILLISOL_FORMAT,

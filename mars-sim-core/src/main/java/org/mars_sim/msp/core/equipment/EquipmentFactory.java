@@ -76,6 +76,11 @@ public final class EquipmentFactory {
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 
 		unitManager.addUnit(newEqm);
+		
+		// Stores this equipment into its settlement
+		settlement.getInventory().storeUnit(newEqm);
+		// Add this equipment as being owned by this settlement
+		settlement.addOwnedEquipment(newEqm);
 
 		return newEqm;
 	}

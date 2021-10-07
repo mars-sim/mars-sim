@@ -627,20 +627,10 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 		
 		// Reorder sites for shortest distance.
+		List<Coordinates> orderSites = Exploration.getMinimalPath(startingLocation, unorderedSites);
 		int collectionSiteNum = 1;	
-		currentLocation = startingLocation;
-		while (unorderedSites.size() > 0) {
-			Coordinates shortest = unorderedSites.get(0);
-			Iterator<Coordinates> i = unorderedSites.iterator();
-			while (i.hasNext()) {
-				Coordinates site = i.next();
-				if (Coordinates.computeDistance(currentLocation, site) < Coordinates.computeDistance(currentLocation, shortest))
-					shortest = site;
-			}
-			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));
-			unorderedSites.remove(shortest);
-			currentLocation = shortest;
-			collectionSiteNum++;
+		for(Coordinates next : orderSites) {
+			addNavpoint(new NavPoint(next, getCollectionSiteDescription(collectionSiteNum++)));
 		}
 	}
 	
@@ -733,20 +723,11 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 		
 		// Reorder sites for shortest distance.
-		int collectionSiteNum = 1;
-		currentLocation = startingLocation;
-		while (unorderedSites.size() > 0) {
-			Coordinates shortest = unorderedSites.get(0);
-			Iterator<Coordinates> i = unorderedSites.iterator();
-			while (i.hasNext()) {
-				Coordinates site = i.next();
-				if (Coordinates.computeDistance(currentLocation, site) < Coordinates.computeDistance(currentLocation, shortest))
-					shortest = site;
-			}
-			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));
-			unorderedSites.remove(shortest);
-			currentLocation = shortest;
-			collectionSiteNum++;
+		// Reorder sites for shortest distance.
+		List<Coordinates> orderSites = Exploration.getMinimalPath(startingLocation, unorderedSites);
+		int collectionSiteNum = 1;	
+		for(Coordinates next : orderSites) {
+			addNavpoint(new NavPoint(next, getCollectionSiteDescription(collectionSiteNum++)));
 		}
 	}
 	

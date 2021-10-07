@@ -14,6 +14,7 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars.sim.console.chat.simcommand.unit.EquipmentCommand;
 import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
@@ -40,6 +41,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	MissionRadiusCommand.RADIUS,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
+																	new EquipmentCommand(SETTLEMENT_GROUP),
 																	new InventoryCommand(SETTLEMENT_GROUP),
 																	new UnitLocationCommand(SETTLEMENT_GROUP),
 																	MalfunctionCommand.MALFUNCTION,

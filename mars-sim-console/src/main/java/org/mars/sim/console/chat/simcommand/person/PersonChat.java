@@ -13,6 +13,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.unit.EquipmentCommand;
 import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.unit.MissionCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
@@ -37,6 +38,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																	EvaCommand.EVA,
 																	FriendCommand.FRIEND,
 																	JobProspectCommand.JOB_PROSPECT,
+																	new EquipmentCommand(PERSON_GROUP),
 																	new UnitLocationCommand(PERSON_GROUP),
 																	new InventoryCommand(PERSON_GROUP),
 																	new MissionCommand(PERSON_GROUP),

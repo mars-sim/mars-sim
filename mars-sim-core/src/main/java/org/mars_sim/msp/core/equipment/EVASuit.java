@@ -195,18 +195,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		capacities.add(0, OXYGEN_CAPACITY); 
 		capacities.add(1, WATER_CAPACITY);
 		capacities.add(2, CO2_CAPACITY);
-		
-		// Set the resource capacities of the EVA suit.
-//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
-//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
-//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
-		
-		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
-//		getInventory().addGeneralCapacity(CAPACITY);
-
-		settlement.getInventory().storeUnit(this);
-		// Add this equipment as being owned by this settlement
-		settlement.addOwnedEquipment(this);
 	}
 	
 	/**

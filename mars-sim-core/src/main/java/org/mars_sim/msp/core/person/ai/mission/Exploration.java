@@ -765,7 +765,7 @@ public class Exploration extends RoverMission
 	 * @param startingLocation
 	 * @return
 	 */
-	private static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
+	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
 		
 		List<Coordinates> unorderedSites2 = new ArrayList<>(unorderedSites);
 		List<Coordinates> orderedSites = new ArrayList<>(unorderedSites2.size());
