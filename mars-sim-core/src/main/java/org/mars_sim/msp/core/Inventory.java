@@ -1587,10 +1587,14 @@ public class Inventory implements Serializable {
 	 * @return true if unit is in storage.
 	 */
 	public boolean containsUnit(Unit unit) {
-		Integer uid = unit.getIdentifier();
-		if (uid != null && containedUnitIDs.contains(uid)) {
-			return true;
+		if (containedUnitIDs != null 
+				&& !containedUnitIDs.isEmpty()) {
+			Integer uid = unit.getIdentifier();
+			if (uid != null && containedUnitIDs.contains(uid)) {
+				return true;
+			}
 		}
+				
 		return false;
 	}
 
