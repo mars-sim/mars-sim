@@ -52,7 +52,7 @@ import com.alee.managers.tooltip.TooltipWay;
 public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
 
 	public static final int WIDTH = 530;
-	public static final int HEIGHT = 630;
+	public static final int HEIGHT = 620;
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");

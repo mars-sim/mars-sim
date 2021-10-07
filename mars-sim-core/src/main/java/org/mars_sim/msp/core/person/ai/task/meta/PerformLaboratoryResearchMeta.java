@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PerformLaboratoryResearchMeta.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -93,7 +93,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                    }
 	                }
 	                catch (Exception e) {
-            			logger.severe(person, "Is unable to perform lab research.", e);	                
+	                	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);	                
 	                }
 	            }
 	        }
@@ -127,8 +127,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                        }
 	                    }
 	                    catch (Exception e) {
-	            			logger.severe(person, "Is unable to perform lab research.", e);	                
-
+	                    	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);	                
 	                    }
 	                }
 	            }

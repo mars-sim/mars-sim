@@ -207,8 +207,6 @@ public class MainDesktopPane extends JDesktopPane
 
 			backgroundImageIcon.setImage(backgroundImage);
 
-			backgroundLabel.setSize(getSize());
-
 			firstDisplay = false;
 		}
 
@@ -813,6 +811,9 @@ public class MainDesktopPane extends JDesktopPane
 //		runToolWindowExecutor();
 	}
 
+	/**
+	 * Clear the desktop
+	 */
 	public void clearDesktop() {
 
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
@@ -1098,8 +1099,6 @@ public class MainDesktopPane extends JDesktopPane
 	public EventTableModel getEventTableModel() {
 		return eventTableModel;
 	}
-
-
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {

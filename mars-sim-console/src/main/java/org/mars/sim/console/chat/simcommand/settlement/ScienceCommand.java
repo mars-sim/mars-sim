@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScienceCommand.java
- * @version 3.1.2 2020-12-30
+ * @Date 2021-10-05
  * @author Barry Evans
  */
 
@@ -62,7 +62,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 		}
 
 		list.sort((ScienceScore d1, ScienceScore d2) -> (d1.total < d2.total ? 1 : (d1.total == d2.total ? 0 : -1)));
-		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Cenx",
+		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Canx",
 				                    "Prim", "Collab", "Achiev");
 
 		int rank = 1;
