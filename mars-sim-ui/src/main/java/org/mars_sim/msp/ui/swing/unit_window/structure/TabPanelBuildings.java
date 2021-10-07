@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-06
  * @author Scott Davis
  */
 
@@ -93,7 +93,6 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 		}
 
 		// Create building select panel.
-		// Add buildingInfoPanel & buildingTitleLabel
 		WebPanel buildingInfoPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
 		// buildingInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(buildingInfoPanel);
@@ -103,8 +102,6 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		buildingInfoPanel.add(titleLabel);
-		titleLabel.setOpaque(false);
-		titleLabel.setBackground(new Color(0, 0, 0, 128));
 
 		WebPanel buildingSelectPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingInfoPanel.add(buildingSelectPanel);
@@ -120,10 +117,6 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 		// Create building list.
 		comboBox = new JComboBoxMW<Building>(comboBoxModel);
 //		comboBox.setRenderer(new PromptComboBoxRenderer("Select a Building"));
-		// comboBox.setOpaque(false);
-		// comboBox.setBackground(new Color(0,0,0,128));
-		// comboBox.setBackground(new Color(255,229,204));
-		// comboBox.setForeground(Color.orange);
 		comboBox.addActionListener(this);
 		comboBox.setMaximumRowCount(10);
 		comboBox.setBorder(null);
@@ -211,20 +204,16 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 	}
 
 	public void setPanelStyle(WebPanel p) {
-		// if (isTranslucent) {
 		p.setOpaque(false);
 		p.setBackground(new Color(0, 0, 0, 128));
-		// }
 	}
 
 	public void setPanelTranslucent() {
-		// if (isTranslucent) {
 		Iterator<WebPanel> i = panelList.iterator();
 		while (i.hasNext()) {
 			WebPanel pp = i.next();
 			setPanelStyle(pp);
 		}
-		// }
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2021-08-28
+ * @date 2021-10-06
  * @author Scott Davis
  */
 
@@ -74,8 +74,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	/** The Inventory instance. */
-	private Inventory inv; 
+	private Unit unit;
+	private Inventory inventory;
 	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
@@ -94,8 +94,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
-
-        inv = unit.getInventory();
+        this.unit = unit;
+        if (!(unit instanceof Equipment))
+        	this.inventory = unit.getInventory();
 	}
 	
 	public boolean isUIDone() {
@@ -125,7 +126,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(resourcesPanel);
 
         // Create resources table model
-        resourceTableModel = new ResourceTableModel(inv);
+        resourceTableModel = new ResourceTableModel();
 
         // Create resources table
         resourcesTable = new ZebraJTable(resourceTableModel);
@@ -169,7 +170,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(equipmentPanel);
 
         // Create equipment table model
-        equipmentTableModel = new EquipmentTableModel(inv);
+        equipmentTableModel = new EquipmentTableModel();
 
         // Create equipment table
         equipmentTable = new ZebraJTable(equipmentTableModel);
@@ -273,37 +274,55 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private int counts = 0;
 		
-		private Inventory inventory;
-		
 		private Map<Resource, Number> resources;
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
 		
 		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0");
 
-        private ResourceTableModel(Inventory inventory) {
-            this.inventory = inventory;
+        private ResourceTableModel() {
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             capacity = new HashMap<Resource, Number>();
 
-            keys.addAll(inventory.getAllAmountResourcesStored(false));
-            Iterator<Resource> iAmount = keys.iterator();
-            while (iAmount.hasNext()) {
-                AmountResource resource = (AmountResource) iAmount.next();
-                resources.put(resource, inventory.getAmountResourceStored(resource, false));
-                capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
+            if (inventory != null) {
+	            keys.addAll(inventory.getAllAmountResourcesStored(false));
+	            Iterator<Resource> iAmount = keys.iterator();
+	            while (iAmount.hasNext()) {
+	                AmountResource resource = (AmountResource) iAmount.next();
+	                resources.put(resource, inventory.getAmountResourceStored(resource, false));
+	                capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
+	            }
+	
+	            Set<ItemResource> itemResources = inventory.getAllIRStored();
+	            keys.addAll(itemResources);
+	            Iterator<ItemResource> iItem = itemResources.iterator();
+	            while (iItem.hasNext()) {
+	                ItemResource resource = iItem.next();
+	                resources.put(resource, inventory.getItemResourceNum(resource));
+	                capacity.put(resource, null);
+	            }
             }
-
-            Set<ItemResource> itemResources = inventory.getAllIRStored();
-            keys.addAll(itemResources);
-            Iterator<ItemResource> iItem = itemResources.iterator();
-            while (iItem.hasNext()) {
-                ItemResource resource = iItem.next();
-                resources.put(resource, inventory.getItemResourceNum(resource));
-                capacity.put(resource, null);
+            else {
+//            	Equipment e = (Equipment)unit;
+//            	keys.addAll(e.getAllAmountResourcesStored(false));
+// 	            Iterator<Resource> iAmount = keys.iterator();
+// 	            while (iAmount.hasNext()) {
+// 	                AmountResource resource = (AmountResource) iAmount.next();
+// 	                resources.put(resource, inventory.getAmountResourceStored(resource, false));
+// 	                capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
+// 	            }
+// 	
+// 	            Set<ItemResource> itemResources = inventory.getAllIRStored();
+// 	            keys.addAll(itemResources);
+// 	            Iterator<ItemResource> iItem = itemResources.iterator();
+// 	            while (iItem.hasNext()) {
+// 	                ItemResource resource = iItem.next();
+// 	                resources.put(resource, inventory.getItemResourceNum(resource));
+// 	                capacity.put(resource, null);
+// 	            }
             }
-
+            
             // Sort resources alphabetically by name.
             keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 //            Collections.sort(keys);
@@ -366,54 +385,56 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 //        }      
 //        
         public void update() {
-        	try {
-        		List<Resource> newResourceKeys = new ArrayList<Resource>();
-        		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>(inventory.getAllAmountResourcesStored(false));
-        		
-        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
-        		Set<ItemResource> itemResources = inventory.getAllIRStored();
-        		newResourceKeys.addAll(itemResources);
-
-    			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
-        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
-        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
-        		while (i.hasNext()) {
-        			AmountResource ar =  i.next();
-        			newResources.put(ar, inventory.getAmountResourceStored(ar, false));
-        			newCapacity.put(ar, inventory.getAmountResourceCapacity(ar, false));
-        		}
-    			
-            	Iterator<ItemResource> iItem = itemResources.iterator();
-            	while (iItem.hasNext()) {
-            		ItemResource resource = iItem.next();
-            		newResources.put(resource, inventory.getItemResourceNum(resource));
-            		newCapacity.put(resource, null);
-            	}
-            	
-            	// Sort resources alphabetically by name.
-//                Collections.sort(newResourceKeys);
-		
-                counts++;
-        		if (counts % 20 == 20 
-        				|| (resources.size() != newResourceKeys.size())
-        				|| !resources.equals(newResources)) {
-//        			System.out.println("InventoryTabPanel::ResourceTableModel::update");
-               		counts = 0;
-        			resources = newResources;
-        			capacity = newCapacity;
-        			keys = newResourceKeys;
-                    keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-        			fireTableDataChanged();
-//                		((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
+            if (inventory != null) {
+	        	try {
+	        		List<Resource> newResourceKeys = new ArrayList<Resource>();
+	        		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>(inventory.getAllAmountResourcesStored(false));
+	        		
+	        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
+	        		Set<ItemResource> itemResources = inventory.getAllIRStored();
+	        		newResourceKeys.addAll(itemResources);
 	
-        		}
-        		
-                keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-//              Collections.sort(keys);
-        	}
-        	catch(Exception e) {
-        		logger.severe(e.getMessage());
-            }
+	    			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+	        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
+	        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
+	        		while (i.hasNext()) {
+	        			AmountResource ar =  i.next();
+	        			newResources.put(ar, inventory.getAmountResourceStored(ar, false));
+	        			newCapacity.put(ar, inventory.getAmountResourceCapacity(ar, false));
+	        		}
+	    			
+	            	Iterator<ItemResource> iItem = itemResources.iterator();
+	            	while (iItem.hasNext()) {
+	            		ItemResource resource = iItem.next();
+	            		newResources.put(resource, inventory.getItemResourceNum(resource));
+	            		newCapacity.put(resource, null);
+	            	}
+	            	
+	            	// Sort resources alphabetically by name.
+	//                Collections.sort(newResourceKeys);
+			
+	                counts++;
+	        		if (counts % 20 == 20 
+	        				|| (resources.size() != newResourceKeys.size())
+	        				|| !resources.equals(newResources)) {
+	//        			System.out.println("InventoryTabPanel::ResourceTableModel::update");
+	               		counts = 0;
+	        			resources = newResources;
+	        			capacity = newCapacity;
+	        			keys = newResourceKeys;
+	                    keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+	        			fireTableDataChanged();
+	//                		((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
+		
+	        		}
+	        		
+	                keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+	//              Collections.sort(keys);
+	        	}
+	        	catch(Exception e) {
+	        		logger.severe(e.getMessage());
+	            }
+	        }
         }
     }
 
@@ -427,7 +448,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private int counts = 0;
 		
-		private Inventory inventory;
 		private Map<String, String> types;
 		private Map<String, String> contentOwner;
 		private Map<String, Double> mass;
@@ -436,20 +456,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		 * hidden constructor.
 		 * @param inventory {@link Inventory}
 		 */
-		private EquipmentTableModel(Inventory inventory) {
-			this.inventory = inventory;
+		private EquipmentTableModel() {
 
 			types = new HashMap<>();
 			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
 			
-			for (Equipment e : inventory.findAllEquipment()) {
-				String name = e.getName();
-				types.put(name, e.getType());
-				contentOwner.put(name, getContentOwner(e));
-				mass.put(name, e.getMass());
-				equipmentList.add(e);
-			}
+            if (inventory != null) {
+				for (Equipment e : inventory.findAllEquipment()) {
+					String name = e.getName();
+					types.put(name, e.getType());
+					contentOwner.put(name, getContentOwner(e));
+					mass.put(name, e.getMass());
+					equipmentList.add(e);
+				}
+            }
 			// Sort equipment alphabetically by name.
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 		}
@@ -531,11 +552,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			Map<String, String> newTypes = new HashMap<>();
 			Map<String, String> newContentOwner = new HashMap<>();
 			Map<String, Double> newMass = new HashMap<>();
-			for (Equipment e : inventory.findAllEquipment()) {
-				newTypes.put(e.getName(), e.getType());
-				newContentOwner.put(e.getName(), getContentOwner(e));
-				newMass.put(e.getName(), e.getMass());
-				newEquipment.add(e);
+			
+			if (inventory != null) {
+				for (Equipment e : inventory.findAllEquipment()) {
+					newTypes.put(e.getName(), e.getType());
+					newContentOwner.put(e.getName(), getContentOwner(e));
+					newMass.put(e.getName(), e.getMass());
+					newEquipment.add(e);
+				}
 			}
 
 			newEquipment.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
@@ -588,8 +612,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		equipmentTable = null;
 		resourcesTable = null;
 		equipmentList.clear();
-		equipmentList = null;
-		    
+		equipmentList = null;   
 	}
-	
 }

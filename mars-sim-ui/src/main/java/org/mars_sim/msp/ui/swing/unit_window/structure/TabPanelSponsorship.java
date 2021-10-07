@@ -82,10 +82,10 @@ extends TabPanel {
 		labelPanel.add(titleLabel);
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new SpringLayout());
 //		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
-
+		
 		// Prepare sponsor name label
 		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
 		//sponsorNameLabel.setSize(2, 2);

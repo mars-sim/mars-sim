@@ -191,7 +191,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			// Prepare job panel
 			WebPanel topSpringPanel = new WebPanel(new SpringLayout());// GridLayout(2, 2, 0, 0));
-
 			firstPanel.add(topSpringPanel, BorderLayout.NORTH);
 
 			// Prepare job label

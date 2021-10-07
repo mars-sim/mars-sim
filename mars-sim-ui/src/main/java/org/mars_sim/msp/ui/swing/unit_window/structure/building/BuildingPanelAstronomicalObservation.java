@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * AstronomicalObservationBuildingPanel.java
- * @version 3.2.0 2021-06-20
+ * BuildingPanelAstronomicalObservation.java
+ * @date 2021-10-06
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -35,11 +35,9 @@ extends BuildingFunctionPanel {
 	private int currentObserversAmount;
 
 	private WebLabel observersLabel;
-	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
-	
+
 	private AstronomicalObservation function;
-//	private OrbitViewer orbitViewer;
-	
+
 	/**
 	 * Constructor.
 	 * @param observatory the astronomical observatory building function.
@@ -61,14 +59,12 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Astronomy top label
-		// 2014-11-21 Changed font type, size and color and label text
 		WebLabel astronomyLabel = new WebLabel(Msg.getString("BuildingPanelAstronomicalObservation.title"), WebLabel.CENTER); //$NON-NLS-1$
 		astronomyLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//astronomyLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(astronomyLabel);
 
 		// Observer number label
-		// 2014-11-21 Fixed currentObserversAmount
 		observersLabel = new WebLabel(Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers", currentObserversAmount), WebLabel.CENTER); //$NON-NLS-1$
 		observersLabel.setHorizontalAlignment(WebLabel.CENTER);
 		update();
@@ -97,9 +93,7 @@ extends BuildingFunctionPanel {
 		WebButton starMap = new WebButton();
 		starMap.setIcon(desktop.getMainWindow().getTelescopeIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
-		
-		//balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
-		//button.setToolTipText("Click to open the solar system orbit viewer");
+
 		starMap.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -122,29 +116,4 @@ extends BuildingFunctionPanel {
 			);
 		}
 	}
-	
-//    public void setViewer(OrbitViewer orbitViewer) {
-//    	this.orbitViewer = orbitViewer;
-//    }
-    
-//	/**
-//	 * Open orbit viewer
-//	 */
-//	private void openOrbitViewer() {
-
-//		MainWindow mw = desktop.getMainWindow();
-//		if (mw != null)  {
-//			if (orbitViewer == null && !desktop.isOrbitViewerOn())
-//				orbitViewer = new OrbitViewer(desktop, this);
-//		}
-//
-//		MainScene ms = desktop.getMainScene();
-//		
-//		if (ms != null)  {
-//			if (orbitViewer == null && !desktop.isOrbitViewerOn()) {
-//				orbitViewer = new OrbitViewer(desktop, this);
-//			}
-//		}
-//	}
-
 }

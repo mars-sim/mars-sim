@@ -281,6 +281,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
 		
+		// Sets the base mass
+		setBaseMass(spec.getBaseMass());
+		
 		baseLevel = spec.getBaseLevel();
 		description = spec.getDescription();
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConfig.java
- * @date 2021-10-01
+ * @date 2021-10-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -44,6 +44,7 @@ public class BuildingConfig implements Serializable {
 	private static final String LENGTH = "length";
 	private static final String THICKNESS = "thickness";
 	private static final String BASE_LEVEL = "base-level";
+	private static final String BASE_MASS = "base-mass";
 
 	private static final String WEAR_LIFETIME = "wear-lifetime";
 	private static final String MAINTENANCE_TIME = "maintenance-time";
@@ -197,6 +198,11 @@ public class BuildingConfig implements Serializable {
 			newSpec.setWallThickness(Double.parseDouble(thickness));
 		}
 		
+		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
+		if (baseMass != null) {
+			newSpec.setBaseMass(Double.parseDouble(baseMass));
+		}
+			
 		// Get Storage
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);

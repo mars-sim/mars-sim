@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -61,6 +63,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
 	
+	private Set<Integer> resources;
 	
 	/**
 	 * Constructs an Equipment object

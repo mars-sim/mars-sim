@@ -69,6 +69,8 @@ public class BuildingSpec {
 	private double width;
 	private double thickness = WALL_THICKNESS_ALUMINUM;
 	
+	private double baseMass;
+	
 	private double computingUnit;
 	private double powerDemand;
 	private double coolingDemand;
@@ -152,7 +154,6 @@ public class BuildingSpec {
 		return description;
 	}
 
-	
 	public double getBasePowerRequirement() {
 		return basePowerRequirement;
 	}
@@ -180,7 +181,15 @@ public class BuildingSpec {
 	public double getWidth() {
 		return width;
 	}
-
+	
+	public double getBaseMass() {
+		return baseMass;
+	}
+	
+	public void setBaseMass(double value) {
+		baseMass = value;
+	}
+	
 	public double getStockCapacity() {
 		return stockCapacity;
 	}
@@ -264,18 +273,6 @@ public class BuildingSpec {
 	public void setWasteSpecialties(List<ScienceType> wasteSpecialties) {
 		this.wasteSpecialties = wasteSpecialties;
 	}
-	
-//	public void setComputingPower(double value) {
-//		this.computingPower = value;
-//	}
-//	
-//	public void setPowerDemand(double value) {
-//		this.powerDemand = value;
-//	}
-//	
-//	public void setCoolingDemand(double value) {
-//		this.coolingDemand = value;
-//	}
 	
 	public double getComputingUnit() {
 		return computingUnit;
