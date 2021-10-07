@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -331,7 +332,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.getInventory().containsUnitClass(SpecimenBox.class);
+		return person.getInventory().containsEquipment(EquipmentType.SPECIMEN_BOX);
 	}
 
 	/**
@@ -384,7 +385,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 //		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
-		if (pInv.containsUnitClass(SpecimenBox.class)) {
+		if (pInv.containsEquipment(EquipmentType.SPECIMEN_BOX)) {
 			SpecimenBox box = pInv.findASpecimenBox();
 			box.transfer(pInv, rover);
 		}

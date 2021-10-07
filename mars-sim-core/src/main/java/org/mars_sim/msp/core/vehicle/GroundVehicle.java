@@ -227,8 +227,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			double step = 10D;
 			boolean foundGoodLocation = false;
 
-			boolean isSmallVehicle = getVehicleType().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())
-					|| getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName());
+			boolean isSmallVehicle = getVehicleTypeString().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())
+					|| getVehicleTypeString().equalsIgnoreCase(VehicleType.LUV.getName());
 
 			double d = VEHICLE_CLEARANCE_0;
 			if (isSmallVehicle)

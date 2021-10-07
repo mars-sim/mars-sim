@@ -49,7 +49,7 @@ public class VehicleChat extends ConnectedUnitCommand {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Connected to ");
-		buffer.append(vehicle.getVehicleType());
+		buffer.append(vehicle.getVehicleTypeString());
 		buffer.append(" called ");
 		buffer.append(vehicle.getName());
 		buffer.append(" based at ");

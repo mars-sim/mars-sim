@@ -42,7 +42,7 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	public Icon getButtonIcon(Unit unit) {
 //		Vehicle v = (Vehicle) unit;
 //		Rover rover = (Rover) v;
-		String type = ((Vehicle) unit).getVehicleType();
+		String type = ((Vehicle) unit).getVehicleTypeString();
 		
 		if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
 			buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon", ImageLoader.VEHICLE_ICON_DIR);

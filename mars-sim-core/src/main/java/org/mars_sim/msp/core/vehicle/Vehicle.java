@@ -182,8 +182,10 @@ public abstract class Vehicle extends Unit
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	
+	/** The vehicle type string. */	
+	private String vehicleTypeString;
 	/** The vehicle type. */	
-	private String vehicleType;
+	private VehicleType vehicleType;
 	/** The type of dessert loaded. */	
 	private String typeOfDessertLoaded;
 	
@@ -223,14 +225,15 @@ public abstract class Vehicle extends Unit
 	 * @param settlement          the settlement the vehicle is parked at.
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	Vehicle(String name, String vehicleType, Settlement settlement, double maintenanceWorkTime) {
+	Vehicle(String name, String vehicleTypeString, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 		
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		this.vehicleType = vehicleType;
+		this.vehicleTypeString = vehicleTypeString;
+		vehicleType = VehicleType.convertNameToVehicleType(vehicleTypeString);
 		
 		// Obtain the associated settlement ID 
 		associatedSettlementID = settlement.getIdentifier();
@@ -242,26 +245,26 @@ public abstract class Vehicle extends Unit
 		settlement.getInventory().storeUnit(this);
 	
 		// Initialize vehicle data
-		vehicleType = vehicleType.toLowerCase();
+		vehicleTypeString = vehicleTypeString.toLowerCase();
 	
-		if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+		if (vehicleTypeString.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
 			// Note: Hard code the value of averagePower for the time being
 			averagePower = 45;
 		}
-		else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName())) {
+		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.LUV.getName())) {
 			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
 			averagePower = 15;
 		}	
-		else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
+		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
 			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
 			averagePower = 60;
 		}
-		else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
+		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
 			averagePower = 75;
 		}
-		else if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
+		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
 			averagePower = 90;
 		}
@@ -283,10 +286,10 @@ public abstract class Vehicle extends Unit
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 		
 		// Add its vehicle type as scope
-		malfunctionManager.addScopeString(vehicleType);
+		malfunctionManager.addScopeString(vehicleTypeString);
 		
 		// Add "rover" as scope
-		if (vehicleType.contains(SystemType.ROVER.getName())) {
+		if (vehicleTypeString.contains(SystemType.ROVER.getName())) {
 			malfunctionManager.addScopeString(SystemType.ROVER.getName());
 		}
 
@@ -294,27 +297,27 @@ public abstract class Vehicle extends Unit
 		
 		// Set width and length of vehicle.
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		width = vehicleConfig.getWidth(vehicleType);
-		length = vehicleConfig.getLength(vehicleType);
+		width = vehicleConfig.getWidth(vehicleTypeString);
+		length = vehicleConfig.getLength(vehicleTypeString);
 
 		// Set description
-		setDescription(vehicleType);
+		setDescription(vehicleTypeString);
 		// Set total distance traveled by vehicle (km)
 		odometerMileage = 0;
 		// Set distance traveled by vehicle since last maintenance (km)
 		distanceMaint = 0;
 		// Set base speed.
-		baseSpeed = vehicleConfig.getBaseSpeed(vehicleType);
+		baseSpeed = vehicleConfig.getBaseSpeed(vehicleTypeString);
 //		setBaseSpeed(baseSpeed);
 
 		// Set the empty mass of the vehicle.
-		setBaseMass(vehicleConfig.getEmptyMass(vehicleType));
+		setBaseMass(vehicleConfig.getEmptyMass(vehicleTypeString));
 
 		// Set the drivetrain efficiency [in kWh/km] of the vehicle.
-		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleType) ;
+		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleTypeString) ;
 		
 		// Gets the capacity [in kg] of vehicle's fuel tank 
-		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
+		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleTypeString, ResourceUtil.findAmountResourceName(getFuelType())); 
 
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
@@ -335,11 +338,11 @@ public abstract class Vehicle extends Unit
 		baseFuelConsumption = baseRange / totalEnergy;
 		
 		// Gets the crew capacity
-		int numCrew = vehicleConfig.getCrewSize(vehicleType);
+		int numCrew = vehicleConfig.getCrewSize(vehicleTypeString);
 
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
-		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
+		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleTypeString);
 		
 		// Set the general capacity of the inventory to cargoCapacity
 		getInventory().addGeneralCapacity(cargoCapacity);
@@ -368,10 +371,10 @@ public abstract class Vehicle extends Unit
 		findNewParkingLoc();
 
 		// Initialize operator activity spots.
-		operatorActivitySpots = new ArrayList<>(vehicleConfig.getOperatorActivitySpots(vehicleType));
+		operatorActivitySpots = new ArrayList<>(vehicleConfig.getOperatorActivitySpots(vehicleTypeString));
 
 		// Initialize passenger activity spots.
-		passengerActivitySpots = new ArrayList<>(vehicleConfig.getPassengerActivitySpots(vehicleType));
+		passengerActivitySpots = new ArrayList<>(vehicleConfig.getPassengerActivitySpots(vehicleTypeString));
 	}
 
 	/**
@@ -394,7 +397,7 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 
-		this.vehicleType = vehicleType;
+		this.vehicleTypeString = vehicleType;
 
 		associatedSettlementID = settlement.getIdentifier();
 //		containerUnit = settlement;
@@ -443,10 +446,14 @@ public abstract class Vehicle extends Unit
 		return vehicleConfig.getDescription(vehicleType);
 	}
 
-	public String getVehicleType() {
-		return vehicleType;
+	public String getVehicleTypeString() {
+		return vehicleTypeString;
 	}
 
+	public VehicleType getVehicleType() {
+		return vehicleType;
+	}
+	
 	@Override
 	public double getWidth() {
 		return width;
@@ -1657,7 +1664,7 @@ public abstract class Vehicle extends Unit
 		Vehicle v = (Vehicle) obj;
 		return this.getName().equals(v.getName())
 				&& this.getIdentifier() == v.getIdentifier()
-				&& this.vehicleType.equals(v.getVehicleType())
+				&& this.vehicleTypeString.equals(v.getVehicleTypeString())
 				&& this.associatedSettlementID == v.getAssociatedSettlementID();
 	}
 	
@@ -1671,7 +1678,7 @@ public abstract class Vehicle extends Unit
 		int hashCode = getName().hashCode();
 		hashCode *= getIdentifier();
 		hashCode *= associatedSettlementID;
-		hashCode *= vehicleType.hashCode();
+		hashCode *= vehicleTypeString.hashCode();
 		return hashCode;
 	}
 

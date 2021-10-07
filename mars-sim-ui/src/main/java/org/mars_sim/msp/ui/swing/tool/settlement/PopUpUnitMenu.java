@@ -142,8 +142,8 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
                 
                 if (unit instanceof Vehicle) {
                 	Vehicle vehicle = (Vehicle) unit;
-                	description = vehicle.getDescription(vehicle.getVehicleType());
-                	type = Conversion.capitalize(vehicle.getVehicleType());
+                	description = vehicle.getDescription(vehicle.getVehicleTypeString());
+                	type = Conversion.capitalize(vehicle.getVehicleTypeString());
                 	name = Conversion.capitalize(vehicle.getName());
                 }
                 else {

@@ -46,7 +46,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		int parkedCargo = 0;
 		int parkedLUV = 0;
 		for (Vehicle vehicle : settlement.getParkedVehicles()) {
-			String d = vehicle.getVehicleType();
+			String d = vehicle.getVehicleTypeString();
 			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
 				parkedRovers++;
 			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
@@ -62,7 +62,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		int missionCargo = 0;
 		int missionLUV = 0;
 		for (Vehicle vehicle : settlement.getMissionVehicles()) {
-			String d = vehicle.getVehicleType();
+			String d = vehicle.getVehicleTypeString();
 			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
 				missionRovers++;
 			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
@@ -91,7 +91,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		
 		// Sort the vehicle list according to the type
 		Collection<Vehicle> list = settlement.getAllAssociatedVehicles();
-		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleType().compareTo(p2.getVehicleType()))
+		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleTypeString().compareTo(p2.getVehicleTypeString()))
 				.collect(Collectors.toList());
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 25, "Lead", CommandHelper.PERSON_WIDTH);
@@ -99,7 +99,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
 
-			String vTypeStr = Conversion.capitalize(v.getVehicleType());
+			String vTypeStr = Conversion.capitalize(v.getVehicleTypeString());
 			if (vTypeStr.equalsIgnoreCase("Light Utility Vehicle"))
 				vTypeStr = "LUV";
 

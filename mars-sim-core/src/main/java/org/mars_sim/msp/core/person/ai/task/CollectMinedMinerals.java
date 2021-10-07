@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -131,7 +132,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return true if carrying bags.
 	 */
 	private boolean hasBags() {
-		return worker.getInventory().containsUnitClass(Bag.class);
+		return worker.getInventory().containsEquipment(EquipmentType.BAG);
 	}
 
 	/**
@@ -289,7 +290,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 		// Unload bag to rover's inventory.
 		Inventory pInv = worker.getInventory();
-		if (pInv.containsUnitClass(Bag.class)) {
+		if (pInv.containsEquipment(EquipmentType.BAG)) {
 			// Load bags in rover.
 			Iterator<Bag> i = pInv.findAllBags().iterator();
 			while (i.hasNext()) {

@@ -55,7 +55,7 @@ public final class UnitDisplayInfoFactory {
 		else if (unit instanceof Vehicle) {
 			Vehicle vehicle = (Vehicle) unit;
 			if (vehicle instanceof Rover) {
-				String type = vehicle.getVehicleType();
+				String type = vehicle.getVehicleTypeString();
 				if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
 					return explorerRoverBean;
 				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
@@ -64,9 +64,9 @@ public final class UnitDisplayInfoFactory {
 					return cargoRoverBean;
 				else
 					return roverBean;
-			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName())) {
+			} else if (vehicle.getVehicleTypeString().equalsIgnoreCase(VehicleType.LUV.getName())) {
 				return luvBean;
-			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+			} else if (vehicle.getVehicleTypeString().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
 				return deliveryDroneBean;
 			}
 			else

@@ -28,6 +28,7 @@ public enum EquipmentType {
 
 	private String name;	
 
+	private static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 	private static Set<String> nameSet;
 	
 	private static Set<Integer> idSet;
@@ -70,7 +71,7 @@ public enum EquipmentType {
 		if (idSet == null) {
 			idSet = new HashSet<Integer>();
 			for (EquipmentType e : EquipmentType.values()) {
-				idSet.add(e.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID);
+				idSet.add(e.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID);
 			}
 		}
 		return idSet;
@@ -86,7 +87,7 @@ public enum EquipmentType {
 		if (name != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
 	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return e.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+	    			return e.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
 	    		}
 	    	}
 		}
@@ -100,7 +101,7 @@ public enum EquipmentType {
 	 * @return {@link EquipmentType}
 	 */
 	public static EquipmentType convertID2Type(int typeID) {
-		return EquipmentType.values()[typeID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
+		return EquipmentType.values()[typeID - FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 	
 	/**
@@ -110,12 +111,12 @@ public enum EquipmentType {
 	 * @return type id
 	 */
 	public static int convertClass2ID(Class<?> equipmentClass) {
-		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
 		else return -1;
 	}
 	
@@ -159,6 +160,18 @@ public enum EquipmentType {
 	 * @return
 	 */
 	public static int getResourceID(EquipmentType type) {
-		return type.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		return type.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+	}
+	
+	public static int getSpecimentBoxID() {
+		return SPECIMEN_BOX.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+	}
+	
+	public static int getBagID() {
+		return BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+	}
+	
+	public static int getEVASuitID() {
+		return EVA_SUIT.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
 	}
 }

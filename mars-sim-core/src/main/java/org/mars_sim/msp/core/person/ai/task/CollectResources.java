@@ -187,7 +187,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return true if carrying containers.
 	 */
 	private boolean hasContainers() {
-		return person.getInventory().containsUnitClass(containerType);
+		return person.getInventory().containsEquipment(containerType);
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Unload containers to rover's inventory.
 		if (containerType != null) {
 			Inventory pInv = person.getInventory();
-			if (pInv.containsUnitClass(containerType)) {
+			if (pInv.containsEquipment(containerType)) {
 				// Load containers in rover.
 				Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
 				while (i.hasNext()) {

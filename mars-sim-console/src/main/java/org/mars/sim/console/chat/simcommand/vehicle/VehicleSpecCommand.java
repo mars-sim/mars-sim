@@ -47,7 +47,7 @@ public class VehicleSpecCommand extends ChatCommand {
 
 		StructuredResponse buffer = new StructuredResponse();
 		buffer.appendLabeledString("Name", source.getName());
-		buffer.appendLabeledString("Type", source.getVehicleType());
+		buffer.appendLabeledString("Type", source.getVehicleTypeString());
 		buffer.appendLabeledString("Description", source.getDescription());
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
