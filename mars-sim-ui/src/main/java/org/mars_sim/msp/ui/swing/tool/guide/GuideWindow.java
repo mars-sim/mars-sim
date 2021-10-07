@@ -148,8 +148,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		setMaximizable(true);
 		setVisible(true);
 	
-		setSize(new Dimension(800, 600));
-
+		setSize(new Dimension(800, 600));		
 		Dimension desktopSize = desktop.getMainWindow().getFrame().getSize();
 		Dimension windowSize = getSize();
 

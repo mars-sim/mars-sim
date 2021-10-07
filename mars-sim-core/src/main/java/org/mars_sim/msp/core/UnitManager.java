@@ -184,8 +184,8 @@ public class UnitManager implements Serializable, Temporal {
 		
 		Unit found = getUnitMap(id).get(id);
 		if (found == null) {
-			logger.warning("Unit not found " + id + " type:" + getTypeFromIdentifier(id)
-			               + " baseID:" + (id >>> TYPE_BITS));
+			logger.warning("Unit not found " + id + ". Type of unit : " + getTypeFromIdentifier(id)
+			               + " (Base ID:" + (id >>> TYPE_BITS) + ").");
 		}
 		return found;
 	}

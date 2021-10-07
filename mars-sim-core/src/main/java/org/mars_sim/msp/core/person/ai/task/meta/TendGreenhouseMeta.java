@@ -39,7 +39,7 @@ public class TendGreenhouseMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TENDING_PLANTS);
 		setTrait(TaskTrait.ARTISITC);
-		setPreferredJob(JobType.BOTANIST);
+		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 	}
 
     @Override

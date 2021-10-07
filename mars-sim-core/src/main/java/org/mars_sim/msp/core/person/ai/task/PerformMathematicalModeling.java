@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -36,8 +36,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A task for performing mathematical modeling in a laboratory for a scientific study.
  */
-public class PerformMathematicalModeling
-extends Task
+public class PerformMathematicalModeling extends Task
 implements ResearchScientificStudy, Serializable {
 
     /** default serial id. */
@@ -98,8 +97,6 @@ implements ResearchScientificStudy, Serializable {
             else {
             	logger.log(person, Level.INFO, 5000, NO_LAB_SLOT);
             	endTask();
-//            	person.getMind().getTaskManager().clearTask();
-            	//person.getMind().getTaskManager().getNewTask();
             }
             
             // Initialize phase
@@ -108,10 +105,7 @@ implements ResearchScientificStudy, Serializable {
         }
         
         else {
-        	//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a research collaboration.", null);
         	endTask();
-//        	person.getMind().getTaskManager().clearTask();
-        	//person.getMind().getTaskManager().getNewTask();
         }
 
         // Check if person is in a moving rover.
@@ -256,8 +250,6 @@ implements ResearchScientificStudy, Serializable {
             List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
 
-        //ScienceType mathematics = ScienceType.MATHEMATICS;
-
         for (Building building : buildingList) {
             Research lab = building.getResearch();
             if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
@@ -277,8 +269,6 @@ implements ResearchScientificStudy, Serializable {
     private static Lab getVehicleLab(Vehicle vehicle) {
 
         Lab result = null;
-
-        //ScienceType mathematics = ScienceType.MATHEMATICS;
 
         if (vehicle instanceof Rover) {
             Rover rover = (Rover) vehicle;
@@ -397,7 +387,6 @@ implements ResearchScientificStudy, Serializable {
 
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
 
         if (isDone()) {
             return time;

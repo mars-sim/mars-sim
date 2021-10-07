@@ -48,6 +48,7 @@ public enum JobType {
 						JobType.CHEMIST,
 						JobType.COMPUTER_SCIENTIST,
 						JobType.DOCTOR,
+						JobType.ENGINEER,
 						JobType.MATHEMATICIAN,
 						JobType.METEOROLOGIST,
 						JobType.PHYSICIST,

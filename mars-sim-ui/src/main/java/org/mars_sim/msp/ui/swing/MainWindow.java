@@ -307,7 +307,7 @@ extends JComponent implements ClockListener {
 			selectedSize = new Dimension(screenWidth, screenHeight);
 			
 			// Set frame size
-			frame.setSize(selectedSize);   
+			frame.setSize(selectedSize);
 			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 		}
 		
@@ -334,7 +334,7 @@ extends JComponent implements ClockListener {
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 			}
 		}
-
+	
 		try {
 			// Set up MainDesktopPane
 			desktop = new MainDesktopPane(this);
@@ -360,7 +360,7 @@ extends JComponent implements ClockListener {
 
 		// Dispose the Splash Window
 		disposeSplash();
-
+		
 		// Open all initial windows.
 		desktop.openInitialWindows();
 	}
@@ -572,7 +572,13 @@ extends JComponent implements ClockListener {
 
 		frame.addWindowStateListener(new WindowStateListener() {
 			   public void windowStateChanged(WindowEvent e) {
-                   isIconified = (e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED; //
+				   int state = e.getNewState();
+                   isIconified = (state == Frame.ICONIFIED);
+				   if (state == Frame.MAXIMIZED_HORIZ
+						   || state == Frame.MAXIMIZED_VERT)
+//					   frame.update(getGraphics());
+						logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
+					repaint();
 			   }
 		});
 		
@@ -585,7 +591,7 @@ extends JComponent implements ClockListener {
 		// Set up the main pane
 		mainPane = new JPanel(new BorderLayout());
 		frame.add(mainPane);
-
+		
 		// Set up the jlayer pane
 		JPanel jlayerPane = new JPanel(new BorderLayout());
 		jlayerPane.add(desktop);		
@@ -1373,5 +1379,4 @@ extends JComponent implements ClockListener {
 		masterClock = null;
 		earthClock = null;
 	}
-
 }

@@ -1,16 +1,16 @@
-/**
+/*
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -33,7 +33,7 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
             "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
 
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
 
     // Create list of experimental sciences.
     private static List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
@@ -87,7 +87,7 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
 	                        }
 	                    }
 	                    catch (Exception e) {
-                            logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab experiements.");// + e.getMessage());
+                            logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
 	                    }
 	                }
 	            }
@@ -122,7 +122,7 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
 	                            }
 	                        }
 	                        catch (Exception e) {
-	                            logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab experiements.");// + e.getMessage());
+	                            logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
 	                        }
 	                    }
 	                }

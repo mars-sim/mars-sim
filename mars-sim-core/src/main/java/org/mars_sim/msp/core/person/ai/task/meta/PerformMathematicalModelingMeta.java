@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModelingMeta.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -38,7 +38,7 @@ public class PerformMathematicalModelingMeta extends MetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC);
-		setPreferredJob(JobType.MATHEMATICIAN);
+		setPreferredJob(JobType.MATHEMATICIAN, JobType.PHYSICIST, JobType.COMPUTER_SCIENTIST, JobType.ENGINEER);
 	}
 
 

@@ -107,7 +107,6 @@ public abstract class MetaTask {
     protected void setPreferredJob(JobType... jobs) {
         Collections.addAll(this.preferredJob, jobs);
 	}
-
 	
 	/**
 	 * Gets the associated task name.
