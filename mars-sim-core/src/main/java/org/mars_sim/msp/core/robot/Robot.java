@@ -62,9 +62,8 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/* default logger. */
+	/** default logger. */
 	private static final  Logger logger = Logger.getLogger(Robot.class.getName());
-//	private static String sourceName = logger.getName();
 
 	// Static members
 	/** The base carrying capacity (kg) of a robot. */
@@ -75,11 +74,14 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
+	/** A small amount. */
+	private static final double SMALL_AMOUNT = 0.00001;
 	
-	/** The enum type of this equipment. */
+	/** The string type of this equipment. */
 	public static final String TYPE = "Robot";
-	
+	/** The string tag of operable. */	
 	private static final String OPERABLE = "Operable";
+	/** The string tag of inoperable. */
 	private static final String INOPERABLE = "Inoperable";
 	
 	
@@ -907,11 +909,11 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	 * 
 	 * @return modifier
 	 */
-	public double getWalkSpeedMod() {
+	public double calculateWalkSpeed() {
 		double mass = getInventory().getTotalInventoryMass(false);
 		double cap = getInventory().getGeneralCapacity();
 		// At full capacity, may still move at 10% 
-		return 1.1 - mass/cap;
+		return 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
 	}
 	
 	public int getAge() {

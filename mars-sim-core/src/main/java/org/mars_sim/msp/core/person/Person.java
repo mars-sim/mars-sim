@@ -79,11 +79,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
+	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
 
 	public static final int MAX_NUM_SOLS = 3;
-	
+	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 	
 	private final static String EARTH_BIRTHPLACE = "Earth";
@@ -148,7 +148,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** Settlement Z location (meters) from settlement center. */
 	private double zLoc;
 	/** The walking speed modifier. */
-	private double walkSpeedMod = 1.1;
+//	private double walkSpeedMod = 1.1;
 	
 	/** The birthplace of the person. */
 	private String birthplace;
@@ -424,7 +424,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		System.out.println(getName() + " can carry " + carryCap + " kg.");
 				
 		// Calculate the walking speed modifier
-		caculateWalkSpeedMod();
+		calculateWalkSpeed();
 
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
 
@@ -1894,19 +1894,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Calculate the modifier for walking speed based on how much this unit is carrying
 	 */
-	public void caculateWalkSpeedMod() {
+	public double calculateWalkSpeed() {
 		double mass = getInventory().getTotalInventoryMass(false);
 		double cap = getInventory().getGeneralCapacity();
 		// At full capacity, may still move at 10%.
 		// Make sure is doesn't go -ve and there is always some movement
-		walkSpeedMod = 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
+		return 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
 	}
-	
-	public double getWalkSpeedMod() {
-		return walkSpeedMod;
-	}
-	
-	
+
 	@Override
 	protected UnitType getUnitType() {
 		return UnitType.PERSON;

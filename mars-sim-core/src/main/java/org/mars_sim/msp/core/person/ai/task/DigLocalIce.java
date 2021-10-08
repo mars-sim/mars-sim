@@ -206,6 +206,15 @@ implements Serializable {
 			return time;
 		}
 
+     	if (person.isInSettlement()) {
+//          logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
+     		ended = true;
+     		endTask();
+     		return 0;
+     	}
+     	
+        setDescription(NAME);
+        
         double collected = time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
@@ -232,17 +241,41 @@ implements Serializable {
         	return 0;
         }
         
-        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
-        		resourceID);
-     
-		if (collected >= bagRemainingCap) {
-			collected = bagRemainingCap;
-			finishedCollecting = true;
-		}
-
         if (collected > SMALL_AMOUNT) {
         	aBag.storeAmountResource(resourceID, collected);
+	     	totalCollected += collected;
         }
+        
+        double bagCap = aBag.getAmountResourceCapacity(resourceID);
+        if (totalCollected >= bagCap) {
+        	totalCollected = bagCap;
+			finishedCollecting = true;
+		}
+        
+        if (!finishedCollecting) {
+        	double loadCap = person.getInventory().getGeneralCapacity();
+            if (totalCollected >= loadCap) {
+            	totalCollected = loadCap;
+    			finishedCollecting = true;
+    		}
+        }
+        
+        if (!finishedCollecting) {
+	        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
+	        		resourceID);
+			if (collected >= bagRemainingCap) {
+				collected = bagRemainingCap;
+				finishedCollecting = true;
+			}
+        }
+        
+        if (!finishedCollecting) {
+	        double personRemainingCap = person.getInventory().getRemainingGeneralCapacity(false);
+			if (collected >= personRemainingCap) {
+				collected = personRemainingCap;
+				finishedCollecting = true;
+			}
+		}
         
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
@@ -254,9 +287,8 @@ implements Serializable {
         // Add experience points
         addExperience(time);
         
-        if (finishedCollecting && totalCollected > 0 && collected > 0) {
-        	totalCollected += collected;
-        	
+        if (finishedCollecting) {
+    	
             logger.log(person, Level.INFO, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
             	+ " kg " + resourceString + ".");
@@ -269,13 +301,6 @@ implements Serializable {
          		return 0;
             }
     	}
-        
-     	if (person.isInSettlement()) {
-//            logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
-        	ended = true;
-        	endTask();
-     		return 0;
-     	}
      	
 	    // Check for an accident during the EVA operation.
 	    checkForAccident(time);

@@ -143,9 +143,7 @@ implements Serializable {
 
         // Determine walking distance.
         double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
-		person.caculateWalkSpeedMod();
-		double mod = person.getWalkSpeedMod();
-		double speed = WALKING_SPEED  * mod;
+		double speed = person.calculateWalkSpeed();
 		double distanceKm = speed * timeHours;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = Point2D.Double.distance(worker.getXLocation(),

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2021-08-15
+ * @date 2021-10-07
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -115,7 +116,9 @@ implements Serializable {
      	}
 
         // Take bags for collecting resource.
-     	Bag aBag = transferBag();
+//     	Bag aBag = null;
+//     	if (!hasBags())
+     	Bag	aBag = transferBag();
 
         // If bags are not available, end task.
         if (aBag == null) {
@@ -147,9 +150,14 @@ implements Serializable {
 			// set the boolean to true so that it won't be done again today
 	//		person.getPreference().setTaskDue(this, true);
 			
+	     // Determine storage bin location.
+//            Point2D.Double binLoc = determineBinLocation();
+//            setBinLocation(binLoc.getX(), binLoc.getY());
+	        
 	       	// Add task phases
         	addPhase(COLLECT_REGOLITH);
-        	
+//        	addPhase(WALK_TO_BIN);
+//        	addPhase(DROP_OFF_RESOURCE);
             setPhase(WALK_TO_OUTSIDE_SITE);
             
 //	        logger.log(person, Level.INFO, 4_000, "Started digging for regolith.");
@@ -211,6 +219,15 @@ implements Serializable {
 			return time;
 		}
 
+     	if (person.isInSettlement()) {
+//          logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
+     		ended = true;
+     		endTask();
+     		return 0;
+     	}
+     	
+        setDescription(NAME);
+        
         double collected = time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
@@ -237,18 +254,43 @@ implements Serializable {
         	return 0;
         }
         
-        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
-        		resourceID);
-    
-		if (collected >= bagRemainingCap) {
-			collected = bagRemainingCap;
+        if (collected > SMALL_AMOUNT) {
+        	aBag.storeAmountResource(resourceID, collected);
+	     	totalCollected += collected;
+        }
+        
+        double bagCap = aBag.getAmountResourceCapacity(resourceID);
+        if (totalCollected >= bagCap) {
+        	totalCollected = bagCap;
 			finishedCollecting = true;
 		}
-
-		if (collected > SMALL_AMOUNT) {
-			aBag.storeAmountResource(resourceID, collected);
-		}
         
+        if (!finishedCollecting) {
+        	double loadCap = person.getInventory().getGeneralCapacity();
+            if (totalCollected >= loadCap) {
+            	totalCollected = loadCap;
+    			finishedCollecting = true;
+    		}
+        }
+        
+        if (!finishedCollecting) {
+	        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
+	        		resourceID);
+			if (collected >= bagRemainingCap) {
+				collected = bagRemainingCap;
+				finishedCollecting = true;
+			}
+        }
+        
+        if (!finishedCollecting) {
+	        double personRemainingCap = person.getInventory().getRemainingGeneralCapacity(false);
+	        
+			if (collected >= personRemainingCap) {
+				collected = personRemainingCap;
+				finishedCollecting = true;
+			}
+		}
+
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
         double strengthMod = condition.getStrengthMod();
@@ -259,9 +301,8 @@ implements Serializable {
         // Add experience points
         addExperience(time);
         
-        if (finishedCollecting && totalCollected > 0 && collected > 0) {
-        	totalCollected += collected;
-
+        if (finishedCollecting) {
+     	
             logger.log(person, Level.INFO, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
         		+ " kg " + resourceString + "."); 
@@ -274,30 +315,24 @@ implements Serializable {
          		return 0;
             }
     	}
-        
-     	if (person.isInSettlement()) {
-//            logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
-        	ended = true;
-        	endTask();
-     		return 0;
-     	}
      	
 	    // Check for an accident during the EVA operation.
 	    checkForAccident(time);
 	    
         return 0D;
     }
-
+    
     /**
      * Checks if the person is carrying any bags.
      * @return true if carrying bags.
      */
     private boolean hasBags() {
-        return person.getInventory().hasABag(false, resourceID);
+        return person.getInventory().hasABag(true, resourceID);
     }
 
     /**
      * Transfers an empty bag from a settlement to a person
+     * @return a bag
      */
     private Bag transferBag() {
     	// Note: should take a bag before leaving the airlock
@@ -366,6 +401,36 @@ implements Serializable {
         return newLocation;
     }
 
+    public Building findBin() {
+    	return null;
+    }
+    
+    /**
+     * Determine storage bin location for dropping off regolith.
+     * @return storage bin X and Y location outside settlement.
+     */
+    private Point2D.Double determineBinLocation() {
+
+    	Building bin = findBin();
+    	double x = bin.getXLocation();
+    	double y = bin.getYLocation();
+    	int facing = (int)bin.getFacing();
+    	
+    	if (facing == 0) {
+			x -= 3;
+		} else if (facing == 90) {
+			y -= 3;
+		} else if (facing == 180) {
+			x += 3;
+		} else if (facing == 270) {
+			y += 3;
+		} else {
+			x -= 3;
+		}
+
+        return new Point2D.Double(x, y);
+    }
+    
     /**
      * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement
      */

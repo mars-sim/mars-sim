@@ -46,18 +46,18 @@ public class WalkOutside extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	/** in km / hr. */
+	/** The speed factor due to walking in EVA suit. */	
+	private static final double EVA_MOD = .3;
+	/** The base walking speed [km / hr] */
 	private static final double BASE_WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
-	/** in km / hr. */
+	/** The max walking speed [km / hr] */
 	private static final double MAX_WALKING_SPEED = 3 * BASE_WALKING_SPEED;
+	/** The greater than zero distance [km] */	
 	private static final double VERY_SMALL_DISTANCE = .00001D;
-
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .3D;
-
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .001;
-
 	/** Obstacle avoidance path neighbor distance (meters). */
 	public static final double NEIGHBOR_DISTANCE = 7D;
 
@@ -99,7 +99,7 @@ public class WalkOutside extends Task implements Serializable {
 		// Check that the person is currently outside a settlement or vehicle.
 		if (person.isInside())
 			throw new IllegalStateException("WalkOutside task started when " + person + " is " + person.getLocationStateType());
-		
+
 		init();
 	}
 
@@ -584,7 +584,9 @@ public class WalkOutside extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingPhase(double time) {
-
+		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
+		double speed = 0;
+		
 		// Check for accident.
 		checkForAccident(person.getSuit(), time, BASE_ACCIDENT_CHANCE, getEffectiveSkillLevel(), "EVA");
 
@@ -596,45 +598,40 @@ public class WalkOutside extends Task implements Serializable {
 				endTask();
 				return time;
 			}
+			else
+				speed = person.calculateWalkSpeed() * EVA_MOD;
 		} 
+		
 		else if (robot != null) {
-			return time;
+			speed = robot.calculateWalkSpeed() * EVA_MOD;
 		}
-
-//		double walkingSpeed = getWalkingSpeed();
-		person.caculateWalkSpeedMod();
-		double mod = person.getWalkSpeedMod();
 		
 		// Determine walking distance.
-		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
-		double distanceKm = Walk.PERSON_WALKING_SPEED * timeHours * mod;
-		double distanceMeters = distanceKm * 1000D;
+		double coveredKm = speed * timeHours;
+		double coveredMeters = coveredKm * 1000D;
 		double remainingPathDistance = getRemainingPathDistance();
 
 		// Determine time left after walking.
 		double timeLeft = 0D;
-		if (distanceMeters > remainingPathDistance) {
-			double overDistance = distanceMeters - remainingPathDistance;
-//			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / Walk.PERSON_WALKING_SPEED * 1000D;
-			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / Walk.PERSON_WALKING_SPEED * 60D * 60D);	
-			distanceMeters = remainingPathDistance;
+		if (coveredMeters > remainingPathDistance) {
+			coveredMeters = remainingPathDistance;
+
+			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);	
 		}
 
-		while (distanceMeters > VERY_SMALL_DISTANCE) {
-
+		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			Point2D location = walkingPath.get(walkingPathIndex);
-
 			double distanceToLocation = Point2D.distance(worker.getXLocation(), worker.getYLocation(), 
 						location.getX(), location.getY());
 
-			if (distanceMeters >= distanceToLocation) {
+			if (coveredMeters >= distanceToLocation) {
 
 				// Set person at next path location.
 				worker.setXLocation(location.getX());
 				worker.setYLocation(location.getY());
 
-				distanceMeters -= distanceToLocation;
+				coveredMeters -= distanceToLocation;
 				if (walkingPath.size() > (walkingPathIndex + 1)) {
 					walkingPathIndex++;
 				}
@@ -647,13 +644,13 @@ public class WalkOutside extends Task implements Serializable {
 				double direction = determineDirection(location.getX(), location.getY());
 
 				// Determine person's new location at distance and direction.
-				walkInDirection(direction, distanceMeters);
+				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location.
 				worker.setXLocation(location.getX());
 				worker.setYLocation(location.getY());
 				
-				distanceMeters = 0D;
+				coveredMeters = 0D;
 			}
 		}
 
@@ -662,6 +659,7 @@ public class WalkOutside extends Task implements Serializable {
 
 			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
 			Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
+			
 			worker.setXLocation(finalLocation.getX());
 			worker.setYLocation(finalLocation.getY());
 
