@@ -76,8 +76,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
-	
-		
 		
 		// Determine location for field work.
 		Point2D exploreLoc = determineExploreLocation();
@@ -343,9 +341,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private void takeSpecimenContainer() {
 		Unit container = findLeastFullContainer(rover);
 		if (container != null) {
-			if (person.getInventory().canStoreUnit(container, false)) {
+//			if (person.getInventory().canStoreUnit(container, false)) {
 				container.transfer(rover, person);
-			}
+//			}
 		}
 	}
 
@@ -370,7 +368,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 					mostCapacity = remainingCapacity;
 				}
 			} catch (Exception e) {
-	          	logger.log(Level.SEVERE, "Problems calling getAmountResourceRemainingCapacity(): "+ e.getMessage());
+	          	logger.log(Level.SEVERE, "Problems in getting a speciment box : " + e.getMessage());
 			}
 		}
 
