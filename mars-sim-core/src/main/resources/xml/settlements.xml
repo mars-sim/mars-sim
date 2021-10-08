@@ -194,6 +194,16 @@
 			<building id="9" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 
 			<building id="10" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
+			
+			<building id="11" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="12" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="13" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="14" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="15" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="16" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="17" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="18" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />	
+						
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="2" />
@@ -316,6 +326,15 @@
 
 			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
 
+			<building id="13" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="14" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="15" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="16" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="17" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="18" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="19" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="20" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />	
+			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -391,6 +410,15 @@
 
 			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
 
+			<building id="13" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="14" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="15" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="16" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="17" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="18" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="19" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="20" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -466,6 +494,15 @@
 
 			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
 
+			<building id="13" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="14" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="15" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="16" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="17" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="18" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="19" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="20" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -534,13 +571,19 @@
 			<building id="8" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
 
 			<building id="9" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
-
 			<building id="10" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
-
 			<building id="11" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
-
 			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
 
+			<building id="13" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="14" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="15" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="16" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="17" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="18" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="19" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="20" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -628,6 +671,14 @@
 			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
 
+			<building id="25" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="26" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="27" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="28" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="29" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="30" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="31" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="32" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
@@ -710,6 +761,15 @@
 			<building id="15" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="16" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 					
+			<building id="17" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="18" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="19" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="20" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="21" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="22" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="23" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="24" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+								
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -948,6 +1008,15 @@
 			<building id="20" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="21" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 					
+			<building id="22" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="23" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="24" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="25" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="26" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="27" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="28" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="29" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+								
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -958,7 +1027,6 @@
 			<equipment type="Bag" number="80" />
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="50" />
-
 
 			<!-- Resources -->
 			<resource type="food" amount="4000.0" />
@@ -1183,6 +1251,15 @@
 	
 			<building id="20" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="21" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+					
+			<building id="22" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="23" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="24" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="25" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="26" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="27" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="28" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="29" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
@@ -1555,7 +1632,7 @@
 					<connection id="2" x-location="-4.5" y-location="0.0" />
 					<connection id="1" x-location="0.0" y-location="4.5" />	
 					<connection id="14" x-location="4.5" y-location="0.0" />	
-					<connection id="25" x-location="0.0" y-location="-4.4" />									
+					<connection id="26" x-location="0.0" y-location="-4.4" />									
 				</connection-list>
 			</building>
 					
@@ -1665,30 +1742,40 @@
 			<building id="17" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
 			<building id="18" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
 			<building id="19" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-100.0" facing="0.0" />
-			<building id="27" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-100.0" facing="0.0" />
+			<building id="20" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-100.0" facing="0.0" />							
 								
-								
-			<building id="20" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
-			<building id="21" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
-			<building id="22" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building id="21" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="22" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="23" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 	
-			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
-			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
-					
+			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="25" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+									
 			<!-- This hallway connects the inflatable greenhouse to the fish farm -->		
-			<building id="25" type="Hallway" length="4.0" x-location="0" y-location="-6.5" facing="0.0">
+			<building id="26" type="Hallway" length="4.0" x-location="0" y-location="-6.5" facing="0.0">
 				<connection-list>
 					<connection id="0" x-location="0.0" y-location="2.4" />
-					<connection id="26" x-location="0.0" y-location="-2.0" />
+					<connection id="27" x-location="0.0" y-location="-2.0" />
 				</connection-list>
-			</building>		
-			
-			<building id="26" type="Fish Farm" x-location="0.0" y-location="-13" facing="180.0">
+			</building>									
+							
+			<!-- This fish farm connects to the inflatable greenhouse -->				
+			<building id="27" type="Fish Farm" x-location="0.0" y-location="-13" facing="180.0">
 				<connection-list>
-					<connection id="25" x-location="0.0" y-location="-4.4" />
+					<connection id="26" x-location="0.0" y-location="-4.4" />
 				</connection-list>
-			</building>
+			</building>	
 			
+			
+			<building id="28" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="29" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="30" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="31" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="32" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="33" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="34" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="35" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+				
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -1949,7 +2036,6 @@
 			<building id="20" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
 			<building id="21" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-100.0" facing="0.0" />
 			<building id="22" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-100.0" facing="0.0" />
-
 														
 			<building id="23" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="24" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
@@ -1957,8 +2043,16 @@
 	
 			<building id="26" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="27" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
-		
-			
+					
+			<building id="28" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="29" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="30" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="31" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="32" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="33" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="34" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="35" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />					
+					
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Light Utility Vehicle" number="3" />
 			<vehicle type="Delivery Drone" number="3" />
@@ -2209,7 +2303,16 @@
 	
 			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
-					
+				
+			<building id="25" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="26" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="27" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="28" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="29" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="30" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="31" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="32" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+								
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<vehicle type="Delivery Drone" number="1" />
@@ -2427,7 +2530,18 @@
 			<building id="21" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="22" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
-			
+
+			<building id="24" type="Solar Photovoltaic Array" x-location="50.0" y-location="-50.0" facing="0.0" />
+						
+			<building id="25" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="26" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="27" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="28" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="29" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="30" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="31" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="32" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+						
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -2724,7 +2838,18 @@
 			<building id="31" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="32" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="33" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
-			
+	
+			<building id="34" type="Solar Photovoltaic Array" x-location="50.0" y-location="-50.0" facing="0.0" />
+						
+			<building id="35" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="36" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="37" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="38" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="39" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="40" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="41" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="42" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+						
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -2753,8 +2878,7 @@
 			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 -->
-			<resource type="argon" amount="90.0" />		
-			
+			<resource type="argon" amount="90.0" />	
 			<resource type="fertilizer" amount="50.0" />
 			
 			<!-- Crop -->
@@ -2799,7 +2923,6 @@
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
-
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -3024,7 +3147,16 @@
 			<building id="34" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="35" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="36" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
-			
+						
+			<building id="37" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="38" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="39" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="40" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="41" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="42" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="43" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="44" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+						
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -3053,8 +3185,7 @@
 			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 -->
-			<resource type="argon" amount="90.0" />		
-			
+			<resource type="argon" amount="90.0" />	
 			<resource type="fertilizer" amount="50.0" />
 			
 			<!-- Crop -->
@@ -3099,7 +3230,6 @@
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
-
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -3323,6 +3453,17 @@
 			<building id="32" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="33" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
 			
+			<building id="34" type="Solar Photovoltaic Array" x-location="50.0" y-location="-50.0" facing="0.0" />
+						
+			<building id="35" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="36" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="37" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="38" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="39" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="40" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="41" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="42" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+						
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -3397,7 +3538,6 @@
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
-
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -3619,7 +3759,18 @@
 			<building id="31" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="32" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 			<building id="33" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
-			
+	
+			<building id="34" type="Solar Photovoltaic Array" x-location="50.0" y-location="-50.0" facing="0.0" />
+						
+			<building id="35" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="36" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="37" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="38" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="39" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="40" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="41" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="42" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+						
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -3695,7 +3846,6 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
-
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -3747,6 +3897,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-R -->
+		
 		<template name="Phase 3-X" default-population="12" number-of-robots="7"  sponsor="SPACEX">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -3960,7 +4111,16 @@
 			<building id="68" type="Medium Battery Array" x-location="55.0" y-location="-60.0" facing="0.0" />
 			<building id="69" type="Medium Battery Array" x-location="70.0" y-location="-60.0" facing="0.0" />
 			<building id="70" type="Medium Battery Array" x-location="85.0" y-location="-60.0" facing="0.0" />
-				
+					
+			<building id="71" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="72" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="73" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="74" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="75" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="76" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="77" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="78" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
+							
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />
@@ -4304,6 +4464,23 @@
 					<connection id="4" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
+									
+			<building id="49" type="Regolith Storage Bin" x-location="25.0" y-location="0.0" facing="90.0" />	
+			<building id="50" type="Regolith Storage Bin" x-location="25.0" y-location="2.5" facing="90.0" />
+			<building id="51" type="Sand Storage Bin" x-location="25.0" y-location="5.0" facing="90.0" />	
+			<building id="52" type="Sand Storage Bin" x-location="25.0" y-location="7.5" facing="90.0" />	
+			<building id="53" type="Concrete Storage Bin" x-location="25.0" y-location="10.0" facing="90.0" />	
+			<building id="54" type="Concrete Storage Bin" x-location="25.0" y-location="12.5" facing="90.0" />	
+			<building id="55" type="Cement Storage Bin" x-location="25.0" y-location="15.0" facing="90.0" />	
+			<building id="56" type="Cement Storage Bin" x-location="25.0" y-location="17.5" facing="90.0" />	
+			<building id="57" type="Mortar Storage Bin" x-location="25.0" y-location="20.0" facing="90.0" />	
+			<building id="58" type="Mortar Storage Bin" x-location="25.0" y-location="22.5" facing="90.0" />	
+			<building id="59" type="Lime Storage Bin" x-location="25.0" y-location="25.0" facing="90.0" />	
+			<building id="60" type="Lime Storage Bin" x-location="25.0" y-location="27.5" facing="90.0" />	
+			<building id="61" type="Ice Storage Bin" x-location="25.0" y-location="-2.5" facing="90.0" />	
+			<building id="62" type="Ice Storage Bin" x-location="25.0" y-location="-5.0" facing="90.0" />	
+			<building id="63" type="Carbon Storage Bin" x-location="25.0" y-location="-7.5" facing="90.0" />
+			<building id="64" type="Carbon Storage Bin" x-location="25.0" y-location="-10.0" facing="90.0" />
 			
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
