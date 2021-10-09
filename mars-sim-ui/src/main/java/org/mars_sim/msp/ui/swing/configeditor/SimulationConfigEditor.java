@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
@@ -963,7 +964,8 @@ public class SimulationConfigEditor {
 	 */
 	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		return new Scenario(name, description, is, false);
+		List<ArrivingSettlement> arrivals = null;
+		return new Scenario(name, description, is, arrivals, false);
 	}
 
 	/**

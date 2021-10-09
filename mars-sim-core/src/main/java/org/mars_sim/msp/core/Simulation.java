@@ -24,10 +24,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -36,7 +34,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.data.DataLogger;
-import org.mars_sim.msp.core.data.DataRoot;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
@@ -388,8 +385,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
-		transportManager = new TransportManager(simulationConfig.getSettlementConfiguration(),
-												simulationConfig.getReportingAuthorityFactory());
+		transportManager = new TransportManager(eventManager);
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -508,9 +504,9 @@ public class Simulation implements ClockListener, Serializable {
 			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
-			transportManager = (TransportManager) ois.readObject();
-			creditManager = (CreditManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
+			creditManager = (CreditManager) ois.readObject();
+			transportManager = (TransportManager) ois.readObject();
 			relationshipManager = (RelationshipManager) ois.readObject();		
 			unitManager = (UnitManager) ois.readObject();		
 			masterClock = (MasterClock) ois.readObject();	
@@ -663,7 +659,6 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
 											   simulationConfig.getPartConfiguration());
-		TransportManager.initializeInstances(eventManager);
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 				
@@ -904,9 +899,9 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(missionManager);
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);
-			oos.writeObject(transportManager);
-			oos.writeObject(creditManager);
 			oos.writeObject(eventManager);
+			oos.writeObject(creditManager);
+			oos.writeObject(transportManager);
 			oos.writeObject(relationshipManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);

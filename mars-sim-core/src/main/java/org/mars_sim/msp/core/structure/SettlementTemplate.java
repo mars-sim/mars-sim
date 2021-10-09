@@ -8,11 +8,10 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -26,9 +25,6 @@ public class SettlementTemplate implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	// * default logger.
-	// private static final Logger logger = Logger.getLogger(SettlementTemplate.class.getName());
 
 	// Data members.
 	private int defaultPopulation;
@@ -62,12 +58,12 @@ public class SettlementTemplate implements Serializable {
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 
-		buildings = new ArrayList<BuildingTemplate>();
-		vehicles = new HashMap<String, Integer>();
-		equipment = new HashMap<String, Integer>();
-		resources = new HashMap<AmountResource, Double>();
-		parts = new HashMap<Part, Integer>();
-		resupplies = new ArrayList<ResupplyMissionTemplate>();
+		buildings = new ArrayList<>();
+		vehicles = new HashMap<>();
+		equipment = new HashMap<>();
+		resources = new HashMap<>();
+		parts = new HashMap<>();
+		resupplies = new ArrayList<>();
 	}
 
 	/**
@@ -128,7 +124,7 @@ public class SettlementTemplate implements Serializable {
 	 * 
 	 * @param buildingTemplate the building template.
 	 */
-	public void addBuildingTemplate(BuildingTemplate buildingTemplate) {
+	void addBuildingTemplate(BuildingTemplate buildingTemplate) {
 		buildings.add(buildingTemplate);
 	}
 
@@ -138,7 +134,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return list of building templates.
 	 */
 	public List<BuildingTemplate> getBuildingTemplates() {
-		return new CopyOnWriteArrayList<BuildingTemplate>(buildings);
+		return Collections.unmodifiableList(buildings);
 	}
 
 	/**
@@ -147,7 +143,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param vehicleType the vehicle type.
 	 * @param number      the number of vehicles to add.
 	 */
-	public void addVehicles(String vehicleType, int number) {
+	void addVehicles(String vehicleType, int number) {
 		if (vehicles.containsKey(vehicleType)) {
 			number += vehicles.get(vehicleType);
 		}
@@ -160,7 +156,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<String, Integer> getVehicles() {
-		return new ConcurrentHashMap<String, Integer>(vehicles);
+		return Collections.unmodifiableMap(vehicles);
 	}
 
 	/**
@@ -169,7 +165,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param equipmentType the equipment type.
 	 * @param number        the number of equipment to add.
 	 */
-	public void addEquipment(String equipmentType, int number) {
+	void addEquipment(String equipmentType, int number) {
 		if (equipment.containsKey(equipmentType)) {
 			number += equipment.get(equipmentType);
 		}
@@ -182,7 +178,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<String, Integer> getEquipment() {
-		return new ConcurrentHashMap<String, Integer>(equipment);
+		return Collections.unmodifiableMap(equipment);
 	}
 
 	/**
@@ -191,7 +187,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param resource the resource.
 	 * @param amount   the amount (kg).
 	 */
-	public void addAmountResource(AmountResource resource, double amount) {
+	void addAmountResource(AmountResource resource, double amount) {
 		if (resources.containsKey(resource)) {
 			amount += resources.get(resource);
 		}
@@ -204,7 +200,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<AmountResource, Double> getResources() {
-		return new ConcurrentHashMap<AmountResource, Double>(resources);
+		return Collections.unmodifiableMap(resources);
 	}
 
 	/**
@@ -213,7 +209,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param part   the part.
 	 * @param number the number of parts.
 	 */
-	public void addPart(Part part, int number) {
+	void addPart(Part part, int number) {
 		if (parts.containsKey(part)) {
 			number += parts.get(part);
 		}
@@ -226,7 +222,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<Part, Integer> getParts() {
-		return new ConcurrentHashMap<Part, Integer>(parts);
+		return Collections.unmodifiableMap(parts);
 	}
 
 	/**
@@ -234,7 +230,7 @@ public class SettlementTemplate implements Serializable {
 	 * 
 	 * @param resupplyMissionTemplate the resupply mission template.
 	 */
-	public void addResupplyMissionTemplate(ResupplyMissionTemplate resupplyMissionTemplate) {
+	void addResupplyMissionTemplate(ResupplyMissionTemplate resupplyMissionTemplate) {
 		resupplies.add(resupplyMissionTemplate);
 	}
 
@@ -244,7 +240,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return list of resupply mission templates.
 	 */
 	public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {
-		return new CopyOnWriteArrayList<ResupplyMissionTemplate>(resupplies);
+		return Collections.unmodifiableList(resupplies);
 	}
 
 	/**

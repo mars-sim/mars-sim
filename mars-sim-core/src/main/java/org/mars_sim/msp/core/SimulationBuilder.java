@@ -283,7 +283,6 @@ public class SimulationBuilder {
 			SettlementBuilder builder = new SettlementBuilder(sim,
 					simConfig);
 			if (useCrews && crewConfig == null) {
-//				logger.info("Created default CrewConfig");
 				crewConfig = new CrewConfig();
 			}
 			builder.setCrew(crewConfig);
@@ -299,6 +298,9 @@ public class SimulationBuilder {
 					bootstrap = config.getItem(defaultName);
 				}
 				builder.createInitialSettlements(bootstrap);
+				sim.getTransportManager().loadArrivingSettments(bootstrap,
+																simConfig.getSettlementConfiguration(),
+																simConfig.getReportingAuthorityFactory());
 			}
 		}
 

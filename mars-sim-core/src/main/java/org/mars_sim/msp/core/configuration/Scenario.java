@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.configuration;
 
 import java.util.List;
 
+import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 
 /**
@@ -19,14 +20,16 @@ public class Scenario implements UserConfigurable {
 	private boolean bundled;
 	private String name;
 	private List<InitialSettlement> settlements;
+	private List<ArrivingSettlement> arrivals;
 
 	public Scenario(String name, String description, List<InitialSettlement> settlements,
-			boolean bundled) {
+			List<ArrivingSettlement> arrivals, boolean bundled) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.bundled = bundled;
 		this.settlements = settlements;
+		this.arrivals = arrivals;
 	}
 
 	@Override
@@ -44,6 +47,14 @@ public class Scenario implements UserConfigurable {
 		return bundled;
 	}
 
+	/**
+	 * The initial settlements associated with this scenario.
+	 * @return
+	 */
+	public List<ArrivingSettlement> getArrivals() {
+		return arrivals;
+	}
+	
 	/**
 	 * The initial settlements associated with this scenario.
 	 * @return

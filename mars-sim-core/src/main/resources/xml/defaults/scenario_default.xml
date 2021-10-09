@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE scenario-configuration [
-	<!ELEMENT scenario-configuration (initial-settlement-list)>
+	<!ELEMENT scenario-configuration (initial-settlement-list, arriving-settlement-list)>
 	<!ATTLIST scenario-configuration name CDATA #REQUIRED>
 	<!ATTLIST scenario-configuration description CDATA #REQUIRED>
 
@@ -15,8 +15,16 @@
 	<!ELEMENT location EMPTY>
 	<!ATTLIST location longitude CDATA #REQUIRED>
 	<!ATTLIST location latitude CDATA #REQUIRED>
+	
 
-
+	<!ELEMENT arriving-settlement-list (arriving-settlement*)>
+	<!ELEMENT arriving-settlement (location?)>
+	<!ATTLIST arriving-settlement name CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement template CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement arrival-in-sols CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement persons CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement robots CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement sponsor CDATA #REQUIRED>
 ]>
 
 <scenario-configuration name="Default" description="Default provided Scenario">
@@ -55,4 +63,9 @@
 		</settlement>
 		
 	</initial-settlement-list>
+	<arriving-settlement-list>
+		<arriving-settlement name="New Town" template="Phase 1-M" persons="10"
+							 robots="4" sponsor="MS" arrival-in-sols="20">
+		</arriving-settlement>
+	</arriving-settlement-list>
 </scenario-configuration>
