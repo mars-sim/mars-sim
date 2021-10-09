@@ -1,7 +1,8 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelFishery.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-07
+ * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
@@ -16,10 +17,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import com.alee.laf.label.WebLabel;
 
 /**
- * The BuildingPanelThermal class is a building function panel representing 
- * the heat production of a settlement building.
+ * The BuildingPanelFishery class is a building function panel for
+ * the fish farm of a settlement building.
  */
-//TODO: list individual power source in building tab and the power generated from that source
 @SuppressWarnings("serial")
 public class BuildingPanelFishery
 extends BuildingFunctionPanel {

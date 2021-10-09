@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -52,6 +52,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -75,7 +76,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	private MalfunctionManager manager;
 
 	/** The wear condition label. */
-	private JLabel wearConditionLabel;
+	private WebLabel wearConditionLabel;
 	/** The last completed label. */
 	private JLabel lastCompletedLabel;
 	/** Label for parts. */
@@ -112,21 +113,20 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		// Set the layout
 		setLayout(new BorderLayout(1, 1));
 		
-		WebPanel labelPanel = new WebPanel(new GridLayout(6, 1, 2, 2));
+		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 2, 1));
 		add(labelPanel, BorderLayout.NORTH);
 		
 		// Create maintenance label.
-		JLabel maintenanceLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
-		maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		JLabel titleLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(maintenanceLabel);
-
-		labelPanel.add(new JLabel(" "));
+		labelPanel.add(titleLabel);
 		
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
-		wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
+		wearConditionLabel = new WebLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 				JLabel.CENTER);
+//		wearConditionLabel.setPadding(5, 5, 5, 5);
 		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		labelPanel.add(wearConditionLabel);
 

@@ -50,8 +50,6 @@ extends BuildingFunctionPanel {
 		WebPanel titlePanel = new WebPanel();
 		add(titlePanel, BorderLayout.NORTH);
 		titlePanel.add(titleLabel);
-		titlePanel.setOpaque(false);
-		titlePanel.setBackground(new Color(0,0,0,128));
 
 		WebPanel springPanel = new WebPanel(new SpringLayout());
 		add(springPanel, BorderLayout.CENTER);
@@ -101,7 +99,7 @@ extends BuildingFunctionPanel {
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                3, 2, //rows, cols
-		                                65, 20,        //initX, initY
+		                                65, 5,        //initX, initY
 		                                3, 1);       //xPad, yPad
 	}
 

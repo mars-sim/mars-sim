@@ -70,8 +70,6 @@ implements MouseListener {
 		labelPanel.setBackground(new Color(0,0,0,128));
 		
 		// Create vehicle maintenance label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for labels
 		WebLabel vehicleMaintenanceLabel = new WebLabel(Msg.getString("BuildingPanelVehicleMaintenance.title"), WebLabel.CENTER);
 		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown

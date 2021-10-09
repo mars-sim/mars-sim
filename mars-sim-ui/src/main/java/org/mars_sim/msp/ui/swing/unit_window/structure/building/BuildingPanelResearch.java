@@ -1,13 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelResearch.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -57,18 +56,16 @@ extends BuildingFunctionPanel {
 		// Set panel layout
 		setLayout(new BorderLayout());
 
-		// Prepare label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
-
 		// Prepare research label
-		WebLabel researchLabel = new WebLabel(Msg.getString("BuildingPanelResearch.title"), WebLabel.CENTER); //$NON-NLS-1$
-		researchLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(researchLabel);
+		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelResearch.title"), WebLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setPadding(2, 5, 10, 5);
+		add(titleLabel, BorderLayout.NORTH);
 
+		// Prepare label panel
+		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1, 5, 10));
+		add(labelPanel, BorderLayout.CENTER);
+	
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
 		researchersLabel = new WebLabel(Msg.getString("BuildingPanelResearch.numberOfResearchers", researchersCache), WebLabel.CENTER);
@@ -104,11 +101,7 @@ extends BuildingFunctionPanel {
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.add(specialtyTA);
 		specialtyTA.setBorder(new MarsPanelBorder());
-
-		add(listPanel, BorderLayout.CENTER);
-		listPanel.setOpaque(false);
-		listPanel.setBackground(new Color(0,0,0,128));
-
+		add(listPanel, BorderLayout.SOUTH);
 	}
 
 	/**

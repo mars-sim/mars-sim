@@ -392,25 +392,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else if (age > 14 && age <= 18)
 			load = (int)(baseCap/2.5 + age * 1.5);
 		else if (age > 18 && age <= 25)
-			load = (int)(baseCap/2 + 25 - age / 7.5);
+			load = (int)(baseCap/2 + 35 - age / 7.5);
 		else if (age > 25 && age <= 35)
 			load = (int)(baseCap + 30 - age / 12.5);
 		else if (age > 35 && age <= 45)
 			load = (int)(baseCap + 25 - age / 10);
 		else if (age > 45 && age <= 55)
-			load = (int)(baseCap/1.25 + 20 - age / 7.5);
+			load = (int)(baseCap + 20 - age / 7.5);
 		else if (age > 55 && age <= 65)
-			load = (int)(baseCap/1.5 + 15 - age / 6);
+			load = (int)(baseCap/1.25 + 15 - age / 6.0);
 		else if (age > 65 && age <= 70)
-			load = (int)(baseCap/1.75 + 10 - age / 5);
+			load = (int)(baseCap/1.5 + 10 - age / 5.0);
 		else if (age > 70 && age <= 75)
-			load = (int)(baseCap/2 - age / 4);
+			load = (int)(baseCap/1.75 - age / 4.0);
 		else if (age > 75 && age <= 80)
-			load = (int)(baseCap/3 - age / 4);
+			load = (int)(baseCap/2.0 - age / 4.0);
 		else 
-			load = (int)(baseCap/4 - age / 4);
+			load = (int)(baseCap/2.5 - age / 4.0);
 		
-		int carryCap = Math.max(2, (int)(gym + load + weight/6.0 + (strength - 50)/1.5 + (endurance - 50)/2.0 
+		int carryCap = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0 
 				+ RandomUtil.getRandomRegressionInteger(10)));
 		
 		// Set inventory total mass capacity based on the person's weight and strength.
@@ -422,9 +422,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		System.out.println(getName() + " age: " + age);
 //		System.out.println(getName() + " load: " + load + " kg.");
 //		System.out.println(getName() + " can carry " + carryCap + " kg.");
-				
-		// Calculate the walking speed modifier
-		calculateWalkSpeed();
 
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
 

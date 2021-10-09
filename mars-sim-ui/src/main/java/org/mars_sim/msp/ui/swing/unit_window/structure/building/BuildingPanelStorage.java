@@ -49,11 +49,9 @@ extends BuildingFunctionPanel {
 		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
-		WebPanel titlePanel = new WebPanel(new GridLayout(2,1,0,0));
+		WebPanel titlePanel = new WebPanel(new GridLayout(2, 1, 0, 5));
 		add(titlePanel, BorderLayout.NORTH);
 		titlePanel.add(storageLabel);
-		titlePanel.setOpaque(false);
-		titlePanel.setBackground(new Color(0,0,0,128));
 
 		WebLabel maxCapLabel = new WebLabel(Msg.getString("BuildingPanelStorage.maxCap"), WebLabel.CENTER);
 		titlePanel.add(maxCapLabel);
@@ -61,10 +59,8 @@ extends BuildingFunctionPanel {
 		Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 	
 		// Create resource storage panel.
-		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 0));
+		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
 		add(resourceStoragePanel, BorderLayout.CENTER);
-		resourceStoragePanel.setOpaque(false);
-		resourceStoragePanel.setBackground(new Color(0,0,0,128));
 
 		SortedSet<Integer> keys = new TreeSet<Integer>(resourceStorage.keySet());
 		for (Integer resource : keys) { 

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -64,8 +64,8 @@ import com.alee.managers.tooltip.TooltipWay;
 
 
 /**
- * The FarmingBuildingPanel class is a building function panel representing
- * the crop farming status of a settlement building.
+ * The BuildingPanelFarming class is a building function panel representing
+ * the crop farm of a settlement building.
  */
 @SuppressWarnings("serial")
 public class BuildingPanelFarming
@@ -140,7 +140,7 @@ implements MouseListener {
 		add(farmingLabel, BorderLayout.NORTH);
 
 		// Create label panel
-		WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(5, 1, 0, 0));
+		WebPanel springPanel = new WebPanel(new SpringLayout());
 		add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare solar irradiance label
@@ -228,7 +228,7 @@ implements MouseListener {
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                6, 2, //rows, cols
-		                                65, 20,        //initX, initY
+		                                65, 5,        //initX, initY
 		                                3, 1);       //xPad, yPad
 
 		WebPanel southPanel = new WebPanel(new BorderLayout());

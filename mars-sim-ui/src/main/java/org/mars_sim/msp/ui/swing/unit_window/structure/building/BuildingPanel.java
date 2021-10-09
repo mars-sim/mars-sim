@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,8 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
@@ -55,16 +52,11 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
-
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 
 /**
@@ -147,66 +139,20 @@ public class BuildingPanel extends JPanel {
 		add(topPanel, BorderLayout.NORTH);
 
 		// Add renameBtn for renaming a building
-//		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		JButton renameBtn = new JButton(Msg.getString("BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
-//		renameBtn.setPreferredSize(new Dimension(70, 20));
-//		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
-//		// renameBtn.setBackground(Color.GRAY);
-//		renameBtn.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				// if rename is done successfully, then update the building name
-//				renameBuilding();
-//				buildingNameLabel.setText(newName);
-//			}
-//		});
-//		btnPanel.add(renameBtn);
-//		topPanel.add(btnPanel, BorderLayout.NORTH);
-
-		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
-//		infoPanel.setBorder(new MarsPanelBorder());
-		topPanel.add(infoPanel, BorderLayout.CENTER);
-		
-		// Prepare dimension label
-		JLabel dimLabel = new JLabel("Dimension: ", JLabel.RIGHT); //$NON-NLS-1$
-		//dimLabel.setSize(2, 2);
-		infoPanel.add(dimLabel);
-
-		// Prepare dimension TF
-		WebPanel wrapper0 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField dimTF = new JTextField();
-		dimTF.setText(building.getLength() + " x " + building.getWidth() + " x 2.5"); 
-		dimTF.setEditable(false);
-		wrapper0.setPreferredSize(new Dimension(150, 24));
-//		dimTF.setCaretPosition(0);
-		TooltipManager.setTooltip (dimTF, 
-				"Length[m] x Width[m] x Height[m]",
-				TooltipWay.down);
-		wrapper0.add(dimTF);
-		infoPanel.add(wrapper0);
-		
-		// Prepare mass label
-		JLabel massLabel = new JLabel("Base Mass: ", JLabel.RIGHT); //$NON-NLS-1$
-		//massLabel.setSize(2, 2);
-		infoPanel.add(massLabel);
-
-		// Prepare mass TF
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField massTF = new JTextField();
-		massTF.setText(building.getBaseMass() + " kg"); 
-		massTF.setEditable(false);
-		wrapper1.setPreferredSize(new Dimension(150, 24));
-//		massTF.setCaretPosition(0);
-		TooltipManager.setTooltip (massTF, 
-				"The base mass of this building",
-				TooltipWay.down);
-		wrapper1.add(massTF);
-		infoPanel.add(wrapper1);
-		
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
-				80, 1, // initX, initY
-				5, 1); // xPad, yPad
+		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JButton renameBtn = new JButton(Msg.getString("BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
+		renameBtn.setPreferredSize(new Dimension(70, 20));
+		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
+		// renameBtn.setBackground(Color.GRAY);
+		renameBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				// if rename is done successfully, then update the building name
+				renameBuilding();
+				buildingNameLabel.setText(newName);
+			}
+		});
+		btnPanel.add(renameBtn);
+		topPanel.add(btnPanel, BorderLayout.NORTH);
 		
 		// Prepare function list panel.
 		JPanel functionListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -248,6 +194,11 @@ public class BuildingPanel extends JPanel {
 		box.add(Box.createVerticalGlue());
 		functionListPanel.add(box);
 
+		// Prepare the general info panel 
+		BuildingPanelGeneral buildingPanelGeneral = new BuildingPanelGeneral(building, desktop);
+		functionPanels.add(buildingPanelGeneral);
+		functionListPanel.add(buildingPanelGeneral);
+		
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.COOKING)) {
 //			try {
