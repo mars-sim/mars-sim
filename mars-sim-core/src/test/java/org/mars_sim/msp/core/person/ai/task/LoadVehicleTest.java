@@ -146,7 +146,7 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, optionalEquipMap);
 		
 		double optionalLoaded = vehicle.getInventory()
-						.findAllUnitsOfClass(missingId).size();
+						.findAllEquipmentTypeID(missingId).size();
 
 		assertEquals("Optional Equipment loaded", 0D, optionalLoaded);
 	}
@@ -421,7 +421,7 @@ extends TestCase {
 	private void checkVehicleEquipment(Vehicle source, Map<Integer, Integer> manifest) {
 		Inventory inv = source.getInventory();
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
-			int stored = inv.findAllUnitsOfClass(item.getKey()).size();
+			int stored = inv.findAllEquipmentTypeID(item.getKey()).size();
 			assertEquals("Equipment in vehicle " + EquipmentType.convertID2Type(item.getKey()).name(),
 					item.getValue().intValue(), stored);
 		}

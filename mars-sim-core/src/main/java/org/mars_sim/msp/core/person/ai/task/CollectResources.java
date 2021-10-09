@@ -214,10 +214,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Unit result = null;
 		double mostCapacity = 0D;
 
-		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
+		Iterator<Equipment> i = inv.findAllEquipmentTypeID(containerType).iterator();
 		while (i.hasNext()) {
-			Unit container = i.next();
-			double remainingCapacity = ((Equipment)container).getAmountResourceRemainingCapacity(resource);
+			Equipment container = i.next();
+			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
 			if (remainingCapacity > mostCapacity) {
 				result = container;
 				mostCapacity = remainingCapacity;
@@ -315,7 +315,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			Inventory pInv = person.getInventory();
 			if (pInv.containsEquipment(containerType)) {
 				// Load containers in rover.
-				Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
+				Iterator<Equipment> i = pInv.findAllEquipmentTypeID(containerType).iterator();
 				while (i.hasNext()) {
 					// Place this equipment within a rover outside on Mars
 					i.next().transfer(pInv, rover);

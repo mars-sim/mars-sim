@@ -668,9 +668,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (j.hasNext() && result) {
 			Integer containerType = j.next();
 			int numberRequired = emergencyContainersNeeded.get(containerType);
-			int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
+			int numberAvailable = startingSettlement.getInventory().findNumEmptyContainers(containerType, false);
 			
-			// TODO: add tracking demand for containers
+			// Note: add tracking demand for containers
 			if (numberAvailable < numberRequired) {
 				result = false;
 			}

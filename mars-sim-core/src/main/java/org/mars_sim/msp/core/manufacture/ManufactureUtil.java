@@ -633,8 +633,7 @@ public final class ManufactureUtil {
 					i.remove();
 			}
 		} else if (info.getType().equalsIgnoreCase("equipment")) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(info.getItemName());
-			salvagableUnits = inv.findAllUnitsOfClass(equipmentClass);
+			salvagableUnits = inv.findAllEquipmentUnitName(info.getItemName());
 		}
 
 		// Make sure container unit is settlement.

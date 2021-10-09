@@ -103,7 +103,7 @@ public class LoadingController implements Serializable {
 	private void removeVehicleEquipment(Inventory inv, Map<Integer, Integer> equipment) {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
 		for (Integer eqmId : ids) {
-			int amountLoaded = inv.findAllUnitsOfClass(eqmId).size();			
+			int amountLoaded = inv.findAllEquipmentTypeID(eqmId).size();			
 			if (amountLoaded > 0) {
 				int newAmount = equipment.get(eqmId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -438,9 +438,8 @@ public class LoadingController implements Serializable {
 			int amountNeeded = manifest.get(equipmentType);
 			if (amountNeeded > 0) {
 				// How many available ?
-				List<Unit> units = new ArrayList<>(sInv.findAllUnitsOfClass(equipmentType));
-				for(Unit u : units) {
-					Equipment eq = (Equipment) u;
+				List<Equipment> list = new ArrayList<>(sInv.findAllEquipmentTypeID(equipmentType));
+				for(Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle

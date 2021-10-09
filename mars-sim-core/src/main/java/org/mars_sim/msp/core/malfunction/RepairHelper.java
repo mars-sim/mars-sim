@@ -94,6 +94,7 @@ public final class RepairHelper {
 
 	/**
 	 * Claim any needed parts from the Inventory of the container. Valid that none may be needed.
+	 * 
 	 * @param containerUnit
 	 * @param malfunction
 	 */

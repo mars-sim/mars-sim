@@ -259,16 +259,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+			Iterator<Equipment> k = vehicleInv.findAllEquipment().iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
-				Equipment equipment = (Equipment) k.next();
-
+				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment);
-
-				equipment.transfer(vehicleInv, settlementInv);
-				
+				equipment.transfer(vehicleInv, settlementInv);		
 				amountUnloading -= equipment.getMass();
+				
 				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
 					+ " from " + vehicle.getName() + ".");
 			}

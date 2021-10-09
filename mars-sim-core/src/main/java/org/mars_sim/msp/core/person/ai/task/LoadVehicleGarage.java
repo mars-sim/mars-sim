@@ -328,7 +328,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
 			int numLoaded = vInv.findNumEquipment(equipmentType);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
+			int stored = inv.findNumEmptyContainers(equipmentType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
 					logSettlementShortage(vehicle, EquipmentType.convertID2Type(equipmentType).toString(),

@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,9 +23,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.ContainerInterface;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -829,8 +830,9 @@ public class Inventory implements Serializable {
 					for (Integer uid : containedUnitIDs) {
 						Unit unit = unitManager.getUnitByID(uid);
 						// Use only contained units that implement container interface.
-						if (unit instanceof Equipment) {
-							if (unit instanceof EVASuit) {
+						if (unit.getUnitType() == UnitType.EQUIPMENT) {
+							Equipment e = (Equipment)unit;
+							if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 								EVASuit suit = (EVASuit)unit;
 								for (int resourceID : suit.getResourceIDs()) {
 									if (resourceID == storedResourceID) {
@@ -846,9 +848,9 @@ public class Inventory implements Serializable {
 									}
 								}
 							}
-							else {							
-								Equipment e = (Equipment)unit;		
+							else {
 								int resourceID = e.getResource();
+								// If resourceID = -1, then it's brand new and is suitable for storing this resource
 								if (resourceID == storedResourceID || resourceID == -1) {
 									double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
 									double unitStorageAmount = remainingAmount;
@@ -942,8 +944,9 @@ public class Inventory implements Serializable {
 					for (Integer uid : containedUnitIDs) {
 						Unit unit = unitManager.getUnitByID(uid);
 						// Use only contained units that implement container interface.
-						if (unit instanceof Equipment) {
-							if (unit instanceof EVASuit) {
+						if (unit.getUnitType() == UnitType.EQUIPMENT) {
+							Equipment e = (Equipment)unit;
+							if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 								EVASuit suit = (EVASuit)unit;
 								for (int resourceID : suit.getResourceIDs()) {
 									if (resourceID == resource) {
@@ -959,10 +962,10 @@ public class Inventory implements Serializable {
 									}
 								}
 							}
-							else {				
-								Equipment e = (Equipment)unit;
+							else {
 								int resourceID = e.getResource();
-								if (resourceID == resource || resourceID == -1) {
+								// If resourceID = -1, then it's brand new and is suitable for storing this resource
+								if (resourceID == resource || resourceID == -1) { 
 									double remainingCap = e.getAmountResourceRemainingCapacity(resource);
 									double unitStorageAmount = remainingAmount;
 									if (unitStorageAmount > remainingCap) {
@@ -1052,42 +1055,47 @@ public class Inventory implements Serializable {
 				if (remainingAmount > 0D && containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 					for (Integer uid : containedUnitIDs) {
 						Unit unit = unitManager.getUnitByID(uid);					
-						if (unit instanceof Equipment) {
-							if (unit instanceof EVASuit) {
+						if (unit.getUnitType() == UnitType.EQUIPMENT) {
+							Equipment e = (Equipment)unit;
+							if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 								EVASuit suit = (EVASuit)unit;
 								for (int i = 0; i < suit.getResourceIDs().size(); i++) {
 									int resourceID = suit.getResourceID(i);
-									double quantity = suit.getQuanity(i);
-									double containerAmount = suit.getAmountResourceStored(resourceID);
+									if (resourceID == resource) {
+										double quantity = suit.getQuanity(i);
+										double retrievedAmount = remainingAmount;
+										double rcap = suit.getAmountResourceRemainingCapacity(resourceID);
+										double containerAmount = suit.getAmountResourceStored(resourceID);
+										
+										if (quantity > 0 && containerAmount > 0 &&
+											retrievedAmount >= rcap) {
+											retrievedAmount = rcap;
+										}
+										if (retrievedAmount > 0) {
+											suit.retrieveAmountResource(resourceID, containerAmount);
+											remainingAmount -= containerAmount;
+										}
+									}
+								}
+							}
+							else {
+								int resourceID = e.getResource();
+								if (resourceID == resource) {
+									double quantity = e.getQuanity();
+									double retrievedAmount = remainingAmount;
+									double rcap = e.getAmountResourceRemainingCapacity(resourceID);
+									double containerAmount = e.getAmountResourceStored(resourceID);
+									
 									if (quantity > 0 && containerAmount > 0 &&
-										suit.getAmountResourceRemainingCapacity(resourceID) >= containerAmount) {
-										suit.retrieveAmountResource(resourceID, containerAmount);
+										retrievedAmount >= rcap) {
+										retrievedAmount = rcap;
+									}
+									if (retrievedAmount > 0) {
+										e.retrieveAmountResource(resourceID, containerAmount);
 										remainingAmount -= containerAmount;
 									}
 								}
 							}
-							else {								
-								Equipment e = (Equipment)unit;
-								int resourceID = e.getResource();
-								double quantity = e.getQuanity();
-								double containerAmount = e.getAmountResourceStored(resourceID);
-								if (resourceID != -1 && quantity > 0 && containerAmount > 0 &&
-									getAmountResourceRemainingCapacity(resourceID, false, false) >= containerAmount) {
-									e.retrieveAmountResource(resourceID, containerAmount);
-									remainingAmount -= containerAmount;
-								}
-							}
-//							if (resourceID == resource && resourceID != -1) {
-//								double stored = e.getAmountResourceRemainingCapacity(resource); ?
-//								double retrievedAmount = remainingAmount;
-//								if (retrievedAmount > stored) {
-//									retrievedAmount = stored;
-//								}
-//								if (retrievedAmount > 0D) {
-//									e.retrieveAmountResource(resource, retrievedAmount);
-//									remainingAmount -= retrievedAmount;
-//								}
-//							}
 						}
 					}
 				}
@@ -1384,7 +1392,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e instanceof EVASuit) {
+				if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					if (e.getLastOwnerID() != -1)
 						result.add((EVASuit)e);
 				}
@@ -1403,7 +1411,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e instanceof SpecimenBox)
+				if (e.getEquipmentType() == EquipmentType.SPECIMEN_BOX)
 					result.add((SpecimenBox)e);
 			}
 		}
@@ -1435,10 +1443,10 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Person p = null;
-				if (owner instanceof Settlement) {
+				if (owner.getUnitType() == UnitType.SETTLEMENT) {
 					p = ((Settlement)owner).getAssociatedPerson(uid);
 				}
-				else if (owner instanceof Vehicle) {
+				else if (owner.getUnitType() == UnitType.VEHICLE) {
 					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(uid);
 				}
 				else 
@@ -1460,10 +1468,10 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Person p = null;
-				if (owner instanceof Settlement) {
+				if (owner.getUnitType() == UnitType.SETTLEMENT) {
 					p = ((Settlement)owner).getAssociatedPerson(uid);
 				}
-				else if (owner instanceof Vehicle) {
+				else if (owner.getUnitType() == UnitType.VEHICLE) {
 					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(uid);
 				}
 				else 
@@ -1537,7 +1545,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Vehicle v = unitManager.getVehicleByID(uid);
-				if (v != null && v instanceof Drone)
+				if (v != null && v.getVehicleType() == VehicleType.DELIVERY_DRONE)
 					result.add((Drone)v);
 			}
 		}
@@ -1624,18 +1632,6 @@ public class Inventory implements Serializable {
 	 * @return
 	 */
 	public boolean containsEquipment(int typeID) {
-//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(typeID);
-//		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-//			Iterator<Unit> i = getContainedUnits().iterator();
-//			while (i.hasNext()) {
-//				Unit unit = i.next();
-//				if (unitClass.isInstance(unit)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-		
 		return containsEquipment(EquipmentType.convertID2Type(typeID));
 	}
 	
@@ -1757,7 +1753,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-//				if (e instanceof EVASuit) {
 					suit = (EVASuit)e;
 					if (suit.getLastOwnerID() != -1
 						&& suit.getLastOwner().getName().equalsIgnoreCase(person.getName())) {
@@ -1785,7 +1780,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-//				if (e instanceof SpecimenBox)
 					return (SpecimenBox)e;
 				}
 			}
@@ -1804,7 +1798,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-//				if (e instanceof Bag) {
 					if (e.isBrandNew()) {
 						return (Bag)e;
 					}
@@ -1825,7 +1818,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-//				if (e instanceof Bag) {
 					if (empty) {
 						// It must be empty inside
 						if (e.isEmpty(resource)) {
@@ -1851,7 +1843,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-//				if (e instanceof Bag) {
 					if (empty) {
 						// It must be empty inside
 						if (e.isEmpty(resource)) {
@@ -1868,21 +1859,19 @@ public class Inventory implements Serializable {
 	}	
 	
 	/**
-	 * Finds all the units with a particular type ID
-	 * Note: currently use by equipment (containers) only
+	 * Finds all the equipment with a particular type ID
 	 * 
 	 * @param typeID
 	 * @return
 	 */
-	public Collection<Unit> findAllUnitsOfClass(int typeID) {	
-		Collection<Unit> result = new HashSet<Unit>();
+	public Collection<Equipment> findAllEquipmentTypeID(int typeID) {	
+		Collection<Equipment> result = new HashSet<Equipment>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			Iterator<Unit> i = getContainedUnits().iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
-				if (unit instanceof Equipment && 
-					((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
-						result.add(unit);
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null && 
+					e.getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
+						result.add(e);
 				}
 			}
 		}
@@ -1908,6 +1897,60 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Finds all equipment with a particular equipment type
+	 * 
+	 * @param typeString equipment type string
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public Collection<Unit> findAllEquipmentUnitName(String typeString) {
+		Collection<Unit> result = new HashSet<>();
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null && e.getType().equalsIgnoreCase(typeString)) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds all equipment with a particular equipment type
+	 * 
+	 * @param type EquipmentType
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public Collection<Equipment> findAllEquipmentType(String typeStsring) {
+		Collection<Equipment> result = new HashSet<>();
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null && e.getType().equalsIgnoreCase(typeStsring)) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds all equipment with a particular equipment type
+	 * 
+	 * @param type EquipmentType
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public Collection<Equipment> findAllEquipmentType(EquipmentType type) {
+		Collection<Equipment> result = new HashSet<>();
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null && e.getEquipmentType() == type) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Finds all of the equipment.
 	 * 
@@ -1935,7 +1978,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null) 
+				if (e != null && e instanceof ContainerInterface)
 					result.add(e);
 			}
 		}
@@ -1953,7 +1996,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-//				if (e != null && e instanceof SpecimenBox) {
 					result.add((SpecimenBox)e);
 				}	
 			}
@@ -1972,7 +2014,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-//				if (e != null && e instanceof EVASuit) {
 					result.add((EVASuit)e);
 				}	
 			}
@@ -1991,7 +2032,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-//				if (e != null && e instanceof Bag) {
 					result.add((Bag)e);
 				}	
 			}
@@ -2053,7 +2093,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-//				if (e instanceof SpecimenBox) {
 					if (isEmpty) {
 						// It must be empty inside
 						if (e.isEmpty(brandNew)) {
@@ -2081,7 +2120,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-//				if (e instanceof Bag) {
 					if (isEmpty) {
 						// It must be empty inside
 						if (e.isEmpty(brandNew)) {
@@ -2109,7 +2147,6 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-//				if (e instanceof EVASuit) {
 					if (isEmpty) {
 						// It must be empty inside
 						if (e.isEmpty(allowDirty)) {
@@ -2138,7 +2175,7 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Unit unit = unitManager.getUnitByID(uid);
 				if (unitClass.isInstance(unit)) {
-					if (unit instanceof Equipment) {
+					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (((Equipment)unit).isEmpty(brandNew)) {
 							result++;
 						}
@@ -2181,33 +2218,25 @@ public class Inventory implements Serializable {
 	}
 	
 	/**
-	 * Finds the number of empty equipment units
+	 * Finds the number of empty containers
 	 * 
 	 * @param typeID
-	 * @param brandNew  does it include brand new bag only
-	 * @return
+	 * @param brandNew is it brand new (never been used) ? 
+	 * @return number of empty containers
 	 */
-	public int findNumEmptyUnitsOfClass(int typeID, boolean brandNew) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(typeID);	
+	public int findNumEmptyContainers(int typeID, boolean brandNew) {
 		int result = 0;
-		if (containsEquipment(typeID)) {
-			for (Unit unit : getContainedUnits()) {
-				if (unitClass.isInstance(unit)) {
-					if (unit instanceof Equipment) {
-						if (((Equipment)unit).isEmpty(brandNew)) {
-							result++;
-						}
-					}
-					else {
-						Inventory inv = unit.getInventory();
-						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(brandNew)) {
-							result++;
-						}
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null && e.getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
+					if (e.isEmpty(brandNew)) {
+						result++;
 					}
 				}
 			}
 		}
+
 		return result;
 	}
 
@@ -2264,7 +2293,7 @@ public class Inventory implements Serializable {
 				result = true;
 			}
 					
-			if (owner != null && !(unit instanceof Equipment) 
+			if (owner != null && unit.getUnitType() != UnitType.EQUIPMENT  
 					&& unit.getInventory().containsUnit(owner)) {
 				logger.log(unit, Level.SEVERE, 30_000,
 						owner.getName() + " was owned by " + unit);
@@ -2310,9 +2339,10 @@ public class Inventory implements Serializable {
 					
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
 
-					if (unit instanceof Equipment) {
-						if (unit instanceof EVASuit) {
-							EVASuit suit = (EVASuit)unit;
+					if (unit.getUnitType() == UnitType.EQUIPMENT) {
+						Equipment e = (Equipment)unit;
+						if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+							EVASuit suit = (EVASuit)e;
 							for (int resourceID : suit.getResourceIDs()) {
 //								updateAmountResourceCapacityCache(resource);
 //								updateAmountResourceStoredCache(resource);
@@ -2320,12 +2350,11 @@ public class Inventory implements Serializable {
 							}
 						}
 						else {
-							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
 							double quantity = e.getQuanity();
 							if (resourceID != -1 && quantity > 0) {
-								updateAmountResourceCapacityCache(resourceID);
-								updateAmountResourceStoredCache(resourceID);
+//								updateAmountResourceCapacityCache(resourceID);
+//								updateAmountResourceStoredCache(resourceID);
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -2342,10 +2371,11 @@ public class Inventory implements Serializable {
 					}
 				}
 				
-				if (owner instanceof Settlement) {
+				if (owner.getUnitType() == UnitType.SETTLEMENT) {
 					// Try to empty amount resources into parent if container.
-					if (unit instanceof Equipment) {
-						if (unit instanceof EVASuit) {
+					if (unit.getUnitType() == UnitType.EQUIPMENT) {
+						Equipment e = (Equipment)unit;
+						if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 							EVASuit suit = (EVASuit)unit;
 							for (int i = 0; i < suit.getResourceIDs().size(); i++) {
 								int resourceID = suit.getResourceID(i);
@@ -2359,7 +2389,6 @@ public class Inventory implements Serializable {
 							}
 						}
 						else {
-							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
 							double quantity = e.getQuanity();
 							double containerAmount = e.getAmountResourceStored(resourceID);
@@ -2371,7 +2400,7 @@ public class Inventory implements Serializable {
 						}
 					}
 	
-					else if (unit instanceof Person) {
+					else if (unit.getUnitType() == UnitType.PERSON) {
 						((Settlement) owner).addPeopleWithin((Person)unit);
 					}
 				}
@@ -2447,8 +2476,9 @@ public class Inventory implements Serializable {
 					setAllStoredAmountResourcesCacheDirty();
 					setTotalAmountResourcesStoredCacheDirty();
 								
-					if (unit instanceof Equipment) {
-						if (unit instanceof EVASuit) {
+					if (unit.getUnitType() == UnitType.EQUIPMENT) {
+						Equipment e = (Equipment)unit;
+						if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 							EVASuit suit = (EVASuit)unit;
 							for (int resourceID : suit.getResourceIDs()) {
 //								updateAmountResourceCapacityCache(resource);
@@ -2457,13 +2487,12 @@ public class Inventory implements Serializable {
 							}
 						}
 						else {
-							Equipment e = (Equipment)unit;
 							int resourceID = e.getResource();
 							double quantity = e.getQuanity();
 							if (resourceID != -1 && quantity > 0) {
 								// resourceID != -1 means the container has not been initialized
-								updateAmountResourceCapacityCache(resourceID);
-								updateAmountResourceStoredCache(resourceID);
+//								updateAmountResourceCapacityCache(resourceID);
+//								updateAmountResourceStoredCache(resourceID);
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -2482,8 +2511,8 @@ public class Inventory implements Serializable {
 					}
 				}
 				
-				if (owner instanceof Settlement) {
-					if (unit instanceof Person) {
+				if (owner.getUnitType() == UnitType.SETTLEMENT) {
+					if (unit.getUnitType() == UnitType.PERSON) {
 						// Retrieve this person from the settlement
 						((Settlement) owner).removePeopleWithin((Person)unit);
 					}
@@ -2665,11 +2694,10 @@ public class Inventory implements Serializable {
 		if (owner != null 
 				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
 				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
-
-//			if (owner instanceof MarsSurface) {
-//				return;
-//			}
-//			else
+			if (owner.getUnitType() == UnitType.PLANET) {
+				return;
+			}
+			else
 				setCacheDirty(0);
 		}
 	}
@@ -2740,9 +2768,13 @@ public class Inventory implements Serializable {
 		if (containersCapacityCacheDirty.containsKey(resource)) {
 			if (containersCapacityCacheDirty.get((Integer)resource)) {
 				if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-					for (Unit unit : getContainedUnits()) {
-						if (unit instanceof Equipment) {
-							containedCapacity += ((Equipment)unit).getAmountResourceCapacity(resource);
+					for (Integer uid : containedUnitIDs) {
+						Unit u = unitManager.getUnitByID(uid);
+						if (u.getUnitType() == UnitType.EQUIPMENT) {
+							containedCapacity += ((Equipment)u).getAmountResourceCapacity(resource);
+						}
+						else {
+							containedCapacity += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
 				}
@@ -2774,11 +2806,15 @@ public class Inventory implements Serializable {
 		
 		if (containersStoredCacheDirty.containsKey(resource)) {
 			// Check if containersStoredCacheDirty is null from another thread
-			if (containersStoredCacheDirty.get(resource)) {
+			if (containersStoredCacheDirty.get(resource)) {				
 				if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-					for (Unit unit : getContainedUnits()) {
-						if (unit instanceof Equipment) {
-							containedStored +=  ((Equipment)unit).getAmountResourceStored(resource);
+					for (Integer uid : containedUnitIDs) {
+						Unit u = unitManager.getUnitByID(uid);
+						if (u.getUnitType() == UnitType.EQUIPMENT) {
+							containedStored +=  ((Equipment)u).getAmountResourceStored(resource);
+						}
+						else {
+							containedStored += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
 					containersStoredCache.put(resource, containedStored);
@@ -2936,15 +2972,19 @@ public class Inventory implements Serializable {
 		else if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-					for (Unit unit : getContainedUnits()) {
-						if (unit instanceof Equipment) {
-							containerStored += ((Equipment)unit).getAmountResourceStored(resource);
+					for (Integer uid : containedUnitIDs) {
+						Equipment e = unitManager.getEquipmentByID(uid);
+						if (e != null) {
+							containerStored += e.getAmountResourceStored(resource);
 						}
-					}
+						else {
+							containerStored += unitManager.getUnitByID(uid).getInventory().getAmountResourceStored(resource, false);
+						}
+					}	
 				}
 				containersStoredCache.put(resource, containerStored);
-
 				containersStoredCacheDirty.put(resource, false);
+				
 			} else {
 				containerStored = containersStoredCache.get(resource);
 			}
@@ -3043,12 +3083,25 @@ public class Inventory implements Serializable {
 		}
 
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Unit unit : getContainedUnits()) {
-				if (unit instanceof Equipment) {
-					int resource = ((Equipment)unit).getResource();
-					if (resource != -1)
-						// resourceID = -1 means the container has not been initialized
-						tempAllStored.add(resource);
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				
+				if (e != null) {
+					// Include EVASuit's 3 resources
+					if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+						List<Integer> set = ((EVASuit)e).getResourceIDs();
+						tempAllStored.addAll(set);
+					}
+					else {
+						int resource = e.getResource();
+						if (resource != -1)
+							// resourceID = -1 means the container has not been initialized
+							tempAllStored.add(resource);
+					}
+				}
+				else {
+					Set<Integer> set = unitManager.getUnitByID(uid).getInventory().getAllARStored(false);
+					tempAllStored.addAll(set);
 				}
 			}
 		}
@@ -3100,12 +3153,13 @@ public class Inventory implements Serializable {
 		}
 
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Unit unit : getContainedUnits()) {
-				if (unit instanceof Equipment) {
-					tempStored = ((Equipment)unit).getStoredMass();
+			for (Integer uid : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(uid);
+				if (e != null) {
+					tempStored = e.getStoredMass();
 				}
 				else
-					tempStored = unit.getInventory().getTotalAmountResourcesStored(false);
+					tempStored = unitManager.getUnitByID(uid).getInventory().getTotalAmountResourcesStored(false);
 			}
 		}
 

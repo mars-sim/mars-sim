@@ -1213,4 +1213,17 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 		}
 		return robotType;
 	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = getNickName().hashCode();
+		hashCode *= getRobotType().hashCode();
+		hashCode *= getIdentifier();
+		return hashCode;
+	}
+	
 }

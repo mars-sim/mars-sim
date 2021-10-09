@@ -926,8 +926,8 @@ public class Walk extends Task implements Serializable {
 			else {
 				if (person.isOutside()) {
 					setDescription("Walking outside toward (" + xx + ", " + yy + ")");
-					logger.info(person, "Walking exterior from (" + x + ", " + y + ") to (" 
-							+ xx + ", " + yy + ")");
+//					logger.info(person, "Walking outside from (" + x + ", " + y + ") to (" 
+//							+ xx + ", " + yy + ")");
 					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
 				} 
 				else {

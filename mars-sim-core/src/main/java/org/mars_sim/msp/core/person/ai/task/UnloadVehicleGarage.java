@@ -410,17 +410,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+			Iterator<Equipment> k = vehicleInv.findAllEquipment().iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
-				Equipment equipment = (Equipment) k.next();
-
+				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment);
-				
 				equipment.transfer(vehicleInv, settlementInv);
-//				vehicleInv.retrieveUnit(equipment);
-//				settlementInv.storeUnit(equipment);
-				
 				amountUnloading -= equipment.getMass();
 
 				if (!vehicle.getName().contains("Mock")) {

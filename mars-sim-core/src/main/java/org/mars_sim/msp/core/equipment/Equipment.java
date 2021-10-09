@@ -50,18 +50,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	
 	/** The identifier for the last owner of this equipment. */
 	private int lastOwner;
-	/** The equipment type. */
-	private final String type;
-	
+	/** The id of the resource that this equipment holds. */
 	private int resource = -1;
+	/** The quantity of the resource. */
 	private double quantity;
-	
 	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
 	
-	private Set<Integer> resources;
+//	private Set<Integer> resources;
 	
 	/**
 	 * Constructs an Equipment object
@@ -74,7 +72,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		super(name, settlement.getCoordinates());
 		
 		// Initialize data members.
-		this.type = type;
 		this.equipmentType = EquipmentType.convertName2Enum(type);
 		isSalvaged = false;
 		salvageInfo = null;
@@ -465,7 +462,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	public String getType() {
-		return type;
+		return equipmentType.getName();
 	}
 	
 	public EquipmentType getEquipmentType() {
@@ -520,7 +517,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public int hashCode() {
 		int hashCode = getNickName().hashCode();
-		hashCode *= type.hashCode();
+		hashCode *= equipmentType.hashCode();
 		hashCode *= getIdentifier();
 		return hashCode;
 	}

@@ -1156,52 +1156,41 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
-	/**
-	 * Robot consumes given amount of power
-	 * 
-	 * @param amount    amount of power to consume (in kJ).
-	 * @param container unit to get power from
-	 * @throws Exception if error consuming power.
-	 */
-	public void consumePower(double amount, Unit container) {
-		if (container == null)
-			throw new IllegalArgumentException("container is null");
-	}
 
-	/**
-	 * Person consumes given amount of packed food
-	 * 
-	 * @param amount    amount of food to consume (in kg).
-	 * @param container unit to get food from
-	 * @throws Exception if error consuming food.
-	 */
-	public void consumePackedFood(double amount, Unit container) {
-		Inventory inv = container.getInventory();
-
-		double foodEaten = amount;
-		double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodID, false);
-
-		inv.addAmountDemandTotalRequest(ResourceUtil.foodID, foodEaten);
-
-		if (foodAvailable < 0.01D) {
-
-			logger.log(person, Level.WARNING, 10_000, "Found only " + foodAvailable
-							+ " kg preserved food remaining.");
-			}
-
-		// if container has less than enough food, finish up all food in the container
-		else {
-
-			if (foodEaten > foodAvailable)
-				foodEaten = foodAvailable;
-
-			foodEaten = Math.round(foodEaten * 1_000_000.0) / 1_000_000.0;
-			// subtract food from container
-			inv.retrieveAmountResource(ResourceUtil.foodID, foodEaten);
-
-			inv.addAmountDemand(ResourceUtil.foodID, foodEaten);
-		}
-	}
+//	/**
+//	 * Person consumes given amount of packed food
+//	 * 
+//	 * @param amount    amount of food to consume (in kg).
+//	 * @param container unit to get food from
+//	 * @throws Exception if error consuming food.
+//	 */
+//	public void consumePackedFood(double amount, Unit container) {
+//		Inventory inv = container.getInventory();
+//
+//		double foodEaten = amount;
+//		double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodID, false);
+//
+//		inv.addAmountDemandTotalRequest(ResourceUtil.foodID, foodEaten);
+//
+//		if (foodAvailable < 0.01D) {
+//
+//			logger.log(person, Level.WARNING, 10_000, "Found only " + foodAvailable
+//							+ " kg preserved food remaining.");
+//			}
+//
+//		// if container has less than enough food, finish up all food in the container
+//		else {
+//
+//			if (foodEaten > foodAvailable)
+//				foodEaten = foodAvailable;
+//
+//			foodEaten = Math.round(foodEaten * 1_000_000.0) / 1_000_000.0;
+//			// subtract food from container
+//			inv.retrieveAmountResource(ResourceUtil.foodID, foodEaten);
+//
+//			inv.addAmountDemand(ResourceUtil.foodID, foodEaten);
+//		}
+//	}
 
 	/**
 	 * Person consumes given amount of oxygen

@@ -183,7 +183,7 @@ public final class EquipmentFactory {
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
-
+	
 	/**
 	 * Gets the equipment class with its resource id
 	 * 
