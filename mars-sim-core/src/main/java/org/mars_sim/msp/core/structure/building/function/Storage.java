@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -31,8 +32,11 @@ public class Storage extends Function implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Storage.class.getName());
 
+	private static int greyWaterID = ResourceUtil.greyWaterID;
+
 	private Map<Integer, Double> resourceCapacities;
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -47,7 +51,7 @@ public class Storage extends Function implements Serializable {
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 
-		// Note : A capacity of a resource in a settlement is the sum of the capacity of
+		// Note: A capacity of a resource in a settlement is the sum of the capacity of
 		// the same resource in all buildings of that settlement
 		
 		// Initialize resource capacities for this building.
@@ -242,19 +246,15 @@ public class Storage extends Function implements Serializable {
 				// double stored = inv.getAmountResourceStored(ar, false);
 				if (remainingCapacity < 0.00001) {
 					result = false;
-					// TODO: increase VP of barrel/bag/gas canister for storage to prompt for
+					// Note: increase VP of barrel/bag/gas canister for storage to prompt for
 					// manufacturing them
 					
 					// Vent or drain 1% of resource
 					double ventAmount = 0.01 * inv.getAmountResourceCapacity(id, false);
 					inv.retrieveAmountResource(id, ventAmount);
-//					LogConsolidated.log(Level.WARNING, 10_000, sourceName + "::" + method, 
-//							"[" + inv.getOwner()
-//				    		+ "] No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
-//				    		+ ResourceUtil.findAmountResourceName(id) + ". Venting ", null);
-					
+				
 					// Adjust the grey water filtering rate
-					if (id == ResourceUtil.greyWaterID && inv.getOwner() instanceof Settlement) {
+					if (id == greyWaterID && inv.getOwner().getUnitType() == UnitType.SETTLEMENT) {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
@@ -350,7 +350,7 @@ public class Storage extends Function implements Serializable {
 
 				if (amountStored < 0.00001) {
 					result = false;
-					if (id == ResourceUtil.greyWaterID && inv.getOwner() instanceof Settlement) {
+					if (id == greyWaterID && inv.getOwner().getUnitType() == UnitType.SETTLEMENT) {
 						Settlement s = (Settlement)(inv.getOwner());
 						// Adjust the grey water filtering rate
 						s.decreaseGreyWaterFilteringRate();

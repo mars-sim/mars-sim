@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.ContainerInterface;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -850,7 +849,6 @@ public class Inventory implements Serializable {
 							}
 							else {
 								int resourceID = e.getResource();
-								// If resourceID = -1, then it's brand new and is suitable for storing this resource
 								if (resourceID == storedResourceID || resourceID == -1) {
 									double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
 									double unitStorageAmount = remainingAmount;
@@ -965,14 +963,14 @@ public class Inventory implements Serializable {
 							else {
 								int resourceID = e.getResource();
 								// If resourceID = -1, then it's brand new and is suitable for storing this resource
-								if (resourceID == resource || resourceID == -1) { 
-									double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
+								if (resourceID == resource || resourceID == -1) {
+									double remainingCap = e.getAmountResourceRemainingCapacity(resource);
 									double unitStorageAmount = remainingAmount;
 									if (unitStorageAmount > remainingCap) {
 										unitStorageAmount = remainingCap;
 									}
 									if (unitStorageAmount > 0D) {
-										e.storeAmountResource(resourceID, unitStorageAmount);
+										e.storeAmountResource(resource, unitStorageAmount);
 										remainingAmount -= unitStorageAmount;
 									}	
 								}
@@ -1965,7 +1963,7 @@ public class Inventory implements Serializable {
 	}
 	
 	/**
-	 * Finds all of the containers.
+	 * Finds all of the containers (excluding EVA suit).
 	 * 
 	 * @return collection of containers or empty collection if none.
 	 */
@@ -1974,7 +1972,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e instanceof ContainerInterface)
+				if (e != null && e.getEquipmentType() != EquipmentType.EVA_SUIT) 
 					result.add(e);
 			}
 		}
@@ -2680,18 +2678,18 @@ public class Inventory implements Serializable {
 			}
 		}
 
-		Unit owner = getOwner();
-		// Set owner unit's amount resource capacity cache as dirty (if any).
-		if (owner != null) {
-			if (owner.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID)
-				return;
-			if (owner.getContainerID() == Unit.OUTER_SPACE_UNIT_ID)
-				return;
-			if (owner.getUnitType() == UnitType.PLANET)
-				return;
-				
-			setCacheDirty(0);
-		}
+//		Unit owner = getOwner();
+//		// Set owner unit's amount resource capacity cache as dirty (if any).
+//		if (owner != null) {
+//			if (owner.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID)
+//				return;
+//			if (owner.getContainerID() == Unit.OUTER_SPACE_UNIT_ID)
+//				return;
+//			if (owner.getUnitType() == UnitType.PLANET)
+//				return;
+//				
+//			setCacheDirty(0);
+//		}
 	}
 
 	/**
@@ -2903,7 +2901,7 @@ public class Inventory implements Serializable {
 		}
 		
 		// Set owner unit's amount resource stored cache as dirty (if any).
-		setCacheDirty(1);
+//		setCacheDirty(1);
 	}
 
 	/**
@@ -3026,8 +3024,8 @@ public class Inventory implements Serializable {
 
 		allStoredAmountResourcesCacheDirty = true;
 
-//		// Mark owner unit's all stored amount resources stored as dirty, if any.
-		setCacheDirty(2);
+		// Mark owner unit's all stored amount resources stored as dirty, if any.
+//		setCacheDirty(2);
 	}
 
 	/**
@@ -3114,7 +3112,7 @@ public class Inventory implements Serializable {
 		setTotalInventoryMassCacheDirty();
 
 		// Mark owner unit's total resources stored as dirty, if any.
-		setCacheDirty(3);
+//		setCacheDirty(3);
 	}
 
 	/**
@@ -3256,7 +3254,7 @@ public class Inventory implements Serializable {
 		totalInventoryMassCacheDirty = true;
 
 		// Set owner's unit total mass to dirty, if any.
-		setCacheDirty(4);
+//		setCacheDirty(4);
 	}
 
 	/**
@@ -3359,33 +3357,38 @@ public class Inventory implements Serializable {
 		testingTag = value;
 	}
 
-	/**
-	 * Sets the cache as dirty 
-	 * 
-	 * @param type
-	 */
-	public void setCacheDirty(int type) {
-		// Set owner unit's amount resource stored cache as dirty (if any).	
-		Unit owner = getOwner();
-		if (owner != null 
-				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
-				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
-			Unit cu = owner.getContainerUnit();
-			if (cu != null) {
-		
-				if (type == 0)
-					cu.getInventory().setAmountResourceCapacityCacheAllDirty(true);
-				else if (type == 1)
-					cu.getInventory().setAmountResourceStoredCacheAllDirty(true);
-				else if (type == 2)
-					cu.getInventory().setAllStoredARCacheDirty();
-				else if (type == 3)
-					cu.getInventory().setTotalAmountResourcesStoredCacheDirty();
-				else if (type == 4)
-					cu.getInventory().setUnitTotalMassCacheDirty();
-			}
-		}
-	}
+//	/**
+//	 * Sets the cache as dirty 
+//	 * 
+//	 * @param type
+//	 */
+//	public void setCacheDirty(int type) {
+//		// Set owner unit's amount resource stored cache as dirty (if any).	
+//		Unit owner = getOwner();
+//		if (owner != null) {
+//			if (owner.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID)
+//				return;
+//			if (owner.getContainerID() == Unit.OUTER_SPACE_UNIT_ID)
+//				return;
+//			if (owner.getUnitType() == UnitType.PLANET)
+//				return;
+//			
+//			Unit cu = owner.getContainerUnit();
+//			if (cu != null) {
+//		
+//				if (type == 0)
+//					cu.getInventory().setAmountResourceCapacityCacheAllDirty(true);
+//				else if (type == 1)
+//					cu.getInventory().setAmountResourceStoredCacheAllDirty(true);
+//				else if (type == 2)
+//					cu.getInventory().setAllStoredARCacheDirty();
+//				else if (type == 3)
+//					cu.getInventory().setTotalAmountResourcesStoredCacheDirty();
+//				else if (type == 4)
+//					cu.getInventory().setUnitTotalMassCacheDirty();
+//			}
+//		}
+//	}
 	
 	public static void initializeInstances(UnitManager um) {
 		unitManager = um;

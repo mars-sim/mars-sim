@@ -1404,7 +1404,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.BUILDING;
 	}
 

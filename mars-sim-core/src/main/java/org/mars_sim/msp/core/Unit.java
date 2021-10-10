@@ -245,7 +245,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * some logical UnitTypes can have multiple implementation, e.g. Equipment.
 	 * @return
 	 */
-	protected abstract UnitType getUnitType();
+	public abstract UnitType getUnitType();
 
 	/**
 	 * Is this time pulse valid for the Unit.Has it been already applied?

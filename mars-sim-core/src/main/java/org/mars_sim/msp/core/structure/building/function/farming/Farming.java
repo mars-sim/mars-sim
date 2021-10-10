@@ -1,7 +1,7 @@
-/**
-* Mars Simulation Project
+/*
+ * Mars Simulation Project
  * Farming.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -81,7 +81,6 @@ public class Farming extends Function implements Serializable {
 	public static final double O2_RATE = .75;
 	public static final double MIN  = .00001D;// 0.0000000001;
 
-	
 //	 private static ItemResource LED_Item;
 //	 private static ItemResource HPS_Item;
 //	 private int numLEDInUse;
@@ -89,7 +88,7 @@ public class Farming extends Function implements Serializable {
 //	/** The number of crop types available. */
 //	private static int cropTypeNum;
 	/** The number of High Power Sodium Lamp needed. */
-	private int numHPSinNeed;
+//	private int numHPSinNeed;
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -420,10 +419,10 @@ public class Farming extends Function implements Serializable {
 
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
-		// TODO: adjust how much old soil should be turned to crop waste
+		// Note: adjust how much old soil should be turned to crop waste
 		store(amount, ResourceUtil.cropWasteID, "Farming::provideNewSoil");
 
-		// TODO: adjust how much new soil is needed to replenish the soil bed
+		// Note: adjust how much new soil is needed to replenish the soil bed
 		if (amount > MIN)
 			retrieve(amount, ResourceUtil.soilID, true);
 
@@ -741,7 +740,7 @@ public class Farming extends Function implements Serializable {
 				// Reset cumulativeDailyPAR
 				for (Crop c : crops)
 					c.resetPAR();
-				// TODO: will need to limit the size of the other usage maps
+				// Note: will need to limit the size of the other usage maps
 			}
 	
 			// Determine the production level.
@@ -829,7 +828,7 @@ public class Farming extends Function implements Serializable {
 
 		powerRequired += getTotalLightingPower();
 
-		// TODO: add separate auxiliary power for subsystem, not just lighting power
+		// Note: add separate auxiliary power for subsystem, not just lighting power
 
 		return powerRequired;
 	}

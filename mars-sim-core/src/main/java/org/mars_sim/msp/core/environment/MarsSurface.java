@@ -48,7 +48,7 @@ public class MarsSurface extends Unit implements Serializable {
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.PLANET;
 	}
 

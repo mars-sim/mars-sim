@@ -926,7 +926,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.ROBOT;
 	}
 

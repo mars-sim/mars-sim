@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Crop.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -831,7 +831,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					dailyHarvest = 0;
 					return true;
 				}
-				// TODO: is it better off doing the actualHarvest computation once a day or
+				// Note: is it better off doing the actualHarvest computation once a day or
 				// every time
 				// Reset the daily work counter currentPhaseWorkCompleted back to zero
 				// currentPhaseWorkCompleted = 0D;
@@ -847,6 +847,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// max possible harvest within this period of time
 			double maxPeriodHarvest = maxHarvest * (time / growingTime);
 			// Compute each harvestModifiers and sum them up below
+			// Note: computeHarvest takes up 40% of all cpu utilization
 			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time);
 			// Add to the daily harvest.
 			dailyHarvest += maxPeriodHarvest * harvestModifier;
@@ -1217,7 +1218,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// farm.addCO2Cache(-cO2Used);
 				cumulative_co2 = cumulative_co2 - cO2Used;
 			}
-			// TODO: research how much high amount of CO2 may facilitate the crop growth and
+			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
 
 //			co2Modifier = cO2Used / cO2Req;
@@ -1319,6 +1320,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		computeWaterFertilizer(growthFactor, time);
 
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
+		// Note: computeGases takes up 25% of all cpu utilization
 		computeGases(effectivePAR, growthFactor, time);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 

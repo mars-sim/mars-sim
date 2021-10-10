@@ -1652,7 +1652,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.VEHICLE;
 	}
 	

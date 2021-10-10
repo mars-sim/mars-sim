@@ -3526,7 +3526,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.SETTLEMENT;
 	}
 

@@ -1900,7 +1900,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.PERSON;
 	}
 

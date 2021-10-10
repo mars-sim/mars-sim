@@ -157,6 +157,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			// Run each resource process.
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
+				// 	processResources takes up 32% of all cpu utilization
 				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlementInventory());
 			}
 		}

@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -474,7 +473,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.EQUIPMENT;
 	}
 
@@ -517,7 +516,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public int hashCode() {
 		int hashCode = getNickName().hashCode();
-		hashCode *= equipmentType.hashCode();
+		hashCode *= getEquipmentType().hashCode() ;
 		hashCode *= getIdentifier();
 		return hashCode;
 	}

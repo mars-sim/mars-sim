@@ -540,7 +540,7 @@ implements Serializable, LocalBoundedObject {
 	}
 
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
 	}
 }

@@ -83,7 +83,7 @@ public class PreparingDessert extends Function implements Serializable {
 	private static int NUM_DESSERTS = availableDesserts.length;
 
 	private static int waterID = ResourceUtil.waterID;
-	private static int greyWaterID = ResourceUtil.greyWaterID;
+//	private static int greyWaterID = ResourceUtil.greyWaterID;
 	private static int foodWasteID = ResourceUtil.foodWasteID;
 	public static int NaClOID = ResourceUtil.NaClOID;
 
