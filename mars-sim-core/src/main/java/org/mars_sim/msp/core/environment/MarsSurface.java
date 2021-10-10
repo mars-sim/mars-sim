@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -52,6 +53,17 @@ public class MarsSurface extends Unit implements Serializable {
 		return UnitType.PLANET;
 	}
 
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		return ResourceUtil.findAmountResourceName(resource);
+	}
+	
 	@Override
 	public Settlement getSettlement() {
 		return null;

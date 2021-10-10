@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -1904,6 +1905,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return UnitType.PERSON;
 	}
 
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		return ResourceUtil.findAmountResourceName(resource);
+	}
+	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */

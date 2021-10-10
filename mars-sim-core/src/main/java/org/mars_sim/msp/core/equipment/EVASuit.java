@@ -9,14 +9,13 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -85,8 +84,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public static final int h2o = ResourceUtil.waterID;
 	public static final int co2 = ResourceUtil.co2ID;
 	
-	/** capacity (kg). */
-	public static final double CAPACITY = 250;
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
@@ -95,6 +92,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static final double CO2_CAPACITY = 1D;
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
+	/** capacity (kg). */
+	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
 	private static final double NORMAL_AIR_PRESSURE = 17;// 20.7; // CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
 	/** Normal temperature (celsius). */
@@ -119,15 +118,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private List<Integer> resourceIDs = new ArrayList<>();
 	/** A list of Amount Resources. */
 	private List<AmountResource> resourceARs = new ArrayList<>();
-
-	/** A map of resources with quantity. */
-	private Map<Integer, Double> quantityMap = new HashMap<>();
-	/** A map of resources with capacity. */
-	private Map<Integer, Double> capacityMap = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
+	/** The MicroInventory instance. */
+	private MicroInventory microInventory;
+	
 	static {
 		 
 		 for (String p: ItemResourceUtil.EVASUIT_PARTS) {
@@ -187,13 +184,15 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		resourceARs.add(1, ResourceUtil.waterAR);
 		resourceARs.add(2, ResourceUtil.carbonDioxideAR);
 		
-		quantityMap.put(o2, 0.0); 
-		quantityMap.put(h2o, 0.0);
-		quantityMap.put(co2, 0.0);
+		microInventory = new MicroInventory(this);
+	
+		microInventory.setQuantity(o2, 0); 
+		microInventory.setQuantity(h2o, 0);
+		microInventory.setQuantity(co2, 0);
 		
-		capacityMap.put(o2, OXYGEN_CAPACITY); 
-		capacityMap.put(h2o, WATER_CAPACITY);
-		capacityMap.put(co2, CO2_CAPACITY);
+		microInventory.setCapacity(o2, OXYGEN_CAPACITY); 
+		microInventory.setCapacity(h2o, WATER_CAPACITY);
+		microInventory.setCapacity(co2, CO2_CAPACITY);
 	}
 	
 	/**
@@ -233,7 +232,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @return quantity
 	 */
 	public double getQuanity(int resource) {
-		return quantityMap.get(resource);
+		return microInventory.getQuanity(resource);
 	}
 	
 	/**
@@ -242,8 +241,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @param resource
 	 * @param quantity
 	 */
-	public void setQuanity(int resource, double quantity) {
-		quantityMap.put(resource, quantity);
+	public void setQuantity(int resource, double quantity) {
+		microInventory.setQuantity(resource, quantity);
 	}
 	
 	/**
@@ -290,24 +289,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			
-			double newQ = getQuanity(resource) + quantity;
-			String name = ResourceUtil.findAmountResourceName(resource);
-			
-			if (newQ > getTotalCapacity()) {
-				double excess = newQ - getTotalCapacity();
-				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
-				setQuanity(resource, getTotalCapacity());
-				return excess;
-			}
-			else {
-				setQuanity(resource, newQ);
-//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
-				return 0;
-			}
+			return microInventory.storeAmountResource(resource, quantity);
 		}
 		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
+			String name = findAmountResourceName(resource);
 			logger.warning(this, "Invalid request for storing " + name + ".");
 			return quantity;
 		}
@@ -325,24 +310,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			double q = getQuanity(resource);
-			double diff = q - quantity;
-			if (diff < 0) {
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, 10_000L, "Just retrieved all " + q + " kg of " 
-						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
-				setQuanity(resource, 0);
-				return diff;
-			}
-			else {
-				setQuanity(resource, diff);
-				return 0;
-			}
+			return microInventory.retrieveAmountResource(resource, quantity);
 		}
 		else {
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			String name = findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 10.0)/10.0 + " kg "+ requestedResource + ".");
+					+ Math.round(quantity* 10.0)/10.0 + " kg "+ name + ".");
 			return quantity;
 		}
 	}
@@ -415,7 +388,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
-        return capacityMap.get(resource);
+        return microInventory.getCapacity(resource);
     }
     
 	/**
@@ -425,30 +398,18 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
     @Override
 	public double getStoredMass() {
-		double total = 0;
-//		if (quantityMap != null && !quantityMap.isEmpty()) {
-			for (double m: quantityMap.values()) {
-				total += m;
-			}
-//		}
-		return total;
+		return microInventory.getStoredMass();
 	}
 	
 	/**
-	 * Is this suit empty ?
+	 * Is this suit empty of this resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
 	@Override
 	public boolean isEmpty(int resource) {
-//		if (quantityMap != null && !quantityMap.isEmpty()) {
-			for (double m: quantityMap.values()) {
-				if (m > 0)
-					return false;
-			}
-//		}
-		return true;
+		return microInventory.isEmpty(resource);
 	}
 
 	/**
@@ -460,19 +421,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	@Override
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
-			if (getLastOwnerID() == -1) {				
-				return true;
-			}
+			return isBrandNew();
 		}
 
-//		if (quantityMap != null && !quantityMap.isEmpty()) {
-			for (double m: quantityMap.values()) {
-				if (m > 0)
-					return false;
-			}
-//		}
-		
-		return true;
+		return microInventory.isEmpty();
 	}	
 
 	@Override
@@ -489,13 +441,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	@Override
 	public boolean hasContent() {
-//		if (quantityMap != null && !quantityMap.isEmpty()) {
-			for (double m: quantityMap.values()) {
-				if (m > 0)
-					return true;
-			}
-//		}
-		return false;
+		return !microInventory.isEmpty();
 	}
 	
 	/**
@@ -780,12 +726,31 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 //		return this.getNickName().equals(e.getNickName());
 //	}
 	
+	/**
+	 * Gets the owner of this suit
+	 * 
+	 * @return owner
+	 */
 	private Person getOwner() {
 		return (Person)getLastOwner();
 	}
 	
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		int index = getIndex(resource);
+		return resourceARs.get(index).getName();
+	}
+	
 	public void destroy() {
 		malfunctionManager = null;
+		microInventory = null;
+		resourceARs = null;
 	}
 }
 

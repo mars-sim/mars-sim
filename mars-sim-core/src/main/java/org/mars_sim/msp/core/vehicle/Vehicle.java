@@ -1656,6 +1656,17 @@ public abstract class Vehicle extends Unit
 		return UnitType.VEHICLE;
 	}
 	
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		return ResourceUtil.findAmountResourceName(resource);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

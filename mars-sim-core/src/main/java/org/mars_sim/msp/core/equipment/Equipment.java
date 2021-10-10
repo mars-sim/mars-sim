@@ -9,9 +9,11 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -21,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -53,13 +56,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private int resource = -1;
 	/** The quantity of the resource. */
 	private double quantity;
+	/** The Amount Resource. */
+	private AmountResource resourceAR;
 	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
-	
-//	private Set<Integer> resources;
-	
+
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -94,14 +97,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	public double getQuanity() {
 		return quantity;
 	}
-	
 
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
 	@Override
 	public double getMass() {
-		// Note stored mass may be have a differnet implementation in subclasses
+		// Note stored mass may be have a different implementation in subclasses
 		return getStoredMass() + getBaseMass();
 	}
 
@@ -118,7 +120,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			// Question: if a bag was filled with regolith and later was emptied out
 			// should it be tagged for only regolith and NOT for another resource ?
 			this.resource = resource;
-			String name = ResourceUtil.findAmountResourceName(resource);
+			resourceAR = ResourceUtil.findAmountResource(resource);
+			String name = findAmountResourceName(resource);
 			if (name != null) {
 //				logger.config(this, "Initialized for storing " + name + ".");
 			}
@@ -131,9 +134,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (this.resource == resource) {
 			
 			double newQ = this.quantity + quantity;
-			String name = ResourceUtil.findAmountResourceName(resource);
-			
+	
 			if (newQ > getTotalCapacity()) {
+				String name = findAmountResourceName(resource);
+				
 				double excess = newQ - getTotalCapacity();
 				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
 				this.quantity = getTotalCapacity();
@@ -146,8 +150,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			}
 		}
 		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String name = findAmountResourceName(resource);
+			String storedResource = findAmountResourceName(this.resource);
 			logger.warning(this, "Invalid request for storing " + name 
 					+ ". Already have " + Math.round(this.quantity* 10.0)/10.0 + " kg " + storedResource + ".");
 			return quantity;
@@ -165,7 +169,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (this.resource == resource) {
 			double diff = this.quantity - quantity;
 			if (diff < 0) {
-				String name = ResourceUtil.findAmountResourceName(resource);
+				String name = findAmountResourceName(resource);
 				logger.warning(this, 10_000L, "Just retrieved all " + this.quantity + " kg of " 
 						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
 				this.quantity = 0;
@@ -177,13 +181,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			}
 		}
 		else if (this.resource == -1) {
-			String name = ResourceUtil.findAmountResourceName(resource);
+			String name = findAmountResourceName(resource);
 			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
 					+ name + ". Not being used for storing anything yet.");
 			return 0;
 		}
 		else {
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			String requestedResource = findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
 					+ Math.round(quantity* 10.0)/10.0 + " kg "
 					+ requestedResource + ".");
@@ -477,6 +481,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return UnitType.EQUIPMENT;
 	}
 
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		return resourceAR.getName();
+	}
+	
 	public static String generateName(String baseName) {
 		if (baseName == null) {
 			throw new IllegalArgumentException("Must specify a baseName");

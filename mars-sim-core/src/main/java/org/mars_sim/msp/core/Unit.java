@@ -1032,6 +1032,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public boolean transfer(Inventory originInv, Inventory destinationInv) {
 		return originInv.transferUnit(this, destinationInv.getOwner());
 	}
+	
+	public abstract String findAmountResourceName(int resource);
+	
 	/**
 	 * Compares this object with the specified object for order.
 	 * 

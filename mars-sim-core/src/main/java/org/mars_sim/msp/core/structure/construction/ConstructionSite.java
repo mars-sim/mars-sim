@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -542,5 +543,16 @@ implements Serializable, LocalBoundedObject {
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
+	}
+	
+	/**
+	 * Finds the string name of the amount resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findAmountResourceName(int resource) {
+		return ResourceUtil.findAmountResourceName(resource);
 	}
 }
