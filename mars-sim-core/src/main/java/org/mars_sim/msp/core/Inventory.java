@@ -966,13 +966,13 @@ public class Inventory implements Serializable {
 								int resourceID = e.getResource();
 								// If resourceID = -1, then it's brand new and is suitable for storing this resource
 								if (resourceID == resource || resourceID == -1) { 
-									double remainingCap = e.getAmountResourceRemainingCapacity(resource);
+									double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
 									double unitStorageAmount = remainingAmount;
 									if (unitStorageAmount > remainingCap) {
 										unitStorageAmount = remainingCap;
 									}
 									if (unitStorageAmount > 0D) {
-										e.storeAmountResource(resource, unitStorageAmount);
+										e.storeAmountResource(resourceID, unitStorageAmount);
 										remainingAmount -= unitStorageAmount;
 									}	
 								}
@@ -1062,14 +1062,12 @@ public class Inventory implements Serializable {
 								for (int i = 0; i < suit.getResourceIDs().size(); i++) {
 									int resourceID = suit.getResourceID(i);
 									if (resourceID == resource) {
-										double quantity = suit.getQuanity(i);
 										double retrievedAmount = remainingAmount;
-										double rcap = suit.getAmountResourceRemainingCapacity(resourceID);
 										double containerAmount = suit.getAmountResourceStored(resourceID);
 										
-										if (quantity > 0 && containerAmount > 0 &&
-											retrievedAmount >= rcap) {
-											retrievedAmount = rcap;
+										if (containerAmount > 0 &&
+											retrievedAmount >= containerAmount) {
+											retrievedAmount = containerAmount;
 										}
 										if (retrievedAmount > 0) {
 											suit.retrieveAmountResource(resourceID, containerAmount);
@@ -1081,14 +1079,12 @@ public class Inventory implements Serializable {
 							else {
 								int resourceID = e.getResource();
 								if (resourceID == resource) {
-									double quantity = e.getQuanity();
 									double retrievedAmount = remainingAmount;
-									double rcap = e.getAmountResourceRemainingCapacity(resourceID);
 									double containerAmount = e.getAmountResourceStored(resourceID);
 									
-									if (quantity > 0 && containerAmount > 0 &&
-										retrievedAmount >= rcap) {
-										retrievedAmount = rcap;
+									if (containerAmount > 0 &&
+										retrievedAmount >= containerAmount) {
+										retrievedAmount = containerAmount;
 									}
 									if (retrievedAmount > 0) {
 										e.retrieveAmountResource(resourceID, containerAmount);
@@ -2411,8 +2407,6 @@ public class Inventory implements Serializable {
 		} else {
 			logger.severe(unit, 30_000, "Could not be stored.");
 			stored = false;
-			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-//			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
 		}
 		
 		return stored;
@@ -2534,8 +2528,6 @@ public class Inventory implements Serializable {
 			logger.log(unit, Level.SEVERE, 30_000, 
 					"Could not be retrieved from " + owner.getName() + ".");
 			retrieved = false;
-			// Note: how to get rid of the throw statement below needed for maven test
-//			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
 		}
 		
 		return retrieved;
@@ -2563,7 +2555,6 @@ public class Inventory implements Serializable {
 	 * @return stored mass (kg).
 	 */
 	public double getTotalInventoryMass(boolean allowDirty) {
-
 		return getTotalInventoryMassCache(allowDirty);
 	}
 
@@ -2574,7 +2565,6 @@ public class Inventory implements Serializable {
 	 * @return true if empty.
 	 */
 	public boolean isEmpty(boolean allowDirty) {
-
 		return (getTotalInventoryMass(allowDirty) == 0D);
 	}
 
@@ -2590,9 +2580,14 @@ public class Inventory implements Serializable {
 		
 		Unit owner = getOwner();
 		
-		if (owner != null 
-				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
-				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
+		if (owner != null) {
+			if (owner.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID)
+				return result;
+			if (owner.getContainerID() == Unit.OUTER_SPACE_UNIT_ID)
+				return result;
+			if (owner.getUnitType() == UnitType.PLANET)
+				return result;
+			
 			Unit cu = owner.getContainerUnit();
 			Inventory containerInv = null;
 			if (cu != null) {
@@ -2637,7 +2632,6 @@ public class Inventory implements Serializable {
 	 * @return true if resource is dirty in cache.
 	 */
 	private boolean isAmountResourceCapacityCacheDirty(int resource) {
-
 		// Initialize amount resource capacity cache if necessary.
 		if (capacityCache == null) {
 			initializeAmountResourceCapacityCache();
@@ -2658,7 +2652,6 @@ public class Inventory implements Serializable {
 	 * @param resource the dirty resource.
 	 */
 	private void setAmountResourceCapacityCacheDirty(int resource) {
-
 		// Initialize amount resource capacity cache if necessary.
 		if (capacityCache == null) {
 			initializeAmountResourceCapacityCache();
@@ -2674,7 +2667,6 @@ public class Inventory implements Serializable {
 	 *                        dirty.
 	 */
 	private void setAmountResourceCapacityCacheAllDirty(boolean containersDirty) {
-
 		// Initialize amount resource capacity cache if necessary.
 		if (capacityCache == null) {
 			initializeAmountResourceCapacityCache();
@@ -2689,16 +2681,16 @@ public class Inventory implements Serializable {
 		}
 
 		Unit owner = getOwner();
-		
 		// Set owner unit's amount resource capacity cache as dirty (if any).
-		if (owner != null 
-				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
-				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
-			if (owner.getUnitType() == UnitType.PLANET) {
+		if (owner != null) {
+			if (owner.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID)
 				return;
-			}
-			else
-				setCacheDirty(0);
+			if (owner.getContainerID() == Unit.OUTER_SPACE_UNIT_ID)
+				return;
+			if (owner.getUnitType() == UnitType.PLANET)
+				return;
+				
+			setCacheDirty(0);
 		}
 	}
 
