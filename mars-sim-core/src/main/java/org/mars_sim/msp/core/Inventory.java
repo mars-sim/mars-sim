@@ -2181,9 +2181,8 @@ public class Inventory implements Serializable {
 						Equipment e = (Equipment)unit;
 						if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 							EVASuit suit = (EVASuit)unit;
-							for (int i = 0; i < suit.getResourceIDs().size(); i++) {
-								int resourceID = suit.getResourceID(i);
-								double quantity = suit.getQuanity(i);
+							for (int resourceID: suit.getResourceIDs()) {
+								double quantity = suit.getQuanity(resourceID);
 								double containerAmount = suit.getAmountResourceStored(resourceID);
 								if (quantity > 0 && containerAmount > 0 &&
 									suit.getAmountResourceRemainingCapacity(resourceID) >= containerAmount) {

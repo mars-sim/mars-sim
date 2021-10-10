@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2021-10-03
+ * @date 2021-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -9,13 +9,14 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -114,14 +115,15 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public static double emptyMass;
 	
 	// Data members
-	/** A list of resource id's it can hold. */
+	/** A list of resource id's. */
 	private List<Integer> resourceIDs = new ArrayList<>();
-	/** A list of Amount Resources it can hold. */
+	/** A list of Amount Resources. */
 	private List<AmountResource> resourceARs = new ArrayList<>();
-	/** A list of the amount of the resources it can hold. */	
-	private List<Double> quantities = new ArrayList<>();
-	/** A list of the capacity of the resources it has. */	
-	private List<Double> capacities = new ArrayList<>();
+
+	/** A map of resources with quantity. */
+	private Map<Integer, Double> quantityMap = new HashMap<>();
+	/** A map of resources with capacity. */
+	private Map<Integer, Double> capacityMap = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -177,32 +179,27 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 
-//		resourceIDs = new ArrayList<>();
 		resourceIDs.add(0, o2); 
 		resourceIDs.add(1, h2o);
 		resourceIDs.add(2, co2);
 		 
-//		resourceARs = new ArrayList<>();
 		resourceARs.add(0, ResourceUtil.oxygenAR); 
 		resourceARs.add(1, ResourceUtil.waterAR);
 		resourceARs.add(2, ResourceUtil.carbonDioxideAR);
 		
-//		quantities = new ArrayList<>();
-		quantities.add(0.0); 
-		quantities.add(0.0);
-		quantities.add(0.0);
+		quantityMap.put(o2, 0.0); 
+		quantityMap.put(h2o, 0.0);
+		quantityMap.put(co2, 0.0);
 		
-//		capacities = new ArrayList<>();
-		capacities.add(0, OXYGEN_CAPACITY); 
-		capacities.add(1, WATER_CAPACITY);
-		capacities.add(2, CO2_CAPACITY);
+		capacityMap.put(o2, OXYGEN_CAPACITY); 
+		capacityMap.put(h2o, WATER_CAPACITY);
+		capacityMap.put(co2, CO2_CAPACITY);
 	}
 	
 	/**
 	 * Gets a list of supported resources
 	 * 
-	 * @param index
-	 * @return a list of resources
+	 * @return a list of resource ids
 	 */
 	public List<Integer> getResourceIDs() {
 		return resourceIDs;
@@ -222,31 +219,31 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/**
 	 * Gets the AmountResource of a particular resource
 	 * 
-	 * @param index
+	 * @param resource
 	 * @return Amount Resource
 	 */
-	public AmountResource getResourceAR(int index) {
-		return resourceARs.get(index);
+	public AmountResource getResourceAR(int resource) {
+		return resourceARs.get(resource);
 	}
 	
 	/**
 	 * Gets the amount in quantity of a particular resource
 	 * 
-	 * @param index
+	 * @param resource
 	 * @return quantity
 	 */
-	public double getQuanity(int index) {
-		return quantities.get(index);
+	public double getQuanity(int resource) {
+		return quantityMap.get(resource);
 	}
 	
 	/**
 	 * Sets the amount in quantity of a particular resource
 	 * 
-	 * @param index
+	 * @param resource
 	 * @param quantity
 	 */
-	public void setQuanity(int index, double quantity) {
-		quantities.set(index, quantity);
+	public void setQuanity(int resource, double quantity) {
+		quantityMap.put(resource, quantity);
 	}
 	
 	/**
@@ -294,17 +291,17 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		
 		if (index != -1) {
 			
-			double newQ = getQuanity(index) + quantity;
+			double newQ = getQuanity(resource) + quantity;
 			String name = ResourceUtil.findAmountResourceName(resource);
 			
 			if (newQ > getTotalCapacity()) {
 				double excess = newQ - getTotalCapacity();
 				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
-				setQuanity(index, getTotalCapacity());
+				setQuanity(resource, getTotalCapacity());
 				return excess;
 			}
 			else {
-				setQuanity(index, newQ);
+				setQuanity(resource, newQ);
 //				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
 				return 0;
 			}
@@ -328,17 +325,17 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			double q = getQuanity(index);
+			double q = getQuanity(resource);
 			double diff = q - quantity;
 			if (diff < 0) {
 				String name = ResourceUtil.findAmountResourceName(resource);
 				logger.warning(this, 10_000L, "Just retrieved all " + q + " kg of " 
 						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
-				setQuanity(index, 0);
+				setQuanity(resource, 0);
 				return diff;
 			}
 			else {
-				setQuanity(index, diff);
+				setQuanity(resource, diff);
 				return 0;
 			}
 		}
@@ -361,7 +358,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			return getCapacity(index);
+			return getCapacity(resource);
 		}
 		else {
 			return 0;
@@ -379,7 +376,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			return getCapacity(index) - this.getQuanity(index);
+			return getCapacity(resource) - getQuanity(resource);
 		}
 		else {
 			return 0;
@@ -397,7 +394,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			return getQuanity(index);
+			return getQuanity(resource);
 		}
 		else {
 			return 0;
@@ -418,7 +415,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
-        return capacities.get(resource);
+        return capacityMap.get(resource);
     }
     
 	/**
@@ -429,11 +426,11 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
     @Override
 	public double getStoredMass() {
 		double total = 0;
-		if (quantities != null && !quantities.isEmpty()) {
-			for (double m: quantities) {
+//		if (quantityMap != null && !quantityMap.isEmpty()) {
+			for (double m: quantityMap.values()) {
 				total += m;
 			}
-		}
+//		}
 		return total;
 	}
 	
@@ -445,12 +442,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public boolean isEmpty(int resource) {
-		if (quantities != null && !quantities.isEmpty()) {
-			for (double m: quantities) {
-				if (m != 0)
+//		if (quantityMap != null && !quantityMap.isEmpty()) {
+			for (double m: quantityMap.values()) {
+				if (m > 0)
 					return false;
 			}
-		}
+//		}
 		return true;
 	}
 
@@ -468,12 +465,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			}
 		}
 
-		if (quantities != null && !quantities.isEmpty()) {
-			for (double m: quantities) {
+//		if (quantityMap != null && !quantityMap.isEmpty()) {
+			for (double m: quantityMap.values()) {
 				if (m > 0)
 					return false;
 			}
-		}
+//		}
 		
 		return true;
 	}	
@@ -492,12 +489,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	@Override
 	public boolean hasContent() {
-		if (quantities != null && !quantities.isEmpty()) {
-			for (double m: quantities) {
+//		if (quantityMap != null && !quantityMap.isEmpty()) {
+			for (double m: quantityMap.values()) {
 				if (m > 0)
 					return true;
 			}
-		}
+//		}
 		return false;
 	}
 	
