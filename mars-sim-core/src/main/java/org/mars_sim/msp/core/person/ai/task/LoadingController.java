@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;

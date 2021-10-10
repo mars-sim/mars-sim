@@ -147,17 +147,6 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int getItemSupplyRequest(Integer r) {
-		int result;
-
-		if (itemSupplyRequestMap.containsKey(r)) {
-			result = itemSupplyRequestMap.get(r);
-		} else {
-			itemSupplyRequestMap.put(r, 0);
-			result = 0;
-		}
-		return result;
-	}
 	
 	public double getAmountSupply(Integer r) {
 		double result;
@@ -205,7 +194,7 @@ public class Inventory implements Serializable {
 		addItemSupplyRequest(r);
 	}
 	
-	public void addAmountSupplyRequest(Integer r) {
+	private void addAmountSupplyRequest(Integer r) {
 		if (amountSupplyRequestMap.containsKey(r)) {
 			int oldNum = amountSupplyRequestMap.get(r);
 			amountSupplyRequestMap.put(r, oldNum + 1);
@@ -215,7 +204,7 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public void addItemSupplyRequest(Integer r) {
+	private void addItemSupplyRequest(Integer r) {
 		if (itemSupplyRequestMap.containsKey(r)) {
 			int oldNum = itemSupplyRequestMap.get(r);
 			itemSupplyRequestMap.put(r, oldNum + 1);
@@ -316,30 +305,7 @@ public class Inventory implements Serializable {
 		}
 		return result;
 	}
-	
-	public int getAmountDemandMapSize() {
-		return amountDemandMap.size();
-	}
 
-	public int getItemDemandMapSize() {
-		return itemDemandMap.size();
-	}
-	
-	public int getDemandTotalRequestMapSize() {
-		return amountDemandTotalRequestMap.size();
-	}
-
-	public int getItemDemandTotalRequestMapSize() {
-		return itemDemandTotalRequestMap.size();
-	}
-
-	public int getAmountDemandMetRequestMapSize() {
-		return amountDemandMetRequestMap.size();
-	}
-
-	public int getItemDemandMetRequestMapSize() {
-		return itemDemandMetRequestMap.size();
-	}
 
 	public void compactAmountSupplyMap(int sol) {
 		compactAMap(amountSupplyMap, sol);
@@ -365,7 +331,7 @@ public class Inventory implements Serializable {
 		compactIMap(itemDemandMap, sol);
 	}
 	
-	public void compactAMap(Map<Integer, Double> amountMap, int sol) {
+	private static void compactAMap(Map<Integer, Double> amountMap, int sol) {
 
 		Map<Integer, Double> map = amountMap;
 
@@ -377,7 +343,7 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public void compactIMap(Map<Integer, Integer> amountMap, int sol) {
+	private static void compactIMap(Map<Integer, Integer> amountMap, int sol) {
 
 		Map<Integer, Integer> map = amountMap;
 
@@ -435,14 +401,6 @@ public class Inventory implements Serializable {
 			itemDemandEstimatedMap.put(r, num);
 	}
 
-	public void compactAmountDemandEstimatedMap(int sol) {
-		compactAMap(amountDemandEstimatedMap, sol);
-	}
-
-	public void compactItemDemandEstimatedMap(int sol) {
-		compactIMap(itemDemandEstimatedMap, sol);
-	}
-	
 	/**
 	 * Adds the demand of this resource. It prompts for raising its value point
 	 * (VP).
@@ -474,7 +432,7 @@ public class Inventory implements Serializable {
 		addItemDemandMetRequest(r);
 	}
 	
-	public void addAmountDemandMetRequest(int r) {
+	private void addAmountDemandMetRequest(int r) {
 		if (amountDemandMetRequestMap.containsKey(r)) {
 			int oldNum = amountDemandMetRequestMap.get(r);
 			amountDemandMetRequestMap.put(r, oldNum + 1);
@@ -485,7 +443,7 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public void addItemDemandMetRequest(int r) {
+	private void addItemDemandMetRequest(int r) {
 		if (itemDemandMetRequestMap.containsKey(r)) {
 			int oldNum = itemDemandMetRequestMap.get(r);
 			itemDemandMetRequestMap.put(r, oldNum + 1);
@@ -572,32 +530,6 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Checks if storage has capacity for a resource.
-	 * 
-	 * @param resource   the resource.
-	 * @param allowDirty will allow dirty (possibly out of date) results.
-	 * @return true if storage capacity.
-	 */
-	public boolean hasAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
-		if (resource == null) {
-			throw new IllegalArgumentException("resource cannot be null.");
-		}
-		return (getAmountResourceCapacityCacheValue(resource, allowDirty) > 0D);
-	}
-
-	/**
-	 * Checks if storage has capacity for an amount of a resource.
-	 * 
-	 * @param resource   the resource.
-	 * @param amount     the amount (kg).
-	 * @param allowDirty will allow dirty (possibly out of date) results.
-	 * @return true if storage capacity.
-	 */
-	public boolean hasAmountResourceCapacity(AmountResource resource, double amount, boolean allowDirty) {
-		return hasAmountResourceCapacity(resource.getID(), amount, allowDirty);
-	}
-
-	/**
 	 * Checks if storage has capacity for an amount of a resource.
 	 * 
 	 * @param resource   the resource.
@@ -621,7 +553,7 @@ public class Inventory implements Serializable {
 	 * @return capacity amount (kg).
 	 */
 	public double getAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
-		return getAmountResourceCapacityCacheValue(resource, allowDirty);
+		return getAmountResourceCapacityCacheValue(resource.getID(), allowDirty);
 	}
 
 	/**
@@ -659,7 +591,7 @@ public class Inventory implements Serializable {
 	 * @return stored amount (kg).
 	 */
 	public double getAmountResourceStored(AmountResource resource, boolean allowDirty) {
-		return getAmountResourceStoredCacheValue(resource, allowDirty);
+		return getAmountResourceStoredCacheValue(resource.getID(), allowDirty);
 	}
 
 	/**
@@ -683,7 +615,7 @@ public class Inventory implements Serializable {
 //		Set<AmountResource> s = ConcurrentHashMap.newKeySet();
 //		s.addAll(getAllStoredAmountResourcesCache(allowDirty));
 //		return s;
-		return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
+		return new HashSet<>(getAllStoredAmountResourcesCache(allowDirty));
 	}
 
 	/**
@@ -694,7 +626,7 @@ public class Inventory implements Serializable {
 	 */
 	public Set<Integer> getAllARStored(boolean allowDirty) {
 //		logger.info(owner, "getAllStoredARCache(allowDirty)");
-		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
+		return new HashSet<>(getAllStoredARCache(allowDirty));
 //		Set<Integer> s = ConcurrentHashMap.newKeySet();
 ////		logger.info(owner, getAllStoredARCache(allowDirty).toString());
 //		s.addAll(getAllStoredARCache(allowDirty));
@@ -751,25 +683,7 @@ public class Inventory implements Serializable {
 	 */
 	public double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits,
 			boolean allowDirty) {
-
-		double result = 0D;
-
-		if (useContainedUnits) {
-			double capacity = getAmountResourceCapacity(resource, allowDirty);
-			double stored = getAmountResourceStored(resource, allowDirty);
-			result += capacity - stored;
-		} else if (resourceStorage != null) {// && !resourceStorage.isEmpty()) {
-			result += resourceStorage.getAmountResourceRemainingCapacity(resource);
-		}
-
-		// Check if remaining capacity exceeds container unit's remaining general
-		// capacity.
-		double containerUnitLimit = getContainerUnitGeneralCapacityLimit(allowDirty);
-		if (result > containerUnitLimit) {
-			result = containerUnitLimit;
-		}
-
-		return result;
+		return getAmountResourceRemainingCapacity(resource.getID(), useContainedUnits, allowDirty);
 	}
 
 	/**
@@ -780,111 +694,7 @@ public class Inventory implements Serializable {
 	 * @param useContainedUnits
 	 */
 	public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) {
-
-		if (amount < 0D) {
-			logger.log(getOwner(), Level.SEVERE, 30_000,  
-					"Cannot store negative amount of resource: " 
-					+ Math.round(amount*100.0)/100.0);
-		}
-
-		if (amount > 0D) {
-
-			if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits, false)) {
-
-				int storedResourceID = resource.getID();
-				
-				// Set modified cache values as dirty.
-				setAmountResourceCapacityCacheAllDirty(false);
-				setAmountResourceStoredCacheAllDirty(false);
-				setAllStoredAmountResourcesCacheDirty();
-				setTotalAmountResourcesStoredCacheDirty();
-
-				double remainingAmount = amount;
-				double remainingStorageCapacity = 0D;
-				if (resourceStorage != null) {//  && !resourceStorage.isEmpty()) {
-					remainingStorageCapacity += resourceStorage.getAmountResourceRemainingCapacity(resource);
-				}
-
-				// Check if local resource storage can hold resources if not using contained
-				// units.
-				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					logger.log(getOwner(), Level.WARNING, 10_000, 
-							resource.getName() 
-							+ " could not be totally stored. Remaining: "
-							+ Math.round(remainingAmount - remainingStorageCapacity)*100.0/100.0);
-				}
-
-				// Store resource in local resource storage.
-				double storageAmount = remainingAmount;
-				if (storageAmount > remainingStorageCapacity) {
-					storageAmount = remainingStorageCapacity;
-				}
-				if ((storageAmount > 0D) && (resourceStorage != null)) {
-					resourceStorage.storeAmountResource(resource, storageAmount);
-					remainingAmount -= storageAmount;
-				}
-
-				// Store remaining resource in contained units in general capacity.
-				if (useContainedUnits && remainingAmount > 0D && containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-					for (Integer uid : containedUnitIDs) {
-						Unit unit = unitManager.getUnitByID(uid);
-						// Use only contained units that implement container interface.
-						if (unit.getUnitType() == UnitType.EQUIPMENT) {
-							Equipment e = (Equipment)unit;
-							if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-								EVASuit suit = (EVASuit)unit;
-								for (int resourceID : suit.getResourceIDs()) {
-									if (resourceID == storedResourceID) {
-										double remainingCap = suit.getAmountResourceRemainingCapacity(resourceID);
-										double unitStorageAmount = remainingAmount;
-										if (unitStorageAmount > remainingCap) {
-											unitStorageAmount = remainingCap;
-										}
-										if (unitStorageAmount > 0D) {
-											suit.storeAmountResource(storedResourceID, unitStorageAmount);
-											remainingAmount -= unitStorageAmount;
-										}
-									}
-								}
-							}
-							else {
-								int resourceID = e.getResource();
-								if (resourceID == storedResourceID || resourceID == -1) {
-									double remainingCap = e.getAmountResourceRemainingCapacity(resourceID);
-									double unitStorageAmount = remainingAmount;
-									if (unitStorageAmount > remainingCap) {
-										unitStorageAmount = remainingCap;
-									}
-									if (unitStorageAmount > 0D) {
-										e.storeAmountResource(storedResourceID, unitStorageAmount);
-										remainingAmount -= unitStorageAmount;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					logger.log(getOwner(), Level.WARNING, 10_000,
-							resource.getName() 
-							+ " could not be totally stored. Remaining: " 
-							+ Math.round(remainingAmount*100.0)/100.0);
-				}
-
-				// Fire inventory event.
-				Unit o = getOwner();
-				if (o != null) {
-					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-				}
-			} else {
-				logger.log(getOwner(), Level.SEVERE, 30_000,
-						"Insufficient capacity to store " 
-						+ resource.getName() + ", capacity: "
-						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
-						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
-			}
-		}
+		storeAmountResource(resource.getID(), amount, useContainedUnits);
 	}
 
 	/**
@@ -903,8 +713,8 @@ public class Inventory implements Serializable {
 		}
 
 		if (amount > 0D) {
-
-			if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits, false)) {
+			double remainingCapacity = getAmountResourceRemainingCapacity(resource, useContainedUnits, false);
+			if (amount <= remainingCapacity) {
 
 				// Set modified cache values as dirty.
 				setAmountResourceCapacityCacheAllDirty(false);
@@ -995,8 +805,8 @@ public class Inventory implements Serializable {
 				logger.log(getOwner(), Level.SEVERE, 30_000, 
 						"Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
-						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
-						+ ", attempted: " + Math.round(amount*1000.0)/1000.0 + " kg");
+						+ remainingCapacity
+						+ ", attempted: " + amount + " kg");
 			}
 		}
 	}
@@ -1238,7 +1048,7 @@ public class Inventory implements Serializable {
 		        .collect(java.util.stream.Collectors.toSet());
 		}
 		else {
-			return new HashSet<ItemResource>();
+			return new HashSet<>();
 		}
     }
 
@@ -1250,7 +1060,7 @@ public class Inventory implements Serializable {
 	public Set<Integer> getAllItemResourcesStored() {
 
 		if (containedItemResources != null  && !containedItemResources.isEmpty()) {
-			return new HashSet<Integer>(containedItemResources.keySet());
+			return new HashSet<>(containedItemResources.keySet());
 		}
 		else {
 			return new HashSet<>();
@@ -1372,7 +1182,7 @@ public class Inventory implements Serializable {
 	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return total mass (kg).
 	 */
-	public double getUnitTotalMass(boolean allowDirty) {
+	private double getUnitTotalMass(boolean allowDirty) {
 		return getUnitTotalMassCache(allowDirty);
 	}
 
@@ -2607,20 +2417,20 @@ public class Inventory implements Serializable {
 	/**
 	 * Initializes the amount resource capacity cache.
 	 */
-	public void initializeAmountResourceCapacityCache() {
-		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache;
+	private void initializeAmountResourceCapacityCache() {
+		//Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache;
 		capacityCache = new ConcurrentHashMap<Integer, Double>();
 		capacityCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
 		containersCapacityCache = new ConcurrentHashMap<Integer, Double>();
 		containersCapacityCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
 
-		if (resources != null)
-		for (int resource : resources) {
-			capacityCache.put(resource, 0D);
-			capacityCacheDirty.put(resource, true);
-			containersCapacityCache.put(resource, 0D);
-			containersCapacityCacheDirty.put(resource, true);
-		}
+//		if (resources != null)
+//		for (int resource : resources) {
+//			capacityCache.put(resource, 0D);
+//			capacityCacheDirty.put(resource, true);
+//			containersCapacityCache.put(resource, 0D);
+//			containersCapacityCacheDirty.put(resource, true);
+//		}
 	}
 
 	/**
@@ -2699,17 +2509,6 @@ public class Inventory implements Serializable {
 	 * @param allowDirty true if cache value can be dirty.
 	 * @return capacity (kg) for the amount resource.
 	 */
-	private double getAmountResourceCapacityCacheValue(AmountResource resource, boolean allowDirty) {
-		return getAmountResourceCapacityCacheValue(resource.getID(), allowDirty);
-	}
-
-	/**
-	 * Gets the cached capacity value for an amount resource.
-	 * 
-	 * @param resource   the amount resource.
-	 * @param allowDirty true if cache value can be dirty.
-	 * @return capacity (kg) for the amount resource.
-	 */
 	private double getAmountResourceCapacityCacheValue(int resource, boolean allowDirty) {
 
 		// Initialize amount resource capacity cache if necessary.
@@ -2723,13 +2522,7 @@ public class Inventory implements Serializable {
 		}
 
 		// Check if amountResourceCapacityCache contains the resource
-		if (capacityCache.containsKey(resource))
-			return capacityCache.get(resource);
-		else {
-			capacityCache.put(resource, 0D);
-			return 0;
-		}
-		// return amountResourceCapacityCache.get(resource);
+		return capacityCache.getOrDefault(resource, 0D);
 	}
 
 	/**
@@ -2834,18 +2627,18 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource stored cache.
 	 */
 	private void initializeAmountResourceStoredCache() {
-		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
+		// Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
 		storedCache = new ConcurrentHashMap<Integer, Double>();
 		storedCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
 		containersStoredCache = new ConcurrentHashMap<Integer, Double>();
 		containersStoredCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
-
-		for (int resource : resources) {
-			storedCache.put(resource, 0D);
-			storedCacheDirty.put(resource, true);
-			containersStoredCache.put(resource, 0D);
-			containersStoredCacheDirty.put(resource, true);
-		}
+//
+//		for (int resource : resources) {
+//			storedCache.put(resource, 0D);
+//			storedCacheDirty.put(resource, true);
+//			containersStoredCache.put(resource, 0D);
+//			containersStoredCacheDirty.put(resource, true);
+//		}
 	}
 
 	/**
@@ -2902,17 +2695,6 @@ public class Inventory implements Serializable {
 		
 		// Set owner unit's amount resource stored cache as dirty (if any).
 //		setCacheDirty(1);
-	}
-
-	/**
-	 * Gets the cached stored value for an amount resource.
-	 * 
-	 * @param resource   the amount resource.
-	 * @param allowDirty true if cache value can be dirty.
-	 * @return stored amount (kg) for the amount resource.
-	 */
-	private double getAmountResourceStoredCacheValue(final AmountResource resource, final boolean allowDirty) {
-		return getAmountResourceStoredCacheValue(resource.getID(), allowDirty);
 	}
 
 	/**
@@ -3263,7 +3045,7 @@ public class Inventory implements Serializable {
 	 * @param allowDirty true if cache value can be dirty.
 	 * @return total inventory mass cache value.
 	 */
-	public double getTotalInventoryMassCache(boolean allowDirty) {
+	private double getTotalInventoryMassCache(boolean allowDirty) {
 
 		// Update total inventory mass cache if it is dirty.
 		if (!allowDirty && totalInventoryMassCacheDirty) {

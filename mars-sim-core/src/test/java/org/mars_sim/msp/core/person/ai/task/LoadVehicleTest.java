@@ -487,8 +487,10 @@ extends TestCase {
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				// Add extra to the stored to give a tolerance
 				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
-				settlementInv.addAmountResourceTypeCapacity(key, amount);
+				// Add extra to the capacity
+				settlementInv.addAmountResourceTypeCapacity(key, amount + EXTRA_RESOURCE);
 				settlementInv.storeAmountResource(key, amount, true);
 			}
 			else {
