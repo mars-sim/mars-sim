@@ -40,9 +40,6 @@ public class LargeBag extends Equipment implements ContainerInterface, Serializa
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);
-
-		// Set the solid capacity.
-//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 	
 	/**

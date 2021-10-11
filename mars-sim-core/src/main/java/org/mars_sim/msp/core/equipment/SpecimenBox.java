@@ -36,9 +36,6 @@ implements ContainerInterface, Serializable {
 
 		// Set the base mass of the container.
 		setBaseMass(EMPTY_MASS);
-
-		// Set the capacity of the container.
-//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, CAPACITY);
 	}
 
 	/**

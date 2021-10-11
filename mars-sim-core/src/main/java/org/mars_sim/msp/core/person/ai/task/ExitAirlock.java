@@ -1222,11 +1222,19 @@ public class ExitAirlock extends Task implements Serializable {
 			double takenOxygen = neededOxygen;
 			if (takenOxygen > availableOxygen)
 				takenOxygen = availableOxygen;
+			
+//			System.out.println(person + " takenOxygen: " + takenOxygen + " kg " 
+//			+ " neededOxygen: " + neededOxygen + " kg "
+//			+ " availableOxygen: " + availableOxygen + " kg ");
+			
 			try {
+				// Retrieve resource
 				entityInv.retrieveAmountResource(oxygenID, takenOxygen);
+				// Store resource
 				suit.storeAmountResource(oxygenID, takenOxygen);
-				// Add tracking demand
+				// Track demand
 				entityInv.addAmountDemand(oxygenID, takenOxygen);
+				
 			} catch (Exception e) {
 				logger.log(person, Level.SEVERE, 10_000, 
 						"Ran into issues providing oxygen to " + suit.getName() + e.getMessage(),
@@ -1242,17 +1250,24 @@ public class ExitAirlock extends Task implements Serializable {
 			double takenWater = neededWater;
 			if (takenWater > availableWater)
 				takenWater = availableWater;
+			
+//			System.out.println(person + " takenWater: " + takenWater + " kg " 
+//					+ " neededWater: " + neededWater + " kg "
+//					+ " availableWater: " + availableWater + " kg ");
 			try {
+				// Retrieve resource
 				entityInv.retrieveAmountResource(waterID, takenWater);
+				// Store resource
 				suit.storeAmountResource(waterID, takenWater);
-				// Add tracking demand
+				// Track demand
 				entityInv.addAmountDemand(waterID, takenWater);
 			} catch (Exception e) {
 				logger.log(person, Level.SEVERE, 10_000, 
 						"Ran into issues providing water to " + suit.getName(), e);
 			}
 
-//			String loc = person.getModifiedLoc();
+//			System.out.println(person + " o2: " + suit.getAmountResourceStored(oxygenID) + " kg " + " resource: " + oxygenID);
+//			System.out.println(person + " h2o: " + suit.getAmountResourceStored(waterID) + " kg " + " resource: " + waterID);
 			
 			// Return suit to entity's inventory.
 			logger.log(person, Level.FINER, 4_000,

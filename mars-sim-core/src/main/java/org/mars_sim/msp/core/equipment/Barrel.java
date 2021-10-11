@@ -42,9 +42,6 @@ implements ContainerInterface, Serializable {
 
 		// Sets the base mass of the barrel.
 		setBaseMass(EMPTY_MASS);
-
-		// Set the liquid capacity.
-//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -49,8 +50,10 @@ public class MicroInventory implements Serializable {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getQuanity(int resource) {
-		return quantityMap.get(resource);
+	public double getQuantity(int resource) {
+		if (quantityMap.containsKey(resource))
+			return quantityMap.get(resource);
+		return 0;
 	}
 	
 	/**
@@ -68,7 +71,10 @@ public class MicroInventory implements Serializable {
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
-        return capacityMap.get(resource);
+		if (capacityMap.containsKey(resource)) {
+			return capacityMap.get(resource);
+		}
+		return 0;
     }
     
 	/**
@@ -80,11 +86,11 @@ public class MicroInventory implements Serializable {
 	public void setCapacity(int resource, double capacity) {
 		capacityMap.put(resource, capacity);
 	}
-	
+	 
 	/**
 	 * Gets the total weight of the stored resources
 	 * 
-	 * @return
+	 * @return mass [kg]
 	 */
 	public double getStoredMass() {
 		double total = 0;
@@ -130,17 +136,20 @@ public class MicroInventory implements Serializable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		double newQ = getQuanity(resource) + quantity;
-
-		if (newQ > getTotalCapacity()) {
+		if (quantity == 0)
+			return 0;
+		double newQ = getQuantity(resource) + quantity;
+		double cap = getCapacity(resource);
+		if (newQ > cap) {
 			String name = owner.findAmountResourceName(resource);
-			double excess = newQ - getTotalCapacity();
-			logger.warning(owner, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
-			setQuantity(resource, getTotalCapacity());
+			double excess = newQ - cap;
+			logger.warning(owner, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			setQuantity(resource, cap);
 			return excess;
 		}
 		else {
 			setQuantity(resource, newQ);
+//			System.out.println("microI's storeAR. " + " resource: " + resource + " quantity: " + getQuantity(resource));
 			return 0;
 		}
 	}
@@ -153,7 +162,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		double q = getQuanity(resource);
+		double q = getQuantity(resource);
 		double diff = q - quantity;
 		if (diff < 0) {
 			String name = owner.findAmountResourceName(resource);
@@ -185,7 +194,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		return getCapacity(resource) - getQuanity(resource);
+		return getCapacity(resource) - getQuantity(resource);
 	}
 	
 	/**
@@ -195,7 +204,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
-		return getQuanity(resource);
+		return getQuantity(resource);
 	}
 
 	/**
@@ -206,6 +215,14 @@ public class MicroInventory implements Serializable {
         return owner.getTotalCapacity();
     }
     
+	/**
+	 * Clean this container for future use
+	 */
+	public void clean() {
+		capacityMap.clear();
+		quantityMap.clear();
+	}
+	
 	public void destroy() {
 		capacityMap = null;
 		quantityMap = null;

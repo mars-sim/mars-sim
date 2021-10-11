@@ -190,11 +190,11 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		microInventory.setQuantity(h2o, 0);
 		microInventory.setQuantity(co2, 0);
 		
-		microInventory.setCapacity(o2, OXYGEN_CAPACITY); 
+		microInventory.setCapacity(o2, OXYGEN_CAPACITY);
 		microInventory.setCapacity(h2o, WATER_CAPACITY);
 		microInventory.setCapacity(co2, CO2_CAPACITY);
 	}
-	
+
 	/**
 	 * Gets a list of supported resources
 	 * 
@@ -224,42 +224,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public AmountResource getResourceAR(int resource) {
 		return resourceARs.get(resource);
 	}
-	
-	/**
-	 * Gets the amount in quantity of a particular resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getQuanity(int resource) {
-		return microInventory.getQuanity(resource);
-	}
-	
-	/**
-	 * Sets the amount in quantity of a particular resource
-	 * 
-	 * @param resource
-	 * @param quantity
-	 */
-	public void setQuantity(int resource, double quantity) {
-		microInventory.setQuantity(resource, quantity);
-	}
-	
-	/**
-	 * Is this resource supported ?
-	 * 
-	 * @param resource
-	 * @return true if this resource is supported
-	 */
-	public boolean isResourceSupported(int resource) {
-		for (int r: resourceIDs) {
-			if (r == resource)
-				return true;
-		}
 		
-		return false;
-	}
-	
 	/**
 	 * Gets the index of a particular resource
 	 * 
@@ -277,6 +242,38 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		return -1;
 	}
 	
+	
+//	/**
+//	 * Sets the capacity of the suit based on index
+//	 * @param index
+//	 */
+//	public void setCapacityByIndex(int index) {
+//		if (index == 0)
+//			microInventory.setCapacity(o2, OXYGEN_CAPACITY); 
+//		else if (index == 1)
+//			microInventory.setCapacity(h2o, WATER_CAPACITY);
+//		else if (index == 2)
+//			microInventory.setCapacity(co2, CO2_CAPACITY);
+//	}
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+	@Override
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
+    
+	/**
+     * Gets the capacity of this resource that this container can hold.
+     * @return capacity (kg).
+     */
+	@Override
+    public double getCapacity(int resource) {
+        return microInventory.getCapacity(resource);
+    }
+    
 	/**
 	 * Stores the resource
 	 * 
@@ -287,15 +284,20 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
 		int index = getIndex(resource);
-		
+//		System.out.println("EVASuit'storeAR. index: " + index + " resource: " + resource + " quantity: " + quantity);
+		// index != -1 means this resource is allowed to be stored
 		if (index != -1) {
 			return microInventory.storeAmountResource(resource, quantity);
 		}
+		
 		else {
+			// index = -1 means this resource is not allowed to be stored
 			String name = findAmountResourceName(resource);
-			logger.warning(this, "Invalid request for storing " + name + ".");
+			logger.warning(this, name + " is not allowed to be stored " 
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
 			return quantity;
 		}
+			
 	}
 	
 	/**
@@ -309,13 +311,15 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public double retrieveAmountResource(int resource, double quantity) {
 		int index = getIndex(resource);
 		
+		// index != -1 means this resource is allowed to be stored
 		if (index != -1) {
 			return microInventory.retrieveAmountResource(resource, quantity);
 		}
 		else {
+			// index = -1 means this resource is not allowed to be stored
 			String name = findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 10.0)/10.0 + " kg "+ name + ".");
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 			return quantity;
 		}
 	}
@@ -347,9 +351,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
 		int index = getIndex(resource);
-		
-		if (index != -1) {
-			return getCapacity(resource) - getQuanity(resource);
+		if (index != -1) {	
+			return microInventory.getAmountResourceRemainingCapacity(resource);
 		}
 		else {
 			return 0;
@@ -367,38 +370,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		int index = getIndex(resource);
 		
 		if (index != -1) {
-			return getQuanity(resource);
+//			System.out.println("getAmountResourceStored: " + getQuantity(resource));
+			return getQuantity(resource);
 		}
 		else {
 			return 0;
 		}
-	}
-	
-	/**
-     * Gets the total capacity of resource that this container can hold.
-     * @return total capacity (kg).
-     */
-	@Override
-    public double getTotalCapacity() {
-        return CAPACITY;
-    }
-	
-	/**
-     * Gets the capacity of this resource that this container can hold.
-     * @return capacity (kg).
-     */
-    public double getCapacity(int resource) {
-        return microInventory.getCapacity(resource);
-    }
-    
-	/**
-	 * Gets the total weight of the stored resources
-	 * 
-	 * @return
-	 */
-    @Override
-	public double getStoredMass() {
-		return microInventory.getStoredMass();
 	}
 	
 	/**
@@ -410,38 +387,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	@Override
 	public boolean isEmpty(int resource) {
 		return microInventory.isEmpty(resource);
-	}
-
-	/**
-	 * Is this suit empty ? 
-	 * 
-	 * @param brandNew true if it needs to be brand new
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty(boolean brandNew) {
-		if (brandNew) {
-			return isBrandNew();
-		}
-
-		return microInventory.isEmpty();
-	}	
-
-	@Override
-	public boolean isBrandNew() {
-		if (getLastOwnerID() == -1)
-			return true;
-		return false;
-	}
-
-	@Override
-	public boolean isUsed() {
-		return !isBrandNew();
-	}
-
-	@Override
-	public boolean hasContent() {
-		return !microInventory.isEmpty();
 	}
 	
 	/**
@@ -636,28 +581,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		return result;
 	}
 
-//	/**
-//	 * Checks to see if the inventory is at full capacity with oxygen and water.
-//	 * 
-//	 * @return true if oxygen and water stores at full capacity
-//	 * @throws Exception if error checking inventory.
-//	 */
-//	public boolean isFullyLoaded() {
-//		boolean result = true;
-//
-//		double oxygen = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-//		if (oxygen != OXYGEN_CAPACITY) {
-//			result = false;
-//		}
-//
-//		double water = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
-//		if (water != WATER_CAPACITY) {
-//			result = false;
-//		}
-//		
-//		return result;
-//	}
-
 	/**
 	 * Time passing for EVA suit.
 	 *
@@ -751,6 +674,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		malfunctionManager = null;
 		microInventory = null;
 		resourceARs = null;
+		resourceIDs = null;
 	}
 }
 

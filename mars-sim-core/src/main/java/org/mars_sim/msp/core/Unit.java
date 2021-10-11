@@ -955,11 +955,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public double getTotalCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
-			if (this instanceof EVASuit)
-				return ((EVASuit)this).getTotalCapacity();
 			return ((Equipment)this).getTotalCapacity();
 		}
 		
+		// if Inventory is presents, use getGeneralCapacity
 		return 0;
 	}
 	

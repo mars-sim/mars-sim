@@ -41,9 +41,6 @@ implements ContainerInterface, Serializable {
 		
 		// Sets the base mass of the gas canister.
 		setBaseMass(EMPTY_MASS);
-		
-		// Set the gas capacity.
-//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 	
 	/**

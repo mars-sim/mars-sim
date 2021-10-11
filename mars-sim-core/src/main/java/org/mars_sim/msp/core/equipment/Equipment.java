@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * Equipment.java
- * @date 2021-10-03
+ * @date 2021-10-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
@@ -47,21 +46,24 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	// Data members.
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
+	
 	/** Unique identifier for the settlement that owns this equipment. */
 	private int associatedSettlementID;
-	
 	/** The identifier for the last owner of this equipment. */
 	private int lastOwner;
-	/** The id of the resource that this equipment holds. */
-	private int resource = -1;
-	/** The quantity of the resource. */
-	private double quantity;
+
+	/** A list of resource id's. */
+	private List<Integer> resourceIDs = new ArrayList<>();
+	/** A list of Amount Resources. */
+	private List<AmountResource> resourceARs = new ArrayList<>();
+	/** The equipment type enum. */
+	private final EquipmentType equipmentType;
 	/** The Amount Resource. */
 	private AmountResource resourceAR;
 	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
-	/** The equipment type enum. */
-	private final EquipmentType equipmentType;
+	/** The MicroInventory instance. */
+	private MicroInventory microInventory;
 
 	/**
 	 * Constructs an Equipment object
@@ -82,6 +84,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
+		
+		microInventory = new MicroInventory(this);
 	}
 
 	@Override
@@ -90,14 +94,76 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return false;
 	}
 
-	public int getResource() {
-		return resource;
+	/**
+	 * Gets a list of supported resources
+	 * 
+	 * @return a list of resource ids
+	 */
+	public List<Integer> getResourceIDs() {
+		return resourceIDs;
 	}
 	
-	public double getQuanity() {
-		return quantity;
+	
+	/**
+	 * Gets the id of a particular resource
+	 * 
+	 * @param index
+	 * @return Amount Resource id
+	 */
+	public int getResourceID(int index) {
+		if (resourceIDs.contains(index))
+			return resourceIDs.get(index);
+		return -1;
 	}
-
+	
+	/**
+	 * Gets the id of the resource
+	 * 
+	 * @return Amount Resource id
+	 */
+	public int getResource() {
+		return getResourceID(0);
+	}
+	
+	/**
+	 * Gets the AmountResource of a particular resource
+	 * 
+	 * @param resource
+	 * @return Amount Resource
+	 */
+	public AmountResource getResourceAR(int resource) {
+		return resourceARs.get(resource);
+	}
+	
+	/**
+	 * Gets the amount in quantity of a particular resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getQuantity(int resource) {
+		return microInventory.getQuantity(resource);
+	}
+	
+	/**
+	 * Gets the amount in quantity of the resource
+	 * 
+	 * @return quantity
+	 */
+	public double getQuantity() {
+		return getQuantity(0);
+	}
+	
+	/**
+	 * Sets the amount in quantity of a particular resource
+	 * 
+	 * @param resource
+	 * @param quantity
+	 */
+	public void setQuantity(int resource, double quantity) {
+		microInventory.setQuantity(resource, quantity);
+	}
+	
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
@@ -106,7 +172,72 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		// Note stored mass may be have a different implementation in subclasses
 		return getStoredMass() + getBaseMass();
 	}
-
+	
+	/**
+	 * Gets the total weight of the stored resources
+	 * 
+	 * @return
+	 */
+	public double getStoredMass() {
+		return microInventory.getStoredMass();
+	}
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+	public abstract double getTotalCapacity();
+	
+	/**
+     * Gets the capacity of this resource that this container can hold.
+     * @return capacity (kg).
+     */
+    public double getCapacity(int resource) {
+        return getTotalCapacity();
+    }
+	
+	/**
+	 * Sets the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void setCapacity(int resource, double capacity) {
+		microInventory.setCapacity(resource, capacity);
+	}
+	
+	/**
+	 * Is this resource supported ?
+	 * 
+	 * @param resource
+	 * @return true if this resource is supported
+	 */
+	public boolean isResourceSupported(int resource) {
+		for (int r: resourceIDs) {
+			if (r == resource)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Gets the index of a particular resource
+	 * 
+	 * @param resource
+	 * @return index
+	 */
+	public int getIndex(int resource) {
+		if (resourceIDs != null && !resourceIDs.isEmpty()) {
+			for (int r: resourceIDs) {
+				if (r == resource)
+					return resourceIDs.indexOf(r);
+			}
+		}
+		
+		return -1;
+	}
+	
 	/**
 	 * Stores the resource
 	 * 
@@ -115,47 +246,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		// If this container has never been used before
-		if (this.resource == -1) {
-			// Question: if a bag was filled with regolith and later was emptied out
-			// should it be tagged for only regolith and NOT for another resource ?
-			this.resource = resource;
-			resourceAR = ResourceUtil.findAmountResource(resource);
-			String name = findAmountResourceName(resource);
-			if (name != null) {
-//				logger.config(this, "Initialized for storing " + name + ".");
-			}
-			else {
-				logger.warning(this, "Resource " + resource + " is invalid.");
-				return quantity;
-			}
+		int index = getIndex(resource);
+//		System.out.println("EVASuit index: " + index + " resource: " + resource + " quantity: " + quantity);
+		// Question: if a bag was filled with regolith and later was emptied out
+		// should it be tagged for only regolith and NOT for another resource ?
+		// index = -1 means it's brand new
+		if (index == -1) {
+			resourceIDs.add(resource);
+			resourceARs.add(ResourceUtil.findAmountResource(resource));
+			setCapacity(resource, getTotalCapacity());
+			setQuantity(resource, 0);
 		}
 		
-		if (this.resource == resource) {
-			
-			double newQ = this.quantity + quantity;
-	
-			if (newQ > getTotalCapacity()) {
-				String name = findAmountResourceName(resource);
-				
-				double excess = newQ - getTotalCapacity();
-				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
-				this.quantity = getTotalCapacity();
-				return excess;
-			}
-			else {
-				this.quantity = newQ;
-//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
-				return 0;
-			}
-		}
-		else {
-			String name = findAmountResourceName(resource);
-			String storedResource = findAmountResourceName(this.resource);
-			logger.warning(this, "Invalid request for storing " + name 
-					+ ". Already have " + Math.round(this.quantity* 10.0)/10.0 + " kg " + storedResource + ".");
-			return quantity;
-		}
+		return microInventory.storeAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -166,105 +269,75 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (this.resource == resource) {
-			double diff = this.quantity - quantity;
-			if (diff < 0) {
-				String name = findAmountResourceName(resource);
-				logger.warning(this, 10_000L, "Just retrieved all " + this.quantity + " kg of " 
-						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
-				this.quantity = 0;
-				return diff;
-			}
-			else {
-				this.quantity = diff;
-				return 0;
-			}
+		int index = getIndex(resource);
+		if (resourceIDs.contains(resource)) {
+			return microInventory.retrieveAmountResource(resource, quantity);
 		}
-		else if (this.resource == -1) {
+		
+		else if (index == -1) {
 			String name = findAmountResourceName(resource);
 			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
 					+ name + ". Not being used for storing anything yet.");
 			return 0;
 		}
+
 		else {
-			String requestedResource = findAmountResourceName(resource);
+			String name = findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 10.0)/10.0 + " kg "
-					+ requestedResource + ".");
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 			return quantity;
 		}
 	}
 	
 	/**
-	 * Gets the capacity of this amount resource
+	 * Gets the capacity of a particular amount resource
 	 * 
 	 * @param resource
-	 * @return
+	 * @return capacity
 	 */
 	public double getAmountResourceCapacity(int resource) {
-		if (this.resource == resource || this.resource == -1) {
+		int index = getIndex(resource);
+		
+		if (index == -1 || resourceIDs.contains(resource)) {
 			return getTotalCapacity();
 		}
 		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
 	
 	/**
-	 * Obtains the remaining storage space 
+	 * Obtains the remaining storage space of a particular amount resource
 	 * 
 	 * @param resource
-	 * @return
+	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		if (this.resource == resource || this.resource == -1) {
-			return getTotalCapacity() - this.quantity;
+		int index = getIndex(resource);
+		
+		if (index == -1 || resourceIDs.contains(resource)) {	
+			return microInventory.getAmountResourceRemainingCapacity(resource);
 		}
 		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
-	
 	
 	/**
 	 * Gets the amount resource stored
 	 * 
 	 * @param resource
-	 * @return
+	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
-		if (this.resource == resource) {
-			return this.quantity;
-		}
-		else if (this.resource == - 1) {
-			return 0;
+		if (resourceIDs.contains(resource)) {
+			return getQuantity(resource);
 		}
 		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
 			return 0;
 		}
 	}
-	
-	/**
-	 * Gets the total weight of the stored resource
-	 * 
-	 * @return
-	 */
-	public double getStoredMass() {
-		return this.quantity;
-	}
-	
+    
 	/**
 	 * Is this equipment empty ?
 	 * 
@@ -272,50 +345,42 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return
 	 */
 	public boolean isEmpty(int resource) {
-		if (this.resource == -1 || (this.resource == resource && this.quantity == 0))
+		int index = getIndex(resource);
+		if (index == -1 || (resourceIDs.contains(resource) && getQuantity(resource) == 0))
 			return true;
 		
 		return false;
 	}
 
+
 	/**
-	 * Is this equipment empty ? 
+	 * Is this suit empty ? 
 	 * 
 	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
 	public boolean isEmpty(boolean brandNew) {
-		// if resource is -1, it's never been used before	
-		if (brandNew && (resource == -1 && this.quantity == 0)) {
-			return true;
+		if (brandNew) {
+			return isBrandNew();
 		}
-		// if it's not brand new, it doesn't matter if source is -1 or not
-		else if (resource == -1 || this.quantity == 0) {
-				return true;	
-		}
-		return false;
+
+		return microInventory.isEmpty();
 	}	
 
 	public boolean isBrandNew() {
-		if (resource == -1 && this.quantity == 0)
+		if (getLastOwnerID() == -1)
 			return true;
 		return false;
 	}
 
 	public boolean isUsed() {
-		if (resource != -1)
-			return true;
-		return false;
+		return !isBrandNew();
 	}
 
 	public boolean hasContent() {
-		if (quantity > 0)
-			return true;
-		return false;
+		return !microInventory.isEmpty();
 	}
-
-	public abstract double getTotalCapacity();
-
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
@@ -505,11 +570,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * Clean this container for future use
 	 */
 	public void clean() {
-		this.resource = -1;
-		this.quantity = 0;
+		resourceARs.clear();
+		resourceIDs.clear();
+		microInventory.clean();
 	}
-	
-	
+
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 

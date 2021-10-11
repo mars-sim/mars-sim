@@ -40,9 +40,6 @@ public class Bag extends Equipment implements ContainerInterface, Serializable {
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);
-
-		// Set the solid capacity.
-//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 
 	/**

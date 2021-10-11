@@ -156,7 +156,7 @@ implements Serializable {
                
                 if (e.hasContent()) {
                     // Only check one type of amount resource for container.
-                    int resource = e.getResource();
+                    int resource = e.getResourceID(0);
                     // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
                     if (resource != 1 && inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
                         result = true;
@@ -213,7 +213,7 @@ implements Serializable {
         	Equipment e = i.next();
         	
             if (e instanceof ContainerInterface) { 
-            	int resourceID = e.getResource();
+            	int resourceID = e.getResourceID(0);
                 if (resourceID != -1) {
                 	// resourceID = -1 means the container has not been initialized
                     double amount = e.getAmountResourceStored(resourceID);

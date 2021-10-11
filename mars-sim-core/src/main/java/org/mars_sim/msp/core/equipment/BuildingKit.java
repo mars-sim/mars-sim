@@ -155,7 +155,6 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
