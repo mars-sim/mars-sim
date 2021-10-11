@@ -105,24 +105,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	
 	
 	/**
-	 * Gets the id of a particular resource
-	 * 
-	 * @param index
-	 * @return Amount Resource id
-	 */
-	public int getResourceID(int index) {
-		if (resourceIDs.contains(index))
-			return resourceIDs.get(index);
-		return -1;
-	}
-	
-	/**
 	 * Gets the id of the resource
 	 * 
 	 * @return Amount Resource id
 	 */
 	public int getResource() {
-		return getResourceID(0);
+		return (resourceIDs.isEmpty() ? -1 : resourceIDs.get(0));
 	}
 	
 	/**
@@ -133,35 +121,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public AmountResource getResourceAR(int resource) {
 		return resourceARs.get(resource);
-	}
-	
-	/**
-	 * Gets the amount in quantity of a particular resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getQuantity(int resource) {
-		return microInventory.getQuantity(resource);
-	}
-	
-	/**
-	 * Gets the amount in quantity of the resource
-	 * 
-	 * @return quantity
-	 */
-	public double getQuantity() {
-		return getQuantity(0);
-	}
-	
-	/**
-	 * Sets the amount in quantity of a particular resource
-	 * 
-	 * @param resource
-	 * @param quantity
-	 */
-	public void setQuantity(int resource, double quantity) {
-		microInventory.setQuantity(resource, quantity);
 	}
 	
 	/**
@@ -227,7 +186,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @param resource
 	 * @return index
 	 */
-	public int getIndex(int resource) {
+	private int getIndex(int resource) {
 		if (resourceIDs != null && !resourceIDs.isEmpty()) {
 			for (int r: resourceIDs) {
 				if (r == resource)
@@ -254,8 +213,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (index == -1) {
 			resourceIDs.add(resource);
 			resourceARs.add(ResourceUtil.findAmountResource(resource));
-			setCapacity(resource, getTotalCapacity());
-			setQuantity(resource, 0);
+			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
 		return microInventory.storeAmountResource(resource, quantity);
@@ -331,7 +289,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public double getAmountResourceStored(int resource) {
 		if (resourceIDs.contains(resource)) {
-			return getQuantity(resource);
+			return microInventory.getAmountResourceStored(resource);
 		}
 		else {
 			return 0;
@@ -346,7 +304,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public boolean isEmpty(int resource) {
 		int index = getIndex(resource);
-		if (index == -1 || (resourceIDs.contains(resource) && getQuantity(resource) == 0))
+		if (index == -1 || (resourceIDs.contains(resource) && microInventory.isEmpty(resource)))
 			return true;
 		
 		return false;

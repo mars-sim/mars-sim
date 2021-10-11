@@ -39,6 +39,8 @@ public class EquipmentCommand extends AbstractUnitCommand {
 
 		Inventory inv = source.getInventory();
 		
+		boolean showAll = ((input != null) && input.equalsIgnoreCase("all"));
+		
 		StructuredResponse buffer = new StructuredResponse();
 
 		Collection<Equipment> equipment = inv.findAllEquipment();
@@ -62,6 +64,9 @@ public class EquipmentCommand extends AbstractUnitCommand {
 				if (builder.length() > 0) {
 					stored = builder.toString();
 				}
+				else if (showAll) {
+					stored = "empty";
+				}
 			}
 			else if (!(e instanceof Robot)) {
 				int resourceID = e.getResource();
@@ -71,10 +76,13 @@ public class EquipmentCommand extends AbstractUnitCommand {
 								e.getAmountResourceStored(resourceID),
 								e.getAmountResourceCapacity(resourceID));
 				}
+				else if (showAll) {
+					stored = "empty";
+				}
 			}
 			
 			if (stored != null) {
-				buffer.appendTableRow(e.getName(), stored.toString());
+				buffer.appendTableRow(e.getName(), stored);
 			}
 		}
 		context.println(buffer.getOutput());

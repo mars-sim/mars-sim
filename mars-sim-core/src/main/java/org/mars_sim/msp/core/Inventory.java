@@ -2154,7 +2154,7 @@ public class Inventory implements Serializable {
 						}
 						else {
 							int resourceID = e.getResource();
-							double quantity = e.getQuantity();
+							double quantity = e.getAmountResourceStored(resourceID);
 							if (resourceID != -1 && quantity > 0) {
 //								updateAmountResourceCapacityCache(resourceID);
 //								updateAmountResourceStoredCache(resourceID);
@@ -2292,7 +2292,7 @@ public class Inventory implements Serializable {
 						}
 						else {
 							int resourceID = e.getResource();
-							double quantity = e.getQuantity();
+							double quantity = e.getAmountResourceStored(resourceID);
 							if (resourceID != -1 && quantity > 0) {
 								// resourceID != -1 means the container has not been initialized
 //								updateAmountResourceCapacityCache(resourceID);
@@ -2862,8 +2862,7 @@ public class Inventory implements Serializable {
 				if (e != null) {
 					// Include EVASuit's 3 resources
 					if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-						List<Integer> set = ((EVASuit)e).getResourceIDs();
-						tempAllStored.addAll(set);
+						tempAllStored.addAll(((EVASuit)e).getResourceIDs());
 					}
 					else {
 						int resource = e.getResource();

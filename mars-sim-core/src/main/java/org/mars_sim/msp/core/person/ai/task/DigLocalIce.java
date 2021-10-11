@@ -242,13 +242,12 @@ implements Serializable {
         }
         
         if (collected > SMALL_AMOUNT) {
-        	aBag.storeAmountResource(resourceID, collected);
-	     	totalCollected += collected;
+        	double shortfall = aBag.storeAmountResource(resourceID, collected);
+	     	totalCollected += (collected - shortfall);
         }
         
-        double bagCap = aBag.getAmountResourceCapacity(resourceID);
-        if (totalCollected >= bagCap) {
-        	totalCollected = bagCap;
+        double bagCap = aBag.getAmountResourceRemainingCapacity(resourceID);
+        if (bagCap == 0D) {
 			finishedCollecting = true;
 		}
         
