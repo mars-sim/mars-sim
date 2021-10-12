@@ -119,9 +119,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
-	/** The MicroInventory instance. */
-//	private MicroInventory microInventory;
-	
 	static {
 		 
 		 for (String p: ItemResourceUtil.EVASUIT_PARTS) {
@@ -225,7 +222,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}
 		else {
 			// index = -1 means this resource is not allowed to be stored
-			String name = ResourceUtil.findAmountResourceName(resource);
+			String name = findAmountResourceName(resource);
 			logger.warning(this, name + " is not allowed to be stored " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
 			return quantity;

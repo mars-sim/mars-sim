@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -154,7 +155,7 @@ public class MicroInventory implements Serializable {
 		double shortfall = 0D;
 		double remaining = s.stored - quantity;
 		if (remaining < 0) {
-			String name = ResourceUtil.findAmountResourceName(resource);
+			String name = ((Unit)owner).findAmountResourceName(resource);
 			logger.warning(owner, 10_000L, "Just retrieved all " + quantity + " kg of " 
 					+ name + ". Lacking " + Math.round(-remaining * 10.0)/10.0 + " kg.");
 			shortfall = -remaining;

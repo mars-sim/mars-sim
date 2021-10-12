@@ -830,7 +830,9 @@ public class Inventory implements Serializable {
 	public void retrieveAmountResource(int resource, double amount) {
 		if (amount < 0D) {
 			logger.log(getOwner(), Level.SEVERE, 30_000,
-					"Cannot retrieve negative amount of resource: " + amount);
+					"Cannot retrieve negative amount "
+					+ "(" + amount + " kg) of "
+					+ ResourceUtil.findAmountResourceName(resource));
 		}
 
 		if (amount > 0D) {

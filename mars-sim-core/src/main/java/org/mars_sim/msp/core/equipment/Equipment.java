@@ -8,7 +8,9 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -55,11 +57,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** A list of resource id's. */
 	private List<Integer> resourceIDs = new ArrayList<>();
 	/** A list of Amount Resources. */
-	private List<AmountResource> resourceARs = new ArrayList<>();
+	private Map<Integer, AmountResource> resourceARs = new HashMap<>();
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
-	/** The Amount Resource. */
-	private AmountResource resourceAR;
 	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
 	/** The MicroInventory instance. */
@@ -212,7 +212,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		// index = -1 means it's brand new
 		if (index == -1) {
 			resourceIDs.add(resource);
-			resourceARs.add(ResourceUtil.findAmountResource(resource));
+			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
@@ -512,7 +512,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	@Override
 	public String findAmountResourceName(int resource) {
-		return resourceAR.getName();
+		if (resourceARs.containsKey(resource)) {
+			return resourceARs.get(resource).getName();
+		}
+		else {
+			AmountResource ar = ResourceUtil.findAmountResource(resource);
+			if (resourceIDs.contains(resource)) {
+				resourceARs.put(resource, ar);
+				return ar.getName();
+			}
+			else {
+				// this resource is not stored in the micro inventory
+				// therefore it doesn't need to be saved in resourceARs
+				return ar.getName();
+			}
+		}
 	}
 	
 	public static String generateName(String baseName) {
