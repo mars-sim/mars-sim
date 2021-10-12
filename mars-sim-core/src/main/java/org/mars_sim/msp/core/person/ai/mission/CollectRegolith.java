@@ -12,7 +12,6 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -57,7 +56,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -75,7 +74,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 		// Use CollectResourcesMission constructor.
 		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 

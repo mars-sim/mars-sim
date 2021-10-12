@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -142,7 +143,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, robotType.getName(), settlement); // extending equipment
+		super(name, EquipmentType.ROBOT, robotType.getName(), settlement); // extending equipment
 		
 		// Store this robot to the settlement 
 		settlement.getInventory().storeUnit(this);

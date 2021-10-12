@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -62,7 +63,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	/** The resource type. */
 	protected Integer resourceType;
 	/** The container type to use to collect resource. */
-	protected Integer containerType;
+	protected EquipmentType containerType;
 
 	/**
 	 * Constructor.
@@ -78,7 +79,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param containerType   the type of container to use to collect resource.
 	 */
 	public CollectResources(String taskName, Person person, Rover rover, Integer resourceType, double collectionRate,
-			double targettedAmount, double startingCargo, Integer containerType) {
+			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
@@ -210,13 +211,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource for capacity.
 	 * @return container.
 	 */
-	private static Unit findLeastFullContainer(Inventory inv, Integer containerType, Integer resource) {
+	private static Unit findLeastFullContainer(Inventory inv, EquipmentType containerType, Integer resource) {
 		Unit result = null;
 		double mostCapacity = 0D;
 
-		Iterator<Equipment> i = inv.findAllEquipmentTypeID(containerType).iterator();
-		while (i.hasNext()) {
-			Equipment container = i.next();
+		for(Equipment container : inv.findAllEquipmentType(containerType)) {
 			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
 			if (remainingCapacity > mostCapacity) {
 				result = container;
@@ -315,7 +314,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			Inventory pInv = person.getInventory();
 			if (pInv.containsEquipment(containerType)) {
 				// Load containers in rover.
-				Iterator<Equipment> i = pInv.findAllEquipmentTypeID(containerType).iterator();
+				Iterator<Equipment> i = pInv.findAllEquipmentType(containerType).iterator();
 				while (i.hasNext()) {
 					// Place this equipment within a rover outside on Mars
 					i.next().transfer(pInv, rover);
@@ -333,7 +332,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(MissionMember member, Rover rover, Integer containerType,
+	public static boolean canCollectResources(MissionMember member, Rover rover, EquipmentType containerType,
 			Integer resourceType) {
 
 		boolean result = false;

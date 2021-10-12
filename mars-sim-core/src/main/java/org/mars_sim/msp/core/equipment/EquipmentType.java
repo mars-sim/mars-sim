@@ -24,7 +24,8 @@ public enum EquipmentType {
 	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
 	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
 	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
-	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
+	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")), //$NON-NLS-1$
+	ROBOT				("Robot"); 
 
 	private String name;	
 
@@ -150,7 +151,7 @@ public enum EquipmentType {
 	    		}
 	    	}
 		}
-		return null;
+		throw new IllegalArgumentException("No equipment type called " + name);
 	}
 	
 	/**

@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -230,7 +229,7 @@ public final class ManufactureUtil {
 			double salvagedGoodValue = 0D;
 			Good salvagedGood = null;
 			if (salvagedUnit instanceof Equipment) {
-				salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+				salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());
 			} else if (salvagedUnit instanceof Vehicle) {
 				salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
 			}
@@ -303,9 +302,7 @@ public final class ManufactureUtil {
 		} 
 		
 		else if (item.getType() == ItemType.EQUIPMENT) {
-//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} 
 		
@@ -533,44 +530,6 @@ public final class ManufactureUtil {
 		return highestTechLevel;
 	}
 
-	/**
-	 * Gets a good for a manufacture process item.
-	 * 
-	 * @param item the manufacture process item.
-	 * @return good
-	 * @throws Exception if error determining good.
-	 */
-	public static Good getGood(ManufactureProcessItem item) {
-		Good result = null;
-		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
-			result = GoodsUtil.getResourceGood(ar);
-			if (result == null)
-				result = GoodsUtil.createResourceGood(ar);
-		} 
-		
-		else if (ItemType.PART.equals(item.getType())) {
-			ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
-			result = GoodsUtil.getResourceGood(ir);
-			if (result == null)
-				result = GoodsUtil.createResourceGood(ir);
-		} 
-		
-		else if (ItemType.EQUIPMENT.equals(item.getType())) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(equipmentClass);
-			if (result == null)
-				result = GoodsUtil.createEquipmentGood(equipmentClass);
-		} 
-		
-		else if (ItemType.VEHICLE.equals(item.getType())) {
-			result = GoodsUtil.getVehicleGood(item.getName());
-			if (result == null)
-				result = GoodsUtil.createVehicleGood(item.getName());
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the mass for a manufacturing process item.
@@ -587,7 +546,7 @@ public final class ManufactureUtil {
 		} else if (ItemType.PART.equals(item.getType())) {
 			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
+			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
 			mass = item.getAmount() * vehicleConfig.getEmptyMass(item.getName());

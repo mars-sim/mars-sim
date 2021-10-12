@@ -77,10 +77,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @param settlement the unit's owner
 	 */
 	protected Equipment(String name, String type, Settlement settlement) {
+		this(name, EquipmentType.convertName2Enum(type), type, settlement);
+	}
+
+	/**
+	 * Constructs an Equipment object
+	 * 
+	 * @param name     the name of the unit
+	 * @param type     the type of the unit
+	 * @param settlement the unit's owner
+	 */
+	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		
 		// Initialize data members.
-		this.equipmentType = EquipmentType.convertName2Enum(type);
+		this.equipmentType = eType;
 		isSalvaged = false;
 		salvageInfo = null;
 		
@@ -275,14 +286,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		int index = getIndex(resource);
-		
-		if (index == -1 || resourceIDs.contains(resource)) {	
+		int allocatedResource = getResource();
+		if (allocatedResource == resource) {
 			return microInventory.getAmountResourceRemainingCapacity(resource);
 		}
-		else {
-			return 0;
+		else if (allocatedResource == -1) {
+			return getTotalCapacity();
 		}
+		return 0;
 	}
 	
 	/**

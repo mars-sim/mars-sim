@@ -21,19 +21,9 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Barrel;
-import org.mars_sim.msp.core.equipment.ContainerInterface;
-import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.GasCanister;
-import org.mars_sim.msp.core.equipment.LargeBag;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
@@ -61,9 +51,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -206,9 +194,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double MAX_VP = 5_000D;
 	private static final double MIN_VP = .1;
 	private static final double PERCENT_90 = .9;
-	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_81 = .81;
-	private static final double PERCENT_121 = 1.21;
 	private static final double MAX_FINAL_VP = 5_000D;
 
 	private static final double LIFE_SUPPORT_MIN = 100;
@@ -232,10 +218,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double INGOT_METAL_DEMAND = .05;
 	private static final double SHEET_METAL_DEMAND = .05;
 	private static final double STEEL_DEMAND = .05;
-//	private static final double STEEL_CAN_DEMAND = .3;
-	private static final double WIRE_DEMAND = .05;
-
-	private static final double PIPE_DEMAND = .05;
 	
 	private static final double BOTTLE_DEMAND = .002;
 	private static final double FIBERGLASS_DEMAND = .05;
@@ -2411,7 +2393,7 @@ public class GoodsManager implements Serializable, Temporal {
 				return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
 			if (GoodCategory.EQUIPMENT == good.getCategory()
 					|| GoodCategory.CONTAINER == good.getCategory())
-				return getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
+				return getNumberOfEquipmentForSettlement(good, good.getEquipmentType());
 			if (GoodCategory.VEHICLE == good.getCategory())
 				return getNumberOfVehiclesForSettlement(good.getName());
 
@@ -3258,7 +3240,7 @@ public class GoodsManager implements Serializable, Temporal {
 			previous = getEquipmentDemandValue(id);
 		
 			// Determine average demand.
-			average = determineEquipmentDemand(EquipmentFactory.getEquipmentClass(id));
+			average = determineEquipmentDemand(EquipmentType.convertID2Type(id));
 //			logger.info(settlement, equipmentGood.getName() + " average demand: " + average);
 			// Add trade demand.
 //            demand += determineTradeDemand(equipmentGood, useCache);
@@ -3311,16 +3293,16 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipmentClass the equipment class.
 	 * @return demand (# of equipment).
 	 */
-	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
+	private double determineEquipmentDemand(EquipmentType type) {
 		double demand = 0;
 
 		double areologistFactor = (1 + getJobNum(JobType.AREOLOGIST)) / 3.0;
 
-		if (Robot.class.equals(equipmentClass))
+		if (type == EquipmentType.ROBOT)
 			return ROBOT_FACTOR ;
 
 		// Determine number of EVA suits that are needed
-		if (EVASuit.class.equals(equipmentClass)) {
+		if (type == EquipmentType.EVA_SUIT) {
 			// Add the whole EVA Suit demand.
 			demand += getWholeEVASuitDemand();
 
@@ -3328,76 +3310,60 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		// Determine the number of containers that are needed.
-		if (ContainerInterface.class.isAssignableFrom(equipmentClass)) {
+//		PhaseType containerPhase = ContainerUtil.getContainerPhase(type);
+//		double containerCapacity = ContainerUtil.getContainerCapacity(type);
+//
+//		double totalPhaseOverfill = 0D;
+//		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
+//		while (i.hasNext()) {
+//			AmountResource resource = i.next();
+//			if (resource.getPhase() == containerPhase) {
+//				double settlementCapacity = settlement.getInventory()
+//						.getAmountResourceCapacityNoContainers(resource);
+//
+//				double resourceDemand = getAmountDemandValue(resource.getID());
+//
+//				if (resourceDemand > settlementCapacity) {
+//					double resourceOverfill = resourceDemand - settlementCapacity;
+//					totalPhaseOverfill += resourceOverfill;
+//				}
+//			}
+//		}
 
-			PhaseType containerPhase = ContainerUtil.getContainerPhase(equipmentClass);
-			double containerCapacity = ContainerUtil.getContainerCapacity(equipmentClass);
-
-			double totalPhaseOverfill = 0D;
-			Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
-			while (i.hasNext()) {
-				AmountResource resource = i.next();
-				if (resource.getPhase() == containerPhase) {
-					double settlementCapacity = settlement.getInventory()
-							.getAmountResourceCapacityNoContainers(resource);
-
-					double resourceDemand = getAmountDemandValue(resource.getID());
-
-					if (resourceDemand > settlementCapacity) {
-						double resourceOverfill = resourceDemand - settlementCapacity;
-						totalPhaseOverfill += resourceOverfill;
-					}
-				}
-			}
-
-			demand = 1 + totalPhaseOverfill * containerCapacity;
-//			logger.info(settlement, EquipmentType.convertClass2Type(equipmentClass).getName() 
-//					+ " container demand: " + demand);
-		}
-
-		// Determine number of bags that are needed.
-		if (Bag.class.equals(equipmentClass)) {
-			double ratio = computeUsageFactor(equipmentClass);
+		double ratio = computeUsageFactor(type);
+		switch (type) {
+		case BAG:
 			return demand * ratio * settlement.getRegolithCollectionRate() * areologistFactor * BAG_DEMAND;
-		}
-
-		if (LargeBag.class.equals(equipmentClass)) {
-			double ratio = computeUsageFactor(equipmentClass);
+		
+		case LARGE_BAG:
 			return demand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * LARGE_BAG_DEMAND;
-		}
-
-		if (Barrel.class.equals(equipmentClass)) {
-			double ratio = computeUsageFactor(equipmentClass);
+			
+		case BARREL:
 			return demand * ratio * CollectIce.REQUIRED_BARRELS * areologistFactor * BARREL_DEMAND;
-		}
-
-		// Determine number of specimen containers that are needed.
-		if (SpecimenBox.class.equals(equipmentClass)) {
-			double ratio = computeUsageFactor(equipmentClass);
+			
+		case SPECIMEN_BOX:
 			return demand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
-		}
-
-		// Determine number of gas canisters that are needed.
-		if (GasCanister.class.equals(equipmentClass)) {
-			double ratio = computeUsageFactor(equipmentClass);
+			
+		case GAS_CANISTER:
 			return demand * ratio * PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND;
+			
+		default:
+			throw new IllegalArgumentException("Do not know how to calculate demand for " + type);
 		}
-
-		return Math.min(1000, demand);
 	}
 
 	/**
 	 * Computes the usage factor (N + the used number of container / the total number)
 	 * of a class of container
 	 * 
-	 * @param equipmentClass
+	 * @param containerType
 	 * @return the usage factor
 	 */
-	private double computeUsageFactor(Class<? extends Equipment> equipmentClass) {
+	private double computeUsageFactor(EquipmentType containerType) {
 		int numUsed = 0;
 
 		Inventory inv = settlement.getInventory();
-		Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+		Set<Equipment> equipmentList = inv.findAllEquipmentType(containerType);
 		
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
@@ -3406,66 +3372,20 @@ public class GoodsManager implements Serializable, Temporal {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
 					Inventory vehicleInv = vehicle.getInventory();
-					Iterator<Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
-					while (j.hasNext()) {
-						Unit equipment = j.next();
-						if (!equipmentList.contains(equipment))
-							equipmentList.add(equipment);
-					}
+					equipmentList.addAll(vehicleInv.findAllEquipmentType(containerType));
 				}
 			}
 		}
 
 		double total = equipmentList.size();
-
-		Iterator<Unit> k = equipmentList.iterator();
-		while (k.hasNext()) {
-			if (((Equipment)k.next()).hasContent())
+		for(Equipment e: equipmentList) {
+			if (e.hasContent())
 				numUsed++;
 		}
-		
-//		EquipmentType type = EquipmentType.convertClass2Type(equipmentClass);
-//		logger.info(settlement, type.getName() + " numUsed: " + numUsed + " total: " + total);
+
 		return  (1 + numUsed) / (1 + total);
 	}
 
-	/**
-	 * Gets all non-empty containers of a given type associated with this
-	 * settlement.
-	 * 
-	 * @param equipmentClass the equipment type.
-	 * @return number of non-empty containers.
-	 */
-	private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
-		int result = 0;
-
-		Inventory inv = settlement.getInventory();
-		Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-					Inventory vehicleInv = vehicle.getInventory();
-					Iterator<Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
-					while (j.hasNext()) {
-						Unit equipment = j.next();
-						if (!equipmentList.contains(equipment))
-							equipmentList.add(equipment);
-					}
-				}
-			}
-		}
-
-		Iterator<Unit> k = equipmentList.iterator();
-		while (k.hasNext()) {
-			if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D)
-				result++;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the number of people in a job associated with the settlement.
@@ -3488,14 +3408,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipmentClass the equipmentType to check.
 	 * @return number of equipment for the settlement.
 	 */
-	private <T extends Unit> double getNumberOfEquipmentForSettlement(Good good, Class<T> equipmentClass) {
+	private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentClass) {
 //		if (equipmentClass.equals(Robot.class))
 //			return ROBOT_FACTOR;
 
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
-		number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
+		number += settlement.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
 
 		// Get number of equipment out on mission vehicles.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -3504,7 +3424,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
+					number += vehicle.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
 			}
 		}
 
@@ -3513,7 +3433,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				number += person.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
+				number += person.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
 		}
 
 		// Get the number of equipment that will be produced by ongoing manufacturing

@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -80,7 +79,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	private double totalResourceCollected;
 	
 	/** The type of container needed for the mission or null if none. */
-	private Integer containerID;
+	private EquipmentType containerID;
 	/** The start time at the current collection site. */
 	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
@@ -109,7 +108,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @throws MissionException if problem constructing mission.
 	 */
 	CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, Integer resourceID, double siteResourceGoal,
-			double resourceCollectionRate, Integer containerID, int containerNum, int numSites, int minPeople) {
+			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites, int minPeople) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, startingPerson, minPeople);
@@ -211,7 +210,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @throws MissionException if problem constructing mission.
 	 */
 	CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
-			Integer resourceID, double siteResourceGoal, double resourceCollectionRate, Integer containerID,
+			Integer resourceID, double siteResourceGoal, double resourceCollectionRate, EquipmentType containerID,
 			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
@@ -778,29 +777,6 @@ public abstract class CollectResourcesMission extends RoverMission
 	}
 
 	/**
-	 * Gets the number of empty containers of given type at the settlement.
-	 * 
-	 * @param settlement    the settlement
-	 * @param containerType the type of container
-	 * @return number of empty containers.
-	 * @throws MissionException if error determining number.
-	 */
-	protected static int numCollectingContainersAvailable(Settlement settlement, Class<? extends Unit> containerType) {
-		int num = settlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
-		
-		if (num == 0) {
-			int id = EquipmentType.convertClass2ID(containerType);
-			String name = EquipmentType.convertID2Type(id).toString();
-	    	// Note: Create methods for adding the equipment demand for a bag in GoodsManager
-        	logger.log(settlement, Level.WARNING, 10_000,
-        			"No more empty " + name 
-					+ " available.");
-		}
-		
-		return num;
-	}
-
-	/**
 	 * Gets the estimated time remaining for the mission.
 	 * 
 	 * @param useBuffer use time buffer in estimations if true.
@@ -917,7 +893,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
 			// Include required number of containers.
-			result.put(containerID, containerNum);
+			result.put(EquipmentType.getResourceID(containerID), containerNum);
 
 			equipmentNeededCache = result;
 			return result;

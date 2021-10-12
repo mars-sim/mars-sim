@@ -202,8 +202,7 @@ public final class FoodProductionUtil {
 			int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} else if (item.getType() == ItemType.EQUIPMENT) {
-//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 //		} else if (item.getType().equals(ItemType.VEHICLE)) {
 //			Good good = GoodsUtil.getVehicleGood(item.getName());
@@ -323,8 +322,7 @@ public final class FoodProductionUtil {
 		} else if (ItemType.PART == item.getType()) {
 			result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 		} else if (ItemType.EQUIPMENT == item.getType()) {
-//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
+			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
 		}
 //		 else if (Type.VEHICLE.equals(item.getType())) {
 //		 result = GoodsUtil.getVehicleGood(item.getName());
@@ -349,7 +347,7 @@ public final class FoodProductionUtil {
 			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 			mass = item.getAmount() * part.getMassPerItem();
 		} else if (ItemType.EQUIPMENT == item.getType()) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
+			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		}
 //		 else if (Type.VEHICLE.equals(item.getType())) {

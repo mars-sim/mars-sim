@@ -7,18 +7,26 @@
  */
 package org.mars_sim.msp.core.structure.goods;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.resource.*;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Utility class for goods information.
@@ -101,14 +109,14 @@ public class GoodsUtil {
     /**
      * Calculates the cost of each good
      */
-    public static void calculateGoodCost() {
+    private static void calculateGoodCost() {
         for (Good g : goodsList) {
             g.computeCost();
         }
     }
 
 
-    public static Good createResourceGood(Resource resource) {
+    private static Good createResourceGood(Resource resource) {
         if (resource == null) {
             logger.severe("resource is NOT supposed to be null.");
         }
@@ -144,22 +152,7 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
-    /**
-     * Creates a good object for a given equipment class.
-     *
-     * @param equipmentClass the equipment class.
-     * @return good for the resource class or null if none.
-     */
-    public static Good createEquipmentGood(Class<?> equipmentClass) {
-        if (equipmentClass == null) {
-            logger.severe("goodClass cannot be null");
-        }
-
-        int id = EquipmentType.convertClass2ID(equipmentClass);
-        return createEquipmentGood(id);
-    }
-
-    public static Good createEquipmentGood(int id) {
+    private static Good createEquipmentGood(int id) {
         if (EquipmentType.convertID2Type(id) == EquipmentType.EVA_SUIT)
             return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT);
         else
@@ -172,11 +165,11 @@ public class GoodsUtil {
      * @param equipmentClass the equipment class.
      * @return good for the resource class or null if none.
      */
-    public static Good getEquipmentGood(Class<?> equipmentClass) {
+    public static Good getEquipmentGood(EquipmentType equipmentClass) {
         if (equipmentClass == null) {
             logger.severe("equipmentClass is NOT supposed to be null.");
         }
-        int id = EquipmentType.convertClass2ID(equipmentClass);
+        int id = EquipmentType.getResourceID(equipmentClass);
         if (id > 0) {
             return getEquipmentGood(id);
         }
@@ -195,19 +188,7 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
-    /**
-     * Creates a good object for the given vehicle type.
-     *
-     * @param vehicleTypeString the vehicle type string.
-     * @return good for the vehicle type.
-     */
-    public static Good createVehicleGood(String vehicleTypeString) {
-        if ((vehicleTypeString == null) || vehicleTypeString.trim().length() == 0) {
-            logger.severe("vehicleType is NOT supposed to be blank or null.");
-        }
-        return new Good(vehicleTypeString, VehicleType.convertName2ID(vehicleTypeString), GoodCategory.VEHICLE);
-    }
-
+ 
     public static String getVehicleCategory(VehicleType vehicleType) {
         if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
             return HEAVY;
@@ -218,22 +199,7 @@ public class GoodsUtil {
         return "";
     }
 
-    /**
-     * Creates a good object for the given vehicle type.
-     *
-     * @param vehicleType the vehicle type.
-     * @return good for the vehicle type.
-     */
-    public static Good createVehicleGood(VehicleType vehicleType) {
-        if (vehicleType == null) {
-            logger.severe("vehicleType is NOT supposed to be blank or null.");
-        }
-        int id = VehicleType.getVehicleID(vehicleType);
-        return new Good(vehicleType.getName(), id, GoodCategory.VEHICLE);
-    }
-
-
-    public static Good createVehicleGood(int id) {
+    private static Good createVehicleGood(int id) {
         return new Good(VehicleType.convertID2Type(id).getName(), id, GoodCategory.VEHICLE);
     }
 
@@ -265,32 +231,6 @@ public class GoodsUtil {
 
         int id = VehicleType.getVehicleID(vehicleType);
         return getGoodsMap().get(id);
-    }
-
-    /**
-     * Checks if a good is valid in the simulation.
-     *
-     * @param good the good to check.
-     * @return true if good is valid.
-     */
-    public static boolean containsGood(Good good) {
-        if (good == null) {
-            logger.severe("good is NOT supposed to be null.");
-        }
-        return containsGood(good.getID());
-    }
-
-    /**
-     * Checks if a good is valid in the simulation.
-     *
-     * @param good the good to check.
-     * @return true if good is valid.
-     */
-    public static boolean containsGood(int id) {
-        if (id > 0) {
-            logger.severe("good id is NOT supposed to be less than zero.");
-        }
-        return getGoodsMap().containsKey(id);
     }
 
     /**
@@ -394,7 +334,7 @@ public class GoodsUtil {
             result = ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
         else if (GoodCategory.EQUIPMENT == good.getCategory()
                 || GoodCategory.CONTAINER == good.getCategory())
-            result = EquipmentFactory.getEquipmentMass(good.getName());
+            result = EquipmentFactory.getEquipmentMass(good.getEquipmentType());
         else if (GoodCategory.VEHICLE == good.getCategory()) {
             result = vehicleConfig.getEmptyMass(good.getName());
         }
@@ -558,14 +498,6 @@ public class GoodsUtil {
             return good.getID();
 
         return -1;
-    }
-
-    public <K, V> Stream<K> keys(Map<K, V> map, V value) {
-        return map
-                .entrySet()
-                .stream()
-                .filter(entry -> value.equals(entry.getValue()))
-                .map(Map.Entry::getKey);
     }
 
     /**

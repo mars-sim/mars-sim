@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -60,7 +59,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -79,7 +78,7 @@ public class CollectIce extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(description, missionType, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, 
 				computeAverageCollectionRate(iceCollectionSites),
-				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, iceCollectionSites.size(),
+				EquipmentType.BARREL, REQUIRED_BARRELS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 

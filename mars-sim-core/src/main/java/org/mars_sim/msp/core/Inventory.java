@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1509,19 +1508,17 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Finds an empty equipment of a given class
+	 * Finds an empty container of a given class
 	 * 
 	 * @param unitClass
 	 * @return
 	 */
-	public Equipment findAnEmptyEquipment(Class<? extends Unit> unitClass, int resource) {
+	public Equipment findAnEmptyContainer(EquipmentType containerType, int resource) {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (unitClass.isInstance(e)) {
-					if (e.isEmpty(resource)) {
-						return e;
-					}
+				if ((e != null) && e.isEmpty(resource) && (e.getEquipmentType() == containerType)) {
+					return e;
 				}
 			}
 		}	
@@ -1702,6 +1699,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+
 	/**
 	 * Finds all equipment with a particular equipment type
 	 * 
@@ -1726,26 +1724,8 @@ public class Inventory implements Serializable {
 	 * @param type EquipmentType
 	 * @return collection of equipment or empty collection if none.
 	 */
-	public Collection<Equipment> findAllEquipmentType(String typeStsring) {
-		Collection<Equipment> result = new HashSet<>();
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getType().equalsIgnoreCase(typeStsring)) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	public Collection<Equipment> findAllEquipmentType(EquipmentType type) {
-		Collection<Equipment> result = new HashSet<>();
+	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
+		Set<Equipment> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
@@ -1965,38 +1945,6 @@ public class Inventory implements Serializable {
 		}
 		return result;
 	}
-	
-	/**
-	 * Finds the number of units of a class that are contained in storage and have
-	 * an empty inventory.
-	 * 
-	 * @param unitClass  the unit class.
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty units.
-	 */
-	public <T extends Unit> int findNumEmptyUnitsOfClass(Class<T> unitClass, boolean brandNew) {
-		int result = 0;
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Unit unit = unitManager.getUnitByID(uid);
-				if (unitClass.isInstance(unit)) {
-					if (unit.getUnitType() == UnitType.EQUIPMENT) {
-						if (((Equipment)unit).isEmpty(brandNew)) {
-							result++;
-						}
-					}
-					else {
-						Inventory inv = unit.getInventory();
-						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(brandNew)) {
-							result++;
-						}
-					}
-				}
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
@@ -2006,15 +1954,14 @@ public class Inventory implements Serializable {
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
-	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> containerClass, boolean brandNew) {
+	public int findNumEmptyContainersOfClass(EquipmentType containerType, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment unit = unitManager.getEquipmentByID(uid);
-				if (containerClass.isInstance(unit)) {
-					if (((Equipment)unit).isEmpty(brandNew)) {
-						result++;
-					}
+				// The contained unit has to be an Equipment that is empty and of the correct type
+				if ((unit != null) && unit.isEmpty(brandNew) && (unit.getEquipmentType() == containerType)) {
+					result++;
 				}
 			}
 		}
@@ -2030,19 +1977,7 @@ public class Inventory implements Serializable {
 	 * @return number of empty containers
 	 */
 	public int findNumEmptyContainers(int typeID, boolean brandNew) {
-		int result = 0;
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
-					if (e.isEmpty(brandNew)) {
-						result++;
-					}
-				}
-			}
-		}
-
-		return result;
+		return findNumEmptyContainersOfClass(EquipmentType.convertID2Type(typeID), brandNew);
 	}
 
 	/**

@@ -1570,8 +1570,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				double amount = (double) optionalResources.get(id);
 
 				// Obtain a container for storing the amount resource
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-				double capacity = ContainerUtil.getContainerCapacity(containerID);
+				EquipmentType containerType = ContainerUtil.getContainerClassToHoldResource(id);
+				int containerID = EquipmentType.getResourceID(containerType);
+				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);
 
 				if (result.containsKey(containerID)) {

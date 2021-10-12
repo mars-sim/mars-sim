@@ -345,7 +345,7 @@ public class Manufacture extends Function implements Serializable {
 		// GoodsManager goodsManager = settlement.getGoodsManager();
 		Good salvagedGood = null;
 		if (salvagedUnit instanceof Equipment) {
-			salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+			salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());
 		} else if (salvagedUnit instanceof Vehicle) {
 			salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
 		}

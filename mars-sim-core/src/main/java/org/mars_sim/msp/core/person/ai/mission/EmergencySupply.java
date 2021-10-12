@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -881,21 +882,14 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		Iterator<Integer> i = resourcesMap.keySet().iterator();
 		while (i.hasNext()) {
 			Integer id = i.next();
-			
-//          Class<? extends Equipment> containerClass = ContainerUtil.getContainerClassToHoldResource(id);
-//			double resourceAmount = resources.get(id);		
-//			double containerCapacity = ContainerUtil.getContainerCapacity(containerClass);
-//			int numContainers = (int) Math.ceil(resourceAmount / containerCapacity);	
-//			result.put(EquipmentType.convertClass2ID(containerClass), numContainers);
+
 			
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) resourcesMap.get(id);
-				// Class<? extends Container> containerClass =
-				// ContainerUtil.getContainerClassToHoldResource(resource);
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-				double capacity = ContainerUtil.getContainerCapacity(containerID);
+				EquipmentType containerType = ContainerUtil.getContainerClassToHoldResource(id);
+				int containerID = EquipmentType.getResourceID(containerType);
+				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);
-//	            int id = EquipmentType.str2int(containerClass.getClass().getName());
 				if (result.containsKey(containerID)) {
 					numContainers += (int) (result.get(containerID));
 				}

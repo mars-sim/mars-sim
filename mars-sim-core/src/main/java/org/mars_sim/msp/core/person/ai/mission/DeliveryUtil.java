@@ -19,9 +19,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -63,15 +63,13 @@ public final class DeliveryUtil {
 	private static final int MIN_NUM_EQUIPMENT = 10;
 	
 	/** Performance cache for equipment goods. */
-	private final static Map<Class<? extends Equipment>, Equipment> equipmentGoodCache = new HashMap<Class<? extends Equipment>, Equipment>(
-			5);
+	private final static Map<EquipmentType, Equipment> equipmentGoodCache = new HashMap<>();
 
 	/** Cache for the best delivery settlement. */
 	public static Settlement bestDeliverySettlementCache = null;
 
 	/** Cache for container types. */
-	private final static Map<Class<? extends Equipment>, Equipment> containerTypeCache = new HashMap<Class<? extends Equipment>, Equipment>(
-			3);
+	private final static Map<EquipmentType, Equipment> containerTypeCache = new HashMap<>();
 
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
@@ -310,7 +308,7 @@ public final class DeliveryUtil {
 						Equipment container = getAvailableContainerForResource(resource,
 								sellingSettlement, deliveryList);
 						if (container != null) {
-							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
+							Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
 							massCapacity -= container.getBaseMass();
 							int containerNum = 0;
 							if (deliveryList.containsKey(containerGood))
@@ -658,7 +656,7 @@ public final class DeliveryUtil {
 			boolean enoughEquipment = true;
 			if (good.getCategory() == GoodCategory.EQUIPMENT
 					|| good.getCategory() == GoodCategory.CONTAINER) {	
-				if (good.getClassType() == EVASuit.class) {
+				if (good.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					double remainingSuits = sellingInventory - quantityDelivered;
 					// Make sure keep enough number of EVA suits for each citizen with margin 
 					int requiredSuits = (int)(sellingSettlement.getNumCitizens() * 1.2);
@@ -717,7 +715,7 @@ public final class DeliveryUtil {
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			Class<? extends Equipment> type = good.getClassType();
+			EquipmentType type = good.getEquipmentType();
 			if (!equipmentGoodCache.containsKey(type)) {
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, settlement, true));
 			}
@@ -742,7 +740,7 @@ public final class DeliveryUtil {
 			return inventory.getItemResourceNum(good.getID());
 		} else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return inventory.findNumEmptyUnitsOfClass(EquipmentFactory.getEquipmentClass(good.getID()), false);
+			return inventory.findNumEmptyContainersOfClass(good.getEquipmentType(), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
@@ -773,7 +771,7 @@ public final class DeliveryUtil {
 
 		Equipment result = null;
 
-		Class<? extends Equipment> containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Inventory settlementInv = settlement.getInventory();
 
@@ -785,7 +783,7 @@ public final class DeliveryUtil {
 			containersDelivered = deliveredGoods.get(containerGood);
 
 		if (containersStored > containersDelivered)
-			result = settlementInv.findAnEmptyEquipment(containerClass, resource.getID());
+			result = settlementInv.findAnEmptyContainer(containerClass, resource.getID());
 
 		return result;
 	}
@@ -821,7 +819,7 @@ public final class DeliveryUtil {
 	private static double getResourceDeliveryAmount(AmountResource resource, Settlement settlement) {
 		double result = 0D;
 
-		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType))
