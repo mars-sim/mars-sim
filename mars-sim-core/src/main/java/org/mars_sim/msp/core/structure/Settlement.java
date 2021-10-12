@@ -59,6 +59,8 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -3541,6 +3543,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return ResourceUtil.findAmountResourceName(resource);
 	}
 
+	/**
+	 * Finds the string name of the item resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findItemResourceName(int resource) {
+		return ItemResourceUtil.findItemResourceName(resource);
+	}
+	
 	public int getSolCache() {
 		return solCache;
 	}

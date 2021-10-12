@@ -71,7 +71,7 @@ implements Serializable {
 
 	private Settlement settlement;
 
-	private static int resourceID = ResourceUtil.regolithID;
+	private int resourceID = ResourceUtil.regolithID;
 
 	/**
 	 * Constructor.
@@ -123,6 +123,9 @@ implements Serializable {
         // If bags are not available, end task.
         if (aBag == null) {
         	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
+        	// Add bag demand
+        	settlement.getInventory().addItemDemand(resourceID, 5);    
+        	
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
             }

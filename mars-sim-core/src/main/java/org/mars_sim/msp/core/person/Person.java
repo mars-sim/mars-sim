@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2021-09-20
+ * @date 2021-10-11
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -30,6 +31,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -52,6 +54,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -130,7 +133,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int day;
 	/** The age of a person */
 	private int age = -1;
-
+	/** The quarters that the person belongs. */
+	private int quartersInt = -1;
+	/** The current building location of the person. */
+	private int currentBuildingInt;
+	
 	/** The settlement the person is currently associated with. */
 	private Integer associatedSettlementID = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
@@ -195,28 +202,30 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private ReportingAuthority ra;
 	/** The bed location of the person */
 	private Point2D bed;
-	/** The quarters that the person belongs. */
-	private int quartersInt = -1;
-	/** The current building location of the person. */
-	private int currentBuildingInt;
 	/** The EVA suit that the person has donned on. */
 	private EVASuit suit;
+	/** The person's current scientific study. */
+	private ScientificStudy study;
+	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<ScienceType, Double>();
 	/** The person's paternal chromosome. */
 	private Map<Integer, Gene> paternal_chromosome;
 	/** The person's maternal chromosome. */
 	private Map<Integer, Gene> maternal_chromosome;
-	/** The person's mission experiences */
+	/** The person's mission experiences. */
 	private Map<MissionType, Integer> missionExperiences;
-	/** The person's EVA times */
-	private SolMetricDataLogger<String> eVATaskTime;
-	/** The person's water/oxygen consumption */
-	private SolMetricDataLogger<Integer> consumption;
-	/** The person's prior training */
+	/** The person's list of prior trainings */
 	private List<TrainingType> trainings;
-	private ScientificStudy study;
+	/** The person's list of collaborative scientific studies. */
 	private Set<ScientificStudy> collabStudies;
+	/** The person's list of equipment. */
+	private List<Equipment> equipmentList;
+	
+	/** The person's EVA times. */
+	private SolMetricDataLogger<String> eVATaskTime;
+	/** The person's water/oxygen consumption. */
+	private SolMetricDataLogger<Integer> consumption;
 	
 	static {
 		// personConfig is needed by maven unit test
@@ -251,7 +260,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
+		// Create equipment list instance		
+		equipmentList = new ArrayList<>();
 	}
 	
 	/**
@@ -1917,6 +1929,80 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
+	 * Finds the string name of the item resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findItemResourceName(int resource) {
+		return ItemResourceUtil.findItemResourceName(resource);
+	}
+	
+	public List<Equipment> getEquipmentList() {
+		return equipmentList;
+	}
+	
+	public void addEquipment(Equipment equipment) {
+		equipmentList.add(equipment);
+	}
+	
+	public void removeEquipment(Equipment equipment) {
+		equipmentList.remove(equipment);
+	}
+	
+	/**
+	 * Generate a unique name for a person based on a country
+	 * @param country
+	 * @param gender
+	 * @return
+	 */
+	public static String generateName(String country, GenderType gender) {
+		boolean isUniqueName = false;
+		PersonConfig personConfig = simulationConfig.getPersonConfig();
+		
+		// Check for any duplicate full Name
+		Collection<Person> people = unitManager.getPeople();
+		List<String> existingfullnames = people.stream()
+				.map(Person::getName).collect(Collectors.toList());
+
+		// Prevent mars-sim from using the user defined commander's name  
+		String userName = personConfig.getCommander().getFullName();
+		if (userName != null)
+			existingfullnames.add(userName);
+
+		// Setup name ranges
+		PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
+		List<String> last_list = nameSpec.getLastNames();
+		List<String> first_list = null;
+		if (gender == GenderType.MALE) {
+			first_list = nameSpec.getMaleNames();
+		} else {
+			first_list = nameSpec.getFemaleNames();
+		}
+		
+		// Attempt to find a unique combination
+		while (!isUniqueName) {
+			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
+			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
+
+			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
+
+			// double checking if this name has already been in use
+			if (existingfullnames.contains(fullname)) {
+				isUniqueName = false;
+				logger.config(fullname + " is a duplicate name. Choose another one.");
+			}
+			else {
+				return fullname;
+			}
+		}
+		
+		// Should never get here
+		return "Person #" + people.size();
+	}
+	
+	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
 	public void reinit() {
@@ -1979,56 +2065,5 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		scientificAchievement.clear();
 		scientificAchievement = null;
-	}
-
-	/**
-	 * Generate a unique name for a person based on a country
-	 * @param country
-	 * @param gender
-	 * @return
-	 */
-	public static String generateName(String country, GenderType gender) {
-		boolean isUniqueName = false;
-		PersonConfig personConfig = simulationConfig.getPersonConfig();
-		
-		// Check for any duplicate full Name
-		Collection<Person> people = unitManager.getPeople();
-		List<String> existingfullnames = people.stream()
-				.map(Person::getName).collect(Collectors.toList());
-
-		// Prevent mars-sim from using the user defined commander's name  
-		String userName = personConfig.getCommander().getFullName();
-		if (userName != null)
-			existingfullnames.add(userName);
-
-		// Setup name ranges
-		PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
-		List<String> last_list = nameSpec.getLastNames();
-		List<String> first_list = null;
-		if (gender == GenderType.MALE) {
-			first_list = nameSpec.getMaleNames();
-		} else {
-			first_list = nameSpec.getFemaleNames();
-		}
-		
-		// Attempt to find a unique combination
-		while (!isUniqueName) {
-			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
-			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
-
-			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
-
-			// double checking if this name has already been in use
-			if (existingfullnames.contains(fullname)) {
-				isUniqueName = false;
-				logger.config(fullname + " is a duplicate name. Choose another one.");
-			}
-			else {
-				return fullname;
-			}
-		}
-		
-		// Should never get here
-		return "Person #" + people.size();
 	}
 }

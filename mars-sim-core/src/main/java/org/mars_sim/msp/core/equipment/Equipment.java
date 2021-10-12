@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -57,7 +59,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** A list of resource id's. */
 	private List<Integer> resourceIDs = new ArrayList<>();
 	/** A list of Amount Resources. */
-	private Map<Integer, AmountResource> resourceARs = new HashMap<>();
+	private transient Map<Integer, AmountResource> resourceARs = new HashMap<>();
+	/** A list of Amount Resources. */
+	private transient Map<Integer, ItemResource> resourceIRs = new HashMap<>();
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
 	/** The SalvageInfo instance. */	
@@ -525,6 +529,31 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 				// this resource is not stored in the micro inventory
 				// therefore it doesn't need to be saved in resourceARs
 				return ar.getName();
+			}
+		}
+	}
+	
+	/**
+	 * Finds the string name of the item resource
+	 * 
+	 * @param resource
+	 * @return resource string name
+	 */
+	@Override
+	public String findItemResourceName(int resource) {
+		if (resourceIRs.containsKey(resource)) {
+			return resourceIRs.get(resource).getName();
+		}
+		else {
+			ItemResource ir = ItemResourceUtil.findItemResource(resource);
+			if (resourceIDs.contains(resource)) {
+				resourceIRs.put(resource, ir);
+				return ir.getName();
+			}
+			else {
+				// this resource is not stored in the micro inventory
+				// therefore it doesn't need to be saved in resourceIRs
+				return ir.getName();
 			}
 		}
 	}

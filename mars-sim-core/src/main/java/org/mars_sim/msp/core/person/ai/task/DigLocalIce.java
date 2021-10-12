@@ -69,7 +69,7 @@ implements Serializable {
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
-	private static int resourceID = ResourceUtil.iceID;
+	private int resourceID = ResourceUtil.iceID;
 	
 	/**
 	 * Constructor.
@@ -232,6 +232,9 @@ implements Serializable {
         
         if (aBag == null) {
         	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
+        	// Add bag demand
+        	settlement.getInventory().addItemDemand(resourceID, 5); 
+        	
         	if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
             else {

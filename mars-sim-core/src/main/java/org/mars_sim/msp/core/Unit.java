@@ -1034,6 +1034,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public abstract String findAmountResourceName(int resource);
 	
+	public abstract String findItemResourceName(int resource);
+	
 	/**
 	 * Compares this object with the specified object for order.
 	 * 
