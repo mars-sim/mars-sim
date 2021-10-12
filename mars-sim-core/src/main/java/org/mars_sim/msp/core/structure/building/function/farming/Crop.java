@@ -325,8 +325,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.log(building, Level.INFO, 0, "Done growing" + capitalizedCropName
-						+ "'s tissue-culture. Transferring its plantflets to the field.");
+				logger.log(building, Level.INFO, 0, "Done growing " + capitalizedCropName
+						+ "'s tissue-culture. Transferring plantflets to the field.");
 				// if it's growing mushroom
 				setupMushroom();
 			}

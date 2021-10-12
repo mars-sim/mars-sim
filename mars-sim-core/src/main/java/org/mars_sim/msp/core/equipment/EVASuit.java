@@ -120,7 +120,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private MalfunctionManager malfunctionManager;
 
 	/** The MicroInventory instance. */
-	private MicroInventory microInventory;
+//	private MicroInventory microInventory;
 	
 	static {
 		 
@@ -173,7 +173,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 		
-		microInventory = new MicroInventory(this);
+//		microInventory = new MicroInventory(this);
 		
 		microInventory.setCapacity(o2, OXYGEN_CAPACITY);
 		microInventory.setCapacity(h2o, WATER_CAPACITY);

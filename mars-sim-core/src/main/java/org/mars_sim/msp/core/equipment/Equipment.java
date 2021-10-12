@@ -63,7 +63,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** The SalvageInfo instance. */	
 	private SalvageInfo salvageInfo;
 	/** The MicroInventory instance. */
-	private MicroInventory microInventory;
+	protected MicroInventory microInventory;
 
 	/**
 	 * Constructs an Equipment object
