@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -42,9 +43,15 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		boolean showAll = ((input != null) && input.equalsIgnoreCase("all"));
 		
 		StructuredResponse buffer = new StructuredResponse();
-
-		Collection<Equipment> equipment = inv.findAllEquipment();
-
+		
+		Collection<Equipment> equipment;
+		if (source instanceof Person) {
+			equipment = ((Person)source).getEquipmentList();
+		}
+		else {
+			equipment =  inv.findAllEquipment();
+		}
+		
 		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");
 		for (Equipment e : equipment) {
 			String stored = null;
