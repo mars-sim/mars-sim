@@ -338,7 +338,7 @@ implements Serializable {
 //            }
         }
         else {
-        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceString + ".");
+        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag for " + resourceString + ".");
         	ended = true;
         	super.endTask();
         }

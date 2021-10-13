@@ -1972,27 +1972,27 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return UnitType.PERSON;
 	}
 
-	/**
-	 * Finds the string name of the amount resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findAmountResourceName(int resource) {
-		return ResourceUtil.findAmountResourceName(resource);
-	}
-	
-	/**
-	 * Finds the string name of the item resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findItemResourceName(int resource) {
-		return ItemResourceUtil.findItemResourceName(resource);
-	}
+//	/**
+//	 * Finds the string name of the amount resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findAmountResourceName(int resource) {
+//		return ResourceUtil.findAmountResourceName(resource);
+//	}
+//	
+//	/**
+//	 * Finds the string name of the item resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findItemResourceName(int resource) {
+//		return ItemResourceUtil.findItemResourceName(resource);
+//	}
 	
 	public List<Equipment> getEquipmentList() {
 		return equipmentList;
@@ -2155,14 +2155,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		else if (index == -1) {
-			String name = findItemResourceName(resource);
+			String name = ItemResourceUtil.findItemResourceName(resource);
 			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " x " 
 					+ name + ". Not being used for storing anything yet.");
 			return 0;
 		}
 
 		else {
-			String name = findItemResourceName(resource);
+			String name = ItemResourceUtil.findItemResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
 					+ quantity + "x "+ name + ".");
 			return quantity;
@@ -2273,14 +2273,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		else if (index == -1) {
-			String name = findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
 					+ name + ". Not being used for storing anything yet.");
 			return 0;
 		}
 
 		else {
-			String name = findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 			return quantity;

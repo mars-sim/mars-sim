@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * The MicroInventory class represents a simple resource storage solution.
@@ -156,7 +157,7 @@ public class MicroInventory implements Serializable {
 			if (quantity != num) {
 				s.quantity = num;
 				missing = quantity - num;
-				String name = ((Unit)owner).findItemResourceName(resource);
+				String name = ItemResourceUtil.findItemResourceName(resource);
 				logger.warning(owner, "Can only retrive " + quantity + "x " + name 
 					+ " and return the excess " + missing + "x " + name + ".");
 			}
@@ -169,7 +170,7 @@ public class MicroInventory implements Serializable {
 		
 		else {
 			missing = quantity;
-			String name = ((Unit)owner).findItemResourceName(resource);
+			String name = ItemResourceUtil.findItemResourceName(resource);
 			logger.warning(owner, "Cannot store " + quantity + " " + name + ".");
 		}
 
@@ -214,7 +215,7 @@ public class MicroInventory implements Serializable {
 		double shortfall = 0D;
 		double remaining = s.storedAmount - quantity;
 		if (remaining < 0) {
-			String name = ((Unit)owner).findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(owner, 10_000L, "Just retrieved all " + quantity + " kg of " 
 					+ name + " but lacked " + Math.round(-remaining * 10.0)/10.0 + " kg.");
 			shortfall = -remaining;
@@ -244,7 +245,7 @@ public class MicroInventory implements Serializable {
 		
 		if (quantity > s.quantity) {
 			shortfall = quantity - s.quantity;
-			String name = ((Unit)owner).findItemResourceName(resource);
+			String name = ItemResourceUtil.findItemResourceName(resource);
 			logger.warning(owner, "Can only retrive " + quantity + "x " + name 
 				+ " and return the shortfall " + shortfall + "x " + name + ".");
 		}
