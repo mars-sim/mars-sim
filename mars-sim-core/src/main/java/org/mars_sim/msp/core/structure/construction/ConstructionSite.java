@@ -546,25 +546,25 @@ implements Serializable, LocalBoundedObject {
 		return UnitType.CONSTRUCTION;
 	}
 	
-	/**
-	 * Finds the string name of the amount resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findAmountResourceName(int resource) {
-		return ResourceUtil.findAmountResourceName(resource);
-	}
-	
-	/**
-	 * Finds the string name of the item resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findItemResourceName(int resource) {
-		return ItemResourceUtil.findItemResourceName(resource);
-	}
+//	/**
+//	 * Finds the string name of the amount resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findAmountResourceName(int resource) {
+//		return ResourceUtil.findAmountResourceName(resource);
+//	}
+//	
+//	/**
+//	 * Finds the string name of the item resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findItemResourceName(int resource) {
+//		return ItemResourceUtil.findItemResourceName(resource);
+//	}
 }

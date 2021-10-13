@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -24,9 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -58,10 +53,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	/** A list of resource id's. */
 	private List<Integer> resourceIDs = new ArrayList<>();
-	/** A list of Amount Resources. */
-	private transient Map<Integer, AmountResource> resourceARs = new HashMap<>();
-	/** A list of Amount Resources. */
-	private transient Map<Integer, ItemResource> resourceIRs = new HashMap<>();
+//	/** A list of Amount Resources. */
+//	private transient Map<Integer, AmountResource> resourceARs = new HashMap<>();
+//	/** A list of Amount Resources. */
+//	private transient Map<Integer, ItemResource> resourceIRs = new HashMap<>();
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
 	/** The SalvageInfo instance. */	
@@ -128,15 +123,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return (resourceIDs.isEmpty() ? -1 : resourceIDs.get(0));
 	}
 	
-	/**
-	 * Gets the AmountResource of a particular resource
-	 * 
-	 * @param resource
-	 * @return Amount Resource
-	 */
-	public AmountResource getResourceAR(int resource) {
-		return resourceARs.get(resource);
-	}
+//	/**
+//	 * Gets the AmountResource of a particular resource
+//	 * 
+//	 * @param resource
+//	 * @return Amount Resource
+//	 */
+//	public AmountResource getResourceAR(int resource) {
+//		return resourceARs.get(resource);
+//	}
 	
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
@@ -195,22 +190,22 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return false;
 	}
 	
-	/**
-	 * Gets the index of a particular resource
-	 * 
-	 * @param resource
-	 * @return index
-	 */
-	private int getIndex(int resource) {
-		if (resourceIDs != null && !resourceIDs.isEmpty()) {
-			for (int r: resourceIDs) {
-				if (r == resource)
-					return resourceIDs.indexOf(r);
-			}
-		}
-		
-		return -1;
-	}
+//	/**
+//	 * Gets the index of a particular resource
+//	 * 
+//	 * @param resource
+//	 * @return index
+//	 */
+//	private int getIndex(int resource) {
+//		if (resourceIDs != null && !resourceIDs.isEmpty()) {
+//			for (int r: resourceIDs) {
+//				if (r == resource)
+//					return resourceIDs.indexOf(r);
+//			}
+//		}
+//		
+//		return -1;
+//	}
 	
 	/**
 	 * Stores the resource
@@ -220,14 +215,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		int index = getIndex(resource);
+//		int index = getIndex(resource);
 //		System.out.println("EVASuit index: " + index + " resource: " + resource + " quantity: " + quantity);
 		// Question: if a bag was filled with regolith and later was emptied out
 		// should it be tagged for only regolith and NOT for another resource ?
 		// index = -1 means it's brand new
-		if (index == -1) {
+		if (!resourceIDs.contains(resource)) {
 			resourceIDs.add(resource);
-			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
+//			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
@@ -242,20 +237,20 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		int index = getIndex(resource);
+//		int index = getIndex(resource);
 		if (resourceIDs.contains(resource)) {
 			return microInventory.retrieveAmountResource(resource, quantity);
 		}
 		
-		else if (index == -1) {
-			String name = findAmountResourceName(resource);
-			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
-					+ name + ". Not being used for storing anything yet.");
-			return 0;
-		}
+//		else if (index == -1) {
+//			String name = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
+//					+ name + ". Not being used for storing anything yet.");
+//			return 0;
+//		}
 
 		else {
-			String name = findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 			return quantity;
@@ -269,14 +264,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return capacity
 	 */
 	public double getAmountResourceCapacity(int resource) {
-		int index = getIndex(resource);
-		
-		if (index == -1 || resourceIDs.contains(resource)) {
+//		int allocatedResource = getResource();
+//		if (allocatedResource == resource) {
+//			return getTotalCapacity();
+//		}
+//		else if (allocatedResource == -1) {
+//			return getTotalCapacity();
+//		}
+		if (resourceIDs.contains(resource)) {
 			return getTotalCapacity();
 		}
-		else {
-			return 0;
-		}
+		return 0;
 	}
 	
 	/**
@@ -304,9 +302,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public int getItemResourceRemainingCapacity(int resource) {
-		int index = getIndex(resource);
+//		int index = getIndex(resource);
 		
-		if (index == -1 || resourceIDs.contains(resource)) {	
+		if (resourceIDs.contains(resource)) {	
 			return microInventory.getItemResourceRemainingCapacity(resource);
 		}
 		else {
@@ -351,10 +349,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return
 	 */
 	public boolean isEmpty(int resource) {
-		int index = getIndex(resource);
-		if (index == -1 || (resourceIDs.contains(resource) && microInventory.isEmpty(resource)))
+//		int index = getIndex(resource);
+//		if (resourceIDs.contains(resource) && microInventory.isEmpty(resource))
+//			return true;
+		if (!resourceIDs.contains(resource)) {
 			return true;
-		
+		}
+		else if (microInventory.isEmpty(resource)) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -552,55 +556,55 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return UnitType.EQUIPMENT;
 	}
 
-	/**
-	 * Finds the string name of the amount resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findAmountResourceName(int resource) {
-		if (resourceARs.containsKey(resource)) {
-			return resourceARs.get(resource).getName();
-		}
-		else {
-			AmountResource ar = ResourceUtil.findAmountResource(resource);
-			if (resourceIDs.contains(resource)) {
-				resourceARs.put(resource, ar);
-				return ar.getName();
-			}
-			else {
-				// this resource is not stored in the micro inventory
-				// therefore it doesn't need to be saved in resourceARs
-				return ar.getName();
-			}
-		}
-	}
+//	/**
+//	 * Finds the string name of the amount resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findAmountResourceName(int resource) {
+//		if (resourceARs.containsKey(resource)) {
+//			return resourceARs.get(resource).getName();
+//		}
+//		else {
+//			AmountResource ar = ResourceUtil.findAmountResource(resource);
+//			if (resourceIDs.contains(resource)) {
+//				resourceARs.put(resource, ar);
+//				return ar.getName();
+//			}
+//			else {
+//				// this resource is not stored in the micro inventory
+//				// therefore it doesn't need to be saved in resourceARs
+//				return ar.getName();
+//			}
+//		}
+//	}
 	
-	/**
-	 * Finds the string name of the item resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findItemResourceName(int resource) {
-		if (resourceIRs.containsKey(resource)) {
-			return resourceIRs.get(resource).getName();
-		}
-		else {
-			ItemResource ir = ItemResourceUtil.findItemResource(resource);
-			if (resourceIDs.contains(resource)) {
-				resourceIRs.put(resource, ir);
-				return ir.getName();
-			}
-			else {
-				// this resource is not stored in the micro inventory
-				// therefore it doesn't need to be saved in resourceIRs
-				return ir.getName();
-			}
-		}
-	}
+//	/**
+//	 * Finds the string name of the item resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findItemResourceName(int resource) {
+//		if (resourceIRs.containsKey(resource)) {
+//			return resourceIRs.get(resource).getName();
+//		}
+//		else {
+//			ItemResource ir = ItemResourceUtil.findItemResource(resource);
+//			if (resourceIDs.contains(resource)) {
+//				resourceIRs.put(resource, ir);
+//				return ir.getName();
+//			}
+//			else {
+//				// this resource is not stored in the micro inventory
+//				// therefore it doesn't need to be saved in resourceIRs
+//				return ir.getName();
+//			}
+//		}
+//	}
 	
 	public static String generateName(String baseName) {
 		if (baseName == null) {
@@ -615,7 +619,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * Clean this container for future use
 	 */
 	public void clean() {
-		resourceARs.clear();
+//		resourceARs.clear();
 		resourceIDs.clear();
 		microInventory.clean();
 	}

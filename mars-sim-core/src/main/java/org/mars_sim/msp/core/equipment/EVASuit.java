@@ -221,7 +221,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}
 		else {
 			// index = -1 means this resource is not allowed to be stored
-			String name = findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, name + " is not allowed to be stored " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
 			return quantity;
@@ -244,7 +244,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}
 		else {
 			// index = -1 means this resource is not allowed to be stored
-			String name = findAmountResourceName(resource);
+			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, "No such resource. Cannot retrieve " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 			return quantity;

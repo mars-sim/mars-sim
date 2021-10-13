@@ -932,16 +932,16 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 		return UnitType.ROBOT;
 	}
 
-	/**
-	 * Finds the string name of the amount resource
-	 * 
-	 * @param resource
-	 * @return resource string name
-	 */
-	@Override
-	public String findAmountResourceName(int resource) {
-		return ResourceUtil.findAmountResourceName(resource);
-	}
+//	/**
+//	 * Finds the string name of the amount resource
+//	 * 
+//	 * @param resource
+//	 * @return resource string name
+//	 */
+//	@Override
+//	public String findAmountResourceName(int resource) {
+//		return ResourceUtil.findAmountResourceName(resource);
+//	}
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

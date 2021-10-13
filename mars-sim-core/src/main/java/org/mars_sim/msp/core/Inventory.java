@@ -1232,11 +1232,11 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Person p = null;
-				if (owner.getUnitType() == UnitType.SETTLEMENT) {
-					p = ((Settlement)owner).getAssociatedPerson(uid);
+				if (getOwner().getUnitType() == UnitType.SETTLEMENT) {
+					p = ((Settlement)getOwner()).getAssociatedPerson(uid);
 				}
-				else if (owner.getUnitType() == UnitType.VEHICLE) {
-					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(uid);
+				else if (getOwner().getUnitType() == UnitType.VEHICLE) {
+					p = ((Vehicle)getOwner()).getAssociatedSettlement().getAssociatedPerson(uid);
 				}
 				else 
 					p = unitManager.getPersonByID(uid);
@@ -1257,11 +1257,11 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Person p = null;
-				if (owner.getUnitType() == UnitType.SETTLEMENT) {
-					p = ((Settlement)owner).getAssociatedPerson(uid);
+				if (getOwner().getUnitType() == UnitType.SETTLEMENT) {
+					p = ((Settlement)getOwner()).getAssociatedPerson(uid);
 				}
-				else if (owner.getUnitType() == UnitType.VEHICLE) {
-					p = ((Vehicle)owner).getAssociatedSettlement().getAssociatedPerson(uid);
+				else if (getOwner().getUnitType() == UnitType.VEHICLE) {
+					p = ((Vehicle)getOwner()).getAssociatedSettlement().getAssociatedPerson(uid);
 				}
 				else 
 					p = unitManager.getPersonByID(uid);
