@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -99,7 +100,7 @@ public class DigLocalIceMeta extends MetaTask {
             }
 
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumBags(true, false);
+            int numEmptyBags = inv.findNumContainers(EquipmentType.BAG, true, false);
             if (numEmptyBags == 0) {
                 return 0;
             }

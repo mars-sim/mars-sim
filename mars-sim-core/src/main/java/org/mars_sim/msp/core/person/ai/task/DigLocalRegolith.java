@@ -16,7 +16,8 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -118,7 +119,7 @@ implements Serializable {
         // Take bags for collecting resource.
 //     	Bag aBag = null;
 //     	if (!hasBags())
-     	Bag	aBag = transferBag();
+     	Container	aBag = transferBag();
 
         // If bags are not available, end task.
         if (aBag == null) {
@@ -244,10 +245,10 @@ implements Serializable {
 
         boolean finishedCollecting = false;
 
-        Bag aBag = person.findABag(false, resourceID);
+        Container aBag = person.findContainer(EquipmentType.BAG, false, resourceID);
         
         if (aBag == null) {
-        	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
+        	logger.log(person, Level.WARNING, 4_000, "No bags for " + resourceString + " are available."); 
         	if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
             else {
@@ -258,15 +259,14 @@ implements Serializable {
         }
         
         if (collected > SMALL_AMOUNT) {
+            double bagCap = aBag.getAmountResourceRemainingCapacity(resourceID);
+            if (bagCap < collected) {
+            	collected = bagCap;
+    			finishedCollecting = true;
+            }
         	aBag.storeAmountResource(resourceID, collected);
 	     	totalCollected += collected;
         }
-        
-        double bagCap = aBag.getAmountResourceCapacity(resourceID);
-        if (totalCollected >= bagCap) {
-        	totalCollected = bagCap;
-			finishedCollecting = true;
-		}
         
         if (!finishedCollecting) {
         	int loadCap = person.getCarryingCapacity();
@@ -277,20 +277,8 @@ implements Serializable {
         }
         
         if (!finishedCollecting) {
-	        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
-	        		resourceID);
-			if (collected >= bagRemainingCap) {
-				collected = bagRemainingCap;
-				finishedCollecting = true;
-			}
-        }
-        
-        if (!finishedCollecting) {
-	        double personRemainingCap = person.getRemainingCarryingCapacity();
-			if (collected >= personRemainingCap) {
-				collected = personRemainingCap;
-				finishedCollecting = true;
-			}
+        	// Can not physically carry any more
+	        finishedCollecting = (person.getRemainingCarryingCapacity() < 0);
 		}
 
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -328,11 +316,11 @@ implements Serializable {
      * Transfers an empty bag from a settlement to a person
      * @return a bag
      */
-    private Bag transferBag() {
+    private Container transferBag() {
     	// Note: should take a bag before leaving the airlock
     	// Note: also consider dropping off the resource in a shed 
     	// or a shed outside of the workshop/landerhab for processing
-        Bag aBag = settlement.getInventory().findABag(true, resourceID);
+        Container aBag = settlement.getInventory().findContainer(EquipmentType.BAG, true, resourceID);
         if (aBag != null) {
 //            if (person.getInventory().canStoreUnit(aBag, false)) {
             	boolean successful = aBag.transfer(settlement, person);
@@ -435,7 +423,7 @@ implements Serializable {
     	}
     	
     	else {
-	    	Bag bag = person.findABag(false, resourceID);
+	    	Container bag = person.findContainer(EquipmentType.BAG, false, resourceID);
 	    	if (bag == null)
 	    		return;
 	    	
@@ -449,32 +437,27 @@ implements Serializable {
 	            double settlementCap = sInv.getAmountResourceRemainingCapacity(
 	            		resourceID, true, false);
 
-	            if (bag != null && sInv != null) {
-		            if (amount > settlementCap) {
-		            	amount = settlementCap;
-		            	
-		            	logger.log(person, Level.INFO, 0,
-		            			resourceString + " storage full. Could only check in " 
-		            			+ Math.round(amount*10.0)/10.0 + " kg.");
-		            }
-		            
-		            else {
-		            	logger.log(person, Level.INFO, 0, 
-		            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceString + ".");	
-		            }
-//		            // Retrieve the resource from the person
-//	            	pInv.retrieveAmountResource(resourceID, amount);
-//	                // Store the resource in the settlement
-//	                sInv.storeAmountResource(resourceID, amount, true);
-	                // Track supply
-	                sInv.addAmountSupply(resourceID, amount);
-	                // Transfer the bag
-	                bag.transfer(person, settlement);
-					// Add to the daily output
-					settlement.addOutput(resourceID, amount, getTimeCompleted());
-		            // Recalculate settlement good value for output item.
-		            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(resourceID), amount);
+	            if (amount > settlementCap) {
+	            	amount = settlementCap;
+	            	
+	            	logger.log(person, Level.INFO, 0,
+	            			resourceString + " storage full. Could only check in " 
+	            			+ Math.round(amount*10.0)/10.0 + " kg.");
 	            }
+	            
+	            else {
+	            	logger.log(person, Level.INFO, 0, 
+	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceString + ".");	
+	            }
+
+                // Track supply
+                sInv.addAmountSupply(resourceID, amount);
+                // Transfer the bag
+                bag.transfer(person, settlement);
+				// Add to the daily output
+				settlement.addOutput(resourceID, amount, getTimeCompleted());
+	            // Recalculate settlement good value for output item.
+	            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(resourceID), amount);
             }
     	}
     }

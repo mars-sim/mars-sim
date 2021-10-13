@@ -21,11 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -1209,23 +1208,6 @@ public class Inventory implements Serializable {
 	}
 	
 	/**
-	 * Gets a collection of all the stored specimen box.
-	 * 
-	 * @return Collection
-	 */
-	public Collection<SpecimenBox> getContainedSpecimenBoxes() {
-		Collection<SpecimenBox> result = new HashSet<>();
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e.getEquipmentType() == EquipmentType.SPECIMEN_BOX)
-					result.add((SpecimenBox)e);
-			}
-		}
-		return result;
-	}
-	
-	/**
 	 * Gets a collection of all the stored units.
 	 * 
 	 * @return Collection of all units
@@ -1433,16 +1415,6 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Checks if an equipment of a type ID is in storage.
-	 * 
-	 * @param typeID
-	 * @return
-	 */
-	public boolean containsEquipment(int typeID) {
-		return containsEquipment(EquipmentType.convertID2Type(typeID));
-	}
-	
-	/**
 	 * Checks if it contains a particular type of equipment.
 	 * 
 	 * @param type
@@ -1510,24 +1482,6 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Finds an empty container of a given class
-	 * 
-	 * @param unitClass
-	 * @return
-	 */
-	public Equipment findAnEmptyContainer(EquipmentType containerType, int resource) {
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if ((e != null) && e.isEmpty(resource) && (e.getEquipmentType() == containerType)) {
-					return e;
-				}
-			}
-		}
-		
-		return null;
-	}
 	
 	/**
 	 * Finds an unit of a given class in storage.
@@ -1575,37 +1529,21 @@ public class Inventory implements Serializable {
 //				"2. findAnEVAsuit: " + person + " found " + suit);
 		return suit;
 	}
-
-	/**
-	 * Finds an specimen box in storage.
-	 * 
-	 * @return the instance of SpecimenBox or null if none.
-	 */
-	public SpecimenBox findASpecimenBox() {
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-					return (SpecimenBox)e;
-				}
-			}
-		}
-		return null;
-	}	
+	
 	
 	/**
-	 * Finds a brand new bag in storage.
+	 * Finds a brand new container in storage.
 	 * 
 	 * @param empty does it need to be empty ?
-	 * @return the instance of SpecimenBox or null if none.
+	 * @return the instance of Container or null if none.
 	 */
-	public Bag findNewBag() {
+	public Container findNewContainer(EquipmentType containerType) {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
+				if (e != null && e.getEquipmentType() == containerType) {
 					if (e.isBrandNew()) {
-						return (Bag)e;
+						return (Container)e;
 					}
 				}
 			}
@@ -1613,49 +1551,53 @@ public class Inventory implements Serializable {
 		return null;
 	}		
 	
+	
 	/**
-	 * Finds a bag in storage.
+	 * Finds a container in storage.
 	 * 
 	 * @param empty does it need to be empty ?
 	 * @return the instance of SpecimenBox or null if none.
 	 */
-	public Bag findABag(boolean empty, int resource) {
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
+				if (e != null && e.getEquipmentType() == containerType) {
+					int storedResource = e.getResource();
 					if (empty) {
 						// It must be empty inside
 						if (e.isEmpty(resource)) {
-							return (Bag)e;
+							return (Container)e;
 						}
 					}
-					else if (e.getResource() == resource || e.getResource() == -1)
-						return (Bag)e;
+					else if (storedResource == resource || storedResource == -1)
+						return (Container)e;
 				}
 			}
 		}
 		return null;
 	}
 	
+
 	/**
-	 * Does this inventory have a bag for holding a particular resource in storage.
+	 * Does this inventory have a container for holding a particular resource in storage.
 	 * 
 	 * @param empty does it need to be empty ?
-	 * @return the instance of SpecimenBox or null if none.
+	 * @return the instance of container or null if none.
 	 */
-	public boolean hasABag(boolean empty, int resource) {
+	public boolean hasAContainer(EquipmentType containerType, boolean empty, int resource) {
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
+				if (e != null && e.getEquipmentType() == containerType) {
+					int storedResource = e.getResource();
 					if (empty) {
 						// It must be empty inside
 						if (e.isEmpty(resource)) {
 							return true;
 						}
 					}
-					else if (e.getResource() == resource || e.getResource() == -1)
+					else if (storedResource == resource || storedResource == -1)
 						// resourceID = -1 means the container has not been initialized
 						return true;
 				}
@@ -1774,24 +1716,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	/**
-	 * Finds all of the specimen boxes in storage.
-	 * 
-	 * @return collection of specimen boxes or empty collection if none.
-	 */
-	public Collection<SpecimenBox> findAllSpecimenBoxes() {
-		Collection<SpecimenBox> result = new HashSet<>();
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-					result.add((SpecimenBox)e);
-				}	
-			}
-		}
-		return result;
-	}
-	
+
 	/**
 	 * Finds all of the EVA suits in storage.
 	 * 
@@ -1815,13 +1740,13 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return collection of bags or empty collection if none.
 	 */
-	public Collection<Bag> findAllBags() {
-		Collection<Bag> result = new HashSet<>();
+	public Collection<Container> findAllContainers(EquipmentType containerType) {
+		Collection<Container> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-					result.add((Bag)e);
+				if (e != null && e.getEquipmentType() == containerType) {
+					result.add((Container)e);
 				}	
 			}
 		}
@@ -1870,18 +1795,18 @@ public class Inventory implements Serializable {
 
 	
 	/**
-	 * Finds the number of specimen box that are contained in storage.
+	 * Finds the number of containers of a type that are contained in storage.
 	 * 
 	 * @param isEmpty    does it need to be empty ?
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of specimen box
 	 */
-	public int findNumSpecimenBoxes(boolean isEmpty, boolean brandNew) {
+	public int findNumContainers(EquipmentType containerType, boolean isEmpty, boolean brandNew) {
 		int result = 0;
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
+				if (e != null && e.getEquipmentType() == containerType) {
 					if (isEmpty) {
 						// It must be empty inside
 						if (e.isEmpty(brandNew)) {
@@ -1895,34 +1820,7 @@ public class Inventory implements Serializable {
 		}
 		return result;
 	}
-	
-	/**
-	 * Finds the number of bags that are contained in storage.
-	 * 
-	 * @param isEmpty    does it need to be empty ?
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of bags
-	 */
-	public int findNumBags(boolean isEmpty, boolean brandNew) {
-		int result = 0;
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
-					if (isEmpty) {
-						// It must be empty inside
-						if (e.isEmpty(brandNew)) {
-							result++;
-						}
-					}
-					else
-						result++;
-				}	
-			}
-		}
-		return result;
-	}
-		
+
 	/**
 	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
 	 *  
@@ -1959,18 +1857,7 @@ public class Inventory implements Serializable {
 	 * @return number of empty containers.
 	 */
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		int result = 0;
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment unit = unitManager.getEquipmentByID(uid);
-				// The contained unit has to be an Equipment that is empty and of the correct type
-				if ((unit != null) && unit.isEmpty(brandNew) && (unit.getEquipmentType() == containerType)) {
-					result++;
-				}
-			}
-		}
-		
-		return result;
+		return findNumContainers(containerType, true, brandNew);
 	}
 	
 	/**

@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -142,7 +142,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @throws Exception if error taking bag.
 	 */
 	private boolean takeBag() {
-		Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+		Container bag = findMostFullBag(rover.getInventory(), mineralType);
 		if (bag != null) {
 			if (person != null) {
 				return bag.transfer(rover, person);
@@ -160,13 +160,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @param resourceType the resource for capacity.
 	 * @return container.
 	 */
-	private static Bag findMostFullBag(Inventory inv, AmountResource resource) {
-		Bag result = null;
+	private static Container findMostFullBag(Inventory inv, AmountResource resource) {
+		Container result = null;
 		double leastCapacity = Double.MAX_VALUE;
 
 		Iterator<Equipment> i = inv.findAllEquipmentType(EquipmentType.BAG).iterator();
 		while (i.hasNext()) {
-			Bag bag = (Bag)(i.next());
+			Container bag = (Container)(i.next());
 			double remainingCapacity = bag.getAmountResourceRemainingCapacity(resource.getID());
 
 			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
@@ -321,13 +321,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				return false;
 
 			// Checks if available bags with remaining capacity for resource.
-			Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+			Container bag = findMostFullBag(rover.getInventory(), mineralType);
 			boolean bagAvailable = (bag != null);
 
 			// Check if bag and full EVA suit can be carried by person or is too heavy.
 			double carryMass = 0D;
 			if (bag != null) {
-				carryMass += bag.getMass();
+				carryMass += bag.getBaseMass();
 			}
 
 			EVASuit suit = rover.getInventory().findAnEVAsuit(person);

@@ -13,9 +13,8 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -259,7 +258,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 				int randomRock = ResourceUtil.rockIDs[randomNum];
 				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
 				
-		        SpecimenBox box = person.findASpecimenBox();
+		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
 				double cap = box.getAmountResourceRemainingCapacity(randomRock);
 				if (mass < cap) {
@@ -313,7 +312,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	 * @return true if the person receives a specimen container.
 	 */
 	private boolean takeSpecimenContainer() {
-		Unit container = findLeastFullContainer(rover);
+		Container container = findLeastFullContainer(rover);
 		if (container != null) {
 			return container.transfer(rover, person);
 		}
@@ -326,13 +325,13 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	 * @param rover the rover with the inventory to look in.
 	 * @return specimen container or null if none.
 	 */
-	private static SpecimenBox findLeastFullContainer(Rover rover) {
-		SpecimenBox result = null;
+	private static Container findLeastFullContainer(Rover rover) {
+		Container result = null;
 		double mostCapacity = 0D;
 
-		Iterator<SpecimenBox> i = rover.getInventory().findAllSpecimenBoxes().iterator();
+		Iterator<Container> i = rover.getInventory().findAllContainers(EquipmentType.SPECIMEN_BOX).iterator();
 		while (i.hasNext()) {
-			SpecimenBox container = i.next();
+			Container container = i.next();
 			try {
 				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
 
@@ -355,8 +354,8 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	protected void clearDown() {
 		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		if (person.containsEquipment(EquipmentType.SPECIMEN_BOX)) {
-			SpecimenBox box = person.findASpecimenBox();
+		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
+		if (box != null) {
 			box.transfer(person, rover);
 		}
 	}

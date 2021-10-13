@@ -61,23 +61,15 @@ public final class EquipmentFactory {
 
 		Equipment newEqm = null;
 		switch (type) {
-		case BAG:
-			newEqm =  new Bag(newName, settlement);
-			break;
-		case BARREL:
-			newEqm =  new Barrel(newName, settlement);
-			break;
 		case EVA_SUIT:
 			newEqm =  new EVASuit(newName, settlement);
 			break;
+		case BAG:
+		case BARREL:
 		case GAS_CANISTER:
-			newEqm =  new GasCanister(newName, settlement);
-			break;
 		case LARGE_BAG:
-			newEqm =  new LargeBag(newName, settlement);
-			break;
 		case SPECIMEN_BOX:
-			newEqm =  new SpecimenBox(newName, settlement);
+			newEqm =  new GenericContainer(newName, type, settlement);
 			break;
 		default:
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");

@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -254,16 +255,16 @@ class StartingSettlementPanel extends WizardPanel {
 					MissionType type = getWizard().getMissionData().getMissionType();
 					if (MissionType.EXPLORATION == type) {
 						if (column == 8)
-							result = inv.findNumSpecimenBoxes(true, true);//.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
+							result = inv.findNumContainers(EquipmentType.SPECIMEN_BOX, true, true);//.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
 					}
 					else if (MissionType.COLLECT_ICE == type ||
 							MissionType.COLLECT_REGOLITH == type) {
 						if (column == 8)
-							result = inv.findNumBags(true, false);
+							result = inv.findNumContainers(EquipmentType.BAG, true, false);
 					}
 					else if (MissionType.MINING == type) {
 						if (column == 8) {
-							result = inv.findNumBags(true, true);
+							result = inv.findNumContainers(EquipmentType.BAG, true, true);
 						}
 						else if (column == 9) {
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
@@ -393,20 +394,20 @@ class StartingSettlementPanel extends WizardPanel {
 				MissionType type = getWizard().getMissionData().getMissionType();
 				if (MissionType.EXPLORATION == type) {
 					if (column == 8) {
-						if (inv.findNumSpecimenBoxes(true, true) < 
+						if (inv.findNumContainers(EquipmentType.SPECIMEN_BOX, true, true) < 
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (MissionType.COLLECT_ICE == type ||
 						MissionType.COLLECT_REGOLITH == type) {
 					if (column == 8) {
-						if (inv.findNumBags(true, false) <
+						if (inv.findNumContainers(EquipmentType.BAG, true, false) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 				}
 				else if (MissionType.MINING == type ) {
 					if (column == 8) {
-						if (inv.findNumBags(true, true) <
+						if (inv.findNumContainers(EquipmentType.BAG, true, true) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 					if (column == 9) {

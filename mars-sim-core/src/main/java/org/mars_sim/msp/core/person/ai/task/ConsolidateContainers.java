@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.ContainerInterface;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -152,7 +152,7 @@ implements Serializable {
         Iterator<Equipment> i = inv.findAllContainers().iterator();
         while (i.hasNext() && !result) {
         	Equipment e = i.next();
-            if (e instanceof ContainerInterface) {
+            if (e instanceof Container) {
                
                 if (e.hasContent()) {
                     // Only check one type of amount resource for container.
@@ -212,7 +212,7 @@ implements Serializable {
         while (i.hasNext() && (remainingAmountLoading > 0D)) {
         	Equipment e = i.next();
         	
-            if (e instanceof ContainerInterface) { 
+            if (e instanceof Container) { 
             	int resourceID = e.getResource();
                 if (resourceID != -1) {
                 	// resourceID = -1 means the container has not been initialized
@@ -243,7 +243,7 @@ implements Serializable {
                         Iterator<Equipment> k = topInventory.findAllContainers().iterator();
                         while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
                         	Equipment otherUnit = k.next();
-                            if (otherUnit != e && otherUnit instanceof ContainerInterface) {
+                            if (otherUnit != e && otherUnit instanceof Container) {
                                 double otherAmount = otherUnit.getAmountResourceStored(resourceID);
                                 if (otherAmount > 0D) {
                                     double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);

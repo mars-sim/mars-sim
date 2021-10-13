@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -305,7 +306,7 @@ public final class DeliveryUtil {
 					// Add resource container if needed.
 					if (isAmountResource) {
 						resource = ResourceUtil.findAmountResource(good.getID());
-						Equipment container = getAvailableContainerForResource(resource,
+						Container container = getAvailableContainerForResource(resource,
 								sellingSettlement, deliveryList);
 						if (container != null) {
 							Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
@@ -634,7 +635,7 @@ public final class DeliveryUtil {
 
 			boolean isContainerAvailable = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				Equipment container = getAvailableContainerForResource(resource,
+				Container container = getAvailableContainerForResource(resource,
 						sellingSettlement, deliveredGoods);
 				isContainerAvailable = (container != null);
 			}
@@ -766,10 +767,10 @@ public final class DeliveryUtil {
 	 * @return container for the resource or null if none.
 	 * @throws Exception if error.
 	 */
-	private static Equipment getAvailableContainerForResource(AmountResource resource, Settlement settlement,
+	private static Container getAvailableContainerForResource(AmountResource resource, Settlement settlement,
 			Map<Good, Integer> deliveredGoods) {
 
-		Equipment result = null;
+		Container result = null;
 
 		EquipmentType containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
@@ -783,7 +784,7 @@ public final class DeliveryUtil {
 			containersDelivered = deliveredGoods.get(containerGood);
 
 		if (containersStored > containersDelivered)
-			result = settlementInv.findAnEmptyContainer(containerClass, resource.getID());
+			result = settlementInv.findContainer(containerClass, true, resource.getID());
 
 		return result;
 	}

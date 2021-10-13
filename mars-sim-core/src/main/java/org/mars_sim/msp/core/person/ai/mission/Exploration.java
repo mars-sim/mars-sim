@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -655,7 +654,7 @@ public class Exploration extends RoverMission
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of specimen containers.
-			result.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
+			result.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), REQUIRED_SPECIMEN_CONTAINERS);
 
 			equipmentNeededCache = result;
 			return result;

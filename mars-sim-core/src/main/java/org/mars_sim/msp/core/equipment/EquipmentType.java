@@ -104,39 +104,7 @@ public enum EquipmentType {
 	public static EquipmentType convertID2Type(int typeID) {
 		return EquipmentType.values()[typeID - FIRST_EQUIPMENT_RESOURCE_ID];
 	}
-	
-	/**
-	 * Obtains the type id of the equipment class
-	 * 
-	 * @param equipmentClass
-	 * @return type id
-	 */
-	public static int convertClass2ID(Class<?> equipmentClass) {
-		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-		else return -1;
-	}
-	
-	/**
-	 * Obtains the enum type of the equipment class
-	 * 
-	 * @param equipmentClass
-	 * @return {@link EquipmentType}
-	 */
-	public static EquipmentType convertClass2Type(Class<?> equipmentClass) {
-		if (Bag.class.equals(equipmentClass)) return BAG;
-		else if (Barrel.class.equals(equipmentClass)) return BARREL;
-		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT;
-		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER;
-        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG;
-		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX;
-		else return null;
-	}
-	
+
 	/**
 	 * Obtains the enum type of the equipment with its name
 	 * 

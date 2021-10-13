@@ -34,11 +34,10 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
-import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -1999,7 +1998,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	public Set<Unit> getContainedUnits() {
-		return new HashSet<Unit>(getEquipmentList());
+		return new HashSet<>(getEquipmentList());
 	}
 	
 	/**
@@ -2087,17 +2086,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param resourceType the resource for capacity.
 	 * @return container.
 	 */
-	public Bag findMostFullBag(int resource) {
-		Bag result = null;
+	public Container findMostFullContainer(EquipmentType containerType, int resource) {
+		Container result = null;
 		double leastCapacity = Double.MAX_VALUE;
 
-		Iterator<Equipment> i = findAllEquipmentType(EquipmentType.BAG).iterator();
+		Iterator<Equipment> i = findAllEquipmentType(containerType).iterator();
 		while (i.hasNext()) {
-			Bag bag = (Bag)(i.next());
-			double remainingCapacity = bag.getAmountResourceRemainingCapacity(resource);
+			Container container = (Container) i.next();
+			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
 
 			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
-				result = bag;
+				result = container;
 				leastCapacity = remainingCapacity;
 			}
 		}
@@ -2442,18 +2441,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param empty does it need to be empty ?
 	 * @return the instance of SpecimenBox or null if none.
 	 */
-	public Bag findABag(boolean empty, int resource) {
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		if (!equipmentList.isEmpty()) {
 			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
+				if (e != null && e.getEquipmentType() == containerType) {
 					if (empty) {
 						// It must be empty inside
 						if (e.isEmpty(resource)) {
-							return (Bag)e;
+							return (Container)e;
 						}
 					}
 					else if (e.getResource() == resource || e.getResource() == -1)
-						return (Bag)e;
+						return (Container)e;
 				}
 			}
 		}
@@ -2461,15 +2460,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Finds an specimen box in storage.
+	 * Finds a container in storage.
 	 * 
-	 * @return the instance of SpecimenBox or null if none.
+	 * @return the instance of container or null if none.
 	 */
-	public SpecimenBox findASpecimenBox() {
+	public Container findContainer(EquipmentType containerType) {
 		if (!equipmentList.isEmpty()) {
 			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
-					return (SpecimenBox)e;
+				if (e != null && e.getEquipmentType() == containerType) {
+					return (Container)e;
 				}
 			}
 		}

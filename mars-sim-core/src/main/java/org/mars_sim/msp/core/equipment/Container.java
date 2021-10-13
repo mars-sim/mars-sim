@@ -6,19 +6,14 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.Unit;
 
 /**
  * This interface accounts for units that are considered container for resources
  */
-public interface ContainerInterface {
+public interface Container {
 
-	/**
-	 * Gets the phase of resources this container can hold.
-	 * 
-	 * @return resource phase.
-	 */
-	public PhaseType getContainingResourcePhase();
+	public EquipmentType getEquipmentType();
 
 	/**
 	 * Gets the total capacity of resource that this container can hold.
@@ -26,4 +21,16 @@ public interface ContainerInterface {
 	 * @return total capacity (kg).
 	 */
 	public double getTotalCapacity();
+
+	public double getBaseMass();
+
+	public boolean transfer(Unit currentOwner, Unit newOwner);
+	
+
+	public double storeAmountResource(int resourceID, double collected);
+
+	public double getAmountResourceStored(int resourceID);
+	
+	public double getAmountResourceRemainingCapacity(int resourceID);
+
 }

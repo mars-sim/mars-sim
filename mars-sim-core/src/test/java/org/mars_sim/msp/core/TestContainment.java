@@ -8,8 +8,10 @@
 package org.mars_sim.msp.core;
 
 import org.mars_sim.msp.core.environment.MarsSurface;
-import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.MockSettlement;
@@ -133,9 +135,9 @@ extends TestCase {
 	 */
 	public void testBagInGarage() throws Exception {
 
-		Bag bag = new Bag("Bag 1", settlement);
-		unitManager.addUnit(bag);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
 		bag.setContainerUnit(garage);
+
 		
 		testContainment(bag, garage, garage, LocationStateType.INSIDE_SETTLEMENT);
 	}
@@ -145,8 +147,7 @@ extends TestCase {
 	 */
 	public void testBagOnSurface() throws Exception {
 
-		Bag bag = new Bag("Bag 2", settlement);
-		unitManager.addUnit(bag);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
 
 		bag.setContainerUnit(surface);
 		
@@ -162,8 +163,7 @@ extends TestCase {
 
 		vehicle.setContainerUnit(settlement);
 
-		Bag bag = new Bag("Bag in Vehicle", settlement);
-		unitManager.addUnit(bag);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
 
 		bag.setContainerUnit(vehicle);
 		

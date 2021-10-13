@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -899,7 +898,7 @@ public class Mining extends RoverMission
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of bags.
-			result.put(EquipmentType.convertName2ID(LargeBag.TYPE), NUMBER_OF_LARGE_BAGS);
+			result.put(EquipmentType.getResourceID(EquipmentType.LARGE_BAG), NUMBER_OF_LARGE_BAGS);
 
 			equipmentNeededCache = result;
 			return result;

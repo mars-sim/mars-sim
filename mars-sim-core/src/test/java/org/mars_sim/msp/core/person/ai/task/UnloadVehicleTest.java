@@ -15,7 +15,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -91,8 +92,7 @@ extends TestCase {
 		vehicleInv.addGeneralCapacity(100D);
 		vehicleInv.storeItemResources(hammer.getID(), 5);
 		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-			unitManager.addUnit(eqm);
+			Equipment eqm = EquipmentFactory.createEquipment(EquipmentType.SPECIMEN_BOX, settlement, false);
 			vehicleInv.storeUnit(eqm);
 		}
 
