@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2021-10-07
+ * @date 2021-10-12
  * @author Scott Davis
  */
 
@@ -244,7 +244,7 @@ implements Serializable {
 
         boolean finishedCollecting = false;
 
-        Bag aBag = person.getInventory().findABag(false, resourceID);
+        Bag aBag = person.findABag(false, resourceID);
         
         if (aBag == null) {
         	logger.log(person, Level.INFO, 4_000, "No bags for " + resourceString + " are available."); 
@@ -269,7 +269,7 @@ implements Serializable {
 		}
         
         if (!finishedCollecting) {
-        	double loadCap = person.getInventory().getGeneralCapacity();
+        	int loadCap = person.getCarryingCapacity();
             if (totalCollected >= loadCap) {
             	totalCollected = loadCap;
     			finishedCollecting = true;
@@ -286,8 +286,7 @@ implements Serializable {
         }
         
         if (!finishedCollecting) {
-	        double personRemainingCap = person.getInventory().getRemainingGeneralCapacity(false);
-	        
+	        double personRemainingCap = person.getRemainingCarryingCapacity();
 			if (collected >= personRemainingCap) {
 				collected = personRemainingCap;
 				finishedCollecting = true;
@@ -326,14 +325,6 @@ implements Serializable {
     }
     
     /**
-     * Checks if the person is carrying any bags.
-     * @return true if carrying bags.
-     */
-    private boolean hasBags() {
-        return person.getInventory().hasABag(true, resourceID);
-    }
-
-    /**
      * Transfers an empty bag from a settlement to a person
      * @return a bag
      */
@@ -343,7 +334,7 @@ implements Serializable {
     	// or a shed outside of the workshop/landerhab for processing
         Bag aBag = settlement.getInventory().findABag(true, resourceID);
         if (aBag != null) {
-            if (person.getInventory().canStoreUnit(aBag, false)) {
+//            if (person.getInventory().canStoreUnit(aBag, false)) {
             	boolean successful = aBag.transfer(settlement, person);
             	if (successful) {
 //            		logger.log(person, Level.INFO, 10_000, "Just obtained an empty bag for " + resourceString + ".");
@@ -354,12 +345,12 @@ implements Serializable {
                 	ended = true;
                 	super.endTask();
                 }
-            }
-            else {
-            	logger.log(person, Level.WARNING, 10_000, "Strangely unable to carry an empty bag for " + resourceString + ".");
-            	ended = true;
-            	super.endTask();
-            }
+//            }
+//            else {
+//            	logger.log(person, Level.WARNING, 10_000, "Strangely unable to carry an empty bag for " + resourceString + ".");
+//            	ended = true;
+//            	super.endTask();
+//            }
         }
         else {
         	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceString + ".");
@@ -444,8 +435,7 @@ implements Serializable {
     	}
     	
     	else {
-	    	Inventory pInv = person.getInventory();
-	    	Bag bag = pInv.findABag(false, resourceID);
+	    	Bag bag = person.findABag(false, resourceID);
 	    	if (bag == null)
 	    		return;
 	    	
@@ -479,7 +469,7 @@ implements Serializable {
 	                // Track supply
 	                sInv.addAmountSupply(resourceID, amount);
 	                // Transfer the bag
-	                bag.transfer(person, sInv);
+	                bag.transfer(person, settlement);
 					// Add to the daily output
 					settlement.addOutput(resourceID, amount, getTimeCompleted());
 		            // Recalculate settlement good value for output item.

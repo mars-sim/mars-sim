@@ -208,7 +208,7 @@ public class TabPanelGeneral extends TabPanel {
 		infoPanel.add(loadCapLabel);
 
 		// Prepare loading textfield
-		int load = (int)person.getInventory().getGeneralCapacity();
+		int load = person.getCarryingCapacity();
 //		System.out.println(person.getName() + " can carry " + load + " kg.");
 		JTextField loadCapTF = new JTextField(load + " kg");
 		loadCapTF.setEditable(false);

@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -736,8 +737,7 @@ public class ExitAirlock extends Task implements Serializable {
 //				"[" + person.getLocale() + "] " + person.getName() 
 ////				+ " " + loc 
 //				+ " was ready to don the EVA suit.");
-		
- 		
+				
 		EVASuit suit = null;
 		Inventory entityInv = null;
 		
@@ -753,10 +753,21 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (!hasSuit && suit != null) {
+			Settlement settlement = null;
+			Vehicle vehicle = null;
+			
+			if (airlock instanceof BuildingAirlock)
+				settlement = ((Building)airlock.getEntity()).getSettlement();
+			else
+				vehicle = (Vehicle)airlock.getEntity();
+			
 			// if a person hasn't donned the suit yet
 			try {
-				// 1. Transfer the EVA suit from entityInv to person
-				suit.transfer(entityInv, person);			
+				// 1. Transfer the EVA suit from settlement/vehicle to person
+				if (settlement != null)
+					suit.transfer(settlement, person);	
+				else
+					suit.transfer(vehicle, person);	
 				// 2. set the person as the owner
 				suit.setLastOwner(person);
 				// 3. register the suit the person will take into the airlock to don

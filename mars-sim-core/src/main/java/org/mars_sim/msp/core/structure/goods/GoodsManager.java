@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2021-09-05
+ * @date 2021-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -2434,7 +2434,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				amount += person.getInventory().getAmountResourceStored(resource, false);
+				amount += person.getAmountResourceStored(resource.getID());
 		}
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
@@ -3203,7 +3203,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				number += person.getInventory().getItemResourceNum(resource);
+				number += person.getItemResourceStored(resource.getID());
 		}
 
 		// Get the number of resources that will be produced by ongoing manufacturing
@@ -3408,14 +3408,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipmentClass the equipmentType to check.
 	 * @return number of equipment for the settlement.
 	 */
-	private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentClass) {
-//		if (equipmentClass.equals(Robot.class))
-//			return ROBOT_FACTOR;
-
+	private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentType) {
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
-		number += settlement.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
+		number += settlement.getInventory().findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -3424,7 +3421,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
+					number += vehicle.getInventory().findNumEmptyContainersOfType(equipmentType, false);
 			}
 		}
 
@@ -3433,7 +3430,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				number += person.getInventory().findNumEmptyContainersOfClass(equipmentClass, false);
+				number += person.findNumEmptyContainersOfType(equipmentType, false);
 		}
 
 		// Get the number of equipment that will be produced by ongoing manufacturing

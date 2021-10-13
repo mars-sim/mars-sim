@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2021-08-28
+ * @date 2021-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -263,11 +262,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 //			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
-				
 				int randomRock = ResourceUtil.rockSamplesID;
-				
-				Inventory pInv = person.getInventory();
-		        SpecimenBox box = pInv.findASpecimenBox();
+		        SpecimenBox box = person.findASpecimenBox();
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
 				double cap = box.getAmountResourceRemainingCapacity(randomRock);
 				if (mass < cap) {
@@ -330,21 +326,20 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.getInventory().containsEquipment(EquipmentType.SPECIMEN_BOX);
+		return person.containsEquipment(EquipmentType.SPECIMEN_BOX);
 	}
 
 	/**
 	 * Takes the least full specimen container from the rover, if any are available.
 	 * 
-	 * @throws Exception if error taking container.
+	 * @return true if the person receives a specimen container.
 	 */
-	private void takeSpecimenContainer() {
+	private boolean takeSpecimenContainer() {
 		Unit container = findLeastFullContainer(rover);
 		if (container != null) {
-//			if (person.getInventory().canStoreUnit(container, false)) {
-				container.transfer(rover, person);
-//			}
+			return container.transfer(rover, person);
 		}
+		return false;
 	}
 
 	/**
@@ -382,10 +377,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	protected void clearDown() {
 //		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		Inventory pInv = person.getInventory();
-		if (pInv.containsEquipment(EquipmentType.SPECIMEN_BOX)) {
-			SpecimenBox box = pInv.findASpecimenBox();
-			box.transfer(pInv, rover);
+		if (person.containsEquipment(EquipmentType.SPECIMEN_BOX)) {
+			SpecimenBox box = person.findASpecimenBox();
+			box.transfer(person, rover);
 		}
 	}
 }

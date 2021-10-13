@@ -442,7 +442,7 @@ public class LoadingController implements Serializable {
 					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
 							// Put this equipment into a vehicle
-							eq.transfer(sInv, vInv);
+							eq.transfer(settlement, vehicle);
 							amountLoading -= eq.getMass();
 							amountNeeded--;
 							

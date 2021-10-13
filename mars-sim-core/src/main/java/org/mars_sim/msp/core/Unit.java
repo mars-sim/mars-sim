@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
@@ -188,7 +187,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case PERSON:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			this.inventory = new Inventory(this);
+//			this.inventory = new Inventory(this);
 			break;
 		
 		case BUILDING:
@@ -232,6 +231,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			if (inventory != null) {
 				inventory.setCoordinates(location);
 			}
+			else if (getUnitType() == UnitType.PERSON){
+				((Person)this).setLocation(location);
+			}
+				
 		}
 		
 		if (diagnosticFile != null) {
@@ -407,8 +410,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
 		
-		if (getUnitType() != UnitType.EQUIPMENT) {
+		if (getUnitType() != UnitType.EQUIPMENT
+				&& getUnitType() != UnitType.PERSON) {
 			inventory.setCoordinates(newLocation);
+		}
+		
+		if (getUnitType() == UnitType.PERSON) {
+			((Person)this).setLocation(location);
 		}
 		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
@@ -999,38 +1007,77 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		return origin.getInventory().transferUnit(this, destination);
+		boolean transferred = false;
+		// Check the origin is a person 
+		if (origin.getUnitType() == UnitType.PERSON) {
+			transferred = ((Person)origin).removeEquipment((Equipment)this);
+//			if (!transferred) {
+				// The transfer has failed. 
+				// Must return the Unit back to the origin.
+//				((Person)destination).addEquipment((Equipment)this);
+//			}
+		}
+		else {
+			transferred = origin.getInventory().retrieveUnit(this, false);
+//			if (!transferred) {
+				// The transfer has failed. 
+				// Must return the Unit back to the origin.
+//				transferred = origin.getInventory().storeUnit(this);
+//			}
+		}
+		
+		if (transferred) { 
+			// Check if the destination is a person 
+			if (destination.getUnitType() == UnitType.PERSON) {
+				transferred = ((Person)destination).addEquipment((Equipment)this);
+//				if (!transferred) {
+					// The transfer has failed. 
+					// Must remove the Unit from the destination.
+//					((Person)destination).removeEquipment((Equipment)this);
+//				}
+			}
+			else {
+				transferred = destination.getInventory().storeUnit(this);
+//				if (!transferred) {
+					// The transfer has failed. 
+					// Must retrieve the Unit back to the destination.
+//					transferred = destination.getInventory().retrieveUnit(this, false);
+//				}
+			}
+		}
+		
+		return transferred;
 	}
 
-	/**
-	 * Transfer the unit from one owner's inventory to another owner
-	 * 
-	 * @param originInv {@link Inventory} the inventory of the original container unit
-	 * @param destination {@link Unit} the destination container unit
-	 */
-	public boolean transfer(Inventory originInv, Unit destination) {
-		return originInv.transferUnit(this, destination);
-	}
+//	/**
+//	 * Transfer the unit from one owner's inventory to another owner
+//	 * 
+//	 * @param originInv {@link Inventory} the inventory of the original container unit
+//	 * @param destination {@link Unit} the destination container unit
+//	 */
+//	public boolean transfer(Inventory originInv, Unit destination) {
+//		return originInv.getOwner().transfer(this, destination);
+//	}
 	
-	/**
-	 * Transfer the unit from one owner to another owner's inventory
-	 * 
-	 * @param origin {@link Unit} the original container unit
-	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-	 */
-	public boolean transfer(Unit origin, Inventory destinationInv) {
-		return origin.getInventory().transferUnit(this, destinationInv.getOwner());
-	}
+//	/**
+//	 * Transfer the unit from one owner to another owner's inventory
+//	 * 
+//	 * @param origin {@link Unit} the original container unit
+//	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
+//	 */
+//	public boolean transfer(Unit origin, Inventory destinationInv) {
+//		return origin.transfer(this, destinationInv.getOwner());
+//	}
 	
-	/**
-	 * Transfer the unit from one owner's inventory to another owner's inventory
-	 * 
-	 * @param originInv {@link Inventory} the inventory of the original container unit
-	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-	 */
-	public boolean transfer(Inventory originInv, Inventory destinationInv) {
-		return originInv.transferUnit(this, destinationInv.getOwner());
-	}
+//	/**
+//	 * Transfer the unit from one owner's inventory to another owner's inventory
+//	 * 
+//	 * @param originInv {@link Inventory} the inventory of the original container unit
+//	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
+//	 */
+//	public boolean transfer(Inventory originInv, Inventory destinationInv) {
+//		return originInv.getOwner().transfer(this, destinationInv.getOwner());
+//	}
 	
 	public abstract String findAmountResourceName(int resource);
 	

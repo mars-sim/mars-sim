@@ -381,10 +381,14 @@ public abstract class RoverMission extends VehicleMission {
 							int limit = RandomUtil.getRandomInt(1, 2);
 							for (int i=0; i<limit; i++) {
 								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
+									
 									EVASuit suit = settlement.getInventory().findAnEVAsuit(person);
-									if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
-										// Note : should add codes to have a person carries the extra EVA suit physically
-										suit.transfer(settlement, v);
+									if (suit != null) {									
+										boolean success = suit.transfer(settlement, v);									
+										if (success)
+											logger.warning(person, "Received a spare EVA suit from " + settlement + " to " + v);
+										else
+											logger.warning(person, "Cannot transfer a spare EVA suit from " + settlement + " to " + v);
 									}
 								}
 							}
@@ -435,10 +439,8 @@ public abstract class RoverMission extends VehicleMission {
 					recordStartMass();
 					
 					// Embark from settlement
-//					if (v.isInSettlement())
-					if (settlement.getInventory().containsUnit(v))	
-//						settlement.getInventory().retrieveUnit(v);
-						v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
+					if (settlement.getInventory().containsUnit(v))
+						v.transfer(settlement, unitManager.getMarsSurface());
 						
 					setPhaseEnded(true);
 				}
@@ -629,11 +631,12 @@ public abstract class RoverMission extends VehicleMission {
 							// Deliver an EVA suit from the settlement to the rover
 							// Note: Need to generate a task for a person to hand deliver an extra suit
 							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(p);
-							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
-								
-								suit.transfer(disembarkSettlement, rover);
-							
-								logger.warning(p, "Received a spare EVA suit from the settlement.");
+							if (suit != null) {// && rover.getInventory().canStoreUnit(suit, false)) {					
+								boolean success = suit.transfer(disembarkSettlement, rover);
+								if (success)
+									logger.warning(p, "Received a spare EVA suit from " + disembarkSettlement + " to " + rover);
+								else
+									logger.warning(p, "Cannot transfer a spare EVA suit from " + disembarkSettlement + " to " + rover);
 							}
 						}
 					}

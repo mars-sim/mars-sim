@@ -327,7 +327,7 @@ public class DroneMission extends VehicleMission {
 				
 				// Embark from settlement
 				if (settlement.getInventory().containsUnit(v))
-					v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
+					v.transfer(settlement, unitManager.getMarsSurface());
 					
 				setPhaseEnded(true);
 			}

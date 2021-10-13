@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2021-10-03
+ * @date 2021-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -689,14 +691,25 @@ public class EnterAirlock extends Task implements Serializable {
 
 				if (remainingDoffingTime <= 0) {
 	
+					Settlement settlement = null;
+					Vehicle vehicle = null;
+					
+					if (airlock instanceof BuildingAirlock)
+						settlement = ((Building)airlock.getEntity()).getSettlement();
+					else
+						vehicle = (Vehicle)airlock.getEntity();
+					
 					// 2a. Records the person as the owner
 					suit.setLastOwner(person);
 					// 2b. Doff this suit. Deregister the suit from the person
 					person.registerSuit(null);
 	
 					Inventory entityInv = airlock.getEntityInventory();
-					// 2c Transfer the EVA suit from person to entityInv
-					suit.transfer(person, entityInv);
+					// 2c Transfer the EVA suit from person to settlement/vehicle
+					if (settlement != null)
+						suit.transfer(person, settlement);	
+					else
+						suit.transfer(person, vehicle);	
 	
 					// 2d. Return suit to entity's inventory.
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");

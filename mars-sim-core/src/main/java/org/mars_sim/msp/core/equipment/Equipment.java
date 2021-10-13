@@ -296,6 +296,24 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return 0;
 	}
 	
+	
+	/**
+	 * Obtains the remaining storage quantity of a particular item resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public int getItemResourceRemainingCapacity(int resource) {
+		int index = getIndex(resource);
+		
+		if (index == -1 || resourceIDs.contains(resource)) {	
+			return microInventory.getItemResourceRemainingCapacity(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+	
 	/**
 	 * Gets the amount resource stored
 	 * 
@@ -311,6 +329,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		}
 	}
     
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getItemResourceStored(int resource) {
+		if (resourceIDs.contains(resource)) {
+			return microInventory.getItemResourceStored(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+			
 	/**
 	 * Is this equipment empty ?
 	 * 

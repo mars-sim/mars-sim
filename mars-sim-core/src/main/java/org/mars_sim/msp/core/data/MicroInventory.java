@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MicroInventory.java
- * @date 2021-10-10
+ * @date 2021-10-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.data;
@@ -15,7 +15,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 
 /**
@@ -146,30 +145,37 @@ public class MicroInventory implements Serializable {
 			return quantity;
 		}
 		
-		double mass = ItemResourceUtil.findItemResource(resource).getMassPerItem();
-//		double excess = 0;
-		int num = (int) (s.capacity / (quantity * mass));
+		double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+		double totalMass = s.quantity * massPerItem;
+		double rCap = s.capacity - totalMass;
+		int num = (int)(rCap / massPerItem);
+		int missing = 0;
 
 		if (num > 0) {
 		
 			if (quantity != num) {
+				s.quantity = num;
+				missing = quantity - num;
 				String name = ((Unit)owner).findItemResourceName(resource);
-				logger.warning(owner, "Can only store " + quantity + "x " + name + " and return the excess " + (quantity - num) + "x " + name + ".");
+				logger.warning(owner, "Can only retrive " + quantity + "x " + name 
+					+ " and return the excess " + missing + "x " + name + ".");
 			}
 			
-//			excess = s.capacity - num * mass;
-			s.quantity = num;		
+			else {
+				s.quantity = num;
+				missing = 0;	
+			}
 		}
 		
 		else {
-			double excess = quantity * mass - s.capacity;
+			missing = quantity;
 			String name = ((Unit)owner).findItemResourceName(resource);
-			logger.warning(owner, "Cannot store " + quantity + " " + name + ", lacking " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			logger.warning(owner, "Cannot store " + quantity + " " + name + ".");
 		}
 
+		// Update the total mass
 		updateItemResourceTotalMass();
-		
-		return num;
+		return missing;
 	}
 	
 	/**
@@ -210,7 +216,7 @@ public class MicroInventory implements Serializable {
 		if (remaining < 0) {
 			String name = ((Unit)owner).findAmountResourceName(resource);
 			logger.warning(owner, 10_000L, "Just retrieved all " + quantity + " kg of " 
-					+ name + ". Lacking " + Math.round(-remaining * 10.0)/10.0 + " kg.");
+					+ name + " but lacked " + Math.round(-remaining * 10.0)/10.0 + " kg.");
 			shortfall = -remaining;
 			remaining = 0;
 		}
@@ -233,18 +239,19 @@ public class MicroInventory implements Serializable {
 		if (s == null) {
 			return quantity;
 		}
-
+		
 		int shortfall = 0;
-		int remaining = s.quantity - quantity;
-		if (remaining < 0) {
-			String name = ((Unit)owner).findAmountResourceName(resource);
-			logger.warning(owner, 10_000L, "Just retrieved all " + quantity + " of " 
-					+ name + ". Lacking " + Math.round(-remaining * 10.0)/10.0 + ".");
-			shortfall = -remaining;
-			remaining = 0;
+		
+		if (quantity > s.quantity) {
+			shortfall = quantity - s.quantity;
+			String name = ((Unit)owner).findItemResourceName(resource);
+			logger.warning(owner, "Can only retrive " + quantity + "x " + name 
+				+ " and return the shortfall " + shortfall + "x " + name + ".");
 		}
-
-		s.quantity = remaining;
+		else {
+			s.quantity = s.quantity - quantity;
+		}
+		
 		// Update the total mass
 		updateItemResourceTotalMass();
 		return shortfall;
@@ -268,6 +275,23 @@ public class MicroInventory implements Serializable {
 		ResourceStored s = storageMap.get(resource);
 		if (s != null) {
 			return s.capacity - s.storedAmount;
+		}
+		return 0;
+	}
+	
+	/**
+	 * Obtains the remaining storage quantity of a particular item resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public int getItemResourceRemainingCapacity(int resource) {
+		ResourceStored s = storageMap.get(resource);
+		if (s != null) {
+			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+			double totalMass = s.quantity * massPerItem;
+			double rCap = s.capacity - totalMass;
+			return (int)(rCap / massPerItem);
 		}
 		return 0;
 	}
@@ -319,5 +343,6 @@ public class MicroInventory implements Serializable {
 	
 	public void destroy() {
 		storageMap = null;
+		owner = null;
 	}
 }

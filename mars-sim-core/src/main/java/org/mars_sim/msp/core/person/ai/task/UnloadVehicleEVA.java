@@ -264,7 +264,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment);
-				equipment.transfer(vehicleInv, settlementInv);		
+				equipment.transfer(vehicle, settlement);		
 				amountUnloading -= equipment.getMass();
 				
 				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
@@ -367,7 +367,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					
 					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
 					
-					p.transfer(vehicle, settlementInv);
+					p.transfer(vehicle, settlement);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					

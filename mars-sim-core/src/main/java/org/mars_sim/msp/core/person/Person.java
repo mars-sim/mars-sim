@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2021-10-11
+ * @date 2021-10-12
  * @author Scott Davis
  */
 
@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,14 +26,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -54,6 +61,8 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -137,6 +146,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int quartersInt = -1;
 	/** The current building location of the person. */
 	private int currentBuildingInt;
+	/** The carrying capacity of the person. */
+	private int carryingCapacity;
 	
 	/** The settlement the person is currently associated with. */
 	private Integer associatedSettlementID = Integer.valueOf(-1);
@@ -206,6 +217,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private EVASuit suit;
 	/** The person's current scientific study. */
 	private ScientificStudy study;
+	/** The person's MicroInventory instance. */
+	private MicroInventory microInventory;
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<ScienceType, Double>();
@@ -221,6 +234,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Set<ScientificStudy> collabStudies;
 	/** The person's list of equipment. */
 	private List<Equipment> equipmentList;
+	/** A list of resource id's. */
+	private List<Integer> resourceIDs = new ArrayList<>();
+	/** A list of Amount Resources. */
+	private transient Map<Integer, AmountResource> resourceARs = new HashMap<>();
+	/** A list of Amount Resources. */
+	private transient Map<Integer, ItemResource> resourceIRs = new HashMap<>();
 	
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
@@ -264,6 +283,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		attributes = new PersonAttributeManager();
 		// Create equipment list instance		
 		equipmentList = new ArrayList<>();
+		// Create microInventory instance		
+		microInventory = new MicroInventory(this);
 	}
 	
 	/**
@@ -293,11 +314,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		// create a prior training profile
 		generatePriorTraining();
+		// Construct the PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
 		mind = new Mind(this);
+		// Create equipment list instance		
+		equipmentList = new ArrayList<>();
+		// Create microInventory instance		
+		microInventory = new MicroInventory(this);
+		
 		// Set the person's status of death
 		isBuried = false;
 	}
@@ -346,9 +373,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);
 		// Create the consumption map
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
-		// Asssume the person is not a preconfigured crew member
+		// Assume the person is not a preconfigured crew member
 		preConfigured = false;
-		
+		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 	}
 
@@ -423,11 +450,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else 
 			load = (int)(baseCap/2.5 - age / 4.0);
 		
-		int carryCap = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0 
-				+ RandomUtil.getRandomRegressionInteger(10)));
-		
 		// Set inventory total mass capacity based on the person's weight and strength.
-		getInventory().addGeneralCapacity(carryCap); 
+		carryingCapacity = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0 
+				+ RandomUtil.getRandomRegressionInteger(10)));
 		
 //		logger.info(name + " (" + weight + " kg) with strength " + strength 
 //				+ " & endurance " + endurance  
@@ -1129,13 +1154,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 		}
 
-		// Get all contained units.
-		Collection<Integer> IDs = getInventory().getContainedUnitIDs();
-		for (Integer id : IDs) {
-			Unit u = unitManager.getUnitByID(id);
-			if (u instanceof LifeSupportInterface)
-				lifeSupportUnits.add((LifeSupportInterface) u);
-		}
+		// Note: in future a person may rely on a portable gas mask
+		// for breathing 
+		
+//		// Get all contained units.
+//		Collection<Integer> IDs = getInventory().getContainedUnitIDs();
+//		for (Integer id : IDs) {
+//			Unit u = unitManager.getUnitByID(id);
+//			if (u instanceof LifeSupportInterface)
+//				lifeSupportUnits.add((LifeSupportInterface) u);
+//		}
 
 		// If more than one find the best
 		if (lifeSupportUnits.size() > 1) {
@@ -1905,13 +1933,40 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Calculate the modifier for walking speed based on how much this unit is carrying
 	 */
 	public double calculateWalkSpeed() {
-		double mass = getInventory().getTotalInventoryMass(false);
-		double cap = getInventory().getGeneralCapacity();
+		double mass = getTotalMass();
 		// At full capacity, may still move at 10%.
 		// Make sure is doesn't go -ve and there is always some movement
-		return 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
+		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
 	}
 
+	/**
+	 * Mass of Equipment is the base mass plus what every it is storing
+	 */
+	@Override
+	public double getMass() {
+		if (microInventory != null)
+			// Note stored mass may be have a different implementation in subclasses
+			return microInventory.getStoredMass() + getBaseMass();
+		else
+			return getBaseMass();
+	}
+	
+	/**
+	 * Gets the total mass on a person (not including a person's weight)
+	 * 
+	 * @return
+	 */
+	public double getTotalMass() {
+		double result = 0;
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				result += e.getMass();
+			}
+		}
+		result += microInventory.getStoredMass();
+		return result;
+	}
+	
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.PERSON;
@@ -1942,14 +1997,363 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public List<Equipment> getEquipmentList() {
 		return equipmentList;
 	}
-	
-	public void addEquipment(Equipment equipment) {
-		equipmentList.add(equipment);
+
+	public Set<Unit> getContainedUnits() {
+		return new HashSet<Unit>(getEquipmentList());
 	}
 	
-	public void removeEquipment(Equipment equipment) {
-		equipmentList.remove(equipment);
+	/**
+	 * Does this person possess an equipment of this type id
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	public boolean containsEquipment(int typeID) {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				if (typeID == EquipmentType.getResourceID(e.getEquipmentType())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
+	
+	/**
+	 * Does this person possess an equipment of this equipment type
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	public boolean containsEquipment(EquipmentType type) {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				if (type == e.getEquipmentType()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Adds an equipment to this person
+	 * 
+	 * @param equipment
+	 * @return true if this person can carry it
+	 */
+	public boolean addEquipment(Equipment equipment) {
+		if (carryingCapacity >= getTotalMass() + equipment.getMass()) {
+			equipmentList.add(equipment);
+			return true;
+		}
+		return false;		
+	}
+	
+	/**
+	 * Remove an equipment 
+	 * 
+	 * @param equipment
+	 */
+	public boolean removeEquipment(Equipment equipment) {
+		if (equipmentList.contains(equipment)) {
+			equipmentList.remove(equipment);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Finds all equipment with a particular equipment type
+	 * 
+	 * @param type EquipmentType
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
+		Set<Equipment> result = new HashSet<>();
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				if (e != null && e.getEquipmentType() == type) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the most but not completely full bag of the resource in the rover.
+	 * 
+	 * @param inv          the inventory to look in.
+	 * @param resourceType the resource for capacity.
+	 * @return container.
+	 */
+	public Bag findMostFullBag(int resource) {
+		Bag result = null;
+		double leastCapacity = Double.MAX_VALUE;
+
+		Iterator<Equipment> i = findAllEquipmentType(EquipmentType.BAG).iterator();
+		while (i.hasNext()) {
+			Bag bag = (Bag)(i.next());
+			double remainingCapacity = bag.getAmountResourceRemainingCapacity(resource);
+
+			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
+				result = bag;
+				leastCapacity = remainingCapacity;
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the index of a particular resource
+	 * 
+	 * @param resource
+	 * @return index
+	 */
+	private int getIndex(int resource) {
+		if (resourceIDs != null && !resourceIDs.isEmpty()) {
+			for (int r: resourceIDs) {
+				if (r == resource)
+					return resourceIDs.indexOf(r);
+			}
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Stores the item resource
+	 * 
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	public double storeItemResource(int resource, int quantity) {
+		int index = getIndex(resource);
+		// index = -1 means it's brand new
+		if (index == -1) {
+			resourceIDs.add(resource);
+			resourceIRs.put(resource, ItemResourceUtil.findItemResource(resource));
+			microInventory.setCapacity(resource, getTotalCapacity());
+		}
+		
+		return microInventory.storeItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the item resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	public double retrieveItemResource(int resource, int quantity) {
+		int index = getIndex(resource);
+		if (resourceIDs.contains(resource)) {
+			return microInventory.retrieveItemResource(resource, quantity);
+		}
+		
+		else if (index == -1) {
+			String name = findItemResourceName(resource);
+			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " x " 
+					+ name + ". Not being used for storing anything yet.");
+			return 0;
+		}
+
+		else {
+			String name = findItemResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ quantity + "x "+ name + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getItemResourceStored(int resource) {
+		if (resourceIDs.contains(resource)) {
+			return microInventory.getItemResourceStored(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	public double storeAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		// index = -1 means it's brand new
+		if (index == -1) {
+			resourceIDs.add(resource);
+			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
+			microInventory.setCapacity(resource, getTotalCapacity());
+		}
+		
+		if (equipmentList.isEmpty()) {
+			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
+			if (rcap > 0) {
+				return microInventory.storeAmountResource(resource, quantity);
+			}
+			else
+				return quantity;
+		}
+		
+		else if (equipmentList.size() == 1) {
+			// check if there is enough space for storing the entire quantity 
+			// in this equipment container, if not, split it into multiple container
+			double rcap = equipmentList.get(0).getAmountResourceRemainingCapacity(resource);
+			if (rcap > 0) {
+				return equipmentList.get(0).storeAmountResource(resource, quantity);
+			}
+			else
+				return quantity;
+		}
+		else {
+			double rCap = 0;
+			double excess = quantity;
+			for (Equipment e: equipmentList) {
+				// check if there is enough space for storing the entire quantity 
+				// in one equipment container, if not, split it into multiple container	
+				rCap = e.getAmountResourceRemainingCapacity(resource);
+				if (rCap > 0) {
+					excess = e.storeAmountResource(resource, excess);
+				}
+			}
+			// Return any excess unstored amount
+			return excess;
+		}
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	public double retrieveAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		if (resourceIDs.contains(resource)) {
+			if (equipmentList.size() == 1) {
+				// check if there is enough space for storing the entire quantity 
+				// in this equipment container, if not, split it into multiple container
+				double rcap = equipmentList.get(0).getAmountResourceStored(resource);
+				if (rcap > 0) {
+					return equipmentList.get(0).retrieveAmountResource(resource, quantity);
+				}
+				else
+					return quantity;
+			}
+			else {
+				double stored = 0;
+				double missing = quantity;
+				for (Equipment e: equipmentList) {
+					// check if there is enough space for storing the entire quantity 
+					// in one equipment container, if not, split it into multiple container	
+					stored = e.getAmountResourceStored(resource);
+					if (stored > 0) {
+						missing = e.retrieveAmountResource(resource, missing);
+					}
+				}
+				// Return any missing quantity
+				return missing;
+			}
+			
+		}
+		
+		else if (index == -1) {
+			String name = findAmountResourceName(resource);
+			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
+					+ name + ". Not being used for storing anything yet.");
+			return 0;
+		}
+
+		else {
+			String name = findAmountResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	public double getAmountResourceCapacity(int resource) {
+		int index = getIndex(resource);
+		
+		if (index == -1 || resourceIDs.contains(resource)) {
+			return getTotalCapacity();
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAmountResourceRemainingCapacity(int resource) {
+		int index = getIndex(resource);
+		
+		if (index == -1 || resourceIDs.contains(resource)) {	
+			return microInventory.getAmountResourceRemainingCapacity(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAmountResourceStored(int resource) {
+		if (resourceIDs.contains(resource)) {
+			return microInventory.getAmountResourceStored(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+    
+	/**
+	 * Is this person have an empty container for this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean isEmpty(int resource) {
+		int index = getIndex(resource);
+		if (index == -1 || (resourceIDs.contains(resource) && microInventory.isEmpty(resource)))
+			return true;
+		
+		return false;
+	}
+
+	public boolean hasContent() {
+		return !microInventory.isEmpty();
+	}
+
 	
 	/**
 	 * Generate a unique name for a person based on a country
@@ -2000,6 +2404,100 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		// Should never get here
 		return "Person #" + people.size();
+	}
+	
+	public MicroInventory getMicroInventory() {
+		return microInventory;
+	}
+	
+	public int getCarryingCapacity() {
+		return carryingCapacity;
+	}
+	
+	/**
+	 * Finds the number of empty containers of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerClass  the unit class.
+	 * @param brandNew  does it include brand new bag only
+	 * @return number of empty containers.
+	 */
+	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		int result = 0;
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				// The contained unit has to be an Equipment that is empty and of the correct type
+				if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
+					result++;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Finds a bag in storage.
+	 * 
+	 * @param empty does it need to be empty ?
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public Bag findABag(boolean empty, int resource) {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				if (e != null && e.getEquipmentType() == EquipmentType.BAG) {
+					if (empty) {
+						// It must be empty inside
+						if (e.isEmpty(resource)) {
+							return (Bag)e;
+						}
+					}
+					else if (e.getResource() == resource || e.getResource() == -1)
+						return (Bag)e;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds an specimen box in storage.
+	 * 
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public SpecimenBox findASpecimenBox() {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				if (e != null && e.getEquipmentType() == EquipmentType.SPECIMEN_BOX) {
+					return (SpecimenBox)e;
+				}
+			}
+		}
+		return null;
+	}	
+	
+	/**
+	 * Gets the remaining carrying capacity available.
+	 * 
+	 * @return capacity (kg).
+	 */
+	public double getRemainingCarryingCapacity() {
+		return carryingCapacity - getTotalMass();
+	}
+	
+	/**
+	 * Sets the coordinates of all units in the inventory.
+	 * 
+	 * @param newLocation the new coordinate location
+	 */
+	public void setLocation(Coordinates newLocation) {
+		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
+			if (equipmentList != null && !equipmentList.isEmpty() && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
+				for (Equipment e: equipmentList) {
+					e.setCoordinates(newLocation);
+				}
+			}
+		}
 	}
 	
 	/**

@@ -928,7 +928,7 @@ public abstract class Airlock implements Serializable {
 	public abstract Object getEntity();
 
 	/**
-	 * Gets the entity this airlock is attached to.
+	 * Gets the locale this airlock is at.
 	 * 
 	 * @return entity.
 	 */
@@ -1004,9 +1004,9 @@ public abstract class Airlock implements Serializable {
 	public Set<Integer> getAllInsideOccupants() {
 		if (this instanceof BuildingAirlock)
 			return ((BuildingAirlock)this).getAllInsideOccupants();
-		else if (this instanceof VehicleAirlock)
+		else //if (this instanceof VehicleAirlock)
 			return getOccupants();
-		return new HashSet<>();
+//		return new HashSet<>();
 	}
 
 	/**

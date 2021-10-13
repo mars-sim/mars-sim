@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,8 +119,16 @@ public final class MalfunctionFactory implements Serializable {
 		if (source.isInVehicle()) {
 			entities.addAll(getMalfunctionables((Malfunctionable) source.getVehicle()));
 		}
-
-		Collection<Unit> inventoryUnits = source.getInventory().getContainedUnits();
+		
+		Collection<Unit> inventoryUnits = null;
+		
+		if (source instanceof Person) {
+			inventoryUnits = ((Person)source).getContainedUnits();
+		}
+		else {	
+			inventoryUnits = source.getInventory().getContainedUnits();
+		}
+		
 		if (inventoryUnits.size() > 0) {
 			for (Unit unit : inventoryUnits) {
 				if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
@@ -127,7 +136,7 @@ public final class MalfunctionFactory implements Serializable {
 				}
 			}
 		}
-
+		
 		return entities;
 	}
 	

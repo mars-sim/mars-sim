@@ -710,7 +710,7 @@ public final class TradeUtil {
 			return inventory.getItemResourceNum(good.getID());
 		} else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return inventory.findNumEmptyContainersOfClass(good.getEquipmentType(), false);
+			return inventory.findNumEmptyContainersOfType(good.getEquipmentType(), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
@@ -745,7 +745,7 @@ public final class TradeUtil {
 
 		Inventory settlementInv = settlement.getInventory();
 
-		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerClass, false);
+		int containersStored = settlementInv.findNumEmptyContainersOfType(containerClass, false);
 
 		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
 		int containersTraded = 0;
