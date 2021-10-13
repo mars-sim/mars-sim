@@ -112,9 +112,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public static double emptyMass;
 	
 	// Data members
-	/** A list of resource id's. */
-	private List<Integer> resourceIDs = new ArrayList<>();
-	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
@@ -168,35 +165,11 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
-		
-//		microInventory = new MicroInventory(this);
-		
+
 		microInventory.setCapacity(o2, OXYGEN_CAPACITY);
 		microInventory.setCapacity(h2o, WATER_CAPACITY);
 		microInventory.setCapacity(co2, CO2_CAPACITY);
 	}
-
-	/**
-	 * Gets a list of supported resources
-	 * 
-	 * @return a list of resource ids
-	 */
-	@Override
-	public List<Integer> getResourceIDs() {
-		return new ArrayList<>(microInventory.getResourcesStored());
-	}
-
-	
-	/**
-	 * Gets the id of a particular resource
-	 * 
-	 * @param index
-	 * @return Amount Resource id
-	 */
-	public int getResourceID(int index) {
-		return resourceIDs.get(index);
-	}
-
 
 	/**
      * Gets the total capacity of resource that this container can hold.
@@ -216,11 +189,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		if (microInventory.isResourceSupported(resource)) {
+		// Note: this method is different from 
+		// Equipment's storeAmountResource 
+		if (isResourceSupported(resource)) {
 			return microInventory.storeAmountResource(resource, quantity);
 		}
 		else {
-			// index = -1 means this resource is not allowed to be stored
 			String name = ResourceUtil.findAmountResourceName(resource);
 			logger.warning(this, name + " is not allowed to be stored " 
 					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
@@ -228,28 +202,25 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}	
 	}
 	
-	/**
-	 * Retrieves the resource 
-	 * 
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		
-		// index != -1 means this resource is allowed to be stored
-		if (microInventory.isResourceSupported(resource)) {
-			return microInventory.retrieveAmountResource(resource, quantity);
-		}
-		else {
-			// index = -1 means this resource is not allowed to be stored
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
-	}
+//	/**
+//	 * Retrieves the resource 
+//	 * 
+//	 * @param resource
+//	 * @param quantity
+//	 * @return quantity that cannot be retrieved
+//	 */
+//	@Override
+//	public double retrieveAmountResource(int resource, double quantity) {
+//		if (isResourceSupported(resource)) {
+//			return microInventory.retrieveAmountResource(resource, quantity);
+//		}
+//		else {
+//			String name = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "No such resource. Cannot retrieve " 
+//					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+//			return quantity;
+//		}
+//	}
 	
 	/**
 	 * Gets the capacity of a particular amount resource
@@ -259,6 +230,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
+		// Note: this method is different from 
+		// Equipment's getAmountResourceCapacity 
 		return microInventory.getCapacity(resource);
 	}
 	
@@ -270,30 +243,11 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
+		// Note: this method is different from 
+		// Equipment's getAmountResourceRemainingCapacity 
 		return microInventory.getAmountResourceRemainingCapacity(resource);
 	}
 	
-	/**
-	 * Gets the amount resource stored
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAmountResourceStored(int resource) {
-		return microInventory.getAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Is this suit empty of this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty(int resource) {
-		return microInventory.isEmpty(resource);
-	}
 	
 	/**
 	 * Gets the unit's malfunction manager.
@@ -559,7 +513,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;
-		resourceIDs = null;
 	}
 }
 
