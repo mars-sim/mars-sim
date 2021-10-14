@@ -17,16 +17,18 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * The EquipmentType enum class is used for distinguishing between various type of equipments
  */
 public enum EquipmentType {
-	// Equipment - EVA gear
+	
+	// non-container
 	EVA_SUIT			(Msg.getString("EquipmentType.EVASuit")), //$NON-NLS-1$ 
+	ROBOT				("Robot"), 
+	
 	// Container 
 	BAG 				(Msg.getString("EquipmentType.bag")), //$NON-NLS-1$
 	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
 	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
 	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
-	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")), //$NON-NLS-1$
-	ROBOT				("Robot"); 
-
+	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
+	
 	private String name;	
 
 	private static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;

@@ -269,7 +269,7 @@ implements Serializable {
         }
         
         if (!finishedCollecting) {
-        	int loadCap = person.getCarryingCapacity();
+        	double loadCap = person.getCarryingCapacity();
             if (totalCollected >= loadCap) {
             	totalCollected = loadCap;
     			finishedCollecting = true;

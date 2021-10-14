@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -56,6 +55,7 @@ public class MicroInventory implements Serializable {
 	
 	/**
      * Gets the capacity of this resource that this container can hold.
+     * 
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {

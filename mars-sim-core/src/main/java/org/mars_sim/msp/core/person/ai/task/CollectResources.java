@@ -369,7 +369,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
 				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
 			}
-			int carryCapacity = person.getCarryingCapacity();
+			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);
 
 			result = (containerAvailable && canCarryEquipment);

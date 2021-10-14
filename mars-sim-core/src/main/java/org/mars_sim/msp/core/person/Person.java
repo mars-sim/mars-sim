@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -87,7 +88,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements VehicleOperator, MissionMember, Serializable, Temporal {
+public class Person extends Unit implements VehicleOperator, MissionMember, Serializable, Temporal, EquipmentOwner {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1939,172 +1940,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Mass of Equipment is the base mass plus what every it is storing
-	 */
-	@Override
-	public double getMass() {
-		if (microInventory != null)
-			// Note stored mass may be have a different implementation in subclasses
-			return microInventory.getStoredMass() + getBaseMass();
-		else
-			return getBaseMass();
-	}
-	
-	/**
-	 * Gets the total mass on a person (not including a person's weight)
-	 * 
-	 * @return
-	 */
-	public double getTotalMass() {
-		double result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getMass();
-			}
-		}
-		result += microInventory.getStoredMass();
-		return result;
-	}
-	
-	@Override
-	public UnitType getUnitType() {
-		return UnitType.PERSON;
-	}
-
-//	/**
-//	 * Finds the string name of the amount resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findAmountResourceName(int resource) {
-//		return ResourceUtil.findAmountResourceName(resource);
-//	}
-//	
-//	/**
-//	 * Finds the string name of the item resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findItemResourceName(int resource) {
-//		return ItemResourceUtil.findItemResourceName(resource);
-//	}
-	
-	public List<Equipment> getEquipmentList() {
-		return equipmentList;
-	}
-
-	public Set<Unit> getContainedUnits() {
-		return new HashSet<>(getEquipmentList());
-	}
-	
-	/**
-	 * Does this person possess an equipment of this type id
-	 * 
-	 * @param typeID
-	 * @return
-	 */
-	public boolean containsEquipment(int typeID) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				if (typeID == EquipmentType.getResourceID(e.getEquipmentType())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Does this person possess an equipment of this equipment type
-	 * 
-	 * @param typeID
-	 * @return
-	 */
-	public boolean containsEquipment(EquipmentType type) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				if (type == e.getEquipmentType()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Adds an equipment to this person
-	 * 
-	 * @param equipment
-	 * @return true if this person can carry it
-	 */
-	public boolean addEquipment(Equipment equipment) {
-		if (carryingCapacity >= getTotalMass() + equipment.getMass()) {
-			equipmentList.add(equipment);
-			return true;
-		}
-		return false;		
-	}
-	
-	/**
-	 * Remove an equipment 
-	 * 
-	 * @param equipment
-	 */
-	public boolean removeEquipment(Equipment equipment) {
-		if (equipmentList.contains(equipment)) {
-			equipmentList.remove(equipment);
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
-		Set<Equipment> result = new HashSet<>();
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == type) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Gets the most but not completely full bag of the resource in the rover.
-	 * 
-	 * @param inv          the inventory to look in.
-	 * @param resourceType the resource for capacity.
-	 * @return container.
-	 */
-	public Container findMostFullContainer(EquipmentType containerType, int resource) {
-		Container result = null;
-		double leastCapacity = Double.MAX_VALUE;
-
-		Iterator<Equipment> i = findAllEquipmentType(containerType).iterator();
-		while (i.hasNext()) {
-			Container container = (Container) i.next();
-			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
-
-			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
-				result = container;
-				leastCapacity = remainingCapacity;
-			}
-		}
-
-		return result;
-	}
-	
-	/**
 	 * Gets the index of a particular resource
 	 * 
 	 * @param resource
@@ -2121,238 +1956,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return -1;
 	}
 	
-	/**
-	 * Stores the item resource
-	 * 
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	public double storeItemResource(int resource, int quantity) {
-		int index = getIndex(resource);
-		// index = -1 means it's brand new
-		if (index == -1) {
-			resourceIDs.add(resource);
-			resourceIRs.put(resource, ItemResourceUtil.findItemResource(resource));
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-		
-		return microInventory.storeItemResource(resource, quantity);
-	}
-	
-	/**
-	 * Retrieves the item resource 
-	 * 
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	public double retrieveItemResource(int resource, int quantity) {
-		int index = getIndex(resource);
-		if (resourceIDs.contains(resource)) {
-			return microInventory.retrieveItemResource(resource, quantity);
-		}
-		
-		else if (index == -1) {
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " x " 
-					+ name + ". Not being used for storing anything yet.");
-			return 0;
-		}
-
-		else {
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ quantity + "x "+ name + ".");
-			return quantity;
-		}
-	}
-	
-	/**
-	 * Gets the item resource stored
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getItemResourceStored(int resource) {
-		if (resourceIDs.contains(resource)) {
-			return microInventory.getItemResourceStored(resource);
-		}
-		else {
-			return 0;
-		}
-	}
-	
-	/**
-	 * Stores the amount resource
-	 * 
-	 * @param resource the amount resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	public double storeAmountResource(int resource, double quantity) {
-		int index = getIndex(resource);
-		// index = -1 means it's brand new
-		if (index == -1) {
-			resourceIDs.add(resource);
-			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-		
-		if (equipmentList.isEmpty()) {
-			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
-			if (rcap > 0) {
-				return microInventory.storeAmountResource(resource, quantity);
-			}
-			else
-				return quantity;
-		}
-		
-		else if (equipmentList.size() == 1) {
-			// check if there is enough space for storing the entire quantity 
-			// in this equipment container, if not, split it into multiple container
-			double rcap = equipmentList.get(0).getAmountResourceRemainingCapacity(resource);
-			if (rcap > 0) {
-				return equipmentList.get(0).storeAmountResource(resource, quantity);
-			}
-			else
-				return quantity;
-		}
-		else {
-			double rCap = 0;
-			double excess = quantity;
-			for (Equipment e: equipmentList) {
-				// check if there is enough space for storing the entire quantity 
-				// in one equipment container, if not, split it into multiple container	
-				rCap = e.getAmountResourceRemainingCapacity(resource);
-				if (rCap > 0) {
-					excess = e.storeAmountResource(resource, excess);
-				}
-			}
-			// Return any excess unstored amount
-			return excess;
-		}
-	}
-	
-	/**
-	 * Retrieves the resource 
-	 * 
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	public double retrieveAmountResource(int resource, double quantity) {
-		int index = getIndex(resource);
-		if (resourceIDs.contains(resource)) {
-			if (equipmentList.size() == 1) {
-				// check if there is enough space for storing the entire quantity 
-				// in this equipment container, if not, split it into multiple container
-				double rcap = equipmentList.get(0).getAmountResourceStored(resource);
-				if (rcap > 0) {
-					return equipmentList.get(0).retrieveAmountResource(resource, quantity);
-				}
-				else
-					return quantity;
-			}
-			else {
-				double stored = 0;
-				double missing = quantity;
-				for (Equipment e: equipmentList) {
-					// check if there is enough space for storing the entire quantity 
-					// in one equipment container, if not, split it into multiple container	
-					stored = e.getAmountResourceStored(resource);
-					if (stored > 0) {
-						missing = e.retrieveAmountResource(resource, missing);
-					}
-				}
-				// Return any missing quantity
-				return missing;
-			}
-			
-		}
-		
-		else if (index == -1) {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
-					+ name + ". Not being used for storing anything yet.");
-			return 0;
-		}
-
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
-	}
-	
-	/**
-	 * Gets the capacity of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return capacity
-	 */
-	public double getAmountResourceCapacity(int resource) {
-		int index = getIndex(resource);
-		
-		if (index == -1 || resourceIDs.contains(resource)) {
-			return getTotalCapacity();
-		}
-		else {
-			return 0;
-		}
-	}
-	
-	/**
-	 * Obtains the remaining storage space of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAmountResourceRemainingCapacity(int resource) {
-		int index = getIndex(resource);
-		
-		if (index == -1 || resourceIDs.contains(resource)) {	
-			return microInventory.getAmountResourceRemainingCapacity(resource);
-		}
-		else {
-			return 0;
-		}
-	}
-	
-	/**
-	 * Gets the amount resource stored
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAmountResourceStored(int resource) {
-		if (resourceIDs.contains(resource)) {
-			return microInventory.getAmountResourceStored(resource);
-		}
-		else {
-			return 0;
-		}
-	}
-    
-	/**
-	 * Is this person have an empty container for this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean isEmpty(int resource) {
-		int index = getIndex(resource);
-		if (index == -1 || (resourceIDs.contains(resource) && microInventory.isEmpty(resource)))
-			return true;
-		
-		return false;
-	}
-
-	public boolean hasContent() {
-		return !microInventory.isEmpty();
-	}
-
 	
 	/**
 	 * Generate a unique name for a person based on a country
@@ -2405,12 +2008,420 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return "Person #" + people.size();
 	}
 	
-	public MicroInventory getMicroInventory() {
-		return microInventory;
+	/**
+	 * Gets the remaining carrying capacity available.
+	 * 
+	 * @return capacity (kg).
+	 */
+	public double getRemainingCarryingCapacity() {
+		return carryingCapacity - getTotalMass();
 	}
 	
-	public int getCarryingCapacity() {
+	/**
+	 * Get the capacity a person can carry
+	 * 
+	 * @return capacity (kg)
+	 */
+	public double getCarryingCapacity() {
 		return carryingCapacity;
+	}
+	
+	/**
+	 * Mass of Equipment is the base mass plus what every it is storing
+	 */
+	@Override
+	public double getMass() {
+		if (microInventory != null)
+			// Note stored mass may be have a different implementation in subclasses
+			return microInventory.getStoredMass() + getBaseMass();
+		else
+			return getBaseMass();
+	}
+	
+	/**
+	 * Gets the total mass on a person (not including a person's weight)
+	 * 
+	 * @return
+	 */
+	@Override
+	public double getTotalMass() {
+		double result = 0;
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				result += e.getMass();
+			}
+		}
+		result += microInventory.getStoredMass();
+		return result;
+	}
+	
+	/**
+	 * Get the equipment list
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<Equipment> getEquipmentList() {
+		return equipmentList;
+	}
+
+	/**
+	 * Get the equipment set
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Unit> getContainedUnits() {
+		return new HashSet<>(getEquipmentList());
+	}
+	
+	/**
+	 * Does this person possess an equipment of this type id
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	@Override
+	public boolean containsEquipment(int typeID) {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				if (typeID == EquipmentType.getResourceID(e.getEquipmentType())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Does this person possess an equipment of this equipment type
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	@Override
+	public boolean containsEquipment(EquipmentType type) {
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e: equipmentList) {
+				if (type == e.getEquipmentType()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Adds an equipment to this person
+	 * 
+	 * @param equipment
+	 * @return true if this person can carry it
+	 */
+	@Override
+	public boolean addEquipment(Equipment equipment) {
+		if (carryingCapacity >= getTotalMass() + equipment.getMass()) {
+			equipmentList.add(equipment);
+			return true;
+		}
+		return false;		
+	}
+	
+	/**
+	 * Remove an equipment 
+	 * 
+	 * @param equipment
+	 */
+	@Override
+	public boolean removeEquipment(Equipment equipment) {
+		if (equipmentList.contains(equipment)) {
+			equipmentList.remove(equipment);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Stores the item resource
+	 * 
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeItemResource(int resource, int quantity) {
+		int index = getIndex(resource);
+		// index = -1 means it's brand new
+		if (index == -1) {
+			resourceIDs.add(resource);
+			resourceIRs.put(resource, ItemResourceUtil.findItemResource(resource));
+			microInventory.setCapacity(resource, getTotalCapacity());
+		}
+		
+		return microInventory.storeItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the item resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveItemResource(int resource, int quantity) {
+		int index = getIndex(resource);
+		if (resourceIDs.contains(resource)) {
+			return microInventory.retrieveItemResource(resource, quantity);
+		}
+		
+		else if (index == -1) {
+			String name = ItemResourceUtil.findItemResourceName(resource);
+			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " x " 
+					+ name + ". Not being used for storing anything yet.");
+			return 0;
+		}
+
+		else {
+			String name = ItemResourceUtil.findItemResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ quantity + "x "+ name + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getItemResourceStored(int resource) {
+		if (resourceIDs.contains(resource)) {
+			return microInventory.getItemResourceStored(resource);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		// index = -1 means it's brand new
+		if (index == -1) {
+			resourceIDs.add(resource);
+			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
+			// The capacity of a resource on a person varies and is not fixed
+			microInventory.setCapacity(resource, getTotalCapacity());
+		}
+		
+		if (equipmentList.isEmpty()) {
+			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
+			if (rcap > 0) {
+				return microInventory.storeAmountResource(resource, quantity);
+			}
+			else
+				return quantity;
+		}
+		
+		else if (equipmentList.size() == 1) {
+			// check if there is enough space for storing the entire quantity 
+			// in this equipment container, if not, split it into multiple container
+			double rcap = equipmentList.get(0).getAmountResourceRemainingCapacity(resource);
+			if (rcap > 0) {
+				return equipmentList.get(0).storeAmountResource(resource, quantity);
+			}
+			else
+				return quantity;
+		}
+		else {
+			double rCap = 0;
+			double excess = quantity;
+			for (Equipment e: equipmentList) {
+				// check if there is enough space for storing the entire quantity 
+				// in one equipment container, if not, split it into multiple container	
+				rCap = e.getAmountResourceRemainingCapacity(resource);
+				if (rCap > 0) {
+					excess = e.storeAmountResource(resource, excess);
+				}
+			}
+			// Return any excess unstored amount
+			return excess;
+		}
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		int index = getIndex(resource);
+		if (resourceIDs.contains(resource)) {
+			if (equipmentList.size() == 1) {
+				// check if there is enough space for storing the entire quantity 
+				// in this equipment container, if not, split it into multiple container
+				double rcap = equipmentList.get(0).getAmountResourceStored(resource);
+				if (rcap > 0) {
+					return equipmentList.get(0).retrieveAmountResource(resource, quantity);
+				}
+				else
+					return quantity;
+			}
+			else {
+				double stored = 0;
+				double missing = quantity;
+				for (Equipment e: equipmentList) {
+					// check if there is enough space for storing the entire quantity 
+					// in one equipment container, if not, split it into multiple container	
+					stored = e.getAmountResourceStored(resource);
+					if (stored > 0) {
+						missing = e.retrieveAmountResource(resource, missing);
+					}
+				}
+				// Return any missing quantity
+				return missing;
+			}
+			
+		}
+		
+		else if (index == -1) {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
+					+ name + ". Not being used for storing anything yet.");
+			return 0;
+		}
+
+		else {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve " 
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		double result = 0;
+		
+		int index = getIndex(resource);		
+		if (index == -1 || resourceIDs.contains(resource)) {
+			
+			if (!equipmentList.isEmpty()) {
+				for (Equipment e: equipmentList) {
+					result += e.getCapacity(resource);
+				}
+			}
+			
+			result += microInventory.getCapacity(resource);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		double result = 0;
+		
+		int index = getIndex(resource);
+		if (index == -1 || resourceIDs.contains(resource)) {	
+			
+			if (!equipmentList.isEmpty()) {
+				for (Equipment e: equipmentList) {
+					result += e.getAmountResourceRemainingCapacity(resource);
+				}
+			}
+	
+			result += microInventory.getAmountResourceRemainingCapacity(resource);
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getCapacity(int resource) {
+		return getAmountResourceRemainingCapacity(resource);
+	}
+	
+	/**
+     * Gets the total capacity that this person can hold.
+     * 
+     * @return total capacity (kg).
+     */
+	@Override
+	public double getTotalCapacity() {
+		// Question: Should the total capacity varies ? 
+		// based on a person's instant carrying capacity ?
+		return getCarryingCapacity();
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		if (resourceIDs.contains(resource)) {
+			return microInventory.getAmountResourceStored(resource);
+		}
+		
+		return 0;
+	}
+    
+	/**
+	 * Is this person have an empty container for this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean isEmpty(int resource) {
+		int index = getIndex(resource);
+		if (index == -1 || !resourceIDs.contains(resource) || microInventory.isEmpty(resource))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Get the instance of micro inventory
+	 * 
+	 * @return
+	 */
+	@Override
+	public MicroInventory getMicroInventory() {
+		return microInventory;
 	}
 	
 	/**
@@ -2421,6 +2432,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
+	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		int result = 0;
 		if (!equipmentList.isEmpty()) {
@@ -2436,11 +2448,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Finds a bag in storage.
+	 * Finds a container in storage.
 	 * 
+	 * @param containerType
 	 * @param empty does it need to be empty ?
-	 * @return the instance of SpecimenBox or null if none.
+	 * @param resource 
+	 * @return instance of container or null if none.
 	 */
+	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		if (!equipmentList.isEmpty()) {
 			for (Equipment e : equipmentList) {
@@ -2462,8 +2477,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Finds a container in storage.
 	 * 
-	 * @return the instance of container or null if none.
+	 * @return instance of a container or null if none.
 	 */
+	@Override
 	public Container findContainer(EquipmentType containerType) {
 		if (!equipmentList.isEmpty()) {
 			for (Equipment e : equipmentList) {
@@ -2476,19 +2492,56 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}	
 	
 	/**
-	 * Gets the remaining carrying capacity available.
+	 * Finds all equipment with a particular equipment type
 	 * 
-	 * @return capacity (kg).
+	 * @param type EquipmentType
+	 * @return collection of equipment or empty collection if none.
 	 */
-	public double getRemainingCarryingCapacity() {
-		return carryingCapacity - getTotalMass();
+	@Override
+	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
+		Set<Equipment> result = new HashSet<>();
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				if (e != null && e.getEquipmentType() == type) 
+					result.add(e);
+			}
+		}
+		return result;
 	}
+	
+	/**
+	 * Gets the most but not completely full bag of the resource in the rover.
+	 * 
+	 * @param inv          the inventory to look in.
+	 * @param resourceType the resource for capacity.
+	 * @return container.
+	 */
+	@Override
+	public Container findMostFullContainer(EquipmentType containerType, int resource) {
+		Container result = null;
+		double leastCapacity = Double.MAX_VALUE;
+
+		Iterator<Equipment> i = findAllEquipmentType(containerType).iterator();
+		while (i.hasNext()) {
+			Container container = (Container) i.next();
+			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
+
+			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
+				result = container;
+				leastCapacity = remainingCapacity;
+			}
+		}
+
+		return result;
+	}
+	
 	
 	/**
 	 * Sets the coordinates of all units in the inventory.
 	 * 
 	 * @param newLocation the new coordinate location
 	 */
+	@Override
 	public void setLocation(Coordinates newLocation) {
 		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
 			if (equipmentList != null && !equipmentList.isEmpty() && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
@@ -2497,6 +2550,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 			}
 		}
+	}
+	
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.PERSON;
 	}
 	
 	/**

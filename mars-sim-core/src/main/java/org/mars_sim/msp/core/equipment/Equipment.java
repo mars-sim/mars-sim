@@ -147,16 +147,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	
 	/**
      * Gets the total capacity of resource that this container can hold.
+     * 
      * @return total capacity (kg).
      */
-	public abstract double getTotalCapacity();
+	public double getTotalCapacity() {
+		return ContainerUtil.getContainerCapacity(equipmentType);
+	}
 	
 	/**
      * Gets the capacity of this resource that this container can hold.
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
-        return getTotalCapacity();
+        return microInventory.getCapacity(resource);
     }
 	
 	/**

@@ -1,8 +1,8 @@
-/**
+/*
  * Mars Simulation Project
- * Bag.java
- * @version 3.2.0 2021-06-20
- * @author Scott Davis
+ * GenericContainer.java
+ * @date 2021-10-13
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.equipment;
 
@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * A container for holding amount resources.
+ * A container class for holding resources.
  */
 class GenericContainer extends Equipment implements Container, Serializable {
 

@@ -336,7 +336,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += suit.getAmountResourceRemainingCapacity(oxygenID);
 				carryMass += suit.getAmountResourceRemainingCapacity(waterID);
 			}
-			int carryCapacity = person.getCarryingCapacity();
+			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);
 
 			result = (bagAvailable && canCarryEquipment);
