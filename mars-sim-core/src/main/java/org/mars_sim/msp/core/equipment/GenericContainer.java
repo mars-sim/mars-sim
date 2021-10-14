@@ -43,6 +43,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * 
 	 * @return total capacity (kg).
 	 */
+	@Override
 	public double getTotalCapacity() {
 		return totalCapacity;
 	}
@@ -55,6 +56,44 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	private boolean isUnallocated() {
 		return getResource() == -1;
 	}
+	
+	/**
+	 * Stores the resource but only if it matches current resource or empty
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	public double storeAmountResource(int resource, double quantity) {
+		// Question: if a bag was filled with regolith and later was emptied out
+		// should it be tagged for only regolith and NOT for another resource ?
+		int allocated = getResource();
+		if (allocated == -1) {
+			// Allocate the capacity to this new resource
+			microInventory.setCapacity(resource, getTotalCapacity());
+		}
+		else if (allocated != resource) {
+			return quantity; // Allocated to a different resource
+		}
+		return microInventory.storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		if (isUnallocated()) {
+			return totalCapacity;
+		}
+		else {
+			return microInventory.getAmountResourceRemainingCapacity(resource);
+		}
+	}
+		
 	/**
 	 * Gets the capacity of a particular amount resource. Check if container
 	 * is unallocated
@@ -62,6 +101,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @param resource
 	 * @return capacity
 	 */
+	@Override
 	public double getAmountResourceCapacity(int resource) {
 		if (isUnallocated() || microInventory.isResourceSupported(resource)) {
 			return totalCapacity;
@@ -77,5 +117,10 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
+	}
+
+	@Override
+	public int getResource() {
+		return microInventory.getResource();
 	}
 }

@@ -39,8 +39,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -74,7 +75,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	private Unit unit;
 	private Inventory inventory;
 	
     private ResourceTableModel resourceTableModel;
@@ -278,8 +278,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
 		
-		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0");
-
         private ResourceTableModel() {
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
@@ -477,7 +475,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private String getContentOwner(Equipment e) {
 			String s = "";
-			if (e.getType().equalsIgnoreCase(EVASuit.TYPE)) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				Person p = e.getLastOwner();
 				if (p != null)
 					s = p.getName();	
@@ -487,10 +485,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				if (p != null)
 					s = p.getName();
 			}
-			else {
-				int resource = e.getResource();
+			else if (e instanceof Container) {
+				int resource = ((Container)e).getResource();
 				if (resource != -1) {
-					// resourceID = -1 means the container has not been initialized
 					s = ResourceUtil.findAmountResourceName(resource);
 				}
 			}

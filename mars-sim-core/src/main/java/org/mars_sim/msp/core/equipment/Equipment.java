@@ -108,16 +108,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	/**
-	 * Gets the id of the resource
-	 * 
-	 * @return Amount Resource id
-	 */
-	public int getResource() {
-		return microInventory.getResource();	
-//		return (resourceIDs.isEmpty() ? -1 : resourceIDs.get(0));
-	}
-	
-	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
 	@Override
@@ -230,14 +220,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		int allocated = getResource();
-		if (allocated == resource) {
-			return microInventory.getAmountResourceRemainingCapacity(resource);
-		}
-		else if (allocated == -1) {
-			return getTotalCapacity();
-		}
-		return 0;
+		return microInventory.getAmountResourceRemainingCapacity(resource);
 	}
 	
 	
