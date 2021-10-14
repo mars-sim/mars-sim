@@ -7,14 +7,13 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -65,7 +64,8 @@ import org.mars_sim.msp.core.time.ClockPulse;
  * operational considerations.
  * 
  */
-public class EVASuit extends Equipment implements LifeSupportInterface, Serializable, Malfunctionable {
+public class EVASuit extends Equipment
+	implements LifeSupportInterface, ResourceHolder, Serializable, Malfunctionable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -202,26 +202,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		}	
 	}
 	
-//	/**
-//	 * Retrieves the resource 
-//	 * 
-//	 * @param resource
-//	 * @param quantity
-//	 * @return quantity that cannot be retrieved
-//	 */
-//	@Override
-//	public double retrieveAmountResource(int resource, double quantity) {
-//		if (isResourceSupported(resource)) {
-//			return microInventory.retrieveAmountResource(resource, quantity);
-//		}
-//		else {
-//			String name = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "No such resource. Cannot retrieve " 
-//					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-//			return quantity;
-//		}
-//	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
 	 * 

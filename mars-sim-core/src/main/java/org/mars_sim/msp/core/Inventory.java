@@ -1563,15 +1563,16 @@ public class Inventory implements Serializable {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
 				if (e != null && e.getEquipmentType() == containerType) {
-					int storedResource = e.getResource();
+					Container c = (Container) e;
+					int storedResource = c.getResource();
 					if (empty) {
 						// It must be empty inside
-						if (e.isEmpty(resource)) {
-							return (Container)e;
+						if (c.getStoredMass() == 0D) {
+							return c;
 						}
 					}
 					else if (storedResource == resource || storedResource == -1)
-						return (Container)e;
+						return c;
 				}
 			}
 		}
@@ -1704,13 +1705,13 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return collection of containers or empty collection if none.
 	 */
-	public Collection<Equipment> findAllContainers() {
-		Collection<Equipment> result = new HashSet<>();
+	public Collection<Container> findAllContainers() {
+		Collection<Container> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() != EquipmentType.EVA_SUIT) 
-					result.add(e);
+				if (e != null && (e instanceof Container)) 
+					result.add((Container) e);
 			}
 		}
 		return result;

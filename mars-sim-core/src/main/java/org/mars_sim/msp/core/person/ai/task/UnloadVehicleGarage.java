@@ -15,7 +15,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -414,7 +414,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
-				unloadEquipmentInventory(equipment);
+				unloadEquipmentInventory(equipment, settlement);
 				equipment.transfer(vehicle, settlement);
 				amountUnloading -= equipment.getMass();
 
@@ -556,21 +556,23 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * 
 	 * @param equipment the equipment.
 	 */
-	private void unloadEquipmentInventory(Equipment equipment) {
+	public static void unloadEquipmentInventory(Equipment equipment, Settlement settlement) {
 		Inventory sInv = settlement.getInventory();
 
 		// Note: only unloading amount resources at the moment.
-		int resource = equipment.getResource();
-		if (resource != -1) {
-			double amount = equipment.getAmountResourceStored(resource);
-			double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
-			if (amount > capacity) {
-				amount = capacity;
-			}
-			try {
-				equipment.retrieveAmountResource(resource, amount);
-				sInv.storeAmountResource(resource, amount, true);
-			} catch (Exception e) {
+		if (equipment instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) equipment;
+			for(int resource : rh.getResourceIDs()) {
+				double amount = rh.getAmountResourceStored(resource);
+				double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
+				if (amount > capacity) {
+					amount = capacity;
+				}
+				try {
+					rh.retrieveAmountResource(resource, amount);
+					sInv.storeAmountResource(resource, amount, true);
+				} catch (Exception e) {
+				}
 			}
 		}
 	}

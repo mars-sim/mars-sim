@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
@@ -120,16 +120,16 @@ public final class MalfunctionFactory implements Serializable {
 			entities.addAll(getMalfunctionables((Malfunctionable) source.getVehicle()));
 		}
 		
-		Collection<Unit> inventoryUnits = null;
+		Collection<? extends Unit> inventoryUnits = null;
 		
-		if (source instanceof Person) {
-			inventoryUnits = ((Person)source).getContainedUnits();
+		if (source instanceof EquipmentOwner) {
+			inventoryUnits = ((EquipmentOwner)source).getEquipmentList();
 		}
 		else {	
 			inventoryUnits = source.getInventory().getContainedUnits();
 		}
 		
-		if (inventoryUnits.size() > 0) {
+		if (!inventoryUnits.isEmpty()) {
 			for (Unit unit : inventoryUnits) {
 				if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
 					entities.add((Malfunctionable) unit);

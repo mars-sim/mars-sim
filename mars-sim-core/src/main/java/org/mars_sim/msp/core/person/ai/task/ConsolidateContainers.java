@@ -14,7 +14,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -149,29 +148,24 @@ implements Serializable {
         
         Set<Integer> partialResources = new HashSet<Integer>();
         
-        Iterator<Equipment> i = inv.findAllContainers().iterator();
-        while (i.hasNext() && !result) {
-        	Equipment e = i.next();
-            if (e instanceof Container) {
-               
-                if (e.hasContent()) {
-                    // Only check one type of amount resource for container.
-                    int resource = e.getResource();
-                    // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
-                    if ((resource > 0) && inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
-                        result = true;
-                        break;
-                    }
+        for(Container e : inv.findAllContainers()) {
+            if (e.getStoredMass() > 0D) {
+                // Only check one type of amount resource for container.
+                int resource = e.getResource();
+                // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
+                if ((resource > 0) && inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
+                    result = true;
+                    break;
+                }
 
-                    // Check if container is only partially full of resource.
-                    if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
-                        // If another container is also partially full of resource, they can be consolidated.
-                        if (partialResources.contains(resource)) {
-                            result = true;
-                        }
-                        else {
-                            partialResources.add(resource);
-                        }
+                // Check if container is only partially full of resource.
+                if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
+                    // If another container is also partially full of resource, they can be consolidated.
+                    if (partialResources.contains(resource)) {
+                        result = true;
+                    }
+                    else {
+                        partialResources.add(resource);
                     }
                 }
             }
@@ -208,62 +202,57 @@ implements Serializable {
         double remainingAmountLoading = totalAmountLoading;
         
         // Go through each container in top inventory.     
-        Iterator<Equipment> i = topInventory.findAllContainers().iterator();
-        while (i.hasNext() && (remainingAmountLoading > 0D)) {
-        	Equipment e = i.next();
-        	
-            if (e instanceof Container) { 
-            	int resourceID = e.getResource();
-                if (resourceID != -1) {
-                	// resourceID = -1 means the container has not been initialized
-                    double amount = e.getAmountResourceStored(resourceID);
-                    // Move resource in container to top inventory if possible.
-                    double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
-                            resourceID, false, false);
-                    if (topRemainingCapacity > 0D) {
-                        double loadAmount = topRemainingCapacity;
-                        if (loadAmount > amount) {
-                            loadAmount = amount;
-                        }
-                        
-                        if (loadAmount > remainingAmountLoading) {
-                            loadAmount = remainingAmountLoading;
-                        }
-                        
-                        e.retrieveAmountResource(resourceID, loadAmount);
-                        // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
-                        topInventory.storeAmountResource(resourceID, loadAmount, true);
-                        remainingAmountLoading -= loadAmount;
-                        amount -= loadAmount;
+        for(Container e : topInventory.findAllContainers()) {
+        	int resourceID = e.getResource();
+            if (resourceID != -1) {
+            	// resourceID = -1 means the container has not been initialized
+                double amount = e.getAmountResourceStored(resourceID);
+                // Move resource in container to top inventory if possible.
+                double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
+                        resourceID, false, false);
+                if (topRemainingCapacity > 0D) {
+                    double loadAmount = topRemainingCapacity;
+                    if (loadAmount > amount) {
+                        loadAmount = amount;
                     }
                     
-                    // Check if container is empty.
-                    if (e.isEmpty(false)) {
-                        // Go through each other container in top inventory and try to consolidate resource.
-                        Iterator<Equipment> k = topInventory.findAllContainers().iterator();
-                        while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
-                        	Equipment otherUnit = k.next();
-                            if (otherUnit != e && otherUnit instanceof Container) {
-                                double otherAmount = otherUnit.getAmountResourceStored(resourceID);
-                                if (otherAmount > 0D) {
-                                    double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
-                                    if (otherRemainingCapacity > 0D) {
-                                        double loadAmount = otherRemainingCapacity;
-                                        amount = e.getAmountResourceStored(resourceID);
-                                        
-                                        if (loadAmount > amount) {
-                                            loadAmount = amount;
-                                        }
-
-                                        if (loadAmount > remainingAmountLoading) {
-                                            loadAmount = remainingAmountLoading;
-                                        }
-                                        
-                                        e.retrieveAmountResource(resourceID, loadAmount);
-                                        otherUnit.storeAmountResource(resourceID, loadAmount);
-                                        remainingAmountLoading -= loadAmount;
-                                        amount -= loadAmount;
+                    if (loadAmount > remainingAmountLoading) {
+                        loadAmount = remainingAmountLoading;
+                    }
+                    
+                    e.retrieveAmountResource(resourceID, loadAmount);
+                    // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
+                    topInventory.storeAmountResource(resourceID, loadAmount, true);
+                    remainingAmountLoading -= loadAmount;
+                    amount -= loadAmount;
+                }
+                
+                // Check if container is empty.
+                if (e.getAmountResourceStored(resourceID) > 0D) {
+                    // Go through each other container in top inventory and try to consolidate resource.
+                    Iterator<Container> k = topInventory.findAllContainers().iterator();
+                    while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
+                    	Container otherUnit = k.next();
+                        if (otherUnit != e && otherUnit instanceof Container) {
+                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
+                            if (otherAmount > 0D) {
+                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
+                                if (otherRemainingCapacity > 0D) {
+                                    double loadAmount = otherRemainingCapacity;
+                                    amount = e.getAmountResourceStored(resourceID);
+                                    
+                                    if (loadAmount > amount) {
+                                        loadAmount = amount;
                                     }
+
+                                    if (loadAmount > remainingAmountLoading) {
+                                        loadAmount = remainingAmountLoading;
+                                    }
+                                    
+                                    e.retrieveAmountResource(resourceID, loadAmount);
+                                    otherUnit.storeAmountResource(resourceID, loadAmount);
+                                    remainingAmountLoading -= loadAmount;
+                                    amount -= loadAmount;
                                 }
                             }
                         }

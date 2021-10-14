@@ -110,8 +110,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			boolean hasIt = takeContainer();
 
 			// If container is not available, end task.
-			if (hasIt) {        
-				logger.log(person, Level.FINE, 5000, 
+			if (!hasIt) {        
+				logger.log(person, Level.WARNING, 5000, 
 						"Unable to find containers to collect resources.", null);
 				endTask();
 			}

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -23,11 +24,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class CollectIce extends CollectResourcesMission {
 
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-	/** default logger. */ 
-	// may use private static SimLogger logger = SimLogger.getLogger(CollectIce.class.getName());
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
@@ -49,6 +48,8 @@ public class CollectIce extends CollectResourcesMission {
 
 	/** Minimum number of people to do mission. */
 	private final static int MIN_PEOPLE = 2;
+
+	private int searchCount = 0;
 
 	/**
 	 * Constructor
@@ -107,4 +108,25 @@ public class CollectIce extends CollectResourcesMission {
 		return "prospecting site " + siteNum;
 	}
 
+	@Override
+	protected double scoreLocation(Coordinates newLocation) {
+		return terrainElevation.getIceCollectionRate(newLocation);
+	}
+	
+
+	@Override
+	protected boolean isValidScore(double score) {
+		boolean accept = (score > 0);
+		if (!accept && (searchCount++ >= 10)) {
+			addMissionStatus(MissionStatus.NO_ICE_COLLECTION_SITES);
+			endMission();
+		}
+	
+		return accept;
+	}
+
+	@Override
+	protected double calculateRate(Worker worker) {
+		return terrainElevation.getIceCollectionRate(worker.getCoordinates());
+	}
 }

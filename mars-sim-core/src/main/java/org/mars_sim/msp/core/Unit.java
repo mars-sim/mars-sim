@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
@@ -1007,82 +1008,29 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		boolean transferred = false;
+		boolean transferred;
+		
 		// Check the origin is a person 
-		if (origin.getUnitType() == UnitType.PERSON) {
-			transferred = ((Person)origin).removeEquipment((Equipment)this);
-//			if (!transferred) {
-				// The transfer has failed. 
-				// Must return the Unit back to the origin.
-//				((Person)destination).addEquipment((Equipment)this);
-//			}
+		if (origin instanceof EquipmentOwner) {
+			transferred = ((EquipmentOwner)origin).removeEquipment((Equipment)this);
 		}
 		else {
 			transferred = origin.getInventory().retrieveUnit(this, false);
-//			if (!transferred) {
-				// The transfer has failed. 
-				// Must return the Unit back to the origin.
-//				transferred = origin.getInventory().storeUnit(this);
-//			}
 		}
 		
 		if (transferred) { 
 			// Check if the destination is a person 
-			if (destination.getUnitType() == UnitType.PERSON) {
-				transferred = ((Person)destination).addEquipment((Equipment)this);
-//				if (!transferred) {
-					// The transfer has failed. 
-					// Must remove the Unit from the destination.
-//					((Person)destination).removeEquipment((Equipment)this);
-//				}
+			if (destination instanceof EquipmentOwner) {
+				transferred = ((EquipmentOwner)destination).addEquipment((Equipment)this);
 			}
 			else {
 				transferred = destination.getInventory().storeUnit(this);
-//				if (!transferred) {
-					// The transfer has failed. 
-					// Must retrieve the Unit back to the destination.
-//					transferred = destination.getInventory().retrieveUnit(this, false);
-//				}
 			}
 		}
 		
 		return transferred;
 	}
 
-//	/**
-//	 * Transfer the unit from one owner's inventory to another owner
-//	 * 
-//	 * @param originInv {@link Inventory} the inventory of the original container unit
-//	 * @param destination {@link Unit} the destination container unit
-//	 */
-//	public boolean transfer(Inventory originInv, Unit destination) {
-//		return originInv.getOwner().transfer(this, destination);
-//	}
-	
-//	/**
-//	 * Transfer the unit from one owner to another owner's inventory
-//	 * 
-//	 * @param origin {@link Unit} the original container unit
-//	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-//	 */
-//	public boolean transfer(Unit origin, Inventory destinationInv) {
-//		return origin.transfer(this, destinationInv.getOwner());
-//	}
-	
-//	/**
-//	 * Transfer the unit from one owner's inventory to another owner's inventory
-//	 * 
-//	 * @param originInv {@link Inventory} the inventory of the original container unit
-//	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-//	 */
-//	public boolean transfer(Inventory originInv, Inventory destinationInv) {
-//		return originInv.getOwner().transfer(this, destinationInv.getOwner());
-//	}
-	
-//	public abstract String findAmountResourceName(int resource);
-	
-//	public abstract String findItemResourceName(int resource);
-	
 	/**
 	 * Compares this object with the specified object for order.
 	 * 
@@ -1102,7 +1050,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	@Override
 	public String toString() {
-		// return name + " (" + identifier + ")";
 		return name;
 	}
 

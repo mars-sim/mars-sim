@@ -47,6 +47,28 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		return totalCapacity;
 	}
 
+	/**
+	 * THis need optimising. The Get ResourceID method should
+	 * only be in Container
+	 * @return
+	 */
+	private boolean isUnallocated() {
+		return getResource() == -1;
+	}
+	/**
+	 * Gets the capacity of a particular amount resource. Check if container
+	 * is unallocated
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	public double getAmountResourceCapacity(int resource) {
+		if (isUnallocated() || microInventory.isResourceSupported(resource)) {
+			return totalCapacity;
+		}
+		return 0;
+	}
+	
 	@Override
 	public Building getBuildingLocation() {
 		return getContainerUnit().getBuildingLocation();
@@ -56,5 +78,4 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
 	}
-
 }

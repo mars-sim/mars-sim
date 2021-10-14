@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.data.MicroInventory;
+import org.mars_sim.msp.core.data.ResourceHolder;
 
-public interface EquipmentOwner {
+public interface EquipmentOwner extends ResourceHolder {
 	
 	/**
 	 * Gets the total mass on a person (not including a person's weight)
@@ -28,21 +27,6 @@ public interface EquipmentOwner {
 	 * @return
 	 */
 	public List<Equipment> getEquipmentList();
-
-	/**
-	 * Get the equipment set
-	 * 
-	 * @return
-	 */
-	public Set<Unit> getContainedUnits();
-	
-	/**
-	 * Does this person possess an equipment of this type id
-	 * 
-	 * @param typeID
-	 * @return
-	 */
-	public boolean containsEquipment(int typeID);
 	
 	/**
 	 * Does this person possess an equipment of this equipment type
@@ -66,6 +50,14 @@ public interface EquipmentOwner {
 	 * @param equipment
 	 */
 	public boolean removeEquipment(Equipment equipment);
+
+	/**
+	 * Finds all equipment with a particular equipment type
+	 * 
+	 * @param type EquipmentType
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public Set<Equipment> findAllEquipmentType(EquipmentType type);
 	
 	/**
 	 * Stores the item resource
@@ -92,62 +84,6 @@ public interface EquipmentOwner {
 	 * @return quantity
 	 */
 	public double getItemResourceStored(int resource);
-	
-	/**
-	 * Stores the amount resource
-	 * 
-	 * @param resource the amount resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	public double storeAmountResource(int resource, double quantity);
-	
-	/**
-	 * Retrieves the resource 
-	 * 
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	public double retrieveAmountResource(int resource, double quantity);
-	
-	/**
-	 * Gets the capacity of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return capacity
-	 */
-	public double getAmountResourceCapacity(int resource);
-	
-	/**
-	 * Obtains the remaining storage space of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAmountResourceRemainingCapacity(int resource);
-	
-	/**
-     * Gets the capacity of the resource that this container can hold.
-     * 
-     * @return total capacity (kg).
-     */
-	public double getCapacity(int resource);
-	
-	/**
-     * Gets the total capacity that this person can hold.
-     * 
-     * @return total capacity (kg).
-     */
-	public double getTotalCapacity();
-	
-	/**
-	 * Gets the amount resource stored
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAmountResourceStored(int resource);
     
 	/**
 	 * Is this person have an empty container for this resource ?
@@ -156,13 +92,6 @@ public interface EquipmentOwner {
 	 * @return
 	 */
 	public boolean isEmpty(int resource);
-	
-	/**
-	 * Get the instance of micro inventory
-	 * 
-	 * @return
-	 */
-	public MicroInventory getMicroInventory();
 	
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
@@ -190,14 +119,7 @@ public interface EquipmentOwner {
 	 * @return instance of a container or null if none.
 	 */
 	public Container findContainer(EquipmentType containerType);
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	public Set<Equipment> findAllEquipmentType(EquipmentType type);
+
 	
 	/**
 	 * Gets the most but not completely full bag of the resource in the rover.

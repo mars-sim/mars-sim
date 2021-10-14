@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
@@ -104,16 +103,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return a list of resource ids
 	 */
-	public List<Integer> getResourceIDs() {
-		return new ArrayList<>(microInventory.getResourcesStored());
-	}
-	
-	/**
-	 * Gets a list of supported resources
-	 * 
-	 * @return a list of resource ids
-	 */
-	public Set<Integer> getResourceSet() {
+	public Set<Integer> getResourceIDs() {
 		return microInventory.getResourcesStored();
 	}
 	

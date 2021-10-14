@@ -2066,34 +2066,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Get the equipment set
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Unit> getContainedUnits() {
-		return new HashSet<>(getEquipmentList());
-	}
-	
-	/**
-	 * Does this person possess an equipment of this type id
-	 * 
-	 * @param typeID
-	 * @return
-	 */
-	@Override
-	public boolean containsEquipment(int typeID) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				if (typeID == EquipmentType.getResourceID(e.getEquipmentType())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
 	 * @param typeID
@@ -2362,17 +2334,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getCapacity(int resource) {
-		return getAmountResourceRemainingCapacity(resource);
-	}
-	
-	/**
      * Gets the total capacity that this person can hold.
      * 
      * @return total capacity (kg).
@@ -2415,16 +2376,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Get the instance of micro inventory
-	 * 
-	 * @return
-	 */
-	@Override
-	public MicroInventory getMicroInventory() {
-		return microInventory;
-	}
-	
-	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
 	 * 
@@ -2460,14 +2411,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (!equipmentList.isEmpty()) {
 			for (Equipment e : equipmentList) {
 				if (e != null && e.getEquipmentType() == containerType) {
+					Container c = (Container) e;
 					if (empty) {
 						// It must be empty inside
-						if (e.isEmpty(resource)) {
-							return (Container)e;
+						if (c.getStoredMass() == 0D) {
+							return c;
 						}
 					}
-					else if (e.getResource() == resource || e.getResource() == -1)
-						return (Container)e;
+					else if (c.getResource() == resource || c.getResource() == -1)
+						return c;
 				}
 			}
 		}
@@ -2620,5 +2572,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		scientificAchievement.clear();
 		scientificAchievement = null;
+	}
+
+	@Override
+	public Set<Integer> getResourceIDs() {
+		return microInventory.getResourcesStored();
 	}
 }
