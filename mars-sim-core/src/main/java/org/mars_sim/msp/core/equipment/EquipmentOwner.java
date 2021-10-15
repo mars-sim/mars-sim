@@ -84,24 +84,6 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return quantity
 	 */
 	public double getItemResourceStored(int resource);
-    
-	/**
-	 * Is this person have an empty container for this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean isEmpty(int resource);
-	
-	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
-	 * 
-	 * @param containerClass  the unit class.
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers.
-	 */
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
 	
 	/**
 	 * Finds a container in storage.
@@ -112,23 +94,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return instance of container or null if none.
 	 */
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource);
-	
-	/**
-	 * Finds a container in storage.
-	 * 
-	 * @return instance of a container or null if none.
-	 */
-	public Container findContainer(EquipmentType containerType);
 
-	
-	/**
-	 * Gets the most but not completely full bag of the resource in the rover.
-	 * 
-	 * @param inv          the inventory to look in.
-	 * @param resourceType the resource for capacity.
-	 * @return container.
-	 */
-	public Container findMostFullContainer(EquipmentType containerType, int resource);
 	
 	/**
 	 * Sets the coordinates of all units in the inventory.

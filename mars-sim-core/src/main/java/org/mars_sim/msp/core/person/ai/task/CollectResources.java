@@ -313,13 +313,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Unload containers to rover's inventory.
 		if (containerType != null) {
-			if (person.containsEquipment(containerType)) {
-				// Load containers in rover.
-				Iterator<Equipment> i = person.findAllEquipmentType(containerType).iterator();
-				while (i.hasNext()) {
-					// Place this equipment within a rover outside on Mars
-					i.next().transfer(person, rover);
-				}
+			// Load containers in rover.
+			Iterator<Equipment> i = person.findAllEquipmentType(containerType).iterator();
+			while (i.hasNext()) {
+				// Place this equipment within a rover outside on Mars
+				i.next().transfer(person, rover);
 			}
 		}
 	}

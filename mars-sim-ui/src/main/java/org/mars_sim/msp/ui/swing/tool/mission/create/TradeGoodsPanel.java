@@ -306,7 +306,7 @@ class TradeGoodsPanel extends WizardPanel {
 				if (resourceAmount > totalCapacity) {
 					double neededCapacity = resourceAmount - totalCapacity;
 					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
-					String containerName = container.getType().toLowerCase();
+					String containerName = containerType.getName().toLowerCase();
 					if (neededContainerNum > 1) containerName = containerName + "s";
 					errorMessageLabel.setText(neededContainerNum + " " + containerName + " needed to hold " + resource.getName());
 					result = false;

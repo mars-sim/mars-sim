@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,8 +59,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -236,11 +232,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private List<Equipment> equipmentList;
 	/** A list of resource id's. */
 	private List<Integer> resourceIDs = new ArrayList<>();
-	/** A list of Amount Resources. */
-	private transient Map<Integer, AmountResource> resourceARs = new HashMap<>();
-	/** A list of Amount Resources. */
-	private transient Map<Integer, ItemResource> resourceIRs = new HashMap<>();
-	
+
+
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
 	/** The person's water/oxygen consumption. */
@@ -2125,7 +2118,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// index = -1 means it's brand new
 		if (index == -1) {
 			resourceIDs.add(resource);
-			resourceIRs.put(resource, ItemResourceUtil.findItemResource(resource));
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
@@ -2190,7 +2182,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// index = -1 means it's brand new
 		if (index == -1) {
 			resourceIDs.add(resource);
-			resourceARs.put(resource, ResourceUtil.findAmountResource(resource));
 			// The capacity of a resource on a person varies and is not fixed
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
@@ -2361,49 +2352,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
     
 	/**
-	 * Is this person have an empty container for this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty(int resource) {
-		int index = getIndex(resource);
-		if (index == -1 || !resourceIDs.contains(resource) || microInventory.isEmpty(resource))
-			return true;
-		
-		return false;
-	}
-	
-	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
-	 * 
-	 * @param containerClass  the unit class.
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		int result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				// The contained unit has to be an Equipment that is empty and of the correct type
-				if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
-					result++;
-				}
-			}
-		}
-		
-		return result;
-	}
-	
-	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
-	 * @param resource 
+	 * @param resource If -1 then resource doesn't matter
 	 * @return instance of container or null if none.
 	 */
 	@Override
@@ -2418,30 +2371,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 							return c;
 						}
 					}
-					else if (c.getResource() == resource || c.getResource() == -1)
+					else if (resource == -1 || c.getResource() == resource || c.getResource() == -1)
 						return c;
 				}
 			}
 		}
 		return null;
 	}
-	
-	/**
-	 * Finds a container in storage.
-	 * 
-	 * @return instance of a container or null if none.
-	 */
-	@Override
-	public Container findContainer(EquipmentType containerType) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == containerType) {
-					return (Container)e;
-				}
-			}
-		}
-		return null;
-	}	
 	
 	/**
 	 * Finds all equipment with a particular equipment type
@@ -2460,34 +2396,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		return result;
 	}
-	
-	/**
-	 * Gets the most but not completely full bag of the resource in the rover.
-	 * 
-	 * @param inv          the inventory to look in.
-	 * @param resourceType the resource for capacity.
-	 * @return container.
-	 */
-	@Override
-	public Container findMostFullContainer(EquipmentType containerType, int resource) {
-		Container result = null;
-		double leastCapacity = Double.MAX_VALUE;
 
-		Iterator<Equipment> i = findAllEquipmentType(containerType).iterator();
-		while (i.hasNext()) {
-			Container container = (Container) i.next();
-			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
-
-			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
-				result = container;
-				leastCapacity = remainingCapacity;
-			}
-		}
-
-		return result;
-	}
-	
-	
 	/**
 	 * Sets the coordinates of all units in the inventory.
 	 * 

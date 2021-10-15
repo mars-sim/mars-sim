@@ -258,15 +258,14 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			double probability = Math.round((1 + site.getNumEstimationImprovement()) * chance * time *100.0)/100.0;
 			if (probability > .8)
 				probability = .8;
-//			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
-				int randomRock = ResourceUtil.rockSamplesID;
-		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
+				int rockSampleId = ResourceUtil.rockSamplesID;
+		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockSampleId);
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				double cap = box.getAmountResourceRemainingCapacity(rockSampleId);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(randomRock, mass);
+					double excess = box.storeAmountResource(rockSampleId, mass);
 					totalCollected += mass - excess;
 				}
 			}
@@ -376,7 +375,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	protected void clearDown() {
 //		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
+		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
 		if (box != null) {
 			box.transfer(person, rover);
 		}

@@ -20,6 +20,7 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
@@ -57,14 +58,14 @@ public class InventoryCommand extends AbstractUnitCommand {
 		Collection<Equipment> equipment = inv.findAllEquipment();
 		if (input != null) {
 			// Filter according to input
-			equipment = equipment.stream().filter(i -> i.getType().toLowerCase().contains(input)).collect(Collectors.toList());
+			equipment = equipment.stream().filter(i -> i.getEquipmentType().getName().toLowerCase().contains(input)).collect(Collectors.toList());
 		}
 		// Counts Equipment type but exclude Robot; Hack until Robots are correctly subclasses
-		Map<String, Long> eqCounts = equipment.stream()
+		Map<EquipmentType, Long> eqCounts = equipment.stream()
 									.filter(e -> !(e instanceof Robot))
-									.collect(Collectors.groupingBy(Equipment::getType, Collectors.counting()));
-		for (Entry<String, Long> eq : eqCounts.entrySet()) {
-			entries.put(eq.getKey().toLowerCase(), eq.getValue().toString());
+									.collect(Collectors.groupingBy(Equipment::getEquipmentType, Collectors.counting()));
+		for (Entry<EquipmentType, Long> eq : eqCounts.entrySet()) {
+			entries.put(eq.getKey().getName(), eq.getValue().toString());
 		}
 		
 		// Add Items

@@ -1605,25 +1605,6 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param typeString equipment type string
-	 * @return collection of equipment or empty collection if none.
-	 */
-	public Collection<Unit> findAllEquipmentUnitName(String typeString) {
-		Collection<Unit> result = new HashSet<>();
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getType().equalsIgnoreCase(typeString)) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-	
 	/**
 	 * Finds all equipment with a particular equipment type
 	 * 

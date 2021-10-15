@@ -566,7 +566,7 @@ public final class ManufactureUtil {
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
 		Inventory inv = settlement.getInventory();
-		Collection<Unit> salvagableUnits = new ArrayList<Unit>();
+		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
 
 		if (info.getType().equalsIgnoreCase("vehicle")) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
@@ -575,7 +575,7 @@ public final class ManufactureUtil {
 				salvagableUnits = inv.findAllUnitsOfClass(Rover.class);
 
 				// Remove rovers that aren't the right type.
-				Iterator<Unit> i = salvagableUnits.iterator();
+				Iterator<? extends Unit> i = salvagableUnits.iterator();
 				while (i.hasNext()) {
 					Rover rover = (Rover) i.next();
 					if (!rover.getDescription().equalsIgnoreCase(info.getItemName()))
@@ -584,7 +584,7 @@ public final class ManufactureUtil {
 			}
 
 			// Remove any reserved vehicles.
-			Iterator<Unit> i = salvagableUnits.iterator();
+			Iterator<? extends Unit> i = salvagableUnits.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
 				boolean isEmpty = vehicle.getInventory().isEmpty(false);
@@ -592,18 +592,19 @@ public final class ManufactureUtil {
 					i.remove();
 			}
 		} else if (info.getType().equalsIgnoreCase("equipment")) {
-			salvagableUnits = inv.findAllEquipmentUnitName(info.getItemName());
+			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
+			salvagableUnits = inv.findAllEquipmentType(eType);
 		}
 
 		// Make sure container unit is settlement.
-		Iterator<Unit> i = salvagableUnits.iterator();
+		Iterator<? extends Unit> i = salvagableUnits.iterator();
 		while (i.hasNext()) {
 			if (i.next().getContainerUnit() != settlement)
 				i.remove();
 		}
 
 		// Make sure unit's inventory is empty.
-		Iterator<Unit> j = salvagableUnits.iterator();
+		Iterator<? extends Unit> j = salvagableUnits.iterator();
 		while (j.hasNext()) {
 			if (!j.next().getInventory().isEmpty(false))
 				j.remove();
@@ -615,7 +616,7 @@ public final class ManufactureUtil {
 			if (firstUnit instanceof Malfunctionable) {
 				Unit mostWorn = null;
 				double lowestWearCondition = Double.MAX_VALUE;
-				Iterator<Unit> k = salvagableUnits.iterator();
+				Iterator<? extends Unit> k = salvagableUnits.iterator();
 				while (k.hasNext()) {
 					Unit unit = k.next();
 					Malfunctionable malfunctionable = (Malfunctionable) unit;

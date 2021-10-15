@@ -253,16 +253,20 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+				int rockSampleId = box.getResource();
+				if (rockSampleId == -1) {
+					// Box is empty so choose at random
+					int randomNum = RandomUtil.getRandomInt((ResourceUtil.rockIDs).length);
+					rockSampleId = ResourceUtil.rockIDs[randomNum];
+				}
+				logger.info(person, 10_000, "collectRockSamples::randomRock: " + rockSampleId);
 				
-				int randomNum = RandomUtil.getRandomInt((ResourceUtil.rockIDs).length);
-				int randomRock = ResourceUtil.rockIDs[randomNum];
-				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
-				
-		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
+		        
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				double cap = box.getAmountResourceRemainingCapacity(rockSampleId);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(randomRock, mass);
+					double excess = box.storeAmountResource(rockSampleId, mass);
 					totalCollected += mass - excess;
 				}
 			}
@@ -354,7 +358,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	protected void clearDown() {
 		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX);
+		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
 		if (box != null) {
 			box.transfer(person, rover);
 		}

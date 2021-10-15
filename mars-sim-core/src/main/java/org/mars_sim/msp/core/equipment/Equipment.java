@@ -231,12 +231,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public int getItemResourceRemainingCapacity(int resource) {
-//		if (isResourceSupported(resource)) {	
-			return microInventory.getItemResourceRemainingCapacity(resource);
-//		}
-//		else {
-//			return 0;
-//		}
+		return microInventory.getItemResourceRemainingCapacity(resource);
 	}
 	
 	/**
@@ -246,12 +241,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
-//		if (isResourceSupported(resource)) {
-			return microInventory.getAmountResourceStored(resource);
-//		}
-//		else {
-//			return 0;
-//		}
+		return microInventory.getAmountResourceStored(resource);
 	}
     
 	/**
@@ -261,12 +251,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity
 	 */
 	public double getItemResourceStored(int resource) {
-//		if (isResourceSupported(resource)) {
-			return microInventory.getItemResourceStored(resource);
-//		}
-//		else {
-//			return 0;
-//		}
+		return microInventory.getItemResourceStored(resource);
 	}
 			
 	/**
@@ -455,11 +440,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	public int getLastOwnerID() {
 		return lastOwner;
 	}
-	
-	public String getType() {
-		return equipmentType.getName();
-	}
-	
+
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}
@@ -499,8 +480,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Equipment e = (Equipment) obj;
-		return this.getIdentifier() == e.getIdentifier()
-				&& this.getNickName().equals(e.getNickName());
+		return this.getIdentifier() == e.getIdentifier();
 	}
 	
 	/**

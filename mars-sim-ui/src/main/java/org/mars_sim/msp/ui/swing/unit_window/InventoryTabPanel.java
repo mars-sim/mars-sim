@@ -463,7 +463,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             if (inventory != null) {
 				for (Equipment e : inventory.findAllEquipment()) {
 					String name = e.getName();
-					types.put(name, e.getType());
+					types.put(name, e.getEquipmentType().getName());
 					contentOwner.put(name, getContentOwner(e));
 					mass.put(name, e.getMass());
 					equipmentList.add(e);
@@ -552,7 +552,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			
 			if (inventory != null) {
 				for (Equipment e : inventory.findAllEquipment()) {
-					newTypes.put(e.getName(), e.getType());
+					newTypes.put(e.getName(), e.getEquipmentType().getName());
 					newContentOwner.put(e.getName(), getContentOwner(e));
 					newMass.put(e.getName(), e.getMass());
 					newEquipment.add(e);

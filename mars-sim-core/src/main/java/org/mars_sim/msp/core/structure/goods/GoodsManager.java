@@ -3430,7 +3430,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				number += person.findNumEmptyContainersOfType(equipmentType, false);
+				number += person.findAllEquipmentType(equipmentType).size();
 		}
 
 		// Get the number of equipment that will be produced by ongoing manufacturing

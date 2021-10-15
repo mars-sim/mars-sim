@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -102,7 +103,8 @@ public class LoadingController implements Serializable {
 	private void removeVehicleEquipment(Inventory inv, Map<Integer, Integer> equipment) {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
 		for (Integer eqmId : ids) {
-			int amountLoaded = inv.findAllEquipmentTypeID(eqmId).size();			
+			EquipmentType eType = EquipmentType.convertID2Type(eqmId);
+			int amountLoaded = inv.findAllEquipmentType(eType).size();			
 			if (amountLoaded > 0) {
 				int newAmount = equipment.get(eqmId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -437,7 +439,8 @@ public class LoadingController implements Serializable {
 			int amountNeeded = manifest.get(equipmentType);
 			if (amountNeeded > 0) {
 				// How many available ?
-				List<Equipment> list = new ArrayList<>(sInv.findAllEquipmentTypeID(equipmentType));
+				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
+				List<Equipment> list = new ArrayList<>(sInv.findAllEquipmentType(eType));
 				for(Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						if (vInv.canStoreUnit(eq, false)) {
