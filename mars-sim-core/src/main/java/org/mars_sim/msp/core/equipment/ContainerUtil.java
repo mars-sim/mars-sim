@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.Collection;
+
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -103,5 +105,28 @@ public final class ContainerUtil {
 		default:
 			throw new IllegalArgumentException("Equipment type " + type + " is not a container");
 		}
+	}
+	
+
+	/**
+	 * Gets the least full container..
+	 * 
+	 * @param candidates	Potential containers to search
+	 * @param resourceType  the resource for capacity.
+	 * @return container.
+	 */
+	public static Container findLeastFullContainer(Collection<Container> candidates, Integer resource) {
+		Container result = null;
+		double mostCapacity = 0D;
+
+		for(Container container : candidates) {
+			double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
+			if (remainingCapacity > mostCapacity) {
+				result = container;
+				mostCapacity = remainingCapacity;
+			}
+		}
+
+		return result;
 	}
 }

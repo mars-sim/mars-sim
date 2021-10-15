@@ -42,6 +42,11 @@ public class InventoryCommand extends AbstractUnitCommand {
 	protected boolean execute(Conversation context, String input, Unit source) {
 
 		Inventory inv = source.getInventory();
+		if (inv == null) {
+			// TODO ; this needs to support 
+			context.println("Sorry " + source.getName() + " does nt have an Inventory");
+			return false;
+		}
 		
 		StructuredResponse buffer = new StructuredResponse();
 		String capacity = "Limitless";

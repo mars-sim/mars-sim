@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -333,39 +334,14 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return true if the person receives a specimen container.
 	 */
 	private boolean takeSpecimenContainer() {
-		Container container = findLeastFullContainer(rover);
+		Container container = ContainerUtil.findLeastFullContainer(
+											rover.getInventory().findAllContainers(EquipmentType.SPECIMEN_BOX),
+											ResourceUtil.rockSamplesID);
+
 		if (container != null) {
 			return container.transfer(rover, person);
 		}
 		return false;
-	}
-
-	/**
-	 * Gets the least full specimen container in the rover.
-	 * 
-	 * @param rover the rover with the inventory to look in.
-	 * @return specimen container or null if none.
-	 */
-	private static Container findLeastFullContainer(Rover rover) {
-		Container result = null;
-		double mostCapacity = 0D;
-
-		Iterator<Container> i = rover.getInventory().findAllContainers(EquipmentType.SPECIMEN_BOX).iterator();
-		while (i.hasNext()) {
-			Container container = i.next();
-			try {
-				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
-
-				if (remainingCapacity > mostCapacity) {
-					result = container;
-					mostCapacity = remainingCapacity;
-				}
-			} catch (Exception e) {
-	          	logger.log(Level.SEVERE, "Problems in getting a speciment box : " + e.getMessage());
-			}
-		}
-
-		return result;
 	}
 
 	/**
