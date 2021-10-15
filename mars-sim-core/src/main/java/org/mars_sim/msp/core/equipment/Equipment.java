@@ -227,6 +227,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return capacity
 	 */
 	public double getAmountResourceCapacity(int resource) {
+		// Note: this method is different from 
+		// EVASuit's getAmountResourceRemainingCapacity 
 		if (isResourceSupported(resource)) {
 			return getTotalCapacity();
 		}
