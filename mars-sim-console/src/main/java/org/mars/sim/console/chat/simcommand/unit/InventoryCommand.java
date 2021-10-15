@@ -19,6 +19,7 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -61,7 +62,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		// Counts Equipment type but exclude Robot; Hack until Robots are correctly subclasses
 		Map<String, Long> eqCounts = equipment.stream()
-									.filter(e -> !(e instanceof Robot))
+									.filter(e -> (e.getUnitType() != UnitType.ROBOT))
 									.collect(Collectors.groupingBy(Equipment::getType, Collectors.counting()));
 		for (Entry<String, Long> eq : eqCounts.entrySet()) {
 			entries.put(eq.getKey().toLowerCase(), eq.getValue().toString());

@@ -2361,6 +2361,36 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
     
 	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<AmountResource> getAllAmountResourcesStored() {
+		Set<AmountResource> set = new HashSet<>(microInventory.getAllAmountResourcesStored());
+		for (Equipment e: equipmentList) {
+			set.addAll(e.getAllAmountResourcesStored());
+		}
+		
+		return set;
+	}
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<ItemResource> getAllItemResourcesStored() {
+		Set<ItemResource> set = new HashSet<>(microInventory.getAllItemResourcesStored());
+		for (Equipment e: equipmentList) {
+			set.addAll(e.getAllItemResourcesStored());
+		}
+		
+		return set;
+	}
+	
+	/**
 	 * Is this person have an empty container for this resource ?
 	 * 
 	 * @param resource

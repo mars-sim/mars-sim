@@ -6,11 +6,14 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 
 public interface EquipmentOwner extends ResourceHolder {
 	
@@ -85,6 +88,20 @@ public interface EquipmentOwner extends ResourceHolder {
 	 */
 	public double getItemResourceStored(int resource);
     
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	public Set<AmountResource> getAllAmountResourcesStored();
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	public Set<ItemResource> getAllItemResourcesStored();
+	
 	/**
 	 * Is this person have an empty container for this resource ?
 	 * 
