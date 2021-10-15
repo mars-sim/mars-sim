@@ -3379,7 +3379,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		double total = equipmentList.size();
 		for(Equipment e: equipmentList) {
-			if (e.hasContent())
+			if (!e.isEmpty(false))
 				numUsed++;
 		}
 

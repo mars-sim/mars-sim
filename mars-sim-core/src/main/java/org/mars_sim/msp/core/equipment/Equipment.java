@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -105,6 +107,24 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public Set<Integer> getResourceIDs() {
 		return microInventory.getResourcesStored();
+	}
+	
+	/**
+	 * Gets all stored amount resources 
+	 * 
+	 * @return
+	 */
+	public Set<AmountResource> getAllAmountResourcesStored() {
+		return microInventory.getAllAmountResourcesStored();
+	}
+	
+	/**
+	 * Gets all stored item resources 
+	 * 
+	 * @return
+	 */
+	public Set<ItemResource> getAllItemResourcesStored() {
+		return microInventory.getAllItemResourcesStored();
 	}
 	
 	/**
@@ -255,17 +275,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 			
 	/**
-	 * Is this equipment empty ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean isEmpty(int resource) {
-		return microInventory.isEmpty(resource);
-	}
-
-
-	/**
 	 * Is this suit empty ? 
 	 * 
 	 * @param brandNew true if it needs to be brand new
@@ -273,26 +282,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
-			return isBrandNew();
+			return (getLastOwnerID() == -1);
 		}
 
 		return microInventory.isEmpty();
 	}	
 
-	public boolean isBrandNew() {
-		if (getLastOwnerID() == -1)
-			return true;
-		return false;
-	}
-
-	public boolean isUsed() {
-		return !isBrandNew();
-	}
-
-	public boolean hasContent() {
-		return !microInventory.isEmpty();
-	}
-	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

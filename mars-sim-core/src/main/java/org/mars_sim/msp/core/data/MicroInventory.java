@@ -15,6 +15,8 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -261,10 +263,33 @@ public class MicroInventory implements Serializable {
 	
 	/**
 	 * What resources are stored ?
+	 * 
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
 		return Collections.unmodifiableSet(storageMap.keySet());
+	}
+	
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return
+	 */
+	public Set<AmountResource> getAllAmountResourcesStored() {
+		return storageMap.keySet().stream()
+				.map(ar -> ResourceUtil.findAmountResource(ar))
+				.collect(java.util.stream.Collectors.toSet());
+	}
+	
+	/**
+	 * Gets all stored item resources 
+	 * 
+	 * @return
+	 */
+	public Set<ItemResource> getAllItemResourcesStored() {
+		return storageMap.keySet().stream()
+				.map(ir -> ItemResourceUtil.findItemResource(ir))
+		        .collect(java.util.stream.Collectors.toSet());
 	}
 	
 	/**

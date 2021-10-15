@@ -59,6 +59,8 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -2351,6 +2353,60 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return 0;
 	}
     
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<AmountResource> getAllAmountResourcesStored() {
+		Set<AmountResource> set = new HashSet<>(microInventory.getAllAmountResourcesStored());
+		for (Equipment e: equipmentList) {
+			set.addAll(e.getAllAmountResourcesStored());
+		}
+		
+		return set;
+	}
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<ItemResource> getAllItemResourcesStored() {
+		Set<ItemResource> set = new HashSet<>(microInventory.getAllItemResourcesStored());
+		for (Equipment e: equipmentList) {
+			set.addAll(e.getAllItemResourcesStored());
+		}
+		
+		return set;
+	}
+	
+
+	/**
+	 * Finds the number of empty containers of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerClass  the unit class.
+	 * @param brandNew  does it include brand new bag only
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		int result = 0;
+		if (!equipmentList.isEmpty()) {
+			for (Equipment e : equipmentList) {
+				// The contained unit has to be an Equipment that is empty and of the correct type
+				if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
+					result++;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Finds a container in storage.
 	 * 

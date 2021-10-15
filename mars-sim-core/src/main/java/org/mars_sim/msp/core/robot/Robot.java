@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Robot.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-14
  * @author Manny Kung
  */
 
@@ -17,8 +17,6 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -55,10 +53,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
- * The robot class represents a robot on Mars. It keeps track of everything
- * related to that robot
+ * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Equipment implements VehicleOperator, Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Unit implements VehicleOperator, Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -142,8 +139,8 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, EquipmentType.ROBOT, robotType.getName(), settlement); // extending equipment
-		
+		super(name, settlement.getCoordinates());
+	
 		// Store this robot to the settlement 
 		settlement.getInventory().storeUnit(this);
 		// Add this robot to be owned by the settlement
@@ -152,8 +149,8 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 		// Initialize data members.
 		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
-//		System.out.println("(1) " + associatedSettlementID + " : " + settlement + " : " + name);
 		this.robotType = robotType;
+		
 		xLoc = 0D;
 		yLoc = 0D;
 		

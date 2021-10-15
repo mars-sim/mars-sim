@@ -1488,28 +1488,6 @@ public class Inventory implements Serializable {
 		return suit;
 	}
 	
-	
-	/**
-	 * Finds a brand new container in storage.
-	 * 
-	 * @param empty does it need to be empty ?
-	 * @return the instance of Container or null if none.
-	 */
-	public Container findNewContainer(EquipmentType containerType) {
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
-				if (e != null && e.getEquipmentType() == containerType) {
-					if (e.isBrandNew()) {
-						return (Container)e;
-					}
-				}
-			}
-		}
-		return null;
-	}		
-	
-	
 	/**
 	 * Finds a container in storage.
 	 * 

@@ -19,11 +19,11 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * Command to get the inventory of a Unit
@@ -62,7 +62,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		// Counts Equipment type but exclude Robot; Hack until Robots are correctly subclasses
 		Map<EquipmentType, Long> eqCounts = equipment.stream()
-									.filter(e -> !(e instanceof Robot))
+				.filter(e -> (e.getUnitType() != UnitType.ROBOT))
 									.collect(Collectors.groupingBy(Equipment::getEquipmentType, Collectors.counting()));
 		for (Entry<EquipmentType, Long> eq : eqCounts.entrySet()) {
 			entries.put(eq.getKey().getName(), eq.getValue().toString());
@@ -103,5 +103,4 @@ public class InventoryCommand extends AbstractUnitCommand {
 		context.println(buffer.getOutput());
 		return true;
 	}
-
 }
