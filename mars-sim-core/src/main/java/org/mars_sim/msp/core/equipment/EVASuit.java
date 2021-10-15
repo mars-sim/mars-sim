@@ -217,20 +217,6 @@ public class EVASuit extends Equipment
 	}
 	
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAmountResourceRemainingCapacity(int resource) {
-		// Note: this method is different from 
-		// Equipment's getAmountResourceRemainingCapacity 
-		return microInventory.getAmountResourceRemainingCapacity(resource);
-	}
-	
-	
-	/**
 	 * Gets the unit's malfunction manager.
 	 * 
 	 * @return malfunction manager
