@@ -13,7 +13,7 @@
 ]>
 
 <part-list>
-		<!--  Note: mass can be a decimal number. -->
+		<!--  Note: mass in kg can be a decimal number. -->
 		<!--  Note: both probability and max-number must be a whole integer and without decimal places. -->
 	<part name="airleak patch" mass=".2">
 		<description>Plastic and adhesive patch for airleak.</description>

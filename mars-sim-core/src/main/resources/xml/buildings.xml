@@ -594,7 +594,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 
-			<!-- The building is capable of storing resources. -->
+			<!-- This building is capable of storing the following resources. -->
 				<!-- stock-capacity: the building's default capacity (kg) for 
 				     all the resources. -->
 			<storage stock-capacity="10000">
