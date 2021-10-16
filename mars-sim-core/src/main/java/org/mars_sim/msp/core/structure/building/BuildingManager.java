@@ -1560,32 +1560,6 @@ public class BuildingManager implements Serializable {
 		Building b = person.getBuildingLocation();
         return b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK);
     }
-	
-	
-	/**
-	 * Adds the person to the building if possible for maven testing
-	 * 
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
-	 */
-	public static void addPersonOrRobotToMockBuilding(Person person, Building building) {
-		if (building != null) {
-			try {
-				LifeSupport lifeSupport = building.getLifeSupport();
-
-				if (!lifeSupport.containsOccupant(person)) {
-					lifeSupport.addPerson(person);
-
-					person.setCurrentMockBuilding(building);
-				}
-
-			} catch (Exception e) {
-				logger.log(building, person, Level.SEVERE, 2000, "Could not be added", e);
-			}
-		}		
-		else 
-			logger.log(person, Level.SEVERE, 2000, "Building is null.");
-	}
 		
 	/**
 	 * Adds the person to the building if possible.

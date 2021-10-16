@@ -610,11 +610,12 @@ public abstract class RoverMission extends VehicleMission {
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
-				double fatigue = p.getFatigue(); // 0 to infinity
+				PhysicalCondition pc = p.getPhysicalCondition();
+				double fatigue = pc.getFatigue(); // 0 to infinity
 				double perf = p.getPerformanceRating(); // 0 to 1
-				double stress = p.getStress(); // 0 to 100
-				double energy = p.getEnergy(); // 100 to infinity
-				double hunger = p.getHunger(); // 0 to infinity
+				double stress = pc.getStress(); // 0 to 100
+				double energy = pc.getEnergy(); // 100 to infinity
+				double hunger = pc.getHunger(); // 0 to infinity
 
 				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
 				

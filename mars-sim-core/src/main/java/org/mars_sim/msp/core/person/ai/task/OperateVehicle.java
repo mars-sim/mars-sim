@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -801,7 +803,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 		
 		// Look up a person's prior pilot related training.
-        mod += baseSpeed * person.getPilotingMod();
+        mod += baseSpeed * getPilotingMod(person);
         	
         // Check for any crew emergency
 //        System.out.println("vehicle : " + vehicle);
@@ -812,6 +814,24 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return mod;
     }
     
+	/**
+	 * Calculate the piloting modifier for a Person based on their training
+	 * @param operator
+	 * @return
+	 */
+	private static double getPilotingMod(Person operator) {
+		List<TrainingType> trainings = operator.getTrainings();
+		double mod = 0;
+		if (trainings.contains(TrainingType.AVIATION_CERTIFICATION))
+			mod += .2;
+		if (trainings.contains(TrainingType.FLIGHT_SAFETY))
+			mod += .25;
+		if (trainings.contains(TrainingType.NASA_DESERT_RATS))
+			mod += .15;
+		
+		return mod;
+	}
+	
     /**
      * Gets the distance to the destination.
      * @return distance (km)
@@ -860,7 +880,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     			}
     			
     			// Look up a person's prior pilot related training.
-    			mod += baseSpeed * p.getPilotingMod();
+    			mod += baseSpeed * getPilotingMod(p);
     			
     			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
     			if (skill <= 5) {

@@ -470,7 +470,6 @@ public final class SettlementBuilder {
 				unitManager.addUnit(person);
 		
 				// Set the person as a preconfigured crew member
-				person.setPreConfigured(true);
 				Map<String, Integer> relMap = m.getRelationshipMap();
 				if (relMap != null) {
 					addedCrew.put(person, relMap);

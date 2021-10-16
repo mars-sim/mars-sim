@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -129,7 +130,8 @@ implements Serializable {
 	        // Obtain the fractionOfRest to restore fatigue faster in high fatigue case.	   
 			double fractionOfRest = time/1000;
 		
-			double f = person.getFatigue();
+			PhysicalCondition pc = person.getPhysicalCondition();
+			double f =  pc.getFatigue();
 					
 	        // Reduce person's fatigue
 	        double newFatigue = f - f * fractionOfRest;
@@ -137,8 +139,7 @@ implements Serializable {
 	        if (newFatigue < 0D) {
 	            newFatigue = 0D;
 	        }
-	        person.getPhysicalCondition().setFatigue(newFatigue);
-
+	        pc.setFatigue(newFatigue);
 		}
 		
 		return 0D;

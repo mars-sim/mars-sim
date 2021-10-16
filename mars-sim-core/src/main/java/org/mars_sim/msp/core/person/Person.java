@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +45,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -57,7 +57,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
-import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -71,14 +70,11 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -102,7 +98,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private final static String WEIGHT_GENE = "Weight";
 	
 	private final static String EARTHLING = "Earthling";
-	private final static String ONE_SPACE = " ";
 		
 	/** The average height of a person. */
 	private static final double averageHeight;
@@ -122,8 +117,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private transient int extrovertScore = -1;
 	
 	// Data members
-	/** True if the person is a preconfigured crew member. */
-	private boolean preConfigured;
 	/** True if the person is born on Mars. */
 	private boolean bornOnMars;
 	/** True if the person is buried. */
@@ -168,10 +161,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	
 	/** The birthplace of the person. */
 	private String birthplace;
-	/** The person's first name. */
-	private String firstName;
-	/** The person's last name. */
-	private String lastName;
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
@@ -202,10 +191,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private Preference preference;
 	/** Person's LifeSupportInterface instance. */
 	private LifeSupportInterface support;
-	/** Person's Cooking instance. */
-	private Cooking kitchenWithMeal;
-	/** Person's PreparingDessert instance. */
-	private PreparingDessert kitchenWithDessert;
 	/** Person's ReportingAuthority instance. */
 	private ReportingAuthority ra;
 	/** The bed location of the person */
@@ -300,8 +285,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		
 		// Initialize data members
 		super.setName(name);
-		firstName = name.substring(0, name.indexOf(ONE_SPACE));
-		lastName = name.substring(name.indexOf(ONE_SPACE) + 1, name.length());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
@@ -367,8 +350,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);
 		// Create the consumption map
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
-		// Assume the person is not a preconfigured crew member
-		preConfigured = false;
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 	}
@@ -376,7 +357,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Compute a person's chromosome map
 	 */
-	public void setupChromosomeMap() {
+	private void setupChromosomeMap() {
 		paternal_chromosome = new ConcurrentHashMap<>();
 		maternal_chromosome = new ConcurrentHashMap<>();
 
@@ -400,7 +381,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Compute a person's attributes and its chromosome
 	 */
-	public void setupAttributeTrait() {
+	private void setupAttributeTrait() {
 		// Note: set up a set of genes that was passed onto this person 
 		// from two hypothetical parents
 		int ID = 40;
@@ -465,7 +446,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Compute a person's blood type and its chromosome
 	 */
-	public void setupBloodType() {
+	private void setupBloodType() {
 		int ID = 1;
 		boolean dominant = false;
 
@@ -530,7 +511,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Compute a person's height and its chromosome
 	 */
-	public void setupHeight() {
+	private void setupHeight() {
 		int ID = 20;
 		boolean dominant = false;
 
@@ -568,7 +549,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Compute a person's weight and its chromosome
 	 */
-	public void setupWeight() {
+	private void setupWeight() {
 		int ID = 21;
 		boolean dominant = false;
 
@@ -850,15 +831,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Set his/her currentStateType
 		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;  
 		// Set his/her buried settlement
-		setBuriedSettlement(associatedSettlementID);
+		buriedSettlement = associatedSettlementID;
+
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(-1);
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
-	}
-
-	protected void setDescription(String s) {
-		super.setDescription(s);
 	}
 
 	/**
@@ -866,6 +844,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	void setDeclaredDead() {
 		declaredDead = true;
+		setDescription("Dead");
 	}
 	
 	/**
@@ -938,14 +917,15 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 							circadian.updateSleepCycle(m, true);
 						}
 						
+						double fatigue = condition.getFatigue();
 						if (getShiftType() == ShiftType.B) {
-							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(500));
+							condition.setFatigue(fatigue + RandomUtil.getRandomInt(500));
 						}
 						else if (getShiftType() == ShiftType.Y) {
-							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(333));
+							condition.setFatigue(fatigue + RandomUtil.getRandomInt(333));
 						}
 						else if (getShiftType() == ShiftType.Z) {
-							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(667));
+							condition.setFatigue(fatigue + RandomUtil.getRandomInt(667));
 						}
 							
 					}
@@ -1029,32 +1009,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Find a medical aid according to the current location.
-	 *
-	 * @return Accessible aid.
-	 */
-	MedicalAid getAccessibleAid() {
-		MedicalAid found = null;
-
-		Settlement settlement = getSettlement();
-		if (settlement != null) {
-			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
-			if (infirmaries.size() > 0) {
-				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
-				Building foundBuilding = infirmaries.get(rand);
-				found = (MedicalAid) foundBuilding.getMedical();
-			}
-		}
-
-		Vehicle vehicle = getVehicle();
-		if (vehicle != null && vehicle instanceof Medical) {
-			found = ((Medical) vehicle).getSickBay();
-		}
-
-		return found;
-	}
-
-	/**
 	 * Returns the person's mind
 	 *
 	 * @return the person's mind
@@ -1068,7 +1022,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return mind.getTaskManager();
 	}
 	
-
 	/**
 	 * Updates and returns the person's age
 	 *
@@ -1212,22 +1165,25 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return collection of people in person's location.
 	 */
 	public Collection<Person> getLocalGroup() {
-		Collection<Person> localGroup = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> localGroup = null;
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 					LifeSupport lifeSupport = building.getLifeSupport();
-					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
+					localGroup = new ConcurrentLinkedQueue<>(lifeSupport.getOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
 			Crewable crewableVehicle = (Crewable) getVehicle();
-			localGroup = new ConcurrentLinkedQueue<Person>(crewableVehicle.getCrew());
+			localGroup = new ConcurrentLinkedQueue<>(crewableVehicle.getCrew());
 		}
 
-		if (localGroup.contains(this)) {
+		if (localGroup == null) {
+			localGroup = Collections.emptyList();
+		}
+		else if (localGroup.contains(this)) {
 			localGroup.remove(this);
 		}
 		return localGroup;
@@ -1243,33 +1199,13 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Checks if the person is sick.
-	 *
-	 * @return true if the person is sick.
-	 */
-	public boolean isSick() {
-		return condition.hasSeriousMedicalProblems();
-	}
-	
-	/**
-	 * Gets the name of the vehicle operator
-	 *
-	 * @return vehicle operator name.
-	 */
-	public String getOperatorName() {
-		return getName();
-	}
-
-	/**
 	 * Sets the person's name
 	 * 
 	 * @param newName the new name
 	 */
 	public void setName(String newName) {
 		if (!getName().equals(newName)) {
-			logger.config(this, "The Mission Control renamed to '" + newName + "'.");
-			firstName = newName.substring(0, newName.indexOf(" "));
-			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
+			logger.config(this, "The Mission Control renamed to '" + newName + "'.");	
 			super.setName(newName);
 			super.setDescription(EARTHLING);
 		}
@@ -1280,6 +1216,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @return associated settlement or null if none.
 	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
@@ -1304,15 +1241,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 				unitManager.getSettlementByID(newSettlement).addACitizen(this);
 			}
 		}
-	}
-
-	/**
-	 * Sets the associated settlement for a person.
-	 *
-	 * @param settlement
-	 */
-	public void setBuriedSettlement(int settlement) {
-		buriedSettlement = settlement;
 	}
 
 	public Settlement getBuriedSettlement() {
@@ -1387,50 +1315,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 //		System.out.println(" Person : " + this + " " + science + " " + achievementCredit);
 	}
 
-	public void setKitchenWithMeal(Cooking kitchen) {
-		this.kitchenWithMeal = kitchen;
-	}
-
-	public Cooking getKitchenWithMeal() {
-		return kitchenWithMeal;
-	}
-
-	public void setKitchenWithDessert(PreparingDessert kitchen) {
-		this.kitchenWithDessert = kitchen;
-	}
-
-	public PreparingDessert getKitchenWithDessert() {
-		return kitchenWithDessert;
-	}
-
-	/**
-	 * Gets the building the person is located at Returns null if outside of a
-	 * settlement
-	 *
-	 * @return building
-	 */
-	@Override
-	public Building getBuildingLocation() {
-		return computeCurrentBuilding();
-	}
-
-	
-	/**
-	 * Is this person at this building type ?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isPersonAtBuilding(String type) {
-    	Building b = getBuildingLocation();
-    	
-    	if (b != null) {
-            return b.getBuildingType().equalsIgnoreCase(type);
-    	}
-    	
-    	return false;
-    }
-	
 	/**
 	 * Checks if the adjacent building is the type of interest
 	 * 
@@ -1439,7 +1323,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	public boolean isAdjacentBuildingType(String type) {	
 		if (getSettlement() != null) {
-			Building b = computeCurrentBuilding();
+			Building b = getBuildingLocation();
 			
 			List<Building> list = getSettlement().createAdjacentBuildings(b);
 			for (Building bb : list) {
@@ -1456,7 +1340,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @return building
 	 */
-	public Building computeCurrentBuilding() {
+	public Building getBuildingLocation() {
 //		if (currentBuilding != null) {
 //			return currentBuilding;
 //		} else if (getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {//isInSettlement()) {
@@ -1477,53 +1361,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public void setCurrentBuilding(Building building) {
 		if (building == null) {
 			currentBuildingInt = -1;
-		}
-		
+		}		
 		else {
 			currentBuildingInt = building.getIdentifier();
 		}		
-	}
-
-	/**
-	 * Computes the building the person is currently located at Returns null if
-	 * outside of a settlement
-	 *
-	 * @param building
-	 */
-	public void setCurrentMockBuilding(Building building) {
-		if (building == null) {
-			currentBuildingInt = -1;
-		}
-		else {
-			currentBuildingInt = building.getIdentifier();
-		}
-	}
-	
-	/**
-	 * Obtains the immediate location (either building, vehicle, a settlement's
-	 * vicinity or outside on Mars)
-	 * 
-	 * @return the name string of the location the unit is at
-	 */
-	public String getImmediateLocation() {
-		return getLocationTag().getImmediateLocation();
-	}
-
-	/**
-	 * Obtains the modified immediate location 
-	 * 
-	 * @return the name string of the location the unit is at
-	 */
-	public String getModifiedLoc() {
-		return getLocationTag().getModifiedLoc();
-	}
-	
-	public String getLocale() {
-		return getLocationTag().getLocale();
-	}
-	
-	public String getExtendedLocations() {
-		return getLocationTag().getExtendedLocation();
 	}
 	
 	public Settlement findSettlementVicinity() {
@@ -1560,22 +1401,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 	public ShiftType getShiftType() {
 		return taskSchedule.getShiftType();
-	}
-
-	public double getFatigue() {
-		return condition.getFatigue();
-	}
-
-	public double getEnergy() {
-		return condition.getEnergy();
-	}
-	
-	public double getHunger() {
-		return condition.getHunger();
-	}
-		
-	public double getStress() {
-		return condition.getStress();
 	}
 
 	public int[] getPreferredSleepHours() {
@@ -1618,27 +1443,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return declaredDead;
 	}
 
-//	public String getPlaceOfDeath() {
-//		if (condition.isDead() && condition.getDeathDetails() != null) {
-//				return condition.getDeathDetails().getPlaceOfDeath();
-//		}
-//		return "Unknown";
-//	}
-	
 	public boolean isBuried() {
 		return isBuried;
 	}
 
-	//@Override
-	public void setVehicle(Vehicle vehicle) {
-//		this.vehicleInt = vehicle.getIdentifier();
-	}
-	
 	/**
 	 * Get vehicle person is in, null if person is not in vehicle
 	 * 
 	 * @return the person's vehicle
 	 */
+	@Override
 	public Vehicle getVehicle() {
 		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
 			Vehicle v = (Vehicle) getContainerUnit();
@@ -1652,39 +1466,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public CircadianClock getCircadianClock() {
 		return circadian;
 	}
-	
-	/**
-	 * Gets the first name of the person
-	 * 
-	 * @return the first name
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * Gets the last name of the person
-	 * 
-	 * @return the last name
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * Return the mission description if a person is on a mission
-	 * 
-	 * @return description
-	 */
-	public String getMissionDescription() {
-		Mission m = null;
-		if (mind.getMission() != null) {
-			m = mind.getMission();
-			return m.getDescription();
-		} else {
-			return "None";
-		}
-	}
 
 	/**
 	 * Adds the mission experience score
@@ -1697,7 +1478,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		total += score;
 		missionExperiences.put(missionType, total);
 	}
-
 
 	/**
 	 * Gets the mission experiences map
@@ -1809,21 +1589,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		age = value;
 	}
 
-	
-	/**
-	 * Checks if the person is a preconfigured crew member.
-	 */
-	public boolean isPreConfigured() {
-		return preConfigured;
-	}
-
-	/**
-	 * Set the person as a preconfigured crew member.
-	 */
-	public void setPreConfigured(boolean value) {
-		preConfigured = value;
-	}
-
 	/**
 	 * Returns a reference to the Person's skill manager
 	 * 
@@ -1835,22 +1600,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Returns the effective integer skill level from a named skill based on
-	 * additional modifiers such as fatigue.
-	 * 
-	 * @param skillType the skill's type
-	 * @return the skill's effective level
-	 */
-	public int getEffectiveSkillLevel(SkillType skillType) {
-		// Modify for fatigue, minus 1 skill level for every 1000 points of fatigue.
-		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
-	}
-
-
-	/**
 	 * Randomly generate a list of training the person may have attended
 	 */
-	public void generatePriorTraining() {
+	private void generatePriorTraining() {
 		if (trainings == null) {
 			trainings = new CopyOnWriteArrayList<>();
 			List<TrainingType> lists = new CopyOnWriteArrayList<>(Arrays.asList(TrainingType.values()));
@@ -1876,19 +1628,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public List<TrainingType> getTrainings() {
 		return trainings;
 	}
-	
-	public double getPilotingMod() {
-		double mod = 0;
-		if (trainings.contains(TrainingType.AVIATION_CERTIFICATION))
-			mod += .2;
-		if (trainings.contains(TrainingType.FLIGHT_SAFETY))
-			mod += .25;
-		if (trainings.contains(TrainingType.NASA_DESERT_RATS))
-			mod += .15;
-		
-		return mod;
-	}
-	
+
 	/**
 	 * Registers a particular EVA suit to the person
 	 * 
@@ -1906,21 +1646,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return suit;
 	}
 	
-	public int getExtrovertScore() {
+	public int getExtrovertmodifier() {
 		if (extrovertScore == -1) {
 			int score = mind.getTraitManager().getIntrovertExtrovertScore();
 			extrovertScore = score;
 			
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2
-			return score;
 		}
 		
-		return extrovertScore;
-	}
-	
-	public int getExtrovertmodifier() {
-		return (int)((getExtrovertScore() - 50) / 25D);
+		return (int)((extrovertScore - 50) / 25D);
 	}
 	
 	/**
@@ -2503,12 +2238,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		if (this.getClass() != obj.getClass()) return false;
 		Person p = (Person) obj;
 		return this.getIdentifier() == p.getIdentifier();
-//				&& this.firstName.equals(p.getFirstName())
-//				&& this.lastName.equals(p.getLastName())
-//				&& this.height == p.getHeight()
-//				&& this.gender.equals(p.getGender())
-//				&& this.age == p.getAge()
-//				&& this.getBirthDate() == p.getBirthDate();
 	}
 
 	/**
@@ -2533,8 +2262,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		role = null;
 		preference = null;
 		support = null;
-		kitchenWithMeal = null;
-		kitchenWithDessert = null;
 		ra = null;
 		bed = null;
 		attributes.destroy();
