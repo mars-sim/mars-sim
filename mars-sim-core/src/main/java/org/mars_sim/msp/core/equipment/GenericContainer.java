@@ -7,7 +7,11 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Set;
 
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -20,18 +24,24 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private double totalCapacity;
+	private double amountStored;
+	private int resourceHeld = -1;
+	private boolean reusable;
 	
 	/**
 	 * Constructor.
-	 * @param newName 
-	 * 
+	 * @param name
+	 * @param type Type of container
 	 * @param base the location of the bag.
+	 * @param reusable Is the container reusable by a different resource when empty
 	 * @throws Exception if error creating bag.
 	 */
-	GenericContainer(String name, EquipmentType type, Settlement base) {
+	GenericContainer(String name, EquipmentType type, boolean reusable, Settlement base) {
 		// Use Equipment constructor
 		super(name, type, type.name(), base);
 
+		this.reusable = reusable;
+		
 		// Sets the base mass of the bag.
 		setBaseMass(EquipmentFactory.getEquipmentMass(type));
 		
@@ -48,15 +58,89 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		return totalCapacity;
 	}
 
+
 	/**
-	 * THis need optimising. The Get ResourceID method should
-	 * only be in Container
-	 * @return
+	 * Get the resource that is held
 	 */
-	private boolean isUnallocated() {
-		return getResource() == -1;
+	@Override
+	public int getResource() {
+		return resourceHeld;
 	}
 	
+	/**
+	 * Gets a list of supported resources
+	 * 
+	 * @return a list of resource ids
+	 */
+	@Override
+	public Set<Integer> getResourceIDs() {
+		if (resourceHeld == -1) {
+			return Collections.emptySet();
+		}
+		return Set.of(resourceHeld);
+	}
+
+	
+	/**
+	 * TODO Remove this method.
+	 */
+	@Override
+	public Set<AmountResource> getAllAmountResourcesStored() {
+		if (resourceHeld == -1) {
+			return Collections.emptySet();
+		}
+		return Set.of(ResourceUtil.findAmountResource(resourceHeld));
+	}
+
+	/**
+	 * Total mass held
+	 */
+	@Override
+	public double getStoredMass() {
+		return amountStored;
+	}
+
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		if (resourceHeld == resource) {
+			if (quantity < amountStored) {
+				amountStored -= quantity;
+				return 0;
+			}
+			else {
+				// Now empty
+				double shortfall = quantity - amountStored;
+				amountStored = 0D;
+				if (reusable) {
+					resourceHeld = -1;
+				}
+				return shortfall;
+			}
+		}
+		return quantity;
+	}
+
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		if (resource == resourceHeld) {
+			return amountStored;
+		}
+		return 0;
+	}
+
 	/**
 	 * Stores the resource but only if it matches current resource or empty
 	 * 
@@ -64,18 +148,27 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
+	@Override
 	public double storeAmountResource(int resource, double quantity) {
 		// Question: if a bag was filled with regolith and later was emptied out
 		// should it be tagged for only regolith and NOT for another resource ?
-		int allocated = getResource();
-		if (allocated == -1) {
+		if (resourceHeld == -1) {
 			// Allocate the capacity to this new resource
-			microInventory.setCapacity(resource, getTotalCapacity());
+			resourceHeld = resource;
 		}
-		else if (allocated != resource) {
+		else if (resourceHeld != resource) {
 			return quantity; // Allocated to a different resource
 		}
-		return microInventory.storeAmountResource(resource, quantity);
+		
+		double remainingCap = totalCapacity - amountStored;
+		if (remainingCap < quantity) {
+			amountStored = totalCapacity;
+			return quantity - remainingCap;
+		}
+		else {
+			amountStored += quantity;
+			return 0D;
+		}
 	}
 	
 	/**
@@ -86,12 +179,14 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		if (isUnallocated()) {
+		if (resourceHeld == -1) {
 			return totalCapacity;
 		}
-		else {
-			return microInventory.getAmountResourceRemainingCapacity(resource);
+		else if (resourceHeld == resource) {
+			return totalCapacity - amountStored;
 		}
+		
+		return 0;
 	}
 		
 	/**
@@ -103,7 +198,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		if (isUnallocated() || microInventory.isResourceSupported(resource)) {
+		if ((resourceHeld == -1) || (resource == resourceHeld)) {
 			return totalCapacity;
 		}
 		return 0;
@@ -117,10 +212,5 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
-	}
-
-	@Override
-	public int getResource() {
-		return microInventory.getResource();
 	}
 }

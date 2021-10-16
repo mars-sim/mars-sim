@@ -45,7 +45,7 @@ extends TestCase {
 	 * Test container with a single resource
 	 */
 	public void testSingleResource() throws Exception {
-		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, settlement);
+		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
@@ -70,7 +70,7 @@ extends TestCase {
 	 * Test container with 2 resources
 	 */
 	public void testTwoResource() throws Exception {
-		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, settlement);
+		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
@@ -92,7 +92,7 @@ extends TestCase {
 	 * Test container with 2 resources
 	 */
 	public void testEmptying() throws Exception {
-		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, settlement);
+		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.rockSamplesID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
@@ -114,5 +114,42 @@ extends TestCase {
 		int secondResource = ResourceUtil.iceID;
 		assertEquals("1st resource after unload", bagCap, c.getAmountResourceRemainingCapacity(rockID));
 		assertEquals("2nd resource after unload", 0D, c.getAmountResourceRemainingCapacity(secondResource));
+	}
+	
+	/*
+	 * Test container with 2 resources
+	 */
+	public void testNoneReusable() throws Exception {
+		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
+		
+		int secondResource = ResourceUtil.iceID;
+		int rockID = ResourceUtil.rockSamplesID;
+		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
+		
+		// Load rock
+		c.storeAmountResource(rockID, bagCap);
+		c.retrieveAmountResource(rockID, bagCap);
+		assertEquals("Capacity of prime resource after full unload", bagCap, c.getAmountResourceRemainingCapacity(rockID));
+		assertEquals("Capacity of secondary resource after full unload", 0D, c.getAmountResourceRemainingCapacity(secondResource));
+	}
+	
+	
+	/*
+	 * Test container with 2 resources
+	 */
+	public void testReusable() throws Exception {
+		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
+		
+		int secondResource = ResourceUtil.iceID;
+		int rockID = ResourceUtil.rockSamplesID;
+		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.SPECIMEN_BOX);
+		
+		// Load rock
+		c.storeAmountResource(rockID, bagCap);
+		c.retrieveAmountResource(rockID, bagCap);
+		
+		// Both should be back to full capacity
+		assertEquals("Capacity of prime resource after full unload", bagCap, c.getAmountResourceRemainingCapacity(rockID));
+		assertEquals("Capacity of secondary resource after full unload", bagCap, c.getAmountResourceRemainingCapacity(secondResource));
 	}
 }

@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -32,10 +29,7 @@ public enum EquipmentType {
 	private String name;	
 
 	private static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-	private static Set<String> nameSet;
-	
-	private static Set<Integer> idSet;
-	
+		
 	/** hidden constructor. */
 	private EquipmentType(String name) {
 		this.name = name;
@@ -50,36 +44,6 @@ public enum EquipmentType {
 		return this.name;
 	}
 
-	/**
-	 * Gets a set of equipment names
-	 * 
-	 * @return
-	 */
-	public static Set<String> getNameSet() {
-		if (nameSet == null) {
-			nameSet = new HashSet<String>();
-			for (EquipmentType et : EquipmentType.values()) {
-				nameSet.add(et.toString());
-			}
-		}
-		return nameSet;
-	}
-
-	/**
-	 * Gets a set of equipment ids
-	 * 
-	 * @return
-	 */
-	public static Set<Integer> getIDs() {
-		if (idSet == null) {
-			idSet = new HashSet<Integer>();
-			for (EquipmentType e : EquipmentType.values()) {
-				idSet.add(e.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID);
-			}
-		}
-		return idSet;
-	}
-	
 	/**
 	 * Obtains the type id (not the ordinal id) of the equipment
 	 * 
@@ -132,17 +96,5 @@ public enum EquipmentType {
 	 */
 	public static int getResourceID(EquipmentType type) {
 		return type.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-	}
-	
-	public static int getSpecimentBoxID() {
-		return SPECIMEN_BOX.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-	}
-	
-	public static int getBagID() {
-		return BAG.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
-	}
-	
-	public static int getEVASuitID() {
-		return EVA_SUIT.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
 	}
 }

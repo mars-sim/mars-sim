@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -18,31 +17,12 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public final class EquipmentFactory {
 
-	// Cache maps.
-	/** The equipment name set cache. */
-	private static Set<String> equipmentNamesCache;
-
 	private static UnitManager unitManager;
 	
 	/**
 	 * Private constructor for static factory class.
 	 */
 	private EquipmentFactory() {
-	}
-
-	/**
-	 * Gets a set of all equipment names.
-	 * 
-	 * @return set of equipment name strings.
-	 */
-	public static Set<String> getEquipmentNames() {
-
-		if (equipmentNamesCache == null) {
-			equipmentNamesCache = EquipmentType.getNameSet();
-		}
-
-		return equipmentNamesCache;
-
 	}
 
 	/**
@@ -64,12 +44,17 @@ public final class EquipmentFactory {
 		case EVA_SUIT:
 			newEqm =  new EVASuit(newName, settlement);
 			break;
+			
 		case BAG:
 		case BARREL:
 		case GAS_CANISTER:
 		case LARGE_BAG:
+			newEqm =  new GenericContainer(newName, type, false, settlement);
+			break;
+			
 		case SPECIMEN_BOX:
-			newEqm =  new GenericContainer(newName, type, settlement);
+			// Reusable Containers
+			newEqm =  new GenericContainer(newName, type, true, settlement);
 			break;
 		default:
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");

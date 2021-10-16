@@ -293,11 +293,8 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
-        List<String> equipmentNames = new ArrayList<>(EquipmentFactory.getEquipmentNames());
-        Iterator<String> i = equipmentNames.iterator();
-        while (i.hasNext()) {
-            String name = i.next();
-            int id = EquipmentType.convertName2ID(name);
+        for(EquipmentType eType : EquipmentType.values()) {
+            int id = EquipmentType.getResourceID(eType);
             newMap.put(id, createEquipmentGood(id));
         }
         return newMap;

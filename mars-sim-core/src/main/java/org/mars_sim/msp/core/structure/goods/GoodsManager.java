@@ -360,9 +360,8 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		// Create equipment demand cache.
-		Iterator<Integer> e = EquipmentType.getIDs().iterator();
-		while (e.hasNext()) {
-			int id = e.next();
+		for(EquipmentType eType : EquipmentType.values()) {
+			int id = EquipmentType.getResourceID(eType);
 			equipmentDemandCache.put(id, INITIAL_EQUIPMENT_DEMAND);
 		}
 
