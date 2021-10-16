@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mars_sim.msp.core.logging.Loggable;
@@ -278,6 +279,7 @@ public class MicroInventory implements Serializable {
 	public Set<AmountResource> getAllAmountResourcesStored() {
 		return storageMap.keySet().stream()
 				.map(ar -> ResourceUtil.findAmountResource(ar))
+				.filter(Objects::nonNull)
 				.collect(java.util.stream.Collectors.toSet());
 	}
 	
@@ -289,6 +291,7 @@ public class MicroInventory implements Serializable {
 	public Set<ItemResource> getAllItemResourcesStored() {
 		return storageMap.keySet().stream()
 				.map(ir -> ItemResourceUtil.findItemResource(ir))
+				.filter(Objects::nonNull)
 		        .collect(java.util.stream.Collectors.toSet());
 	}
 	

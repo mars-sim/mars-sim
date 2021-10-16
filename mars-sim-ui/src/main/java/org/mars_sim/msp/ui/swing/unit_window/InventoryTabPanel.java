@@ -277,14 +277,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private int counts = 0;
 		
-		private Map<Resource, Number> resources;
-		private Map<Resource, Number> capacity;
-		private List<Resource> keys;
+		private Map<Resource, Number> resources = new HashMap<>();
+		private Map<Resource, Number> capacity = new HashMap<>();
+		private List<Resource> keys = new ArrayList<>();
 		
         private ResourceTableModel() {
-            keys = new ArrayList<Resource>();
-            resources = new HashMap<Resource, Number>();
-            capacity = new HashMap<Resource, Number>();
 
             if (inventory != null) {
 	            keys.addAll(inventory.getAllAmountResourcesStored(false));
