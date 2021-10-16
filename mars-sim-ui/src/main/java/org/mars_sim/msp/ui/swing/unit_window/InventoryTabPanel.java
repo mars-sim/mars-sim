@@ -48,7 +48,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -499,9 +498,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		
                 counts++;
         		if (counts % 20 == 20 
-        				|| (resources.size() != newResourceKeys.size())
-        				|| !resources.equals(newResources)) {
-//        			System.out.println("InventoryTabPanel::ResourceTableModel::update");
+        				|| !keys.equals(newResourceKeys)
+        				|| resources.size() != newResources.size()
+        				|| !resources.equals(newResources)
+        				|| !capacity.equals(newCapacity)) {
                		counts = 0;
         			resources = newResources;
         			capacity = newCapacity;
@@ -554,6 +554,26 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					equipmentList.add(e);
 				}
             }
+            else if (unit instanceof Person) {
+            	for (Equipment e : ((Person)unit).getEquipmentList()) {
+					String name = e.getName();
+					types.put(name, e.getEquipmentType().getName());
+					contentOwner.put(name, getContentOwner(e));
+					mass.put(name, e.getMass());
+					equipmentList.add(e);
+				}
+            }
+//          else if (unit instanceof Robot) { 	
+//          }
+            else if (unit instanceof Equipment) {
+            	Equipment e = (Equipment)unit;
+				String name = e.getName();
+				types.put(name, e.getEquipmentType().getName());
+				contentOwner.put(name, getContentOwner(e));
+				mass.put(name, e.getMass());
+				equipmentList.add(e);
+            }
+            
 			// Sort equipment alphabetically by name.
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 		}
@@ -618,16 +638,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			}
 			return "unknown";
 		}
-
-//		public boolean isMassDifferent(List<Double> oldMass, List<Double> newMass) {
-//			int size = oldMass.size();
-//			for (int i=0; i< size; i++) {
-//				if (oldMass.get(i) != newMass.get(i)) {
-//					return false;
-//				}
-//			}
-//			return true;
-//		}
 		
 		public void update() {
 			List<Equipment> newEquipment = new ArrayList<>();
@@ -643,20 +653,34 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					newEquipment.add(e);
 				}
 			}
-
+            else if (unit instanceof Person) {
+            	for (Equipment e : ((Person)unit).getEquipmentList()) {
+            		newTypes.put(e.getName(), e.getEquipmentType().getName());
+					newContentOwner.put(e.getName(), getContentOwner(e));
+					newMass.put(e.getName(), e.getMass());
+					newEquipment.add(e);
+				}
+            }
+//          else if (unit instanceof Robot) { 	
+//          }
+            else if (unit instanceof Equipment) {
+            	Equipment e = (Equipment)unit;
+            	newTypes.put(e.getName(), e.getEquipmentType().getName());
+				newContentOwner.put(e.getName(), getContentOwner(e));
+				newMass.put(e.getName(), e.getMass());
+				newEquipment.add(e);
+            }
+            
 			newEquipment.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-			Collections.sort(newEquipment);//, new NameComparator());
+			Collections.sort(newEquipment);
 
-//			List<Double> oldMassList = new ArrayList<>(mass.values());
-//			Collections.sort(oldMassList);
-//			List<Double> newMassList = new ArrayList<>(newMass.values());
-//			Collections.sort(newMassList);
-			
 			counts++;
-    		if (counts % 20 == 20 || (equipmentList.size() != newEquipment.size())
-    				|| !newEquipment.equals(equipmentList)) { 
+    		if (counts % 20 == 20 
+    				|| (equipmentList.size() != newEquipment.size())
+    				|| !newEquipment.equals(equipmentList) 
+    				|| !newContentOwner.equals(contentOwner) 
+    				|| !mass.equals(newMass)) { 
     			counts = 0;
-//    			System.out.println("InventoryTabPanel::EquipmentTableModel::update");
 				equipmentList = newEquipment;
 				equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 				contentOwner = newContentOwner;

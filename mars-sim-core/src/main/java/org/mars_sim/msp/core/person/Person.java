@@ -2188,28 +2188,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
-		if (equipmentList.isEmpty()) {
-			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
-			if (rcap > 0) {
-				return microInventory.storeAmountResource(resource, quantity);
-			}
-			else
-				return quantity;
-		}
-		
-		else if (equipmentList.size() == 1) {
+		double rCap = 0;
+		double excess = quantity;
+				
+		if (equipmentList.size() == 1) {
 			// check if there is enough space for storing the entire quantity 
 			// in this equipment container, if not, split it into multiple container
 			double rcap = equipmentList.get(0).getAmountResourceRemainingCapacity(resource);
 			if (rcap > 0) {
-				return equipmentList.get(0).storeAmountResource(resource, quantity);
+				return equipmentList.get(0).storeAmountResource(resource, excess);
 			}
 			else
-				return quantity;
+				return excess;
 		}
-		else {
-			double rCap = 0;
-			double excess = quantity;
+		else if (equipmentList.size() > 1) {
 			for (Equipment e: equipmentList) {
 				// check if there is enough space for storing the entire quantity 
 				// in one equipment container, if not, split it into multiple container	
@@ -2218,9 +2210,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					excess = e.storeAmountResource(resource, excess);
 				}
 			}
-			// Return any excess unstored amount
-			return excess;
 		}
+		
+		if (!microInventory.isEmpty()) {
+
+			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
+			if (rcap > 0) {
+				excess = microInventory.storeAmountResource(resource, excess);
+			}
+		}
+		
+		// Return any excess unstored amount
+		return excess;
 	}
 	
 	/**
@@ -2234,31 +2235,44 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public double retrieveAmountResource(int resource, double quantity) {
 		int index = getIndex(resource);
 		if (resourceIDs.contains(resource)) {
+			double stored = 0;
+			double shortfall = quantity;
+			
+			if (!microInventory.isEmpty()) {
+
+				stored = microInventory.getAmountResourceStored(resource);
+				if (stored > 0) {
+					shortfall = microInventory.retrieveAmountResource(resource, shortfall);
+				}
+				if (shortfall == 0) {
+					// Remove the id
+					resourceIDs.remove(resource);
+				}
+			}		
+			
 			if (equipmentList.size() == 1) {
 				// check if there is enough space for storing the entire quantity 
 				// in this equipment container, if not, split it into multiple container
-				double rcap = equipmentList.get(0).getAmountResourceStored(resource);
-				if (rcap > 0) {
-					return equipmentList.get(0).retrieveAmountResource(resource, quantity);
+				stored = equipmentList.get(0).getAmountResourceStored(resource);
+				if (stored > 0) {
+					return equipmentList.get(0).retrieveAmountResource(resource, shortfall);
 				}
 				else
-					return quantity;
+					return shortfall;
 			}
-			else {
-				double stored = 0;
-				double missing = quantity;
+			else if (equipmentList.size() > 1) {
 				for (Equipment e: equipmentList) {
 					// check if there is enough space for storing the entire quantity 
 					// in one equipment container, if not, split it into multiple container	
 					stored = e.getAmountResourceStored(resource);
 					if (stored > 0) {
-						missing = e.retrieveAmountResource(resource, missing);
+						shortfall = e.retrieveAmountResource(resource, shortfall);
 					}
 				}
-				// Return any missing quantity
-				return missing;
 			}
 			
+			// Return any missing quantity
+			return shortfall;
 		}
 		
 		else if (index == -1) {

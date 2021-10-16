@@ -2429,6 +2429,10 @@ public class Inventory implements Serializable {
 			initializeAmountResourceStoredCache();
 		}
 
+		if (capacityCache == null) {
+			initializeAmountResourceCapacityCache();
+		}
+		
 		// Update amount resource stored cache if it is dirty.
 		if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
 			updateAmountResourceStoredCache(resource);
@@ -2438,6 +2442,7 @@ public class Inventory implements Serializable {
 		if (storedCache.containsKey(resource))
 			return storedCache.get(resource);
 		else {
+
 			capacityCache.put(resource, 0D);
 			return 0;
 		}
