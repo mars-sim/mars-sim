@@ -2464,30 +2464,21 @@ public class Inventory implements Serializable {
 		double containerStored = 0D;
 		if (containersStoredCacheDirty == null)
 			containersStoredCacheDirty = new ConcurrentHashMap<>();
-		else if (containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource)) {
-				if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-					for (Integer uid : containedUnitIDs) {
-						Unit u = unitManager.getUnitByID(uid);
-						if (u.getUnitType() == UnitType.EQUIPMENT) {
-							containerStored += ((Equipment)u).getAmountResourceStored(resource);
-						}
-						else if (u.getUnitType() != UnitType.PERSON) {
-							containerStored += u.getInventory().getAmountResourceStored(resource, false);
-						}
-					}	
+		
+		// Asked to refresh so check units
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer uid : containedUnitIDs) {
+				Unit u = unitManager.getUnitByID(uid);
+				if (u.getUnitType() == UnitType.EQUIPMENT) {
+					containerStored += ((Equipment)u).getAmountResourceStored(resource);
 				}
-				containersStoredCache.put(resource, containerStored);
-				containersStoredCacheDirty.put(resource, false);
-				
-			} else {
-				containerStored = containersStoredCache.get(resource);
-			}
+				else if (u.getUnitType() != UnitType.PERSON) {
+					containerStored += u.getInventory().getAmountResourceStored(resource, false);
+				}
+			}	
 		}
-		// Add checking amountResourceContainersStoredCache
-		else if (containersStoredCache.containsKey(resource)) {
-			containerStored = containersStoredCache.get(resource);
-		}
+		containersStoredCache.put(resource, containerStored);
+		containersStoredCacheDirty.put(resource, false);
 
 		stored += containerStored;
 

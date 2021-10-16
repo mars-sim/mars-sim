@@ -87,15 +87,15 @@ public class InventoryCommand extends AbstractUnitCommand {
 			}
 		}
 		
-		// Add Resources
-		Set<AmountResource> amountResources = inv.getAllAmountResourcesStored(false);
+		// Add Resources allow dirty to avoid updating
+		Set<AmountResource> amountResources = inv.getAllAmountResourcesStored(true);
 		if (input != null) {
 			// Filter according to input
 			amountResources = amountResources.stream().filter(a -> a.getName().contains(input)).collect(Collectors.toSet());
 		}
 		for (AmountResource ar : amountResources) {
 			String name = ar.getName();
-			double amount = inv.getAmountResourceStored(ar, false);
+			double amount = inv.getAmountResourceStored(ar, true);
 			if (amount > 0) {
 				entries.put(name, "" + String.format(CommandHelper.KG_FORMAT, amount));
 			}
