@@ -51,8 +51,8 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -206,7 +206,7 @@ public abstract class Vehicle extends Unit
 	/** Direction vehicle is traveling */
 	private Direction direction;
 	/** The operator of the vehicle. */
-	private VehicleOperator vehicleOperator;
+	private Worker vehicleOperator;
 	/** The one currently towing this vehicle. */
 	private Vehicle towingVehicle;
 	/** The The vehicle's salvage info. */
@@ -1090,11 +1090,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return the vehicle operator
 	 */
-	public VehicleOperator getOperator() {
-//		if (vehicleOperator != null)
-//			System.out.println(this.getNickName() + " operator: " + vehicleOperator.getOperatorName());
-//		else
-//			System.out.println(this.getNickName() + " vehicleOperator is null.");
+	public Worker getOperator() {
 		return vehicleOperator;
 	}
 
@@ -1103,22 +1099,10 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param vehicleOperator the vehicle operator
 	 */
-	public void setOperator(VehicleOperator vehicleOperator) {
+	public void setOperator(Worker vehicleOperator) {
 		this.vehicleOperator = vehicleOperator;
-//		if (vehicleOperator != null)
-//			System.out.println(this.getNickName() + " new operator: " + vehicleOperator.getOperatorName());
-//		else
-//			System.out.println(this.getNickName() + " vehicleOperator is null.");
 		fireUnitUpdate(UnitEventType.OPERATOR_EVENT, vehicleOperator);
 	}
-
-	/**
-	 * Checks if a particular operator is appropriate for a vehicle.
-	 * 
-	 * @param operator the operator to check
-	 * @return true if appropriate operator for this vehicle.
-	 */
-	public abstract boolean isAppropriateOperator(VehicleOperator operator);
 
 	/**
 	 * Returns the current settlement vehicle is parked at. Returns null if vehicle

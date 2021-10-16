@@ -80,13 +80,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements VehicleOperator, MissionMember, Serializable, Temporal, EquipmentOwner {
+public class Person extends Unit implements MissionMember, Serializable, Temporal, EquipmentOwner {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

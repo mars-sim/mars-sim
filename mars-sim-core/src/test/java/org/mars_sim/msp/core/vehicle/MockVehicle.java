@@ -11,10 +11,6 @@ public class MockVehicle extends Vehicle {
 		super("Mock Vehicle", "Mock Vehicle", settlement, 10D, 5000D, 57D, 100D);
 	}
 
-	public boolean isAppropriateOperator(VehicleOperator operator) {
-		return false;
-	}
-
 	public int getFuelType() {
 		return ResourceUtil.methaneID;
 	}

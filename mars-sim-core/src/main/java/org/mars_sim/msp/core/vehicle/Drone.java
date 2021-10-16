@@ -12,14 +12,12 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 
@@ -117,18 +115,6 @@ public class Drone extends Flyer implements Serializable {
 
 		
 		return true;
-	}
-	
-	
-	/**
-	 * Checks if a particular operator is appropriate for the drone.
-	 * 
-	 * @param operator the operator to check
-	 * @return true if appropriate operator has been designated for this drone.
-	 */
-	@Override
-	public boolean isAppropriateOperator(VehicleOperator operator) {
-		return operator instanceof Person || operator instanceof Robot;
 	}
 
 	/**

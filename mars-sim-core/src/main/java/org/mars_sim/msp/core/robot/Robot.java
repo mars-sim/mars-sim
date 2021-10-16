@@ -50,12 +50,11 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements VehicleOperator, Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -622,15 +621,6 @@ public class Robot extends Unit implements VehicleOperator, Salvagable, Temporal
 	}
 
 	/**
-	 * Checks if the vehicle operator is fit for operating the vehicle.
-	 * 
-	 * @return true if vehicle operator is fit.
-	 */
-	public boolean isFitForOperatingVehicle() {
-		return isFit(); 
-	}
-
-	/**
 	 * Gets the name of the vehicle operator
 	 * 
 	 * @return vehicle operator name.
@@ -918,7 +908,6 @@ public class Robot extends Unit implements VehicleOperator, Salvagable, Temporal
 		return age;
 	}
 
-	@Override
 	public boolean isFit() {
 		return !health.isInoperable();
 	}
@@ -928,25 +917,9 @@ public class Robot extends Unit implements VehicleOperator, Salvagable, Temporal
 		return UnitType.ROBOT;
 	}
 
-//	/**
-//	 * Finds the string name of the amount resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findAmountResourceName(int resource) {
-//		return ResourceUtil.findAmountResourceName(resource);
-//	}
 	
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Robot r = (Robot) obj;
-		return this.getIdentifier() == r.getIdentifier()
-				&& this.robotType == r.getRobotType(); 
-//				&& this.nickName.equals(r.getNickName());
+		return super.equals(obj);
 	}
 
 	/**

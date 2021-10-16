@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -294,17 +293,7 @@ public class MicroInventory implements Serializable {
 				.filter(Objects::nonNull)
 		        .collect(java.util.stream.Collectors.toSet());
 	}
-	
-	/**
-	 * Get the resource stored, assuming there's only one resource
-	 * @return
-	 */
-	public int getResource() {
-		if (!storageMap.isEmpty())
-			return new ArrayList<Integer>(storageMap.keySet()).get(0);
-		return -1;
-	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 * 

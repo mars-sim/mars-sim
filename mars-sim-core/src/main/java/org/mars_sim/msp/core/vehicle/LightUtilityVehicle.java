@@ -69,16 +69,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return ResourceUtil.methaneID;
 	}
 
-	@Override
-	public boolean isAppropriateOperator(VehicleOperator operator) {
-		boolean result = false;
-		if (operator instanceof Person)
-			result = (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
-//    	else if (operator instanceof Robot)
-//        	result = (operator instanceof Robot) && (getInventory().containsUnit((Unit) operator));
-		return result;
-	}
-
 	/**
 	 * Gets a collection of the crewmembers.
 	 * 

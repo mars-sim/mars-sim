@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -44,7 +45,6 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
@@ -110,7 +110,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
-	private VehicleOperator lastOperator;
+	private Worker lastOperator;
 	/** The mission lead of this mission. */
 	private MissionMember startingMember;
 	/** The current operate vehicle task. */
@@ -801,7 +801,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// Someone should be driving or it's me !!!
 				becomeDriver = vehicle != null &&
 					((vehicle.getOperator() == null) 
-						|| (vehicle.getOperator().getOperatorName().equals(member.getName())));
+						|| (vehicle.getOperator().equals(member)));
 			}
 			else {
 				// None is driving
@@ -825,7 +825,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						assignTask((Robot)member, operateVehicleTask);
 
 					}
-					lastOperator = (VehicleOperator)member;
+					lastOperator = member;
 					return;
 				}
 			}
@@ -853,7 +853,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 
-	public VehicleOperator getLastOperator() {
+	public Worker getLastOperator() {
 		return lastOperator;
 	}
 	
@@ -982,7 +982,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param operator the vehicle operator.
 	 * @return average speed (km/h)
 	 */
-	private double getAverageVehicleSpeedForOperator(VehicleOperator operator) {
+	private double getAverageVehicleSpeedForOperator(Worker operator) {
 		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator, this);
 	}
 
@@ -995,7 +995,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = getEstimatedTotalRemainingDistance(); // getEstimatedTotalDistance();
+		double distance = getEstimatedTotalRemainingDistance(); 
 		if (distance > 0) {
 			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " 
 					+ Math.round(distance * 10.0)/10.0 + " km.");

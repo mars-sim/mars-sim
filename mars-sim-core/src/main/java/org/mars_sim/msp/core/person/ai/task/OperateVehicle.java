@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,7 +38,6 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
@@ -126,13 +126,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 		
 		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
+		Worker vo = vehicle.getOperator();
 //		Person driver = (Person) vo;
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(person);
 			
-		else if (!person.getName().equals(vo.getOperatorName())) {
+		else if (!person.getName().equals(vo.getName())) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
 	        // Replace the driver
@@ -181,14 +181,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
 		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
+		Worker vo = vehicle.getOperator();
 //		Robot roboDriver = (Robot) vo;
 		
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(robot);
 			
-		else if (!robot.getName().equals(vo.getOperatorName())) {
+		else if (!robot.equals(vo)) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
 	        // Replace the driver
@@ -264,25 +264,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		return startTripDistance;
 	}
 	
-	protected void clearDrivingTask(VehicleOperator vo) {
-		if (vo instanceof Person)
-			clearDrivingTask((Person)vo);
-			
-		else if (vo instanceof Robot)
-			clearDrivingTask((Robot)vo);
-	}
-	
-	protected void clearDrivingTask(Person person) {
+	protected void clearDrivingTask(Worker vo) {
     	// Clear the OperateVehicle task from the last driver
-		TaskManager taskManager = person.getMind().getTaskManager();
-		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
-		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
-		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
-	}
-	
-	protected void clearDrivingTask(Robot robot) {
-    	// Clear the OperateVehicle task from the last driver
-		BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
+		TaskManager taskManager = person.getTaskManager();
 		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
 		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
 		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
@@ -863,7 +847,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @param operator the vehicle operator.
      * @return average operating speed (km/h)
      */
-    public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator, Mission mission) {
+    public static double getAverageVehicleSpeed(Vehicle vehicle, Worker operator, Mission mission) {
     	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();

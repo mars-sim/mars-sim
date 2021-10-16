@@ -306,7 +306,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case DRIVER : {
 					if (vehicle.getOperator() != null) {
-						result = vehicle.getOperator().getOperatorName();
+						result = vehicle.getOperator().getName();
 					}
 					else {
 						result = null;

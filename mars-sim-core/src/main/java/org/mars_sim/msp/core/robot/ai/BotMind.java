@@ -177,29 +177,9 @@ public class BotMind implements Serializable, Temporal {
 	private void resumeMission() {
 		if (mission.canParticipate(robot) && robot.isFit()) {
 			mission.performMission(robot);
-//			logger.info(robot, "Participating " + mission + ".");
 		}
 	}
-	
-//	/**
-//	 * Checks if a robot can start a new mission
-//	 * 
-//	 * @return
-//	 */
-//	public boolean canStartNewMission() {
-//		boolean hasAMission = hasAMission();
-//	
-//		boolean hasActiveMission = hasActiveMission();
-//
-//		boolean overrideMission = false;
-//
-//		// Check if mission creation at settlement (if any) is overridden.
-//		overrideMission = robot.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
-//
-//		// See if this robot can ask for a mission
-//		return !hasActiveMission && !hasAMission && !overrideMission;
-//	}
-	
+
 	public Robot getRobot() {
 		return robot;
 	}

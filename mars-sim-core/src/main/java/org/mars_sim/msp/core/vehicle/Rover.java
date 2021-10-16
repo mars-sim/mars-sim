@@ -825,16 +825,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Checks if a particular operator is appropriate for a vehicle.
-	 * 
-	 * @param operator the operator to check
-	 * @return true if appropriate operator for this vehicle.
-	 */
-	public boolean isAppropriateOperator(VehicleOperator operator) {
-		return (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
-	}
-
-	/**
 	 * Gets the resource type id that this vehicle uses as fuel, namely, methane
 	 * 
 	 * @return resource type id
