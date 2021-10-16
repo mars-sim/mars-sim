@@ -85,4 +85,8 @@ public class AbstractMetaMission implements MetaMission {
 		
 		return result;
 	}
+
+	protected Set<JobType> getPreferredLeaderJob() {
+		return preferredLeaderJob;
+	}
 }

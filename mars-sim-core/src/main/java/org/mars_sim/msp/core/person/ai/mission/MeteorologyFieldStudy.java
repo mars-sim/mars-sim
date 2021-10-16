@@ -7,70 +7,38 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A mission to do meteorology research at a remote field location for a scientific
  * study. TODO externalize strings
  */
-public class MeteorologyFieldStudy extends RoverMission implements Serializable {
+public class MeteorologyFieldStudy extends FieldStudyMission implements Serializable {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.METEOROLOGIST);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(MeteorologyFieldStudy.class.getName());
-
+	
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
-	
-	/** Mission phase. */
-	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
-			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
 
 	/** Minimum number of people to do mission. */
-	public static final int MIN_PEOPLE = 2;
+	private static final int MIN_PEOPLE = 2;
 
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 500D;
 
-	// Data members
-	/** The start time at the field site. */
-	private MarsClock fieldSiteStartTime;
-	/** External flag for ending research at the field site. */
-	private boolean endFieldSite;
-	/** The field site location. */
-	private Coordinates fieldSite;
-	/** Scientific study to research. */
-	private ScientificStudy study;
-	/** The person leading the meteorology research. */
-	private Person leadResearcher;
-
-	private static final ScienceType METEOROLOGY = ScienceType.METEOROLOGY;
 
 	/**
 	 * Constructor.
@@ -79,59 +47,8 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public MeteorologyFieldStudy(Person startingPerson) {
-
-		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson, MIN_PEOPLE);
-
-		Settlement s = startingPerson.getSettlement();
-
-		if (!isDone() && s != null) {
-			// Set the lead meteorology researcher and study.
-			leadResearcher = startingPerson;
-			study = determineStudy(leadResearcher);
-			if (study == null) {
-				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
-				endMission();
-			}
-
-			setStartingSettlement(s);
-
-			// Set mission capacity.
-			if (hasVehicle())
-				setMissionCapacity(getRover().getCrewCapacity());
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
-			if (availableSuitNum < getMissionCapacity())
-				setMissionCapacity(availableSuitNum);
-
-			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson))
-				return;
-
-			// Determine field site location.
-			if (hasVehicle()) {
-				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				determineFieldSite(getVehicle().getRange(MissionType.METEOROLOGY), tripTimeLimit);
-			}
-
-			// Add home settlement
-			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
-
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-			}
-		}
-
-		if (s != null) {
-			// Add researching site phase.
-			addPhase(RESEARCH_SITE);
-
-			// Set initial mission phase.
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
-
-		}
+		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson,
+				  MIN_PEOPLE, ScienceType.METEOROLOGY, FIELD_SITE_TIME);
 	}
 
 	/**
@@ -149,435 +66,17 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	public MeteorologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
-		// Use RoverMission constructor.
-		super(description, MissionType.METEOROLOGY, leadResearcher, MIN_PEOPLE, rover);
-
-		setStartingSettlement(startingSettlement);
-		this.study = study;
-		this.leadResearcher = leadResearcher;
-		this.fieldSite = fieldSite;
-		addNavpoint(new NavPoint(fieldSite, "field research site"));
-
-		// Set mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
-
-		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember mm = i.next();
-			if (mm instanceof Person)
-				((Person)mm).getMind().setMission(this);
-		}
-
-		// Add home settlement
-		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-				getStartingSettlement().getName()));
-
-		// Add researching site phase.
-		addPhase(RESEARCH_SITE);
-
-		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
-		
-		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
-		}
-	}
-
-	/**
-	 * Gets the scientific study for the mission.
-	 * 
-	 * @return scientific study.
-	 */
-	public ScientificStudy getScientificStudy() {
-		return study;
-	}
-
-	/**
-	 * Gets the lead researcher for the mission.
-	 * 
-	 * @return the researcher.
-	 */
-	public Person getLeadResearcher() {
-		return leadResearcher;
-	}
-
-	/**
-	 * Determine the scientific study used for the mission.
-	 * 
-	 * @param researcher the science researcher.
-	 * @return scientific study or null if none determined.
-	 */
-	public static ScientificStudy determineStudy(Person researcher) {
-		ScientificStudy result = null;
-
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
-
-		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = researcher.getStudy();
-		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
-					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (METEOROLOGY == primaryStudy.getScience()) {
-					// Primary study added twice to double chance of random selection.
-					possibleStudies.add(primaryStudy);
-					possibleStudies.add(primaryStudy);
-				}
-			}
-		}
-
-		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = researcher.getCollabStudies().iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
-					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (METEOROLOGY == collabStudy.getContribution(researcher)) {
-					possibleStudies.add(collabStudy);
-				}
-			}
-		}
-
-		// Randomly select study.
-		if (possibleStudies.size() > 0) {
-			int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
-			result = possibleStudies.get(selected);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determine the location of the research site.
-	 * 
-	 * @param roverRange    the rover's driving range
-	 * @param tripTimeLimit the time limit (millisols) of the trip.
-	 * @throws MissionException of site can not be determined.
-	 */
-	private void determineFieldSite(double roverRange, double tripTimeLimit) {
-
-		// Determining the actual traveling range.
-		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit, true);
-		if (timeRange < range) {
-			range = timeRange;
-		}
-
-		// Get the current location.
-		Coordinates startingLocation = getCurrentMissionLocation();
-
-		// Determine the research site.
-		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-		double limit = range / 4D;
-		double siteDistance = RandomUtil.getRandomDouble(limit);
-		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(new NavPoint(fieldSite, "field research site"));
-	}
-
-	/**
-	 * Gets the range of a trip based on its time limit.
-	 * 
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param useBuffer     Use time buffer in estimations if true.
-	 * @return range (km) limit.
-	 */
-	private double getTripTimeRange(double tripTimeLimit, boolean useBuffer) {
-		double timeAtSite = FIELD_SITE_TIME;
-		double tripTimeTravelingLimit = tripTimeLimit - timeAtSite;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		return tripTimeTravelingLimit * averageSpeedMillisol;
-	}
-
-	@Override
-	public double getMissionQualification(MissionMember member) {
-		double result = super.getMissionQualification(member);
-
-		if ((result > 0D) && (member instanceof Person)) {
-
-			Person person = (Person) member;
-
-			// Add modifier if person is a researcher on the same scientific study.
-			if (study != null) {
-				if (person == study.getPrimaryResearcher()) {
-					result += 2D;
-
-					// Check if study's primary science is meteorology.
-					if (METEOROLOGY.equals(study.getScience())) {
-						result += 1D;
-					}
-				} else if (study.getCollaborativeResearchers().contains(person)) {
-					result += 1D;
-
-					// Check if study collaboration science is in meteorology.
-					ScienceType collabScience = study.getContribution(person);
-					if (METEOROLOGY == collabScience) {
-						result += 1D;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null) {
-			return equipmentNeededCache;
-		} else {
-			Map<Integer, Integer> result = new HashMap<>();
-			equipmentNeededCache = result;
-			return result;
-		}
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
-
-	@Override
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(RESEARCH_SITE);
-				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description",
-						getCurrentNavpoint().getDescription())); // $NON-NLS-1$
-			}
-		} 
-		
-		else if (RESEARCH_SITE.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
-		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-		if (RESEARCH_SITE.equals(getPhase())) {
-			researchFieldSitePhase(member);
-		}
-	}
-
-	/**
-	 * Ends the research at a field site.
-	 */
-	public void endResearchAtFieldSite() {
-		logger.warning("Meteorology field site phase ended due to external trigger.");
-		endFieldSite = true;
-
-		// End each member's meteorology field work task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof MeteorologyStudyFieldWork) {
-					((MeteorologyStudyFieldWork) task).endEVA();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Performs the research field site phase of the mission.
-	 * 
-	 * @param member the mission member currently performing the mission
-	 */
-	private void researchFieldSitePhase(MissionMember member) {
-
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		
-		// Check if field site research has just started.
-		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = currentTime;
-		}
-
-		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME;
-
-        if (isEveryoneInRover()) {
-
-			// Check if end field site flag is set.
-			if (endFieldSite) {
-				endFieldSite = false;
-				setPhaseEnded(true);
-			}
-
-			// Check if crew has been at site for more than required length of time, then
-			// end this phase.
-			if (timeExpired) {
-				setPhaseEnded(true);
-			}
-
-			// Determine if no one can start the field work task.
-			boolean nobodyFieldWork = true;
-			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext()) {
-				if (MeteorologyStudyFieldWork.canResearchSite(j.next(), getRover())) {
-					nobodyFieldWork = false;
-				}
-			}
-
-			// If no one can research the site and this is not due to it just being
-			// night time, end the field work phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyFieldWork && (sunlight < 12 || inDarkPolarRegion)) {
-				setPhaseEnded(true);
-			}
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (hasEmergency()) {
-				setPhaseEnded(true);
-			}
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				setPhaseEnded(true);
-			}
-		} else {
-			// If research time has expired for the site, have everyone end their field work
-			// tasks.
-			if (timeExpired) {
-				Iterator<MissionMember> i = getMembers().iterator();
-				while (i.hasNext()) {
-					MissionMember tempMember = i.next();
-					if (tempMember instanceof Person) {
-						Person tempPerson = (Person) tempMember;
-						Task task = tempPerson.getMind().getTaskManager().getTask();
-						if ((task != null) && (task instanceof MeteorologyStudyFieldWork)) {
-							((MeteorologyStudyFieldWork) task).endEVA();
-						}
-					}
-				}
-			}
-		}
-
-		if (!getPhaseEnded()) {
-
-			if (!endFieldSite && !timeExpired) {
-				// If person can research the site, start that task.
-				if (MeteorologyStudyFieldWork.canResearchSite(member, getRover())) {
-					// TODO Refactor
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						assignTask(person,
-								new MeteorologyStudyFieldWork(person, leadResearcher, study, (Rover) getVehicle()));
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingFieldSiteTime();
-		return result;
-	}
-
-	/**
-	 * Gets the estimated time remaining for the field site in the mission.
-	 * 
-	 * @return time (millisols)
-	 * @throws MissionException if error estimating time.
-	 */
-	private double getEstimatedRemainingFieldSiteTime() {
-		double result = 0D;
-
-		// Add estimated remaining field work time at field site if still there.
-		if (RESEARCH_SITE.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime);
-			double remainingTime = FIELD_SITE_TIME - timeSpentAtExplorationSite;
-			if (remainingTime > 0D) {
-				result += remainingTime;
-			}
-		}
-
-		// If field site hasn't been visited yet, add full field work time.
-		if (fieldSiteStartTime == null) {
-			result += FIELD_SITE_TIME;
-		}
-
-		return result;
-	}
-
-	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double fieldSiteTime = getEstimatedRemainingFieldSiteTime();
-		double timeSols = fieldSiteTime / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Determine life support supplies needed for site visit
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
-		return result;
+		super(description, MissionType.METEOROLOGY, leadResearcher, MIN_PEOPLE, rover,
+				  study, FIELD_SITE_TIME, members, startingSettlement, fieldSite);
 	}
 	
 	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
+	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
+		return new MeteorologyStudyFieldWork(person, leadResearcher, study, vehicle);
 	}
-	
+
 	@Override
-	public void destroy() {
-		super.destroy();
-		fieldSiteStartTime = null;
-		fieldSite = null;
-		study = null;
-		leadResearcher = null;
+	protected boolean canResearchSite(MissionMember researcher) {
+		return MeteorologyStudyFieldWork.canResearchSite(researcher, getRover());
 	}
 }

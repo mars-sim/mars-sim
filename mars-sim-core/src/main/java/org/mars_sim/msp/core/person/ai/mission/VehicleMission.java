@@ -1540,16 +1540,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return getEquipmentNeededForRemainingMission(true);
 	}
 
-	/**
-	 * Gets the number and types of equipment needed for the mission.
-	 * 
-	 * @param useBuffer use time buffers in estimation if true.
-	 * @return map of equipment types and number.
-	 */
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
-	}
-	
+//	/**
+//	 * Gets the number and types of equipment needed for the mission.
+//	 * 
+//	 * @param useBuffer use time buffers in estimation if true.
+//	 * @return map of equipment types and number.
+//	 */
+//	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+//		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
+//	}
+//	
 
 	/**
 	 * Gets the optional containers needed for storing the optional resources when loading up the vehicle.
