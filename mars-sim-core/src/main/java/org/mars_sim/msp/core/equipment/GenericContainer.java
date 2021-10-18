@@ -73,7 +73,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @return a list of resource ids
 	 */
 	@Override
-	public Set<Integer> getResourceIDs() {
+	public Set<Integer> getAmountResourceIDs() {
 		if (resourceHeld == -1) {
 			return Collections.emptySet();
 		}
@@ -222,10 +222,6 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 */
 	@Override
 	public boolean hasResource(int resource) {
-		for (int id: getResourceIDs()) {
-			if (id == resource)
-				return true;
-		}
-		return false;
+		return resourceHeld == resource;
 	}
 }

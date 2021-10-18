@@ -71,7 +71,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 				ResourceHolder suit = (ResourceHolder) e;
 				StringBuilder builder = new StringBuilder();
 
-				for(int resourceID: suit.getResourceIDs()) {
+				for(int resourceID: suit.getAmountResourceIDs()) {
 					if (builder.length() > 0) {
 						builder.append(", ");
 					}

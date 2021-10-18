@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.data;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -69,7 +68,7 @@ public interface ResourceHolder {
 	 * 
 	 * @return a collection of resource ids
 	 */
-	public Collection<Integer> getResourceIDs();
+	Set<Integer> getAmountResourceIDs();
 	
 	/**
 	 * Does this unit have this resource ?
@@ -77,5 +76,5 @@ public interface ResourceHolder {
 	 * @param resource
 	 * @return
 	 */
-	public boolean hasResource(int resource);
+	boolean hasResource(int resource);
 }
