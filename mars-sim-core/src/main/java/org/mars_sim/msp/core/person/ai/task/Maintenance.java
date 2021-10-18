@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -208,21 +209,38 @@ public class Maintenance extends Task implements Serializable {
 		Unit containerUnit = worker.getTopContainerUnit();
 
 		if (!(containerUnit instanceof MarsSurface)) {
-			Inventory inv = containerUnit.getInventory();
-			if (Maintenance.hasMaintenanceParts(inv, entity)) {
+//			Inventory inv = containerUnit.getInventory();
+			if (Maintenance.hasMaintenanceParts(containerUnit, entity)) {
 				repairParts = true;
 				Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 				Iterator<Integer> j = parts.keySet().iterator();
-				while (j.hasNext()) {
-					Integer part = j.next();
-					int number = parts.get(part);
-					inv.retrieveItemResources(part, number);
-					manager.maintainWithParts(part, number);
+				
+				if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
 					
-					// Add tracking item demand
-					inv.addItemDemandTotalRequest(part, number);
-					inv.addItemDemand(part, number);
+					while (j.hasNext()) {
+						Integer part = j.next();
+						int number = parts.get(part);
+						containerUnit.getInventory().retrieveItemResources(part, number);
+						manager.maintainWithParts(part, number);
+						
+						// Add tracking item demand
+						containerUnit.getInventory().addItemDemandTotalRequest(part, number);
+						containerUnit.getInventory().addItemDemand(part, number);
+					}
 				}
+				else {
+					while (j.hasNext()) {
+						Integer part = j.next();
+						int number = parts.get(part);
+						((Vehicle)containerUnit).retrieveItemResource(part, number);
+						manager.maintainWithParts(part, number);
+						
+						// Add tracking item demand
+//						inv.addItemDemandTotalRequest(part, number);
+//						inv.addItemDemand(part, number);
+					}
+				}
+				
 			}
 		}
 		
@@ -385,21 +403,22 @@ public class Maintenance extends Task implements Serializable {
 	 * @throws Exception if error checking parts availability.
 	 */
 	public static boolean hasMaintenanceParts(Worker worker, Malfunctionable malfunctionable) {
-		Inventory inv = null;
+		Unit unit = null;
 		
 		if (worker.isInSettlement()) 
 			// This is also the case when the person is in a garage
-			inv = worker.getSettlement().getInventory();
+			unit = worker.getSettlement();
+		
 		else if (worker.isRightOutsideSettlement())
-			inv = worker.getNearbySettlement().getInventory();
+			unit = worker.getNearbySettlement();
 		else if (worker.isInVehicle())
-			inv = worker.getVehicle().getInventory();
+			unit = worker.getVehicle();
 			
-		return hasMaintenanceParts(inv, malfunctionable);
+		return hasMaintenanceParts(unit, malfunctionable);
 	}
 
 	public static boolean hasMaintenanceParts(Settlement settlement, Malfunctionable malfunctionable) {
-		return hasMaintenanceParts(settlement.getInventory(), malfunctionable);
+		return hasMaintenanceParts(settlement, malfunctionable);
 	}
 	
 	/**
@@ -410,21 +429,37 @@ public class Maintenance extends Task implements Serializable {
 	 * @return true if enough parts.
 	 * @throws Exception if error checking parts availability.
 	 */
-	static boolean hasMaintenanceParts(Inventory inv, Malfunctionable malfunctionable) {
+	static boolean hasMaintenanceParts(Unit unit, Malfunctionable malfunctionable) {
 		boolean result = true;
 
-		Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
-		Iterator<Integer> i = parts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			int number = parts.get(part);
-			if (inv.getItemResourceNum(part) < number) {
-				result = false;
-				// Boosts the item demand
-				inv.addItemDemand(part, number);
+		if (unit.getUnitType() == UnitType.SETTLEMENT) {
+			Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+			Iterator<Integer> i = parts.keySet().iterator();
+			while (i.hasNext()) {
+				Integer part = i.next();
+				int number = parts.get(part);
+				if (unit.getInventory().getItemResourceNum(part) < number) {
+					result = false;
+					// Boosts the item demand
+					unit.getInventory().addItemDemand(part, number);
+				}
 			}
 		}
-//		logger.info("Inside hasMaintenanceParts(): result is " + result);
+		else {
+			Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+			Iterator<Integer> i = parts.keySet().iterator();
+			while (i.hasNext()) {
+				Integer part = i.next();
+				int number = parts.get(part);
+				if (((Vehicle)unit).getItemResourceStored(part) < number) {
+					result = false;
+					// Boosts the item demand
+//					unit.addItemDemand(part, number);
+				}
+			}
+		}
+		
+
 		return result;
 	}
 }

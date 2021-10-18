@@ -27,6 +27,10 @@ import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -174,12 +178,35 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
 
 		entities.add(entity);
-
-		Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
-		if (inventoryUnits.size() > 0) {
-			for (Unit unit : inventoryUnits) {
-				if (unit instanceof Malfunctionable) {
-					entities.add((Malfunctionable) unit);
+	
+		if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
+			Collection<Person> inventoryUnits = ((Crewable)entity).getCrew();
+			if (inventoryUnits.size() > 0) {
+				for (Unit unit : inventoryUnits) {
+					if (unit instanceof Malfunctionable) {
+						entities.add((Malfunctionable) unit);
+					}
+				}
+			}
+			
+			Collection<Robot> inventoryUnits1 = ((Crewable)entity).getRobotCrew();
+			if (inventoryUnits.size() > 0) {
+				for (Unit unit : inventoryUnits1) {
+					if (unit instanceof Malfunctionable) {
+						entities.add((Malfunctionable) unit);
+					}
+				}
+			}
+		}
+		
+		// Exclude Drones
+		else if (!(entity instanceof Drone)) {
+			Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
+			if (inventoryUnits.size() > 0) {
+				for (Unit unit : inventoryUnits) {
+					if (unit instanceof Malfunctionable) {
+						entities.add((Malfunctionable) unit);
+					}
 				}
 			}
 		}

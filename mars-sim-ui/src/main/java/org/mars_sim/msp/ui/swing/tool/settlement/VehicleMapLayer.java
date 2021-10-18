@@ -373,7 +373,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		Iterator<Part> i = vehicle.getPossibleAttachmentParts().iterator();
 		while (i.hasNext()) {
 			Part part = i.next();
-			if (vehicle.getInventory().getItemResourceNum(part) > 0) {
+			if (vehicle.getItemResourceStored(part.getID()) > 0) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
 				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());

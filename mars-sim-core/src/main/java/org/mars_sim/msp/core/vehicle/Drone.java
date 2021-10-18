@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Drone.java
- * @date 2021-08-20
+ * @date 2021-10-16
  * @author Manny Kung
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.vehicle;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -39,6 +38,8 @@ public class Drone extends Flyer implements Serializable {
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
 	
+	public static final int METHANE = ResourceUtil.methaneID; 
+	
 	/**
 	 * Constructs a Rover object at a given settlement
 	 * 
@@ -50,17 +51,10 @@ public class Drone extends Flyer implements Serializable {
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 		
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-//		if (vehicleConfig.hasPartAttachments(type)) {
-//			attachments = vehicleConfig.getAttachableParts(type);
-//			slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);
-//		}
 
-		Inventory inv = getInventory();
-		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
-		
 		// Set inventory resource capacities.
-		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, 
-				vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
+		getMicroInventory().setCapacity(METHANE, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
+		
 	}
 
 	
@@ -107,7 +101,7 @@ public class Drone extends Flyer implements Serializable {
 				}
 			}
 	
-			if (getInventory().getAmountResourceStored(getFuelType(), false) > Flyer.LEAST_AMOUNT) {
+			if (getAmountResourceStored(getFuelType()) > Flyer.LEAST_AMOUNT) {
 				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
 					super.removeStatus(StatusType.OUT_OF_FUEL);
 			}

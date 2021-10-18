@@ -190,7 +190,8 @@ extends Airlock {
 	 */
 	@Override
 	public Inventory getEntityInventory() {
-		return vehicle.getInventory();
+		logger.warning("VehicleAirlock no longer needs Inventory instance.");
+		return null;
 	}
 
 	@Override

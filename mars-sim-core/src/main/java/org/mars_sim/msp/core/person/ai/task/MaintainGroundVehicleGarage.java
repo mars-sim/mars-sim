@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -192,9 +192,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add repair parts if necessary.
-		Inventory inv = worker.getTopContainerUnit().getInventory();
 
-		if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
+		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {			
+			Inventory inv = worker.getTopContainerUnit().getInventory();
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {

@@ -54,7 +54,8 @@ extends TestCase {
 		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
 		
-		vehicle = new Rover("Test", "Cargo Rover", settlement);
+		vehicle = new Rover("Test Rover", "Cargo Rover", settlement);
+		vehicle.setCarryingCapacity(5000);
 		unitManager.addUnit(vehicle);
 		
 		person = new Person("Jim Loader", settlement);
@@ -145,8 +146,7 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, requiredEquipMap);
 		checkVehicleEquipment(vehicle, optionalEquipMap);
 		
-		double optionalLoaded = vehicle.getInventory()
-						.findAllEquipmentType(EquipmentType.convertID2Type(missingId)).size();
+		double optionalLoaded = vehicle.findAllEquipmentType(EquipmentType.convertID2Type(missingId)).size();
 
 		assertEquals("Optional Equipment loaded", 0D, optionalLoaded);
 	}
@@ -282,7 +282,7 @@ extends TestCase {
 		loadSettlementEquipment(settlement, equipmentManifest);
 		loadSettlementEquipment(settlement, optionalEquipmentManifest);
 
-		// Mkae sure Vehcile has capacity
+		// Make sure Vehicle has capacity
 		setResourcesCapacity(vehicle, resourcesManifest);
 		setResourcesCapacity(vehicle, optionalResourcesManifest);
 
@@ -344,10 +344,10 @@ extends TestCase {
 		
 		double optionalLoaded;
 		if (missingId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			optionalLoaded = vehicle.getInventory().getAmountResourceStored(missingId, false);
+			optionalLoaded = vehicle.getAmountResourceStored(missingId);
 		}
 		else {
-			optionalLoaded = vehicle.getInventory().getItemResourceNum(missingId);
+			optionalLoaded = vehicle.getItemResourceStored(missingId);
 		}
 			
 		assertEquals("Optional resource loaded", 0D, optionalLoaded);
@@ -420,10 +420,9 @@ extends TestCase {
 	 * @param equipmentManifest
 	 */
 	private void checkVehicleEquipment(Vehicle source, Map<Integer, Integer> manifest) {
-		Inventory inv = source.getInventory();
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
 			EquipmentType eType = EquipmentType.convertID2Type(item.getKey());
-			int stored = inv.findAllEquipmentType(eType).size();
+			int stored = source.findAllEquipmentType(eType).size();
 			assertEquals("Equipment in vehicle " + eType.name(),
 					item.getValue().intValue(), stored);
 		}
@@ -436,19 +435,18 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void checkVehicleResources(Vehicle source, Map<Integer, Number> requiredResourcesMap) {
-		Inventory inv = source.getInventory();
 
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
 
-				double stored = inv.getAmountResourceStored(key, false);
+				double stored = source.getAmountResourceStored(key);
 				double expected = resource.getValue().doubleValue();
 				assertLessThan("Vehicle amount resource stored " + resourceName, expected, stored);
 			}
 			else {
-				int stored = inv.getItemResourceNum(key);
+				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
 				assertEquals("Vehicle item resource stored " + key, expected, stored);
 			}
@@ -468,12 +466,10 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void setResourcesCapacity(Vehicle target, Map<Integer, Number> requiredResourcesMap) {
-		Inventory inv = target.getInventory();
-
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				inv.addAmountResourceTypeCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
+				target.getMicroInventory().setCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
 			}
 		}
 	}

@@ -26,16 +26,16 @@ public class InventoryUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(InventoryUtil.class.getName());
 
-	/**
-	 * Checks if a good EVA suit is in entity inventory.
-	 * 
-	 * @param inv the inventory to check.
-	 * @param {@link Person}
-	 * @return true if good EVA suit is in inventory
-	 */
-	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
-		return getGoodEVASuit(inv, p) != null;
-	}
+//	/**
+//	 * Checks if a good EVA suit is in entity inventory.
+//	 * 
+//	 * @param inv the inventory to check.
+//	 * @param {@link Person}
+//	 * @return true if good EVA suit is in inventory
+//	 */
+//	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
+//		return getGoodEVASuit(inv, p) != null;
+//	}
 	
 	/**
 	 * Gets a good EVA suit

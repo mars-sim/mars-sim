@@ -13,15 +13,16 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -183,13 +184,12 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	private void unloadLUVInventory() {
 
-		Inventory luvInv = luv.getInventory();
 		Inventory rcInv = returnContainer.getInventory();
 
 		// Unload all units.
-		Iterator<Unit> j = luvInv.getContainedUnits().iterator();
+		Iterator<Equipment> j = luv.getEquipmentList().iterator();
 		while (j.hasNext()) {
-			Unit unit = j.next();
+			Equipment unit = j.next();
 			if (rcInv.canStoreUnit(unit, false)) {
 				unit.transfer(luv, returnContainer);
 
@@ -199,15 +199,16 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all parts.
-		Iterator<Integer> i = luvInv.getAllItemResourcesStored().iterator();
+		Iterator<ItemResource> i = luv.getAllItemResourcesStored().iterator();
 		while (i.hasNext()) {
-			Integer item = i.next();
-			int num = luvInv.getItemResourceNum(item);
-			Part part= (Part)(ItemResourceUtil.findItemResource(item));
+			ItemResource item = i.next();
+			int id = item.getID();
+			int num = luv.getItemResourceStored(id);
+			Part part = (Part)item;
 			double mass = part.getMassPerItem() * num;
 			if (rcInv.getRemainingGeneralCapacity(false) >= mass) {
-				luvInv.retrieveItemResources(item, num);
-				rcInv.storeItemResources(item, num);
+				luv.retrieveItemResource(id, num);
+				rcInv.storeItemResources(id, num);
 			} else {
 				logger.severe(returnContainer, part.getName() + " numbered " + num
 							+ " cannot be stored due to insufficient remaining general capacity.");
@@ -215,15 +216,16 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all amount resources.
-		Iterator<Integer> k = luvInv.getAllARStored(false).iterator();
+		Iterator<AmountResource> k = luv.getAllAmountResourcesStored().iterator();
 		while (k.hasNext()) {
-			Integer resource = k.next();
-			double amount = luvInv.getAmountResourceStored(resource, false);
-			if (rcInv.hasAmountResourceCapacity(resource, amount, false)) {
-				luvInv.retrieveAmountResource(resource, amount);
+			AmountResource resource = k.next();
+			int id = resource.getID();
+			double amount = luv.getAmountResourceStored(id);
+			if (rcInv.hasAmountResourceCapacity(id, amount, false)) {
+				luv.retrieveAmountResource(id, amount);
 				rcInv.storeAmountResource(resource, amount, true);
 			} else {
-				logger.severe(returnContainer, ResourceUtil.findAmountResourceName(resource)
+				logger.severe(returnContainer, resource.getName()
 							  + " of amount " + amount + " kg. cannot be stored");
 			}
 		}

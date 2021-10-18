@@ -124,7 +124,7 @@ public class MicroInventory implements Serializable {
 		if (remaining < quantity) {
 			excess = quantity - remaining;
 			quantity = remaining;
-			// THis generates warnings during collect ice & regolith because the Task do not check the capacity before digging
+			// This generates warnings during collect ice & regolith because the Task do not check the capacity before digging
 //			String name = ResourceUtil.findAmountResourceName(resource);
 //			logger.warning(owner, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 		}
@@ -196,7 +196,11 @@ public class MicroInventory implements Serializable {
 		double result = 0;
 		for (int resource: storageMap.keySet()) {
 			int q = storageMap.get(resource).quantity;
-			result += ItemResourceUtil.findItemResource(resource).getMassPerItem() * q;
+			if (q > 0) {
+				ItemResource ir = ItemResourceUtil.findItemResource(resource);
+				if (ir != null)
+					result += ir.getMassPerItem() * q;
+			}
 		}
 		
 		totalMass = result;
@@ -345,7 +349,7 @@ public class MicroInventory implements Serializable {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getItemResourceStored(int resource) {
+	public int getItemResourceStored(int resource) {
 		ResourceStored s = storageMap.get(resource);
 		if (s != null) {
 			return s.quantity;
@@ -363,6 +367,19 @@ public class MicroInventory implements Serializable {
 		return storageMap.containsKey(resource);
 	}
 
+	/**
+	 * Removes a resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean removeResource(int resource) {
+		if (storageMap.containsKey(resource)) {
+			return storageMap.remove(resource) != null;
+		}
+		return false;
+	}
+	
 	/**
 	 * Clean this container for future use
 	 */

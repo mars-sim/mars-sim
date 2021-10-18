@@ -699,7 +699,7 @@ public class EnterAirlock extends Task implements Serializable {
 					else
 						vehicle = (Vehicle)airlock.getEntity();
 					
-					// 2a. Records the person as the owner
+					// 2a. Records the person as the owner (if it hasn't been done)
 					suit.setLastOwner(person);
 					// 2b. Doff this suit. Deregister the suit from the person
 					person.registerSuit(null);
@@ -757,10 +757,53 @@ public class EnterAirlock extends Task implements Serializable {
 	
 						setPhase(CLEAN_UP);
 					}
+					
 					else {
-						logger.log(person, Level.WARNING, 4_000,
-								"EVA suit's container has issues in " + airlock.getEntity().toString() 
-								+ ".");				
+//						logger.log(person, Level.WARNING, 4_000,
+//								"EVA suit's container has issues in " + airlock.getEntity().toString() 
+//								+ ".");			
+						
+						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
+						
+						// 2e. Unloads the resources from the EVA suit to the entityEnv
+						try {
+							// 2e1. Unload oxygen from the suit.
+							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
+							double oxygenCapacity = vehicle.getAmountResourceRemainingCapacity(oxygenID);
+							if (oxygenAmount > oxygenCapacity)
+								oxygenAmount = oxygenCapacity;
+	
+							suit.retrieveAmountResource(oxygenID, oxygenAmount);
+							vehicle.storeAmountResource(oxygenID, oxygenAmount);
+//							entityInv.addAmountSupply(oxygenID, oxygenAmount);
+	
+						} catch (Exception e) {
+							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen : ");
+							// endTask();
+						}
+	
+						// 2e2. Unload water from the suit.
+						double waterAmount = suit.getAmountResourceStored(waterID);
+						double waterCapacity = vehicle.getAmountResourceRemainingCapacity(waterID);
+						if (waterAmount > waterCapacity)
+							waterAmount = waterCapacity;
+	
+						try {
+							suit.retrieveAmountResource(waterID, waterAmount);
+							vehicle.storeAmountResource(waterID, waterAmount);
+//							entityInv.addAmountSupply(waterID, waterAmount);
+	
+						} catch (Exception e) {
+							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");
+							// endTask();
+						}
+	
+						// Add experience
+						addExperience(time);
+	
+						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
+	
+						setPhase(CLEAN_UP);
 					}
 				}
 			}

@@ -140,12 +140,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
-			<!-- <capacity resource="Rock Samples" value="2000.0" /> -->
+			<capacity resource="rock samples" value="400.0" /> 
 
 			<!-- The ice cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
-			<!-- <capacity resource="Ice" value="2000.0" /> -->
+			<capacity resource="ice" value="400.0" />
 
 			<!-- The food waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
@@ -165,7 +165,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 			<!-- The black water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="black water" value="60.0" />	
+			<capacity resource="black water" value="60.0" />
 	
 		</cargo>
 
@@ -215,6 +215,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="oxygen" value="176.0" />
 			<capacity resource="nitrogen" value="176.0" />			
 			<capacity resource="water" value="800.0" />
+			
 			<capacity resource="food" value="512.0" />
 			<capacity resource="dessert" value="240.0" />
 
@@ -224,6 +225,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<capacity resource="grey water" value="480.0" />
 			<capacity resource="black water" value="120.0" />
+			
+			<capacity resource="rock samples" value="400.0" /> 
+			<capacity resource="ice" value="400.0" />
 			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
@@ -255,7 +259,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="oxygen" value="66.0" />
 			<capacity resource="nitrogen" value="66.0" />		
 			<capacity resource="water" value="200.0" />
-			<capacity resource="food" value="128.0" />
+			
+			<capacity resource="food" value="128.0" />			
 			<capacity resource="dessert" value="60" />
 
 			<capacity resource="food waste" value="20.0" />
@@ -264,6 +269,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<capacity resource="grey water" value="120.0" />
 			<capacity resource="black water" value="30.0" />
+			
+			<capacity resource="rock samples" value="400.0" /> 
+			<capacity resource="ice" value="400.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"

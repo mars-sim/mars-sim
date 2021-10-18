@@ -276,7 +276,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 
 		Inventory inv = settlement.getInventory();
-		Inventory vInv = vehicle.getInventory();
 
 		boolean roverInSettlement = false;
 		if (inv.containsUnit(vehicle)) {
@@ -292,7 +291,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				double stored = inv.getAmountResourceStored(resource, false);
 				double needed = required.getValue().doubleValue();
 				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-				double loaded = vInv.getAmountResourceStored(resource, false);
+				double loaded = vehicle.getAmountResourceStored(resource);
 				double totalNeeded = needed + settlementNeed - loaded;
 					
 				if (stored < totalNeeded) {
@@ -307,7 +306,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int needed = required.getValue().intValue();
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
-				int numLoaded = vInv.getItemResourceNum(resource);
+				int numLoaded = vehicle.getItemResourceStored(resource);
 				int totalNeeded = needed + settlementNeed - numLoaded;
 				if (inv.getItemResourceNum(resource) < totalNeeded) {
 					int stored = inv.getItemResourceNum(resource);
@@ -326,7 +325,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Integer equipmentType = eRequired.getKey();			
 			int needed = eRequired.getValue();
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-			int numLoaded = vInv.findNumEquipment(equipmentType);
+			int numLoaded = vehicle.findNumEmptyContainersOfType(EquipmentType.convertID2Type(equipmentType), false);
 			int totalNeeded = needed + settlementNeed - numLoaded;
 			int stored = inv.findNumEmptyContainers(equipmentType, false);
 			if (stored < totalNeeded) {	

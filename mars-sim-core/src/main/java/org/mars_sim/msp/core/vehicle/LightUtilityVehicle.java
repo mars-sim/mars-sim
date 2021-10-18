@@ -1,15 +1,17 @@
-/**
+/*
  * Mars Simulation Project
- * Medical.java
- * @version 3.2.0 2021-06-20
+ * LightUtilityVehicle.java
+ * @date 2021-10-16
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -43,6 +45,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	
 	/** A collections of attachment parts */
 	private Collection<Part> attachments = null;
+	/** The occupants. */
+	private List<Person> occupants = new ArrayList<>();
+	/** The robot occupants. */
+	private List<Robot> robotOccupants = new ArrayList<>();
 	
 	public LightUtilityVehicle(String name, String type, Settlement settlement) {
 		// Use GroundVehicle constructor.
@@ -57,9 +63,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		crewCapacity = vehicleConfig.getCrewSize(type);
 		robotCrewCapacity = vehicleConfig.getCrewSize(type);
 
-		Inventory inv = getInventory();
-		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
-
 		// Set rover terrain modifier
 		setTerrainHandlingCapability(TERRAIN_HANDLING);
 	}
@@ -70,12 +73,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	/**
-	 * Gets a collection of the crewmembers.
+	 * Gets the number of crewmembers the vehicle can carry.
 	 * 
-	 * @return crewmembers as Collection
+	 * @return capacity
 	 */
-	public Collection<Person> getCrew() {
-		return getInventory().getContainedPeople();
+	@Override
+	public int getCrewCapacity() {
+		return crewCapacity;
 	}
 
 	/**
@@ -83,8 +87,9 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return capacity
 	 */
-	public int getCrewCapacity() {
-		return crewCapacity;
+	@Override
+	public int getRobotCrewCapacity() {
+		return robotCrewCapacity;
 	}
 
 	/**
@@ -93,7 +98,42 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @return number of crewmembers
 	 */
 	public int getCrewNum() {
-		return getInventory().getNumContainedPeople();
+		if (!getCrew().isEmpty())
+			return occupants.size();
+		return 0;
+	}
+
+	/**
+	 * Gets the current number of crewmembers.
+	 * 
+	 * @return number of crewmembers
+	 */
+	public int getRobotCrewNum() {
+		if (!getRobotCrew().isEmpty())
+			return robotOccupants.size();
+		return 0;
+	}
+
+	/**
+	 * Gets a list of the robot crewmembers.
+	 * 
+	 * @return robot crewmembers as Collection
+	 */
+	public List<Person> getCrew() {
+		if (occupants == null || occupants.isEmpty())
+			return new ArrayList<>();
+		return occupants;
+	}
+
+	/**
+	 * Gets a list of the robot crewmembers.
+	 * 
+	 * @return robot crewmembers as Collection
+	 */
+	public List<Robot> getRobotCrew() {
+		if (robotOccupants == null || robotOccupants.isEmpty())
+			return new ArrayList<>();
+		return robotOccupants;
 	}
 
 	/**
@@ -103,29 +143,44 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @return true if person is a crewmember
 	 */
 	public boolean isCrewmember(Person person) {
-		return getInventory().containsUnit(person);
+		return occupants.contains(person);
 	}
 
-	@Override
-	public Collection<Robot> getRobotCrew() {
-		return getInventory().getContainedRobots();
-	}
-
-	@Override
-	public int getRobotCrewCapacity() {
-		return robotCrewCapacity;
-	}
-
-	@Override
-	public int getRobotCrewNum() {
-		return getInventory().getNumContainedRobots();
-	}
-
-	@Override
+	/**
+	 * Checks if robot is a crewmember.
+	 * 
+	 * @param robot the robot to check
+	 * @return true if robot is a crewmember
+	 */
 	public boolean isRobotCrewmember(Robot robot) {
-		return getInventory().containsUnit(robot);
+		return robotOccupants.contains(robot);
 	}
 
+	/**
+	 * Adds a person as crewmember
+	 * 
+	 * @param person
+	 * @param true if the person can be added
+	 */
+	public boolean addPerson(Person person) {
+		if (!isCrewmember(person))
+			return occupants.add(person);
+		
+		return false;
+	}
+	
+	/**
+	 * Removes a person as crewmember
+	 * 
+	 * @param person
+	 * @param true if the person can be removed
+	 */
+	public boolean removePerson(Person person) {
+		if (isCrewmember(person))
+			return occupants.remove(person);
+		return false;
+	}
+	
 	/**
 	 * Gets a collection of parts that can be attached to this vehicle.
 	 * 
@@ -155,12 +210,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     }
 
 	@Override
-	public Collection<Unit> getUnitCrew() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getNickName() {
 		return getName();
 	}
@@ -172,6 +221,22 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return null;
 	}
 	 
+	/**
+	 * Sets the coordinates of all units in the inventory.
+	 * 
+	 * @param newLocation the new coordinate location
+	 */
+	@Override
+	public void setLocation(Coordinates newLocation) {
+		super.setLocation(newLocation);
+		
+		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
+			for (Person p: getCrew()) {
+				p.setCoordinates(newLocation);
+			}
+		}
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

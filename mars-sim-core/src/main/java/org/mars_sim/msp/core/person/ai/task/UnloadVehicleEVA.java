@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -31,6 +33,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -252,13 +256,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
-		Inventory vehicleInv = vehicle.getInventory();
+//		Inventory vehicleInv = vehicle.getInventory();
 		
 		Inventory settlementInv = settlement.getInventory();
 		
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Equipment> k = vehicleInv.findAllEquipment().iterator();
+			Iterator<Equipment> k = vehicle.getEquipmentList().iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
@@ -273,10 +277,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		double totalAmount = 0;
 		// Unload amount resources.
-		Iterator<Integer> i = vehicleInv.getAllARStored(false).iterator();
+		Iterator<AmountResource> i = vehicle.getAllAmountResourcesStored().iterator();
 		while (i.hasNext() && (amountUnloading > 0D)) {
-			Integer resource = i.next();
-			double amount = vehicleInv.getAmountResourceStored(resource, false);
+			AmountResource resource = i.next();
+			int id = resource.getID();
+			double amount = vehicle.getAmountResourceStored(id);
 			if (amount > amountUnloading) {
 				amount = amountUnloading;
 			}
@@ -286,20 +291,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				amountUnloading = 0D;
 			}
 			try {
-				vehicleInv.retrieveAmountResource(resource, amount);
+				vehicle.retrieveAmountResource(id, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
 				
-				if (resource != waterID && resource != methaneID 
-						&& resource != foodID && resource != oxygenID) {
+				if (id != waterID && id != methaneID 
+						&& id != foodID && id != oxygenID) {
 					double laborTime = 0;
-					if (resource == iceID || resource == regolithID)
+					if (id == iceID || id == regolithID)
 						laborTime = CollectResources.LABOR_TIME;
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 					
-					settlementInv.addAmountSupply(resource, amount);
+					settlementInv.addAmountSupply(id, amount);
 					// Add to the daily output
-					settlement.addOutput(resource, amount, laborTime);
+					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
 //		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
 				}
@@ -319,20 +324,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
-			Iterator<Integer> j = vehicleInv.getAllItemResourcesStored().iterator();
+			Iterator<ItemResource> j = vehicle.getAllItemResourcesStored().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
-				Integer resource = j.next();
-				Part part= (Part)(ItemResourceUtil.findItemResource(resource));
+				ItemResource resource = j.next();
+				Part part = (Part)resource;
 				double mass = part.getMassPerItem();
-				int num = vehicleInv.getItemResourceNum(resource);
+				int num = vehicle.getItemResourceStored(resource.getID());
 				if ((num * mass) > amountUnloading) {
 					num = (int) Math.round(amountUnloading / mass);
 					if (num == 0) {
 						num = 1;
 					}
 				}
-				vehicleInv.retrieveItemResources(resource, num);
-				settlementInv.storeItemResources(resource, num);
+				vehicle.retrieveItemResource(resource.getID(), num);
+				settlementInv.storeItemResources(resource.getID(), num);
 				amountUnloading -= (num * mass);
 				
 				totalItems += num;
@@ -415,15 +420,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				
 				// Find unreserved vehicle parked at their home base. Visiting vehicles
 				// should not unloaded outside a mission
-				if (!vehicle.isReserved() &&
+				if (vehicle instanceof Rover && !vehicle.isReserved() &&
 						(vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
+					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getTotalMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -434,10 +438,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 						}
 					}
 
-					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
+					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getTotalMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {

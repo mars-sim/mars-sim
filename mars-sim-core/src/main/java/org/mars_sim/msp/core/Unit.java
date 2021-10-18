@@ -37,7 +37,12 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 
 /**
@@ -172,7 +177,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		
 		// Define the default LocationStateType of an unit at the start of the sim
 		// Instantiate Inventory as needed. Still needs to be pushed to subclass
-		// constrcutors
+		// constructors
 		switch(getUnitType()) {
 		case ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
@@ -188,7 +193,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case PERSON:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-//			this.inventory = new Inventory(this);
 			break;
 		
 		case BUILDING:
@@ -199,7 +203,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			this.inventory = new Inventory(this);
 			break;
 		
 		case SETTLEMENT:
@@ -235,7 +238,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			else if (getUnitType() == UnitType.PERSON){
 				((Person)this).setLocation(location);
 			}
-				
+//			else if (getUnitType() == UnitType.VEHICLE){
+//				((Vehicle)this).setLocation(location);
+//			}			
 		}
 		
 		if (diagnosticFile != null) {
@@ -412,12 +417,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		location.setCoords(newLocation);
 		
 		if (getUnitType() != UnitType.EQUIPMENT
-				&& getUnitType() != UnitType.PERSON) {
+				&& getUnitType() != UnitType.PERSON
+				&& getUnitType() != UnitType.VEHICLE) {
 			inventory.setCoordinates(newLocation);
 		}
 		
 		if (getUnitType() == UnitType.PERSON) {
 			((Person)this).setLocation(location);
+		}
+		else if (getUnitType() == UnitType.VEHICLE) {
+			((Vehicle)this).setLocation(location);
 		}
 		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
@@ -429,7 +438,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return the unit's inventory object
 	 */
 	public Inventory getInventory() {
-		if (getUnitType() == UnitType.EQUIPMENT) {
+		if (getUnitType() == UnitType.EQUIPMENT
+				|| getUnitType() == UnitType.PERSON
+				|| getUnitType() == UnitType.VEHICLE) {
 			logger.severe(this + " does NOT use Inventory class anymore.");
 			return null;
 		}
@@ -1008,25 +1019,89 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		boolean transferred;
+		boolean transferred = false;
 		
-		// Check the origin is a person 
-		if (origin instanceof EquipmentOwner) {
-			transferred = ((EquipmentOwner)origin).removeEquipment((Equipment)this);
-		}
-		else {
-			transferred = origin.getInventory().retrieveUnit(this, false);
-		}
-		
-		if (transferred) { 
-			// Check if the destination is a person 
-			if (destination instanceof EquipmentOwner) {
-				transferred = ((EquipmentOwner)destination).addEquipment((Equipment)this);
+		// Check if this unit is a person 
+		if (getUnitType() == UnitType.PERSON) {
+			// Check if the origin is a vehicle
+			if (origin.getUnitType() == UnitType.VEHICLE) {
+				if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+					transferred = ((Crewable)origin).removePerson((Person)this);
+				}
+				// Note: the origin is a settlement/mars surface
+				else {
+					// Retrieve this person from the settlement
+//					((Settlement)origin).removePeopleWithin((Person)this);
+					transferred = origin.getInventory().retrieveUnit(this, true);
+				}
 			}
+		}
+		// Check if this unit is a vehicle
+		else if (getUnitType() == UnitType.VEHICLE) {
+			// Note: move vehicle between settlement and mars surface
+			transferred = origin.getInventory().retrieveUnit(this, true);
+		}
+		// Check if this unit is a equipment
+		else if (getUnitType() == UnitType.EQUIPMENT) {		
+			if (origin.getUnitType() == UnitType.PERSON
+				|| origin.getUnitType() == UnitType.VEHICLE) {
+				transferred = ((EquipmentOwner)origin).removeEquipment((Equipment)this);
+			}
+			// Note: the origin is a settlement/mars surface
+			else {
+				transferred = origin.getInventory().retrieveUnit(this, true);
+			}
+		}
+		// Note: the origin is a settlement/mars surface
+		else {
+			transferred = origin.getInventory().retrieveUnit(this, true);
+		}
+		
+		if (transferred) {	
+			// Check if this unit is a person 
+			if (getUnitType() == UnitType.PERSON) {
+				// Check if the destination is a vehicle
+				if (destination.getUnitType() == UnitType.VEHICLE) {
+					if (((Vehicle)destination).getVehicleType() == VehicleType.LUV
+							|| ((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+						transferred = ((Crewable)destination).addPerson((Person)this);
+					}
+					// Note: the destination is a settlement/mars surface
+					else {
+//						((Settlement) destination).addPeopleWithin((Person)this);
+						transferred = destination.getInventory().storeUnit(this);
+					}
+				}
+			}
+			// Check if this unit is a vehicle
+			else if (getUnitType() == UnitType.VEHICLE) {
+				// Note: move vehicle between settlement and mars surface
+				transferred = destination.getInventory().storeUnit(this);
+			}
+			// Check if this unit is a equipment
+			else if (getUnitType() == UnitType.EQUIPMENT) {
+				if (destination.getUnitType() == UnitType.PERSON
+					|| destination.getUnitType() == UnitType.VEHICLE) {
+					transferred = ((EquipmentOwner)destination).addEquipment((Equipment)this);
+				}
+				// Note: the destination is a settlement/mars surface
+				else {
+					transferred = destination.getInventory().storeUnit(this);
+				}
+			}
+			// Note: the destination is a settlement/mars surface
 			else {
 				transferred = destination.getInventory().storeUnit(this);
 			}
 		}
+		
+		else {
+			logger.warning(this + " cannot be retrieved from " + origin + ".");
+		}
+		
+//		if (!transferred) {
+//			logger.warning(this + " cannot be stored into " + destination + ".");
+//		}
 		
 		return transferred;
 	}

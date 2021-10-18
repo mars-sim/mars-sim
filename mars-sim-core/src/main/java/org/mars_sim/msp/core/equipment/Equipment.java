@@ -277,7 +277,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 			
 	/**
-	 * Is this suit empty ? 
+	 * Is this equipment empty ? 
 	 * 
 	 * @param brandNew true if it needs to be brand new
 	 * @return

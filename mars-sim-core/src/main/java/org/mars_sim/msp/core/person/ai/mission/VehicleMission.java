@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMission.java
- * @date 2021-08-29
+ * @date 2021-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -321,7 +320,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			boolean usable = vehicle.isVehicleReady();
 
-			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getTotalMass() > 0D)
 				usable = false;
 
 			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
@@ -472,7 +471,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
-					if (!vehicleCache.getInventory().isEmpty(false)) {
+					if (!vehicleCache.isEmpty()) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -483,7 +482,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				
 				else if (vehicleCache instanceof Rover) {
-					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.isEmpty()) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -582,7 +581,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// if a vehicle is at a settlement			
 				setPhaseEnded(true);
 				
-				if (!vehicle.getInventory().isEmpty(false))
+				if (!vehicle.isEmpty())
 					setPhase(VehicleMission.DISEMBARKING);
 				
 				leaveVehicle();
@@ -668,7 +667,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			result *= factor;
 		}
 
-		double cap = vehicle.getInventory().getAmountResourceCapacity(vehicle.getFuelType(), false);
+		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
 		if (result > cap)
 			// Make sure the amount requested is less than the max resource cap of this vehicle 
 			result = cap;
@@ -1151,8 +1150,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean result = true;
 
 		if (vehicle != null) {
-			Inventory inv = vehicle.getInventory();
-
+		
 			for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
 				int id = entry.getKey();
 				Object value = entry.getValue();
@@ -1160,7 +1158,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
 					double amount = (Double) value;
-					double amountStored = inv.getAmountResourceStored(id, false);
+					double amountStored = vehicle.getAmountResourceStored(id);
 
 					if (amountStored < amount) {
 						String newLog = "Not enough " 
@@ -1174,7 +1172,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
  
 				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 					int num = (Integer) value;
-					int numStored = inv.getItemResourceNum(id);
+					int numStored = vehicle.getItemResourceStored(id);
 
 					if (numStored < num) {
 						String newLog = "Not enough " 
@@ -1612,8 +1610,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				while (j.hasNext()) {
 					Integer part = j.next();
 					int number = parts.get(part);
-					if (vehicle.getInventory().getItemResourceNum(part) < number) {
-						vehicle.getInventory().addItemDemand(part, number);
+					if (vehicle.getItemResourceStored(part) < number) {
+//						vehicle.getInventory().addItemDemand(part, number);
 						result = true;
 					}
 				}

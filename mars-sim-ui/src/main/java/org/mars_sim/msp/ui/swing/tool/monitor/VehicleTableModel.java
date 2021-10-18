@@ -593,8 +593,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * @return  amount of resource.
 	 */
 	private double getResourceStored(Unit unit, int resource) {
-//		return unit.getInventory().getAmountResourceStored(resource, false);
-		return Math.round(unit.getInventory().getAmountResourceStored(resource, true) * 100.0) / 100.0;
+		return Math.round(((Vehicle)unit).getAmountResourceStored(resource) * 100.0) / 100.0;
 	}
 
 	/**

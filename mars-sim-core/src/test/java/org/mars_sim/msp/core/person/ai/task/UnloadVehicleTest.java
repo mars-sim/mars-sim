@@ -80,21 +80,21 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 		
-		Inventory vehicleInv = vehicle.getInventory();
-		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
-		vehicleInv.storeAmountResource(oxygen, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
-		vehicleInv.storeAmountResource(food, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
-		vehicleInv.storeAmountResource(water, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
-		vehicleInv.storeAmountResource(methane, 100D, true);
-		vehicleInv.addGeneralCapacity(100D);
-		vehicleInv.storeItemResources(hammer.getID(), 5);
-		for (int x = 0; x < 5; x++) {
-			Equipment eqm = EquipmentFactory.createEquipment(EquipmentType.SPECIMEN_BOX, settlement, false);
-			vehicleInv.storeUnit(eqm);
-		}
+//		Inventory vehicleInv = vehicle.getInventory();
+//		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
+//		vehicleInv.storeAmountResource(oxygen, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
+//		vehicleInv.storeAmountResource(food, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
+//		vehicleInv.storeAmountResource(water, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
+//		vehicleInv.storeAmountResource(methane, 100D, true);
+//		vehicleInv.addGeneralCapacity(100D);
+//		vehicleInv.storeItemResources(hammer.getID(), 5);
+//		for (int x = 0; x < 5; x++) {
+//			Equipment eqm = EquipmentFactory.createEquipment(EquipmentType.SPECIMEN_BOX, settlement, false);
+//			vehicleInv.storeUnit(eqm);
+//		}
 
 //		BuildingManager buildingManager = settlement.getBuildingManager();
         MockBuilding b0 = new MockBuilding(settlement.getBuildingManager(), "B0");

@@ -134,7 +134,7 @@ public class Walk extends Task implements Serializable {
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = vehicle.getInventory().containsEVASuit(); //InventoryUtil.goodEVASuitAvailable(vehicle.getInventory(), person);
+					boolean roverSuit = vehicle.getInventory().containsEVASuit();
 					boolean wearingSuit = (person.getSuit() != null);
 					goodEVASuit = roverSuit || wearingSuit;
 
@@ -151,11 +151,10 @@ public class Walk extends Task implements Serializable {
 							walkToSettlement = true;
 						}
 					}
-
-				} else {
+				}
+				else {
 					// If on a LUV, retrieve person from vehicle.
-					// TODO : should we call endTask() instead ?
-					vehicle.getInventory().retrieveUnit(person);
+					person.transfer(vehicle, unitManager.getMarsSurface());
 				}
 			}
 
@@ -1109,10 +1108,7 @@ public class Walk extends Task implements Serializable {
 			// Exit the rover parked inside a garage onto the settlement
 			if (person.isInVehicleInGarage()) {
 				person.transfer(rover, garageBuilding.getSettlement());
-			
-//				rover.getInventory().retrieveUnit(person);
-//				garageBuilding.getSettlementInventory().storeUnit(person); 
-			
+				
 				// Add the person onto the garage
 				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
@@ -1175,8 +1171,6 @@ public class Walk extends Task implements Serializable {
 			
 			// Place this person within a vehicle inside a garage in a settlement
 			person.transfer(garageBuilding, rover);
-//			garageBuilding.getSettlementInventory().retrieveUnit(person);
-//			rover.getInventory().storeUnit(person);
 			
 			// Remove the person from the garage
 			BuildingManager.removePersonFromBuilding(person, garageBuilding);		
@@ -1194,10 +1188,7 @@ public class Walk extends Task implements Serializable {
 			
 			// Place this robot within a vehicle inside a garage in a settlement
 			robot.transfer(garageBuilding, rover);
-						
-//			garageBuilding.getSettlementInventory().retrieveUnit(robot);
-//			rover.getInventory().storeUnit(robot);
-			
+		
 			// Remove the robot from the garage
 			BuildingManager.removeRobotFromBuilding(robot, garageBuilding);
 

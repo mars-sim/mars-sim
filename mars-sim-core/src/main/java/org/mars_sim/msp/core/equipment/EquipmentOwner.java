@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentOwner.java
- * @date 2021-10-13
+ * @date 2021-10-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 
@@ -85,7 +86,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getItemResourceStored(int resource);
+	public int getItemResourceStored(int resource);
     
 	/**
 	 * Gets all stored amount resources
@@ -129,4 +130,35 @@ public interface EquipmentOwner extends ResourceHolder {
 	 */
 	public void setLocation(Coordinates newLocation);
 	
+	/**
+	 * Finds a EVA suit in storage.
+	 * 
+	 * @param person
+	 * @return instance of EVASuit or null if none.
+	 */
+	public EVASuit findEVASuit(Person person);
+	
+	/**
+	 * Checks if enough resource supplies to fill the EVA suit.
+	 * 
+	 * @param suit      the EVA suit.
+	 * @return true if enough supplies.
+	 * @throws Exception if error checking suit resources.
+	 */
+	public boolean hasEnoughResourcesForSuit(EVASuit suit);
+	
+	/**
+	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
+	 *  
+	 * @param isEmpty    does it need to be empty ?
+	 * @return number of EVA suits
+	 */
+	public int findNumEVASuits(boolean isEmpty);
+	
+	/**
+	 * Checks if it contains an EVA suit.
+	 * 
+	 * @return true if it contains an EVA suit.
+	 */
+	public boolean containsEVASuit();
 }

@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -251,12 +253,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && vehicle instanceof Drone && !vehicle.isReserved()
+				if (vehicle instanceof Rover && !vehicle.isReserved()
 						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
+					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
 						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getTotalMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -267,10 +269,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 						}
 					}
 
-					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
+					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
 						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getTotalMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -307,11 +309,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
 					if (vehicleMission.hasVehicle()) {
-						Vehicle vehicle = vehicleMission.getVehicle();					
-						// If no one is in the Vehicle its a candidate
-						if ((vehicle.getInventory().getNumContainedPeople() == 0)
-								|| (vehicle.getInventory().getNumContainedRobots() == 0)) {
-							
+						Vehicle vehicle = vehicleMission.getVehicle();	
+						Crewable c = (Crewable)vehicle;
+						// If no one is inside the vehicle is a candidate
+						if (c.getCrewNum() == 0 || c.getRobotCrewNum() == 0) {
 							// If looking for garaged vehicles; then add to garage otherwise
 							// check vehicle is not in garage
 							if (!isFullyUnloaded(vehicle)) {
@@ -381,7 +382,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 
-		Inventory vehicleInv = vehicle.getInventory();
+//		Inventory vehicleInv = vehicle.getInventory();
 		if (settlement == null) {
 			endTask();
 			return 0D;
@@ -410,7 +411,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Equipment> k = vehicleInv.findAllEquipment().iterator();
+			Iterator<Equipment> k = vehicle.getEquipmentList().iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
@@ -429,10 +430,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		double totalAmount = 0;
 		// Unload amount resources.
-		Iterator<Integer> i = vehicleInv.getAllARStored(false).iterator();
+		Iterator<AmountResource> i = vehicle.getAllAmountResourcesStored().iterator();
 		while (i.hasNext() && (amountUnloading > 0D)) {
-			Integer resource = i.next();
-			double amount = vehicleInv.getAmountResourceStored(resource, false);
+			AmountResource resource = i.next();
+			int id = resource.getID();
+			double amount = vehicle.getAmountResourceStored(id);
 			if (amount > amountUnloading)
 				amount = amountUnloading;
 			double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true, false);
@@ -441,20 +443,20 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				amountUnloading = 0D;
 			}
 			try {
-				vehicleInv.retrieveAmountResource(resource, amount);
+				vehicle.retrieveAmountResource(id, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
 				
-				if (resource != waterID && resource != methaneID 
-						&& resource != foodID && resource != oxygenID) {
+				if (id != waterID && id != methaneID 
+						&& id != foodID && id != oxygenID) {
 					double laborTime = 0;
-					if (resource == iceID || resource == regolithID)
+					if (id == iceID || id == regolithID)
 						laborTime = CollectResources.LABOR_TIME;
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 					
-					settlementInv.addAmountSupply(resource, amount);
+					settlementInv.addAmountSupply(id, amount);
 					// Add to the daily output
-					settlement.addOutput(resource, amount, laborTime);
+					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
 //		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
 				}
@@ -479,20 +481,21 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
-			Iterator<Integer> j = vehicleInv.getAllItemResourcesStored().iterator();
+			Iterator<ItemResource> j = vehicle.getAllItemResourcesStored().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
-				Integer resource = j.next();
-				Part part= (Part)(ItemResourceUtil.findItemResource(resource));
+				ItemResource resource = j.next();
+				int id = resource.getID();
+				Part part= (Part)(ItemResourceUtil.findItemResource(id));
 				double mass = part.getMassPerItem();
-				int num = vehicleInv.getItemResourceNum(resource);
+				int num = vehicle.getItemResourceStored(id);
 				if ((num * mass) > amountUnloading) {
 					num = (int) Math.round(amountUnloading / mass);
 					if (num == 0) {
 						num = 1;
 					}
 				}
-				vehicleInv.retrieveItemResources(resource, num);
-				settlementInv.storeItemResources(resource, num);
+				vehicle.retrieveItemResource(id, num);
+				settlementInv.storeItemResources(id, num);
 				amountUnloading -= (num * mass);
 			}
 

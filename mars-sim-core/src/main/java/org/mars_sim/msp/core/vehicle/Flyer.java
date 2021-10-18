@@ -245,13 +245,11 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	 */
 	protected boolean hasEnoughFuel(double fuelConsumed) {
 		Vehicle v = getVehicle();
-	    Inventory vInv = v.getInventory();
         int fuelType = v.getFuelType();
         
     	try {
-    		double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
-//		    	vInv.retrieveAmountResource(fuelType, fuelConsumed);
-    		
+    		double remainingFuel = v.getAmountResourceStored(fuelType);
+//	
     		if (remainingFuel < LEAST_AMOUNT) {
     			v.addStatus(StatusType.OUT_OF_FUEL);
     			return false;

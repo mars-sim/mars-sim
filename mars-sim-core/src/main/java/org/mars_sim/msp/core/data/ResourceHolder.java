@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.data;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -64,9 +65,17 @@ public interface ResourceHolder {
 	double getTotalCapacity();
 	
 	/**
-	 * Gets a list of supported resources
+	 * Gets a collection of supported resources
 	 * 
-	 * @return a list of resource ids
+	 * @return a collection of resource ids
 	 */
-	public Set<Integer> getResourceIDs();
+	public Collection<Integer> getResourceIDs();
+	
+	/**
+	 * Does this unit have this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasResource(int resource);
 }

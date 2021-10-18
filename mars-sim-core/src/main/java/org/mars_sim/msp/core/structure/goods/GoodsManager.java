@@ -530,7 +530,7 @@ public class GoodsManager implements Serializable, Temporal {
 			projected += getToiletryUsageDemand(id);
 
 			// Tune vehicle demand if applicable.
-			projected += getVehicleFueldDemand(id);
+			projected += getVehicleFuelDemand(id);
 
 //			if (id == ResourceUtil.regolithID)
 //				System.out.println("2. " + id
@@ -1267,12 +1267,12 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the resource to check.
 	 * @return demand (kg) for the resource.
 	 */
-	private double getVehicleFueldDemand(int resource) {
+	private double getVehicleFuelDemand(int resource) {
 		double demand = 0D;
 		if (resource == ResourceUtil.methaneID) {
 			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
 			while (i.hasNext()) {
-				double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
+				double fuelDemand = i.next().getAmountResourceCapacity(resource);
 				demand += fuelDemand * transportation_factor * VEHICLE_FUEL_FACTOR;
 			}
 		}

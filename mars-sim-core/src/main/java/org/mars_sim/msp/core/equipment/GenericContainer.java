@@ -213,4 +213,19 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
 	}
+
+	/**
+	 * Does this unit have this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasResource(int resource) {
+		for (int id: getResourceIDs()) {
+			if (id == resource)
+				return true;
+		}
+		return false;
+	}
 }

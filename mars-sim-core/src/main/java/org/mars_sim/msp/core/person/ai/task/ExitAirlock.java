@@ -18,7 +18,9 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -733,13 +735,10 @@ public class ExitAirlock extends Task implements Serializable {
 			return 0;
 		}
 		
-// 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
-//				"[" + person.getLocale() + "] " + person.getName() 
-////				+ " " + loc 
-//				+ " was ready to don the EVA suit.");
-				
 		EVASuit suit = null;
 		Inventory entityInv = null;
+		Settlement settlement = null;
+		Vehicle vehicle = null;
 		
 		// Check if person already has EVA suit.
 		if (!hasSuit && alreadyHasEVASuit()) {
@@ -748,18 +747,21 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// Get an EVA suit from entity inventory.
 		if (!hasSuit) { 
-			entityInv = airlock.getEntityInventory();
-			suit = InventoryUtil.getGoodEVASuit(entityInv, person);
-		}
-
-		if (!hasSuit && suit != null) {
-			Settlement settlement = null;
-			Vehicle vehicle = null;
-			
 			if (airlock instanceof BuildingAirlock)
 				settlement = ((Building)airlock.getEntity()).getSettlement();
 			else
 				vehicle = (Vehicle)airlock.getEntity();
+			
+			entityInv = airlock.getEntityInventory();
+			if (entityInv != null) {
+				suit = InventoryUtil.getGoodEVASuit(entityInv, person);
+			}
+			else  {
+				suit = ((Vehicle)airlock.getEntity()).findEVASuit(person);
+			}
+		}
+
+		if (!hasSuit && suit != null) {
 			
 			// if a person hasn't donned the suit yet
 			try {

@@ -37,6 +37,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -956,7 +958,7 @@ public class Inventory implements Serializable {
 			Iterator<Integer> i = containedUnitIDs.iterator();
 			while (!result && i.hasNext()) {
 				Unit u = unitManager.getUnitByID(i.next());
-				if (u.getUnitType() != UnitType.PERSON) {
+				if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 					if (u.getInventory().hasItemResource(id)) {
 						result = true;
 					}
@@ -1897,10 +1899,10 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON) {
+					else if (unit.getUnitType() != UnitType.PERSON && unit.getUnitType() != UnitType.VEHICLE) {
 						for (Integer resource : unit.getInventory().getAllARStored(false)) {
-							updateAmountResourceCapacityCache(resource);
-							updateAmountResourceStoredCache(resource);
+//							updateAmountResourceCapacityCache(resource);
+//							updateAmountResourceStoredCache(resource);
 							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 						}
 						for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
@@ -1929,7 +1931,7 @@ public class Inventory implements Serializable {
 					}
 	
 					else if (unit.getUnitType() == UnitType.PERSON) {
-						((Settlement) owner).addPeopleWithin((Person)unit);
+						((Settlement)owner).addPeopleWithin((Person)unit);
 					}
 				}
 
@@ -1942,33 +1944,6 @@ public class Inventory implements Serializable {
 		}
 		
 		return stored;
-	}
-
-	/**
-	 * Transfer the ownership of an unit from one owner to another.
-	 * 
-	 * @param unit the unit.
-	 * @return true if successful
-	 */
-	public boolean transferUnit(Unit unit, Unit newOwner) {
-		boolean transferred = false;
-		if (retrieveUnit(unit, false)) {
-			// Check if newOwner is a person 
-			if (newOwner.getUnitType() == UnitType.PERSON) {
-				transferred = ((Person)newOwner).addEquipment((Equipment)unit);
-			}
-			else {
-				transferred = newOwner.getInventory().storeUnit(unit);
-			}
-			
-			if (!transferred) {
-				// The transfer has failed. 
-				// Must return the Unit back to the origin.
-				storeUnit(unit);
-			}
-		}
-		
-		return transferred;
 	}
 
 	/**
@@ -1992,7 +1967,7 @@ public class Inventory implements Serializable {
 		
 		Integer uid = unit.getIdentifier();
 
-		if ((containedUnitIDs != null) && containedUnitIDs.contains(uid)) {
+		if (containedUnitIDs != null && containedUnitIDs.contains(uid)) {
 			
 			setUnitTotalMassCacheDirty();
 
@@ -2018,10 +1993,10 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON) {		
+					else if (unit.getUnitType() != UnitType.PERSON && unit.getUnitType() != UnitType.VEHICLE) {		
 						for (Integer resource : unit.getInventory().getAllARStored(false)) {
-							updateAmountResourceCapacityCache(resource);
-							updateAmountResourceStoredCache(resource);
+//							updateAmountResourceCapacityCache(resource);
+//							updateAmountResourceStoredCache(resource);
 							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 						}
 						
@@ -2274,7 +2249,7 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedCapacity += ((Equipment)u).getAmountResourceCapacity(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON) {
+						else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 							containedCapacity += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
@@ -2314,7 +2289,7 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedStored +=  ((Equipment)u).getAmountResourceStored(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON) {
+						else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 							containedStored += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
@@ -2472,7 +2447,7 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					containerStored += ((Equipment)u).getAmountResourceStored(resource);
 				}
-				else if (u.getUnitType() != UnitType.PERSON) {
+				else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 					containerStored += u.getInventory().getAmountResourceStored(resource, false);
 				}
 			}	
@@ -2579,7 +2554,7 @@ public class Inventory implements Serializable {
 				}
 				else {
 					Unit u = unitManager.getUnitByID(uid);
-					if (u.getUnitType() != UnitType.PERSON) {
+					if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 						Set<Integer> set = u.getInventory().getAllARStored(false);
 						tempAllStored.addAll(set);
 					}
@@ -2639,7 +2614,7 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					tempStored = ((Equipment)u).getStoredMass();
 				}
-				else if (u.getUnitType() != UnitType.PERSON) {
+				else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
 					tempStored = u.getInventory().getTotalAmountResourcesStored(false);
 				}
 			}
