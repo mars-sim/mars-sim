@@ -105,7 +105,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return a list of resource ids
 	 */
-	public Set<Integer> getAmountResourceIDs() {
+	public Set<Integer> getResourceIDs() {
 		return microInventory.getResourcesStored();
 	}
 	
@@ -290,21 +290,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return microInventory.isEmpty();
 	}	
 
-	
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean hasResource(int resource) {
-		for (int id: getAmountResourceIDs()) {
-			if (id == resource)
-				return true;
-		}
-		return false;
-	}
-	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

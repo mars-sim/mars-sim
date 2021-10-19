@@ -226,17 +226,21 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 		
+		this.location = new Coordinates(0D, 0D);
 
 		if (location != null) {
-			this.location = location;
-
+			// Set the unit's location coordinates
+			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
 			if (inventory != null) {
 				inventory.setCoordinates(location);
-			}			
-		}
-		else {
-			location = new Coordinates(0D, 0D);
+			}
+			else if (getUnitType() == UnitType.PERSON){
+				((Person)this).setLocation(location);
+			}
+//			else if (getUnitType() == UnitType.VEHICLE){
+//				((Vehicle)this).setLocation(location);
+//			}			
 		}
 		
 		if (diagnosticFile != null) {
@@ -418,7 +422,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			inventory.setCoordinates(newLocation);
 		}
 		
-		if (getUnitType() == UnitType.VEHICLE) {
+		if (getUnitType() == UnitType.PERSON) {
+			((Person)this).setLocation(location);
+		}
+		else if (getUnitType() == UnitType.VEHICLE) {
 			((Vehicle)this).setLocation(location);
 		}
 		

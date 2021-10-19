@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -333,7 +332,8 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	protected void clearDown() {
 		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		for(Equipment box : person.getEquipment(EquipmentType.SPECIMEN_BOX)) {
+		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+		if (box != null) {
 			box.transfer(person, rover);
 		}
 	}

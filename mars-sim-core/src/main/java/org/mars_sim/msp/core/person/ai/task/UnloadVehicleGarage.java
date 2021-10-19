@@ -565,7 +565,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Note: only unloading amount resources at the moment.
 		if (equipment instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) equipment;
-			for(int resource : rh.getAmountResourceIDs()) {
+			for(int resource : rh.getResourceIDs()) {
 				double amount = rh.getAmountResourceStored(resource);
 				double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
 				if (amount > capacity) {
