@@ -1887,8 +1887,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		return eqmInventory.getAllAmountResourcesStored();
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
 	}
 	
 	/**
@@ -1897,8 +1897,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return all stored item resources.
 	 */
 	@Override
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return eqmInventory.getAllItemResourcesStored();
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
 	}
 	
 
@@ -1928,16 +1928,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
 
-
-	/**
-	 * Gets a set of resources in storage. 
-	 * @return  a set of resources 
-	 */
-	@Override
-	public Set<Integer> getAmountResourceIDs() {
-		return eqmInventory.getAmountResourceIDs();
-	}
-	
 	/**
 	 * Does this unit have this resource ?
 	 * 

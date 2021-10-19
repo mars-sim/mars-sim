@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -78,18 +76,6 @@ class GenericContainer extends Equipment implements Container, Serializable {
 			return Collections.emptySet();
 		}
 		return Set.of(resourceHeld);
-	}
-
-	
-	/**
-	 * TODO Remove this method.
-	 */
-	@Override
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		if (resourceHeld == -1) {
-			return Collections.emptySet();
-		}
-		return Set.of(ResourceUtil.findAmountResource(resourceHeld));
 	}
 
 	/**

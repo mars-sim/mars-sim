@@ -22,8 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -110,21 +108,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	}
 	
 	/**
-	 * Gets all stored amount resources 
-	 * 
-	 * @return
-	 */
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		return microInventory.getAllAmountResourcesStored();
-	}
-	
-	/**
 	 * Gets all stored item resources 
 	 * 
 	 * @return
 	 */
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return microInventory.getAllItemResourcesStored();
+	public Set<Integer> getItemResourceIDs() {
+		return microInventory.getItemResourceIDs();
 	}
 	
 	/**

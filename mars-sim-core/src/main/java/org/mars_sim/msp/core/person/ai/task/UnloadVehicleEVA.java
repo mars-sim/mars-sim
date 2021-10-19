@@ -24,8 +24,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -275,22 +274,21 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		double totalAmount = 0;
 		// Unload amount resources.
-		Iterator<AmountResource> i = vehicle.getAllAmountResourcesStored().iterator();
+		Iterator<Integer> i = vehicle.getAmountResourceIDs().iterator();
 		while (i.hasNext() && (amountUnloading > 0D)) {
-			AmountResource resource = i.next();
-			int id = resource.getID();
+			int id = i.next();
 			double amount = vehicle.getAmountResourceStored(id);
 			if (amount > amountUnloading) {
 				amount = amountUnloading;
 			}
-			double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true, false);
+			double capacity = settlementInv.getAmountResourceRemainingCapacity(id, true, false);
 			if (capacity < amount) {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
 			try {
 				vehicle.retrieveAmountResource(id, amount);
-				settlementInv.storeAmountResource(resource, amount, true);
+				settlementInv.storeAmountResource(id, amount, true);
 				
 				if (id != waterID && id != methaneID 
 						&& id != foodID && id != oxygenID) {
@@ -322,20 +320,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
-			Iterator<ItemResource> j = vehicle.getAllItemResourcesStored().iterator();
+			Iterator<Integer> j = vehicle.getItemResourceIDs().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
-				ItemResource resource = j.next();
-				Part part = (Part)resource;
+				int id = j.next();
+				Part part = ItemResourceUtil.findItemResource(id);
 				double mass = part.getMassPerItem();
-				int num = vehicle.getItemResourceStored(resource.getID());
+				int num = vehicle.getItemResourceStored(id);
 				if ((num * mass) > amountUnloading) {
 					num = (int) Math.round(amountUnloading / mass);
 					if (num == 0) {
 						num = 1;
 					}
 				}
-				vehicle.retrieveItemResource(resource.getID(), num);
-				settlementInv.storeItemResources(resource.getID(), num);
+				vehicle.retrieveItemResource(id, num);
+				settlementInv.storeItemResources(id, num);
 				amountUnloading -= (num * mass);
 				
 				totalItems += num;

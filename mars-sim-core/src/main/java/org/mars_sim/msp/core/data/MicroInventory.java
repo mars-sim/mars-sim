@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -273,31 +271,12 @@ public class MicroInventory implements Serializable {
 	public Set<Integer> getResourcesStored() {
 		return Collections.unmodifiableSet(storageMap.keySet());
 	}
-	
-	/**
-	 * Gets all stored amount resources
-	 * 
-	 * @return
-	 */
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		return storageMap.keySet().stream()
-				.map(ar -> ResourceUtil.findAmountResource(ar))
-				.filter(Objects::nonNull)
-				.collect(java.util.stream.Collectors.toSet());
-	}
-	
-	/**
-	 * Gets all stored item resources 
-	 * 
-	 * @return
-	 */
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return storageMap.keySet().stream()
-				.map(ir -> ItemResourceUtil.findItemResource(ir))
-				.filter(Objects::nonNull)
-		        .collect(java.util.stream.Collectors.toSet());
-	}
 
+	public Set<Integer> getItemResourceIDs() {
+		// TODO Auto-generated method stub
+		return Collections.unmodifiableSet(storageMap.keySet());
+	}
+	
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 * 
@@ -373,10 +352,5 @@ public class MicroInventory implements Serializable {
 	 */
 	public void clean() {
 		storageMap.clear();
-	}
-	
-	public void destroy() {
-		storageMap = null;
-		owner = null;
 	}
 }

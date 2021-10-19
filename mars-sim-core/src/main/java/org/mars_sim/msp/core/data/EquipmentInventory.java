@@ -294,37 +294,7 @@ public class EquipmentInventory
 
 		return result;
 	}
-    
-	/**
-	 * Gets all stored amount resources
-	 * 
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		Set<AmountResource> set = new HashSet<>(microInventory.getAllAmountResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllAmountResourcesStored());
-		}
-		
-		return set;
-	}
-	
-	/**
-	 * Gets all stored item resources
-	 * 
-	 * @return all stored item resources.
-	 */
-	@Override
-	public Set<ItemResource> getAllItemResourcesStored() {
-		Set<ItemResource> set = new HashSet<>(microInventory.getAllItemResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllItemResourcesStored());
-		}
-		
-		return set;
-	}
-	
+
 
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
@@ -372,26 +342,22 @@ public class EquipmentInventory
 		}
 		return null;
 	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-//	@Override
-//	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
-//		Set<Equipment> result = new HashSet<>();
-//		if (!equipmentList.isEmpty()) {
-//			for (Equipment e : equipmentList) {
-//				if (e != null && e.getEquipmentType() == type) 
-//					result.add(e);
-//			}
-//		}
-//		return result;
-//	}
-	
 
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		Set<Integer> set = new HashSet<>(microInventory.getItemResourceIDs());
+		for (Equipment e: equipmentList) {
+			set.addAll(e.getItemResourceIDs());
+		}
+		
+		return set;
+	}
+	
 	/**
 	 * Gets a set of resources in storage. 
 	 * @return  a set of resources 

@@ -58,8 +58,6 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -324,9 +322,8 @@ public abstract class Vehicle extends Unit
 		
 		// Gets the capacity [in kg] of vehicle's fuel tank 
 		Map<String, Double> capacities = vehicleConfig.getCargoCapacity(vehicleTypeString);
+		fuelCapacity = capacities.getOrDefault(ResourceUtil.findAmountResourceName(getFuelType()), 0D); 
 		
-		fuelCapacity = capacities.get(ResourceUtil.findAmountResourceName(getFuelType())); 
-
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 
@@ -1847,27 +1844,6 @@ public abstract class Vehicle extends Unit
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
-    
-	/**
-	 * Gets all stored amount resources
-	 * 
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		return eqmInventory.getAllAmountResourcesStored();
-	}
-	
-	/**
-	 * Gets all stored item resources
-	 * 
-	 * @return all stored item resources.
-	 */
-	@Override
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return eqmInventory.getAllItemResourcesStored();
-	}
-	
 
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
@@ -1964,6 +1940,15 @@ public abstract class Vehicle extends Unit
 		return result;
 	}
 
+	/**
+	 * Gets a set of item resources in storage. 
+	 * @return  a set of resources 
+	 */
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
+	}
+	
 	/**
 	 * Gets a set of resources in storage. 
 	 * @return  a set of resources 
