@@ -418,10 +418,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			inventory.setCoordinates(newLocation);
 		}
 		
-		if (getUnitType() == UnitType.VEHICLE) {
-			((Vehicle)this).setLocation(location);
-		}
-		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 	

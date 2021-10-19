@@ -389,7 +389,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				Person person = (Person) member;
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof CollectResources) {
-					((CollectResources) task).endEVA();
+					((EVAOperation) task).endEVA();
 				}
 			}
 		}
@@ -530,7 +530,7 @@ public abstract class CollectResourcesMission extends RoverMission
 					
 					// If person can collect resources, start him/her on that task.
 					if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
-						CollectResources collectResources = new CollectResources("Collecting Resources", person,
+						EVAOperation collectResources = new CollectResources("Collecting Resources", person,
 								getRover(), resourceID, resourceCollectionRate,
 								siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceID, false),
 								containerID);

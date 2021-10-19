@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -258,7 +257,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
 						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getTotalMass() > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -272,7 +271,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
 						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getTotalMass() > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {

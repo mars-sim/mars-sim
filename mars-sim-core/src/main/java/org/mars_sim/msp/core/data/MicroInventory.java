@@ -152,33 +152,33 @@ public class MicroInventory implements Serializable {
 		double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
 		double totalMass = s.quantity * massPerItem;
 		double rCap = s.capacity - totalMass;
-		int num = (int)(rCap / massPerItem);
+		int itemCap = (int)(rCap / massPerItem);
 		int missing = 0;
 
-		if (num > 0) {
+		if (itemCap > 0) {
 		
-			if (quantity != num) {
-				s.quantity = num;
-				missing = quantity - num;
+			if (quantity > itemCap) {
+				s.quantity += itemCap;
+				missing = quantity - itemCap;
 				String name = ItemResourceUtil.findItemResourceName(resource);
-				logger.warning(owner, "Can only retrive " + quantity + "x " + name 
-					+ " and return the excess " + missing + "x " + name + ".");
+				logger.warning(owner, "Can only store " + quantity + "@" + name 
+					+ " and return the surplus " + missing + ".");
 			}
-			
 			else {
-				s.quantity = num;
+				s.quantity += quantity;
 				missing = 0;	
 			}
+			
+			// Update the total mass
+			updateItemResourceTotalMass();
 		}
-		
 		else {
 			missing = quantity;
 			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(owner, "Cannot store " + quantity + " " + name + ".");
+			logger.warning(owner, "No space to store " + quantity + "@" + name + ".");
 		}
 
-		// Update the total mass
-		updateItemResourceTotalMass();
+
 		return missing;
 	}
 	

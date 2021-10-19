@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -29,9 +28,9 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
-import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -61,7 +60,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -199,11 +197,9 @@ public abstract class Vehicle extends Unit
 	private String vehicleTypeString;
 	/** The vehicle type. */	
 	private VehicleType vehicleType;
-	/** The type of dessert loaded. */	
-	private String typeOfDessertLoaded;
 	
 	/** A collection of locations that make up the vehicle's trail. */
-	private ArrayList<Coordinates> trail;
+	private List<Coordinates> trail;
 	/** List of operator activity spots. */
 	private List<Point2D> operatorActivitySpots;
 	/** List of passenger activity spots. */
@@ -212,10 +208,7 @@ public abstract class Vehicle extends Unit
 	private Set<StatusType> statusTypes = new HashSet<>();
 	/** The vehicle's status log. */
 	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
-	/** The list of equipment. */
-	private List<Equipment> equipmentList;
-	/** A list of resource id's. */
-//	private List<Integer> resourceIDs = new ArrayList<>();
+
 
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager; 
@@ -228,7 +221,7 @@ public abstract class Vehicle extends Unit
 	/** The vehicle's salvage info. */
 	private SalvageInfo salvageInfo; 
 	/** The MicroInventory instance. */
-	private MicroInventory microInventory;
+	private EquipmentInventory eqmInventory;
 	
 
 	static {
@@ -260,9 +253,6 @@ public abstract class Vehicle extends Unit
 
 		// Add this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
-
-		// Store this vehicle in the settlement
-		settlement.getInventory().storeUnit(this);
 	
 		if (vehicleTypeString.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
@@ -289,10 +279,6 @@ public abstract class Vehicle extends Unit
 		direction = new Direction(0);
 		trail = new ArrayList<>();
 		statusTypes = new HashSet<>();
-		// Create equipment list instance		
-		equipmentList = new ArrayList<>();
-		// Create microInventory instance		
-		microInventory = new MicroInventory(this);
 		
 		isReservedMission = false;
 		distanceMark = false;
@@ -337,7 +323,9 @@ public abstract class Vehicle extends Unit
 		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleTypeString) ;
 		
 		// Gets the capacity [in kg] of vehicle's fuel tank 
-		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleTypeString, ResourceUtil.findAmountResourceName(getFuelType())); 
+		Map<String, Double> capacities = vehicleConfig.getCargoCapacity(vehicleTypeString);
+		
+		fuelCapacity = capacities.get(ResourceUtil.findAmountResourceName(getFuelType())); 
 
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
@@ -363,6 +351,10 @@ public abstract class Vehicle extends Unit
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleTypeString);
+
+		// Create microInventory instance		
+		eqmInventory = new EquipmentInventory(this, cargoCapacity);
+		eqmInventory.setResourceCapacities(capacities);
 		
 		if (this instanceof Rover) {
 		
@@ -384,6 +376,9 @@ public abstract class Vehicle extends Unit
 			// Gets the acceleration in m/s2
 			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 		}
+
+		// Add to the settlement at the end
+		settlement.getInventory().storeUnit(this);
 		
 		// Set initial parked location and facing at settlement.
 		findNewParkingLoc();
@@ -421,15 +416,10 @@ public abstract class Vehicle extends Unit
 
 		setContainerID(associatedSettlementID);
 		
-		settlement.getInventory().storeUnit(this);
-
 		direction = new Direction(0);
 		trail = new ArrayList<>();
 		statusTypes = new HashSet<>();
-		// Create equipment list instance		
-		equipmentList = new ArrayList<>();
-		// Create microInventory instance		
-		microInventory = new MicroInventory(this);
+
 		
 		// Set description
 		setDescription(vehicleType);
@@ -457,11 +447,18 @@ public abstract class Vehicle extends Unit
 		yLocParked = 0D;
 		facingParked = 0D;
 
+		// Create microInventory instance		
+		eqmInventory = new EquipmentInventory(this, 10000D);
+		
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 		
 		addStatus(StatusType.PARKED);
+
+		// Add to the settlement at the end
+		settlement.getInventory().storeUnit(this);
+
 	}
 
 	public String getDescription(String vehicleType) {
@@ -1258,7 +1255,7 @@ public abstract class Vehicle extends Unit
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<>();
+		Collection<Person> people = new HashSet<>();
 
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1267,19 +1264,15 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this vehicle.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
+			if ((task instanceof Maintenance) 
+				&& this.equals(((Maintenance) task).getEntity())) {
+				people.add(person);	
 			}
 
 			// Add all people repairing this vehicle.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
+			if ((task instanceof Repair) 
+				&& this.equals(((Repair) task).getEntity())) {
+				people.add(person);
 			}
 		}
 
@@ -1293,7 +1286,7 @@ public abstract class Vehicle extends Unit
 	 * @return person collection
 	 */
 	public Collection<Person> getTalkingPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<>();
+		Collection<Person> people = new HashSet<>();
 
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1303,14 +1296,7 @@ public abstract class Vehicle extends Unit
 
 			// Add all people having conversation from all places as the task
 			if (task instanceof HaveConversation)
-				if (!people.contains(person))
-					people.add(person);
-
-			// Add all people ready for switching to having conversation as task in this
-			// vehicle.
-//			 if (task instanceof Relax)
-//			 if (!people.contains(person))
-//			 people.add(person);
+				people.add(person);
 		}
 
 		return people;
@@ -1322,7 +1308,7 @@ public abstract class Vehicle extends Unit
 	 * @return robots collection
 	 */
 	public Collection<Robot> getAffectedRobots() {
-		Collection<Robot> robots = new ConcurrentLinkedQueue<>();
+		Collection<Robot> robots = new HashSet<>();
 
 		// Check all robots.
 		Iterator<Robot> i = unitManager.getRobots().iterator();
@@ -1333,16 +1319,14 @@ public abstract class Vehicle extends Unit
 			// Add all robots maintaining this vehicle.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
-					if (!robots.contains(robot))
-						robots.add(robot);
+					robots.add(robot);
 				}
 			}
 
 			// Add all robots repairing this vehicle.
 			if (task instanceof Repair) {
 				if (((Repair) task).getEntity() == this) {
-					if (!robots.contains(robot))
-						robots.add(robot);
+					robots.add(robot);
 				}
 			}
 		}
@@ -1701,55 +1685,13 @@ public abstract class Vehicle extends Unit
 		}
 		return result;
 	}
-	
-	/**
-	 * Is this resource supported ?
-	 * 
-	 * @param resource
-	 * @return true if this resource is supported
-	 */
-	public boolean isResourceSupported(int resource) {
-		return microInventory.isResourceSupported(resource);
-	}
-	
-	
-	/**
-	 * Gets the remaining carrying capacity available.
-	 * 
-	 * @return capacity (kg).
-	 */
-	public double getRemainingCarryingCapacity() {
-		return cargoCapacity - getTotalMass();
-	}
-	
-	/**
-	 * Get the capacity this vehicle can carry
-	 * 
-	 * @return capacity (kg)
-	 */
-	public double getCarryingCapacity() {
-		return cargoCapacity;
-	}
-	
-	/**
-	 * Set the capacity this vehicle can carry
-	 * 
-	 * @return capacity (kg)
-	 */
-	public void setCarryingCapacity(double value) {
-		cargoCapacity = value;
-	}
-	
+
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
 	@Override
 	public double getMass() {
-		if (microInventory != null)
-			// Note stored mass may be have a different implementation in subclasses
-			return microInventory.getStoredMass() + getBaseMass();
-		else
-			return getBaseMass();
+		return eqmInventory.getStoredMass() + getBaseMass();
 	}
 	
 	/**
@@ -1758,15 +1700,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	@Override
-	public double getTotalMass() {
-		double result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getMass();
-			}
-		}
-		result += microInventory.getStoredMass();
-		return result;
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
 	}
 	
 	/**
@@ -1776,7 +1711,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public List<Equipment> getEquipmentList() {
-		return equipmentList;
+		return eqmInventory.getEquipmentList();
 	}
 	
 	/**
@@ -1787,14 +1722,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				if (type == e.getEquipmentType()) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return eqmInventory.containsEquipment(type);
 	}
 	
 	/**
@@ -1805,11 +1733,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		if (cargoCapacity >= getTotalMass() + equipment.getMass()) {
-			equipmentList.add(equipment);
-			return true;
-		}
-		return false;		
+		return eqmInventory.addEquipment(equipment);
 	}
 	
 	/**
@@ -1819,11 +1743,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		if (equipmentList.contains(equipment)) {
-			equipmentList.remove(equipment);
-			return true;
-		}
-		return false;
+		return eqmInventory.removeEquipment(equipment);
 	}
 	
 	/**
@@ -1834,12 +1754,8 @@ public abstract class Vehicle extends Unit
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
-	public double storeItemResource(int resource, int quantity) {
-		if (!hasResource(resource)) {
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-		
-		return microInventory.storeItemResource(resource, quantity);
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
 	}
 	
 	/**
@@ -1851,16 +1767,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double retrieveItemResource(int resource, int quantity) {
-		if (hasResource(resource)) {
-			return microInventory.retrieveItemResource(resource, quantity);
-		}
-
-		else {
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ quantity + "x "+ name + ".");
-			return quantity;
-		}
+		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
 	
 	/**
@@ -1872,53 +1779,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (hasResource(resource)) {
-			double stored = 0;
-			double shortfall = quantity;
-			
-			if (!microInventory.isEmpty()) {
-
-				stored = microInventory.getAmountResourceStored(resource);
-				if (stored > 0) {
-					shortfall = microInventory.retrieveAmountResource(resource, shortfall);
-				}
-				if (shortfall == 0) {
-					// Remove the id
-					microInventory.removeResource(resource);
-				}
-			}		
-			
-			if (equipmentList.size() == 1) {
-				// check if there is enough space for storing the entire quantity 
-				// in this equipment container, if not, split it into multiple container
-				stored = equipmentList.get(0).getAmountResourceStored(resource);
-				if (stored > 0) {
-					return equipmentList.get(0).retrieveAmountResource(resource, shortfall);
-				}
-				else
-					return shortfall;
-			}
-			else if (equipmentList.size() > 1) {
-				for (Equipment e: equipmentList) {
-					// check if there is enough space for storing the entire quantity 
-					// in one equipment container, if not, split it into multiple container	
-					stored = e.getAmountResourceStored(resource);
-					if (stored > 0) {
-						shortfall = e.retrieveAmountResource(resource, shortfall);
-					}
-				}
-			}
-			
-			// Return any missing quantity
-			return shortfall;
-		}
-
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
+		return eqmInventory.retrieveAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -1930,17 +1791,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		// Note: this method is different from 
-		// Equipment's storeAmountResource 
-		if (isResourceSupported(resource)) {
-			return microInventory.storeAmountResource(resource, quantity);
-		}
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, name + " is not allowed to be stored " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
-			return quantity;
-		}	
+		return eqmInventory.storeAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -1951,12 +1802,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public int getItemResourceStored(int resource) {
-		if (hasResource(resource)) {
-			return microInventory.getItemResourceStored(resource);
-		}
-		else {
-			return 0;
-		}
+		return eqmInventory.getItemResourceStored(resource);
 	}
 	
 	/**
@@ -1967,17 +1813,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		double result = 0;
-		
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getCapacity(resource);
-			}
-		}
-		
-		result += microInventory.getCapacity(resource);
-		
-		return result;
+		return eqmInventory.getAmountResourceCapacity(resource);
 	}
 	
 	/**
@@ -1988,17 +1824,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		double result = 0;
-	
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getAmountResourceRemainingCapacity(resource);
-			}
-		}
-
-		result += microInventory.getAmountResourceRemainingCapacity(resource);
-
-		return result;
+		return eqmInventory.getAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**
@@ -2008,9 +1834,7 @@ public abstract class Vehicle extends Unit
      */
 	@Override
 	public double getTotalCapacity() {
-		// Question: Should the total capacity varies ? 
-		// based on a person's instant carrying capacity ?
-		return getCarryingCapacity();
+		return eqmInventory.getTotalCapacity();
 	}
 	
 	/**
@@ -2021,11 +1845,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public double getAmountResourceStored(int resource) {
-		if (hasResource(resource)) {
-			return microInventory.getAmountResourceStored(resource);
-		}
-		
-		return 0;
+		return eqmInventory.getAmountResourceStored(resource);
 	}
     
 	/**
@@ -2035,12 +1855,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public Set<AmountResource> getAllAmountResourcesStored() {
-		Set<AmountResource> set = new HashSet<>(microInventory.getAllAmountResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllAmountResourcesStored());
-		}
-		
-		return set;
+		return eqmInventory.getAllAmountResourcesStored();
 	}
 	
 	/**
@@ -2050,12 +1865,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public Set<ItemResource> getAllItemResourcesStored() {
-		Set<ItemResource> set = new HashSet<>(microInventory.getAllItemResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllItemResourcesStored());
-		}
-		
-		return set;
+		return eqmInventory.getAllItemResourcesStored();
 	}
 	
 
@@ -2069,17 +1879,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		int result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				// The contained unit has to be an Equipment that is empty and of the correct type
-				if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
-					result++;
-				}
-			}
-		}
-		
-		return result;
+		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
 	
 	/**
@@ -2092,57 +1892,9 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == containerType) {
-					Container c = (Container) e;
-					if (empty) {
-						// It must be empty inside
-						if (c.getStoredMass() == 0D) {
-							return c;
-						}
-					}
-					else if (resource == -1 || c.getResource() == resource || c.getResource() == -1)
-						return c;
-				}
-			}
-		}
-		return null;
+		return eqmInventory.findContainer(containerType, empty, resource);
 	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	@Override
-	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
-		Set<Equipment> result = new HashSet<>();
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == type) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Sets the coordinates of all units in the inventory.
-	 * 
-	 * @param newLocation the new coordinate location
-	 */
-	@Override
-	public void setLocation(Coordinates newLocation) {
-		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
-			if (equipmentList != null && !equipmentList.isEmpty() && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
-				for (Equipment e: equipmentList) {
-					e.setCoordinates(newLocation);
-				}
-			}
-		}
-	}	
+
 	
 	/**
 	 * Finds a EVA suit in storage.
@@ -2150,27 +1902,24 @@ public abstract class Vehicle extends Unit
 	 * @param person
 	 * @return instance of EVASuit or null if none.
 	 */
-	@Override
 	public EVASuit findEVASuit(Person person) {
 		EVASuit goodSuit = null;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					EVASuit suit = (EVASuit)e;
-					boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-					boolean hasEnoughResources = hasEnoughResourcesForSuit(suit);
-					boolean lastOwner = (suit.getLastOwner() == person);
-					
-					if (!malfunction && hasEnoughResources) {
-						if (lastOwner) {
-							// Pick this EVA suit since it has been used by the same person
-							return suit;
-						}
-						else {
-							// For now, make a note of this suit but not selecting it yet. 
-							// Continue to look for a better suit
-							goodSuit = suit;
-						}
+		for (Equipment e : eqmInventory.getEquipmentList()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				EVASuit suit = (EVASuit)e;
+				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+				boolean hasEnoughResources = hasEnoughResourcesForSuit(suit);
+				boolean lastOwner = (suit.getLastOwner() == person);
+				
+				if (!malfunction && hasEnoughResources) {
+					if (lastOwner) {
+						// Pick this EVA suit since it has been used by the same person
+						return suit;
+					}
+					else {
+						// For now, make a note of this suit but not selecting it yet. 
+						// Continue to look for a better suit
+						goodSuit = suit;
 					}
 				}
 			}
@@ -2186,27 +1935,16 @@ public abstract class Vehicle extends Unit
 	 * @return true if enough supplies.
 	 * @throws Exception if error checking suit resources.
 	 */
-	@Override
-	public boolean hasEnoughResourcesForSuit(EVASuit suit) {
-		int otherPeopleNum = getSettlement().getNumCitizens();
+	private boolean hasEnoughResourcesForSuit(EVASuit suit) {
 		// Check if enough oxygen.
 		double neededOxygen = suit.getAmountResourceRemainingCapacity(OXYGEN);
 		double availableOxygen = getAmountResourceStored(OXYGEN);
-		// Make sure there is enough extra oxygen for everyone else.
-		availableOxygen -= neededOxygen * otherPeopleNum;
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
 		double neededWater = suit.getAmountResourceRemainingCapacity(WATER);
 		double availableWater = getAmountResourceStored(WATER);
-		// Make sure there is enough extra water for everyone else.
-		availableWater -= (neededWater * otherPeopleNum);
 		boolean hasEnoughWater = (availableWater >= neededWater);
-
-		// it's okay even if there's not enough water
-//		if (!hasEnoughWater)
-//			LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
 
 		return hasEnoughOxygen && hasEnoughWater;
 	}
@@ -2214,59 +1952,25 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
 	 *  
-	 * @param isEmpty    does it need to be empty ?
 	 * @return number of EVA suits
 	 */
-	@Override
-	public int findNumEVASuits(boolean isEmpty) {
+	public int findNumEVASuits() {
 		int result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					if (isEmpty) {
-						// It must be empty inside
-						if (e.isEmpty(false)) {
-							result++;
-						}
-					}
-					else
-						result++;
-				}	
-			}
+		for (Equipment e : eqmInventory.getEquipmentList()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				result++;
+			}	
 		}
 		return result;
 	}
-	
-	/**
-	 * Checks if it contains an EVA suit.
-	 * 
-	 * @return true if it contains an EVA suit.
-	 */
-	@Override
-	public boolean containsEVASuit() {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
+
 	/**
 	 * Gets a set of resources in storage. 
 	 * @return  a set of resources 
 	 */
 	@Override
-	public Collection<Integer> getResourceIDs() {
-		Set<Integer> set = new HashSet<Integer>(); 
-		set.addAll(microInventory.getResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getResourceIDs());
-		}
-	
-		return set;
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
 	}
 	
 	/**
@@ -2277,38 +1981,16 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public boolean hasResource(int resource) {
-		for (int id: getResourceIDs()) {
-			if (id == resource)
-				return true;
-		}
-		return false;
+		return eqmInventory.hasResource(resource);
 	}
-	
-	/**
-	 * Is this unit empty ? 
-	 * 
-	 * @return true if this unit doesn't carry any resources or equipment
-	 */
-	public boolean isEmpty() {
-		if (equipmentList != null && !equipmentList.isEmpty())
-			return false;
-		return microInventory.isEmpty();
-	}	
-	
-	public MicroInventory getMicroInventory() {
-		return microInventory;
-	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Vehicle v = (Vehicle) obj;
-		return this.getName().equals(v.getName())
-				&& this.getIdentifier() == v.getIdentifier()
-				&& this.vehicleTypeString.equals(v.getVehicleTypeString())
-				&& this.associatedSettlementID == v.getAssociatedSettlementID();
+		return this.getIdentifier() == v.getIdentifier();
 	}
 	
 	/**
@@ -2318,11 +2000,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = getName().hashCode();
-		hashCode *= getIdentifier();
-		hashCode *= associatedSettlementID;
-		hashCode *= vehicleTypeString.hashCode();
-		return hashCode;
+		return getIdentifier() % 32;
 	}
 
 	@Override

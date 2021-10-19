@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -301,15 +299,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-
-		// Unload containers to rover's inventory.
-		if (containerType != null) {
-			// Load containers in rover.
-			for(Equipment e : person.getEquipment(containerType)) {
-				// Place this equipment within a rover outside on Mars
-				e.transfer(person, rover);
-			}
-		}
+		returnEquipmentToVehicle(rover);
 	}
 
 	/**

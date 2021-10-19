@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -26,14 +26,12 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -413,7 +411,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return list of vehicles.
 	 */
 	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> result = new ArrayList<>();
 
 		if (settlement != null) {
 			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -427,7 +425,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getTotalMass() > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -441,7 +439,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getTotalMass() > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {

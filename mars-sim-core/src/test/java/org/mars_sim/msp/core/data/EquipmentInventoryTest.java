@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -104,6 +106,25 @@ extends TestCase {
 		assertEquals("Total mass after 2nd load", CAPACITY_AMOUNT, inv.getStoredMass());
 	}
 
+	/*
+	 * Test method loading Equipment
+	 */
+	public void testItemOverloading() throws Exception {
+		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
+		Part drillPart = ItemResourceUtil.pneumaticDrillAR;
+		
+		int maxDrills = (int) Math.floor(CAPACITY_AMOUNT/drillPart.getMassPerItem());
+		
+		assertEquals("No excess on capacity load", 0, inv.storeItemResource(drillPart.getID(), maxDrills));
+		assertEquals("Stored drills after load", maxDrills, inv.getItemResourceStored(drillPart.getID()));
+		assertEquals("Stored mass after drill load", maxDrills * drillPart.getMassPerItem(),
+													inv.getStoredMass());
+		
+		// Try and load one more and should fail
+		assertEquals("Excess on overload", 1, inv.storeItemResource(drillPart.getID(), 1));
+	}
+
+	
 	/*
 	 * Test method loading Equipment
 	 */

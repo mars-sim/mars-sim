@@ -337,10 +337,10 @@ public class VehicleConfig implements Serializable {
 	 * @param resource    the resource
 	 * @return vehicle capacity for resource might be <code>null</code>
 	 */
-	public Double getCargoCapacity(String vehicleType, String resource) {
-		Double value = map.get(vehicleType.toLowerCase()).cargoCapacityMap.get(resource.toLowerCase());
+	public Map<String, Double> getCargoCapacity(String vehicleType) {
+		Map<String, Double> value = map.get(vehicleType.toLowerCase()).cargoCapacityMap;
 		if (value == null)
-			return 0d;
+			throw new IllegalArgumentException("No vehicle type " + vehicleType + " configured");
 		return value;
 	}
 

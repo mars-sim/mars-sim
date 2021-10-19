@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * Vehicle.java
- * @date 2021-10-16
- * @author Scott Davis
+ * EquipmentInventory.java
+ * @date 2021-10-19
+ * @author Barry Evans
  */
 
 package org.mars_sim.msp.core.data;
@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.equipment.Container;
@@ -22,6 +24,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * The represents an Inventory that can hold Equipment as well as Resources. It provides
@@ -84,25 +87,7 @@ public class EquipmentInventory
 	public List<Equipment> getEquipmentList() {
 		return equipmentList;
 	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	@Override
-	public List<Equipment> getEquipment(EquipmentType type) {
-		List<Equipment> result = new ArrayList<>();
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == type) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-	
+
 	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
@@ -156,7 +141,7 @@ public class EquipmentInventory
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
-	public double storeItemResource(int resource, int quantity) {
+	public int storeItemResource(int resource, int quantity) {
 		if (!hasResource(resource)) {
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
@@ -455,5 +440,19 @@ public class EquipmentInventory
 		if (!equipmentList.isEmpty())
 			return false;
 		return microInventory.isEmpty();
+	}
+
+	/**
+	 * Set the resource capacities.
+	 * TODO should be keyed on resourceID not string.
+	 * @param capacities
+	 */
+	public void setResourceCapacities(Map<String, Double> capacities) {
+		for (Entry<String, Double> v : capacities.entrySet()) {
+			AmountResource foundResource = ResourceUtil.findAmountResource(v.getKey());
+			if (foundResource != null) {
+				microInventory.setCapacity(foundResource.getID(), v.getValue());
+			}
+		}
 	}	
 }

@@ -17,8 +17,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -270,15 +268,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 	@Override
 	protected void clearDown() {
-
-		// Should work for Robot as well ???
-		if ((person != null) && (person instanceof EquipmentOwner)) {
-			EquipmentOwner owner = (EquipmentOwner) worker;
-			for (Equipment e : owner.getEquipment(EquipmentType.BAG)) {
-				// Place this equipment within a rover outside on Mars
-				e.transfer(person, rover);
-			}
-		}
+		returnEquipmentToVehicle(rover);
 	}
 
 	/**

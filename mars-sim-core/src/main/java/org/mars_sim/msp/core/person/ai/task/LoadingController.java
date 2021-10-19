@@ -373,9 +373,10 @@ public class LoadingController implements Serializable {
 			}	
 			
 			// Check remaining capacity in vehicle inventory.
-			double remainingMassCapacity = vehicle.getRemainingCarryingCapacity();
-			// Note: LoadVehicleTest sometimes return a -ve value of remainingMassCapacity.
-//			System.out.println("LoadingController: remainingMassCapacity: " + remainingMassCapacity);
+			double remainingMassCapacity = vehicle.getTotalCapacity() - vehicle.getStoredMass();
+			if (remainingMassCapacity < 0D) {
+				remainingMassCapacity = 0D;
+			}
 			double loadingMass = amountToLoad * p.getMassPerItem();
 			if (remainingMassCapacity < loadingMass) {
 				if (mandatory) {

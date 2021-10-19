@@ -29,15 +29,6 @@ public interface EquipmentOwner extends ResourceHolder {
 	 */
 	List<Equipment> getEquipmentList();
 	
-
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	List<Equipment> getEquipment(EquipmentType type);
-	
 	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
@@ -68,7 +59,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
-	public double storeItemResource(int resource, int quantity);
+	public int storeItemResource(int resource, int quantity);
 	
 	/**
 	 * Retrieves the item resource 

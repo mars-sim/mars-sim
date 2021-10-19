@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,14 +24,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
-import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -61,7 +58,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -271,14 +267,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(EARTHLING);
-
-		// Store this person in the settlement
-		settlement.getInventory().storeUnit(this);
-		// Add this person as a citizen
-		settlement.addACitizen(this);
 		
 		// Initialize data members
-		super.setName(name);
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
@@ -294,6 +284,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		// Set the person's status of death
 		isBuried = false;
+
+
+		// Store this person in the settlement
+		settlement.getInventory().storeUnit(this);
+		// Add this person as a citizen
+		settlement.addACitizen(this);
 	}
 
 	/*
@@ -1735,7 +1731,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getMass() {
-		return eqmInventory.getStoredMass() + getBaseMass();
+		// TODO because the PErson is not fully initialised in the constructor this
+		// can be null. The initialise method is the culprit.
+		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
 
 	}
 	
@@ -1748,7 +1746,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public List<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
 	}
-
+	
 	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
@@ -1789,7 +1787,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
-	public double storeItemResource(int resource, int quantity) {
+	public int storeItemResource(int resource, int quantity) {
 		return eqmInventory.storeItemResource(resource, quantity);
 	}
 	
@@ -1929,17 +1927,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	@Override
-	public List<Equipment> getEquipment(EquipmentType type) {
-		return eqmInventory.getEquipment(type);
-	}
+
 
 	/**
 	 * Gets a set of resources in storage. 

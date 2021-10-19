@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
@@ -689,15 +690,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 	}
 
 	/**
-	 * Set the task's stress modifier. Stress modifier can be positive (increase in
-	 * stress) or negative (decrease in stress).
-	 * 
-	 * @param newStressModifier stress modification per millisol.
+	 * Unload any held Equipment back to a Vehicle
+	 * @param destination
 	 */
-	protected void setStressModifier(double newStressModifier) {
-		super.setStressModifier(stressModifier);
+	protected void returnEquipmentToVehicle(Vehicle destination) {
+		// Load containers in rover.
+		for(Equipment e : person.getEquipmentList()) {
+			// Place this equipment within a rover outside on Mars
+			e.transfer(person, destination);
+		}
 	}
-	
+
 	/**
 	 * Rescue the person from the rover
 	 * 
