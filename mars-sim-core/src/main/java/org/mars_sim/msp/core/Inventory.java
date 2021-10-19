@@ -1894,7 +1894,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID : rh.getAmountResourceIDs()) {
+							for (int resourceID : rh.getResourceIDs()) {
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -1916,7 +1916,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID: rh.getAmountResourceIDs()) {
+							for (int resourceID: rh.getResourceIDs()) {
 								double containerAmount = rh.getAmountResourceStored(resourceID);
 								if (containerAmount > 0 &&
 									// From Owner
@@ -1988,7 +1988,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID : rh.getAmountResourceIDs()) {
+							for (int resourceID : rh.getResourceIDs()) {
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -2545,13 +2545,19 @@ public class Inventory implements Serializable {
 
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
-				Unit u = unitManager.getUnitByID(uid);
+				Equipment e = unitManager.getEquipmentByID(uid);
 				
-				if (u instanceof ResourceHolder) {
-					tempAllStored.addAll(((ResourceHolder)u).getAmountResourceIDs());
+				if (e != null) {
+					if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+						tempAllStored.addAll(((ResourceHolder)e).getResourceIDs());
+					}
 				}
 				else {
-					tempAllStored.addAll(u.getInventory().getAllARStored(false));
+					Unit u = unitManager.getUnitByID(uid);
+					if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+						Set<Integer> set = u.getInventory().getAllARStored(false);
+						tempAllStored.addAll(set);
+					}
 				}
 			}
 		}

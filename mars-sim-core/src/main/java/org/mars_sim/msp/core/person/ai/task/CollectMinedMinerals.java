@@ -274,7 +274,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		// Should work for Robot as well ???
 		if ((person != null) && (person instanceof EquipmentOwner)) {
 			EquipmentOwner owner = (EquipmentOwner) worker;
-			for (Equipment e : owner.getEquipment(EquipmentType.BAG)) {
+			for (Equipment e : owner.findAllEquipmentType(EquipmentType.BAG)) {
 				// Place this equipment within a rover outside on Mars
 				e.transfer(person, rover);
 			}
