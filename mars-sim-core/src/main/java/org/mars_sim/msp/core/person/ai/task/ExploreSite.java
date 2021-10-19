@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -351,8 +352,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	protected void clearDown() {
 //		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
-		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-		if (box != null) {
+		for(Equipment box : person.getEquipment(EquipmentType.SPECIMEN_BOX)) {
 			box.transfer(person, rover);
 		}
 	}

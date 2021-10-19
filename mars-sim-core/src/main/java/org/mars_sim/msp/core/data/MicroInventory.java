@@ -367,18 +367,6 @@ public class MicroInventory implements Serializable {
 		return storageMap.containsKey(resource);
 	}
 
-	/**
-	 * Removes a resource
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean removeResource(int resource) {
-		if (storageMap.containsKey(resource)) {
-			return storageMap.remove(resource) != null;
-		}
-		return false;
-	}
 	
 	/**
 	 * Clean this container for future use
