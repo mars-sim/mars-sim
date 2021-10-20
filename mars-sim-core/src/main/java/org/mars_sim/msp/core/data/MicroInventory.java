@@ -7,17 +7,16 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 public class MicroInventory implements Serializable {
 
 	static final class ResourceStored implements Serializable {
+
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		double capacity;
@@ -35,6 +35,12 @@ public class MicroInventory implements Serializable {
 		ResourceStored(double capacity) {
 			super();
 			this.capacity = capacity;
+		}
+		
+		@Override
+		public String toString() {
+			return "ResourceStored [capacity=" + capacity + ", storedAmount=" + storedAmount + ", quantity=" + quantity
+					+ "]";
 		}
 	}
 	
@@ -149,36 +155,37 @@ public class MicroInventory implements Serializable {
 			return quantity;
 		}
 		
-		double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+		Part partSpec = ItemResourceUtil.findItemResource(resource);
+		double massPerItem = partSpec.getMassPerItem();
 		double totalMass = s.quantity * massPerItem;
 		double rCap = s.capacity - totalMass;
-		int num = (int)(rCap / massPerItem);
+		int itemCap = (int)(rCap / massPerItem);
 		int missing = 0;
 
-		if (num > 0) {
+		if (itemCap > 0) {
 		
-			if (quantity != num) {
-				s.quantity = num;
-				missing = quantity - num;
-				String name = ItemResourceUtil.findItemResourceName(resource);
-				logger.warning(owner, "Can only retrive " + quantity + "x " + name 
-					+ " and return the excess " + missing + "x " + name + ".");
+			if (quantity > itemCap) {
+				s.quantity += itemCap;
+				missing = quantity - itemCap;
+				logger.warning(owner, "Can only store " + quantity + "@"
+						+ partSpec.getName() 
+						+ " and return the surplus " + missing + ".");
 			}
-			
 			else {
-				s.quantity = num;
+				s.quantity += quantity;
 				missing = 0;	
 			}
+			
+			// Update the total mass
+			updateItemResourceTotalMass();
 		}
-		
 		else {
 			missing = quantity;
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(owner, "Cannot store " + quantity + " " + name + ".");
+			logger.warning(owner, "No space to store " + quantity + "@"
+								+ partSpec.getName() + ".");
 		}
 
-		// Update the total mass
-		updateItemResourceTotalMass();
+
 		return missing;
 	}
 	
@@ -242,7 +249,7 @@ public class MicroInventory implements Serializable {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	public double retrieveItemResource(int resource, int quantity) {
+	public int retrieveItemResource(int resource, int quantity) {
 		ResourceStored s = storageMap.get(resource);
 		if (s == null) {
 			return quantity;
@@ -266,38 +273,27 @@ public class MicroInventory implements Serializable {
 	}
 	
 	/**
-	 * What resources are stored ?
+	 * What amount resources are stored ?
 	 * 
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
-		return Collections.unmodifiableSet(storageMap.keySet());
-	}
-	
-	/**
-	 * Gets all stored amount resources
-	 * 
-	 * @return
-	 */
-	public Set<AmountResource> getAllAmountResourcesStored() {
 		return storageMap.keySet().stream()
-				.map(ar -> ResourceUtil.findAmountResource(ar))
-				.filter(Objects::nonNull)
-				.collect(java.util.stream.Collectors.toSet());
-	}
-	
-	/**
-	 * Gets all stored item resources 
-	 * 
-	 * @return
-	 */
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return storageMap.keySet().stream()
-				.map(ir -> ItemResourceUtil.findItemResource(ir))
-				.filter(Objects::nonNull)
-		        .collect(java.util.stream.Collectors.toSet());
+				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+				.collect(Collectors.toSet());
 	}
 
+	/**
+	 * What item resources are stored ?
+	 * 
+	 * @return
+	 */
+	public Set<Integer> getItemResourceIDs() {
+		return storageMap.keySet().stream()
+				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+				.collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 * 
@@ -367,28 +363,11 @@ public class MicroInventory implements Serializable {
 		return storageMap.containsKey(resource);
 	}
 
-	/**
-	 * Removes a resource
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public boolean removeResource(int resource) {
-		if (storageMap.containsKey(resource)) {
-			return storageMap.remove(resource) != null;
-		}
-		return false;
-	}
 	
 	/**
 	 * Clean this container for future use
 	 */
 	public void clean() {
 		storageMap.clear();
-	}
-	
-	public void destroy() {
-		storageMap = null;
-		owner = null;
 	}
 }

@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -221,21 +219,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return null;
 	}
 	 
-	/**
-	 * Sets the coordinates of all units in the inventory.
-	 * 
-	 * @param newLocation the new coordinate location
-	 */
-	@Override
-	public void setLocation(Coordinates newLocation) {
-		super.setLocation(newLocation);
-		
-		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
-			for (Person p: getCrew()) {
-				p.setCoordinates(newLocation);
-			}
-		}
-	}
 	
 	@Override
 	public void destroy() {

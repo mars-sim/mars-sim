@@ -7,15 +7,16 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -147,7 +148,13 @@ public class EatDrink extends Task implements Serializable {
 		
 		Inventory inv = null;
 		Unit container = person.getContainerUnit();
-		if (container != null) {
+		if (container instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) container;
+			// Take preserved food from inventory if it is available.
+			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
+			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);
+		}
+		else if (container != null) {
 			inv = container.getInventory();	
 			// Take preserved food from inventory if it is available.
 			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
@@ -637,32 +644,19 @@ public class EatDrink extends Task implements Serializable {
 			proportion = foodConsumptionRate - cumulativeProportion;
 		}
 		
-//		logger.info(person + "  proportion: " + proportion);
 		if (proportion > MIN) {
 
 			Unit container = person.getContainerUnit();
-			if (person.isInside()) {
-				Inventory inv = container.getInventory();
-	
+			if (person.isInside()) {	
 				// Take preserved food from inventory if it is available.
-				boolean haveFood = Storage.retrieveAnResource(proportion, ResourceUtil.foodID, inv, true);
+				boolean haveFood = retrieveAnResource(proportion, ResourceUtil.foodID, container);
 				
 				if (haveFood) {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					
-//					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
-//							"[" + person.getLocationTag().getLocale() + "] " + person 
-//							+ " just ate " + Math.round(proportion*1000.0)/1000.0 + " kg of preserved food.");
-					
 					// Food amount eaten over this period of time.
 					double hungerRelieved = RATIO * proportion / foodConsumptionRate;
-//					logger.info(person + "::eatPreservedFood()"
-//							+ "   currentHunger " + Math.round(currentHunger*100.0)/100.0
-//							+ "   hungerRelieved " + Math.round(hungerRelieved*100.0)/100.0
-//							+ "   proportion " + Math.round(proportion*1000.0)/1000.0
-//							+ "   EatingSpeed " + Math.round(person.getEatingSpeed()*1000.0)/1000.0
-//							+ "   foodConsumptionRate " + Math.round(foodConsumptionRate*1000.0)/1000.0);
 					
 					// Consume preserved food after eating
 					reduceHunger(hungerRelieved);
@@ -691,6 +685,53 @@ public class EatDrink extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Get a resource from a provider. 
+	 * TODO eventually everything will be a ResourceHolder
+	 * @param quantity amount to retrieve
+	 * @param resourceID Resource to retrieve
+	 * @param provider The provider of resources.
+	 * @return Did retrieve all ?
+	 */
+	private boolean retrieveAnResource(double quantity, int resourceID, Unit provider) {
+		boolean result = false;
+		if (provider instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) provider;
+			return (rh.retrieveAmountResource(resourceID, quantity) == 0D);
+		}
+		else {
+			Inventory inv = provider.getInventory();
+			double stored = inv.getAmountResourceStored(resourceID, true);
+			if (stored < quantity) {
+				quantity = stored;
+			}
+			else {
+				result = true;
+			}
+			inv.retrieveAmountResource(resourceID, quantity);
+		}
+		
+		return result;
+	}
+
+
+	/**
+	 * Get the amount of resource stored by a provider
+	 * @param provider
+	 * @param resourceID
+	 * @return
+	 */
+	private double storedAnResource(Unit provider, int resourceID) {
+		if (provider instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) provider;
+			return rh.getAmountResourceStored(resourceID);
+		}
+		else {
+			Inventory inv = provider.getInventory();
+			return inv.getAmountResourceStored(resourceID, true);
+		}
+	}
+	
 	/**
 	 * Performs the eating dessert phase of the task.
 	 * 
@@ -788,21 +829,17 @@ public class EatDrink extends Task implements Serializable {
 		if (proportion > MIN) {
 		
 			// Dessert amount eaten over this period of time.
-	//		double dessertAmount = dessertConsumptionRate * dessertProportion;
 			Unit containerUnit = person.getTopContainerUnit();
 			
 			if (containerUnit != null) {
-				Inventory inv = containerUnit.getInventory();
-				
 				// Take dessert resource from inventory if it is available.
-				boolean hasDessert = false;
-				if (inv != null) {
-					// Add to cumulativeProportion
-					cumulativeProportion += proportion;
-					
-					hasDessert = Storage.retrieveAnResource(proportion, nameOfDessert.getName(), inv, true);
-				}
-				
+				// Add to cumulativeProportion
+				cumulativeProportion += proportion;
+					 
+				boolean hasDessert = retrieveAnResource(proportion,
+							ResourceUtil.findIDbyAmountResourceName(nameOfDessert.getName()),
+							containerUnit);
+
 				if (hasDessert) {
 					// Consume water
 					consumeDessertWater(dryMass);
@@ -838,7 +875,7 @@ public class EatDrink extends Task implements Serializable {
 	 * 
 	 * @param dryMass of the dessert
 	 */
-	public void consumeDessertWater(double dryMass) {
+	private void consumeDessertWater(double dryMass) {
 		double currentThirst = Math.min(thirst, THIRST_CEILING);
 		double waterFinal = Math.min(waterEachServing, currentThirst);
 		// Note that the water content within the dessert has already been deducted from
@@ -867,8 +904,7 @@ public class EatDrink extends Task implements Serializable {
 	 * 
 	 * @param is it water only
 	 */
-	public void consumeWater(boolean waterOnly) {
-//		logger.info(person + "::consumeWater()");
+	private void consumeWater(boolean waterOnly) {
 
 		if (!pc.isThirsty())
 			return;
@@ -878,17 +914,12 @@ public class EatDrink extends Task implements Serializable {
 		if (thirst > PhysicalCondition.THIRST_THRESHOLD / 2.0) {
 			double currentThirst = Math.min(thirst, THIRST_CEILING);
 			Unit containerUnit = person.getContainerUnit();
-			Inventory inv = null;
 			EVASuit suit = null;
 			
 			if (containerUnit != null) {			
 				if (containerUnit instanceof MarsSurface) {
 					// Doing EVA outside. Get water from one's EVA suit
 					suit = person.getSuit();
-				}
-				else {
-					// In a vehicle or settlement
-					inv = containerUnit.getInventory();
 				}
 			}
 			
@@ -924,56 +955,23 @@ public class EatDrink extends Task implements Serializable {
 				}
 			}
 			
-			else if (inv != null && waterFinal > 0) {
+			else if (waterFinal > 0) {
 				int level = person.getAssociatedSettlement().getWaterRation();
 				double new_thirst = (currentThirst - waterFinal) / 10;
-				// Test to see if there's enough water
-				boolean haswater = false;
-				double amount = waterFinal / 1000D / level;
-
-				if (amount > MIN) {
-					double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
-					if (available >= amount)
-						haswater = true;
-				}				
-					
-				if (haswater) {
-					new_thirst = new_thirst - amount * 5_000;
-					if (new_thirst < 0)
-						new_thirst = 0;
-					else if (new_thirst > THIRST_CEILING)
-						new_thirst = THIRST_CEILING;
-					pc.setThirst(new_thirst);
+				double [] levels = {1D, 1.5D, 3D, 4.5D};
+				
+				// Try different level of water
+				for(double levelModifier : levels) {
+					// Test to see if there's enough water
+					boolean haswater = false;
+					double amount = waterFinal / 1000D / level / levelModifier;
 
 					if (amount > MIN) {
-						Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
-						// Track the water consumption
-						person.addConsumptionTime(ResourceUtil.waterID, amount);
-						if (waterOnly)
-							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-						
-//						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
-//								"[" + person.getLocationTag().getLocale() + "] " + person
-//										+ " drank " + Math.round(amount * 1000.0) / 1.0
-//										+ " mL of water.");
-					}
-//					LogConsolidated.log(Level.FINE, 1000, sourceName,
-//						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
-//						 + " thirst : " + Math.round(currentThirst* 100.0)/100.0
-//						 + " waterEachServing : " + Math.round(waterEachServing* 100.0)/100.0
-//						 + " waterFinal : " + Math.round(waterFinal* 100.0)/100.0
-//						 + " new_thirst : " + Math.round(new_thirst* 100.0)/100.0, null);
-				}
-
-				else if (!haswater) {
-					// Test to see if there's just half of the amount of water
-					amount = waterFinal / 1000D / level / 1.5;
-					if (amount > MIN) {
-						double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+						double available = storedAnResource(containerUnit, ResourceUtil.waterID);
 						if (available >= amount)
 							haswater = true;
-					}
-					
+					}				
+						
 					if (haswater) {
 						new_thirst = new_thirst - amount * 5_000;
 						if (new_thirst < 0)
@@ -981,82 +979,23 @@ public class EatDrink extends Task implements Serializable {
 						else if (new_thirst > THIRST_CEILING)
 							new_thirst = THIRST_CEILING;
 						pc.setThirst(new_thirst);
-						
+	
 						if (amount > MIN) {
-							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+							retrieveAnResource(amount, ResourceUtil.waterID, containerUnit);
 							// Track the water consumption
 							person.addConsumptionTime(ResourceUtil.waterID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-							logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-											+ Math.round(amount * 1000.0)
-											+ " mL of water.");
-						}
-					}
-					else {
-						amount = waterFinal / 1000D / level / 3.0;
-
-						if (amount > MIN) {
-							double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
-							if (available >= amount)
-								haswater = true;
 						}
 						
-						if (haswater) {
-							new_thirst = new_thirst - amount * 5_000;
-							if (new_thirst < 0)
-								new_thirst = 0;
-							else if (new_thirst > THIRST_CEILING)
-								new_thirst = THIRST_CEILING;
-							pc.setThirst(new_thirst);
-
-							if (amount > MIN) {
-								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
-								// Track the water consumption
-								person.addConsumptionTime(ResourceUtil.waterID, amount);
-								if (waterOnly)
-									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-								logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-												+ Math.round(amount * 1000.0)
-												+ " mL of water.");
-							}
-						}
-						
-						else {
-							amount = waterFinal / 1000D / level / 4.5;
-							if (amount > MIN) {
-								double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
-								if (available >= amount)
-									haswater = true;
-							}
-							
-							if (haswater) {
-								new_thirst = new_thirst - amount * 5_000;
-								if (new_thirst < 0)
-									new_thirst = 0;
-								else if (new_thirst > THIRST_CEILING)
-									new_thirst = THIRST_CEILING;
-								pc.setThirst(new_thirst);
-
-								if (amount > MIN) {
-									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
-									// Track the water consumption
-									person.addConsumptionTime(ResourceUtil.waterID, amount);
-									if (waterOnly)
-										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-									logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-													+ Math.round(amount * 1000.0)
-													+ " mL of water.");
-								}
-							}
-						}
+						return;
 					}
 				}
 			}
 		}
 	}
 
-	
+
 	/**
 	 * Eat an unprepared dessert.
 	 * 
@@ -1157,7 +1096,7 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private List<AmountResource> getAvailableDessertResources(double amountNeeded, boolean isThirsty) {
 
-		List<AmountResource> result = new CopyOnWriteArrayList<AmountResource>();
+		List<AmountResource> result = new ArrayList<>();
 
 		Unit containerUnit = person.getContainerUnit();
 		if (!(containerUnit instanceof MarsSurface)) {
@@ -1270,45 +1209,6 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if there is dessert available for the person.
-	 * 
-	 * @param person the person to check.
-	 * @return true if preserved food is available.
-	 */
-	public static boolean isDessertAvailable(Person person) {
-		boolean result = false;
-		Unit containerUnit = person.getTopContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			Inventory inv = containerUnit.getInventory();
-			
-			// TODO: need to look for all available dessert
-			
-//			if (inv != null && foodConsumptionRate > MIN)
-//				result = inv.getAmountResourceStored(ResourceUtil.foodID, false) > MIN;
-//				Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
-		}
-		return result;
-	}
-	
-	/**
-	 * Checks if there is preserved food available for the person.
-	 * 
-	 * @param person the person to check.
-	 * @return true if preserved food is available.
-	 */
-	public static boolean isPreservedFoodAvailable(Person person) {
-		boolean result = false;
-		Unit containerUnit = person.getTopContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			Inventory inv = containerUnit.getInventory();
-			if (inv != null && foodConsumptionRate > MIN)
-				result = inv.getAmountResourceStored(ResourceUtil.foodID, false) > MIN;
-//				Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
-		}
-		return result;
-	}
-
-	/**
 	 * Throw away any napkins
 	 */
 	@Override
@@ -1323,5 +1223,4 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 	}
-
 }

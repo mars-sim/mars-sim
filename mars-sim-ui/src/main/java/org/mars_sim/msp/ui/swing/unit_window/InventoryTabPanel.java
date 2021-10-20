@@ -19,10 +19,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,12 +39,15 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -274,82 +277,63 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private List<Resource> keys = new ArrayList<>();
 		
         private ResourceTableModel() {
-
+        	loadModel(keys, resources, capacity);
+        }
+        
+        private void loadModel(List<Resource> kys, Map<Resource, Number> res, Map<Resource, Number> cap) {
             if (inventory != null) {
-	            keys.addAll(inventory.getAllAmountResourcesStored(false));
-	            Iterator<Resource> iAmount = keys.iterator();
+	            kys.addAll(inventory.getAllAmountResourcesStored(false));
+	            Iterator<Resource> iAmount = kys.iterator();
 	            while (iAmount.hasNext()) {
 	                AmountResource resource = (AmountResource) iAmount.next();
-	                resources.put(resource, inventory.getAmountResourceStored(resource, false));
-	                capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
+	                res.put(resource, inventory.getAmountResourceStored(resource, false));
+	                cap.put(resource, inventory.getAmountResourceCapacity(resource, false));
 	            }
 	
 	            Set<ItemResource> itemResources = inventory.getAllIRStored();
-	            keys.addAll(itemResources);
+	            kys.addAll(itemResources);
 	            Iterator<ItemResource> iItem = itemResources.iterator();
 	            while (iItem.hasNext()) {
 	                ItemResource resource = iItem.next();
-	                resources.put(resource, inventory.getItemResourceNum(resource));
-	                capacity.put(resource, null);
+	                res.put(resource, inventory.getItemResourceNum(resource));
+	                cap.put(resource, null);
 	            }
             }
-            else if (unit.getUnitType() == UnitType.PERSON) {
-            	Person p = (Person)unit;
-            	keys.addAll(p.getAllAmountResourcesStored());
- 	            Iterator<Resource> iAmount = keys.iterator();
- 	            while (iAmount.hasNext()) {
- 	                AmountResource resource = (AmountResource) iAmount.next();
- 	                resources.put(resource, p.getAmountResourceStored(resource.getID()));
- 	                capacity.put(resource, p.getAmountResourceCapacity(resource.getID()));
- 	            }
- 
- 	            Set<ItemResource> itemResources = p.getAllItemResourcesStored();
- 	            keys.addAll(itemResources);
- 	            Iterator<ItemResource> iItem = itemResources.iterator();
- 	            while (iItem.hasNext()) {
- 	                ItemResource resource = iItem.next();
- 	                resources.put(resource, p.getItemResourceStored(resource.getID()));
- 	                capacity.put(resource, null);
- 	            }
-            }
-//            else if (unit.getUnitType() == UnitType.ROBOT) {
-//              Robot r = (Robot)unit;
-//            }
-            else if (unit.getUnitType() == UnitType.EQUIPMENT) {
-            	Equipment e = (Equipment)unit;
-            	if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-            		for (AmountResource ar: e.getAllAmountResourcesStored()) {
-            			keys.add((Resource)ar);
-    	 	            Iterator<Resource> r = keys.iterator();
-    	 	            while (r.hasNext()) {
-    	 	                AmountResource resource = (AmountResource) r.next();
-    	 	                resources.put(resource, e.getAmountResourceStored(resource.getID()));
-    	 	                capacity.put(resource, e.getAmountResourceCapacity(resource.getID()));
-    	 	            }
-            		}
+            else {
+            	// New approach based ion interfaces
+            	if (unit instanceof ResourceHolder) {
+            		ResourceHolder rh = (ResourceHolder) unit;
+            		Set<AmountResource> arItems = rh.getAmountResourceIDs().stream()
+            					  .map(ar -> ResourceUtil.findAmountResource(ar))
+            					  .filter(Objects::nonNull)
+            					  .collect(Collectors.toSet());
+                	
+            		kys.addAll(arItems);
+     	            for( AmountResource resource : arItems) {
+     	                res.put(resource, rh.getAmountResourceStored(resource.getID()));
+     	                cap.put(resource, rh.getAmountResourceCapacity(resource.getID()));
+     	            }
             	}
-            	else {
-	            	keys.addAll(e.getAllAmountResourcesStored());
-	 	            Iterator<Resource> iAmount = keys.iterator();
-	 	            while (iAmount.hasNext()) {
-	 	                AmountResource resource = (AmountResource) iAmount.next();
-	 	                resources.put(resource, e.getAmountResourceStored(resource.getID()));
-	 	                capacity.put(resource, e.getAmountResourceCapacity(resource.getID()));
-	 	            }
-	 	
-	 	            Set<ItemResource> itemResources = e.getAllItemResourcesStored();
-	 	            keys.addAll(itemResources);
-	 	            Iterator<ItemResource> iItem = itemResources.iterator();
-	 	            while (iItem.hasNext()) {
-	 	                ItemResource resource = iItem.next();
-	 	                resources.put(resource, e.getItemResourceStored(resource.getID()));
-	 	                capacity.put(resource, null);
+     
+            	// Has Item resources
+            	if (unit instanceof EquipmentOwner) {
+            		EquipmentOwner eo = (EquipmentOwner) unit;
+            		Set<Resource> irItems = eo.getItemResourceIDs().stream()
+	            				.map(ir -> ItemResourceUtil.findItemResource(ir))
+	            				.filter(Objects::nonNull)
+	            		        .collect(Collectors.toSet());
+
+ 	            	kys.addAll(irItems);
+	 	            for(Resource resource : irItems) {
+	 	                res.put(resource, eo.getItemResourceStored(resource.getID()));
+	 	                cap.put(resource, null);
 	 	            }
             	}
             }
+
             
             // Sort resources alphabetically by name.
-            keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+            kys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
         }
 
         public int getRowCount() {
@@ -401,115 +385,22 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public void update() {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
-        		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>();
-        		Set<ItemResource> itemResources = new HashSet<>();
-
     			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
         		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
         		
-        		if (inventory != null) {
-        			Set<AmountResource> set = inventory.getAllAmountResourcesStored(false);
-	        		newAmountResourceKeys.addAll(set);
-	        		newResourceKeys.addAll(set);        		
-	        		itemResources.addAll(inventory.getAllIRStored());
-	        		newResourceKeys.addAll(itemResources);
-	
-	        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
-	        		while (i.hasNext()) {
-	        			AmountResource ar =  i.next();
-	        			newResources.put(ar, inventory.getAmountResourceStored(ar, false));
-	        			newCapacity.put(ar, inventory.getAmountResourceCapacity(ar, false));
-	        		}
-	    			
-	            	Iterator<ItemResource> iItem = itemResources.iterator();
-	            	while (iItem.hasNext()) {
-	            		ItemResource resource = iItem.next();
-	            		newResources.put(resource, inventory.getItemResourceNum(resource));
-	            		newCapacity.put(resource, null);
-	            	}
-        		}
-        		else if (unit.getUnitType() == UnitType.PERSON) {
-        			Person p = (Person)unit;
-        			Set<AmountResource> set = p.getAllAmountResourcesStored();
-        			newAmountResourceKeys.addAll(set);
-	        		newResourceKeys.addAll(set);        		
-	        		itemResources.addAll(p.getAllItemResourcesStored());
-	        		newResourceKeys.addAll(itemResources);
-	
-	        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
-	        		while (i.hasNext()) {
-	        			AmountResource ar =  i.next();
-	        			newResources.put(ar, p.getAmountResourceStored(ar.getID()));
-	        			newCapacity.put(ar, p.getAmountResourceCapacity(ar.getID()));
-	        		}
-	    			
-	            	Iterator<ItemResource> iItem = itemResources.iterator();
-	            	while (iItem.hasNext()) {
-	            		ItemResource resource = iItem.next();
-	            		newResources.put(resource, p.getItemResourceStored(resource.getID()));
-	            		newCapacity.put(resource, null);
-	            	}
-        		}
-//        		else if (unit.getUnitType() == UnitType.ROBOT) {          		
-//        		}
-        		else if (unit.getUnitType() == UnitType.EQUIPMENT) {
-        			Equipment e = (Equipment)unit;
-        			
-                	if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-                		for (AmountResource ar: e.getAllAmountResourcesStored()) {
-                			newAmountResourceKeys.add(ar);
-        	        		newResourceKeys.add(ar);        		
-        	        		itemResources.addAll(e.getAllItemResourcesStored());
-        	        		newResourceKeys.addAll(itemResources);
-        	
-        	        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
-        	        		while (i.hasNext()) {
-        	        			AmountResource arr = i.next();
-        	        			newResources.put(arr, e.getAmountResourceStored(arr.getID()));
-        	        			newCapacity.put(arr, e.getAmountResourceCapacity(arr.getID()));
-        	        		}
-                		}
-                	}
-                	else {
-                		newAmountResourceKeys.addAll(e.getAllAmountResourcesStored());
-    	        		newResourceKeys.addAll(e.getAllAmountResourcesStored());        		
-    	        		itemResources.addAll(e.getAllItemResourcesStored());
-    	        		newResourceKeys.addAll(itemResources);
-    	
-    	        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
-    	        		while (i.hasNext()) {
-    	        			AmountResource ar =  i.next();
-    	        			newResources.put(ar, e.getAmountResourceStored(ar.getID()));
-    	        			newCapacity.put(ar, e.getAmountResourceCapacity(ar.getID()));
-    	        		}
-    	    			
-    	            	Iterator<ItemResource> iItem = itemResources.iterator();
-    	            	while (iItem.hasNext()) {
-    	            		ItemResource resource = iItem.next();
-    	            		newResources.put(resource, e.getItemResourceStored(resource.getID()));
-    	            		newCapacity.put(resource, null);
-    	            	}
-                	}
-        		}
-	            	
-            	// Sort resources alphabetically by name.
-        		newResourceKeys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-                
-        		if (keys.size() != newResourceKeys.size()
-        				|| !keys.equals(newResourceKeys)
-        				|| resources.size() != newResources.size()
+        		loadModel(newResourceKeys, newResources, newCapacity);
+
+        		if (!keys.equals(newResourceKeys)
         				|| !resources.equals(newResources)
         				|| !capacity.equals(newCapacity)) {
         			resources = newResources;
         			capacity = newCapacity;
         			keys = newResourceKeys;
         			fireTableDataChanged();
-//                		((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
 	
         		}
         		
                 keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-//              Collections.sort(keys);
         	}
     }
 

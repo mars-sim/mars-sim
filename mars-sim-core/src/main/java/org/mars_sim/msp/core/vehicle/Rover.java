@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -20,7 +21,6 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -153,7 +153,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Gets the estimated cabin compartment air volume.
 		cabinAirVolume = vehicleConfig.getEstimatedAirVolume(type);
 
-		oxygenCapacity = vehicleConfig.getCargoCapacity(type, LifeSupportInterface.OXYGEN);
+		Map<String, Double> capacitiles = vehicleConfig.getCargoCapacity(type);
+		oxygenCapacity = capacitiles.get(LifeSupportInterface.OXYGEN);
 		min_o2_pressure = SimulationConfig.instance().getPersonConfig().getMinSuitO2Pressure();
 		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS 
 				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
@@ -163,24 +164,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 //		logger.config(type + " : full tank O2 partial pressure is " + fullO2PartialPressure + " kPa");
 //		logger.config(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
 //		logger.config(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
-		
-		// Set inventory resource capacities.
-		getMicroInventory().setCapacity(OXYGEN, oxygenCapacity);
-		getMicroInventory().setCapacity(NITROGEN, vehicleConfig.getCargoCapacity(type, ResourceUtil.NITROGEN));
-		getMicroInventory().setCapacity(WATER, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.WATER));
-		getMicroInventory().setCapacity(METHANE, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
-		getMicroInventory().setCapacity(FOOD, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.FOOD));
-		
-		getMicroInventory().setCapacity(FOOD_WASTE, vehicleConfig.getCargoCapacity(type, ResourceUtil.FOOD_WASTE));
-		getMicroInventory().setCapacity(SOLID_WASTE, vehicleConfig.getCargoCapacity(type, ResourceUtil.SOLID_WASTE));
-		getMicroInventory().setCapacity(TOXIC_WASTE, vehicleConfig.getCargoCapacity(type, ResourceUtil.TOXIC_WASTE));
-		getMicroInventory().setCapacity(GREY_WATER, vehicleConfig.getCargoCapacity(type, ResourceUtil.GREY_WATER));
-		getMicroInventory().setCapacity(BLACK_WATER, vehicleConfig.getCargoCapacity(type, ResourceUtil.BLACK_WATER));
-
-		getMicroInventory().setCapacity(ROCK_SAMPLES, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMPLES));
-		getMicroInventory().setCapacity(ICE, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
-
-		
+			
 		// Construct sick bay.
 		if (vehicleConfig.hasSickbay(type)) {
 			sickbay = new SickBay(this, vehicleConfig.getSickbayTechLevel(type),
@@ -1040,22 +1024,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	
 	public double getCargoCapacity() {
 		return cargoCapacity;
-	}
-	
-	/**
-	 * Sets the coordinates of all units in the inventory.
-	 * 
-	 * @param newLocation the new coordinate location
-	 */
-	@Override
-	public void setLocation(Coordinates newLocation) {
-		super.setLocation(newLocation);
-		
-		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
-			for (Person p: getCrew()) {
-				p.setCoordinates(newLocation);
-			}
-		}
 	}
 	
 	@Override

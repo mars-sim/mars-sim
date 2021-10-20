@@ -1878,9 +1878,6 @@ public class Inventory implements Serializable {
 			Unit owner = getOwner();
 
 			if (owner != null) {
-				
-				unit.setContainerUnit(owner);
-				
 				if (ownerID != Unit.MARS_SURFACE_UNIT_ID) {
 					// Set modified cache values as dirty.
 					setAmountResourceCapacityCacheAllDirty(true);
@@ -1897,7 +1894,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID : rh.getResourceIDs()) {
+							for (int resourceID : rh.getAmountResourceIDs()) {
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -1919,7 +1916,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID: rh.getResourceIDs()) {
+							for (int resourceID: rh.getAmountResourceIDs()) {
 								double containerAmount = rh.getAmountResourceStored(resourceID);
 								if (containerAmount > 0 &&
 									// From Owner
@@ -1937,6 +1934,8 @@ public class Inventory implements Serializable {
 						((Settlement)owner).addPeopleWithin((Person)unit);
 					}
 				}
+
+				unit.setContainerUnit(owner);
 			}
 			
 		} else {
@@ -1967,18 +1966,12 @@ public class Inventory implements Serializable {
 		boolean retrieved = true;
 		
 		Integer uid = unit.getIdentifier();
-		
-//		if (unit.getUnitType() == UnitType.PERSON)
-//			logger.log(unit, Level.INFO, 30_000, 
-//				"retrieving " + unit + "(" + uid + ")" + " from " + owner.getName() + ".");
-		
+
 		if (containedUnitIDs != null && containedUnitIDs.contains(uid)) {
-//			logger.log(unit, Level.INFO, 30_000, 
-//					"containing " + unit + " in " + owner.getName() + ".");
 			
 			setUnitTotalMassCacheDirty();
 
-			retrieved = containedUnitIDs.remove(uid);
+			containedUnitIDs.remove(uid);
 
 			// Update owner
 			Unit owner = getOwner();
@@ -1995,7 +1988,7 @@ public class Inventory implements Serializable {
 					if (unit.getUnitType() == UnitType.EQUIPMENT) {
 						if (unit instanceof ResourceHolder) {
 							ResourceHolder rh = (ResourceHolder)unit;
-							for (int resourceID : rh.getResourceIDs()) {
+							for (int resourceID : rh.getAmountResourceIDs()) {
 								owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resourceID);
 							}
 						}
@@ -2016,12 +2009,12 @@ public class Inventory implements Serializable {
 				if (owner.getUnitType() == UnitType.SETTLEMENT) {
 					if (unit.getUnitType() == UnitType.PERSON) {
 						// Retrieve this person from the settlement
-						retrieved = ((Settlement) owner).removePeopleWithin((Person)unit);
+						((Settlement) owner).removePeopleWithin((Person)unit);
 					}
 				}
 			}
 			
-			if (retrieved && retrieveOnly) {
+			if (!retrieveOnly) {
 	            unit.setContainerUnit(null);
 			}
 		}
@@ -2035,13 +2028,8 @@ public class Inventory implements Serializable {
 			
 			logger.log(unit, Level.SEVERE, 30_000, 
 					"Could not be retrieved from " + owner.getName() + ".");
-			
 			retrieved = false;
 		}
-		
-//		if (unit.getUnitType() == UnitType.PERSON && !retrieved)
-//			logger.log(unit, Level.INFO, 30_000, 
-//				"can't retrieve " + unit + "(" + uid + ")" + " from " + owner.getName() + ".");
 		
 		return retrieved;
 	}
@@ -2557,19 +2545,13 @@ public class Inventory implements Serializable {
 
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer uid : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(uid);
+				Unit u = unitManager.getUnitByID(uid);
 				
-				if (e != null) {
-					if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-						tempAllStored.addAll(((ResourceHolder)e).getResourceIDs());
-					}
+				if (u instanceof ResourceHolder) {
+					tempAllStored.addAll(((ResourceHolder)u).getAmountResourceIDs());
 				}
 				else {
-					Unit u = unitManager.getUnitByID(uid);
-					if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
-						Set<Integer> set = u.getInventory().getAllARStored(false);
-						tempAllStored.addAll(set);
-					}
+					tempAllStored.addAll(u.getInventory().getAllARStored(false));
 				}
 			}
 		}

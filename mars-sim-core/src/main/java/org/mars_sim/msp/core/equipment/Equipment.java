@@ -22,8 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -105,17 +103,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return a list of resource ids
 	 */
-	public Set<Integer> getResourceIDs() {
+	public Set<Integer> getAmountResourceIDs() {
 		return microInventory.getResourcesStored();
-	}
-	
-	/**
-	 * Gets all stored amount resources 
-	 * 
-	 * @return
-	 */
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		return microInventory.getAllAmountResourcesStored();
 	}
 	
 	/**
@@ -123,8 +112,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return
 	 */
-	public Set<ItemResource> getAllItemResourcesStored() {
-		return microInventory.getAllItemResourcesStored();
+	public Set<Integer> getItemResourceIDs() {
+		return microInventory.getItemResourceIDs();
 	}
 	
 	/**
@@ -290,6 +279,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return microInventory.isEmpty();
 	}	
 
+	
+	/**
+	 * Does this unit have this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasResource(int resource) {
+		for (int id: getAmountResourceIDs()) {
+			if (id == resource)
+				return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

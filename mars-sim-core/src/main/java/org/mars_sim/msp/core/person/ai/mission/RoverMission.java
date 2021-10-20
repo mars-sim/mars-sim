@@ -7,11 +7,12 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
@@ -163,7 +164,7 @@ public abstract class RoverMission extends VehicleMission {
 
 			usable = vehicle.isVehicleReady();
 			
-			if (vehicle.getTotalMass() > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 			
 			if (!(vehicle instanceof Rover))
@@ -207,7 +208,7 @@ public abstract class RoverMission extends VehicleMission {
 			if (!(vehicle instanceof Rover))
 				usable = false;
 			
-			if (vehicle.getTotalMass() > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
 			if (usable)
@@ -505,7 +506,8 @@ public abstract class RoverMission extends VehicleMission {
 	        if (!isRoverInAGarage)
 	        	rover.findNewParkingLoc();
 	        
-			for (Person p : rover.getCrew()) {
+	        List<Person> currentCrew = new ArrayList<>(rover.getCrew());
+			for (Person p : currentCrew) {
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}
@@ -539,7 +541,7 @@ public abstract class RoverMission extends VehicleMission {
 			if (isNoOneInRover()) {
 
 				// Unload rover if necessary.
-				boolean roverUnloaded = rover.getTotalMass() == 0D;
+				boolean roverUnloaded = rover.getStoredMass() == 0D;
 				if (!roverUnloaded) {
 					if (member.isInSettlement() && ((Person)member).isFit()) {
 						// Note : Random chance of having person unload (this allows person to do other things
@@ -906,8 +908,9 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
 		Map<Integer, Number> map = new HashMap<>();
-		// Get an EVA suit.
-		EVASuit suit = InventoryUtil.getGoodEVASuit(startingSettlement.getInventory(), getStartingPerson());
+		
+		// Get an EVA suit from the staring settlement as an example of an EVA Suit
+		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingSettlement(), getStartingPerson());
 
 		// Determine needed repair parts for EVA suits.
 		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();

@@ -277,13 +277,17 @@ public class Mind implements Serializable, Temporal {
 			else {
 				// If the mission vehicle has embarked but the person is not on board, 
 				// then release the person from the mission
-				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
-					mission.removeMember(person);
-					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
-					mission = null;
-				}
-				
-				else if (mission.getPhase() != null) {
+				// TODO this logic fails because a Units coordinate can only be trusted when on the Surface.
+				// Maybe this should use TopContainer but would be better to identify
+				// if this Prson is on board
+//				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
+//					mission.removeMember(person);
+//					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
+//					mission = null;
+//				}
+//				
+//				else
+				if (mission.getPhase() != null) {
 					// Checks if a person is tired, too stressful or hungry and need 
 					// to take break, eat and/or sleep
 			        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());

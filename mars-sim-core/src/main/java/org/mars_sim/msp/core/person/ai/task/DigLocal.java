@@ -89,13 +89,20 @@ implements Serializable {
 	      	return;
 		}
 
+        // To dig local a person must be in a Settlement
+        if (!person.isInSettlement()) {
+        	logger.warning(person, "Is not in a settlement to start a DigLocal Task");
+        	endTask();
+        	return;
+        }
+        
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
      		endTask();
      		return;
      	}
 
-        // Get an available airlock.
+        // Get an available airlock in a settlement
      	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
@@ -319,23 +326,24 @@ implements Serializable {
     	// Note: should take a bag before leaving the airlock
     	// Note: also consider dropping off the resource in a shed 
     	// or a shed outside of the workshop/landerhab for processing
-        Container aBag = settlement.getInventory().findContainer(containerType, true, resourceID);
-        if (aBag != null) {
-            	boolean successful = aBag.transfer(settlement, person);
-            	if (successful) {
-//            		logger.log(person, Level.INFO, 10_000, "Just obtained an empty bag for " + resourceString + ".");
-            		return aBag;
-            	}
-            	else {
-                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
-                	endTask();
-                }
+        Container aBag = person.findContainer(containerType, false, resourceID);
+        if (aBag == null) {
+        	// Doesn't have a Bag
+        	aBag = settlement.getInventory().findContainer(containerType, true, resourceID);
+	        if (aBag != null) {
+	            	boolean successful = aBag.transfer(settlement, person);
+	            	if (!successful) {
+	            		aBag = null;
+	                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
+	                	endTask();
+	                }
+	        }
+	        else {
+	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceName + ".");
+	        	endTask();
+	        }
         }
-        else {
-        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceName + ".");
-        	endTask();
-        }
-        return null;
+        return aBag;
     }
 
     @Override

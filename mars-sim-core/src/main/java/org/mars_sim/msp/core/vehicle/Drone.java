@@ -48,13 +48,7 @@ public class Drone extends Flyer implements Serializable {
 	 * @param settlement  the settlement the rover is parked at
 	 */
 	public Drone(String name, String type, Settlement settlement) {
-		super(name, type, settlement, MAINTENANCE_WORK_TIME);
-		
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-
-		// Set inventory resource capacities.
-		getMicroInventory().setCapacity(METHANE, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
-		
+		super(name, type, settlement, MAINTENANCE_WORK_TIME);		
 	}
 
 	

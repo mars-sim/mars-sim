@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -666,10 +665,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				vehicle.findNewParkingLoc();
 
 				// Store all construction vehicle attachments in settlement.
-				Iterator<ItemResource> j = vehicle.getAllItemResourcesStored().iterator();
-				while (j.hasNext()) {
-					ItemResource attachmentPart = j.next();
-					int id = attachmentPart.getID();
+				for(int id : vehicle.getItemResourceIDs()) {
 					int num = vehicle.getItemResourceStored(id);
 					vehicle.retrieveItemResource(id, num);
 					sInv.storeItemResources(id, num);

@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -49,7 +51,12 @@ public class EatDrinkMeta extends MetaTask {
 		
 		Inventory inv = null;
 		Unit container = person.getContainerUnit();
-		if (container != null) {
+		if (container instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) container;
+			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
+			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);	
+		}
+		else if (container != null) {
 			inv = container.getInventory();	
 			// Take preserved food from inventory if it is available.
 			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);

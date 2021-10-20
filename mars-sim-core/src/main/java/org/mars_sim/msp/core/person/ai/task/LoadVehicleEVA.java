@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -270,7 +269,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (!settlement.getBuildingManager().addToGarage(vehicle)) {
 					int peopleOnboard = rover.getCrewNum();
 					if ((peopleOnboard > 0)) {
-						int numSuits = rover.findNumEVASuits(false);
+						int numSuits = rover.findNumEVASuits();
 						double water = rover.getAmountResourceStored(ResourceUtil.waterID);
 						double oxygen = rover.getAmountResourceStored(ResourceUtil.oxygenID);
 						if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {

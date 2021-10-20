@@ -320,7 +320,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			boolean usable = vehicle.isVehicleReady();
 
-			if (vehicle.getTotalMass() > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
 			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
@@ -471,7 +471,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
-					if (!vehicleCache.isEmpty()) {
+					if (vehicleCache.getStoredMass() != 0D) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -482,7 +482,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				
 				else if (vehicleCache instanceof Rover) {
-					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.isEmpty()) {
+					if (((Rover)vehicleCache).getCrewNum() != 0
+							|| (vehicleCache.getStoredMass() != 0D)) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -581,7 +582,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// if a vehicle is at a settlement			
 				setPhaseEnded(true);
 				
-				if (!vehicle.isEmpty())
+				if (vehicle.getStoredMass() != 0D)
 					setPhase(VehicleMission.DISEMBARKING);
 				
 				leaveVehicle();

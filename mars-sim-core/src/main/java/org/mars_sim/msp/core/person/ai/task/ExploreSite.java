@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -335,7 +334,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
-											rover.getInventory().findAllContainers(EquipmentType.SPECIMEN_BOX),
+											rover, EquipmentType.SPECIMEN_BOX,
 											ResourceUtil.rockSamplesID);
 
 		if (container != null) {
@@ -349,11 +348,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-//		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
-		// Load specimen container in rover.
-		Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-		if (box != null) {
-			box.transfer(person, rover);
-		}
+		returnEquipmentToVehicle(rover);
 	}
 }

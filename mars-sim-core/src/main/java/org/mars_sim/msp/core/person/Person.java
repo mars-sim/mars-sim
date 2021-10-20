@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,13 +24,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.MicroInventory;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -60,7 +58,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -201,7 +198,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/** The person's current scientific study. */
 	private ScientificStudy study;
 	/** The person's MicroInventory instance. */
-	private MicroInventory microInventory;
+	private EquipmentInventory eqmInventory;
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<ScienceType, Double>();
@@ -215,8 +212,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private List<TrainingType> trainings;
 	/** The person's list of collaborative scientific studies. */
 	private Set<ScientificStudy> collabStudies;
-	/** The person's list of equipment. */
-	private List<Equipment> equipmentList;
 
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
@@ -258,10 +253,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
-		// Create equipment list instance		
-		equipmentList = new ArrayList<>();
-		// Create microInventory instance		
-		microInventory = new MicroInventory(this);
+
 	}
 	
 	/**
@@ -275,14 +267,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(EARTHLING);
-
-		// Store this person in the settlement
-		settlement.getInventory().storeUnit(this);
-		// Add this person as a citizen
-		settlement.addACitizen(this);
 		
 		// Initialize data members
-		super.setName(name);
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
@@ -295,13 +281,15 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
 		mind = new Mind(this);
-		// Create equipment list instance		
-		equipmentList = new ArrayList<>();
-		// Create microInventory instance		
-		microInventory = new MicroInventory(this);
-		
+
 		// Set the person's status of death
 		isBuried = false;
+
+
+		// Store this person in the settlement
+		settlement.getInventory().storeUnit(this);
+		// Add this person as a citizen
+		settlement.addACitizen(this);
 	}
 
 	/*
@@ -350,6 +338,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
+		
+		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
 
 	/**
@@ -1661,7 +1651,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * Calculate the modifier for walking speed based on how much this unit is carrying
 	 */
 	public double calculateWalkSpeed() {
-		double mass = getTotalMass();
+		double mass = getMass();
 		// At full capacity, may still move at 10%.
 		// Make sure is doesn't go -ve and there is always some movement
 		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
@@ -1724,7 +1714,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return capacity (kg).
 	 */
 	public double getRemainingCarryingCapacity() {
-		return carryingCapacity - getTotalMass();
+		return carryingCapacity - getMass();
 	}
 	
 	/**
@@ -1741,28 +1731,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getMass() {
-		if (microInventory != null)
-			// Note stored mass may be have a different implementation in subclasses
-			return microInventory.getStoredMass() + getBaseMass();
-		else
-			return getBaseMass();
-	}
-	
-	/**
-	 * Gets the total mass on a person (not including a person's weight)
-	 * 
-	 * @return
-	 */
-	@Override
-	public double getTotalMass() {
-		double result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getMass();
-			}
-		}
-		result += microInventory.getStoredMass();
-		return result;
+		// TODO because the PErson is not fully initialised in the constructor this
+		// can be null. The initialise method is the culprit.
+		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
+
 	}
 	
 	/**
@@ -1772,9 +1744,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public List<Equipment> getEquipmentList() {
-		return equipmentList;
+		return eqmInventory.getEquipmentList();
 	}
-
+	
 	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
@@ -1783,14 +1755,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				if (type == e.getEquipmentType()) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return eqmInventory.containsEquipment(type);
 	}
 	
 	/**
@@ -1801,11 +1766,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		if (carryingCapacity >= getTotalMass() + equipment.getMass()) {
-			equipmentList.add(equipment);
-			return true;
-		}
-		return false;		
+		return eqmInventory.addEquipment(equipment);		
 	}
 	
 	/**
@@ -1815,11 +1776,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		if (equipmentList.contains(equipment)) {
-			equipmentList.remove(equipment);
-			return true;
-		}
-		return false;
+		return eqmInventory.removeEquipment(equipment);
 	}
 	
 	/**
@@ -1830,12 +1787,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
-	public double storeItemResource(int resource, int quantity) {
-		if (!hasResource(resource)) {
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-		
-		return microInventory.storeItemResource(resource, quantity);
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
 	}
 	
 	/**
@@ -1846,17 +1799,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return quantity that cannot be retrieved
 	 */
 	@Override
-	public double retrieveItemResource(int resource, int quantity) {
-		if (hasResource(resource)) {
-			return microInventory.retrieveItemResource(resource, quantity);
-		}
-		
-		else {
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ quantity + "x "+ name + ".");
-			return quantity;
-		}
+	public int retrieveItemResource(int resource, int quantity) {
+		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
 	
 	/**
@@ -1867,12 +1811,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public int getItemResourceStored(int resource) {
-		if (hasResource(resource)) {
-			return microInventory.getItemResourceStored(resource);
-		}
-		else {
-			return 0;
-		}
+		return eqmInventory.getItemResourceStored(resource);
 	}
 	
 	/**
@@ -1884,45 +1823,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		if (!hasResource(resource)) {
-			// The capacity of a resource on a person varies and is not fixed
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-		
-		double rCap = 0;
-		double excess = quantity;
-				
-		if (equipmentList.size() == 1) {
-			// check if there is enough space for storing the entire quantity 
-			// in this equipment container, if not, split it into multiple container
-			double rcap = equipmentList.get(0).getAmountResourceRemainingCapacity(resource);
-			if (rcap > 0) {
-				return equipmentList.get(0).storeAmountResource(resource, excess);
-			}
-			else
-				return excess;
-		}
-		else if (equipmentList.size() > 1) {
-			for (Equipment e: equipmentList) {
-				// check if there is enough space for storing the entire quantity 
-				// in one equipment container, if not, split it into multiple container	
-				rCap = e.getAmountResourceRemainingCapacity(resource);
-				if (rCap > 0) {
-					excess = e.storeAmountResource(resource, excess);
-				}
-			}
-		}
-		
-		if (!microInventory.isEmpty()) {
-
-			double rcap = microInventory.getAmountResourceRemainingCapacity(resource);
-			if (rcap > 0) {
-				excess = microInventory.storeAmountResource(resource, excess);
-			}
-		}
-		
-		// Return any excess unstored amount
-		return excess;
+		return eqmInventory.storeAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -1934,53 +1835,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (hasResource(resource)) {
-			double stored = 0;
-			double shortfall = quantity;
-			
-			if (!microInventory.isEmpty()) {
-
-				stored = microInventory.getAmountResourceStored(resource);
-				if (stored > 0) {
-					shortfall = microInventory.retrieveAmountResource(resource, shortfall);
-				}
-				if (shortfall == 0) {
-					// Remove the id
-					microInventory.removeResource(resource);
-				}
-			}		
-			
-			if (equipmentList.size() == 1) {
-				// check if there is enough space for storing the entire quantity 
-				// in this equipment container, if not, split it into multiple container
-				stored = equipmentList.get(0).getAmountResourceStored(resource);
-				if (stored > 0) {
-					return equipmentList.get(0).retrieveAmountResource(resource, shortfall);
-				}
-				else
-					return shortfall;
-			}
-			else if (equipmentList.size() > 1) {
-				for (Equipment e: equipmentList) {
-					// check if there is enough space for storing the entire quantity 
-					// in one equipment container, if not, split it into multiple container	
-					stored = e.getAmountResourceStored(resource);
-					if (stored > 0) {
-						shortfall = e.retrieveAmountResource(resource, shortfall);
-					}
-				}
-			}
-			
-			// Return any missing quantity
-			return shortfall;
-		}
-
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
+		return eqmInventory.retrieveAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -1991,17 +1846,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		double result = 0;
-
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getCapacity(resource);
-			}
-		}
-		
-		result += microInventory.getCapacity(resource);
-		
-		return result;
+		return eqmInventory.getAmountResourceCapacity(resource);
 	}
 	
 	/**
@@ -2012,17 +1857,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		double result = 0;
-
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getAmountResourceRemainingCapacity(resource);
-			}
-		}
-
-		result += microInventory.getAmountResourceRemainingCapacity(resource);
-
-		return result;
+		return eqmInventory.getAmountResourceCapacity(resource);
 	}
 	
 	/**
@@ -2032,9 +1867,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
      */
 	@Override
 	public double getTotalCapacity() {
-		// Question: Should the total capacity varies ? 
-		// based on a person's instant carrying capacity ?
-		return getCarryingCapacity();
+		return eqmInventory.getTotalCapacity();
 	}
 	
 	/**
@@ -2045,11 +1878,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getAmountResourceStored(int resource) {
-		if (hasResource(resource)) {
-			return microInventory.getAmountResourceStored(resource);
-		}
-		
-		return 0;
+		return eqmInventory.getAmountResourceStored(resource);
 	}
     
 	/**
@@ -2058,13 +1887,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return all stored amount resources.
 	 */
 	@Override
-	public Set<AmountResource> getAllAmountResourcesStored() {
-		Set<AmountResource> set = new HashSet<>(microInventory.getAllAmountResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllAmountResourcesStored());
-		}
-		
-		return set;
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
 	}
 	
 	/**
@@ -2073,13 +1897,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return all stored item resources.
 	 */
 	@Override
-	public Set<ItemResource> getAllItemResourcesStored() {
-		Set<ItemResource> set = new HashSet<>(microInventory.getAllItemResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getAllItemResourcesStored());
-		}
-		
-		return set;
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
 	}
 	
 
@@ -2093,17 +1912,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		int result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				// The contained unit has to be an Equipment that is empty and of the correct type
-				if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
-					result++;
-				}
-			}
-		}
-		
-		return result;
+		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
 	
 	/**
@@ -2116,196 +1925,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == containerType) {
-					Container c = (Container) e;
-					if (empty) {
-						// It must be empty inside
-						if (c.getStoredMass() == 0D) {
-							return c;
-						}
-					}
-					else if (resource == -1 || c.getResource() == resource || c.getResource() == -1)
-						return c;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Finds all equipment with a particular equipment type
-	 * 
-	 * @param type EquipmentType
-	 * @return collection of equipment or empty collection if none.
-	 */
-	@Override
-	public Set<Equipment> findAllEquipmentType(EquipmentType type) {
-		Set<Equipment> result = new HashSet<>();
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == type) 
-					result.add(e);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Checks if it contains an EVA suit.
-	 * 
-	 * @return true if it contains an EVA suit.
-	 */
-	@Override
-	public boolean containsEVASuit() {
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Sets the coordinates of all units in the inventory.
-	 * 
-	 * @param newLocation the new coordinate location
-	 */
-	@Override
-	public void setLocation(Coordinates newLocation) {
-		if (LocationStateType.MARS_SURFACE != getLocationStateType()) {
-			if (equipmentList != null && !equipmentList.isEmpty() && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
-				for (Equipment e: equipmentList) {
-					e.setCoordinates(newLocation);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Gets a set of resources in storage. 
-	 * @return  a set of resources 
-	 */
-	@Override
-	public Collection<Integer> getResourceIDs() {
-		Set<Integer> set = new HashSet<Integer>(); 
-			set.addAll(microInventory.getResourcesStored());
-		for (Equipment e: equipmentList) {
-			set.addAll(e.getResourceIDs());
-		}
-		
-		return set;
-	}
-	
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasResource(int resource) {
-		for (int id: getResourceIDs()) {
-			if (id == resource)
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Finds a EVA suit in storage.
-	 * 
-	 * @param person
-	 * @return instance of EVASuit or null if none.
-	 */
-	@Override
-	public EVASuit findEVASuit(Person person) {
-		EVASuit goodSuit = null;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					EVASuit suit = (EVASuit)e;
-					boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-					boolean hasEnoughResources = hasEnoughResourcesForSuit(suit);
-					boolean lastOwner = (suit.getLastOwner() == person);
-					
-					if (!malfunction && hasEnoughResources) {
-						if (lastOwner) {
-							// Pick this EVA suit since it has been used by the same person
-							return suit;
-						}
-						else {
-							// For now, make a note of this suit but not selecting it yet. 
-							// Continue to look for a better suit
-							goodSuit = suit;
-						}
-					}
-				}
-			}
-		}
-		
-		return goodSuit;
-	}
-	
-	/**
-	 * Checks if enough resource supplies to fill the EVA suit.
-	 * 
-	 * @param suit      the EVA suit.
-	 * @return true if enough supplies.
-	 * @throws Exception if error checking suit resources.
-	 */
-	@Override
-	public boolean hasEnoughResourcesForSuit(EVASuit suit) {
-		int otherPeopleNum = getSettlement().getNumCitizens();
-		// Check if enough oxygen.
-		double neededOxygen = suit.getAmountResourceRemainingCapacity(OXYGEN);
-		double availableOxygen = getAmountResourceStored(OXYGEN);
-		// Make sure there is enough extra oxygen for everyone else.
-		availableOxygen -= neededOxygen * otherPeopleNum;
-		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
-
-		// Check if enough water.
-		double neededWater = suit.getAmountResourceRemainingCapacity(WATER);
-		double availableWater = getAmountResourceStored(WATER);
-		// Make sure there is enough extra water for everyone else.
-		availableWater -= (neededWater * otherPeopleNum);
-		boolean hasEnoughWater = (availableWater >= neededWater);
-
-		// it's okay even if there's not enough water
-//		if (!hasEnoughWater)
-//			LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
-
-		return hasEnoughOxygen && hasEnoughWater;
-	}
-	
-	/**
-	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
-	 *  
-	 * @param isEmpty    does it need to be empty ?
-	 * @return number of EVA suits
-	 */
-	@Override
-	public int findNumEVASuits(boolean isEmpty) {
-		int result = 0;
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e : equipmentList) {
-				if (e != null && e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					if (isEmpty) {
-						// It must be empty inside
-						if (e.isEmpty(false)) {
-							result++;
-						}
-					}
-					else
-						result++;
-				}	
-			}
-		}
-		return result;
+		return eqmInventory.findContainer(containerType, empty, resource);
 	}
 	
 	/**
@@ -2314,9 +1934,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		if (equipmentList != null && !equipmentList.isEmpty())
-			return false;
-		return microInventory.isEmpty();
+		return (eqmInventory.getStoredMass() == 0D);
 	}	
 	
 	@Override
@@ -2379,5 +1997,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		scientificAchievement.clear();
 		scientificAchievement = null;
+	}
+
+	@Override
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
 	}
 }

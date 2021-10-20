@@ -3364,17 +3364,18 @@ public class GoodsManager implements Serializable, Temporal {
 		Inventory inv = settlement.getInventory();
 		Set<Equipment> equipmentList = inv.findAllEquipmentType(containerType);
 		
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-					Inventory vehicleInv = vehicle.getInventory();
-					equipmentList.addAll(vehicleInv.findAllEquipmentType(containerType));
-				}
-			}
-		}
+		// TODO need to revisit this
+//		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+//		while (i.hasNext()) {
+//			Mission mission = i.next();
+//			if (mission instanceof VehicleMission) {
+//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
+//					Inventory vehicleInv = vehicle.getInventory();
+//					equipmentList.addAll(vehicle.findNumEmptyContainersOfType(containerType, initialized) findAllEquipmentType(containerType));
+//				}
+//			}
+//		}
 
 		double total = equipmentList.size();
 		for(Equipment e: equipmentList) {
@@ -3429,7 +3430,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.isOutside())
-				number += person.findAllEquipmentType(equipmentType).size();
+				number += person.findNumEmptyContainersOfType(equipmentType, false);
 		}
 
 		// Get the number of equipment that will be produced by ongoing manufacturing

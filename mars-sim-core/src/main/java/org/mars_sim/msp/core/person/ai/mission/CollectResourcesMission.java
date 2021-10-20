@@ -18,9 +18,9 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -389,7 +389,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				Person person = (Person) member;
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof CollectResources) {
-					((CollectResources) task).endEVA();
+					((EVAOperation) task).endEVA();
 				}
 			}
 		}
@@ -401,7 +401,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param inv
 	 * @return
 	 */
-	private double updateResources(Inventory inv) {
+	private double updateResources(ResourceHolder inv) {
 
 		double resourcesCollected = 0;
 		double resourcesCapacity = 0;
@@ -409,8 +409,8 @@ public abstract class CollectResourcesMission extends RoverMission
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
 		for (Integer type : getCollectibleResources()) {
-			resourcesCollected += inv.getAmountResourceStored(type, false);
-			resourcesCapacity += inv.getAmountResourceCapacity(type, false);
+			resourcesCollected += inv.getAmountResourceStored(type);
+			resourcesCapacity += inv.getAmountResourceCapacity(type);
 		}
 		
 		// Set total collected resources.
@@ -443,9 +443,8 @@ public abstract class CollectResourcesMission extends RoverMission
 	 */
 	private void collectingPhase(MissionMember member) {
 		
-		Inventory inv = getRover().getInventory();
-		
-		double roverRemainingCap = inv.getRemainingGeneralCapacity(false);
+		Rover rover = getRover();
+		double roverRemainingCap = rover.getTotalCapacity() - rover.getStoredMass();
 		
 		double weight = ((Person)member).getMass();
 
@@ -454,7 +453,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			setPhaseEnded(true);
 		}
 		
-		double resourcesCapacity = updateResources(inv);
+		double resourcesCapacity = updateResources(rover);
 
 		// Check if end collecting flag is set.
 		if (endCollectingSite) {
@@ -530,9 +529,9 @@ public abstract class CollectResourcesMission extends RoverMission
 					
 					// If person can collect resources, start him/her on that task.
 					if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
-						CollectResources collectResources = new CollectResources("Collecting Resources", person,
+						EVAOperation collectResources = new CollectResources("Collecting Resources", person,
 								getRover(), resourceID, resourceCollectionRate,
-								siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceID, false),
+								siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
 								containerID);
 						assignTask(person, collectResources);
 					}
@@ -548,7 +547,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 		
 		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
-		updateResources(inv);
+		updateResources(rover);
 	}
 
 	/**

@@ -13,9 +13,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -25,45 +29,36 @@ public class InventoryUtil {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(InventoryUtil.class.getName());
-
-//	/**
-//	 * Checks if a good EVA suit is in entity inventory.
-//	 * 
-//	 * @param inv the inventory to check.
-//	 * @param {@link Person}
-//	 * @return true if good EVA suit is in inventory
-//	 */
-//	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
-//		return getGoodEVASuit(inv, p) != null;
-//	}
 	
 	/**
 	 * Gets a good EVA suit
 	 * 
-	 * @param inv
+	 * @param housing The unit housing the airlock to be used.
 	 * @param p
 	 * @return
 	 */
-	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
-		// Gets the suit the person has used before
-		EVASuit suit = inv.findAnEVAsuit(p);
-		// Check if suit has any malfunctions.
-		if (suit != null) {
-			if (suit.getMalfunctionManager().hasMalfunction()) {
-				logger.log(p, Level.WARNING, 4_000,
-					suit.getName() + " malfunction and not usable.");
-			}
-			else {
-//				logger.log(p, Level.INFO, 4_000,
-//						"getGoodEVASuit: " + p + " found " + suit);
-				return suit;
+	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
+		Collection<Equipment> candidates;
+ 		if (housing instanceof Settlement) {
+			Inventory inv = housing.getInventory();
+			candidates = inv.findAllEquipmentType(EquipmentType.EVA_SUIT);
+		}
+		else {
+			EquipmentOwner eo = (EquipmentOwner) housing;
+			candidates = eo.getEquipmentList();
+		}
+ 		
+ 		// Find suit without malfunciton
+ 		// TODO favourite a previous one
+		for(Equipment e : candidates) {
+			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
+					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
+				return (EVASuit)e;
 			}
 		}
-		// If the previous EVA suit has malfunction, get a new one
-		suit = getGoodEVASuitNResource(inv, p);
-//		logger.log(p, Level.INFO, 4_000,
-//				"getGoodEVASuit: " + p + " found " + suit);
-		return suit;
+
+		logger.warning(p, "Can not find an EVA suit in " + housing.getName());
+		return null;
 	}
 	
 	/**
@@ -72,7 +67,7 @@ public class InventoryUtil {
 	 * @param inv the inventory to check.
 	 * @return EVA suit or null if none available.
 	 */
-	public static EVASuit getGoodEVASuitNResource(Inventory inv, Person p) {
+	private static EVASuit getGoodEVASuitNResource(Inventory inv, Person p) {
 		List<EVASuit> malSuits = new ArrayList<>(0);
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);

@@ -38,8 +38,6 @@ public class EquipmentCommand extends AbstractUnitCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
 
-		Inventory inv = source.getInventory();
-		
 		boolean showAll = ((input != null) && input.equalsIgnoreCase("all"));
 		
 		StructuredResponse buffer = new StructuredResponse();
@@ -49,6 +47,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 			equipment = ((EquipmentOwner)source).getEquipmentList();
 		}
 		else {
+			Inventory inv = source.getInventory();
 			equipment =  inv.findAllEquipment();
 		}
 		
@@ -71,7 +70,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 				ResourceHolder suit = (ResourceHolder) e;
 				StringBuilder builder = new StringBuilder();
 
-				for(int resourceID: suit.getResourceIDs()) {
+				for(int resourceID: suit.getAmountResourceIDs()) {
 					if (builder.length() > 0) {
 						builder.append(", ");
 					}

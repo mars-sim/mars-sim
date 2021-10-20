@@ -9,16 +9,14 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -199,24 +197,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error taking container.
 	 */
 	private boolean takeContainer() {
-		Container container = findLeastFullContainer(rover.getInventory(),
-													 containerType, resourceType);
+		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+
 		if (container != null) {
 			return container.transfer(rover, person);
 		}
 		return false;
-	}
-
-	/**
-	 * Gets the least full container in the rover.
-	 * 
-	 * @param inv           the inventory to look in.
-	 * @param containerType the container class to look for.
-	 * @param resourceType  the resource for capacity.
-	 * @return container.
-	 */
-	private static Container findLeastFullContainer(Inventory inv, EquipmentType containerType, Integer resource) {
-		return ContainerUtil.findLeastFullContainer(inv.findAllContainers(containerType), resource);
 	}
 
 	/**
@@ -254,7 +240,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		double remainingPersonCapacity = person.getAmountResourceRemainingCapacity(resourceType);
-		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType, false) - startingCargo;
+		double currentSamplesCollected = rover.getAmountResourceStored(resourceType) - startingCargo;
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
 
@@ -283,12 +269,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 		checkForAccident(time);
 		
 		// Collect resources.
+		Container container = person.findContainer(containerType, false, resourceType);
 		if (samplesCollected <= sampleLimit) {
-			person.storeAmountResource(resourceType, samplesCollected);
+			container.storeAmountResource(resourceType, samplesCollected);
 			return 0D;
 		} else {
 			if (sampleLimit >= 0D) {
-				person.storeAmountResource(resourceType, sampleLimit);
+				container.storeAmountResource(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
 			return time - (sampleLimit / collectionRate);
@@ -301,16 +288,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-
-		// Unload containers to rover's inventory.
-		if (containerType != null) {
-			// Load containers in rover.
-			Iterator<Equipment> i = person.findAllEquipmentType(containerType).iterator();
-			while (i.hasNext()) {
-				// Place this equipment within a rover outside on Mars
-				i.next().transfer(person, rover);
-			}
-		}
+		returnEquipmentToVehicle(rover);
 	}
 
 	/**
@@ -343,7 +321,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				return false;
 
 			// Checks if available container with remaining capacity for resource.
-			Container container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
+			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 			boolean containerAvailable = (container != null);
 
 			// Check if container and full EVA suit can be carried by person or is too
@@ -352,11 +330,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (container != null) {
 				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
+
+			EVASuit suit = InventoryUtil.getGoodEVASuit(rover, person);
 			if (suit != null) {
+				// Mass include everything
 				carryMass += suit.getMass();
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
 			}
 			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);

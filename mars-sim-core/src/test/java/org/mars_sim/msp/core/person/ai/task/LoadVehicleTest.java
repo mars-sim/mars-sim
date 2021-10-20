@@ -55,7 +55,6 @@ extends TestCase {
 		unitManager.addUnit(settlement);
 		
 		vehicle = new Rover("Test Rover", "Cargo Rover", settlement);
-		vehicle.setCarryingCapacity(5000);
 		unitManager.addUnit(vehicle);
 		
 		person = new Person("Jim Loader", settlement);
@@ -146,9 +145,11 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, requiredEquipMap);
 		checkVehicleEquipment(vehicle, optionalEquipMap);
 		
-		double optionalLoaded = vehicle.findAllEquipmentType(EquipmentType.convertID2Type(missingId)).size();
-
-		assertEquals("Optional Equipment loaded", 0D, optionalLoaded);
+		EquipmentType eType = EquipmentType.convertID2Type(missingId);
+		long optionalLoaded = vehicle.getEquipmentList().stream()
+				.filter(e -> (e.getEquipmentType() == eType))
+				.count();
+		assertEquals("Optional Equipment loaded", 0, optionalLoaded);
 	}
 
 
@@ -247,11 +248,11 @@ extends TestCase {
 	 */
 	public void testLoadFull() throws Exception {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
+		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 5);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
 
 		Map<Integer, Integer> optionalEquipMap = new HashMap<>();
-		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10);
+		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5);
 	
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
@@ -259,8 +260,8 @@ extends TestCase {
 		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 5D);
+		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 5D);
 		
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,
@@ -408,7 +409,7 @@ extends TestCase {
 			loadingCount++;
 		}
 		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Load operation not stopped", loaded);
+		assertTrue("Load operation stopped on load complete", loaded);
 		assertTrue("Loading controller complete", controller.isCompleted());
 		
 		return controller;
@@ -422,7 +423,9 @@ extends TestCase {
 	private void checkVehicleEquipment(Vehicle source, Map<Integer, Integer> manifest) {
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
 			EquipmentType eType = EquipmentType.convertID2Type(item.getKey());
-			int stored = source.findAllEquipmentType(eType).size();
+			long stored = source.getEquipmentList().stream()
+					.filter(e -> (e.getEquipmentType() == eType))
+					.count();
 			assertEquals("Equipment in vehicle " + eType.name(),
 					item.getValue().intValue(), stored);
 		}
@@ -448,7 +451,8 @@ extends TestCase {
 			else {
 				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
-				assertEquals("Vehicle item resource stored " + key, expected, stored);
+				String itemName = ItemResourceUtil.findItemResourceName(key);
+				assertEquals("Vehicle item resource stored " + itemName, expected, stored);
 			}
 		}
 	}
@@ -469,7 +473,7 @@ extends TestCase {
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				target.getMicroInventory().setCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
+				//target.getMicroInventory().setCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
 			}
 		}
 	}

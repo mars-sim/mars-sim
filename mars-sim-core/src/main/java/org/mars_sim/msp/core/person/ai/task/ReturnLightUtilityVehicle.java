@@ -22,7 +22,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -199,12 +201,9 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all parts.
-		Iterator<ItemResource> i = luv.getAllItemResourcesStored().iterator();
-		while (i.hasNext()) {
-			ItemResource item = i.next();
-			int id = item.getID();
+		for(int id : luv.getItemResourceIDs()) { 
 			int num = luv.getItemResourceStored(id);
-			Part part = (Part)item;
+			Part part = ItemResourceUtil.findItemResource(id);
 			double mass = part.getMassPerItem() * num;
 			if (rcInv.getRemainingGeneralCapacity(false) >= mass) {
 				luv.retrieveItemResource(id, num);
@@ -216,16 +215,13 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all amount resources.
-		Iterator<AmountResource> k = luv.getAllAmountResourcesStored().iterator();
-		while (k.hasNext()) {
-			AmountResource resource = k.next();
-			int id = resource.getID();
+		for(int id : luv.getAmountResourceIDs()) {
 			double amount = luv.getAmountResourceStored(id);
 			if (rcInv.hasAmountResourceCapacity(id, amount, false)) {
 				luv.retrieveAmountResource(id, amount);
-				rcInv.storeAmountResource(resource, amount, true);
+				rcInv.storeAmountResource(id, amount, true);
 			} else {
-				logger.severe(returnContainer, resource.getName()
+				logger.severe(returnContainer, ResourceUtil.findAmountResourceName(id)
 							  + " of amount " + amount + " kg. cannot be stored");
 			}
 		}

@@ -118,7 +118,7 @@ public abstract class DroneMission extends VehicleMission {
 
 			usable = drone.isVehicleReady();
 			
-			if (drone.getTotalMass() > 0D)
+			if (drone.getStoredMass() > 0D)
 				usable = false;
 			
 			if (usable) {
@@ -156,7 +156,7 @@ public abstract class DroneMission extends VehicleMission {
 			
 			usable = drone.isVehicleReady();
 				
-			if (drone.getTotalMass() > 0D)
+			if (drone.getStoredMass() > 0D)
 				usable = false;
 
 			if (usable)
@@ -388,7 +388,7 @@ public abstract class DroneMission extends VehicleMission {
 			v.correctVehicleReservation();
 
 			// Unload drone if necessary.
-			boolean droneUnloaded = drone.getTotalMass() == 0D;
+			boolean droneUnloaded = drone.getStoredMass() == 0D;
 			
 			if (!droneUnloaded) {
 				
