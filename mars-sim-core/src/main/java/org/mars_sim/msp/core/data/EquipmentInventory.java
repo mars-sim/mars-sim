@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -224,12 +223,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int getItemResourceStored(int resource) {
-		if (hasResource(resource)) {
-			return microInventory.getItemResourceStored(resource);
-		}
-		else {
-			return 0;
-		}
+		return microInventory.getItemResourceStored(resource);
 	}
 	
 	/**
@@ -241,11 +235,9 @@ public class EquipmentInventory
 	@Override
 	public double getAmountResourceCapacity(int resource) {
 		double result = 0;
-		
-		if (!equipmentList.isEmpty()) {
-			for (Equipment e: equipmentList) {
-				result += e.getCapacity(resource);
-			}
+
+		for (Equipment e: equipmentList) {
+			result += e.getCapacity(resource);
 		}
 		
 		result += microInventory.getCapacity(resource);

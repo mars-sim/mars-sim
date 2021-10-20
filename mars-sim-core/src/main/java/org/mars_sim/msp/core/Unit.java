@@ -110,7 +110,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
 
-	// File for diagnositcs output
+	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
 		
 	/**
@@ -226,17 +226,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 		
+		this.location = new Coordinates(0D, 0D);
 
 		if (location != null) {
-			this.location = location;
-
+			// Set the unit's location coordinates
+			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
 			if (inventory != null) {
 				inventory.setCoordinates(location);
-			}			
-		}
-		else {
-			location = new Coordinates(0D, 0D);
+			}		
 		}
 		
 		if (diagnosticFile != null) {
@@ -1017,12 +1015,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
 					transferred = ((Crewable)origin).removePerson((Person)this);
 				}
-				// Note: the origin is a settlement/mars surface
 				else {
-					// Retrieve this person from the settlement
-//					((Settlement)origin).removePeopleWithin((Person)this);
-					transferred = origin.getInventory().retrieveUnit(this, true);
+					logger.warning(this + "Not possible to be retrieved from " + origin + ".");
 				}
+			}
+			// Note: the origin is a settlement/mars surface
+			else {
+				// Retrieve this person from the settlement
+//				((Settlement)origin).removePeopleWithin((Person)this);
+				transferred = origin.getInventory().retrieveUnit(this, true);
 			}
 		}
 		// Check if this unit is a vehicle
@@ -1046,20 +1047,22 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			transferred = origin.getInventory().retrieveUnit(this, true);
 		}
 		
-		if (transferred) {	
+		if (transferred) {
 			// Check if this unit is a person 
 			if (getUnitType() == UnitType.PERSON) {
 				// Check if the destination is a vehicle
 				if (destination.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)destination).getVehicleType() == VehicleType.LUV
-							|| ((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+					if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
 						transferred = ((Crewable)destination).addPerson((Person)this);
 					}
-					// Note: the destination is a settlement/mars surface
 					else {
-//						((Settlement) destination).addPeopleWithin((Person)this);
-						transferred = destination.getInventory().storeUnit(this);
+						logger.warning(this + "Not possible to be stored into " + origin + ".");
 					}
+				}
+				// Note: the destination is a settlement/mars surface
+				else {
+//					((Settlement) destination).addPeopleWithin((Person)this);
+					transferred = destination.getInventory().storeUnit(this);
 				}
 			}
 			// Check if this unit is a vehicle
@@ -1082,15 +1085,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			else {
 				transferred = destination.getInventory().storeUnit(this);
 			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+			}
 		}
 		
 		else {
 			logger.warning(this + " cannot be retrieved from " + origin + ".");
 		}
 		
-//		if (!transferred) {
-//			logger.warning(this + " cannot be stored into " + destination + ".");
-//		}
 		
 		return transferred;
 	}

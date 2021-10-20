@@ -2019,18 +2019,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.collect(Collectors.toList());
 	}
 
-		
-	/**
-	 * Makes this person within this settlement
-	 * 
-	 * @param p the person
-	 */
-	public void addPeopleWithin(Person p) {
-		if (!peopleWithin.contains(p)) {
-			peopleWithin.add(p);
-		}
-	}
-	
 	/**
 	 * Gets the person by id
 	 * 
@@ -2055,28 +2043,46 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	
 	
 	/**
+	 * Makes this person within this settlement
+	 * 
+	 * @param p the person
+	 * @return true if added successfully
+	 */
+	public boolean addPeopleWithin(Person p) {
+		if (!peopleWithin.contains(p)) {
+			return peopleWithin.add(p);
+		}
+		return false;
+	}
+
+	/**
 	 * Removes this person from being within this settlement
 	 * 
 	 * @param p the person
+	 * @return true if removed successfully
 	 */
-	public void removePeopleWithin(Person p) {
+	public boolean removePeopleWithin(Person p) {
 		if (peopleWithin.contains(p)) {
-			peopleWithin.remove(p);
+			return peopleWithin.remove(p);
 		}
+		return false;
 	}
 	
 	/**
 	 * Makes this person a legal citizen of this settlement
 	 * 
 	 * @param p the person
+	 * @return true if removed successfully
 	 */
-	public void addACitizen(Person p) {
+	public boolean addACitizen(Person p) {
+		boolean result = false;
 		if (!citizens.contains(p)) {
-			citizens.add(p);
+			result = citizens.add(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 		}
+		return result;
 	}
 	
 	/**
