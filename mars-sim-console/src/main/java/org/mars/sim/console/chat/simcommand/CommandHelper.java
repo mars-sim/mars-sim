@@ -202,6 +202,30 @@ public class CommandHelper {
 	}
 	
 	/**
+	 * Display the details of a list of Airlocks
+	 * @param response Output for details.
+	 * @param airlocks
+	 */
+	public static void outputAirlockDetailed(StructuredResponse response, String name, Airlock airlock) {
+		response.appendLabeledString("Name", name);
+		response.appendLabeledString("Operator", airlock.getOperatorName());
+		response.appendLabeledString("State", airlock.getState().name());
+		response.appendLabeledString("Activated", (airlock.isActivated() ? "Yes" : "No"));
+		response.appendLabeledString("Doors", "Inner-" + (airlock.isInnerDoorLocked() ? "LCK" : "ULK")
+												+ " Outer-" + (airlock.isOuterDoorLocked() ? "LCK" : "ULK"));
+		response.appendLabeledString("Waiting", "Inner-" + airlock.getNumAwaitingInnerDoor()
+												+ " Outer-" + airlock.getNumAwaitingOuterDoor());
+		
+		response.appendTableHeading("Occupant", PERSON_WIDTH, "Has Suit");
+		for (int pID : airlock.getOccupants()) {
+			Person p = airlock.getPersonByID(pID);
+			if (p != null) {
+				response.appendTableRow(p.getName(), p.getSuit() != null ? "Yes" : "No");
+			}
+		}
+	}
+	
+	/**
 	 * This generates the details of a mission.
 	 * @param response Output destination
 	 * @param mission Mission in question

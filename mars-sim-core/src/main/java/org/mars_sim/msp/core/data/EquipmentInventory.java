@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public List<Equipment> getEquipmentList() {
-		return equipmentList;
+		return Collections.unmodifiableList(equipmentList);
 	}
 
 	/**
