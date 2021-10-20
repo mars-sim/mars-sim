@@ -11,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
@@ -141,7 +140,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @throws Exception if error taking bag.
 	 */
 	private boolean takeBag() {
-		Container bag = findLeastFullBag(rover.getInventory(), mineralType);
+		Container bag = ContainerUtil.findLeastFullContainer(rover,
+											EquipmentType.BAG,
+											mineralType.getID());
 		if (bag != null) {
 			if (person != null) {
 				return bag.transfer(rover, person);
@@ -150,19 +151,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Gets the most but not completely full bag of the resource in the rover.
-	 * 
-	 * @param inv          the inventory to look in.
-	 * @param resourceType the resource for capacity.
-	 * @return container.
-	 */
-	private static Container findLeastFullBag(Inventory inv, AmountResource resource) {
-		return ContainerUtil.findLeastFullContainer(
-										inv.findAllContainers(EquipmentType.BAG),
-										resource.getID());
 	}
 
 	@Override
@@ -299,7 +287,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				return false;
 
 			// Checks if available bags with remaining capacity for resource.
-			Container bag = findLeastFullBag(rover.getInventory(), mineralType);
+			Container bag = ContainerUtil.findLeastFullContainer(rover,
+																EquipmentType.BAG,
+																mineralType.getID());
 			boolean bagAvailable = (bag != null);
 
 			// Check if bag and full EVA suit can be carried by person or is too heavy.

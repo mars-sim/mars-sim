@@ -41,7 +41,8 @@ implements Serializable {
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person); 
-
-        setCollectionRate(getSettlement().getIceCollectionRate());
+        if (!isDone()) {
+        	setCollectionRate(getSettlement().getIceCollectionRate());
+        }
 	}
 }

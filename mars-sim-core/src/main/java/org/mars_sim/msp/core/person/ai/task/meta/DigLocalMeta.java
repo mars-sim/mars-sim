@@ -37,9 +37,10 @@ public abstract class DigLocalMeta extends MetaTask {
     protected double getProbability(Settlement settlement, Person person, double collectionProbability) {
 
     	// Will not perform this task if he has a mission
-    	if (person.getMission() != null)
+    	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
-        
+    	}
+    	
         double result = 0D;
        	
     	// Check if an airlock is available

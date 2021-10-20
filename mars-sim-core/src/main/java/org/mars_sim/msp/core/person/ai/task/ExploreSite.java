@@ -334,7 +334,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
-											rover.getInventory().findAllContainers(EquipmentType.SPECIMEN_BOX),
+											rover, EquipmentType.SPECIMEN_BOX,
 											ResourceUtil.rockSamplesID);
 
 		if (container != null) {

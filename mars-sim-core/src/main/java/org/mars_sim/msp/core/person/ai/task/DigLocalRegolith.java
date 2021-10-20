@@ -43,7 +43,8 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_REGOLITH,  ResourceUtil.regolithID, 
         	  EquipmentType.BAG, person);
-
-        setCollectionRate(getSettlement().getRegolithCollectionRate());
+        if (!isDone()) {
+        	setCollectionRate(getSettlement().getRegolithCollectionRate());
+        }
     }
 }

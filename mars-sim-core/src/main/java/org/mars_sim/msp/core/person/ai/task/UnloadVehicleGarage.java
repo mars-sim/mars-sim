@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -243,7 +242,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @return list of vehicles.
 	 */
 	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> result = new ArrayList<>();
 
 		if (settlement != null) {
 			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -254,34 +253,30 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
 					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
-						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getStoredMass() > 0D) {
+						if (vehicle.getStoredMass() > 0D) {
+							needsUnloading = true;
+						}
+						if (vehicle instanceof Towing) {
+							if (((Towing) vehicle).getTowedVehicle() != null) {
 								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
 							}
 						}
 					}
 
 					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
-						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							if (vehicle.getStoredMass() > 0D) {
+						if (vehicle.getStoredMass() > 0D) {
+							needsUnloading = true;
+						}
+						if (vehicle instanceof Towing) {
+							if (((Towing) vehicle).getTowedVehicle() != null) {
 								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
 							}
 						}
 					}
 
 				}
-				if (needsUnloading) {
+				if (needsUnloading && settlement.getBuildingManager().addToGarage(vehicle)) {
 					result.add(vehicle);
 				}
 			}
@@ -582,7 +577,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param vehicle Vehicle to check.
 	 * @return is vehicle fully unloaded?
 	 */
-	static public boolean isFullyUnloaded(Vehicle vehicle) {
-		return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
+	static private boolean isFullyUnloaded(Vehicle vehicle) {
+		return (vehicle.getStoredMass() == 0D);
 	}
 }

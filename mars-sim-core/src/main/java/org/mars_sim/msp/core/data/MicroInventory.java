@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -264,17 +264,25 @@ public class MicroInventory implements Serializable {
 	}
 	
 	/**
-	 * What resources are stored ?
+	 * What amount resources are stored ?
 	 * 
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
-		return Collections.unmodifiableSet(storageMap.keySet());
+		return storageMap.keySet().stream()
+				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+				.collect(Collectors.toSet());
 	}
 
+	/**
+	 * What item resources are stored ?
+	 * 
+	 * @return
+	 */
 	public Set<Integer> getItemResourceIDs() {
-		// TODO Auto-generated method stub
-		return Collections.unmodifiableSet(storageMap.keySet());
+		return storageMap.keySet().stream()
+				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+				.collect(Collectors.toSet());
 	}
 	
 	/**

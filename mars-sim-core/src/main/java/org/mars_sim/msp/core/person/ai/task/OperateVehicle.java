@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -31,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -341,11 +339,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
-		
-        Inventory vInv = vehicle.getInventory();
+
         int fuelType = vehicle.getFuelType();
         
-        double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
+        double remainingFuel = vehicle.getAmountResourceStored(fuelType);
 
         if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
@@ -434,20 +431,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Case 2 : just used up the last drop of fuel 
         	fuelNeeded = remainingFuel;
         	
-        	try {
-		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-	    
-		    }
-		    catch (Exception e) {
-		    	logger.log(vehicle, Level.SEVERE, 10_000,  
-						"Unable to retrieve methane.");
-
-		    	// Turn on emergency beacon
-		    	turnOnBeacon();
-		    	
-	        	endTask();
-	        	return time;
-		    }
+		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
         	
         	// Update and reduce the distanceTraveled since there is not enough fuel
         	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
@@ -474,22 +458,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 // Update the fuel needed for distance traveled.
                 fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
-                try {
-    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-   
-    		    }
-    		    catch (Exception e) {
-    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
-    						"Unable to retrieve methane.");
-
-    		    	// Turn on emergency beacon
-    		    	turnOnBeacon();
-    		    	
-    	        	endTask();
-    	        	return time;
-    		    }
-                
- 		    	
+                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
+                	
 		        // Add distance traveled to vehicle's odometer.
 		        vehicle.addOdometerMileage(distanceTraveled);
 		        vehicle.addDistanceLastMaintenance(distanceTraveled);
@@ -533,20 +503,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
              // Update the fuel needed for distance traveled.
                 fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
-                try {
-    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-
-    		    }
-    		    catch (Exception e) {
-    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
-    						"Unable to retrieve methane.");
-
-    		    	// Turn on emergency beacon
-    		    	turnOnBeacon();
-    		    	
-    	        	endTask();
-    	        	return time;
-    		    }
+                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
                 	    	
                 // Determine new position.
                 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));

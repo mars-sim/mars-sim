@@ -497,6 +497,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setContainerUnit(Unit newContainer) {
 		Unit oldContainer = getContainerUnit();
+		
+		if ((newContainer != null) && newContainer.equals(oldContainer)) {
+			return;
+		}
+		
 		// 1. Set Coordinates
 		if (newContainer == null) {
 			// Set back to its previous container unit's coordinates
@@ -1084,10 +1089,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			// Note: the destination is a settlement/mars surface
 			else {
 				transferred = destination.getInventory().storeUnit(this);
+				
+				// On the surface so update the Units coordinates
+				setCoordinates(location);
 			}
 			
 			if (!transferred) {
 				logger.warning(this + " cannot be stored into " + destination + ".");
+			}
+			else {
+				setContainerUnit(destination);
 			}
 		}
 		

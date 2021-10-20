@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -66,13 +67,19 @@ public class StudyFieldSamplesMeta extends MetaTask {
 	
 	        // Check that there are available field samples to study.
 	        try {
+	        	double samplesStored = 0D;
 	            Unit container = person.getContainerUnit();
-				if (!(container instanceof MarsSurface)) {
-	                Inventory inv = container.getInventory();
-	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false) < StudyFieldSamples.SAMPLE_MASS) {
-	                    return 0;
-	                }
+	            if (container instanceof ResourceHolder) {
+	            	samplesStored = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
 	            }
+	            else if (!(container instanceof MarsSurface)) {
+	                Inventory inv = container.getInventory();
+	                samplesStored = inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false);
+	            }
+	            
+	            if (samplesStored < StudyFieldSamples.SAMPLE_MASS) {
+                    return 0;
+                }
 	        }
 	        catch (Exception e) {
 	            logger.severe("getProbability(): " + e.getMessage());

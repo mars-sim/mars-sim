@@ -1097,7 +1097,7 @@ public class BuildingManager implements Serializable {
 						vehicle.addStatus(StatusType.GARAGED);
 					
 					logger.log(settlement, vehicle, Level.INFO, 60_000, 
-							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
+ 							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 					return true;
 				}
 			}

@@ -905,8 +905,9 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
 		Map<Integer, Number> map = new HashMap<>();
-		// Get an EVA suit.
-		EVASuit suit = InventoryUtil.getGoodEVASuit(startingSettlement.getInventory(), getStartingPerson());
+		
+		// Get an EVA suit from the staring settlement as an example of an EVA Suit
+		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingSettlement(), getStartingPerson());
 
 		// Determine needed repair parts for EVA suits.
 		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();

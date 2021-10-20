@@ -13,13 +13,16 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -127,14 +130,13 @@ implements Serializable {
      * @param person the person.
      * @return true if containers need resource consolidation.
      */
-    public static boolean needResourceConsolidation(Person person) {
-        Inventory inv = person.getTopContainerUnit().getInventory();
-        return consolidate(inv);
-    }
-    
-    public static boolean needResourceConsolidation(Robot robot) {
-        Inventory inv = robot.getTopContainerUnit().getInventory(); 
-        return consolidate(inv);
+    public static boolean needResourceConsolidation(Worker person) {
+    	Unit container = person.getTopContainerUnit();
+        if (!(container instanceof Settlement)) {
+        	// TODO need to consolidate inside a Vehicle
+        	return false;
+        }
+        return needsConsolidation(container.getInventory());
     }
     
     /**
@@ -143,7 +145,7 @@ implements Serializable {
      * @param inv
      * @return
      */
-    public static boolean consolidate(Inventory inv) {   	
+    private static boolean needsConsolidation(Inventory inv) {   	
         boolean result = false;
         
         Set<Integer> partialResources = new HashSet<Integer>();
