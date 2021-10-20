@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.InventoryUtil;
@@ -504,7 +506,8 @@ public abstract class RoverMission extends VehicleMission {
 	        if (!isRoverInAGarage)
 	        	rover.findNewParkingLoc();
 	        
-			for (Person p : rover.getCrew()) {
+	        List<Person> currentCrew = new ArrayList<>(rover.getCrew());
+			for (Person p : currentCrew) {
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}

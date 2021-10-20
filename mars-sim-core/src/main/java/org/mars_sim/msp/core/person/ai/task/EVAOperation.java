@@ -8,7 +8,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -694,8 +696,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param destination
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
-		// Load containers in rover.
-		for(Equipment e : person.getEquipmentList()) {
+		// Return containers in rover Take a copy as the original will change.
+		List<Equipment> held = new ArrayList<>(person.getEquipmentList());
+		for(Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
 			e.transfer(person, destination);
 		}

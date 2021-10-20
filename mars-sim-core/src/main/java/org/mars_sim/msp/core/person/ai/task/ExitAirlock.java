@@ -1240,9 +1240,9 @@ public class ExitAirlock extends Task implements Serializable {
 			if (takenWater > availableWater)
 				takenWater = availableWater;
 
-				// Retrieve resource
-				entityInv.retrieveAmountResource(waterID, takenWater);
-				entityInv.addAmountDemand(waterID, takenWater);
+			// Retrieve resource
+			entityInv.retrieveAmountResource(waterID, takenWater);
+			entityInv.addAmountDemand(waterID, takenWater);
 		}
 		else if (housing instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) housing;

@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 public class MicroInventory implements Serializable {
 
 	static final class ResourceStored implements Serializable {
+
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		double capacity;
@@ -33,6 +35,12 @@ public class MicroInventory implements Serializable {
 		ResourceStored(double capacity) {
 			super();
 			this.capacity = capacity;
+		}
+		
+		@Override
+		public String toString() {
+			return "ResourceStored [capacity=" + capacity + ", storedAmount=" + storedAmount + ", quantity=" + quantity
+					+ "]";
 		}
 	}
 	
@@ -147,7 +155,8 @@ public class MicroInventory implements Serializable {
 			return quantity;
 		}
 		
-		double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+		Part partSpec = ItemResourceUtil.findItemResource(resource);
+		double massPerItem = partSpec.getMassPerItem();
 		double totalMass = s.quantity * massPerItem;
 		double rCap = s.capacity - totalMass;
 		int itemCap = (int)(rCap / massPerItem);
@@ -158,9 +167,9 @@ public class MicroInventory implements Serializable {
 			if (quantity > itemCap) {
 				s.quantity += itemCap;
 				missing = quantity - itemCap;
-				String name = ItemResourceUtil.findItemResourceName(resource);
-				logger.warning(owner, "Can only store " + quantity + "@" + name 
-					+ " and return the surplus " + missing + ".");
+				logger.warning(owner, "Can only store " + quantity + "@"
+						+ partSpec.getName() 
+						+ " and return the surplus " + missing + ".");
 			}
 			else {
 				s.quantity += quantity;
@@ -172,8 +181,8 @@ public class MicroInventory implements Serializable {
 		}
 		else {
 			missing = quantity;
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(owner, "No space to store " + quantity + "@" + name + ".");
+			logger.warning(owner, "No space to store " + quantity + "@"
+								+ partSpec.getName() + ".");
 		}
 
 
@@ -240,7 +249,7 @@ public class MicroInventory implements Serializable {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	public double retrieveItemResource(int resource, int quantity) {
+	public int retrieveItemResource(int resource, int quantity) {
 		ResourceStored s = storageMap.get(resource);
 		if (s == null) {
 			return quantity;

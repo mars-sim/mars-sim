@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -142,7 +141,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		if (!hasResource(resource)) {
+		if (!microInventory.isResourceSupported(resource)) {
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
@@ -157,17 +156,8 @@ public class EquipmentInventory
 	 * @return quantity that cannot be retrieved
 	 */
 	@Override
-	public double retrieveItemResource(int resource, int quantity) {
-		if (hasResource(resource)) {
-			return microInventory.retrieveItemResource(resource, quantity);
-		}
-
-		else {
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(owner, "No such resource. Cannot retrieve " 
-					+ quantity + "x "+ name + ".");
-			return quantity;
-		}
+	public int retrieveItemResource(int resource, int quantity) {
+		return microInventory.retrieveItemResource(resource, quantity);
 	}
 	
 	/**
@@ -368,27 +358,6 @@ public class EquipmentInventory
 		return set;
 	}
 	
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasResource(int resource) {
-		for (int id: getAmountResourceIDs()) {
-			if (id == resource)
-				return true;
-		}
-		
-		// Check Equipment
-		for (Equipment e: equipmentList) {
-			if ((e instanceof ResourceHolder) && ((ResourceHolder) e).hasResource(resource)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	/**
 	 * Is this unit empty ? 

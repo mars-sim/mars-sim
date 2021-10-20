@@ -1799,7 +1799,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return quantity that cannot be retrieved
 	 */
 	@Override
-	public double retrieveItemResource(int resource, int quantity) {
+	public int retrieveItemResource(int resource, int quantity) {
 		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
 	
@@ -1926,17 +1926,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		return eqmInventory.findContainer(containerType, empty, resource);
-	}
-
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasResource(int resource) {
-		return eqmInventory.hasResource(resource);
 	}
 	
 	/**

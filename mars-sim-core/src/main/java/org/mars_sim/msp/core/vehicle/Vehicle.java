@@ -1763,7 +1763,7 @@ public abstract class Vehicle extends Unit
 	 * @return quantity that cannot be retrieved
 	 */
 	@Override
-	public double retrieveItemResource(int resource, int quantity) {
+	public int retrieveItemResource(int resource, int quantity) {
 		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
 	
@@ -1956,17 +1956,6 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
-	}
-	
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasResource(int resource) {
-		return eqmInventory.hasResource(resource);
 	}
 
 	@Override

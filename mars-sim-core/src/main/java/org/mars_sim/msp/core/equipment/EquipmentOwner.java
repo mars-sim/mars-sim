@@ -66,7 +66,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	public double retrieveItemResource(int resource, int quantity);
+	public int retrieveItemResource(int resource, int quantity);
 	
 	/**
 	 * Gets the item resource stored

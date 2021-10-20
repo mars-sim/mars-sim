@@ -69,12 +69,4 @@ public interface ResourceHolder {
 	 * @return a collection of resource ids
 	 */
 	Set<Integer> getAmountResourceIDs();
-	
-	/**
-	 * Does this unit have this resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	boolean hasResource(int resource);
 }

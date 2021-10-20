@@ -260,8 +260,8 @@ extends TestCase {
 		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 5D);
+		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 5D);
 		
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,
@@ -409,7 +409,7 @@ extends TestCase {
 			loadingCount++;
 		}
 		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Load operation not stopped", loaded);
+		assertTrue("Load operation stopped on load complete", loaded);
 		assertTrue("Loading controller complete", controller.isCompleted());
 		
 		return controller;
@@ -451,7 +451,8 @@ extends TestCase {
 			else {
 				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
-				assertEquals("Vehicle item resource stored " + key, expected, stored);
+				String itemName = ItemResourceUtil.findItemResourceName(key);
+				assertEquals("Vehicle item resource stored " + itemName, expected, stored);
 			}
 		}
 	}
