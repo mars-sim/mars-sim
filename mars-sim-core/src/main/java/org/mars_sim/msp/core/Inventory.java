@@ -1845,7 +1845,9 @@ public class Inventory implements Serializable {
 				result = true;
 			}
 					
-			if (owner != null && unit.getUnitType() != UnitType.EQUIPMENT  
+			if (owner != null && unit.getUnitType() != UnitType.EQUIPMENT 
+					&& unit.getUnitType() != UnitType.PERSON
+					&& unit.getUnitType() != UnitType.VEHICLE
 					&& unit.getInventory().containsUnit(owner)) {
 				logger.log(unit, Level.SEVERE, 30_000,
 						owner.getName() + " was owned by " + unit);

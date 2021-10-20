@@ -56,8 +56,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -492,6 +490,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 	}
 
+	/**
+	 * Gets the blood type
+	 * 
+	 * @return
+	 */
 	public String getBloodType() {
 		return bloodType;
 	}
@@ -1659,9 +1662,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	
 	/**
 	 * Generate a unique name for a person based on a country
+	 * 
 	 * @param country
 	 * @param gender
-	 * @return
+	 * @return the unique name
 	 */
 	public static String generateName(String country, GenderType gender) {
 		boolean isUniqueName = false;
@@ -1740,7 +1744,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Get the equipment list
 	 * 
-	 * @return
+	 * @return the equipment list
 	 */
 	@Override
 	public List<Equipment> getEquipmentList() {
@@ -1751,7 +1755,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * Does this person possess an equipment of this equipment type
 	 * 
 	 * @param typeID
-	 * @return
+	 * @return true if this person possess this equipment type
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {

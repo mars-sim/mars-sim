@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryUtil.java
- * @date 2021-10-03
+ * @date 2021-10-20
  * @author Manny Kung
  */
 
@@ -40,16 +40,14 @@ public class InventoryUtil {
 	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
 		Collection<Equipment> candidates;
  		if (housing instanceof Settlement) {
-			Inventory inv = housing.getInventory();
-			candidates = inv.findAllEquipmentType(EquipmentType.EVA_SUIT);
+			candidates = housing.getInventory().findAllEquipmentType(EquipmentType.EVA_SUIT);
 		}
 		else {
-			EquipmentOwner eo = (EquipmentOwner) housing;
-			candidates = eo.getEquipmentList();
+			candidates = ((EquipmentOwner) housing).getEquipmentList();
 		}
  		
- 		// Find suit without malfunciton
- 		// TODO favourite a previous one
+ 		// Find suit without malfunction
+ 		// TODO favorite a previous one
 		for(Equipment e : candidates) {
 			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
 					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {

@@ -704,20 +704,16 @@ public class EnterAirlock extends Task implements Serializable {
 					// 2b. Doff this suit. Deregister the suit from the person
 					person.registerSuit(null);
 	
-					Inventory entityInv = airlock.getEntityInventory();
-					// 2c Transfer the EVA suit from person to settlement/vehicle
-					if (settlement != null)
-						suit.transfer(person, settlement);	
-					else
-						suit.transfer(person, vehicle);	
-	
-					// 2d. Return suit to entity's inventory.
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
 
-					if (entityInv != null) {
+					if (settlement != null) {
+						// 2c Transfer the EVA suit from person to settlement/vehicle
+						suit.transfer(person, settlement);
+						
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 	
-						// 2e. Unloads the resources from the EVA suit to the entityEnv
+						// 2d. Unloads the resources from the EVA suit to the entityEnv
+						Inventory entityInv = airlock.getEntityInventory();
 						try {
 							// 2e1. Unload oxygen from the suit.
 							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
@@ -749,23 +745,15 @@ public class EnterAirlock extends Task implements Serializable {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");
 							// endTask();
 						}
-	
-						// Add experience
-						addExperience(time);
-	
-						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-	
-						setPhase(CLEAN_UP);
 					}
 					
 					else {
-//						logger.log(person, Level.WARNING, 4_000,
-//								"EVA suit's container has issues in " + airlock.getEntity().toString() 
-//								+ ".");			
-						
+						// 2c Transfer the EVA suit from person to settlement/vehicle
+						suit.transfer(person, vehicle);	
+					
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 						
-						// 2e. Unloads the resources from the EVA suit to the entityEnv
+						// 2d. Unloads the resources from the EVA suit to the entityEnv
 						try {
 							// 2e1. Unload oxygen from the suit.
 							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
@@ -797,14 +785,15 @@ public class EnterAirlock extends Task implements Serializable {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");
 							// endTask();
 						}
-	
-						// Add experience
-						addExperience(time);
-	
-						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-	
-						setPhase(CLEAN_UP);
 					}
+					
+					// Add experience
+					addExperience(time);
+
+					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
+
+					setPhase(CLEAN_UP);
+					
 				}
 			}
 				

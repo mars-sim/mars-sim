@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Malfunction class represents a malfunction in a vehicle, structure or
@@ -148,10 +149,8 @@ public class Malfunction implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(Malfunction.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(Malfunction.class.getName());
 
 	private static final String INCIDENT_NUM = " - Incident #";
 	private static final String REPAIR_REQUIRES = " - Repair requires ";
@@ -194,8 +193,7 @@ public class Malfunction implements Serializable {
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-						name + " - Estimated " + effort.getKey() + " work time: "
+				logger.info(10_000, name + " - Estimated " + effort.getKey() + " work time: "
 								+ Math.round(actualEffort*10.0)/10.0);	
 				work.put(effort.getKey(), new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));				
 			}
@@ -423,8 +421,7 @@ public class Malfunction implements Serializable {
 			// if this malfunction has repair work
 			if (!w.isCompleted()) {
 				if ((w.workCompleted == 0) && (time > 0D)) {
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-							name + " - " + workType + " repair work initiated by " + repairer + ".");
+					logger.info(10_000, name + " - " + workType + " repair work initiated by " + repairer + ".");
 				}
 				
 				// How much can be used
@@ -457,8 +454,7 @@ public class Malfunction implements Serializable {
 	public void leaveWork(MalfunctionRepairWork required, String name) {
 		RepairWork w = getWorkType(required);
 		if (w.leaveWork(name) && !w.isCompleted()) {
-			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-					name + " repairer " + name + " leaving the scene.");
+			logger.info(10_000, "Repairer " + name + " leaving the scene.");
 		}
 	}
 	
@@ -534,9 +530,8 @@ public class Malfunction implements Serializable {
 				int id = part.getPartID();				
 				repairParts.put(id, part.getNumber());
 					
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						name + REPAIR_REQUIRES + part.getName()
-						+ QUANTITY + part.getNumber() + CLOSE_B, null);
+				logger.warning(name + REPAIR_REQUIRES + part.getName()
+						+ QUANTITY + part.getNumber() + CLOSE_B);
 			}
 		}
 	}
@@ -558,7 +553,7 @@ public class Malfunction implements Serializable {
 	 * @param number the number used for repair.
 	 * @param inv the inventory
 	 */
-	public void repairWithParts(Integer id, int number, Inventory inv) {
+	public void repairWithParts(Integer id, int number, Unit containerUnit) {
 		if (repairParts.containsKey(id)) {
 
 			int numberNeeded = repairParts.get(id);
@@ -570,10 +565,20 @@ public class Malfunction implements Serializable {
 
 				//  Add producing solid waste
 				double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
-				if (mass > 0)
-					Storage.storeAnResource(mass, ResourceUtil.solidWasteID, inv,
-							sourceName + "::repairWithParts");
-
+				if (mass > 0) {
+					
+					if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
+						Storage.storeAnResource(mass, ResourceUtil.solidWasteID, containerUnit.getInventory(),
+								containerUnit.getName() + "::repairWithParts");					
+					}
+					else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
+						((Vehicle)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
+					}
+					else {
+						logger.warning(containerUnit, 10_000L, "Trying to store " + ResourceUtil.solidWasteID);
+					}
+				}
+				
 				if (numberNeeded > 0)
 					repairParts.put(id, numberNeeded);
 				else

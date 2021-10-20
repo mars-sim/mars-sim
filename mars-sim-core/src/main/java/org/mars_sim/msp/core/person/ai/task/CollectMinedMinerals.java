@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
@@ -298,7 +299,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += bag.getBaseMass();
 			}
 
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getContainerUnit(), person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getAmountResourceRemainingCapacity(oxygenID);

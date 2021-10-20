@@ -59,8 +59,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -185,8 +183,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.co2ID,
 				ResourceUtil.methaneID,
 				ResourceUtil.waterID,
-//				ResourceUtil.greyWaterID,
-//				ResourceUtil.blackWaterID,
+				ResourceUtil.greyWaterID,
+				ResourceUtil.blackWaterID,
 				ResourceUtil.rockSamplesID,
 				ResourceUtil.iceID,
 				ResourceUtil.regolithID };
