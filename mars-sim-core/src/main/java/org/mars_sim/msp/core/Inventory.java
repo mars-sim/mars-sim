@@ -1878,6 +1878,9 @@ public class Inventory implements Serializable {
 			Unit owner = getOwner();
 
 			if (owner != null) {
+				
+				unit.setContainerUnit(owner);
+				
 				if (ownerID != Unit.MARS_SURFACE_UNIT_ID) {
 					// Set modified cache values as dirty.
 					setAmountResourceCapacityCacheAllDirty(true);
@@ -1934,8 +1937,6 @@ public class Inventory implements Serializable {
 						((Settlement)owner).addPeopleWithin((Person)unit);
 					}
 				}
-
-				unit.setContainerUnit(owner);
 			}
 			
 		} else {
@@ -1966,12 +1967,18 @@ public class Inventory implements Serializable {
 		boolean retrieved = true;
 		
 		Integer uid = unit.getIdentifier();
-
+		
+//		if (unit.getUnitType() == UnitType.PERSON)
+//			logger.log(unit, Level.INFO, 30_000, 
+//				"retrieving " + unit + "(" + uid + ")" + " from " + owner.getName() + ".");
+		
 		if (containedUnitIDs != null && containedUnitIDs.contains(uid)) {
+//			logger.log(unit, Level.INFO, 30_000, 
+//					"containing " + unit + " in " + owner.getName() + ".");
 			
 			setUnitTotalMassCacheDirty();
 
-			containedUnitIDs.remove(uid);
+			retrieved = containedUnitIDs.remove(uid);
 
 			// Update owner
 			Unit owner = getOwner();
@@ -2009,12 +2016,12 @@ public class Inventory implements Serializable {
 				if (owner.getUnitType() == UnitType.SETTLEMENT) {
 					if (unit.getUnitType() == UnitType.PERSON) {
 						// Retrieve this person from the settlement
-						((Settlement) owner).removePeopleWithin((Person)unit);
+						retrieved = ((Settlement) owner).removePeopleWithin((Person)unit);
 					}
 				}
 			}
 			
-			if (!retrieveOnly) {
+			if (retrieved && retrieveOnly) {
 	            unit.setContainerUnit(null);
 			}
 		}
@@ -2028,8 +2035,13 @@ public class Inventory implements Serializable {
 			
 			logger.log(unit, Level.SEVERE, 30_000, 
 					"Could not be retrieved from " + owner.getName() + ".");
+			
 			retrieved = false;
 		}
+		
+//		if (unit.getUnitType() == UnitType.PERSON && !retrieved)
+//			logger.log(unit, Level.INFO, 30_000, 
+//				"can't retrieve " + unit + "(" + uid + ")" + " from " + owner.getName() + ".");
 		
 		return retrieved;
 	}

@@ -403,10 +403,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public void setContainerUnit(Unit containerUnit) {
 		super.setContainerUnit(containerUnit);
-//		if (containerUnit instanceof Vehicle) {
-//			vehicle = containerUnit.getIdentifier();
-//		} else
-//			vehicle = -1;
 	}
 
 	// TODO: allow parts to be recycled
