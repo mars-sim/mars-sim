@@ -1177,7 +1177,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return capacity (kg).
 	 */
 	public double getRemainingCarryingCapacity() {
-		return carryingCapacity - getMass();
+		double result = carryingCapacity - eqmInventory.getStoredMass();
+		if (result < 0)
+			return 0;
+		return result;
 	}
 	
 	/**

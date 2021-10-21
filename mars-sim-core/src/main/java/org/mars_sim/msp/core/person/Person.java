@@ -1718,7 +1718,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return capacity (kg).
 	 */
 	public double getRemainingCarryingCapacity() {
-		return carryingCapacity - getMass();
+		double result = carryingCapacity - eqmInventory.getStoredMass();
+		if (result < 0)
+			return 0;
+		return result;
 	}
 	
 	/**
