@@ -132,7 +132,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return true if carrying bags.
 	 */
 	private boolean hasBags() {
-		return worker.getInventory().containsEquipment(EquipmentType.BAG);
+		return worker.containsEquipment(EquipmentType.BAG);
 	}
 
 	/**
@@ -206,8 +206,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
 
-		double roverRemainingCap = rover.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
-				false);
+		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
 		
 		double weight = 0;
 		if (person != null)
@@ -220,8 +219,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			return .5 * time;
 		}
 			
-		remainingPersonCapacity = worker.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
-					false);
+		remainingPersonCapacity = worker.getAmountResourceRemainingCapacity(mineralType.getID());
 
 		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
@@ -241,7 +239,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		addExperience(time);
 
 		// Collect minerals.
-		worker.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
 
 		mission.collectMineral(mineralType, mineralsCollected);
 		

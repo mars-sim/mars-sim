@@ -130,9 +130,6 @@ public final class MalfunctionFactory implements Serializable {
 		if (source instanceof EquipmentOwner) {
 			inventoryUnits = ((EquipmentOwner)source).getEquipmentList();
 		}
-		else {	
-			inventoryUnits = source.getInventory().getContainedUnits();
-		}
 		
 		if (!inventoryUnits.isEmpty()) {
 			for (Unit unit : inventoryUnits) {

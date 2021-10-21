@@ -10,9 +10,9 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public interface Worker extends Loggable, Serializable {
+public interface Worker extends Loggable, Serializable, EquipmentOwner {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -144,16 +144,11 @@ public interface Worker extends Loggable, Serializable {
 	 */
 	public void setMission(Mission newMission);
 
-	/**
-	 * Get the Worker's Inventory
-	 * TODO Should come from the InventoryOwner interface
-	 * @return
-	 */
-	public Inventory getInventory();
-
+	
 	// These methods below should be moved to separate Walker interface
 	// Also should be converted into a single LocalCoordinate class
 	// instead of 2DPoint which is a UI AWT class
+	
 	
 	/**
 	 * Gets the worker X location at a settlement.

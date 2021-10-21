@@ -382,14 +382,5 @@ public class EquipmentInventory
 				microInventory.setCapacity(foundResource.getID(), v.getValue());
 			}
 		}
-	}	
-	
-//	/**
-//	 * Sets the cargo capacity
-//	 * 
-//	 * @param value
-//	 */
-//	public void setCargoCapacity(double value) {
-//		cargoCapacity = value;
-//	}
+	}
 }

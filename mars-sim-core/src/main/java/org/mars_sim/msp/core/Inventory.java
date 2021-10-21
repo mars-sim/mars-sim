@@ -961,7 +961,8 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() != UnitType.PERSON 
 						&& u.getUnitType() != UnitType.VEHICLE
 						&& u.getUnitType() != UnitType.EQUIPMENT
-						&& u.getUnitType() != UnitType.ROBOT) {
+						&& u.getUnitType() != UnitType.ROBOT
+						&& u.getUnitType() != UnitType.PLANET) {
 					if (u.getInventory().hasItemResource(id)) {
 						result = true;
 					}
@@ -2103,7 +2104,7 @@ public class Inventory implements Serializable {
 			
 			Unit cu = owner.getContainerUnit();
 			Inventory containerInv = null;
-			if (cu != null) {
+			if (cu != null && cu.getUnitType() != UnitType.PLANET) {
 				containerInv = cu.getInventory();
 
 				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {

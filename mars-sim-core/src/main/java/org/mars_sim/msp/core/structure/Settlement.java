@@ -499,7 +499,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Stores limited amount of oxygen in this settlement
 		getInventory().storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN, false);
 		
-		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);	
+//		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);	
 		
 		final double INITIAL_FREE_CAP = 1_000;
 		// Initialize a limited storage capacity for each resource

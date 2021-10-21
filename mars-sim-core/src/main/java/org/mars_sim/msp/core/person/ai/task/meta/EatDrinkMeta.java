@@ -51,16 +51,18 @@ public class EatDrinkMeta extends MetaTask {
 		
 		Inventory inv = null;
 		Unit container = person.getContainerUnit();
-		if (container instanceof ResourceHolder) {
+		if (container != null && container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
 			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
 			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);	
 		}
-		else if (container != null) {
+		else {
 			inv = container.getInventory();	
-			// Take preserved food from inventory if it is available.
-			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
-			waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
+			if (inv != null) {
+				// Take preserved food from inventory if it is available.
+				foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
+				waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
+			}
 		}
 		
 		boolean food = false;
