@@ -285,7 +285,7 @@ implements Serializable {
         
         if (!finishedCollecting) {
         	// Can not physically carry any more
-	        finishedCollecting = (person.getRemainingCarryingCapacity() < 0);
+	        finishedCollecting = (person.getRemainingCarryingCapacity() <= 0);
 		}
 
         PhysicalCondition condition = person.getPhysicalCondition();

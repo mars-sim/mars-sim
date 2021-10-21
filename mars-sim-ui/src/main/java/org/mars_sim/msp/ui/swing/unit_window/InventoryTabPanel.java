@@ -435,8 +435,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					equipmentList.add(e);
 				}
             }
-            else if (unit.getUnitType() == UnitType.PERSON) {
-            	for (Equipment e : ((Person)unit).getEquipmentList()) {
+            else if (unit.getUnitType() == UnitType.PERSON
+            		|| unit.getUnitType() == UnitType.ROBOT) {
+            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentList()) {
 					String name = e.getName();
 					types.put(name, e.getEquipmentType().getName());
 					contentOwner.put(name, getContentOwner(e));

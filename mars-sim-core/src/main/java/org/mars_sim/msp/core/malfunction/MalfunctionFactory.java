@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -179,7 +180,18 @@ public final class MalfunctionFactory implements Serializable {
 
 		entities.add(entity);
 	
-		if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
+		if (entity instanceof Robot) {
+			Collection<Equipment> inventoryUnits = ((EquipmentOwner)entity).getEquipmentList();
+			if (inventoryUnits.size() > 0) {
+				for (Equipment e : inventoryUnits) {
+					if (e instanceof Malfunctionable) {
+						entities.add((Malfunctionable) e);
+					}
+				}
+			}
+		}
+		// must filter out drones	
+		else if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
 			Collection<Person> inventoryUnits = ((Crewable)entity).getCrew();
 			if (inventoryUnits.size() > 0) {
 				for (Unit unit : inventoryUnits) {
@@ -199,8 +211,8 @@ public final class MalfunctionFactory implements Serializable {
 			}
 		}
 		
-		// Exclude Drones
-		else if (!(entity instanceof Drone)) {
+		else if (entity instanceof Settlement) {
+			// Settlement as the entity
 			Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
 			if (inventoryUnits.size() > 0) {
 				for (Unit unit : inventoryUnits) {

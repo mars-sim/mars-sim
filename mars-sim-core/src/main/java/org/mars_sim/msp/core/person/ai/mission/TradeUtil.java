@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -287,7 +287,7 @@ public final class TradeUtil {
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
 		sellerGoodsManager.prepareForLoadCalculation();
 
-		double massCapacity = rover.getInventory().getGeneralCapacity();
+		double massCapacity = rover.getTotalCapacity();
 
 		// Subtract mission base mass (estimated).
 		double missionPartsMass = MISSION_BASE_MASS;
@@ -717,7 +717,7 @@ public final class TradeUtil {
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
 					count++;
 				}

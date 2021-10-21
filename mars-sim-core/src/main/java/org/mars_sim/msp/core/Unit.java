@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Unit.java
- * @date 2021-09-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -38,9 +38,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -182,7 +179,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			this.inventory = new Inventory(this);
 			break;
 			
 		case EQUIPMENT:
@@ -412,6 +408,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		
 		if (getUnitType() != UnitType.EQUIPMENT
 				&& getUnitType() != UnitType.PERSON
+				&& getUnitType() != UnitType.ROBOT
 				&& getUnitType() != UnitType.VEHICLE) {
 			inventory.setCoordinates(newLocation);
 		}
@@ -427,6 +424,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public Inventory getInventory() {
 		if (getUnitType() == UnitType.EQUIPMENT
 				|| getUnitType() == UnitType.PERSON
+				|| getUnitType() == UnitType.ROBOT
 				|| getUnitType() == UnitType.VEHICLE) {
 			logger.severe(this + " does NOT use Inventory class anymore.");
 			return null;

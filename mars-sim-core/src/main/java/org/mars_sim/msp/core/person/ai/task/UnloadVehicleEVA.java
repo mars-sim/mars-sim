@@ -527,6 +527,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return is vehicle fully unloaded?
 	 */
 	static public boolean isFullyUnloaded(Vehicle vehicle) {
-		return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
+		return (vehicle.getStoredMass() == 0D);
 	}
 }

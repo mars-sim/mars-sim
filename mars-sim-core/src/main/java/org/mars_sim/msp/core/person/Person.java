@@ -195,7 +195,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private EVASuit suit;
 	/** The person's current scientific study. */
 	private ScientificStudy study;
-	/** The person's MicroInventory instance. */
+	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 	
 	/** The person's achievement in scientific fields. */
@@ -336,7 +336,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
-		
+		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
 
@@ -1735,7 +1735,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public double getMass() {
-		// TODO because the PErson is not fully initialised in the constructor this
+		// TODO because the Person is not fully initialised in the constructor this
 		// can be null. The initialise method is the culprit.
 		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
 
@@ -1941,6 +1941,15 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return (eqmInventory.getStoredMass() == 0D);
 	}	
 	
+
+	/**
+	 * Gets the stored mass
+	 */
+	@Override
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
+	}
+	
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.PERSON;
@@ -2003,8 +2012,4 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		scientificAchievement = null;
 	}
 
-	@Override
-	public double getStoredMass() {
-		return eqmInventory.getStoredMass();
-	}
 }

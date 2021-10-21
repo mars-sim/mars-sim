@@ -1692,6 +1692,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Is this unit empty ? 
+	 * 
+	 * @return true if this unit doesn't carry any resources or equipment
+	 */
+	public boolean isEmpty() {
+		return (eqmInventory.getStoredMass() == 0D);
+	}	
+	
+	/**
 	 * Gets the total mass on this vehicle (not including vehicle's weight)
 	 * 
 	 * @return
@@ -1825,7 +1834,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-     * Gets the total capacity that this person can hold.
+     * Gets the total capacity that it can hold.
      * 
      * @return total capacity (kg).
      */

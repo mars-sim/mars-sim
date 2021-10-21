@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DeliveryUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -282,7 +282,7 @@ public final class DeliveryUtil {
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
 		sellerGoodsManager.prepareForLoadCalculation();
 
-		double massCapacity = drone.getInventory().getGeneralCapacity();
+		double massCapacity = drone.getTotalCapacity();
 
 
 		// Determine repair parts for trip.
@@ -747,7 +747,7 @@ public final class DeliveryUtil {
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
 					count++;
 				}

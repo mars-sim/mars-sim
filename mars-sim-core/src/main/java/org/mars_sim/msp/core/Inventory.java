@@ -958,7 +958,10 @@ public class Inventory implements Serializable {
 			Iterator<Integer> i = containedUnitIDs.iterator();
 			while (!result && i.hasNext()) {
 				Unit u = unitManager.getUnitByID(i.next());
-				if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+				if (u.getUnitType() != UnitType.PERSON 
+						&& u.getUnitType() != UnitType.VEHICLE
+						&& u.getUnitType() != UnitType.EQUIPMENT
+						&& u.getUnitType() != UnitType.ROBOT) {
 					if (u.getInventory().hasItemResource(id)) {
 						result = true;
 					}
@@ -1845,9 +1848,11 @@ public class Inventory implements Serializable {
 				result = true;
 			}
 					
-			if (owner != null && unit.getUnitType() != UnitType.EQUIPMENT 
-					&& unit.getUnitType() != UnitType.PERSON
-					&& unit.getUnitType() != UnitType.VEHICLE
+			if (owner != null && 
+					(unit.getUnitType() == UnitType.SETTLEMENT 
+					|| unit.getUnitType() == UnitType.PLANET
+					|| unit.getUnitType() == UnitType.BUILDING
+					|| unit.getUnitType() != UnitType.CONSTRUCTION)
 					&& unit.getInventory().containsUnit(owner)) {
 				logger.log(unit, Level.SEVERE, 30_000,
 						owner.getName() + " was owned by " + unit);
@@ -1901,7 +1906,9 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON && unit.getUnitType() != UnitType.VEHICLE) {
+					else if (unit.getUnitType() != UnitType.PERSON 
+							&& unit.getUnitType() != UnitType.ROBOT
+							&& unit.getUnitType() != UnitType.VEHICLE) {
 						for (Integer resource : unit.getInventory().getAllARStored(false)) {
 //							updateAmountResourceCapacityCache(resource);
 //							updateAmountResourceStoredCache(resource);
@@ -1995,7 +2002,10 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON && unit.getUnitType() != UnitType.VEHICLE) {		
+					else if (unit.getUnitType() != UnitType.PERSON 
+							&& unit.getUnitType() != UnitType.ROBOT
+							&& unit.getUnitType() != UnitType.VEHICLE
+							) {		
 						for (Integer resource : unit.getInventory().getAllARStored(false)) {
 //							updateAmountResourceCapacityCache(resource);
 //							updateAmountResourceStoredCache(resource);
@@ -2251,7 +2261,9 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedCapacity += ((Equipment)u).getAmountResourceCapacity(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+						else if (u.getUnitType() != UnitType.PERSON 
+								&& u.getUnitType() != UnitType.ROBOT
+								&& u.getUnitType() != UnitType.VEHICLE) {
 							containedCapacity += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
@@ -2291,7 +2303,9 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedStored +=  ((Equipment)u).getAmountResourceStored(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+						else if (u.getUnitType() != UnitType.PERSON 
+								&& u.getUnitType() != UnitType.ROBOT
+								&& u.getUnitType() != UnitType.VEHICLE) {
 							containedStored += u.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
@@ -2449,7 +2463,9 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					containerStored += ((Equipment)u).getAmountResourceStored(resource);
 				}
-				else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+				else if (u.getUnitType() != UnitType.PERSON 
+						&& u.getUnitType() != UnitType.ROBOT
+						&& u.getUnitType() != UnitType.VEHICLE) {
 					containerStored += u.getInventory().getAmountResourceStored(resource, false);
 				}
 			}	
@@ -2610,7 +2626,9 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					tempStored = ((Equipment)u).getStoredMass();
 				}
-				else if (u.getUnitType() != UnitType.PERSON && u.getUnitType() != UnitType.VEHICLE) {
+				else if (u.getUnitType() != UnitType.PERSON 
+						&& u.getUnitType() != UnitType.ROBOT
+						&& u.getUnitType() != UnitType.VEHICLE) {
 					tempStored = u.getInventory().getTotalAmountResourcesStored(false);
 				}
 			}

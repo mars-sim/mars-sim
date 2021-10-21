@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Delivery.java
- * @date 2021-08-28
+ * @date 2021-10-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -448,7 +448,7 @@ public class Delivery extends DroneMission implements Serializable {
 	private void performDestinationUnloadGoodsPhase() {
 
 		// Unload drone if necessary.
-		if (getDrone().getInventory().getTotalInventoryMass(false) == 0D) {
+		if (getDrone().getStoredMass() == 0D) {
 			setPhaseEnded(true);
 		}
 	}
@@ -609,8 +609,8 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
 			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getInventory().getGeneralCapacity();
-			double secondCapacity = secondVehicle.getInventory().getGeneralCapacity();
+			double firstCapacity = firstVehicle.getTotalCapacity();
+			double secondCapacity = secondVehicle.getTotalCapacity();
 			if (firstCapacity > secondCapacity) {
 				result = 1;
 			} else if (secondCapacity > firstCapacity) {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2021-10-14
+ * @date 2021-10-20
  * @author Manny Kung
  */
 
@@ -10,13 +10,20 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -54,7 +61,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable, EquipmentOwner {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -88,6 +95,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
+	/** The building the robot is at. */
+	private int currentBuildingInt;
 	/** The year of birth of this robot. */
 	private int year;
 	/** The month of birth of this robot. */
@@ -100,18 +109,27 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
+	/** The carrying capacity of the robot. */
+	private int carryingCapacity;
 	
 	/** Settlement X location (meters) from settlement center. */
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
 
+	/** The birthplace of the robot. */
+	private String birthplace;
+	/** The birth time of the robot. */
+	private String birthTimeStamp;
 	/** The nick name for this robot. e.g. Chefbot 001 */
 	private String nickName;
 	/** The country of the robot made. */
 	private String country;
 	/** The sponsor of the robot. */
 	private String sponsor;
+	
+	/** The Robot Type. */
+	private RobotType robotType;
 	
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
@@ -125,17 +143,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
-	/** The birthplace of the robot. */
-	private String birthplace;
-	/** The birth time of the robot. */
-	private String birthTimeStamp;
-	/** The TaskSchedule instance. */
-	//private TaskSchedule taskSchedule;
-	/** The Robot Type. */
-	private RobotType robotType;
-	/** The building the robot is at. */
-	private int currentBuildingInt;
-
+	/** The person's EquipmentInventory instance. */
+	private EquipmentInventory eqmInventory;
+	
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
@@ -189,22 +199,25 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		botMind = new BotMind(this);
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this);
-
-		setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D);
-		height = 156 + RandomUtil.getRandomInt(22);
-
+		// Set base mass
+		setBaseMass(100);
+		// Set height
+		height = 150;
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
-		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
+		// Set carry capacity
+		carryingCapacity = (int) (BASE_CAPACITY + strength);	
+		// Construct the EquipmentInventory instance.
+		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
 
-	/**
-	 * Gets the total capacity of resource that this container can hold.
-	 * @return total capacity (kg).
-	 */
-	public double getTotalCapacity() {
-		return BASE_CAPACITY;
-	}
+//	/**
+//	 * Gets the total capacity of resource that this container can hold.
+//	 * @return total capacity (kg).
+//	 */
+//	public double getTotalCapacity() {
+//		return BASE_CAPACITY;
+//	}
 
 
 	/**
@@ -894,10 +907,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return modifier
 	 */
 	public double calculateWalkSpeed() {
-		double mass = getInventory().getTotalInventoryMass(false);
-		double cap = getInventory().getGeneralCapacity();
-		// At full capacity, may still move at 10% 
-		return 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
+		double mass = getMass();
+		// At full capacity, may still move at 10%.
+		// Make sure is doesn't go -ve and there is always some movement
+		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
 	}
 	
 	public int getAge() {
@@ -908,39 +921,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return !health.isInoperable();
 	}
 	
-	@Override
-	public UnitType getUnitType() {
-		return UnitType.ROBOT;
-	}
-
-	
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-
-	/**
-	 * Reinitialize references after loading from a saved sim
-	 */
-	public void reinit() {
-		botMind.reinit();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		if (salvageInfo != null)
-			salvageInfo.destroy();
-		salvageInfo = null;
-		attributes.destroy();
-		attributes = null;
-		botMind.destroy();
-		botMind = null;
-		health.destroy();
-		health = null;
-		skillManager.destroy();
-		skillManager = null;
-		birthTimeStamp = null;
-	}
 
 	/**
 	 * Generate a unique name for the Robot. Generated based on
@@ -1190,6 +1170,244 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 		return robotType;
 	}
+
+	/**
+	 * Gets the remaining carrying capacity available.
+	 * 
+	 * @return capacity (kg).
+	 */
+	public double getRemainingCarryingCapacity() {
+		return carryingCapacity - getMass();
+	}
+	
+	/**
+	 * Get the capacity the robot can carry
+	 * 
+	 * @return capacity (kg)
+	 */
+	public double getCarryingCapacity() {
+		return carryingCapacity;
+	}
+	
+	/**
+	 * Mass of Equipment is the base mass plus what every it is storing
+	 */
+	@Override
+	public double getMass() {
+		// TODO because the PErson is not fully initialised in the constructor this
+		// can be null. The initialise method is the culprit.
+		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
+
+	}
+	
+	/**
+	 * Is this unit empty ? 
+	 * 
+	 * @return true if this unit doesn't carry any resources or equipment
+	 */
+	public boolean isEmpty() {
+		return (eqmInventory.getStoredMass() == 0D);
+	}	
+	
+
+	/**
+	 * Gets the stored mass
+	 */
+	@Override
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
+	}
+	
+	/**
+	 * Get the equipment list
+	 * 
+	 * @return the equipment list
+	 */
+	@Override
+	public List<Equipment> getEquipmentList() {
+		return eqmInventory.getEquipmentList();
+	}
+	
+	/**
+	 * Does this person possess an equipment of this equipment type
+	 * 
+	 * @param typeID
+	 * @return true if this person possess this equipment type
+	 */
+	@Override
+	public boolean containsEquipment(EquipmentType type) {
+		return eqmInventory.containsEquipment(type);
+	}
+	
+	/**
+	 * Adds an equipment to this person
+	 * 
+	 * @param equipment
+	 * @return true if this person can carry it
+	 */
+	@Override
+	public boolean addEquipment(Equipment equipment) {
+		return eqmInventory.addEquipment(equipment);		
+	}
+	
+	/**
+	 * Remove an equipment 
+	 * 
+	 * @param equipment
+	 */
+	@Override
+	public boolean removeEquipment(Equipment equipment) {
+		return eqmInventory.removeEquipment(equipment);
+	}
+	
+	/**
+	 * Stores the item resource
+	 * 
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the item resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return eqmInventory.retrieveItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public int getItemResourceStored(int resource) {
+		return eqmInventory.getItemResourceStored(resource);
+	}
+	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		return eqmInventory.storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		return eqmInventory.retrieveAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+     * Gets the total capacity that this robot can hold.
+     * 
+     * @return total capacity (kg).
+     */
+	@Override
+	public double getTotalCapacity() {
+		return eqmInventory.getTotalCapacity();
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return eqmInventory.getAmountResourceStored(resource);
+	}
+    
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
+	}
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
+	}
+	
+
+	/**
+	 * Finds the number of empty containers of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerClass  the unit class.
+	 * @param brandNew  does it include brand new bag only
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
+	}
+	
+	/**
+	 * Finds a container in storage.
+	 * 
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	@Override
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
+		return eqmInventory.findContainer(containerType, empty, resource);
+	}
 	
 	/**
 	 * Gets the hash code for this object.
@@ -1202,5 +1420,39 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		hashCode *= getIdentifier();
 		return hashCode;
 	}
+
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.ROBOT;
+	}
+
 	
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
+	public void reinit() {
+		botMind.reinit();
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (salvageInfo != null)
+			salvageInfo.destroy();
+		salvageInfo = null;
+		attributes.destroy();
+		attributes = null;
+		botMind.destroy();
+		botMind = null;
+		health.destroy();
+		health = null;
+		skillManager.destroy();
+		skillManager = null;
+		birthTimeStamp = null;
+	}
+
 }

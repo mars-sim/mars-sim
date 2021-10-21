@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -131,24 +132,15 @@ public final class RepairHelper {
 					malfunction.repairWithParts(id, number, containerUnit);
 				}
 			}
-			else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
-				
+			else {
 				for (Entry<Integer, Integer> part : parts.entrySet()) {
 					Integer id = part.getKey();
 					int number = part.getValue();
-					((Vehicle)containerUnit).retrieveItemResource(id, number);
+					((EquipmentOwner)containerUnit).retrieveItemResource(id, number);
 					malfunction.repairWithParts(id, number, containerUnit);
 				}
 			}
-			else if (containerUnit.getUnitType() == UnitType.PERSON) {
-				
-				for (Entry<Integer, Integer> part : parts.entrySet()) {
-					Integer id = part.getKey();
-					int number = part.getValue();
-					((Person)containerUnit).retrieveItemResource(id, number);
-					malfunction.repairWithParts(id, number, containerUnit);
-				}
-			}
+			
 		}
 	}
 }

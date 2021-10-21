@@ -2424,7 +2424,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					amount += vehicle.getInventory().getAmountResourceStored(resource, false);
+					amount += vehicle.getAmountResourceStored(resource.getID());
 			}
 		}
 
@@ -3193,7 +3193,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getInventory().getItemResourceNum(resource);
+					number += vehicle.getItemResourceStored(resource.getID());
 			}
 		}
 
@@ -3371,7 +3371,6 @@ public class GoodsManager implements Serializable, Temporal {
 //			if (mission instanceof VehicleMission) {
 //				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 //				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-//					Inventory vehicleInv = vehicle.getInventory();
 //					equipmentList.addAll(vehicle.findNumEmptyContainersOfType(containerType, initialized) findAllEquipmentType(containerType));
 //				}
 //			}
@@ -3421,7 +3420,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getInventory().findNumEmptyContainersOfType(equipmentType, false);
+					number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
 			}
 		}
 

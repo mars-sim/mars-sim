@@ -255,7 +255,7 @@ public class EquipmentInventory
 	@Override
 	public double getTotalCapacity() {
 		// Question: Should the total capacity varies ? 
-		// based on a person's instant carrying capacity ?
+		// based on one's instant carrying capacity ?
 		return cargoCapacity;
 	}
 	
@@ -383,4 +383,13 @@ public class EquipmentInventory
 			}
 		}
 	}	
+	
+//	/**
+//	 * Sets the cargo capacity
+//	 * 
+//	 * @param value
+//	 */
+//	public void setCargoCapacity(double value) {
+//		cargoCapacity = value;
+//	}
 }

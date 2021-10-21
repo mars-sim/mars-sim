@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Trade.java
- * @date 2021-08-28
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -479,7 +479,7 @@ public class Trade extends RoverMission implements Serializable {
 		unloadTowedVehicle();
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
+		boolean roverUnloaded = getRover().getStoredMass() == 0D;
 		if (roverUnloaded) {
 			setPhaseEnded(true);
 		}
@@ -586,12 +586,14 @@ public class Trade extends RoverMission implements Serializable {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
 					if (person.isDeclaredDead()) {
-						EVASuit suit0 = getVehicle().getInventory().findAnEVAsuit(person);
+						EVASuit suit0 = getVehicle().findEVASuit(person);
 						if (suit0 == null) { 
 							if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {
 								EVASuit suit1 = tradingSettlement.getInventory().findAnEVAsuit(person); 
-								if (suit1 != null && getVehicle().getInventory().canStoreUnit(suit1, false)) {
-									suit1.transfer(tradingSettlement, getVehicle());
+								if (suit1 != null) {
+									boolean done = suit1.transfer(tradingSettlement, getVehicle());
+									if (!done)
+										logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
 								} else {
 									logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
 								}
@@ -726,7 +728,7 @@ public class Trade extends RoverMission implements Serializable {
 			Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 			while (j.hasNext()) {
 				Vehicle vehicle = j.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
 					if ((vehicle != getVehicle()) && !vehicle.isReserved() && isEmpty) {
 						result = vehicle;
@@ -819,8 +821,8 @@ public class Trade extends RoverMission implements Serializable {
 
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
 			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getInventory().getGeneralCapacity();
-			double secondCapacity = secondVehicle.getInventory().getGeneralCapacity();
+			double firstCapacity = firstVehicle.getTotalCapacity();
+			double secondCapacity = secondVehicle.getTotalCapacity();
 			if (firstCapacity > secondCapacity) {
 				result = 1;
 			} else if (secondCapacity > firstCapacity) {

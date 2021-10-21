@@ -374,7 +374,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 
-//		Inventory vehicleInv = vehicle.getInventory();
 		if (settlement == null) {
 			endTask();
 			return 0D;
@@ -519,7 +518,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					
 					logger.log(worker, Level.INFO, 0,"was retrieving the dead body of " + p + " from " + vehicle.getName() + ".");
 
-					
 					// Retrieve the dead person and place this person within a settlement	
 					p.transfer(vehicle, settlement);
 					
