@@ -1728,7 +1728,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	@Override
-	public List<Equipment> getEquipmentList() {
+	public Set<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
 	}
 	

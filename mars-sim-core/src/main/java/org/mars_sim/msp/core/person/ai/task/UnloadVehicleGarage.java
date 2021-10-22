@@ -301,16 +301,20 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
 					if (vehicleMission.hasVehicle()) {
 						Vehicle vehicle = vehicleMission.getVehicle();	
-						Crewable c = (Crewable)vehicle;
-						// If no one is inside the vehicle is a candidate
-						if (c.getCrewNum() == 0 || c.getRobotCrewNum() == 0) {
-							// If looking for garaged vehicles; then add to garage otherwise
-							// check vehicle is not in garage
-							if (!isFullyUnloaded(vehicle)) {
-								if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
-										|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
-									result.add(vehicleMission);
-								}
+						if (vehicle instanceof Crewable) {
+							Crewable c = (Crewable)vehicle;
+							if (c.getCrewNum() > 0 || c.getRobotCrewNum() > 0) {
+								// Has occupants so skip it
+								continue;
+							}
+						}
+						
+						// If looking for garaged vehicles; then add to garage otherwise
+						// check vehicle is not in garage
+						if (!isFullyUnloaded(vehicle)) {
+							if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
+									|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+								result.add(vehicleMission);
 							}
 						}
 					}

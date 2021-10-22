@@ -81,7 +81,13 @@ public class MicroInventory implements Serializable {
 	 * @param capacity
 	 */
 	public void setCapacity(int resource, double capacity) {
-		storageMap.put(resource, new ResourceStored(capacity));
+		ResourceStored s = storageMap.get(resource);
+		if (s != null) {
+			s.capacity = capacity;
+		}
+		else {
+			storageMap.put(resource, new ResourceStored(capacity));
+		}
 	}
 	 
 	/**
@@ -91,8 +97,13 @@ public class MicroInventory implements Serializable {
 	 * @param capacity
 	 */
 	public void addCapacity(int resource, double capacity) {
-		double oldCap = getCapacity(resource);
-		storageMap.put(resource, new ResourceStored(oldCap + capacity));
+		ResourceStored s = storageMap.get(resource);
+		if (s != null) {
+			s.capacity += capacity;
+		}
+		else {
+			storageMap.put(resource, new ResourceStored(capacity));
+		}
 	}
 	
 	/**
@@ -102,11 +113,14 @@ public class MicroInventory implements Serializable {
 	 * @param capacity
 	 */
 	public void removeCapacity(int resource, double capacity) {
-		double oldCap = getCapacity(resource);
-		if (oldCap > capacity)
-			storageMap.put(resource, new ResourceStored(oldCap - capacity));
-		else
-			storageMap.put(resource, new ResourceStored(0));
+		ResourceStored s = storageMap.get(resource);
+
+		if (s != null) {
+			s.capacity -= capacity;
+			if (s.capacity < 0D) {
+				s.capacity = 0D;
+			}
+		}
 	}
 	
 	/**

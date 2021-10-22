@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MissionSummaryCommand extends ChatCommand {
 
 	public static final ChatCommand MISSION_SUMMARY = new MissionSummaryCommand();
+	private static final String ACTIVE = "active";
 
 	private MissionSummaryCommand() {
 		super(TopLevel.SIMULATION_GROUP, "ms", "mission summary", "Summary of all missionss");
@@ -29,6 +30,7 @@ public class MissionSummaryCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 
+		boolean showAll = ((input == null) || !input.equalsIgnoreCase(ACTIVE)); 
 		MissionManager mgr = context.getSim().getMissionManager();
 		
 		StructuredResponse response = new StructuredResponse();
@@ -43,10 +45,12 @@ public class MissionSummaryCommand extends ChatCommand {
 				Vehicle v = vm.getVehicle();
 				vName = (v != null ? v.getName() : "");
 			}
-			response.appendTableRow(m.getTypeID(),
-									m.getPhase().getName(),
-									vName,
-									m.getAssociatedSettlement());
+			if (showAll || !m.isDone()) {
+				response.appendTableRow(m.getTypeID(),
+										m.getPhase().getName(),
+										vName,
+										m.getAssociatedSettlement());
+			}
 		}
 
 		context.println(response.getOutput());

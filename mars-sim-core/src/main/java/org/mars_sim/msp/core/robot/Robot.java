@@ -1233,7 +1233,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return the equipment list
 	 */
 	@Override
-	public List<Equipment> getEquipmentList() {
+	public Set<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
 	}
 	

@@ -9,11 +9,12 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -63,25 +64,28 @@ public class Storage extends Function implements Serializable {
 //		}
 
 		// Set the capacities for each supported resource
-		building.getSettlement().getEquipmentInventory().setResourceCapacityMap(resourceCapacities);
+		Settlement owner = building.getSettlement();
+		EquipmentInventory inv = owner.getEquipmentInventory();
+		inv.setResourceCapacity(resourceCapacities, true);
 		
 		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
-		building.getSettlement().getEquipmentInventory().addCargoCapacity(stockCapacity);
+		inv.addCargoCapacity(stockCapacity);
 
 		// Obtains initial resources map for this building.
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
+		
 		// Obtains initial resources set for this building.		
-		Set<Integer> initialSet = initialResources.keySet();
-		for (Integer i : initialSet) {
-			double initialAmount = initialResources.get(i);
-			double remainingCap = building.getSettlement().getAmountResourceRemainingCapacity(i);
-			if (initialAmount > remainingCap)
-				initialAmount = remainingCap;
-			
-			// Adds the capacity for this resource.
-			building.getSettlement().getEquipmentInventory().addCapacity(i, initialAmount);
+		
+		for (Entry<Integer, Double> i : initialResources.entrySet()) {
+			double initialAmount = i.getValue();
+			int resourceId = i.getKey();
+
 			// Stores this resource in this building.
-			building.getSettlement().storeAmountResource(i, initialAmount);
+			double excess = inv.storeAmountResource(resourceId, initialAmount);
+			if (excess > 0D) {
+				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
+				logger.warning(building, "Can not store excess (" + excess + "kg) of the initial resource " + resourceName);
+			}
 		}
 	}
 

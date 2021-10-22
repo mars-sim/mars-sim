@@ -3360,7 +3360,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double computeUsageFactor(EquipmentType containerType) {
 		int numUsed = 0;
 
-		List<Equipment> equipmentList = settlement.getEquipmentTypeList(containerType);
+		Set<Equipment> equipmentList = settlement.getEquipmentTypeList(containerType);
 		
 		// TODO need to revisit this
 //		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();

@@ -833,6 +833,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// If the destination has been reached, end the phase.
 		if (reachedDestination) {
+			Settlement base = destination.getSettlement();
+			if (vehicle.getAssociatedSettlement().equals(base)) {
+				logger.info(vehicle, "Arrived back home " + base.getName());
+				vehicle.transfer(vehicle.getContainerUnit(), base);
+				
+				// TODO There is a problem with the Vehicle not being on the
+				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
+				// This is temporary fix pending #474 which will revisit transfers
+				if (!base.equals(vehicle.getContainerUnit())) {
+					vehicle.setContainerUnit(base);
+					logger.warning(vehicle, "Had to force container to home base");
+				}
+			}
+			
 			reachedNextNode();
 			setPhaseEnded(true);
 		}

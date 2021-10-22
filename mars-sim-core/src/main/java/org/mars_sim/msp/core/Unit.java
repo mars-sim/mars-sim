@@ -996,6 +996,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			else if (origin.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)origin).removePerson((Person)this);
 			}
+			else if (origin.getUnitType() == UnitType.BUILDING) {
+				// Retrieve this person from the settlement
+				transferred = ((Building)origin).getSettlement().removePeopleWithin((Person)this);
+//				transferred = origin.getInventory().retrieveUnit(this, true);
+			}
 			// Note: the origin is a settlement
 			else {
 				// Retrieve this person from the settlement

@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -254,7 +256,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Equipment> k = vehicle.getEquipmentList().iterator();
+			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentList());
+			Iterator<Equipment> k = originalEqm.iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)

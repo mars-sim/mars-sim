@@ -33,7 +33,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * 
 	 * @return
 	 */
-	List<Equipment> getEquipmentList();
+	Set<Equipment> getEquipmentList();
 	
 	/**
 	 * Does this person possess an equipment of this equipment type

@@ -117,8 +117,8 @@ public class CommandHelper {
 			Set<Person> c = study.getCollaborativeResearchers();
 			for (Person person :  study.getInvitedResearchers()) {
 				response.appendTableRow(person.getName(),
-										(study.hasInvitedResearcherResponded(person) ? "Yes" : "No"),
-										(c.contains(person) ? "Yes" : "No"));
+										study.hasInvitedResearcherResponded(person),
+										c.contains(person));
 			}
 			break;
 		
@@ -193,7 +193,7 @@ public class CommandHelper {
 		
 		for (Airlock airlock : airlocks) {
 			response.appendTableRow(airlock.getEntityName(), airlock.getState().name(),
-									(airlock.isActivated() ? "Yes" : "No"),
+									airlock.isActivated(),
 									airlock.getOperatorName(),
 									String.format("%d/%d", airlock.getNumOccupants(), airlock.getCapacity()),
 									(airlock.isInnerDoorLocked() ? "LCK" : "ULK"),

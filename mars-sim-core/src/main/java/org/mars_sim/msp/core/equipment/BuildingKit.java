@@ -18,8 +18,10 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 
-public class BuildingKit extends Equipment implements Serializable, Malfunctionable, Salvagable {
+public class BuildingKit extends Equipment
+	implements Serializable, Malfunctionable, Salvagable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

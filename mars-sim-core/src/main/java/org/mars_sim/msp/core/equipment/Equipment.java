@@ -22,20 +22,17 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a EVA suit or a medpack.
  */
-public abstract class Equipment extends Unit implements Indoor, Salvagable, Temporal {
+public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -90,18 +87,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		associatedSettlementID = settlement.getIdentifier();
 		
 		microInventory = new MicroInventory(this);
-	}
-
-	/**
-	 * Time passing for this equipment.
-	 *
-	 * @param pulse the amount of clock pulse passing (in millisols)
-	 * @throws Exception if error during time.
-	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		// By default Equipment are passive objects
-		return false;
 	}
 
 	/**

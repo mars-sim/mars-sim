@@ -1145,7 +1145,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		
 		// Update owned Units
-//		timePassing(pulse, getEquipmentList());
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, citizens);
 		timePassing(pulse, ownedRobots);
@@ -3713,7 +3712,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return the equipment list
 	 */
 	@Override
-	public List<Equipment> getEquipmentList() {
+	public Set<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
 	}
 	
@@ -3722,10 +3721,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return the equipment list
 	 */
-	public List<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
+	public Set<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
 		return eqmInventory.getEquipmentList().stream()
 				.filter(e -> e.getEquipmentType() == equipmentType)
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 	
 	/**

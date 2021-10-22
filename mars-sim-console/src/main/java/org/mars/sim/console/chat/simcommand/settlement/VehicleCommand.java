@@ -17,8 +17,7 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -41,51 +40,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
-		int parkedRovers = 0;
-		int parkedExplorers = 0;
-		int parkedCargo = 0;
-		int parkedLUV = 0;
-		for (Vehicle vehicle : settlement.getParkedVehicles()) {
-			String d = vehicle.getVehicleTypeString();
-			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
-				parkedRovers++;
-			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
-				parkedExplorers++;
-			else if (d.equals(VehicleType.CARGO_ROVER.getName()))
-				parkedCargo++;
-			else if (vehicle instanceof LightUtilityVehicle)
-				parkedLUV++;
-		}
-
-		int missionRovers = 0;
-		int missionExplorers = 0;
-		int missionCargo = 0;
-		int missionLUV = 0;
-		for (Vehicle vehicle : settlement.getMissionVehicles()) {
-			String d = vehicle.getVehicleTypeString();
-			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
-				missionRovers++;
-			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
-				missionExplorers++;
-			else if (d.equals(VehicleType.CARGO_ROVER.getName()))
-				missionCargo++;
-			else if (vehicle instanceof LightUtilityVehicle)
-				missionLUV++;
-		}
-		
-		response.appendHeading("Summary");
-		response.appendLabelledDigit("Total # of Rovers", settlement.getAllAssociatedVehicles().size());
-		response.appendLabelledDigit("Cargo Rovers on Mission", missionCargo);
-		response.appendLabelledDigit("Transports on Mission", missionRovers);
-		response.appendLabelledDigit("Explorers on Mission", missionExplorers);
-		response.appendLabelledDigit("LUVs on Mission", missionLUV);
-		response.appendLabelledDigit("Rovers on Mission", settlement.getMissionVehicles().size());
-
-		response.appendLabelledDigit("Parked/Garaged Cargo Rovers", parkedCargo);
-		response.appendLabelledDigit("Parked/Garaged Transports", parkedRovers);
-		response.appendLabelledDigit("Parked/Garaged Explorers", parkedExplorers);
-		response.appendLabelledDigit("Parked/Garaged LUVs", parkedLUV);
-		response.appendLabelledDigit("Rovers NOT on mission", settlement.getParkedVehicleNum());
+		Collection<Vehicle> parked = settlement.getParkedVehicles();
 		
 		response.appendHeading("Vehicles");
 		
@@ -94,25 +49,33 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleTypeString().compareTo(p2.getVehicleTypeString()))
 				.collect(Collectors.toList());
 
-		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 25, "Lead", CommandHelper.PERSON_WIDTH);
+		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, 
+									"Parked", "Home", "Garage", "Reserved", "Mission", 25);
 
+		BuildingManager bm = settlement.getBuildingManager();
 		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
-
-			String vTypeStr = Conversion.capitalize(v.getVehicleTypeString());
-			if (vTypeStr.equalsIgnoreCase("Light Utility Vehicle"))
+			VehicleType vt = v.getVehicleType();
+			String vTypeStr;
+			if (vt == VehicleType.LUV)
 				vTypeStr = "LUV";
-
+			else {
+				vTypeStr = vt.getName();
+			}
+			
 			// Print mission name
 			String missionName = "";
-			String leader = "";
 			Mission mission = missionMgr.getMissionForVehicle(v);
 			if (mission != null) {
-				leader = mission.getStartingPerson().getName();
 				missionName = mission.getTypeID();
 			}
 			
-			response.appendTableRow(v.getName(), vTypeStr, missionName, leader);
+			// Dropped Parked once fix problem
+			boolean isParked = parked.contains(v);
+			boolean isHome = settlement.equals(v.getSettlement());
+			boolean isGaraged = bm.isInGarage(v);
+			response.appendTableRow(v.getName(), vTypeStr, isParked,
+						isHome, isGaraged, v.isReserved(), missionName);
 		}
 		
 		context.println(response.getOutput());

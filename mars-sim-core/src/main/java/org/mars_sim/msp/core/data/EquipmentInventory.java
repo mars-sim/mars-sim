@@ -8,11 +8,9 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,7 +43,7 @@ public class EquipmentInventory
 	private double cargoCapacity;
 	
 	/** Locally held Equipment **/
-	private List<Equipment> equipmentList;
+	private Set<Equipment> equipmentList;
 
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
@@ -59,7 +57,7 @@ public class EquipmentInventory
 		this.cargoCapacity = cargoCapacity;
 		
 		// Create equipment list instance		
-		equipmentList = new ArrayList<>();
+		equipmentList = new HashSet<>();
 		// Create microInventory instance		
 		microInventory = new MicroInventory(owner);
 	
@@ -84,8 +82,8 @@ public class EquipmentInventory
 	 * @return
 	 */
 	@Override
-	public List<Equipment> getEquipmentList() {
-		return Collections.unmodifiableList(equipmentList);
+	public Set<Equipment> getEquipmentList() {
+		return Collections.unmodifiableSet(equipmentList);
 	}
 
 	/**
@@ -96,7 +94,7 @@ public class EquipmentInventory
 	@Override
 	public Collection<Container> findAllContainers() {
 		Collection<Container> result = new HashSet<>();
-		for (Equipment e : getEquipmentList()) {
+		for (Equipment e : equipmentList) {
 			if (e != null && e instanceof Container) {
 				Container c = (Container)e;
 				result.add(c);
@@ -129,11 +127,12 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		if (cargoCapacity >= getStoredMass() + equipment.getMass()) {
+		boolean contained = equipmentList.contains(equipment);
+		if (!contained && (cargoCapacity >= getStoredMass() + equipment.getMass())) {
 			equipmentList.add(equipment);
 			return true;
 		}
-		return false;		
+		return contained;		
 	}
 	
 	/**
@@ -143,11 +142,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		if (equipmentList.contains(equipment)) {
-			equipmentList.remove(equipment);
-			return true;
-		}
-		return false;
+		return equipmentList.remove(equipment);
 	}
 	
 	/**
@@ -359,14 +354,14 @@ public class EquipmentInventory
 		for (Equipment e : equipmentList) {
 			if (e != null && e.getEquipmentType() == containerType) {
 				Container c = (Container) e;
-				if (empty) {
-					// It must be empty inside
-					if (c.getStoredMass() == 0D) {
+				// Check it matches the resource spec
+				int containerResource = c.getResource();
+				if (resource == -1 || containerResource == resource || containerResource == -1)
+				{
+					if (!empty || (c.getStoredMass() == 0D)) {
 						return c;
 					}
 				}
-				else if (resource == -1 || c.getResource() == resource || c.getResource() == -1)
-					return c;
 			}
 		}
 		return null;
@@ -457,11 +452,15 @@ public class EquipmentInventory
 	/**
 	 * Set the resource capacities.
 	 * @param capacities
+	 * @param add Should these be added to the current values
 	 */
-	public void setResourceCapacityMap(Map<Integer, Double> capacities) {
+	public void setResourceCapacity(Map<Integer, Double> capacities, boolean add) {
 		for (Entry<Integer, Double> v : capacities.entrySet()) {
 			Integer foundResource = v.getKey();
-			if (foundResource != null) {
+			if (add) {
+				microInventory.addCapacity(foundResource, v.getValue());
+			}
+			else {
 				microInventory.setCapacity(foundResource, v.getValue());
 			}
 		}

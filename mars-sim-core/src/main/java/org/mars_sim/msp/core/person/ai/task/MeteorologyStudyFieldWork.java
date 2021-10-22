@@ -257,7 +257,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 				int rockSampleId = box.getResource();
 				if (rockSampleId == -1) {
 					// Box is empty so choose at random
-					int randomNum = RandomUtil.getRandomInt((ResourceUtil.rockIDs).length);
+					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
 					rockSampleId = ResourceUtil.rockIDs[randomNum];
 				}
 				logger.info(person, 10_000, "collectRockSamples::randomRock: " + rockSampleId);

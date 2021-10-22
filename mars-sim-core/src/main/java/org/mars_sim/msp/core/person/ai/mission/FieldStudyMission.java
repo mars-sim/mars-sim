@@ -497,7 +497,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						logger.info(person, "Assigned field work for " + getTypeID());
 						assignTask(person, createFieldStudyTask(person, leadResearcher,
 								study, (Rover) getVehicle()));
 					}

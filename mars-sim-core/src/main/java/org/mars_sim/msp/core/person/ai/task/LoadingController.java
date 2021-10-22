@@ -126,6 +126,18 @@ public class LoadingController implements Serializable {
 			if (resourceId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
 				amountLoaded = vehicle.getAmountResourceStored(resourceId);
+				double capacity = vehicle.getAmountResourceCapacity(resourceId);
+				double amountRequired = resources.get(resourceId).doubleValue();
+				if (capacity < amountRequired) {
+					// So the vehicle can not handle the Manifest volume
+					// Adjust the manifest down
+					resources.put(resourceId, (capacity - amountLoaded));
+					logger.warning(vehicle, "Can not hold the "
+									+ ResourceUtil.findAmountResourceName(resourceId)
+									+ " in the manifest (" + amountRequired
+									+ ") as capacity is " + capacity);
+					amountLoaded = 0;
+				}
 			}
 			else {
 				// Load item resources
@@ -193,7 +205,7 @@ public class LoadingController implements Serializable {
 		// use load amount (that means load couldn't complete it
 		boolean completed = isCompleted();
 		if (completed) {
-			logger.info(vehicle, "Loading completed by " + worker.getName());
+			logger.fine(vehicle, "Loading completed by " + worker.getName());
 		}
 		return (amountLoading > 0D) || completed;
 	}
@@ -255,7 +267,11 @@ public class LoadingController implements Serializable {
 		double amountToLoad = Math.min(amountNeeded, amountLoading);
 		
 		// Check the amount to load is not too small.
-		amountToLoad = Math.max(SMALLEST_RESOURCE_LOAD, amountToLoad);
+		if (amountToLoad < SMALLEST_RESOURCE_LOAD) {
+			// Too small to load
+			amountToLoad = 0;
+			amountNeeded = 0;
+		}
 		
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
@@ -283,7 +299,7 @@ public class LoadingController implements Serializable {
 			// Check remaining capacity in vehicle inventory.
 			double remainingCapacity = vehicle.getAmountResourceRemainingCapacity(resource);
 			if (remainingCapacity < amountToLoad) {
-				if (mandatory) {
+				if (mandatory && ((amountToLoad - remainingCapacity) > SMALLEST_RESOURCE_LOAD)) {
 					// Will load up as much required resource as possible
 					logger.warning(vehicle, "Not enough capacity for loading " 
 							+ Math.round(amountToLoad * 100D) / 100D + " kg "
@@ -301,8 +317,6 @@ public class LoadingController implements Serializable {
 				settlement.retrieveAmountResource(resource, amountToLoad);
 				// Store resource in the vehicle
 				vehicle.storeAmountResource(resource, amountToLoad);
-				// Track amount demand
-//				sInv.addAmountDemand(resource, amountToLoad);
 			} catch (Exception e) {
 				logger.severe(vehicle, "Cannot transfer from settlement to vehicle: ", e);
 				return amountLoading;

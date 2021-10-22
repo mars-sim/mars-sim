@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * The EVASuit class represents an EVA suit which provides life support for a
@@ -66,7 +67,8 @@ import org.mars_sim.msp.core.time.ClockPulse;
  * 
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, ResourceHolder, Serializable, Malfunctionable {
+	implements LifeSupportInterface, ResourceHolder, Serializable, Malfunctionable,
+				Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -417,10 +419,9 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		if (!isValid(pulse)) {
-			return false;
-		}
-		
+		// EVA Suit doesn't check the pulse value like other units
+		// because it is not called consistently every pulse. It is only
+		// called when in use by a Person.
 		Unit container = getContainerUnit();
 		if (container.getUnitType() == UnitType.PERSON
 			&&!((Person) container).getPhysicalCondition().isDead()) {

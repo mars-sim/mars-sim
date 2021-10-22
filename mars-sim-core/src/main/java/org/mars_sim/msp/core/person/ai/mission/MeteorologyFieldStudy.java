@@ -8,9 +8,11 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -38,6 +40,9 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 500D;
+
+	/** How many specimen boxes per mission member */
+	private static final int SPECIMEN_BOX_MEMBER = 3;
 
 
 	/**
@@ -78,5 +83,18 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	@Override
 	protected boolean canResearchSite(MissionMember researcher) {
 		return MeteorologyStudyFieldWork.canResearchSite(researcher, getRover());
+	}
+
+	/**
+	 * Need some Specimen boxes
+	 */
+	@Override
+	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		Map<Integer, Integer> required = super.getEquipmentNeededForRemainingMission(useBuffer);
+		
+		required.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX),
+												 getMembersNumber() * SPECIMEN_BOX_MEMBER);
+		
+		return required;
 	}
 }

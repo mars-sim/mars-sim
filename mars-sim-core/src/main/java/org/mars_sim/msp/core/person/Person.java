@@ -865,6 +865,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			study.timePassing(pulse);
 		}
 		
+		// If I have a suit then record the use
+		if (suit != null) {
+			suit.timePassing(pulse);
+		}
+		
 		if (!condition.isDead()) {
 			// Mental changes with time passing.
 			mind.timePassing(pulse);
@@ -1745,7 +1750,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return the equipment list
 	 */
 	@Override
-	public List<Equipment> getEquipmentList() {
+	public Set<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
 	}
 	
