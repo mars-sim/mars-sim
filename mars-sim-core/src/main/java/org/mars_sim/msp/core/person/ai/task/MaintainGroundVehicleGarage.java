@@ -193,12 +193,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Add repair parts if necessary.
 		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
 			Settlement settlement = worker.getSettlement();
-//			Inventory inv = worker.getTopContainerUnit().getInventory();
+
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
+				// This is within a garage in a settlement
 				settlement.retrieveItemResource(part, number);
 				manager.maintainWithParts(part, number);			
 				// Add item demand

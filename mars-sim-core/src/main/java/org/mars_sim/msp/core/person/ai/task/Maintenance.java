@@ -416,14 +416,35 @@ public class Maintenance extends Task implements Serializable {
 		return hasMaintenanceParts(unit, malfunctionable);
 	}
 
+	/**
+	 * Checks if there are enough local parts to perform maintenance.
+	 * 
+	 * @param settlement the settlement holding the needed parts.
+	 * @param malfunctionable the entity needing maintenance.
+	 * @return true if enough parts.
+	 */
 	public static boolean hasMaintenanceParts(Settlement settlement, Malfunctionable malfunctionable) {
-		return hasMaintenanceParts(settlement, malfunctionable);
+		boolean result = true;
+		
+		Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+		Iterator<Integer> i = parts.keySet().iterator();
+		while (i.hasNext()) {
+			Integer part = i.next();
+			int number = parts.get(part);
+			if (settlement.getItemResourceStored(part) < number) {
+				result = false;
+				// Boosts the item demand
+//				unit.getInventory().addItemDemand(part, number);
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
 	 * 
-	 * @param inventory       inventory holding the needed parts.
+	 * @param unit the unit holding the needed parts.
 	 * @param malfunctionable the entity needing maintenance.
 	 * @return true if enough parts.
 	 * @throws Exception if error checking parts availability.
@@ -432,17 +453,7 @@ public class Maintenance extends Task implements Serializable {
 		boolean result = true;
 
 		if (unit.getUnitType() == UnitType.SETTLEMENT) {
-			Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
-			Iterator<Integer> i = parts.keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int number = parts.get(part);
-				if (((Settlement)unit).getItemResourceStored(part) < number) {
-					result = false;
-					// Boosts the item demand
-//					unit.getInventory().addItemDemand(part, number);
-				}
-			}
+			return hasMaintenanceParts((Settlement)unit, malfunctionable);
 		}
 		else {
 			Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
