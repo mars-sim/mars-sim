@@ -75,7 +75,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	private ResourceHolder resourceHolder;
+	private ResourceHolder rh;
 	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
@@ -95,7 +95,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
         this.unit = unit;
-        this.resourceHolder = (ResourceHolder)unit;
+        this.rh = (ResourceHolder)unit;
 	}
 	
 	public boolean isUIDone() {
@@ -276,57 +276,36 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         private void loadModel(List<Resource> kys, Map<Resource, Number> res, Map<Resource, Number> cap) {
-//            if (inventory != null) {
-//	            kys.addAll(inventory.getAllAmountResourcesStored(false));
-//	            Iterator<Resource> iAmount = kys.iterator();
-//	            while (iAmount.hasNext()) {
-//	                AmountResource resource = (AmountResource) iAmount.next();
-//	                res.put(resource, inventory.getAmountResourceStored(resource, false));
-//	                cap.put(resource, inventory.getAmountResourceCapacity(resource, false));
-//	            }
-//	
-//	            Set<ItemResource> itemResources = inventory.getAllIRStored();
-//	            kys.addAll(itemResources);
-//	            Iterator<ItemResource> iItem = itemResources.iterator();
-//	            while (iItem.hasNext()) {
-//	                ItemResource resource = iItem.next();
-//	                res.put(resource, inventory.getItemResourceNum(resource));
-//	                cap.put(resource, null);
-//	            }
-//            }
-//            else {
-            	// New approach based ion interfaces
-            	if (unit instanceof ResourceHolder) {
-            		ResourceHolder rh = (ResourceHolder) unit;
-            		Set<AmountResource> arItems = rh.getAmountResourceIDs().stream()
-            					  .map(ar -> ResourceUtil.findAmountResource(ar))
-            					  .filter(Objects::nonNull)
-            					  .collect(Collectors.toSet());
-                	
-            		kys.addAll(arItems);
-     	            for( AmountResource resource : arItems) {
-     	                res.put(resource, rh.getAmountResourceStored(resource.getID()));
-     	                cap.put(resource, rh.getAmountResourceCapacity(resource.getID()));
-     	            }
-            	}
+        	// New approach based on interfaces
+        	if (unit instanceof ResourceHolder) {
+        		rh = (ResourceHolder) unit;
+        		Set<AmountResource> arItems = rh.getAmountResourceIDs().stream()
+        					  .map(ar -> ResourceUtil.findAmountResource(ar))
+        					  .filter(Objects::nonNull)
+        					  .collect(Collectors.toSet());
+            	
+        		kys.addAll(arItems);
+ 	            for( AmountResource resource : arItems) {
+ 	                res.put(resource, rh.getAmountResourceStored(resource.getID()));
+ 	                cap.put(resource, rh.getAmountResourceCapacity(resource.getID()));
+ 	            }
+        	}
+ 
+        	// Has Item resources
+        	if (unit instanceof EquipmentOwner) {
+        		EquipmentOwner eo = (EquipmentOwner) unit;
+        		Set<Resource> irItems = eo.getItemResourceIDs().stream()
+            				.map(ir -> ItemResourceUtil.findItemResource(ir))
+            				.filter(Objects::nonNull)
+            		        .collect(Collectors.toSet());
+
+            	kys.addAll(irItems);
+ 	            for(Resource resource : irItems) {
+ 	                res.put(resource, eo.getItemResourceStored(resource.getID()));
+ 	                cap.put(resource, null);
+ 	            }
+        	}
      
-            	// Has Item resources
-            	if (unit instanceof EquipmentOwner) {
-            		EquipmentOwner eo = (EquipmentOwner) unit;
-            		Set<Resource> irItems = eo.getItemResourceIDs().stream()
-	            				.map(ir -> ItemResourceUtil.findItemResource(ir))
-	            				.filter(Objects::nonNull)
-	            		        .collect(Collectors.toSet());
-
- 	            	kys.addAll(irItems);
-	 	            for(Resource resource : irItems) {
-	 	                res.put(resource, eo.getItemResourceStored(resource.getID()));
-	 	                cap.put(resource, null);
-	 	            }
-            	}
-//            }
-
-            
             // Sort resources alphabetically by name.
             kys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
         }
@@ -379,24 +358,24 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public void update() {
-        		List<Resource> newResourceKeys = new ArrayList<Resource>();
-    			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
-        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
-        		
-        		loadModel(newResourceKeys, newResources, newCapacity);
+    		List<Resource> newResourceKeys = new ArrayList<Resource>();
+			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+    		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
+    		
+    		loadModel(newResourceKeys, newResources, newCapacity);
 
-        		if (!keys.equals(newResourceKeys)
-        				|| !resources.equals(newResources)
-        				|| !capacity.equals(newCapacity)) {
-        			resources = newResources;
-        			capacity = newCapacity;
-        			keys = newResourceKeys;
-        			fireTableDataChanged();
-	
-        		}
-        		
-                keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-        	}
+    		if (!keys.equals(newResourceKeys)
+    				|| !resources.equals(newResources)
+    				|| !capacity.equals(newCapacity)) {
+    			resources = newResources;
+    			capacity = newCapacity;
+    			keys = newResourceKeys;
+    			fireTableDataChanged();
+
+    		}
+    		
+            keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+    	}
     }
 
 	/**
@@ -420,16 +399,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			types = new HashMap<>();
 			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
-			
-//            if (inventory != null) {
-//				for (Equipment e : inventory.findAllEquipment()) {
-//					String name = e.getName();
-//					types.put(name, e.getEquipmentType().getName());
-//					contentOwner.put(name, getContentOwner(e));
-//					mass.put(name, e.getMass());
-//					equipmentList.add(e);
-//				}
-//            }
+
             if (unit.getUnitType() == UnitType.PERSON
             		|| unit.getUnitType() == UnitType.ROBOT
             		|| unit.getUnitType() == UnitType.VEHICLE
@@ -532,22 +502,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			Map<String, String> newTypes = new HashMap<>();
 			Map<String, String> newContentOwner = new HashMap<>();
 			Map<String, Double> newMass = new HashMap<>();
-			
-//			if (inventory != null) {
-//				for (Equipment e : inventory.findAllEquipment()) {
-//					newTypes.put(e.getName(), e.getEquipmentType().getName());
-//					newContentOwner.put(e.getName(), getContentOwner(e));
-//					newMass.put(e.getName(), e.getMass());
-//					newEquipment.add(e);
-//				}
-//			}
-			
+					
             if (unit.getUnitType() == UnitType.PERSON
             		|| unit.getUnitType() == UnitType.ROBOT
             		|| unit.getUnitType() == UnitType.VEHICLE
             		|| unit.getUnitType() == UnitType.SETTLEMENT
             		) {
-            	for (Equipment e : ((Person)unit).getEquipmentList()) {
+            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentList()) {
             		newTypes.put(e.getName(), e.getEquipmentType().getName());
 					newContentOwner.put(e.getName(), getContentOwner(e));
 					newMass.put(e.getName(), e.getMass());
