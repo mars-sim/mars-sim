@@ -1743,7 +1743,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Does this person possess an equipment of this equipment type
+	 * Does this unit possess an equipment of this equipment type
 	 * 
 	 * @param typeID
 	 * @return
@@ -1754,14 +1754,20 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Adds an equipment to this person
+	 * Adds an equipment to this unit
 	 * 
 	 * @param equipment
-	 * @return true if this person can carry it
+	 * @return true if it can be carried
 	 */
 	@Override
-	public boolean addEquipment(Equipment equipment) {
-		return eqmInventory.addEquipment(equipment);
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {	
+			e.setCoordinates(getCoordinates());
+			e.setContainerUnit(this);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			return true;
+		}
+		return false;
 	}
 	
 	/**

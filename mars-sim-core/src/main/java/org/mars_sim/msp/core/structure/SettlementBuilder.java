@@ -255,8 +255,8 @@ public final class SettlementBuilder {
 			for (int x = 0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(type, settlement,
 						false);
-				settlement.addEquipment(equipment);
 				unitManager.addUnit(equipment);
+				settlement.addEquipment(equipment);
 			}
 		}
 	}

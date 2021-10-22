@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.Container;
@@ -1255,8 +1255,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return true if this person can carry it
 	 */
 	@Override
-	public boolean addEquipment(Equipment equipment) {
-		return eqmInventory.addEquipment(equipment);		
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {	
+			e.setCoordinates(getCoordinates());
+			e.setContainerUnit(this);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			return true;
+		}
+		return false;		
 	}
 	
 	/**

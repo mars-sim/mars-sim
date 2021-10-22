@@ -77,9 +77,10 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!personList.contains(person))
-			return personList.add(person);
-		
+		if (!personList.contains(person) && personList.add(person)) {
+			person.setContainerUnit(this);
+			return true;
+		}
 		return false;
 	}
 	
@@ -102,9 +103,10 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the vehicle can be added
 	 */
 	public boolean addVehicle(Vehicle vehicle) {
-		if (!vehicleList.contains(vehicle))
-			return vehicleList.add(vehicle);
-		
+		if (!vehicleList.contains(vehicle) && vehicleList.add(vehicle)) {
+			vehicle.setContainerUnit(this);
+			return true;
+		}
 		return false;
 	}
 	

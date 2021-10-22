@@ -161,9 +161,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person))
-			return occupants.add(person);
-		
+		if (!isCrewmember(person) && occupants.add(person)) {
+			person.setContainerUnit(this);
+			return true;
+		}
 		return false;
 	}
 	

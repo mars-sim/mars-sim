@@ -1777,8 +1777,14 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return true if this person can carry it
 	 */
 	@Override
-	public boolean addEquipment(Equipment equipment) {
-		return eqmInventory.addEquipment(equipment);		
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {	
+			e.setCoordinates(getCoordinates());
+			e.setContainerUnit(this);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			return true;
+		}
+		return false;		
 	}
 	
 	/**

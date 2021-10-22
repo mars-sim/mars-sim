@@ -2049,8 +2049,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if added successfully
 	 */
 	public boolean addPeopleWithin(Person p) {
-		if (!peopleWithin.contains(p)) {
-			return peopleWithin.add(p);
+		if (!peopleWithin.contains(p) && peopleWithin.add(p)) {
+			p.setContainerUnit(this);
+			return true;
 		}
 		return false;
 	}
@@ -2075,16 +2076,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if removed successfully
 	 */
 	public boolean addACitizen(Person p) {
-		boolean result = false;
-		if (!citizens.contains(p)) {
-			result = citizens.add(p);
+		if (!citizens.contains(p) && citizens.add(p)) {
 			addPeopleWithin(p);
 			p.setCoordinates(getCoordinates());
+			p.setContainerUnit(this);
 			// Update the numCtizens
 			numCitizens = citizens.size();
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+			return true;
 		}
-		return result;
+		return false;
 	}
 	
 	/**
@@ -2092,14 +2093,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param p the person
 	 */
-	public void removeACitizen(Person p) {
+	public boolean removeACitizen(Person p) {
 		if (citizens.contains(p)) {
 			citizens.remove(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
 //			System.out.println("numCitizens: " + numCitizens);
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -2107,13 +2110,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param r
 	 */
-	public void addOwnedRobot(Robot r) {
-		if (!ownedRobots.contains(r)) {
-			ownedRobots.add(r);
+	public boolean addOwnedRobot(Robot r) {
+		if (!ownedRobots.contains(r) && ownedRobots.add(r)) {
 			r.setCoordinates(getCoordinates());
+			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			numOwnedBots = ownedRobots.size();
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -2121,12 +2126,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param r
 	 */
-	public void removeOwnedRobot(Robot r) {
+	public boolean removeOwnedRobot(Robot r) {
 		if (ownedRobots.contains(r)) {
 			ownedRobots.remove(r);
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			numOwnedBots = ownedRobots.size();
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -2136,11 +2143,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be added
 	 */
 	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (!parkedVehicles.contains(vehicle))
-			if (parkedVehicles.add(vehicle)) {
-//				numOwnedVehicles = ownedVehicles.size();
-				return true;
-			}
+		if (!parkedVehicles.contains(vehicle) && parkedVehicles.add(vehicle)) {
+			vehicle.setContainerUnit(this);
+//			numOwnedVehicles = ownedVehicles.size();
+			return true;
+		}
 		return false;
 	}
 	
@@ -2151,10 +2158,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be removed
 	 */
 	public boolean removeParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle))
-			if (parkedVehicles.remove(vehicle)) {
-//				numOwnedVehicles = ownedVehicles.size();
-			}
+		if (parkedVehicles.contains(vehicle) && parkedVehicles.remove(vehicle)) {
+//			numOwnedVehicles = ownedVehicles.size();
+			return true;
+		}
 		return false;
 	}
 	
@@ -2182,6 +2189,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (ownedVehicles.add(vehicle)) {
 				addParkedVehicle(vehicle);
 				vehicle.setCoordinates(getCoordinates());
+				vehicle.setContainerUnit(this);
 				numOwnedVehicles = ownedVehicles.size();
 				return true;
 			}
@@ -2211,6 +2219,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
+			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

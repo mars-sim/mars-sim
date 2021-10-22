@@ -516,10 +516,10 @@ public class Manufacture extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement, false);
 
-							// Add this equipment as being owned by this settlement
-							settlement.addEquipment(equipment);
 							// Place this equipment within a settlement
 							unitManager.addUnit(equipment);
+							// Add this equipment as being owned by this settlement
+							settlement.addEquipment(equipment);
 							// Note: Add tracking supply for equipment
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
