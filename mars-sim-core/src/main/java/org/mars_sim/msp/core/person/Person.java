@@ -860,7 +860,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return false;
 		}
 		
-		// Primary researcher; my responsiblity to update Study
+		// Primary researcher; my responsibility to update Study
 		if (study != null) {
 			study.timePassing(pulse);
 		}

@@ -92,6 +92,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		microInventory = new MicroInventory(this);
 	}
 
+	/**
+	 * Time passing for this equipment.
+	 *
+	 * @param pulse the amount of clock pulse passing (in millisols)
+	 * @throws Exception if error during time.
+	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		// By default Equipment are passive objects
@@ -201,12 +207,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			return microInventory.retrieveAmountResource(resource, quantity);
 		}
 		
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
+//		else {
+//			String name = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "No such resource. Cannot retrieve " 
+//					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+//			return quantity;
+//		}
+		return quantity;
 	}
 	
 	/**

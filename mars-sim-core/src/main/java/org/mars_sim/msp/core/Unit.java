@@ -225,7 +225,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
 //			if (inventory != null) {
-//				inventory.setCoordinates(location);
+			setCoordinates(location);
 //			}		
 		}
 		
@@ -243,8 +243,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public abstract UnitType getUnitType();
 
 	/**
-	 * Is this time pulse valid for the Unit.Has it been already applied?
+	 * Is this time pulse valid for the Unit. Has it been already applied?
 	 * The logic on this method can be commented out later on
+	 * 
 	 * @param pulse Pulse to apply
 	 * @return Valid to accept
 	 */

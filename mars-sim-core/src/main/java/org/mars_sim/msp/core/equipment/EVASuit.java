@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2021-10-10
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -78,9 +79,9 @@ public class EVASuit extends Equipment
 
 	public static String GOODTYPE = "EVA Gear";
 	
-	public static final int o2 = ResourceUtil.oxygenID; 
-	public static final int h2o = ResourceUtil.waterID;
-	public static final int co2 = ResourceUtil.co2ID;
+	public static final int OXYGEN_ID = ResourceUtil.oxygenID; 
+	public static final int WATER_ID = ResourceUtil.waterID;
+	public static final int CO2_ID = ResourceUtil.co2ID;
 	
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
@@ -166,9 +167,9 @@ public class EVASuit extends Equipment
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 
-		microInventory.setCapacity(o2, OXYGEN_CAPACITY);
-		microInventory.setCapacity(h2o, WATER_CAPACITY);
-		microInventory.setCapacity(co2, CO2_CAPACITY);
+		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
+		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
+		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
 	}
 
 	/**
@@ -237,13 +238,13 @@ public class EVASuit extends Equipment
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
 //			String name = getOwner().getName();
-			if (getAmountResourceStored(o2) <= massO2MinimumLimit) {				
+			if (getAmountResourceStored(OXYGEN_ID) <= massO2MinimumLimit) {				
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 			
-			if (getAmountResourceStored(h2o) <= 0D) {				
+			if (getAmountResourceStored(WATER_ID) <= 0D) {				
 				logger.log(getOwner(), Level.WARNING, 30_000, 
 						"Ran out of water.");
 //				return false;
@@ -304,7 +305,7 @@ public class EVASuit extends Equipment
 		// the ISS
 		if (amountRequested > 0) {
 			try {
-				double oxygenLeft = getAmountResourceStored(o2);
+				double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 	//			if (oxygenTaken * 100 > oxygenLeft) {
 	//				// O2 is running out soon
 	//				// Walk back to the building or vehicle
@@ -315,7 +316,7 @@ public class EVASuit extends Equipment
 				if (oxygenTaken > oxygenLeft)
 					oxygenTaken = oxygenLeft;
 				if (oxygenTaken > 0)
-					retrieveAmountResource(o2, oxygenTaken);
+					retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 							
 				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
 				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
@@ -323,11 +324,11 @@ public class EVASuit extends Equipment
 				// .5l).
 	
 				double carbonDioxideProvided = .04 * .04 * oxygenTaken;
-				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(co2);
+				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
 				if (carbonDioxideProvided > carbonDioxideCapacity)
 					carbonDioxideProvided = carbonDioxideCapacity;
 	
-				storeAmountResource(co2, carbonDioxideProvided);
+				storeAmountResource(CO2_ID, carbonDioxideProvided);
 	
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
@@ -345,13 +346,13 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-		double waterLeft = getAmountResourceStored(h2o);
+		double waterLeft = getAmountResourceStored(WATER_ID);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
-
-		retrieveAmountResource(h2o, waterTaken);
+		if (waterTaken > 0)
+			retrieveAmountResource(WATER_ID, waterTaken);
 
 		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -373,7 +374,7 @@ public class EVASuit extends Equipment
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 		
-		double oxygenLeft = getAmountResourceStored(o2);
+		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
@@ -414,20 +415,20 @@ public class EVASuit extends Equipment
 	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws Exception if error during time.
 	 */
+	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (!isValid(pulse)) {
 			return false;
 		}
 		
 		Unit container = getContainerUnit();
-		if (container instanceof Person) {
-			Person person = (Person) container;
-			if (!person.getPhysicalCondition().isDead()) {
+		if (container.getUnitType() == UnitType.PERSON
+			&&!((Person) container).getPhysicalCondition().isDead()) {
 				malfunctionManager.activeTimePassing(pulse.getElapsed());	
-			}
 		}
 
 		malfunctionManager.timePassing(pulse);
+		
 		return true;
 	}
 

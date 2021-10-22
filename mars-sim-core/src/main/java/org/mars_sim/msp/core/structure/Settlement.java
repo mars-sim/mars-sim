@@ -1145,7 +1145,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		
 		// Update owned Units
-		timePassing(pulse, getEquipmentList());
+//		timePassing(pulse, getEquipmentList());
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, citizens);
 		timePassing(pulse, ownedRobots);
