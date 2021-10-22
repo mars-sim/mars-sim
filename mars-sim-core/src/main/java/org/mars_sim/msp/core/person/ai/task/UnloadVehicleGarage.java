@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -94,6 +95,37 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		
 		settlement = person.getSettlement();
 
+		if (settlement != null) {
+			init(robot);
+		}
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param person the robot to perform the task.
+	 */
+	public UnloadVehicleGarage(Robot robot) {
+		// Use Task constructor.
+		super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
+
+		if (robot.isOutside()) {
+			endTask();
+		}
+		
+		settlement = robot.getSettlement();
+
+		if (settlement != null) {
+			init(robot);
+		}
+	}
+
+	/**
+	 * Initialise the task
+	 * @param starter
+	 */
+	private void init(Worker starter) {
+		
 		VehicleMission mission = getMissionNeedingUnloading();
 		if (mission != null) {
 			vehicle = mission.getVehicle();
@@ -105,74 +137,17 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (vehicle != null) {
-			// Add the rover to a garage if possible.
-			if (!settlement.getBuildingManager().addToGarage(vehicle)) {
-				// Need to do EVA to unload
-				endTask();
-			}
-			
-			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
-			// If vehicle is in a garage, add person to garage.
-			Building garageBuilding = BuildingManager.getBuilding(vehicle);
-			if (garageBuilding != null) {
-				// Walk to garage building.
-				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
-			}
+			initLoad(starter);
 
-			// End task if vehicle or garage not available.
-			if ((vehicle == null) || (garageBuilding == null)) {
-				endTask();
-			}
-
-			// Initialize task phase
-			addPhase(UNLOADING);
-			setPhase(UNLOADING);
-
-			logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
-		} else
-			endTask();
-	}
-
-	public UnloadVehicleGarage(Robot robot) {
-		// Use Task constructor.
-		super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
-
-		if (robot.isOutside()) {
-			endTask();
-		}
-		
-		settlement = robot.getSettlement();
-
-		VehicleMission mission = getMissionNeedingUnloading();
-		if (mission != null) {
-			vehicle = mission.getVehicle();
-		} else {
-			List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
-			if (nonMissionVehicles.size() > 0) {
-				vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
-			}
-		}
-
-		// Add the rover to a garage if possible
-		if (vehicle != null && settlement.getBuildingManager().addToGarage(vehicle)) {
-			// Walk to garage.
-			Building garage = BuildingManager.getBuilding(vehicle);
-			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
-		
-			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-			
-			// Initialize task phase
-			addPhase(UNLOADING);
-			setPhase(UNLOADING);
-
-			logger.log(robot, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
+			logger.log(starter, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 		}
 		else {
 			endTask();
-		}	
+		}
 	}
-
+	
+	
 	/**
 	 * Constructor
 	 * 
@@ -186,26 +161,24 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (person.isOutside()) {
 			endTask();
 		}
-		
-		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$;
+	
 		this.vehicle = vehicle;
 
 		settlement = person.getSettlement();
 
-		// If vehicle is in a garage, add person to garage.
-		Building garageBuilding = BuildingManager.getBuilding(vehicle);
-		if (garageBuilding != null) {
-			// Walk to garage building.
-			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+		if (vehicle != null && settlement != null) {
+			initLoad(person);
 		}
 
-		// Initialize phase
-		addPhase(UNLOADING);
-		setPhase(UNLOADING); 
-	
 		logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param robot the robot to perform the task
+	 * @param vehicle the vehicle to be unloaded
+	 */
 	public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
 		// Use Task constructor.
 		super("Unloading vehicle", robot, true, false, STRESS_MODIFIER, DURATION);
@@ -214,25 +187,49 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			endTask();
 		}
 		
-		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$;
 		this.vehicle = vehicle;
 
 		settlement = robot.getSettlement();
 
-		// If vehicle is in a garage, add robot to garage.
-		Building garageBuilding = BuildingManager.getBuilding(vehicle);
-		if (garageBuilding != null) {
-			// Walk to garage building.
-			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+		if (vehicle != null && settlement != null) {
+			initLoad(robot);
 		}
-
-		// Initialize phase
-		addPhase(UNLOADING);
-		setPhase(UNLOADING); 
 	
 		logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
 	}
 
+	/**
+	 * Initialise the load task
+	 * @param starter
+	 */
+	private void initLoad(Worker starter) {
+//		Building garageBuilding = BuildingManager.getBuilding(vehicle);
+//		if (garageBuilding != null) {
+//		// If vehicle is in a garage, add walk there to the garage.
+//			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+//		}
+
+		// Add the vehicle to a garage if possible
+		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+
+//		System.out.println("garage is " + garage);
+		
+		// End task if vehicle or garage not available
+		if (garage == null) {
+			endTask();
+			return;
+		}
+		
+		// Walk to garage
+		walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+		// Set the description
+		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
+		
+		// Initialize phase
+		addPhase(UNLOADING);
+		setPhase(UNLOADING); 
+	}
+	
 	/**
 	 * Gets a list of vehicles that need unloading and aren't reserved for a
 	 * mission.
@@ -477,7 +474,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Iterator<Integer> j = vehicle.getItemResourceIDs().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
 				int id = j.next();
-				Part part= (Part)(ItemResourceUtil.findItemResource(id));
+				Part part = (Part)(ItemResourceUtil.findItemResource(id));
 				double mass = part.getMassPerItem();
 				int num = vehicle.getItemResourceStored(id);
 				if ((num * mass) > amountUnloading) {
@@ -520,7 +517,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					logger.log(worker, Level.INFO, 0,"was retrieving the dead body of " + p + " from " + vehicle.getName() + ".");
 
 					// Retrieve the dead person and place this person within a settlement	
-					p.transfer(vehicle, settlement);
+					p.transfer(p, settlement);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
 

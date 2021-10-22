@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -99,12 +100,20 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			endTask();
 			return;
 		}
-		
-		// Add the rover to a garage if possible
-		if (settlement.getBuildingManager().addToGarage(vehicle)) {
+		else {
+			// Add the rover to a garage if possible
+			Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+			
+//			System.out.println("garage is " + garage);
+			
+			// End task if vehicle or garage not available
+			if (garage == null) {
+				endTask();
+				return;
+			}
+			
 			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle),
-													 FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			loadController = vehicleMission.prepareLoadingPlan(starter.getAssociatedSettlement());
@@ -112,9 +121,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
-		}
-		else {
-			endTask();
 		}
 	}
 
@@ -128,6 +134,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			endTask();
 			return;
 		}
+		
 		initLoad(robot);
 	}
 
@@ -142,6 +149,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		super("Loading vehicle", person, true, false, STRESS_MODIFIER,
 				RandomUtil.getRandomDouble(50D) + 10D);
 		this.vehicleMission = mission;
+		
 		initLoad(person);
 	}
 
@@ -150,6 +158,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		super("Loading vehicle", robot, true, false, STRESS_MODIFIER,
 				RandomUtil.getRandomDouble(50D) + 10D);
 		this.vehicleMission = mission;
+		
 		initLoad(robot);
 	}
 
