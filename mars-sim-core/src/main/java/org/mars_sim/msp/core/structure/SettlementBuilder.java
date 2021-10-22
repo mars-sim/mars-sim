@@ -19,7 +19,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -227,14 +226,17 @@ public final class SettlementBuilder {
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 					LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 					unitManager.addUnit(luv);	
+					settlement.addOwnedVehicle(luv);
 				} 
 				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
 					Drone drone = new Drone(name, vehicleType, settlement);
 					unitManager.addUnit(drone);
+					settlement.addOwnedVehicle(drone);
 				}
 				else {
 					Rover rover = new Rover(name, vehicleType, settlement);
 					unitManager.addUnit(rover);
+					settlement.addOwnedVehicle(rover);
 				}
 			}
 		}
@@ -253,7 +255,7 @@ public final class SettlementBuilder {
 			for (int x = 0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(type, settlement,
 						false);
-				settlement.addOwnedEquipment(equipment);
+				settlement.addEquipment(equipment);
 				unitManager.addUnit(equipment);
 			}
 		}
@@ -291,6 +293,8 @@ public final class SettlementBuilder {
 			}
 			
 			unitManager.addUnit(robot);
+			
+			settlement.addOwnedRobot(robot);
 		}
 	}
 
@@ -301,16 +305,15 @@ public final class SettlementBuilder {
 	 * @throws Exception if error storing resources.
 	 */
 	private void createResources(SettlementTemplate template, Settlement settlement) {
-		Inventory inv = settlement.getInventory();
 
 		Map<AmountResource, Double> resourceMap = template.getResources();
 		for (Entry<AmountResource, Double> value : resourceMap.entrySet()) {
 			AmountResource resource = value.getKey();
 			double amount = value.getValue();
-			double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+			double capacity = settlement.getAmountResourceRemainingCapacity(resource.getID());
 			if (amount > capacity)
 				amount = capacity;
-			inv.storeAmountResource(resource, amount, true);
+			settlement.storeAmountResource(resource.getID(), amount);
 		}
 	}
 
@@ -320,13 +323,12 @@ public final class SettlementBuilder {
 	 * @throws Exception if error creating parts.
 	 */
 	private void createParts(SettlementTemplate template, Settlement settlement) {
-		Inventory inv = settlement.getInventory();
 
 		Map<Part, Integer> partMap = template.getParts();
 		for (Entry<Part, Integer> item : partMap.entrySet()) {
 			Part part = item.getKey();
 			Integer number = item.getValue();
-			inv.storeItemResources(part.getID(), number);
+			settlement.storeItemResource(part.getID(), number);
 		}
 	}
 
@@ -366,8 +368,11 @@ public final class SettlementBuilder {
 					.build();
 			
 			person.initialize();
+			
 			unitManager.addUnit(person);
-
+			
+			settlement.addACitizen(person);
+			
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set up preference
@@ -467,7 +472,10 @@ public final class SettlementBuilder {
 						.build();
 				
 				person.initialize();
+				
 				unitManager.addUnit(person);
+				
+				settlement.addACitizen(person);
 		
 				// Set the person as a preconfigured crew member
 				Map<String, Integer> relMap = m.getRelationshipMap();
@@ -595,6 +603,8 @@ public final class SettlementBuilder {
 					robot.initialize();
 
 					unitManager.addUnit(robot);
+					
+					settlement.addOwnedRobot(robot);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeGoodsPanel.java
- * @date 2021-08-27
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -444,7 +444,7 @@ class TradeGoodsPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
+					int amount = (int) TradeUtil.getNumInInventory(good, settlement);
 					if (checkForVehicle(good)) amount--;
 					goodsMap.put(good, amount);
 				}

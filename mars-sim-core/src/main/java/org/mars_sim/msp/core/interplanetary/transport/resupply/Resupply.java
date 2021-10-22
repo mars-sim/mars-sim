@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Resupply.java
- * @date 2021-09-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -471,9 +470,8 @@ public class Resupply implements Serializable, Transportable {
 				vehicle = new Rover(name, vehicleType, settlement);
 			}
 			unitManager.addUnit(vehicle);
+			settlement.addOwnedVehicle(vehicle);
 		}
-
-		Inventory inv = settlement.getInventory();
 
 		// Deliver equipment.
 		Iterator<String> equipmentI = getNewEquipment().keySet().iterator();
@@ -483,9 +481,9 @@ public class Resupply implements Serializable, Transportable {
 			for (int x = 0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement,
 						false);
-				// Place this equipment within a settlement
-				inv.storeUnit(equipment);
 				unitManager.addUnit(equipment);
+				// Place this equipment within a settlement
+				settlement.addEquipment(equipment);
 			}
 		}
 
@@ -495,11 +493,11 @@ public class Resupply implements Serializable, Transportable {
 			AmountResource resource = resourcesI.next();
 			int id = resource.getID();
 			double amount = getNewResources().get(resource);
-			double capacity = inv.getAmountResourceRemainingCapacity(id, true, false);
+			double capacity = settlement.getAmountResourceRemainingCapacity(id);
 			if (amount > capacity)
 				amount = capacity;
-			inv.storeAmountResource(id, amount, true);
-			inv.addAmountSupply(id, amount);
+			settlement.storeAmountResource(id, amount);
+//			inv.addAmountSupply(id, amount);
 		}
 
 		// Deliver parts.
@@ -507,8 +505,8 @@ public class Resupply implements Serializable, Transportable {
 		while (partsI.hasNext()) {
 			Part part = partsI.next();
 			int number = getNewParts().get(part);
-			inv.storeItemResources(part.getID(), number);
-			inv.addItemSupply(part.getID(), number);
+			settlement.storeItemResource(part.getID(), number);
+//			inv.addItemSupply(part.getID(), number);
 		}
 
 		// Deliver Robots.
@@ -550,6 +548,9 @@ public class Resupply implements Serializable, Transportable {
 //			immigrant.assignReportingAuthority();
 
 			unitManager.addUnit(immigrant);
+			
+			settlement.addACitizen(immigrant);
+			
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);
 

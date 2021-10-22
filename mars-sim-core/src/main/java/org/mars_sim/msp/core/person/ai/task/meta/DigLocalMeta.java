@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
- * DigLocalhMeta.java
- * @version 3.3.0 2021-10-13
+ * DigLocalMeta.java
+ * @date 2021-10-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -66,17 +65,15 @@ public abstract class DigLocalMeta extends MetaTask {
         // Checks if the person is physically drained
 		if (EVAOperation.isExhausted(person))
 			return 0;
-		
-        Inventory inv = settlement.getInventory();	
 
         // Check at least one EVA suit at settlement.
-        int numSuits = inv.findNumEVASuits(false, true);
+        int numSuits = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
         if (numSuits == 0) {
             return 0;
         }
 
         // Check if at least one empty bag at settlement.
-        int numEmptyBags = inv.findNumContainers(containerType, true, false);
+        int numEmptyBags = settlement.findNumContainersOfType(containerType);
         if (numEmptyBags == 0) {
             return 0;
         }

@@ -115,7 +115,7 @@ public class MaintenanceMeta extends MetaTask {
 
 		try {
 			// Total probabilities for all malfunctionable entities in person's local.
-			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
+			Iterator<Malfunctionable> i = MalfunctionFactory.getBuildingMalfunctionables(settlement).iterator();
 			while (i.hasNext()) {
 				Malfunctionable entity = i.next();
 				boolean isVehicle = (entity instanceof Vehicle);

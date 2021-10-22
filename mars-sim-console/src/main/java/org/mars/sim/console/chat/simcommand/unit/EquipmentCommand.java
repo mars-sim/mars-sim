@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EquipmentCommand.java
- * @version 3.3.2 2021-10-07
+ * @date 2021-10-21
  * @author Barry Evans
  */
 
@@ -42,13 +42,9 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		
 		StructuredResponse buffer = new StructuredResponse();
 		
-		Collection<Equipment> equipment;
+		Collection<Equipment> equipment = null;
 		if (source instanceof EquipmentOwner) {
 			equipment = ((EquipmentOwner)source).getEquipmentList();
-		}
-		else {
-			Inventory inv = source.getInventory();
-			equipment =  inv.findAllEquipment();
 		}
 		
 		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");

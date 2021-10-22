@@ -466,7 +466,7 @@ public class EVASuit extends Equipment
 		if (s == null) s = super.getAssociatedSettlement();
 		return s;
 	}
-
+	
 	/**
 	 * Gets the owner of this suit
 	 * 
@@ -474,6 +474,16 @@ public class EVASuit extends Equipment
 	 */
 	private Person getOwner() {
 		return (Person)getLastOwner();
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
 	}
 
 	public void destroy() {

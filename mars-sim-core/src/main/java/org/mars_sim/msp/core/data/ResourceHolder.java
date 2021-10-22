@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.data;
 
 import java.util.Set;
 
+import org.mars_sim.msp.core.Unit;
+
 /**
  * Represents an entity that can hold resources.
  *
@@ -69,4 +71,11 @@ public interface ResourceHolder {
 	 * @return a collection of resource ids
 	 */
 	Set<Integer> getAmountResourceIDs();
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	public Unit getHolder();
 }

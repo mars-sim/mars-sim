@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -37,6 +36,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for static methods for Trade Mission. TODO externalize strings
@@ -515,8 +515,8 @@ public final class TradeUtil {
 
 		Part item = ItemResourceUtil.findItemResource(itemResourceGood.getID());
 
-		int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
-		int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
+		int sellingInventory = sellingSettlement.getItemResourceStored(item.getID());
+		int buyingInventory = buyingSettlement.getItemResourceStored(item.getID());
 
 		int numberTraded = 0;
 		if (tradeList.containsKey(itemResourceGood))
@@ -584,7 +584,7 @@ public final class TradeUtil {
 		if (tradedGoods.containsKey(good))
 			amountTraded += tradedGoods.get(good).doubleValue();
 
-		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
+		double sellingInventory = getNumInInventory(good, sellingSettlement);
 		double sellingSupplyAmount = sellingInventory - amountTraded - 1D;
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
@@ -595,7 +595,7 @@ public final class TradeUtil {
 		}
 		boolean allTraded = (sellingInventory <= amountTraded);
 
-		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
+		double buyingInventory = getNumInInventory(good, buyingSettlement);
 		double buyingSupplyAmount = buyingInventory + amountTraded + 1D;
 		if (buyingSupplyAmount < 0D)
 			buyingSupplyAmount = 0D;
@@ -704,17 +704,18 @@ public final class TradeUtil {
 	 * @return number of goods in inventory.
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
-	public static double getNumInInventory(Good good, Inventory inventory) {
+	public static double getNumInInventory(Good good, Settlement settlement) {
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			return inventory.getAmountResourceStored(good.getID(), false);
+			return settlement.getAmountResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
-			return inventory.getItemResourceNum(good.getID());
+			return settlement.getItemResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return inventory.findNumEmptyContainersOfType(good.getEquipmentType(), false);
+			return settlement.findNumEmptyContainersOfType(good.getEquipmentType(), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
-			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
+			VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
+			Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
 				boolean isEmpty = vehicle.isEmpty();
@@ -742,19 +743,17 @@ public final class TradeUtil {
 
 		Container result = null;
 
-		EquipmentType containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
-		Inventory settlementInv = settlement.getInventory();
+		int containersStored = settlement.findNumEmptyContainersOfType(containerType, false);
 
-		int containersStored = settlementInv.findNumEmptyContainersOfType(containerClass, false);
-
-		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;
 		if (tradedGoods.containsKey(containerGood))
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlementInv.findContainer(containerClass, true, resource.getID());
+			result = settlement.findContainer(containerType, true, resource.getID());
 
 		return result;
 	}

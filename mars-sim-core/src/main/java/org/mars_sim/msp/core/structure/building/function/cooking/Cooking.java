@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -546,7 +546,7 @@ public class Cooking extends Function implements Serializable {
 	 * @return dessertAvailable
 	 */
 	private Integer pickOneOil(double amount) {
-		return getOilMenu().stream().filter(oil -> building.getInventory().getAmountResourceStored(oil, false) > amount).findFirst().orElse(-1);
+		return getOilMenu().stream().filter(oil -> building.getSettlement().getAmountResourceStored(oil) > amount).findFirst().orElse(-1);
 		
 	}
 
@@ -700,7 +700,7 @@ public class Cooking extends Function implements Serializable {
 		// retrieveAnResource()
 		boolean hasFive = false;
 		if (amount * 5 > MIN)
-			hasFive = Storage.retrieveAnResource(amount * 5, resource, building.getInventory(), isRetrieving);
+			hasFive = Storage.retrieveAnResource(amount * 5, resource, building.getSettlement(), isRetrieving);
 		// 2b1. if inv has it, save it to local map cache
 		if (hasFive) {
 			// take 5 out, put 4 into resourceMap, use 1 right now
@@ -710,7 +710,7 @@ public class Cooking extends Function implements Serializable {
 		} else { // 2b2.
 			boolean hasOne = false;
 			if (amount > MIN)
-				hasOne = Storage.retrieveAnResource(amount, resource, building.getInventory(), isRetrieving);
+				hasOne = Storage.retrieveAnResource(amount, resource, building.getSettlement(), isRetrieving);
 			if (!hasOne)
 				result = false;
 		}
@@ -752,7 +752,7 @@ public class Cooking extends Function implements Serializable {
 	private boolean consumeOil(double oilRequired) {
 		Integer oil = pickOneOil(oilRequired);
 		if (oil != -1) {
-			building.getInventory().addAmountDemand(oil, oilRequired);
+//			building.getSettlement().addAmountDemand(oil, oilRequired);
 			// may use the default amount of AMOUNT_OF_OIL_PER_MEAL;
 			retrieveAnIngredientFromMap(oilRequired, oil, true);
 			return true;
@@ -883,10 +883,10 @@ public class Cooking extends Function implements Serializable {
 		// TODO: turn this into a task
 		boolean cleaning0 = false;
 		if (cleaningAgentPerSol * .1 > MIN)
-			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, ResourceUtil.NaClOID, building.getInventory(), true);
+			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, ResourceUtil.NaClOID, building.getSettlement(), true);
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, ResourceUtil.waterID, building.getInventory(), true);
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, ResourceUtil.waterID, building.getSettlement(), true);
 			building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, cleaningAgentPerSol * 5);
 		}
 

@@ -1,11 +1,12 @@
 /*
  * Mars Simulation Project
  * EquipmentOwner.java
- * @date 2021-10-17
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,13 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return
 	 */
 	public double getStoredMass();
+	
+	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findAllContainers();
 	
 	/**
 	 * Get the equipment list
@@ -102,4 +110,20 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return instance of container or null if none.
 	 */
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource);
+	
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	public double getRemainingCargoCapacity();
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasItemResource(int resource);
+	
 }

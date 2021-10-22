@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @date 2021-08-29
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -275,12 +274,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		if (settlement == null)
 			throw new IllegalArgumentException("settlement is null");
 
-		Inventory inv = settlement.getInventory();
-
 		boolean roverInSettlement = false;
-		if (inv.containsUnit(vehicle)) {
+		if (settlement.containsParkedVehicle(vehicle)) {
 			roverInSettlement = true;
-			inv.retrieveUnit(vehicle);
+			settlement.removeParkedVehicle(vehicle);
 		}
 
 		// Check if there are enough resources at the settlement.
@@ -288,7 +285,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int resource = required.getKey();
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
 
-				double stored = inv.getAmountResourceStored(resource, false);
+				double stored = settlement.getAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
 				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 				double loaded = vehicle.getAmountResourceStored(resource);
@@ -298,7 +295,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
 								loaded, needed, settlementNeed, stored);
-					inv.addAmountDemandTotalRequest(resource, totalNeeded);
+//					inv.addAmountDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
 			}
@@ -308,12 +305,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vehicle.getItemResourceStored(resource);
 				int totalNeeded = needed + settlementNeed - numLoaded;
-				if (inv.getItemResourceNum(resource) < totalNeeded) {
-					int stored = inv.getItemResourceNum(resource);
+				if (settlement.getItemResourceStored(resource) < totalNeeded) {
+					int stored = settlement.getItemResourceStored(resource);
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
 								numLoaded, needed, settlementNeed, stored);
-					inv.addItemDemandTotalRequest(resource, totalNeeded);
+//					inv.addItemDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
 			} else
@@ -322,15 +319,16 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		// Check if there is enough equipment at the settlement.
 		for(Entry<Integer, Integer> eRequired : equipment.entrySet()) {
-			Integer equipmentType = eRequired.getKey();			
+			Integer equipmentType = eRequired.getKey();
+			EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
 			int needed = eRequired.getValue();
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-			int numLoaded = vehicle.findNumEmptyContainersOfType(EquipmentType.convertID2Type(equipmentType), false);
+			int numLoaded = vehicle.findNumEmptyContainersOfType(eType, false);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			int stored = inv.findNumEmptyContainers(equipmentType, false);
+			int stored = settlement.findNumEmptyContainersOfType(eType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
-					logSettlementShortage(vehicle, EquipmentType.convertID2Type(equipmentType).toString(),
+					logSettlementShortage(vehicle, eType.toString(),
 							numLoaded, totalNeeded, settlementNeed, stored);
 				}
 				return false;
@@ -338,7 +336,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (roverInSettlement)
-			inv.storeUnit(vehicle);
+			settlement.addParkedVehicle(vehicle);
 
 		return true;
 	}

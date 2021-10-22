@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2021-08-25
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -23,18 +23,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.environment.DustStorm;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Commander;
@@ -58,8 +61,6 @@ import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -72,7 +73,6 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -86,74 +86,61 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, Temporal, LifeSupportInterface, Objective {
+public class Settlement extends Structure implements Serializable, Temporal, LifeSupportInterface, Objective, EquipmentOwner  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
+	// Static members
 	private static final String DETECTOR_GRID = "The detector grid forecast a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 	
-//	public static final int CHECK_GOODS = 20;
-	
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
-
 	public static final int MAX_NUM_SOLS = 3;
-
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
-
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
-
 	private static final int RESOURCE_UPDATE_FREQ = 50;
-
 	private static final int CHECK_WATER_RATION = 100;
-	
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
-
 	public static final int NUM_CRITICAL_RESOURCES = 10;
-
 	private static final int RESOURCE_STAT_SOLS = 12;
-
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
-
 	public static final int REGOLITH_MAX = 2000;
-		
 	public static final int MIN_REGOLITH_RESERVE = 80; // per person
-
 	public static final int MIN_SAND_RESERVE = 5; // per person
-
 	public static final int ICE_MAX = 4000;
-	
 	public static final int WATER_MAX = 8_000;
-
 	public static final int MIN_ICE_RESERVE = 200; // per person
-
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int REGOLITH_ID = ResourceUtil.regolithID;
+	private static final int SAND_ID = ResourceUtil.sandID;
+	private static final int ICE_ID = ResourceUtil.iceID;
+	
 	public static final double MIN_WATER_RESERVE = 400D; // per person
-
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
-
 	// Initial mission passing score
 	private static final double INITIAL_MISSION_SCORE = 400D;
 	// Hvae a maximum mission score that can be recorded
 	private static final double MAX_MISSION_SCORE = 1000D;
 
-
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
-	
-	/** The unit count for this settlement. */
-	//private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
 	
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
@@ -161,9 +148,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-	
-	/** Amount of time (millisols) required for periodic maintenance. */
-	// private static final double MAINTENANCE_TIME = 1000D;
 	
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
@@ -181,41 +165,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.oxygenID,
 				ResourceUtil.hydrogenID,
 				ResourceUtil.co2ID,
-				ResourceUtil.methaneID,
-				ResourceUtil.waterID,
+				METHANE_ID,
+				WATER_ID,
 				ResourceUtil.greyWaterID,
 				ResourceUtil.blackWaterID,
 				ResourceUtil.rockSamplesID,
-				ResourceUtil.iceID,
-				ResourceUtil.regolithID };
+				ICE_ID,
+				REGOLITH_ID };
 	}
-
-	/** The equipment map cache. */
-	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
-	/** The total amount resource collected/studied. */
-	private Map<Integer, Double> resourcesCollected = new HashMap<>();
-	/** The settlement's resource statistics. */
-	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
-	/** The settlement's list of citizens. */
-	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
-	/** The settlement's list of owned robots. */
-	private Collection<Robot> ownedRobots = new ConcurrentLinkedQueue<Robot>();
-	/** The settlement's list of owned vehicles. */
-	private Collection<Vehicle> ownedVehicles = new ConcurrentLinkedQueue<Vehicle>();
-	/** The list of people currently within the settlement. */
-	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
-	/** The list of equipment currently within the settlement. */
-	private Collection<Equipment> ownedEquipment = new ConcurrentLinkedQueue<Equipment>();
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
-
-	/** Unique identifier for this settlement. */
-	//private int identifier;
 	/** The base mission probability of the settlement. */
 	private boolean missionProbability = false;
+	
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -253,7 +216,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
 	/** Numbers of equipment owned by this settlement. */
-	private int numOwnedEquipment;
+//	private int numOwnedEquipment;
 	/** Minimum amount of methane to stay in this settlement when considering a mission. */
 	private int minMethane = 50;
 	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
@@ -298,8 +261,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
-	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private Map<MissionType,Integer> missionRange = new EnumMap<>(MissionType.class);
 	
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
@@ -309,10 +270,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/** The settlement's ReportingAuthority instance. */
 	private ReportingAuthority ra;
-	
-	/** The settlement objective type instance. */
-	private ObjectiveType objectiveType;
-
 	/** The settlement's building manager. */
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
@@ -333,38 +290,62 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Coordinates location;
 	/** The settlement's last dust storm. */
 	private DustStorm storm;
-
-	/** The last 20 mission scores */
-	private List<Double> missionScores;
-	/** The settlement's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement;
+	/** The person's EquipmentInventory instance. */
+	private EquipmentInventory eqmInventory;
+	
+	/** The settlement objective type instance. */
+	private ObjectiveType objectiveType;
+	
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private SolMetricDataLogger<WaterUseType> waterConsumption;
 	/** The settlement's daily output (resources produced). */
 	private SolMetricDataLogger<Integer> dailyResourceOutput;
 	/** The settlement's daily labor hours output. */
 	private SolMetricDataLogger<Integer> dailyLaborTime;
-
+	
+	/** The settlement's achievement in scientific fields. */
+	private Map<ScienceType, Double> scientificAchievement;
+	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
-	
-	private Set<OverrideType> processOverrides = new HashSet<>();
-	/** Mission modifiers */
+	/** The map of mission modifiers. */
 	private Map<MissionType, Integer> missionModifiers;
-	private Set<MissionType> disabledMissions = new HashSet<>();
+	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
+	private Map<MissionType,Integer> missionRange = new EnumMap<>(MissionType.class);
+	/** The equipment map cache. */
+	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
+	/** The total amount resource collected/studied. */
+	private Map<Integer, Double> resourcesCollected = new HashMap<>();
+	/** The settlement's resource statistics. */
+	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
 	
-	private Set<Integer> availableAirlocks = new HashSet<>();
-	
-	
-	// Static members	
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
+	/** The last 20 mission scores */
+	private List<Double> missionScores;
 
+	/** The set of processes being overridden. */	
+	private Set<OverrideType> processOverrides = new HashSet<>();
+	/** The set of disabled missions. */
+	private Set<MissionType> disabledMissions = new HashSet<>();
+	/** The set of available airlocks. */	
+	private Set<Integer> availableAirlocks = new HashSet<>();
+
+	/** The settlement's list of citizens. */
+	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
+	/** The settlement's list of owned robots. */
+	private Collection<Robot> ownedRobots = new ConcurrentLinkedQueue<Robot>();
+	/** The settlement's list of owned vehicles. */
+	private Collection<Vehicle> ownedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	/** The settlement's list of parked vehicles. */
+	private Collection<Vehicle> parkedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	/** The list of people currently within the settlement. */
+	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
+
+	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		
+	
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
@@ -412,6 +393,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (missionManager == null) {// for passing maven test
 			missionManager = sim.getMissionManager();
 		}
+		
+		final double GEN_MAX = 1_000_000;
+		// Create EquipmentInventory instance		
+		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 	}
 
 	/**
@@ -483,29 +468,33 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
 	
 		final double GEN_MAX = 1_000_000;
+		// Create EquipmentInventory instance		
+		eqmInventory = new EquipmentInventory(this, GEN_MAX);
+		
 		// Initialize the general storage capacity for this settlement
-		getInventory().addGeneralCapacity(GEN_MAX);
+		//getInventory().addGeneralCapacity(GEN_MAX);
 		
 		// initialize the oxygen type capacity
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
+//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
 		
-		final double PHASE_MAX = 10_000;
+//		final double PHASE_MAX = 10_000;
 		// initialize the phase type capacity
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
+//		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
+//		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
+//		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
+		
 		
 		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
-		getInventory().storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN, false);
+		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
 		
 //		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);	
 		
-		final double INITIAL_FREE_CAP = 1_000;
+//		final double INITIAL_FREE_CAP = 1_000;
 		// Initialize a limited storage capacity for each resource
-		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
-		}
+//		for (AmountResource ar : ResourceUtil.getAmountResources()) {
+//			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
+//		}
 		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);	
@@ -787,9 +776,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
-		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
-				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
-				.collect(Collectors.counting()));
+		return ownedRobots.size();
+//		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
+//				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
+//				.collect(Collectors.counting()));
 	}
 
 	/**
@@ -798,7 +788,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return Collection of robots
 	 */
 	public Collection<Robot> getRobots() {
-		return CollectionUtils.getRobot(getInventory().getContainedUnits());
+		return ownedRobots;//CollectionUtils.getRobot(getInventory().getContainedUnits());
 	}
 
 	/**
@@ -823,12 +813,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean lifeSupportCheck() {
 
 		try {
-			double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false); 
+			double amount = getAmountResourceStored(ResourceUtil.oxygenID); 
 			if (amount <= 0D) {
 				logger.warning(this, "No more oxygen.");
 				return false;
 			}
-			amount = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+			amount = getAmountResourceStored(WATER_ID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more water.");
 				return false;
@@ -877,23 +867,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(OXYGEN_ID, false);
+			double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
 			// CompositionOfAir is doing it for all inhabitants once per frame.
-			getInventory().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-
-			getInventory().addAmountDemand(OXYGEN_ID, oxygenTaken);
+			retrieveAmountResource(OXYGEN_ID, oxygenTaken);
+//			addAmountDemand(OXYGEN_ID, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
-			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(CO2_ID, true, false);
+			double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
-			getInventory().storeAmountResource(CO2_ID, carbonDioxideProvided, true);
+			storeAmountResource(CO2_ID, carbonDioxideProvided);
 
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing O2/removing CO2 ", e);
@@ -912,12 +901,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getAmountResourceStored(WATER_ID, false);
+			double waterLeft = getAmountResourceStored(WATER_ID);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			if (waterTaken > MIN) {
-				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
-				getInventory().retrieveAmountResource(WATER_ID, waterTaken);
+//				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
+				retrieveAmountResource(WATER_ID, waterTaken);
 			}
 		} catch (Exception e) {
 			logger.log(this, null, Level.SEVERE, 5000, "Error in providing H2O needs: ", e);
@@ -1156,7 +1145,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		
 		// Update owned Units
-		timePassing(pulse, ownedEquipment);
+		timePassing(pulse, getEquipmentList());
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, citizens);
 		timePassing(pulse, ownedRobots);
@@ -1277,7 +1266,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
-		double newAmount = getInventory().getAmountResourceStored(resourceType, false);
+		double newAmount = getAmountResourceStored(resourceType);
 		
 		if (resourceStat.containsKey(sol)) {
 			todayMap = resourceStat.get(sol);
@@ -1367,12 +1356,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		
 		solCache = solElapsed;
 		
-		int size = samplingResources.length;
-		for (int i=0; i<size; i++) {
-			int id = samplingResources[i];
-			double amount = calculateDailyAverageResource(solCache - 1, id);
-
-		}
+//		int size = samplingResources.length;
+//		for (int i=0; i<size; i++) {
+//			int id = samplingResources[i];
+//			double amount = calculateDailyAverageResource(solCache - 1, id);
+////			map.put(id, amount);
+//		}
 	}
 
 	private void refreshResourceStat() {
@@ -1553,20 +1542,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// Compact amount resource map
 			// Carry out the daily average of the previous x days
-			getInventory().compactAmountSupplyMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearAmountSupplyRequestMap();
-			// Carry out the daily average of the previous x days
-			getInventory().compactAmountDemandMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearAmountDemandTotalRequestMap();
-			getInventory().clearAmountDemandMetRequestMap();
-
-			// compact item resource map
-			getInventory().compactItemSupplyMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearItemSupplyRequestMap();
-			// Carry out the daily average of the previous x days
-			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearItemDemandTotalRequestMap();
-			getInventory().clearItemDemandMetRequestMap();
+//			getInventory().compactAmountSupplyMap(SUPPLY_DEMAND_REFRESH);
+//			getInventory().clearAmountSupplyRequestMap();
+//			// Carry out the daily average of the previous x days
+//			getInventory().compactAmountDemandMap(SUPPLY_DEMAND_REFRESH);
+//			getInventory().clearAmountDemandTotalRequestMap();
+//			getInventory().clearAmountDemandMetRequestMap();
+//
+//			// compact item resource map
+//			getInventory().compactItemSupplyMap(SUPPLY_DEMAND_REFRESH);
+//			getInventory().clearItemSupplyRequestMap();
+//			// Carry out the daily average of the previous x days
+//			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
+//			getInventory().clearItemDemandTotalRequestMap();
+//			getInventory().clearItemDemandMetRequestMap();
 
 			// Added clearing of weather data map
 			weather.clearMap();
@@ -2039,6 +2028,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
 	}
 	
+
+	/**
+	 * Does it contains this person
+	 * 
+	 * @param p the person
+	 * @return true if added successfully
+	 */
+	public boolean containsPerson(Person p) {
+		if (!peopleWithin.contains(p)) {
+			return peopleWithin.add(p);
+		}
+		return false;
+	}
 	
 	/**
 	 * Makes this person within this settlement
@@ -2076,6 +2078,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		boolean result = false;
 		if (!citizens.contains(p)) {
 			result = citizens.add(p);
+			addPeopleWithin(p);
+			p.setCoordinates(getCoordinates());
 			// Update the numCtizens
 			numCitizens = citizens.size();
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
@@ -2106,6 +2110,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public void addOwnedRobot(Robot r) {
 		if (!ownedRobots.contains(r)) {
 			ownedRobots.add(r);
+			r.setCoordinates(getCoordinates());
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			numOwnedBots = ownedRobots.size();
 		}
@@ -2125,55 +2130,117 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Adds a vehicle to be owned by the settlement
+	 * Adds a parked vehicle
 	 * 
-	 * @param r
+	 * @param vehicle
+	 * @param true if the parked vehicle can be added
 	 */
-	public void addOwnedVehicle(Vehicle v) {
-		if (!ownedVehicles.contains(v)) {
-			ownedVehicles.add(v);
-			numOwnedVehicles = ownedVehicles.size();
-		}
+	public boolean addParkedVehicle(Vehicle vehicle) {
+		if (!parkedVehicles.contains(vehicle))
+			if (parkedVehicles.add(vehicle)) {
+//				numOwnedVehicles = ownedVehicles.size();
+				return true;
+			}
+		return false;
 	}
-
+	
 	/**
-	 * Removes a vehicle from being owned by the settlement
+	 * Removes a parked vehicle
 	 * 
-	 * @param r
+	 * @param vehicle
+	 * @param true if the parked vehicle can be removed
 	 */
-	public void removeOwnedVehicle(Vehicle v) {
-		if (ownedVehicles.contains(v)) {
-			ownedVehicles.remove(v);
-			numOwnedVehicles = ownedVehicles.size();
+	public boolean removeParkedVehicle(Vehicle vehicle) {
+		if (parkedVehicles.contains(vehicle))
+			if (parkedVehicles.remove(vehicle)) {
+//				numOwnedVehicles = ownedVehicles.size();
+			}
+		return false;
+	}
+	
+	/**
+	 * Does it have this vehicle parked at the settlement ?
+	 *  
+	 * @param vehicle
+	 * @return
+	 */
+	public boolean containsParkedVehicle(Vehicle vehicle) {
+		if (parkedVehicles.contains(vehicle)) {
+			return true;
 		}
+		return false;
+	}
+	
+	/**
+	 * Adds a vehicle into ownership
+	 * 
+	 * @param vehicle
+	 * @param true if the vehicle can be added
+	 */
+	public boolean addOwnedVehicle(Vehicle vehicle) {
+		if (!ownedVehicles.contains(vehicle))
+			if (ownedVehicles.add(vehicle)) {
+				addParkedVehicle(vehicle);
+				vehicle.setCoordinates(getCoordinates());
+				numOwnedVehicles = ownedVehicles.size();
+				return true;
+			}
+		return false;
+	}
+	
+	/**
+	 * Removes a vehicle from ownership
+	 * 
+	 * @param vehicle
+	 * @param true if the vehicle can be removed
+	 */
+	public boolean removeOwnedVehicle(Vehicle vehicle) {
+		if (ownedVehicles.contains(vehicle))
+			if (ownedVehicles.remove(vehicle)) {
+				numOwnedVehicles = ownedVehicles.size();
+			}
+		return false;
 	}
 	
 	/**
 	 * Adds an equipment to be owned by the settlement
 	 * 
-	 * @param r
+	 * @param e
 	 */
-	public void addOwnedEquipment(Equipment e) {
-		if (!ownedEquipment.contains(e)) {
-			ownedEquipment.add(e);
+	@Override
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {	
+			e.setCoordinates(getCoordinates());
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			numOwnedEquipment = ownedEquipment.size();
+			return true;
 		}
+		return false;
 	}
 
 	/**
 	 * Removes an equipment from being owned by the settlement
 	 * 
-	 * @param r
+	 * @param e
 	 */
-	public void removeOwnedEquipment(Equipment e) {
-		if (ownedEquipment.contains(e)) {
-			ownedEquipment.remove(e);
+	@Override	
+	public boolean removeEquipment(Equipment e) {
+		if (eqmInventory.removeEquipment(e)) {	
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
-			numOwnedEquipment = ownedEquipment.size();
+			return true;
 		}
+		return false;
 	}
 
+	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		return eqmInventory.findAllContainers();
+	}
+	
 	/**
 	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
@@ -2210,7 +2277,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return collection of associated equipment.
 	 */
 	public Collection<Equipment> getAllAssociatedEquipment() {	
-		return ownedEquipment;
+		return getEquipmentList();
 	}
 	
 	/**
@@ -2247,7 +2314,49 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return Collection of parked drones
 	 */
 	public Collection<Drone> getParkedDrones() {
-		return getInventory().getContainedDrones();
+		return parkedVehicles.stream()
+				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				.map(Drone.class::cast)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets a collection of drones parked or garaged at the settlement.
+	 *
+	 * @return Collection of parked drones
+	 */
+	public Collection<Unit> getVehicleTypeList(VehicleType vehicleType) {
+		return ownedVehicles.stream()
+				.filter(v -> v.getVehicleType() == vehicleType)
+				.map(Unit.class::cast)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Finds the number of vehicles of a particular type
+	 * 
+	 * @param vehicleType the vehicle type.
+	 * @return number of vehicles.
+	 */
+	public int findNumVehiclesOfType(VehicleType vehicleType) {
+		return Math.toIntExact(ownedVehicles
+					.stream()
+					.filter(v -> v.getVehicleType() == vehicleType)
+					.collect(Collectors.counting()));
+	}
+	
+	/**
+	 * Finds the number of parked rovers
+	 * 
+	 * @return number of parked rovers.
+	 */
+	public int findNumParkedRovers() {
+		return Math.toIntExact(parkedVehicles
+					.stream()
+					.filter(v -> v.getVehicleType() == VehicleType.CARGO_ROVER
+					|| v.getVehicleType() == VehicleType.EXPLORER_ROVER
+					|| v.getVehicleType() == VehicleType.TRANSPORT_ROVER)
+					.collect(Collectors.counting()));
 	}
 	
 	/**
@@ -2256,7 +2365,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
-		return getInventory().getContainedVehicles();
+		return parkedVehicles;
 	}
 
 	/**
@@ -2265,7 +2374,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
-		return getInventory().getNumContainedVehicles();
+		return getParkedVehicles().size();
 	}
 
 	/**
@@ -2273,7 +2382,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return number of owned vehicles
 	 */
-	public int getVehicleNum() {
+	public int getOwnedVehicleNum() {
 		return numOwnedVehicles;
 	}
 
@@ -2861,7 +2970,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return level of water ration.
 	 */
 	private void computeWaterRation() {
-		double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+		double storedWater = getAmountResourceStored(WATER_ID);
 		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens() // getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
@@ -3042,14 +3151,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(ResourceUtil.regolithID);
+		double regolith_value = goodsManager.getGoodValuePerItem(REGOLITH_ID);
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > REGOLITH_MAX)
 			regolith_value = REGOLITH_MAX;
 		else if (regolith_value < 0)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(ResourceUtil.sandID);
+		double sand_value = goodsManager.getGoodValuePerItem(SAND_ID);
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > REGOLITH_MAX)
 			sand_value = REGOLITH_MAX;
@@ -3058,8 +3167,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		int pop = numCitizens;
 
-		double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
-		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandID, false);
+		double regolith_available = getAmountResourceStored(REGOLITH_ID);
+		double sand_available = getAmountResourceStored(SAND_ID);
 
 		if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value / 10
 				|| sand_available < MIN_SAND_RESERVE * pop + sand_value / 10) {
@@ -3088,14 +3197,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private double computeIceProbability() {
 		double result = 0;
 
-		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
+		double ice_value = goodsManager.getGoodValuePerItem(ICE_ID);
 
 		if (ice_value > ICE_MAX)
 			ice_value = ICE_MAX;
 		if (ice_value < 1)
 			ice_value = 1;
 
-		double water_value = goodsManager.getGoodValuePerItem(ResourceUtil.waterID);
+		double water_value = goodsManager.getGoodValuePerItem(WATER_ID);
 		water_value = water_value * goodsManager.getWaterValue();
 		if (water_value > WATER_MAX)
 			water_value = WATER_MAX;
@@ -3103,8 +3212,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			water_value = 1;
 
 		// Compare the available amount of water and ice reserve
-		double ice_available =  getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
-		double water_available =  Math.log(1 + getInventory().getAmountResourceStored(ResourceUtil.waterID, false));
+		double ice_available =  getAmountResourceStored(ICE_ID);
+		double water_available =  Math.log(1 + getAmountResourceStored(WATER_ID));
 
 		int pop = numCitizens;
 
@@ -3397,7 +3506,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 
 			// 5. Check if min number of EVA suits at settlement.
-			if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
+			if (findNumContainersOfType(EquipmentType.EVA_SUIT) < RoverMission.MIN_GOING_MEMBERS) {
 				return false;
 			}
 
@@ -3407,8 +3516,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 	
 			// 7. Check if starting settlement has minimum amount of methane fuel.
-			if (getInventory().getAmountResourceStored(ResourceUtil.methaneID,
-					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
+			if (getAmountResourceStored(METHANE_ID) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 				return false;
 			}
 
@@ -3452,19 +3560,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// e.g. an ice mission is desperately needed especially when there's
 		// not enough water since ice will produce water.
 
-		Inventory inv = getInventory();
-
 		try {
-			if (inv.getAmountResourceStored(METHANE_ID, false) < minMethane) {
+			if (getAmountResourceStored(METHANE_ID) < minMethane) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(OXYGEN_ID, false) < mineOxygen) {
+			if (unmasked && getAmountResourceStored(OXYGEN_ID) < mineOxygen) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(WATER_ID, false) < minWater) {
+			if (unmasked && getAmountResourceStored(WATER_ID) < minWater) {
 				return false;
 			}
-			if (inv.getAmountResourceStored(FOOD_ID, false) < minFood) {
+			if (getAmountResourceStored(FOOD_ID) < minFood) {
 				return false;
 			}
 		} catch (Exception e) {
@@ -3536,27 +3642,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return UnitType.SETTLEMENT;
 	}
 	
-//	/**
-//	 * Finds the string name of the amount resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findAmountResourceName(int resource) {
-//		return ResourceUtil.findAmountResourceName(resource);
-//	}
-//
-//	/**
-//	 * Finds the string name of the item resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findItemResourceName(int resource) {
-//		return ItemResourceUtil.findItemResourceName(resource);
-//	}
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
 	
 	public int getSolCache() {
 		return solCache;
@@ -3565,13 +3659,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean isFirstSol() {
         return solCache == 0 || solCache == 1;
     }
-	
-	/**
-	 * Reinitialize references after loading from a saved sim
-	 */
-	public void reinit() {
-		buildingManager.reinit();
-	}
 	
 	/**
 	 * Gets the equipment type cache
@@ -3585,6 +3672,256 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	@Override
 	public Settlement getSettlement() {
 		return null;
+	}
+	
+	/**
+	 * Generate a unique name for the Settlement
+	 * @return
+	 */
+	public static String generateName(ReportingAuthority sponsor) {
+		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
+	
+		List<String> usedNames = unitManager.getSettlements().stream()
+							.map(s -> s.getName()).collect(Collectors.toList());
+	
+		remainingNames.removeAll(usedNames);
+		int idx = RandomUtil.getRandomInt(remainingNames.size());
+		
+		return remainingNames.get(idx);
+	}
+
+	/**
+	 * Gets the stored mass
+	 */
+	@Override
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
+	}
+	
+	/**
+	 * Get the equipment list
+	 * 
+	 * @return the equipment list
+	 */
+	@Override
+	public List<Equipment> getEquipmentList() {
+		return eqmInventory.getEquipmentList();
+	}
+	
+	/**
+	 * Get a list of the equipment with particular equipment type
+	 * 
+	 * @return the equipment list
+	 */
+	public List<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
+		return eqmInventory.getEquipmentList().stream()
+				.filter(e -> e.getEquipmentType() == equipmentType)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Does it possess an equipment of this equipment type
+	 * 
+	 * @param typeID
+	 * @return true if this person possess this equipment type
+	 */
+	@Override
+	public boolean containsEquipment(EquipmentType type) {
+		return eqmInventory.containsEquipment(type);
+	}
+	
+	/**
+	 * Stores the item resource
+	 * 
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the item resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return eqmInventory.retrieveItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public int getItemResourceStored(int resource) {
+		return eqmInventory.getItemResourceStored(resource);
+	}
+	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		return eqmInventory.storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		return eqmInventory.retrieveAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
+		return eqmInventory.getRemainingCargoCapacity();
+	}
+	
+	/**
+     * Gets the total capacity that this robot can hold.
+     * 
+     * @return total capacity (kg).
+     */
+	@Override
+	public double getTotalCapacity() {
+		return eqmInventory.getTotalCapacity();
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return eqmInventory.getAmountResourceStored(resource);
+	}
+    
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
+	}
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return eqmInventory.hasItemResource(resource);
+	}
+
+	/**
+	 * Finds the number of empty containers of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerClass  the unit class.
+	 * @param brandNew  does it include brand new bag only
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
+	}
+	
+	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
+	}
+	
+	/**
+	 * Finds a container in storage.
+	 * 
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	@Override
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
+		return eqmInventory.findContainer(containerType, empty, resource);
+	}
+	
+	/**
+	 * Gets the EquipmentInventory instance.
+	 * @return
+	 */
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
+	}
+	
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
+	public void reinit() {
+		buildingManager.reinit();
 	}
 	
 	@Override
@@ -3622,19 +3959,5 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		scientificAchievement = null;
 	}
 
-	/**
-	 * Generate a unique name for the Settlement
-	 * @return
-	 */
-	public static String generateName(ReportingAuthority sponsor) {
-		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
-	
-		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(s -> s.getName()).collect(Collectors.toList());
-	
-		remainingNames.removeAll(usedNames);
-		int idx = RandomUtil.getRandomInt(remainingNames.size());
-		
-		return remainingNames.get(idx);
-	}
+
 }

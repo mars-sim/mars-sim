@@ -1,8 +1,12 @@
+/*
+ * Mars Simulation Project
+ * TestInventory
+ * @date 2021-10-21
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core;
 
-import org.junit.Assert;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
@@ -219,7 +223,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourceTypeStoreDeepOverload() throws Exception {
         Unit testUnit1 = new MockSettlement();
         unitManager.addUnit(testUnit1);
-        testUnit1.getInventory().addGeneralCapacity(20D);
+        ((MockSettlement)testUnit1).getEquipmentInventory().addCargoCapacity(20D);
         
         Unit testUnit2 = new MockVehicle(settlement);
         unitManager.addUnit(testUnit2);
@@ -567,13 +571,13 @@ public class TestInventory extends TestCase {
 //        }
 //    }
 
-    public void testInventoryUnitStoreGood() throws Exception {
-        Inventory inventory = settlement.getInventory();        
-        inventory.addGeneralCapacity(10D);
+    public void testInventoryUnitStoreGood() throws Exception {        
+        settlement.getEquipmentInventory().addCargoCapacity(10D);
         
         Unit testUnit = new MockVehicle(settlement);
         unitManager.addUnit(testUnit);
-        inventory.storeUnit(testUnit);
+
+        settlement.addParkedVehicle((MockVehicle)testUnit);
     }
 
 //    public void testInventoryUnitStoredDuplicate() throws Exception {
@@ -687,15 +691,14 @@ public class TestInventory extends TestCase {
     public void testInventoryContainsUnitGood() throws Exception {
         Settlement mock = new MockSettlement();
         unitManager.addUnit(mock);
-        
-    	Inventory inventory = mock.getInventory();
-        inventory.addGeneralCapacity(10D);
+        settlement.getEquipmentInventory().addCargoCapacity(10D);
+
         Unit testUnit = new MockVehicle(settlement);
         unitManager.addUnit(testUnit);
         
-        inventory.storeUnit(testUnit);
+        settlement.addParkedVehicle((MockVehicle)testUnit);
         
-        assertTrue(inventory.containsUnit(testUnit));
+        assertTrue(settlement.containsParkedVehicle((MockVehicle)testUnit));
     }
 
 //    public void testInventoryContainsUnitFail() throws Exception {

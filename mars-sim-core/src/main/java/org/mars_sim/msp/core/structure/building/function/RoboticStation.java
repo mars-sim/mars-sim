@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoboticStation.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -36,7 +36,7 @@ public class RoboticStation extends Function implements Serializable {
 	private int sleepers;
 	private int occupantCapacity;
 
-	private double powerRequired;
+//	private double powerRequired;
 
 	private Collection<Robot> robotOccupants;
 
@@ -53,7 +53,7 @@ public class RoboticStation extends Function implements Serializable {
 		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
-		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
+//		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 		// this.occupantCapacity = occupantCapacity;
 		// this.powerRequired = powerRequired;
 
@@ -182,16 +182,15 @@ public class RoboticStation extends Function implements Serializable {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			// Make sure all occupants are actually in settlement inventory.
-			// If not, remove them as occupants.
-			if (robotOccupants != null)
-				if (robotOccupants.size() > 0) {
-					Iterator<Robot> ii = robotOccupants.iterator();
-					while (ii.hasNext()) {
-						if (!building.getInventory().containsUnit(ii.next()))
-							ii.remove();
-					}
-				}
+//			// Make sure all occupants are actually in settlement inventory.
+//			// If not, remove them as occupants.
+//			if (robotOccupants != null && robotOccupants.size() > 0) {
+//				Iterator<Robot> ii = robotOccupants.iterator();
+//				while (ii.hasNext()) {
+//					if (!building.getInventory().containsUnit(ii.next()))
+//						ii.remove();
+//				}
+//			}
 		}
 		return valid;
 	}

@@ -914,13 +914,6 @@ public abstract class Airlock implements Serializable {
 	public abstract String getEntityName();
 
 	/**
-	 * Gets the inventory of the entity this airlock is attached to.
-	 * 
-	 * @return inventory
-	 */
-	public abstract Inventory getEntityInventory();
-
-	/**
 	 * Gets the entity this airlock is attached to.
 	 * 
 	 * @return entity.

@@ -78,8 +78,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/** The unit's location tag. */
 	private LocationTag tag;
-	/** The unit's inventory. */
-	private Inventory inventory;
 
 	/** The last pulse applied */
 	private long lastPulse = 0;
@@ -204,7 +202,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case SETTLEMENT:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			this.inventory = new Inventory(this);
 			break;
 			
 		case CONSTRUCTION:
@@ -227,9 +224,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			// Set the unit's location coordinates
 			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
-			if (inventory != null) {
-				inventory.setCoordinates(location);
-			}		
+//			if (inventory != null) {
+//				inventory.setCoordinates(location);
+//			}		
 		}
 		
 		if (diagnosticFile != null) {
@@ -405,35 +402,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
 		
-		if (getUnitType() != UnitType.EQUIPMENT
-				&& getUnitType() != UnitType.PERSON
-				&& getUnitType() != UnitType.ROBOT
-				&& getUnitType() != UnitType.VEHICLE
-				&& getUnitType() != UnitType.PLANET) {
-			inventory.setCoordinates(newLocation);
-		}
+//		if (getUnitType() != UnitType.EQUIPMENT
+//				&& getUnitType() != UnitType.PERSON
+//				&& getUnitType() != UnitType.ROBOT
+//				&& getUnitType() != UnitType.VEHICLE
+//				&& getUnitType() != UnitType.PLANET) {
+//			inventory.setCoordinates(newLocation);
+//		}
 		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 	
-	/**
-	 * Gets the unit's inventory
-	 * 
-	 * @return the unit's inventory object
-	 */
-	public Inventory getInventory() {
-		if (getUnitType() == UnitType.EQUIPMENT
-				|| getUnitType() == UnitType.PERSON
-				|| getUnitType() == UnitType.ROBOT
-				|| getUnitType() == UnitType.VEHICLE
-				|| getUnitType() == UnitType.PLANET) {
-			logger.severe(this + " does NOT use Inventory class anymore.");
-			return null;
-		}
-
-		return inventory;
-	}
-
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 * 
@@ -451,7 +430,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public void setContainerID(Integer id) {
 		containerID = id;
-//		inventory.setOwnerID(id);
 	}
 	
 	/**
@@ -648,15 +626,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @throws Exception if error getting the mass.
 	 */
 	public double getMass() {
-		double invMass = 0;
-
-		if (inventory == null) { 
-			logger.severe(this + ": inventory is null.");
-		}
-		else 
-			invMass = inventory.getTotalInventoryMass(false);
-
-		return baseMass + invMass;
+		return baseMass;// + getStoredMass();
 	}
 
 	/**
@@ -914,16 +884,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (this instanceof Vehicle) {
+		if (getUnitType() == UnitType.VEHICLE) {
 			// if the vehicle is parked in the vincinity of a settlement or a garage
 			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 				return true;
 			
-			if (getContainerUnit() instanceof Settlement 
-					&& getContainerUnit().getInventory().containsUnit(this)) {
+			if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
+					&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
 				return true;
 			}
-			
 		}
 		
 //		if (LocationStateType.IN_AIRLOCK == currentStateType) {
@@ -1029,8 +998,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			// Note: the origin is a settlement
 			else {
 				// Retrieve this person from the settlement
-//				((Settlement)origin).removePeopleWithin((Person)this);
-				transferred = origin.getInventory().retrieveUnit(this, true);
+				transferred = ((Settlement)origin).removePeopleWithin((Person)this);
+//				transferred = origin.getInventory().retrieveUnit(this, true);
 			}
 		}
 		// Check if this unit is a vehicle
@@ -1039,7 +1008,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				transferred = ((MarsSurface)origin).removeVehicle((Vehicle)this);
 			}
 			else {
-				transferred = origin.getInventory().retrieveUnit(this, true);
+				transferred = ((Settlement)origin).removeParkedVehicle((Vehicle)this);
 			}
 		}
 		// Check if this unit is a equipment
@@ -1054,12 +1023,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			}
 			// Note: the origin is a settlement
 			else {
-				transferred = origin.getInventory().retrieveUnit(this, true);
+				transferred = ((Settlement)origin).removeEquipment((Equipment)this);
 			}
-		}
-		// Note: the origin is a settlement
-		else {
-			transferred = origin.getInventory().retrieveUnit(this, true);
 		}
 		
 		if (transferred) {
@@ -1079,8 +1044,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				}
 				// Note: the destination is a settlement
 				else {
-//					((Settlement) destination).addPeopleWithin((Person)this);
-					transferred = destination.getInventory().storeUnit(this);
+					transferred = ((Settlement)destination).addPeopleWithin((Person)this);
+//					transferred = ((Settlement)destination).addPerson((Person)this);
 				}
 			}
 			// Check if this unit is a vehicle
@@ -1089,7 +1054,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 					transferred = ((MarsSurface)destination).addVehicle((Vehicle)this);
 				}
 				else {
-					transferred = destination.getInventory().retrieveUnit(this, true);
+					transferred = ((Settlement)destination).addParkedVehicle((Vehicle)this);
 				}
 			}
 			// Check if this unit is a equipment
@@ -1104,15 +1069,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				}
 				// Note: the destination is a settlement
 				else {
-					transferred = destination.getInventory().storeUnit(this);
+					transferred = ((Settlement)destination).addEquipment((Equipment)this);
 				}
-			}
-			// Note: the destination is a settlement/mars surface
-			else {
-				transferred = destination.getInventory().storeUnit(this);
-				
-				// On the surface so update the Units coordinates
-				setCoordinates(location);
 			}
 			
 			if (!transferred) {
@@ -1122,11 +1080,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				setContainerUnit(destination);
 			}
 		}
-		
 		else {
 			logger.warning(this + " cannot be retrieved from " + origin + ".");
 		}
-		
 		
 		return transferred;
 	}
@@ -1178,10 +1134,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		location = null;
 		name = null;
 		description = null;
-		inventory.destroy();
-		inventory = null;
-//		containerUnit = null;
-		// if (listeners != null) listeners.clear();
 		listeners = null;
 	}
 

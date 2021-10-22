@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2021-10-12
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -713,17 +713,17 @@ public class EnterAirlock extends Task implements Serializable {
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 	
 						// 2d. Unloads the resources from the EVA suit to the entityEnv
-						Inventory entityInv = airlock.getEntityInventory();
+						ResourceHolder rh = (ResourceHolder)airlock.getEntity();
 						try {
 							// 2e1. Unload oxygen from the suit.
 							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
-							double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+							double oxygenCapacity = rh.getAmountResourceRemainingCapacity(oxygenID);
 							if (oxygenAmount > oxygenCapacity)
 								oxygenAmount = oxygenCapacity;
 	
 							suit.retrieveAmountResource(oxygenID, oxygenAmount);
-							entityInv.storeAmountResource(oxygenID, oxygenAmount, false);
-							entityInv.addAmountSupply(oxygenID, oxygenAmount);
+							rh.storeAmountResource(oxygenID, oxygenAmount);
+//							rh.addAmountSupply(oxygenID, oxygenAmount);
 	
 						} catch (Exception e) {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen : ");
@@ -732,14 +732,14 @@ public class EnterAirlock extends Task implements Serializable {
 	
 						// 2e2. Unload water from the suit.
 						double waterAmount = suit.getAmountResourceStored(waterID);
-						double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
+						double waterCapacity = rh.getAmountResourceRemainingCapacity(waterID);
 						if (waterAmount > waterCapacity)
 							waterAmount = waterCapacity;
 	
 						try {
 							suit.retrieveAmountResource(waterID, waterAmount);
-							entityInv.storeAmountResource(waterID, waterAmount, false);
-							entityInv.addAmountSupply(waterID, waterAmount);
+							rh.storeAmountResource(waterID, waterAmount);
+//							rh.addAmountSupply(waterID, waterAmount);
 	
 						} catch (Exception e) {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");

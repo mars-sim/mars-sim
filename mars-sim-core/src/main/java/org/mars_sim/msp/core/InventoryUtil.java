@@ -38,13 +38,7 @@ public class InventoryUtil {
 	 * @return
 	 */
 	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
-		Collection<Equipment> candidates;
- 		if (housing instanceof Settlement) {
-			candidates = housing.getInventory().findAllEquipmentType(EquipmentType.EVA_SUIT);
-		}
-		else {
-			candidates = ((EquipmentOwner) housing).getEquipmentList();
-		}
+		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentList();
  		
  		// Find suit without malfunction
  		// TODO favorite a previous one
@@ -65,41 +59,42 @@ public class InventoryUtil {
 	 * @param inv the inventory to check.
 	 * @return EVA suit or null if none available.
 	 */
-	private static EVASuit getGoodEVASuitNResource(Inventory inv, Person p) {
-		List<EVASuit> malSuits = new ArrayList<>(0);
+	public static EVASuit getGoodEVASuitNResource(EquipmentOwner owner, Person p) {
+//		List<EVASuit> malSuits = new ArrayList<>(0);
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
-		Collection<EVASuit> suits = inv.findAllEVASuits();
-		for (EVASuit suit : suits) {
-			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-			if (malfunction) {
-				logger.log(p, Level.WARNING, 50_000, 
+		List<EVASuit> suits = new ArrayList<>();
+		for (Equipment e : owner.getEquipmentList()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				EVASuit suit = (EVASuit)e;
+				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+				if (!malfunction) {
+					suits.add(suit);
+				}
+				else 
+					logger.log(p, Level.WARNING, 50_000, 
 						"Spotted the malfunction with " + suit.getName() + " when being examined.");
-				malSuits.add(suit);
-				suits.remove(suit);
-			}
-			
-			try {
-				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
-				if (!malfunction && hasEnoughResources) {			
-					if (p != null && suit.getLastOwner() == p) {
-						// Prefers to pick the same suit that a person has been tagged in the past
-//						logger.log(p, Level.INFO, 4_000,
-//								"getGoodEVASuitNResource: " + p + " found " + suit);
-						return suit;
-					}
-					else
-						// tag it as good suit for possible use below
-						goodSuits.add(suit);
-				}
-				else if (!malfunction && !hasEnoughResources) {
-					// tag it as no resource suit for possible use below
-					noResourceSuits.add(suit);					
-				}
 				
-			} catch (Exception e) {
-				logger.log(p, Level.SEVERE, 50_000,
-						"Could not find enough resources for " + suit.getName() + ".", e);
+				try {
+					boolean hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
+					if (!malfunction && hasEnoughResources) {			
+						if (p != null && suit.getLastOwner() == p) {
+							// Prefers to pick the same suit that a person has been tagged in the past
+							return suit;
+						}
+						else
+							// tag it as good suit for possible use below
+							goodSuits.add(suit);
+					}
+					else if (!malfunction && !hasEnoughResources) {
+						// tag it as no resource suit for possible use below
+						noResourceSuits.add(suit);					
+					}
+					
+				} catch (Exception ex) {
+					logger.log(p, Level.SEVERE, 50_000,
+							"Could not find enough resources for " + suit.getName() + ".", ex);
+				}
 			}
 		}
 
@@ -128,12 +123,14 @@ public class InventoryUtil {
 	 * @return true if enough supplies.
 	 * @throws Exception if error checking suit resources.
 	 */
-	private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
-		int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
+	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
+		int otherPeopleNum = 0; 
+		if (owner instanceof Settlement)
+			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
 
 		// Check if enough oxygen.
 		double neededOxygen = suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
-		double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+		double availableOxygen = owner.getAmountResourceStored(ResourceUtil.oxygenID);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);

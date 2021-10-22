@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Malfunction.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -568,8 +569,7 @@ public class Malfunction implements Serializable {
 				if (mass > 0) {
 					
 					if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
-						Storage.storeAnResource(mass, ResourceUtil.solidWasteID, containerUnit.getInventory(),
-								containerUnit.getName() + "::repairWithParts");					
+						((Settlement)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
 					}
 					else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
 						((Vehicle)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);

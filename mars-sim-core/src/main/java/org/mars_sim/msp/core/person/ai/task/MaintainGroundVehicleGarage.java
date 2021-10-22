@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @date 2021-10-17
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -192,20 +191,19 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add repair parts if necessary.
-
-		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {			
-			Inventory inv = worker.getTopContainerUnit().getInventory();
+		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
+			Settlement settlement = worker.getSettlement();
+//			Inventory inv = worker.getTopContainerUnit().getInventory();
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
-				inv.retrieveItemResources(part, number);
-				manager.maintainWithParts(part, number);
-				
+				settlement.retrieveItemResource(part, number);
+				manager.maintainWithParts(part, number);			
 				// Add item demand
-				inv.addItemDemandTotalRequest(part, number);
-				inv.addItemDemand(part, number);
+//				inv.addItemDemandTotalRequest(part, number);
+//				inv.addItemDemand(part, number);
 			}
 		} else {
 			endTask();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunctionable.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.malfunction;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -41,13 +40,6 @@ public interface Malfunctionable extends Loggable, Serializable {
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople();
-
-	/**
-	 * Gets the inventory associated with this entity.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getInventory();
 
 	/**
 	 * Gets the short location name associated with this entity.

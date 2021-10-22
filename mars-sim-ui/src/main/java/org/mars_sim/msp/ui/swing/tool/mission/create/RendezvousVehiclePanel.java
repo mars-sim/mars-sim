@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RendezvousVehiclePanel.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -26,7 +26,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -206,8 +205,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     		
             if (row < units.size()) {
             	Rover vehicle = (Rover) getUnit(row);
-            	Inventory inv = vehicle.getInventory();
-            	
+   	
             	try {
             		if (column == 0) 
             			result = vehicle.getName();
@@ -220,19 +218,19 @@ class RendezvousVehiclePanel extends WizardPanel {
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
             			AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportInterface.OXYGEN);
-            			result = (int) inv.getAmountResourceStored(oxygen, false);
+            			result = (int) vehicle.getAmountResourceStored(oxygen.getID());
             		}
                 	else if (column == 4) {
                 		AmountResource water = ResourceUtil.findAmountResource(LifeSupportInterface.WATER);
-                		result = (int) inv.getAmountResourceStored(water, false);
+                		result = (int) vehicle.getAmountResourceStored(water.getID());
                 	}
                 	else if (column == 5) { 
                 		AmountResource food = ResourceUtil.findAmountResource(LifeSupportInterface.FOOD);
-                		result = (int) inv.getAmountResourceStored(food, false);
+                		result = (int) vehicle.getAmountResourceStored(food.getID());
                 	}
                 	else if (column == 6) { 
                 		AmountResource dessert = ResourceUtil.findAmountResource("Soymilk");
-                		result = (int) inv.getAmountResourceStored(dessert, false);
+                		result = (int) vehicle.getAmountResourceStored(dessert.getID());
                 	}
                 	else if (column == 7) {
                 		Vehicle rescueVehicle = getRescueVehicle(vehicle);

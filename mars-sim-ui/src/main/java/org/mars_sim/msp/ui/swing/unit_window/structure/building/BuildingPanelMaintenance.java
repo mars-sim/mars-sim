@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @date 2021-10-07
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -70,11 +71,11 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
-	/** The Inventory instance. */
-	private Inventory inv;
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
-
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	/** The wear condition label. */
 	private WebLabel wearConditionLabel;
 	/** The last completed label. */
@@ -92,6 +93,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/** Parts for maintenance **/
 	private Map<Part, List<String>> standardMaintParts;
 
+	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	/**
 	 * Constructor.
@@ -105,8 +107,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		super(malfunctionable, desktop);
 
 		// Initialize data members.
-		inv = malfunctionable.getInventory();
 		this.malfunctionable = malfunctionable;
+		this.settlement = malfunctionable.getSettlement();
 		manager = malfunctionable.getMalfunctionManager();
 		standardMaintParts = getStandardMaintParts(malfunctionable);
 	
@@ -179,7 +181,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		tablePanel.setBorder(title);
 		
 		// Create the parts table model
-		tableModel = new PartTableModel(inv);
+		tableModel = new PartTableModel();
 
 		// Create the parts table
 		table = new ZebraJTable(tableModel);
@@ -325,27 +327,23 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
 		private int size;
 		
-//		private Inventory inventory;
-
 		private List<Part> parts = new ArrayList<>();
 		private List<String> functions = new ArrayList<>();
 		private List<Integer> max = new ArrayList<>();
 		private List<Double> probability = new ArrayList<>();
 
-		
 		/**
 		 * hidden constructor.
 		 * 
 		 * @param inventory {@link Inventory}
 		 */
-		private PartTableModel(Inventory inventory) {
+		private PartTableModel() {
 			
 			size = standardMaintParts.size();
 			
 			for (Part p: standardMaintParts.keySet()) {
 
 				List<String> fList = standardMaintParts.get(p);
-				PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 				for (MaintenanceScope me: partConfig.getMaintenance(fList, p)) {
 					parts.add(p);
 					functions.add(me.getName());
@@ -415,7 +413,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		
 		Map<Part, List<String>> maint = new LinkedHashMap<>();
 	
-		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
 			Part part = maintenance.getPart();
 			List<String> list = null;
 			if (maint.containsKey(part)) {

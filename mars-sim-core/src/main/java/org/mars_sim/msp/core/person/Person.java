@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2021-10-12
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -242,8 +242,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		this.associatedSettlementID = settlement.getIdentifier();
 		super.setDescription(EARTHLING);
 		
-		// Put person in settlement
-		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 
@@ -283,9 +281,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Set the person's status of death
 		isBuried = false;
 
-
-		// Store this person in the settlement
-		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 	}
@@ -1755,6 +1750,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		return eqmInventory.findAllContainers();
+	}
+	
+	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
 	 * @param typeID
@@ -1953,9 +1958,40 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return eqmInventory.getStoredMass();
 	}
 	
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
+		return eqmInventory.getRemainingCargoCapacity();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return eqmInventory.hasItemResource(resource);
+	}
+	
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.PERSON;
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
 	}
 	
 	/**

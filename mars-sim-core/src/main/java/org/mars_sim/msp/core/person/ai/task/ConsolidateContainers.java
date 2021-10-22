@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @date 2021-08-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,10 +11,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -22,10 +22,10 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
  * A task for consolidating the resources stored in local containers.
@@ -58,7 +58,7 @@ implements Serializable {
     private static final double DURATION = 30D;
     
     // Data members.
-    private Inventory topInventory = null;
+//    private Inventory topInventory = null;
     
     /**
      * Constructor.
@@ -69,13 +69,13 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, DURATION);
                 
-        if (person.isOutside()) {//.getTopContainerUnit() == null) {
+        if (person.isOutside()) {
         	endTask();
         	return;
         }
         
         else if (person.isInVehicle()) {
-        	topInventory = person.getTopContainerUnit().getInventory();
+//        	topInventory = person.getTopContainerUnit().getInventory();
             // If person is in rover, walk to passenger activity spot.
             if (person.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -83,7 +83,7 @@ implements Serializable {
         }
         
         else if (person.isInSettlement()) {
-        	topInventory = person.getTopContainerUnit().getInventory();
+//        	topInventory = person.getTopContainerUnit().getInventory();
         	Building storage = person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
         	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
         }
@@ -103,14 +103,12 @@ implements Serializable {
         super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
         
         if (robot.isInVehicle()) {
-           	topInventory = robot.getContainerUnit().getInventory();
             // If robot is in rover, walk to passenger activity spot.
             if (robot.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
             }
         }
         else if (robot.isInSettlement()) {
-        	topInventory = robot.getContainerUnit().getInventory();
         	Building storage = robot.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
         	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
         }
@@ -132,11 +130,11 @@ implements Serializable {
      */
     public static boolean needResourceConsolidation(Worker person) {
     	Unit container = person.getTopContainerUnit();
-        if (!(container instanceof Settlement)) {
-        	// TODO need to consolidate inside a Vehicle
+        if (container instanceof Vehicle) {
+        	// Q: does it need to consolidate inside a Vehicle ?
         	return false;
         }
-        return needsConsolidation(container.getInventory());
+        return needsConsolidation(container);
     }
     
     /**
@@ -145,17 +143,17 @@ implements Serializable {
      * @param inv
      * @return
      */
-    private static boolean needsConsolidation(Inventory inv) {   	
+    private static boolean needsConsolidation(Unit container) {   	
         boolean result = false;
         
         Set<Integer> partialResources = new HashSet<Integer>();
         
-        for(Container e : inv.findAllContainers()) {
+        for (Container e: ((EquipmentOwner)container).findAllContainers()) {
             if (e.getStoredMass() > 0D) {
                 // Only check one type of amount resource for container.
                 int resource = e.getResource();
                 // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
-                if ((resource > 0) && inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
+                if ((resource > 0) && ((EquipmentOwner)container).getAmountResourceRemainingCapacity(resource) > 0D) {
                     result = true;
                     break;
                 }
@@ -195,7 +193,7 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the consolidating phase.
      */
     private double consolidatingPhase(double time) {
-        
+    	EquipmentOwner eo = (EquipmentOwner)(worker.getContainerUnit());
         // Determine consolidation load rate.
     	int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);	
         
@@ -203,15 +201,14 @@ implements Serializable {
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
         double remainingAmountLoading = totalAmountLoading;
         
-        // Go through each container in top inventory.     
-        for(Container e : topInventory.findAllContainers()) {
+        // Go through each container in top inventory.   
+        for (Container e: eo.findAllContainers()) {
         	int resourceID = e.getResource();
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
                 double amount = e.getAmountResourceStored(resourceID);
                 // Move resource in container to top inventory if possible.
-                double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
-                        resourceID, false, false);
+                double topRemainingCapacity = eo.getAmountResourceRemainingCapacity(resourceID);
                 if (topRemainingCapacity > 0D) {
                     double loadAmount = topRemainingCapacity;
                     if (loadAmount > amount) {
@@ -224,7 +221,7 @@ implements Serializable {
                     
                     e.retrieveAmountResource(resourceID, loadAmount);
                     // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
-                    topInventory.storeAmountResource(resourceID, loadAmount, true);
+                    eo.storeAmountResource(resourceID, loadAmount);
                     remainingAmountLoading -= loadAmount;
                     amount -= loadAmount;
                 }
@@ -232,7 +229,7 @@ implements Serializable {
                 // Check if container is empty.
                 if (e.getAmountResourceStored(resourceID) > 0D) {
                     // Go through each other container in top inventory and try to consolidate resource.
-                    Iterator<Container> k = topInventory.findAllContainers().iterator();
+                    Iterator<Container> k = eo.findAllContainers().iterator();
                     while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
                     	Container otherUnit = k.next();
                         if (otherUnit != e && otherUnit instanceof Container) {

@@ -218,7 +218,7 @@ public abstract class Vehicle extends Unit
 	private Vehicle towingVehicle;
 	/** The vehicle's salvage info. */
 	private SalvageInfo salvageInfo; 
-	/** The MicroInventory instance. */
+	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 	
 
@@ -351,6 +351,8 @@ public abstract class Vehicle extends Unit
 
 		// Create microInventory instance		
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
+		
+		// Set the capacities for each supported resource
 		eqmInventory.setResourceCapacities(capacities);
 		
 		if (this instanceof Rover) {
@@ -374,8 +376,8 @@ public abstract class Vehicle extends Unit
 			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 		}
 
-		// Add to the settlement at the end
-		settlement.getInventory().storeUnit(this);
+		// Add to the settlement
+		settlement.addOwnedVehicle(this);
 		
 		// Set initial parked location and facing at settlement.
 		findNewParkingLoc();
@@ -453,8 +455,8 @@ public abstract class Vehicle extends Unit
 		
 		addStatus(StatusType.PARKED);
 
-		// Add to the settlement at the end
-		settlement.getInventory().storeUnit(this);
+		// Add to the settlement
+		settlement.addOwnedVehicle(this);
 
 	}
 
@@ -1645,7 +1647,17 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Generate a new name for the Vehcile; potentially this may be a preconfigured name
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
+	
+	/**
+	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
 	 * or an auto-generated one.
 	 * @param type
 	 * @param sponsor Sponsor.
@@ -1718,6 +1730,16 @@ public abstract class Vehicle extends Unit
 	@Override
 	public List<Equipment> getEquipmentList() {
 		return eqmInventory.getEquipmentList();
+	}
+	
+	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		return eqmInventory.findAllContainers();
 	}
 	
 	/**
@@ -1967,6 +1989,27 @@ public abstract class Vehicle extends Unit
 		return eqmInventory.getAmountResourceIDs();
 	}
 
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
+		return eqmInventory.getRemainingCargoCapacity();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return eqmInventory.hasItemResource(resource);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -220,12 +219,12 @@ public class Maintenance extends Task implements Serializable {
 					while (j.hasNext()) {
 						Integer part = j.next();
 						int number = parts.get(part);
-						containerUnit.getInventory().retrieveItemResources(part, number);
+						((Settlement)containerUnit).retrieveItemResource(part, number);
 						manager.maintainWithParts(part, number);
 						
 						// Add tracking item demand
-						containerUnit.getInventory().addItemDemandTotalRequest(part, number);
-						containerUnit.getInventory().addItemDemand(part, number);
+//						containerUnit.getInventory().addItemDemandTotalRequest(part, number);
+//						containerUnit.getInventory().addItemDemand(part, number);
 					}
 				}
 				else {
@@ -438,10 +437,10 @@ public class Maintenance extends Task implements Serializable {
 			while (i.hasNext()) {
 				Integer part = i.next();
 				int number = parts.get(part);
-				if (unit.getInventory().getItemResourceNum(part) < number) {
+				if (((Settlement)unit).getItemResourceStored(part) < number) {
 					result = false;
 					// Boosts the item demand
-					unit.getInventory().addItemDemand(part, number);
+//					unit.getInventory().addItemDemand(part, number);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @date 2021-08-27
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -352,7 +352,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				emergencyVehicle.setReservedForMission(true);
 				getRover().setTowedVehicle(emergencyVehicle);
 				emergencyVehicle.setTowingVehicle(getRover());
-				getStartingSettlement().getInventory().retrieveUnit(emergencyVehicle);
+				getStartingSettlement().removeParkedVehicle(emergencyVehicle);
 			}
 		}
 	}
@@ -364,7 +364,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle != null)) {
 			emergencyVehicle.setReservedForMission(false);
 
-			disembarkSettlement.getInventory().storeUnit(emergencyVehicle);
+			disembarkSettlement.addParkedVehicle(emergencyVehicle);
 
 			getRover().setTowedVehicle(null);
 
@@ -386,7 +386,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 
-			emergencySettlement.getInventory().storeUnit(getVehicle());
+			emergencySettlement.addParkedVehicle(getVehicle());
 			
 			// Add vehicle to a garage if available.
 			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
@@ -446,12 +446,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			emergencyVehicle.setReservedForMission(false);
 			getRover().setTowedVehicle(null);
 			emergencyVehicle.setTowingVehicle(null);
-			emergencySettlement.getInventory().storeUnit(emergencyVehicle);
+			emergencySettlement.addParkedVehicle(emergencyVehicle);
 			emergencyVehicle.findNewParkingLoc();
 		}
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
+		boolean roverUnloaded = getRover().getStoredMass() == 0D;
 		if (!roverUnloaded) {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)
@@ -535,15 +535,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				Person person = (Person) member;
 				if (!person.isDeclaredDead()) {
 					
-					EVASuit suit0 = getVehicle().getInventory().findAnEVAsuit(person);
-					if (suit0 == null) {
-						if (emergencySettlement.getInventory().findNumEVASuits(false, false) > 0) {
-							EVASuit suit1 = emergencySettlement.getInventory().findAnEVAsuit(person); 
-							if (suit1 != null && getVehicle().getInventory().canStoreUnit(suit1, false)) {
-								suit1.transfer(emergencySettlement, getVehicle());
-							} else {
-								logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
-							}
+					EVASuit suit0 = getVehicle().findEVASuit(person);
+					if (suit0 == null) {				
+						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person); 
+						if (!suit1.transfer(emergencySettlement, getVehicle())) {
+							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
 						}
 					}			
 					
@@ -582,7 +578,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			}
 
 			// Embark from settlement
-			emergencySettlement.getInventory().retrieveUnit(getVehicle());
+			emergencySettlement.removeParkedVehicle(getVehicle());
 			setPhaseEnded(true);
 		}
 	}
@@ -656,9 +652,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			double amountRequired = emergencyResourcesNeeded.get(resource);
 			double amountNeededAtStartingSettlement = getResourceAmountNeededAtStartingSettlement(startingSettlement,
 					resource);
-			double amountAvailable = startingSettlement.getInventory().getAmountResourceStored(resource, false);
+			double amountAvailable = startingSettlement.getAmountResourceStored(resource);
 			// Adding tracking demand
-			startingSettlement.getInventory().addAmountDemandTotalRequest(resource, amountRequired);
+//			startingSettlement.getInventory().addAmountDemandTotalRequest(resource, amountRequired);
 			if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
 				result = false;
 			}
@@ -669,7 +665,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (j.hasNext() && result) {
 			Integer containerType = j.next();
 			int numberRequired = emergencyContainersNeeded.get(containerType);
-			int numberAvailable = startingSettlement.getInventory().findNumEmptyContainers(containerType, false);
+			EquipmentType type = EquipmentType.convertID2Type(containerType);
+			int numberAvailable = startingSettlement.findNumEmptyContainersOfType(type, false);
 			
 			// Note: add tracking demand for containers
 			if (numberAvailable < numberRequired) {
@@ -707,7 +704,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			if (resource.equals(METHANE_ID)) {
 				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
 				while (i.hasNext()) {
-					double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
+					double fuelDemand = i.next().getAmountResourceCapacity(resource);
 					result += fuelDemand * VEHICLE_FUEL_REMAINING_MODIFIER;
 				}
 			}
@@ -776,12 +773,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
 		int numPeople = settlement.getNumCitizens();
-		Inventory inv = settlement.getInventory();
+		
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
-		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(OXYGEN_ID, false);
+		double oxygenAmountAvailable = settlement.getAmountResourceStored(OXYGEN_ID);
 
-		inv.addAmountDemandTotalRequest(OXYGEN_ID, oxygenAmountNeeded);
+//		inv.addAmountDemandTotalRequest(OXYGEN_ID, oxygenAmountNeeded);
 
 		oxygenAmountAvailable += getResourcesOnMissions(settlement, OXYGEN_ID);
 		if (oxygenAmountAvailable < oxygenAmountNeeded) {
@@ -794,9 +791,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		// Determine water amount needed.
 		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
-		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(WATER_ID, false);
+		double waterAmountAvailable = settlement.getAmountResourceStored(WATER_ID);
 
-		inv.addAmountDemandTotalRequest(WATER_ID, waterAmountNeeded);
+//		inv.addAmountDemandTotalRequest(WATER_ID, waterAmountNeeded);
 
 		waterAmountAvailable += getResourcesOnMissions(settlement, WATER_ID);
 		if (waterAmountAvailable < waterAmountNeeded) {
@@ -809,9 +806,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		// Determine food amount needed.
 		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
-		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(FOOD_ID, false);
+		double foodAmountAvailable = settlement.getAmountResourceStored(FOOD_ID);
 
-		inv.addAmountDemandTotalRequest(FOOD_ID, foodAmountNeeded);
+//		inv.addAmountDemandTotalRequest(FOOD_ID, foodAmountNeeded);
 
 		foodAmountAvailable += getResourcesOnMissions(settlement, FOOD_ID);
 		if (foodAmountAvailable < foodAmountNeeded) {
@@ -824,9 +821,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		// Determine methane amount needed.
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(METHANE_ID, false);
+		double methaneAmountAvailable = settlement.getAmountResourceStored(METHANE_ID);
 
-		inv.addAmountDemandTotalRequest(METHANE_ID, methaneAmountNeeded);
+//		inv.addAmountDemandTotalRequest(METHANE_ID, methaneAmountNeeded);
 
 		methaneAmountAvailable += getResourcesOnMissions(settlement, METHANE_ID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
@@ -860,7 +857,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				if (!isTradeMission && !isEmergencySupplyMission) {
 					Rover rover = roverMission.getRover();
 					if (rover != null) {
-						result += rover.getInventory().getAmountResourceStored(resource, false);
+						result += rover.getAmountResourceStored(resource);
 					}
 				}
 			}
@@ -949,20 +946,20 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				while (k.hasNext()) {
 					Integer part = k.next();
 					int number = repairParts.get(part);
-					if (!settlement.getInventory().hasItemResource(part)) {
+					if (!settlement.getItemResourceIDs().contains(part)) {
 						if (result.containsKey(part)) {
 							number += result.get(part).intValue();
 						}
 						result.put(part, number);
 						// Add item demand
-						settlement.getInventory().addItemDemandTotalRequest(part, number);
-						settlement.getInventory().addItemDemand(part, number);
+//						settlement.getInventory().addItemDemandTotalRequest(part, number);
+//						settlement.getInventory().addItemDemand(part, number);
 					}
-					else {
-						// Add item demand
-						settlement.getInventory().addItemDemandTotalRequest(part, 2 * number);
-						settlement.getInventory().addItemDemand(part, 2 * number);
-					}
+//					else {
+//						// Add item demand
+//						settlement.getInventory().addItemDemandTotalRequest(part, 2 * number);
+//						settlement.getInventory().addItemDemand(part, 2 * number);
+//					}
 				}
 			}
 
@@ -972,15 +969,15 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			while (l.hasNext()) {
 				Integer part = l.next();
 				int number = maintParts.get(part);
-				if (!settlement.getInventory().hasItemResource(part)) {
+				if (!settlement.getItemResourceIDs().contains(part)) {
 					if (result.containsKey(part)) {
 						number += result.get(part).intValue();
 					}
 					result.put(part, number);
 					
 					// Add item demand
-					settlement.getInventory().addItemDemandTotalRequest(part, number);
-					settlement.getInventory().addItemDemand(part, number);
+//					settlement.getInventory().addItemDemandTotalRequest(part, number);
+//					settlement.getInventory().addItemDemand(part, number);
 				}
 			}
 		}
@@ -1014,8 +1011,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
 			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getInventory().getGeneralCapacity();
-			double secondCapacity = secondVehicle.getInventory().getGeneralCapacity();
+			double firstCapacity = firstVehicle.getTotalCapacity();
+			double secondCapacity = secondVehicle.getTotalCapacity();
 			if (firstCapacity > secondCapacity) {
 				result = 1;
 			} else if (secondCapacity > firstCapacity) {

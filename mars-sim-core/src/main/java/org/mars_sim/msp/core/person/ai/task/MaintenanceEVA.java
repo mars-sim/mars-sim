@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @date 2021-10-17
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -253,7 +252,6 @@ implements Serializable {
 		}
 
         // Add repair parts if necessary.
-		Inventory inv = settlement.getInventory();
 		entity = getMaintenanceMalfunctionable();
 		
 		if (entity != null && Maintenance.hasMaintenanceParts(settlement, entity)) {
@@ -263,12 +261,11 @@ implements Serializable {
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
-				inv.retrieveItemResources(part, number);
+				settlement.retrieveItemResource(part, number);
 				manager.maintainWithParts(part, number);
-				
 				// Add item demand
-				inv.addItemDemandTotalRequest(part, number);
-				inv.addItemDemand(part, number);
+//				inv.addItemDemandTotalRequest(part, number);
+//				inv.addItemDemand(part, number);
 			}
 
 	        // Add work to the maintenance

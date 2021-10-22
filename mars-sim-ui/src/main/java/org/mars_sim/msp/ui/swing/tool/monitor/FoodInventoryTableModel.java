@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FoodInventoryTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -210,8 +210,8 @@ public class FoodInventoryTableModel extends AbstractTableModel
 				// String foodName = food.getName();
 				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
 				// double foodAvailable = inv.getAmountResourceStored(ar, false);
-				return settlements.get(columnIndex - STARTING_COLUMN).getInventory().getAmountResourceStored(
-						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()), false);
+				return settlements.get(columnIndex - STARTING_COLUMN).getAmountResourceStored(
+						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
 			} catch (Exception e) {
 				return null;
 			}

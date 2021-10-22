@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -372,11 +373,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		for (Integer p : partSet) {
 			int num = parts.get(p);
-	
-			Inventory inv = entity.getAssociatedSettlement().getInventory();
+
 			// Add tracking item demand
-			inv.addItemDemandTotalRequest(p, num);
-			inv.addItemDemand(p, num);
+//			inv.addItemDemandTotalRequest(p, num);
+//			inv.addItemDemand(p, num);
 			
 			// Compute the new reliability and failure rate for this malfunction
 			Part part = ItemResourceUtil.findItemResource(p);
@@ -666,18 +666,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
 					// Resources are depleted according to how much of the repair is remaining
 					double remaining = (100.0 - malfunction.getPercentageFixed())/100D;
-					for( Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
+					for (Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
 						Integer resource = entry.getKey();
 						double amount = entry.getValue();
 						double amountDepleted = amount * time * remaining;
-						Inventory inv = entity.getInventory();
-						double amountStored = inv.getAmountResourceStored(resource, false);
+						ResourceHolder rh = (ResourceHolder)entity;
+						double amountStored = rh.getAmountResourceStored(resource);
 
 						if (amountStored < amountDepleted) {
 							amountDepleted = amountStored;
 						}
 						if (amountDepleted >= 0) {
-							inv.retrieveAmountResource(resource, amountDepleted);
+							rh.retrieveAmountResource(resource, amountDepleted);
 							logger.log(entity, Level.WARNING, 15_000, "Leaking "
 											+ Math.round(amountDepleted*100.0)/100.0 + " of  " 
 											+ ResourceUtil.findAmountResource(resource));

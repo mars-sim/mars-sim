@@ -42,29 +42,27 @@ public final class EquipmentFactory {
 		Equipment newEqm = null;
 		switch (type) {
 		case EVA_SUIT:
-			newEqm =  new EVASuit(newName, settlement);
+			newEqm = new EVASuit(newName, settlement);
 			break;
 			
 		case BAG:
 		case BARREL:
 		case GAS_CANISTER:
 		case LARGE_BAG:
-			newEqm =  new GenericContainer(newName, type, false, settlement);
+			newEqm = new GenericContainer(newName, type, false, settlement);
 			break;
 			
 		case SPECIMEN_BOX:
 			// Reusable Containers
-			newEqm =  new GenericContainer(newName, type, true, settlement);
+			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
 		default:
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 		}
 		unitManager.addUnit(newEqm);
 		
-		// Stores this equipment into its settlement
-		settlement.getInventory().storeUnit(newEqm);
 		// Add this equipment as being owned by this settlement
-		settlement.addOwnedEquipment(newEqm);
+		settlement.addEquipment(newEqm);
 
 		return newEqm;
 	}

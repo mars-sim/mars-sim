@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FuelHeatSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -79,7 +78,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 //	 
 //	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 
-	private double consumeFuel(double time, Inventory inv) {
+	private double consumeFuel(double time, Settlement settlement) {
 
 		double rate_millisol = rate / 1000D;
 
@@ -87,8 +86,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 
-		double fuelStored = inv.getAmountResourceStored(methaneID, false);
-		double o2Stored = inv.getAmountResourceStored(oxygenID, false);
+		double fuelStored = settlement.getAmountResourceStored(methaneID);
+		double o2Stored = settlement.getAmountResourceStored(oxygenID);
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored / 4D));
@@ -109,14 +108,14 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 //			consumed = Math.min(fuelStored, o2Stored/4D);
 //		}				
 
-		inv.retrieveAmountResource(methaneID, consumed);
-		inv.retrieveAmountResource(oxygenID, 4D * consumed);
+		settlement.retrieveAmountResource(methaneID, consumed);
+		settlement.retrieveAmountResource(oxygenID, 4D * consumed);
 
-		inv.addAmountDemandTotalRequest(methaneID, consumed);
-		inv.addAmountDemand(methaneID, consumed);
-
-		inv.addAmountDemandTotalRequest(oxygenID, consumed);
-		inv.addAmountDemand(oxygenID, 4D * consumed);
+//		inv.addAmountDemandTotalRequest(methaneID, consumed);
+//		inv.addAmountDemand(methaneID, consumed);
+//
+//		inv.addAmountDemandTotalRequest(oxygenID, consumed);
+//		inv.addAmountDemand(oxygenID, 4D * consumed);
 
 		return consumed;
 	}
@@ -151,7 +150,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	public double getCurrentHeat(Building building) {
 
 		if (toggle) {
-			double spentFuel = consumeFuel(time, building.getInventory());
+			double spentFuel = consumeFuel(time, building.getSettlement());
 			return getMaxHeat() * spentFuel / maxFuel * THERMAL_EFFICIENCY;
 		}
 
@@ -183,7 +182,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	public double getCurrentPower(Building building) {
 
 		if (toggle) {
-			double spentFuel = consumeFuel(time, building.getInventory());
+			double spentFuel = consumeFuel(time, building.getSettlement());
 			return getMaxHeat() * spentFuel / maxFuel * ELECTRIC_EFFICIENCY;
 		}
 

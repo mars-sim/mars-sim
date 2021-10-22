@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EmergencySupplyPanel.java
- * @date 2021-09-04
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -426,7 +426,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
+					int amount = (int) TradeUtil.getNumInInventory(good, settlement);
 					if (checkForVehicle(good))
 						amount--;
 					goodsMap.put(good, amount);

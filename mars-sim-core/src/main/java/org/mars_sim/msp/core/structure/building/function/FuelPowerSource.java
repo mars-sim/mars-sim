@@ -1,14 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * FuelPowerSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -87,7 +86,7 @@ implements Serializable {
 	 * @param inv
 	 * @return the amount of fuel consumed
 	 */
-	public double consumeFuel(double time, Inventory inv) {
+	public double consumeFuel(double time, Settlement settlement) {
 		this.time = time;
 		 
 		double rate_millisol = rate / 1000D;
@@ -96,20 +95,20 @@ implements Serializable {
 		
 		double consumed = 0;
 		
-		double fuelStored = inv.getAmountResourceStored(methaneID, false);
-		double o2Stored = inv.getAmountResourceStored(oxygenID, false);
+		double fuelStored = settlement.getAmountResourceStored(methaneID);
+		double o2Stored = settlement.getAmountResourceStored(oxygenID);
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
 
-		inv.retrieveAmountResource(methaneID, consumed);
-		inv.retrieveAmountResource(oxygenID, 4D*consumed);
+		settlement.retrieveAmountResource(methaneID, consumed);
+		settlement.retrieveAmountResource(oxygenID, 4D*consumed);
 		
-	    inv.addAmountDemandTotalRequest(methaneID, consumed);
-	   	inv.addAmountDemand(methaneID, consumed);
-	   	
-	    inv.addAmountDemandTotalRequest(oxygenID, consumed);
-	   	inv.addAmountDemand(oxygenID, 4D*consumed);
+//	    inv.addAmountDemandTotalRequest(methaneID, consumed);
+//	   	inv.addAmountDemand(methaneID, consumed);
+//	   	
+//	    inv.addAmountDemandTotalRequest(oxygenID, consumed);
+//	   	inv.addAmountDemand(oxygenID, 4D*consumed);
 	   	
 		return consumed;
 	}
@@ -133,7 +132,7 @@ implements Serializable {
 //			}
 		 
 		 if (toggle) {
-			 double spentFuel = consumeFuel(time, building.getInventory());
+			 double spentFuel = consumeFuel(time, building.getSettlement());
 //			 logger.info("getCurrentPower(). spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
 //					 + "   spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
 //					 + "   getMaxPower(): " +  Math.round(getMaxPower()* 100.0)/100.0 + " kW"

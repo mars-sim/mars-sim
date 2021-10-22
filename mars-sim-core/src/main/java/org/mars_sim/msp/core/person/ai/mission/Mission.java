@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mission.java
- * @date 2021-08-29
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -1355,7 +1356,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (settlement == null)
 			throw new IllegalArgumentException("Settlement is null");
 		
-		int result = settlement.getInventory().findNumEVASuits(false, false);
+		int result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 
 		// Leave one suit for settlement use.
 		if (result > 0) {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehiclePanel.java
- * @date 2021-08-27
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -25,7 +25,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -235,8 +234,7 @@ class VehiclePanel extends WizardPanel {
 
 			if (row < units.size()) {
 				Rover vehicle = (Rover) getUnit(row);
-				Inventory inv = vehicle.getInventory();
-
+				
 				try {
 					if (column == 0)
 						result = vehicle.getName();
@@ -251,9 +249,9 @@ class VehiclePanel extends WizardPanel {
 					else if (column == 5)
 						result = vehicle.hasSickBay();
 					else if (column == 6)
-						result = (int) inv.getGeneralCapacity();
+						result = (int) vehicle.getTotalCapacity();
 					else if (column == 7)
-						result = (int) inv.getTotalInventoryMass(true);
+						result = (int) vehicle.getStoredMass();
 					else if (column == 8)
 						result = vehicle.printStatusTypes();
 					else if (column == 9) {
@@ -298,7 +296,7 @@ class VehiclePanel extends WizardPanel {
 			Rover vehicle = (Rover) getUnit(row);
 
 			if (column == 7) {
-				if (vehicle.getInventory().getTotalInventoryMass(true) > 0D)
+				if (vehicle.getStoredMass() > 0D)
 					result = true;
 			} else if (column == 8) {
 				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))

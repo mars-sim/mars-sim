@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2021-08-15
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
@@ -381,9 +382,9 @@ public abstract class RoverMission extends VehicleMission {
 							// Store one or two EVA suit for person (if possible).
 							int limit = RandomUtil.getRandomInt(1, 2);
 							for (int i=0; i<limit; i++) {
-								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
+								if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1) {
 									
-									EVASuit suit = settlement.getInventory().findAnEVAsuit(person);
+									EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
 									if (suit != null) {									
 										boolean success = suit.transfer(settlement, v);									
 										if (success)
@@ -440,10 +441,13 @@ public abstract class RoverMission extends VehicleMission {
 					recordStartMass();
 					
 					// Embark from settlement
-					if (settlement.getInventory().containsUnit(v))
-						v.transfer(settlement, unitManager.getMarsSurface());
-						
-					setPhaseEnded(true);
+					if (v.transfer(settlement, unitManager.getMarsSurface())) {
+						setPhaseEnded(true);						
+					}
+					else {
+						addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+						endMission();
+					}
 				}
 			}
 		}
@@ -490,7 +494,7 @@ public abstract class RoverMission extends VehicleMission {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If rover has not been parked at settlement, park it.
-				disembarkSettlement.getInventory().storeUnit(v);	
+				disembarkSettlement.addParkedVehicle(v);	
 			}
 			
 			// Test if this rover is towing another vehicle or is being towed
@@ -634,8 +638,8 @@ public abstract class RoverMission extends VehicleMission {
 						if (availableSuitNum > 0) {
 							// Deliver an EVA suit from the settlement to the rover
 							// Note: Need to generate a task for a person to hand deliver an extra suit
-							suit = disembarkSettlement.getInventory().findAnEVAsuit(p);
-							if (suit != null) {// && rover.getInventory().canStoreUnit(suit, false)) {					
+							suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
+							if (suit != null) {				
 								boolean success = suit.transfer(disembarkSettlement, rover);
 								if (success)
 									logger.warning(p, "Received a spare EVA suit from " + disembarkSettlement + " to " + rover);

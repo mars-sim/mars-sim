@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @date 2021-08-25
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -253,10 +252,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
-//		Inventory vehicleInv = vehicle.getInventory();
-		
-		Inventory settlementInv = settlement.getInventory();
-		
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			Iterator<Equipment> k = vehicle.getEquipmentList().iterator();
@@ -281,14 +276,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			if (amount > amountUnloading) {
 				amount = amountUnloading;
 			}
-			double capacity = settlementInv.getAmountResourceRemainingCapacity(id, true, false);
+			double capacity = settlement.getAmountResourceRemainingCapacity(id);
 			if (capacity < amount) {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
 			try {
 				vehicle.retrieveAmountResource(id, amount);
-				settlementInv.storeAmountResource(id, amount, true);
+				settlement.storeAmountResource(id, amount);
 				
 				if (id != waterID && id != methaneID 
 						&& id != foodID && id != oxygenID) {
@@ -298,7 +293,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 					
-					settlementInv.addAmountSupply(id, amount);
+//					settlement.addAmountSupply(id, amount);
 					// Add to the daily output
 					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
@@ -333,7 +328,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					}
 				}
 				vehicle.retrieveItemResource(id, num);
-				settlementInv.storeItemResources(id, num);
+				settlement.storeItemResource(id, num);
 				amountUnloading -= (num * mass);
 				
 				totalItems += num;
@@ -352,8 +347,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			if (towedVehicle != null) {
 				towingVehicle.setTowedVehicle(null);
 				towedVehicle.setTowingVehicle(null);
-				if (!settlementInv.containsUnit(towedVehicle)) {
-					settlementInv.storeUnit(towedVehicle);
+				if (!settlement.containsParkedVehicle(towedVehicle)) {
+					settlement.addParkedVehicle(towedVehicle);
 					towedVehicle.findNewParkingLoc();
 				}
 			}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @date 2021-10-17
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -521,11 +521,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		while (j.hasNext()) {
 			GroundVehicle vehicle = j.next();
 			vehicle.setReservedForMission(true);
-			if (settlement.getInventory().containsUnit(vehicle)) {
-				settlement.getInventory().retrieveUnit(vehicle);
-			} else {
-				logger.warning("Unable to retrieve " + vehicle.getName() + " cannot be retrieved from "
-						+ settlement.getName() + " inventory.");
+			if (!settlement.removeParkedVehicle(vehicle)) {
+				logger.warning("Unable to retrieve " + vehicle.getName() 
+					+ " cannot be retrieved from "
+					+ settlement.getName() + " inventory.");
 				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
 				endMission();
 			}
@@ -605,9 +604,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				while (l.hasNext()) {
 					Integer part = l.next();
 					try {
-						settlement.getInventory().retrieveItemResources(part, 1);
+						settlement.retrieveItemResource(part, 1);
 						if (vehicle != null) {
-							vehicle.getInventory().storeItemResources(part, 1);
+							vehicle.storeItemResource(part, 1);
 						}
 						luvAttachmentParts.add(part);
 					} catch (Exception e) {
@@ -756,28 +755,25 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * at settlement inventory.
 	 */
 	private void loadAvailableConstructionMaterials() {
-		// System.out.println("starting loadAvailableConstructionMaterials()");
-		Inventory inv = settlement.getInventory();
-
 		// Load amount resources.
 		Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double amountNeeded = stage.getRemainingResources().get(resource);
 			// Add tracking demand
-			inv.addAmountDemandTotalRequest(resource, amountNeeded);
+//			inv.addAmountDemandTotalRequest(resource, amountNeeded);
 
-			double amountAvailable = inv.getAmountResourceStored(resource, false);
+			double amountAvailable = settlement.getAmountResourceStored(resource);
 
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
 			double amountLoading = Math.min(amountAvailable, amountNeeded);
 
 			if (amountLoading > SMALL_AMOUNT) {
-				inv.retrieveAmountResource(resource, amountLoading);
+				settlement.retrieveAmountResource(resource, amountLoading);
 				stage.addResource(resource, amountLoading);
 				// Add tracking demand
-				inv.addAmountDemand(resource, amountLoading);
+//				inv.addAmountDemand(resource, amountLoading);
 			}
 		}
 
@@ -786,17 +782,17 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		while (j.hasNext()) {
 			Integer part = j.next();
 			int numberNeeded = stage.getRemainingParts().get(part);
-			int numberAvailable = inv.getItemResourceNum(part);
+			int numberAvailable = settlement.getItemResourceStored(part);
 			// Add demand tracking
-			inv.addItemDemandTotalRequest(part, numberNeeded);
+//			inv.addItemDemandTotalRequest(part, numberNeeded);
 			
 			// Load as many remaining parts as possible into the construction site stage.
 			int numberLoading = Math.min(numberAvailable, numberNeeded);
 
 			if (numberLoading > 0) {
-				inv.retrieveItemResources(part, numberLoading);
+				settlement.retrieveItemResource(part, numberLoading);
 				// Add tracking demand
-				inv.addItemDemand(part, numberLoading);
+//				inv.addItemDemand(part, numberLoading);
 				
 				stage.addParts(part, numberLoading);
 			}
@@ -949,9 +945,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
 							RandomUtil.getRandomDouble(360D));
 
-					if (settlement.getInventory().containsUnit(luvTemp)) {
-						settlement.getInventory().retrieveUnit(luvTemp);
-					} else {
+					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe("Unable to retrieve " + luvTemp.getName() + " cannot be retrieved from "
 								+ settlement.getName() + " inventory.");
 						addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
@@ -975,7 +969,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			while (i.hasNext()) {
 				Integer part = i.next();
 				try {
-					settlement.getInventory().storeItemResources(part, 1);
+					settlement.storeItemResource(part, 1);
 				} catch (Exception e) {
 					logger.log(Level.SEVERE,
 							"Error storing attachment part " + ItemResourceUtil.findItemResource(part).getName());

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mining.java
- * @date 2021-09-04
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
@@ -285,13 +284,11 @@ public class Mining extends RoverMission
 	public static boolean areAvailableAttachmentParts(Settlement settlement) {
 		boolean result = true;
 
-		Inventory inv = settlement.getInventory();
-
 		try {
-			if (!inv.hasItemResource(ItemResourceUtil.pneumaticDrillID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
 				result = false;
 			}
-			if (!inv.hasItemResource(ItemResourceUtil.backhoeID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
 				result = false;
 			}
 		} catch (Exception e) {
@@ -383,14 +380,14 @@ public class Mining extends RoverMission
 		// Attach light utility vehicle for towing.
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
 
-			Inventory settlementInv = getStartingSettlement().getInventory();
-			Inventory luvInv = luv.getInventory();
+			Settlement settlement = getStartingSettlement();
+
 			getRover().setTowedVehicle(luv);
 			luv.setTowingVehicle(getRover());
-			settlementInv.retrieveUnit(luv);
+			settlement.removeParkedVehicle(luv);
 
-			if (!settlementInv.hasItemResource(ItemResourceUtil.pneumaticDrillID)
-					|| !settlementInv.hasItemResource(ItemResourceUtil.backhoeID)) {
+			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
+					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
 				logger.warning(startingPerson.getSettlement(), startingPerson, 
 						" could not load LUV and/or its attachment parts from " + getRover().getNickName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
@@ -400,11 +397,11 @@ public class Mining extends RoverMission
 				
 			try {
 				// Load light utility vehicle with attachment parts.
-				settlementInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);
-				luvInv.storeItemResources(ItemResourceUtil.pneumaticDrillID, 1);
+				settlement.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+				luv.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
 
-				settlementInv.retrieveItemResources(ItemResourceUtil.backhoeID, 1);
-				luvInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
+				settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
+				luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 //				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
 				logger.severe(startingPerson.getSettlement(), startingPerson, 
@@ -431,19 +428,19 @@ public class Mining extends RoverMission
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
 			try {
-				Inventory settlementInv = getStartingSettlement().getInventory();
-				Inventory luvInv = luv.getInventory();
+				Settlement settlement = getStartingSettlement();
+				
 				getRover().setTowedVehicle(null);
 				luv.setTowingVehicle(null);
-				settlementInv.storeUnit(luv);
+				settlement.removeParkedVehicle(luv);
 				luv.findNewParkingLoc();
 
 				// Unload attachment parts.
-				luvInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);
-				settlementInv.storeItemResources(ItemResourceUtil.pneumaticDrillID, 1);
+				luv.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+				settlement.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
 
-				luvInv.retrieveItemResources(ItemResourceUtil.backhoeID, 1);
-				settlementInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
+				luv.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
+				settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Error unloading light utility vehicle and attachment parts.");
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);

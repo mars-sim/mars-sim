@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -118,7 +117,7 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
 
 		if (source.isInSettlement()) {
-			entities = getMalfunctionables(source.getSettlement());
+			entities = getBuildingMalfunctionables(source.getSettlement());
 		}
 
 		if (source.isInVehicle()) {
@@ -148,21 +147,9 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param settlement the settlement.
 	 * @return collection of malfunctionables.
 	 */
-	public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
-		Collection<Malfunctionable> entities = new ArrayList<>(settlement.getBuildingManager().getBuildings());
-
-		// Add all malfunctionable entities in settlement inventory.
-		// TODO: need to separate the malfunctionable in a vehicle ?
-		Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
-		if (inventoryUnits.size() > 0) {
-			for (Unit unit : inventoryUnits) {
-				if ((unit instanceof Malfunctionable) && (!entities.contains((Malfunctionable)unit))) {
-					entities.add((Malfunctionable) unit);
-				}
-			}
-		}
-
-		return entities;
+	public static Collection<Malfunctionable> getBuildingMalfunctionables(Settlement settlement) {
+		// Should get a collection of buildings only
+		return new ArrayList<>(settlement.getBuildingManager().getBuildings());
 	}
 
 	/**
@@ -209,15 +196,7 @@ public final class MalfunctionFactory implements Serializable {
 		}
 		
 		else if (entity instanceof Settlement) {
-			// Settlement as the entity
-			Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
-			if (inventoryUnits.size() > 0) {
-				for (Unit unit : inventoryUnits) {
-					if (unit instanceof Malfunctionable) {
-						entities.add((Malfunctionable) unit);
-					}
-				}
-			}
+			entities.addAll(getBuildingMalfunctionables((Settlement)entity));
 		}
 
 		return entities;
@@ -231,9 +210,8 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static Collection<Malfunctionable> getAssociatedMalfunctionables(Settlement settlement) {
 
-		// Add settlement, buildings and all other malfunctionables in settlement
-		// inventory.
-		Collection<Malfunctionable> entities = getMalfunctionables(settlement);
+		// Add buildings in settlement
+		Collection<Malfunctionable> entities = getBuildingMalfunctionables(settlement);
 
 		// Get all vehicles belong to the Settlement. Vehicles can have a malfunction
 		// in the Settlement or outside settlement
@@ -243,15 +221,12 @@ public final class MalfunctionFactory implements Serializable {
 
 		// Get entities carried by robots
 		for (Robot robot : settlement.getAllAssociatedRobots()) {
-			if (robot.isOutside()) // .getLocationSituation() == LocationSituation.OUTSIDE)
-				entities.addAll(getMalfunctionables(robot));
+			entities.addAll(getMalfunctionables(robot));
 		}
-
-		// TODO: how to ask robots first and only ask people if robots are not available
-		// so that the tasks are not duplicated ?
+		
 		// Get entities carried by people on EVA.
 		for (Person person : settlement.getAllAssociatedPeople()) {
-			if (person.isOutside()) // getLocationSituation() == LocationSituation.OUTSIDE)
+			if (person.isOutside())
 				entities.addAll(getLocalMalfunctionables(person));
 		}
 

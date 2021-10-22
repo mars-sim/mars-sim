@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * AbstraInventoryCommandctUnitCommand.java
- * @version 3.1.2 2020-12-30
+ * InventoryCommand.java
+ * @date 2021-10-21
  * @author Barry Evans
  */
 
@@ -44,40 +44,29 @@ public class InventoryCommand extends AbstractUnitCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
 
-		Inventory inv = null;
 		EquipmentOwner eqmOwner = null;
 		if (source instanceof EquipmentOwner) {
 			eqmOwner = (EquipmentOwner)source;
-		}
-		else {
-			inv = source.getInventory();
 		}
 		
 		StructuredResponse buffer = new StructuredResponse();
 		String capacity = "Limitless";
 		String available = "All";
-		if ((inv != null) && inv.getGeneralCapacity() < Double.MAX_VALUE) {
-			capacity = String.format(CommandHelper.KG_FORMAT, inv.getGeneralCapacity());
-			available = String.format(CommandHelper.KG_FORMAT, inv.getRemainingGeneralCapacity(false));
-					
-		}
-		else {
-			double eqmCapacity = eqmOwner.getTotalCapacity();
-			capacity = String.format(CommandHelper.KG_FORMAT, eqmCapacity);
-			available = String.format(CommandHelper.KG_FORMAT, (eqmCapacity - eqmOwner.getStoredMass()));
-		}
+
+		double eqmCapacity = eqmOwner.getTotalCapacity();
+		capacity = String.format(CommandHelper.KG_FORMAT, eqmCapacity);
+		available = String.format(CommandHelper.KG_FORMAT, (eqmCapacity - eqmOwner.getStoredMass()));
+
 		buffer.appendLabeledString("Capacity", capacity);
 		buffer.appendLabeledString("Available", available);
 	
 		// Find attached Equipment
 		Map<String,String> entries = new TreeMap<>();
-		Collection<Equipment> equipment;
+		Collection<Equipment> equipment = null;
 		if (eqmOwner != null) {
 			equipment = eqmOwner.getEquipmentList();
 		}
-		else {
-			equipment = inv.findAllEquipment();
-		}
+
 		if (input != null) {
 			// Filter according to input
 			equipment = equipment.stream()
@@ -95,9 +84,6 @@ public class InventoryCommand extends AbstractUnitCommand {
 		// Add Items
 		if (eqmOwner != null) {
 			extractResources(eqmOwner, input, entries);
-		}
-		else {
-			extractResources(inv, input, entries);
 		}
 
 		// Displa all as a singel table

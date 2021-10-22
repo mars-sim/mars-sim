@@ -12,14 +12,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -83,7 +85,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Building class is a settlement's building.
  */
 public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
-		LocalBoundedObject, InsidePathLocation, Temporal, Serializable {
+		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -343,24 +345,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	protected Building() {
 		super("Mock Building", new Coordinates(0D, 0D));
-	}
-	
-	/**
-	 * Gets the settlement inventory of this building.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getSettlementInventory() {
-		return settlement.getInventory();
-	}
-
-	/**
-	 * Gets the settlement inventory of this building.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getInventory() {
-		return settlement.getInventory();
 	}
 
 	/**
@@ -1280,7 +1264,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							mal.setTraumatized(victimName);
 
 							// Store the meteorite fragment in the settlement
-							getInventory().storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass(), true);
+							settlement.storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass());
 							
 							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0 
 									+ " kg of meteorite fragments in " + getNickName() + ".");
@@ -1409,29 +1393,86 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public UnitType getUnitType() {
 		return UnitType.BUILDING;
 	}
-	
-//	/**
-//	 * Finds the string name of the amount resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findAmountResourceName(int resource) {
-//		return ResourceUtil.findAmountResourceName(resource);
-//	}
-//	
-//	/**
-//	 * Finds the string name of the item resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findItemResourceName(int resource) {
-//		return ItemResourceUtil.findItemResourceName(resource);
-//	}
 
+
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return getSettlement().getAmountResourceStored(resource);
+	}
+
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		return getSettlement().storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		return getSettlement().retrieveAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		return getSettlement().getAmountResourceCapacity(resource);
+	}
+
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return getSettlement().getAmountResourceRemainingCapacity(resource);
+	}
+
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return getSettlement().getAmountResourceIDs();
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessing.java
- * @date 2021-09-04
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -62,8 +61,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		Inventory inv = settlement.getInventory();
-
 		double result = 0D;		
 		Iterator<ResourceProcessSpec> i = buildingConfig.getResourceProcesses(buildingName).iterator();
 		while (i.hasNext()) {
@@ -87,7 +84,7 @@ public class ResourceProcessing extends Function implements Serializable {
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 
 					// Check inventory limit.
-					double inputSupply = inv.getAmountResourceStored(resource, false);
+					double inputSupply = settlement.getAmountResourceStored(resource);
 					if (inputSupply < rate) {
 						double limit = inputSupply / rate;
 						if (limit < inputInventoryLimit) {
@@ -158,7 +155,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
 				// 	processResources takes up 32% of all cpu utilization
-				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlementInventory());
+				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlement());
 			}
 		}
 		return valid;

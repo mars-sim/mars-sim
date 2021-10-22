@@ -1,24 +1,35 @@
 /*
  * Mars Simulation Project
  * SalvageSettlementPanel.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel for selecting the mission's settlement settlement.
@@ -171,7 +182,7 @@ extends WizardPanel {
 			if (row < units.size()) {
 				try {
 					Settlement settlement = (Settlement) getUnit(row);
-					Inventory inv = settlement.getInventory();
+
 					if (column == 0) 
 						result = settlement.getName();
 					else if (column == 1) 
@@ -181,9 +192,9 @@ extends WizardPanel {
 						result = numSites;
 					}
 					else if (column == 3) 
-						result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+						result = settlement.findNumVehiclesOfType(VehicleType.LUV);
 					else if (column == 4) 
-						result = inv.findNumUnitsOfClass(EVASuit.class);
+						result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 				}
 				catch (Exception e) {}
 			}

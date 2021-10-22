@@ -1,22 +1,18 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleTest.java
- * @version 3.1.0 2017-01-21
+ * UnloadVehicleTest.java
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -70,12 +66,10 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 
-		
-		Inventory settlementInv = settlement.getInventory();
-		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
-		settlementInv.addAmountResourceTypeCapacity(food, 100D);
-		settlementInv.addAmountResourceTypeCapacity(water, 100D);
-		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
+		settlement.getEquipmentInventory().addCapacity(oxygen.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(food.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(water.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(methane.getID(), 100D);
 
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);

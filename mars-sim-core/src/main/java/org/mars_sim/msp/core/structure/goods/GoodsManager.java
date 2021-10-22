@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2021-10-12
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -655,7 +654,7 @@ public class GoodsManager implements Serializable, Temporal {
 			amountDemandCache.put(id, totalDemand);
 
 			if (supply == 0)
-				supply = getInventory().getAmountResourceStored(id, false);
+				supply = settlement.getAmountResourceStored(id);
 
 			// Calculate total supply
 			totalSupply = getAverageAmountSupply(id, supply, solElapsed);// lowerLifeSupportSupply(id, supply * .1);
@@ -827,9 +826,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public double getAverageAmountSupply(int resource, double supplyStored, int solElapsed) {
 		// Gets the total produced or supplied since last time
-		double supply = getInventory().getAmountSupply(resource);
+		double supply = 0; //getInventory().getAmountSupply(resource);
 		// Gets # of requests
-		int requests = getInventory().getAmountSupplyRequest(resource);
+		int requests = 0; //getInventory().getAmountSupplyRequest(resource);
 
 		double aveSupply = 1 + Math.log((1 + supply * requests + supplyStored) / solElapsed);
 
@@ -853,9 +852,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public double getAverageItemSupply(int resource, double supplyStored, int solElapsed) {
 		// Gets the total produced or supplied since last time
-		double supply = getInventory().getItemSupply(resource);
+		double supply = 0; //getInventory().getItemSupply(resource);
 		// Gets # of successful requests
-		int requests = getInventory().getAmountSupplyRequest(resource);
+		int requests = 0; //getInventory().getAmountSupplyRequest(resource);
 
 		double aveSupply = 1 + Math.log((1 + supply * requests + supplyStored) / solElapsed);
 
@@ -884,15 +883,15 @@ public class GoodsManager implements Serializable, Temporal {
 
 		if (resource >= ResourceUtil.FIRST_AMOUNT_RESOURCE_ID && resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
-			Inventory inv = getInventory();
+//			Inventory inv = getInventory();
 			// Gets the total demand on record
-			double demand = inv.getAmountDemand(resource);
+			double demand = 0; //inv.getAmountDemand(resource);
 			// Gets the estimated demand on record
-			double estDemand = inv.getAmountDemandEstimated(resource);
+			double estDemand = 0; //inv.getAmountDemandEstimated(resource);
 			// Gets # of successful requests
-			int metRequests = inv.getAmountDemandMetRequest(resource);
+			int metRequests = 0; //inv.getAmountDemandMetRequest(resource);
 			// Gets the total # of requests
-			int totRequests = inv.getAmountDemandTotalRequest(resource);
+			int totRequests = 0; //inv.getAmountDemandTotalRequest(resource);
 
 			double demandPerMetRequest = 0;
 
@@ -934,15 +933,15 @@ public class GoodsManager implements Serializable, Temporal {
 
 		if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && resource < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 
-			Inventory inv = getInventory();
+//			Inventory inv = getInventory();
 			// Gets the total demand record
-			double demand = inv.getItemDemand(resource);
+			double demand = 0; //inv.getItemDemand(resource);
 			// Gets # of successful requests
-			int metRequests = inv.getItemDemandMetRequest(resource);
+			int metRequests = 0; //inv.getItemDemandMetRequest(resource);
 			// Gets the total # of requests
-			int totRequests = inv.getItemDemandTotalRequest(resource);
+			int totRequests = 0; //inv.getItemDemandTotalRequest(resource);
 			// Gets the estimated demand on record
-			double estDemand = inv.getItemDemandEstimated(resource);
+			double estDemand = 0; //inv.getItemDemandEstimated(resource);
 
 			double demandPerMetRequest = 0;
 
@@ -2415,7 +2414,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double amount = 0D;
 
 		// Get amount of resource in settlement storage.
-		amount += settlement.getInventory().getAmountResourceStored(resource, false);
+		amount += settlement.getAmountResourceStored(resource.getID());
 
 		// Get amount of resource out on mission vehicles.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -2641,7 +2640,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Calculate total item supply
 
 				if (supply == 0)
-					supply = getInventory().getItemResourceNum(id);
+					supply = settlement.getItemResourceStored(id);
 
 				totalSupply = getAverageItemSupply(id, supply, solElapsed);
 
@@ -3184,7 +3183,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double number = 0D;
 
 		// Get number of resources in settlement storage.
-		number += settlement.getInventory().getItemResourceNum(resource);
+		number += settlement.getItemResourceStored(resource.getID());
 
 		// Get number of resources out on mission vehicles.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -3260,7 +3259,7 @@ public class GoodsManager implements Serializable, Temporal {
 			equipmentDemandCache.put(id, totalDemand);
 	
 			if (supply == 0)
-				supply = getInventory().findNumEquipment(id);
+				supply = settlement.findNumContainersOfType(EquipmentType.convertID2Type(id));
 
 			value = totalDemand / (1 + Math.log(supply + 1D));
 	
@@ -3361,8 +3360,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double computeUsageFactor(EquipmentType containerType) {
 		int numUsed = 0;
 
-		Inventory inv = settlement.getInventory();
-		Set<Equipment> equipmentList = inv.findAllEquipmentType(containerType);
+		List<Equipment> equipmentList = settlement.getEquipmentTypeList(containerType);
 		
 		// TODO need to revisit this
 //		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -3411,7 +3409,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
-		number += settlement.getInventory().findNumEmptyContainersOfType(equipmentType, false);
+		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -4141,15 +4139,6 @@ public class GoodsManager implements Serializable, Temporal {
 			mod = m * baseValue;
 		}
 		return mod;
-	}
-
-	/**
-	 * Gets the settlement inventory.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getInventory() {
-		return settlement.getInventory();
 	}
 
 	public double getWaterValue() {

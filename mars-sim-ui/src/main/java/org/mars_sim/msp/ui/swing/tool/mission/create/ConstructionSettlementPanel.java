@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionSettlementPanel.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -28,10 +28,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -203,7 +202,6 @@ class ConstructionSettlementPanel extends WizardPanel {
             if (row < units.size()) {
                 try {
                     Settlement settlement = (Settlement) getUnit(row);
-                    Inventory inv = settlement.getInventory();
                     if (column == 0) 
                         result = settlement.getName();
                     else if (column == 1) 
@@ -213,9 +211,9 @@ class ConstructionSettlementPanel extends WizardPanel {
                         result = numSites;
                     }
                     else if (column == 3) 
-                        result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+                        result = settlement.findNumVehiclesOfType(VehicleType.LUV);
                     else if (column == 4) 
-                        result = inv.findNumUnitsOfClass(EVASuit.class);
+                        result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
                 }
                 catch (Exception e) {}
             }

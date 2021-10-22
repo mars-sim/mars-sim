@@ -341,7 +341,7 @@ public class Delivery extends DroneMission implements Serializable {
 		// If drone is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
 
-			tradingSettlement.getInventory().storeUnit(v);
+			tradingSettlement.addParkedVehicle(v);
 	
 			// Add vehicle to a garage if available.
 			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
@@ -517,7 +517,7 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 
 			// Embark from settlement
-			tradingSettlement.getInventory().retrieveUnit(getVehicle());
+			tradingSettlement.removeParkedVehicle(getVehicle());
 			setPhaseEnded(true);
 		}
 	}

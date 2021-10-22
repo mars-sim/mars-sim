@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CompositionOfAir.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * The CompositionOfAir class accounts for the composition of air of each
- * building in a settlement..
+ * building in a settlement.
  */
 public class CompositionOfAir implements Serializable, Temporal {
 
@@ -554,11 +554,11 @@ public class CompositionOfAir implements Serializable, Temporal {
 							int ar = getGasID(gas);
 	
 							if (d_mass > 0)
-								Storage.retrieveAnResource(d_mass, ar, b.getInventory(), true);
+								Storage.retrieveAnResource(d_mass, ar, b.getSettlement(), true);
 							else { // too much gas, need to recapture it; d_mass is less than 0
 								double recaptured = -d_mass * GAS_CAPTURE_EFFICIENCY;
 								if (recaptured > 0)
-									Storage.storeAnResource(recaptured, ar, b.getInventory(), sourceName + "::monitorAir");
+									Storage.storeAnResource(recaptured, ar, b.getSettlement(), sourceName + "::monitorAir");
 							}
 	
 							double new_m = mass[gas][id] + d_mass;
@@ -801,12 +801,12 @@ public class CompositionOfAir implements Serializable, Temporal {
 			new_moles = old_moles + d_moles;
 			new_mass = old_mass + d_mass;
 			if (d_mass > 0)
-				Storage.retrieveAnResource(d_mass, ar, b.getInventory(), true);
+				Storage.retrieveAnResource(d_mass, ar, b.getSettlement(), true);
 		} else { // recapture
 			new_moles = old_moles - d_moles;
 			new_mass = old_mass - d_mass;
 			if (d_mass > 0)
-				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar, b.getInventory(),
+				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar, b.getSettlement(),
 						sourceName + "::pumpOrRecaptureGas");
 		}
 

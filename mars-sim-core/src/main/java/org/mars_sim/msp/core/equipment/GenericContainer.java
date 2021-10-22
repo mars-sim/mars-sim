@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -209,5 +210,15 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	@Override
 	public boolean hasResource(int resource) {
 		return resourceHeld == resource;
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
 	}
 }

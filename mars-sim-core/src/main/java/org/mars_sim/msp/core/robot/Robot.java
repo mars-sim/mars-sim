@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -150,8 +150,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
 	
-		// Store this robot to the settlement 
-		settlement.getInventory().storeUnit(this);
 		// Add this robot to be owned by the settlement
 		settlement.addOwnedRobot(this);
 
@@ -420,10 +418,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
-		Unit containerUnit = getContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			containerUnit.getInventory().retrieveUnit(this);
-		}
+		((Settlement)getContainerUnit()).removeOwnedRobot(this);
+		
 		isInoperable = true;
 		// Set home town
 		setAssociatedSettlement(-1);
@@ -1193,6 +1189,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
+		return eqmInventory.getRemainingCargoCapacity();
+	}
+	
+	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
 	@Override
@@ -1413,6 +1419,27 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		return eqmInventory.findAllContainers();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return eqmInventory.hasItemResource(resource);
+	}
+	
+	/**
 	 * Gets the hash code for this object.
 	 * 
 	 * @return hash code.
@@ -1427,6 +1454,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.ROBOT;
+	}
+
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
 	}
 
 	
@@ -1457,5 +1494,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		skillManager = null;
 		birthTimeStamp = null;
 	}
+
 
 }

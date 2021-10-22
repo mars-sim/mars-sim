@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -25,8 +25,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -34,8 +32,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -227,53 +224,50 @@ class StartingSettlementPanel extends WizardPanel {
 			if (row < units.size()) {
 				try {
 					Settlement settlement = (Settlement) getUnit(row);
-					Inventory inv = settlement.getInventory();
+
 					if (column == 0)
 						result = settlement.getName();
 					else if (column == 1)
 						result = settlement.getIndoorPeopleCount();
 					else if (column == 2)
-						result = inv.findNumUnitsOfClass(Rover.class);
+						result = settlement.findNumParkedRovers();
 					if (column == 3) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+						result = (int) settlement.getAmountResourceStored(ResourceUtil.oxygenID);
 					}
 					else if (column == 4) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.waterID, false);
+						result = (int) settlement.getAmountResourceStored(ResourceUtil.waterID);
 					}
 					else if (column == 5) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.foodID, false);
+						result = (int) settlement.getAmountResourceStored(ResourceUtil.foodID);
 					}
-//					else if (column == 6) {
-//						result = (int) determineHighestDessertResources(inv);
-//					}
 					else if (column == 6) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.methaneID, false);
+						result = (int) settlement.getAmountResourceStored(ResourceUtil.methaneID);
 					}
 					else if (column == 7)
-						result = inv.findNumUnitsOfClass(EVASuit.class);
+						result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 
 					MissionType type = getWizard().getMissionData().getMissionType();
 					if (MissionType.EXPLORATION == type) {
 						if (column == 8)
-							result = inv.findNumContainers(EquipmentType.SPECIMEN_BOX, true, true);//.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
+							result = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
 					}
 					else if (MissionType.COLLECT_ICE == type ||
 							MissionType.COLLECT_REGOLITH == type) {
 						if (column == 8)
-							result = inv.findNumContainers(EquipmentType.BAG, true, false);
+							result = settlement.findNumContainersOfType(EquipmentType.BAG);
 					}
 					else if (MissionType.MINING == type) {
 						if (column == 8) {
-							result = inv.findNumContainers(EquipmentType.BAG, true, true);
+							result = settlement.findNumContainersOfType(EquipmentType.BAG);
 						}
 						else if (column == 9) {
-							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+							result = settlement.findNumVehiclesOfType(VehicleType.LUV);
 						}
 						else if (column == 10) {
-							result = inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR);
+							result = settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID);
 						}
 						else if (column == 11) {
-							result = inv.getItemResourceNum(ItemResourceUtil.backhoeAR);
+							result = settlement.getItemResourceStored(ItemResourceUtil.backhoeID);
 						}
 					}
 				}
@@ -363,61 +357,57 @@ class StartingSettlementPanel extends WizardPanel {
 		boolean isFailureCell(int row, int column) {
 			boolean result = false;
 			Settlement settlement = (Settlement) getUnit(row);
-			Inventory inv = settlement.getInventory();
 
 			try {
 				if (column == 1) {
 					if (settlement.getIndoorPeopleCount() == 0) result = true;
 				}
 				else if (column == 2) {
-					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
+					if (settlement.findNumParkedRovers() == 0) result = true;
 				}
 				else if (column == 3) {
-					if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) < 100D) result = true;
+					if (settlement.getAmountResourceStored(ResourceUtil.oxygenID) < 100D) result = true;
 				}
 				else if (column == 4) {
-					if (inv.getAmountResourceStored(ResourceUtil.waterID, false) < 100D) result = true;
+					if (settlement.getAmountResourceStored(ResourceUtil.waterID) < 100D) result = true;
 				}
 				else if (column == 5) {
-					if (inv.getAmountResourceStored(ResourceUtil.foodID, false) < 100D) result = true;
+					if (settlement.getAmountResourceStored(ResourceUtil.foodID) < 100D) result = true;
 				}
-//				else if (column == 6) {
-//					if (determineHighestDessertResources(inv) < 10D) result = true;
-//				}
 				else if (column == 6) {
-					if (inv.getAmountResourceStored(ResourceUtil.methaneID, false) < 100D) result = true;
+					if (settlement.getAmountResourceStored(ResourceUtil.methaneID) < 100D) result = true;
 				}
 				else if (column == 7) {
-					if (inv.findNumEVASuits(false, true) == 0) result = true;
+					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) == 0) result = true;
 				}
 
 				MissionType type = getWizard().getMissionData().getMissionType();
 				if (MissionType.EXPLORATION == type) {
 					if (column == 8) {
-						if (inv.findNumContainers(EquipmentType.SPECIMEN_BOX, true, true) < 
+						if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < 
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (MissionType.COLLECT_ICE == type ||
 						MissionType.COLLECT_REGOLITH == type) {
 					if (column == 8) {
-						if (inv.findNumContainers(EquipmentType.BAG, true, false) <
+						if (settlement.findNumContainersOfType(EquipmentType.BAG) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 				}
 				else if (MissionType.MINING == type ) {
 					if (column == 8) {
-						if (inv.findNumContainers(EquipmentType.BAG, true, true) <
+						if (settlement.findNumContainersOfType(EquipmentType.BAG) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 					if (column == 9) {
-						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
+						if (settlement.findNumVehiclesOfType(VehicleType.LUV) == 0) result = true;
 					}
 					else if (column == 10) {
-						if (inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR) == 0) result = true;
+						if (settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID) == 0) result = true;
 					}
 					else if (column == 11) {
-						if (inv.getItemResourceNum(ItemResourceUtil.backhoeAR) == 0) result = true;
+						if (settlement.getItemResourceStored(ItemResourceUtil.backhoeID) == 0) result = true;
 					}
 				}
 			}

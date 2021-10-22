@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleTest
- * @date 2021-09-29
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -484,7 +483,7 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void loadSettlementResources(Settlement target, Map<Integer, Number> requiredResourcesMap) {
-		Inventory settlementInv = target.getInventory();
+//		Inventory settlementInv = target.getInventory();
 
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
@@ -492,11 +491,11 @@ extends TestCase {
 				// Add extra to the stored to give a tolerance
 				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
 				// Add extra to the capacity
-				settlementInv.addAmountResourceTypeCapacity(key, amount + EXTRA_RESOURCE);
-				settlementInv.storeAmountResource(key, amount, true);
+//				target.addAmountResourceTypeCapacity(key, amount + EXTRA_RESOURCE);
+				target.storeAmountResource(key, amount);
 			}
 			else {
-				settlementInv.storeItemResources(key, resource.getValue().intValue());
+				target.storeItemResource(key, resource.getValue().intValue());
 			}	
 		}
 	}

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -36,6 +35,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for static methods for Delivery Mission. TODO externalize strings
@@ -529,8 +529,8 @@ public final class DeliveryUtil {
 
 		Part item = ItemResourceUtil.findItemResource(itemResourceGood.getID());
 
-		int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
-		int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
+		int sellingInventory = sellingSettlement.getItemResourceStored(item.getID());
+		int buyingInventory = buyingSettlement.getItemResourceStored(item.getID());
 
 		int numberDelivered = 0;
 		if (deliveryList.containsKey(itemResourceGood))
@@ -608,7 +608,7 @@ public final class DeliveryUtil {
 		if (deliveredGoods.containsKey(good))
 			quantityDelivered += deliveredGoods.get(good).doubleValue();
 
-		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
+		double sellingInventory = getNumInInventory(good, sellingSettlement);
 		double sellingSupplyQuantity = sellingInventory - quantityDelivered - 1D;
 		if (sellingSupplyQuantity < 0D)
 			sellingSupplyQuantity = 0D;
@@ -619,7 +619,7 @@ public final class DeliveryUtil {
 		}
 		boolean allDelivered = (sellingInventory <= quantityDelivered);
 
-		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
+		double buyingInventory = getNumInInventory(good, buyingSettlement);
 		double buyingSupplyQuantity = buyingInventory + quantityDelivered + 1D;
 		if (buyingSupplyQuantity < 0D)
 			buyingSupplyQuantity = 0D;
@@ -734,17 +734,18 @@ public final class DeliveryUtil {
 	 * @return number of goods in inventory.
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
-	public static double getNumInInventory(Good good, Inventory inventory) {
+	public static double getNumInInventory(Good good, Settlement settlement) {
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			return inventory.getAmountResourceStored(good.getID(), false);
+			return settlement.getAmountResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
-			return inventory.getItemResourceNum(good.getID());
+			return settlement.getItemResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return inventory.findNumEmptyContainersOfType(good.getEquipmentType(), false);
+			return settlement.findNumEmptyContainersOfType(good.getEquipmentType(), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
-			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
+			VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
+			Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
 				boolean isEmpty = vehicle.isEmpty();
@@ -772,19 +773,17 @@ public final class DeliveryUtil {
 
 		Container result = null;
 
-		EquipmentType containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
-		Inventory settlementInv = settlement.getInventory();
+		int containersStored = settlement.findNumEmptyContainersOfType(containerType, false);
 
-		int containersStored = settlementInv.findNumEmptyContainersOfType(containerClass, false);
-
-		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersDelivered = 0;
 		if (deliveredGoods.containsKey(containerGood))
 			containersDelivered = deliveredGoods.get(containerGood);
 
 		if (containersStored > containersDelivered)
-			result = settlementInv.findContainer(containerClass, true, resource.getID());
+			result = settlement.findContainer(containerType, true, resource.getID());
 
 		return result;
 	}

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExplorationMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -68,7 +68,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				
 				// 1. Check if there are enough specimen containers at the settlement for
 				// collecting rock samples.
-				if (settlement.getInventory().findNumContainers(EquipmentType.BAG, true, true) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
+				if (settlement.findNumContainersOfType(EquipmentType.BAG) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
 					return 0;
 				}
 				

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Inventory.java
- * @date 2021-10-03
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -37,8 +38,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -957,15 +956,9 @@ public class Inventory implements Serializable {
 		} else if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			Iterator<Integer> i = containedUnitIDs.iterator();
 			while (!result && i.hasNext()) {
-				Unit u = unitManager.getUnitByID(i.next());
-				if (u.getUnitType() != UnitType.PERSON 
-						&& u.getUnitType() != UnitType.VEHICLE
-						&& u.getUnitType() != UnitType.EQUIPMENT
-						&& u.getUnitType() != UnitType.ROBOT
-						&& u.getUnitType() != UnitType.PLANET) {
-					if (u.getInventory().hasItemResource(id)) {
-						result = true;
-					}
+				Unit u = unitManager.getUnitByID(i.next());	
+				if (((EquipmentOwner)u).hasItemResource(id)) {
+					result = true;
 				}
 			}
 		}
@@ -1849,12 +1842,8 @@ public class Inventory implements Serializable {
 				result = true;
 			}
 					
-			if (owner != null && 
-					(unit.getUnitType() == UnitType.SETTLEMENT 
-					|| unit.getUnitType() == UnitType.PLANET
-					|| unit.getUnitType() == UnitType.BUILDING
-					|| unit.getUnitType() != UnitType.CONSTRUCTION)
-					&& unit.getInventory().containsUnit(owner)) {
+			if (owner != null
+					&& owner.getContainerUnit() == unit) {
 				logger.log(unit, Level.SEVERE, 30_000,
 						owner.getName() + " was owned by " + unit);
 				
@@ -1907,18 +1896,18 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON 
-							&& unit.getUnitType() != UnitType.ROBOT
-							&& unit.getUnitType() != UnitType.VEHICLE) {
-						for (Integer resource : unit.getInventory().getAllARStored(false)) {
-//							updateAmountResourceCapacityCache(resource);
-//							updateAmountResourceStoredCache(resource);
-							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-						}
-						for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
-						}
-					}
+//					else if (unit.getUnitType() != UnitType.PERSON 
+//							&& unit.getUnitType() != UnitType.ROBOT
+//							&& unit.getUnitType() != UnitType.VEHICLE) {
+//						for (Integer resource : unit.getInventory().getAllARStored(false)) {
+////							updateAmountResourceCapacityCache(resource);
+////							updateAmountResourceStoredCache(resource);
+//							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+//						}
+//						for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
+//							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+//						}
+//					}
 				}
 				
 				if (owner.getUnitType() == UnitType.SETTLEMENT) {
@@ -2003,20 +1992,20 @@ public class Inventory implements Serializable {
 							}
 						}
 					}
-					else if (unit.getUnitType() != UnitType.PERSON 
-							&& unit.getUnitType() != UnitType.ROBOT
-							&& unit.getUnitType() != UnitType.VEHICLE
-							) {		
-						for (Integer resource : unit.getInventory().getAllARStored(false)) {
-//							updateAmountResourceCapacityCache(resource);
-//							updateAmountResourceStoredCache(resource);
-							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-						}
-						
-						for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
-							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-						}
-					}
+//					else if (unit.getUnitType() != UnitType.PERSON 
+//							&& unit.getUnitType() != UnitType.ROBOT
+//							&& unit.getUnitType() != UnitType.VEHICLE
+//							) {		
+//						for (Integer resource : unit.getInventory().getAllARStored(false)) {
+////							updateAmountResourceCapacityCache(resource);
+////							updateAmountResourceStoredCache(resource);
+//							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+//						}
+//						
+//						for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
+//							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+//						}
+//					}
 				}
 				
 				if (owner.getUnitType() == UnitType.SETTLEMENT) {
@@ -2102,19 +2091,19 @@ public class Inventory implements Serializable {
 			if (owner.getUnitType() == UnitType.PLANET)
 				return result;
 			
-			Unit cu = owner.getContainerUnit();
-			Inventory containerInv = null;
-			if (cu != null && cu.getUnitType() != UnitType.PLANET) {
-				containerInv = cu.getInventory();
-
-				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
-					result = containerInv.getRemainingGeneralCapacity(allowDirty);
-				}
-	
-				if (containerInv.getContainerUnitGeneralCapacityLimit(allowDirty) < result) {
-					result = containerInv.getContainerUnitGeneralCapacityLimit(allowDirty);
-				}
-			}
+//			Unit cu = owner.getContainerUnit();
+//			Inventory containerInv = null;
+//			if (cu != null && cu.getUnitType() != UnitType.PLANET) {
+//				containerInv = cu.getInventory();
+//
+//				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
+//					result = containerInv.getRemainingGeneralCapacity(allowDirty);
+//				}
+//	
+//				if (containerInv.getContainerUnitGeneralCapacityLimit(allowDirty) < result) {
+//					result = containerInv.getContainerUnitGeneralCapacityLimit(allowDirty);
+//				}
+//			}
 		}
 
 		return result;
@@ -2262,11 +2251,11 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedCapacity += ((Equipment)u).getAmountResourceCapacity(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON 
-								&& u.getUnitType() != UnitType.ROBOT
-								&& u.getUnitType() != UnitType.VEHICLE) {
-							containedCapacity += u.getInventory().getAmountResourceCapacity(resource, false);
-						}
+//						else if (u.getUnitType() != UnitType.PERSON 
+//								&& u.getUnitType() != UnitType.ROBOT
+//								&& u.getUnitType() != UnitType.VEHICLE) {
+//							containedCapacity += u.getInventory().getAmountResourceCapacity(resource, false);
+//						}
 					}
 				}
 				containersCapacityCache.put(resource, containedCapacity);
@@ -2304,11 +2293,11 @@ public class Inventory implements Serializable {
 						if (u.getUnitType() == UnitType.EQUIPMENT) {
 							containedStored +=  ((Equipment)u).getAmountResourceStored(resource);
 						}
-						else if (u.getUnitType() != UnitType.PERSON 
-								&& u.getUnitType() != UnitType.ROBOT
-								&& u.getUnitType() != UnitType.VEHICLE) {
-							containedStored += u.getInventory().getAmountResourceCapacity(resource, false);
-						}
+//						else if (u.getUnitType() != UnitType.PERSON 
+//								&& u.getUnitType() != UnitType.ROBOT
+//								&& u.getUnitType() != UnitType.VEHICLE) {
+//							containedStored += u.getInventory().getAmountResourceCapacity(resource, false);
+//						}
 					}
 					containersStoredCache.put(resource, containedStored);
 					containersStoredCacheDirty.put(resource, false);
@@ -2464,11 +2453,11 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					containerStored += ((Equipment)u).getAmountResourceStored(resource);
 				}
-				else if (u.getUnitType() != UnitType.PERSON 
-						&& u.getUnitType() != UnitType.ROBOT
-						&& u.getUnitType() != UnitType.VEHICLE) {
-					containerStored += u.getInventory().getAmountResourceStored(resource, false);
-				}
+//				else if (u.getUnitType() != UnitType.PERSON 
+//						&& u.getUnitType() != UnitType.ROBOT
+//						&& u.getUnitType() != UnitType.VEHICLE) {
+//					containerStored += u.getInventory().getAmountResourceStored(resource, false);
+//				}
 			}	
 		}
 		containersStoredCache.put(resource, containerStored);
@@ -2569,9 +2558,9 @@ public class Inventory implements Serializable {
 				if (u instanceof ResourceHolder) {
 					tempAllStored.addAll(((ResourceHolder)u).getAmountResourceIDs());
 				}
-				else {
-					tempAllStored.addAll(u.getInventory().getAllARStored(false));
-				}
+//				else {
+//					tempAllStored.addAll(u.getInventory().getAllARStored(false));
+//				}
 			}
 		}
 
@@ -2627,11 +2616,11 @@ public class Inventory implements Serializable {
 				if (u.getUnitType() == UnitType.EQUIPMENT) {
 					tempStored = ((Equipment)u).getStoredMass();
 				}
-				else if (u.getUnitType() != UnitType.PERSON 
-						&& u.getUnitType() != UnitType.ROBOT
-						&& u.getUnitType() != UnitType.VEHICLE) {
-					tempStored = u.getInventory().getTotalAmountResourcesStored(false);
-				}
+//				else if (u.getUnitType() != UnitType.PERSON 
+//						&& u.getUnitType() != UnitType.ROBOT
+//						&& u.getUnitType() != UnitType.VEHICLE) {
+//					tempStored = u.getInventory().getTotalAmountResourcesStored(false);
+//				}
 			}
 		}
 

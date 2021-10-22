@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -27,7 +28,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Meta task for the LoadVehicleEVA task.
  */
 public class LoadVehicleEVAMeta extends MetaTask {
-
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -111,7 +111,7 @@ public class LoadVehicleEVAMeta extends MetaTask {
 	        
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
-	            int numEVASuits = settlement.getInventory().findNumEVASuits(false, false);
+	            int numEVASuits = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 	            if (numEVASuits == 0)
 	            	return 0;
 	            else if (numEVASuits >= 2) {

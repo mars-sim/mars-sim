@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReturnLightUtilityVehicle.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -10,18 +10,17 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -150,30 +149,39 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		Mission mission = worker.getMission();
 		
 		if (mission == null) {
+			boolean done = false;
+			Rover r = null;
+			Settlement s = null;
+			
 			// Put light utility vehicle in return container.
-			if (returnContainer.getInventory().canStoreUnit(luv, false)) {
-				
+			if (returnContainer.getUnitType() == UnitType.VEHICLE) {
+				r = (Rover)returnContainer;
+				done = r.setLUV(luv);
+				// Unload any attachment parts or inventory from light utility vehicle.
+				unloadLUVInventory(r);
+			}
+			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
+				s = (Settlement)returnContainer;
+				done = s.addParkedVehicle(r);
+//				luv.findNewParkingLoc();
+				// Unload any attachment parts or inventory from light utility vehicle.
+				unloadLUVInventory(s);
+			}
+	
+			if (done) {
 				if (person != null)
 					// Remove person from light utility vehicle.
-					luv.getInventory().retrieveUnit(person);
+					luv.removePerson(person);
 				else if (robot != null)
 					// Remove robot from light utility vehicle.
-					luv.getInventory().retrieveUnit(robot);
+					luv.removeRobot(robot);
 
 				luv.setOperator(null);
 				
-				returnContainer.getInventory().storeUnit(luv);		
-				
-				if (returnContainer instanceof Settlement) {
-					luv.findNewParkingLoc();
-				}
 			} else {
 				logger.severe(luv, "Light utility vehicle: could not be stored in "
 						+ returnContainer.getName());
 			}
-
-			// Unload any attachment parts or inventory from light utility vehicle.
-			unloadLUVInventory();
 		}
 
 		endTask();
@@ -184,18 +192,15 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	/**
 	 * Unload all attachment parts and inventory from light utility vehicle.
 	 */
-	private void unloadLUVInventory() {
+	private void unloadLUVInventory(EquipmentOwner eo) {
 
-		Inventory rcInv = returnContainer.getInventory();
+//		Inventory rcInv = returnContainer.getInventory();
 
 		// Unload all units.
 		Iterator<Equipment> j = luv.getEquipmentList().iterator();
 		while (j.hasNext()) {
 			Equipment unit = j.next();
-			if (rcInv.canStoreUnit(unit, false)) {
-				unit.transfer(luv, returnContainer);
-
-			} else {
+			if (!unit.transfer(luv, returnContainer)) {
 				logger.severe(unit, "Cannot be stored in " + returnContainer.getName());
 			}
 		}
@@ -205,9 +210,9 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 			int num = luv.getItemResourceStored(id);
 			Part part = ItemResourceUtil.findItemResource(id);
 			double mass = part.getMassPerItem() * num;
-			if (rcInv.getRemainingGeneralCapacity(false) >= mass) {
+			if (eo.getRemainingCargoCapacity() >= mass) {
 				luv.retrieveItemResource(id, num);
-				rcInv.storeItemResources(id, num);
+				eo.storeItemResource(id, num);
 			} else {
 				logger.severe(returnContainer, part.getName() + " numbered " + num
 							+ " cannot be stored due to insufficient remaining general capacity.");
@@ -217,9 +222,9 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		// Unload all amount resources.
 		for(int id : luv.getAmountResourceIDs()) {
 			double amount = luv.getAmountResourceStored(id);
-			if (rcInv.hasAmountResourceCapacity(id, amount, false)) {
+			if (eo.getAmountResourceCapacity(id) >= amount) {
 				luv.retrieveAmountResource(id, amount);
-				rcInv.storeAmountResource(id, amount, true);
+				eo.storeAmountResource(id, amount);
 			} else {
 				logger.severe(returnContainer, ResourceUtil.findAmountResourceName(id)
 							  + " of amount " + amount + " kg. cannot be stored");

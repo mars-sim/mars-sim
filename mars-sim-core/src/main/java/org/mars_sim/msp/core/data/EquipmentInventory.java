@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentInventory.java
- * @date 2021-10-19
+ * @date 2021-10-20
  * @author Barry Evans
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +17,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.Loggable;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -37,7 +38,7 @@ public class EquipmentInventory
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
+//	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
 	
 	private Loggable owner;
 	
@@ -87,6 +88,23 @@ public class EquipmentInventory
 		return Collections.unmodifiableList(equipmentList);
 	}
 
+	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		Collection<Container> result = new HashSet<>();
+		for (Equipment e : getEquipmentList()) {
+			if (e != null && e instanceof Container) {
+				Container c = (Container)e;
+				result.add(c);
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
@@ -244,6 +262,17 @@ public class EquipmentInventory
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
+		// Note: it does not include the general capacity (aka cargo capacity)
+		return getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
 		return cargoCapacity - getStoredMass();
 	}
 	
@@ -280,10 +309,9 @@ public class EquipmentInventory
 
 
 	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
+	 * Finds the number of empty containers of a particular equipment
 	 * 
-	 * @param containerClass  the unit class.
+	 * @param containerType the equipment type.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
@@ -293,6 +321,24 @@ public class EquipmentInventory
 		for (Equipment e : equipmentList) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
 			if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
+				result++;
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	public int findNumContainersOfType(EquipmentType containerType) {
+		int result = 0;
+		for (Equipment e : equipmentList) {
+			// The contained unit has to be an Equipment that is empty and of the correct type
+			if ((e != null) && (e.getEquipmentType() == containerType)) {
 				result++;
 			}
 		}
@@ -369,7 +415,31 @@ public class EquipmentInventory
 			return false;
 		return microInventory.isEmpty();
 	}
-
+	
+	/**
+	 * Add resource capacity
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void addResourceCapacity(int resource, double capacity) {
+		if (ResourceUtil.findAmountResource(resource) != null) {
+			microInventory.addCapacity(resource, capacity);
+		}
+	}
+	
+	/**
+	 * Set the resource capacity
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void setResourceCapacity(int resource, double capacity) {
+		if (ResourceUtil.findAmountResource(resource) != null) {
+			microInventory.setCapacity(resource, capacity);
+		}
+	}
+	
 	/**
 	 * Set the resource capacities.
 	 * TODO should be keyed on resourceID not string.
@@ -383,4 +453,68 @@ public class EquipmentInventory
 			}
 		}
 	}
+
+	/**
+	 * Set the resource capacities.
+	 * @param capacities
+	 */
+	public void setResourceCapacityMap(Map<Integer, Double> capacities) {
+		for (Entry<Integer, Double> v : capacities.entrySet()) {
+			Integer foundResource = v.getKey();
+			if (foundResource != null) {
+				microInventory.setCapacity(foundResource, v.getValue());
+			}
+		}
+	}
+	
+	/**
+	 * Adds to the cargo capacity (aka the general capacity)
+	 * 
+	 * @param value
+	 */
+	public void addCargoCapacity(double value) {
+		cargoCapacity += value;
+	}
+	
+	/**
+	 * Adds the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void addCapacity(int resource, double capacity) {
+		microInventory.addCapacity(resource, capacity);
+	}
+	
+	/**
+	 * Removes the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void removeCapacity(int resource, double capacity) {
+		microInventory.removeCapacity(resource, capacity);
+	}
+
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return owner.getContainerUnit();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return getItemResourceIDs().contains(resource);
+	}
+
 }

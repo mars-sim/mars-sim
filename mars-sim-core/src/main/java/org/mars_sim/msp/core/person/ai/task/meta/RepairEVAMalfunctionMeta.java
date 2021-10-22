@@ -112,7 +112,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
 		// Add probability for all malfunctionable entities in person's local.
-		for(Malfunctionable entity : MalfunctionFactory.getMalfunctionables(settlement)) {
+		for(Malfunctionable entity : MalfunctionFactory.getBuildingMalfunctionables(settlement)) {
 			// Check if entity has any EVA malfunctions.
 			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
 				if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) > 0) {

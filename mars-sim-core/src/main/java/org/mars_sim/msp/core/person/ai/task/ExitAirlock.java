@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -750,7 +751,7 @@ public class ExitAirlock extends Task implements Serializable {
 				housing = (Vehicle)airlock.getEntity();
 			
 
-			suit = InventoryUtil.getGoodEVASuit(housing, person);
+			suit = InventoryUtil.getGoodEVASuitNResource((EquipmentOwner)housing, person);
 		}
 
 		if (!hasSuit && suit != null) {
@@ -1218,32 +1219,33 @@ public class ExitAirlock extends Task implements Serializable {
 		Unit housing = person.getContainerUnit();
 		
 		if (housing instanceof Settlement) {
-			Inventory entityInv = housing.getInventory();
-
-			// Fill oxygen in suit from entity's inventory.
-			double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
-			entityInv.addAmountDemandTotalRequest(oxygenID, neededOxygen);
+			Settlement settlement = (Settlement)housing;
+			
+			// Fill oxygen in suit
+			double availableOxygen = settlement.getAmountResourceStored(oxygenID);
+//			entityInv.addAmountDemandTotalRequest(oxygenID, neededOxygen);
 	
 			takenOxygen = neededOxygen;
 			if (takenOxygen > availableOxygen)
 				takenOxygen = availableOxygen;
 
 			// Retrieve resource
-			entityInv.retrieveAmountResource(oxygenID, takenOxygen);
-			entityInv.addAmountDemand(oxygenID, takenOxygen);
+			settlement.retrieveAmountResource(oxygenID, takenOxygen);
+//			entityInv.addAmountDemand(oxygenID, takenOxygen);
 
-			// Fill water in suit from entity's inventory.
-			double availableWater = entityInv.getAmountResourceStored(waterID, false);
-			entityInv.addAmountDemandTotalRequest(waterID, neededWater);
+			// Fill water in suit.
+			double availableWater = settlement.getAmountResourceStored(waterID);
+//			entityInv.addAmountDemandTotalRequest(waterID, neededWater);
 	
 			takenWater = neededWater;
 			if (takenWater > availableWater)
 				takenWater = availableWater;
 
 			// Retrieve resource
-			entityInv.retrieveAmountResource(waterID, takenWater);
-			entityInv.addAmountDemand(waterID, takenWater);
+			settlement.retrieveAmountResource(waterID, takenWater);
+//			entityInv.addAmountDemand(waterID, takenWater);
 		}
+		
 		else if (housing instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) housing;
 			takenOxygen = neededOxygen - rh.retrieveAmountResource(oxygenID, neededOxygen);

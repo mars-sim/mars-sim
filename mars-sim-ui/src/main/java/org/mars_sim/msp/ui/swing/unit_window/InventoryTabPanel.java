@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2021-10-14
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -19,7 +19,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,13 +45,10 @@ import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -79,7 +75,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	private Inventory inventory;
+	private ResourceHolder resourceHolder;
 	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
@@ -99,8 +95,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
         this.unit = unit;
-        if (unit instanceof Settlement || unit instanceof Vehicle)
-        	this.inventory = unit.getInventory();
+        this.resourceHolder = (ResourceHolder)unit;
 	}
 	
 	public boolean isUIDone() {
@@ -281,25 +276,25 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         private void loadModel(List<Resource> kys, Map<Resource, Number> res, Map<Resource, Number> cap) {
-            if (inventory != null) {
-	            kys.addAll(inventory.getAllAmountResourcesStored(false));
-	            Iterator<Resource> iAmount = kys.iterator();
-	            while (iAmount.hasNext()) {
-	                AmountResource resource = (AmountResource) iAmount.next();
-	                res.put(resource, inventory.getAmountResourceStored(resource, false));
-	                cap.put(resource, inventory.getAmountResourceCapacity(resource, false));
-	            }
-	
-	            Set<ItemResource> itemResources = inventory.getAllIRStored();
-	            kys.addAll(itemResources);
-	            Iterator<ItemResource> iItem = itemResources.iterator();
-	            while (iItem.hasNext()) {
-	                ItemResource resource = iItem.next();
-	                res.put(resource, inventory.getItemResourceNum(resource));
-	                cap.put(resource, null);
-	            }
-            }
-            else {
+//            if (inventory != null) {
+//	            kys.addAll(inventory.getAllAmountResourcesStored(false));
+//	            Iterator<Resource> iAmount = kys.iterator();
+//	            while (iAmount.hasNext()) {
+//	                AmountResource resource = (AmountResource) iAmount.next();
+//	                res.put(resource, inventory.getAmountResourceStored(resource, false));
+//	                cap.put(resource, inventory.getAmountResourceCapacity(resource, false));
+//	            }
+//	
+//	            Set<ItemResource> itemResources = inventory.getAllIRStored();
+//	            kys.addAll(itemResources);
+//	            Iterator<ItemResource> iItem = itemResources.iterator();
+//	            while (iItem.hasNext()) {
+//	                ItemResource resource = iItem.next();
+//	                res.put(resource, inventory.getItemResourceNum(resource));
+//	                cap.put(resource, null);
+//	            }
+//            }
+//            else {
             	// New approach based ion interfaces
             	if (unit instanceof ResourceHolder) {
             		ResourceHolder rh = (ResourceHolder) unit;
@@ -329,7 +324,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	 	                cap.put(resource, null);
 	 	            }
             	}
-            }
+//            }
 
             
             // Sort resources alphabetically by name.
@@ -426,17 +421,20 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
 			
-            if (inventory != null) {
-				for (Equipment e : inventory.findAllEquipment()) {
-					String name = e.getName();
-					types.put(name, e.getEquipmentType().getName());
-					contentOwner.put(name, getContentOwner(e));
-					mass.put(name, e.getMass());
-					equipmentList.add(e);
-				}
-            }
-            else if (unit.getUnitType() == UnitType.PERSON
-            		|| unit.getUnitType() == UnitType.ROBOT) {
+//            if (inventory != null) {
+//				for (Equipment e : inventory.findAllEquipment()) {
+//					String name = e.getName();
+//					types.put(name, e.getEquipmentType().getName());
+//					contentOwner.put(name, getContentOwner(e));
+//					mass.put(name, e.getMass());
+//					equipmentList.add(e);
+//				}
+//            }
+            if (unit.getUnitType() == UnitType.PERSON
+            		|| unit.getUnitType() == UnitType.ROBOT
+            		|| unit.getUnitType() == UnitType.VEHICLE
+            		|| unit.getUnitType() == UnitType.SETTLEMENT
+            		) {
             	for (Equipment e : ((EquipmentOwner)unit).getEquipmentList()) {
 					String name = e.getName();
 					types.put(name, e.getEquipmentType().getName());
@@ -445,8 +443,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					equipmentList.add(e);
 				}
             }
-//          else if (unit.getUnitType() == UnitType.ROBOT) { 	
-//          }
             else if (unit.getUnitType() == UnitType.EQUIPMENT) {
     			Equipment e = (Equipment)unit;
     			
@@ -537,16 +533,20 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			Map<String, String> newContentOwner = new HashMap<>();
 			Map<String, Double> newMass = new HashMap<>();
 			
-			if (inventory != null) {
-				for (Equipment e : inventory.findAllEquipment()) {
-					newTypes.put(e.getName(), e.getEquipmentType().getName());
-					newContentOwner.put(e.getName(), getContentOwner(e));
-					newMass.put(e.getName(), e.getMass());
-					newEquipment.add(e);
-				}
-			}
+//			if (inventory != null) {
+//				for (Equipment e : inventory.findAllEquipment()) {
+//					newTypes.put(e.getName(), e.getEquipmentType().getName());
+//					newContentOwner.put(e.getName(), getContentOwner(e));
+//					newMass.put(e.getName(), e.getMass());
+//					newEquipment.add(e);
+//				}
+//			}
 			
-            else if (unit.getUnitType() == UnitType.PERSON) {
+            if (unit.getUnitType() == UnitType.PERSON
+            		|| unit.getUnitType() == UnitType.ROBOT
+            		|| unit.getUnitType() == UnitType.VEHICLE
+            		|| unit.getUnitType() == UnitType.SETTLEMENT
+            		) {
             	for (Equipment e : ((Person)unit).getEquipmentList()) {
             		newTypes.put(e.getName(), e.getEquipmentType().getName());
 					newContentOwner.put(e.getName(), getContentOwner(e));
@@ -554,9 +554,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					newEquipment.add(e);
 				}
             }
-//          else if (unit.getUnitType() == UnitType.ROBOT) { 	
-//          }
-			
             else if (unit.getUnitType() == UnitType.EQUIPMENT) {
     			Equipment e = (Equipment)unit;
     			

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
@@ -133,6 +132,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private SickBay sickbay;
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
+	/** The light utility vehicle currently docked at the rover. */
+	private LightUtilityVehicle luv;	
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -153,8 +154,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Gets the estimated cabin compartment air volume.
 		cabinAirVolume = vehicleConfig.getEstimatedAirVolume(type);
 
-		Map<String, Double> capacitiles = vehicleConfig.getCargoCapacity(type);
-		oxygenCapacity = capacitiles.get(LifeSupportInterface.OXYGEN);
+		Map<String, Double> capacities = vehicleConfig.getCargoCapacity(type);
+		oxygenCapacity = capacities.get(LifeSupportInterface.OXYGEN);
+		
 		min_o2_pressure = SimulationConfig.instance().getPersonConfig().getMinSuitO2Pressure();
 		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS 
 				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
@@ -387,7 +389,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 			else if (getSettlement() != null)  {
 
-				double o2 = getSettlement().getInventory().getAmountResourceStored(OXYGEN, true);
+				double o2 = getSettlement().getAmountResourceStored(OXYGEN);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000, 
 						"No more oxygen.");
@@ -401,7 +403,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 					return false;
 				}
 				
-				if (getSettlement().getInventory().getAmountResourceStored(WATER, true) <= 0D) {
+				if (getSettlement().getAmountResourceStored(WATER) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000, 
 							"Ran out of water.");
 					return false;
@@ -490,8 +492,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 */
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
-		
-		Inventory inv = null;
+	
 		Vehicle v = null;
 		
 		// NOTE: need to draw the the hose connecting between the vehicle and the settlement to supply resources
@@ -508,15 +509,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			}
 
 			else {
-				// Use the settlement's inventory
-				inv = getSettlement().getInventory();
 
-				double oxygenLeft = inv.getAmountResourceStored(OXYGEN, false);
+				double oxygenLeft = getSettlement().getAmountResourceStored(OXYGEN);
 
 				if (oxygenTaken > oxygenLeft)
 					oxygenTaken = oxygenLeft;
 				
-				inv.retrieveAmountResource(OXYGEN, oxygenTaken);
+				getSettlement().retrieveAmountResource(OXYGEN, oxygenTaken);
 			}
 		}
 		
@@ -543,7 +542,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		
-		Inventory inv = null;
 		Vehicle v = null;
 		
 		// Note: need to draw the the hose connecting between the vehicle and the settlement to supply resources
@@ -560,15 +558,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			}
 
 			else {
-				// Use the settlement's inventory
-				inv = getSettlement().getInventory();
-				
-				double waterLeft = inv.getAmountResourceStored(WATER, false);
+		
+				double waterLeft = getSettlement().getAmountResourceStored(WATER);
 
 				if (waterTaken > waterLeft)
 					waterTaken = waterLeft;
 
-				inv.retrieveAmountResource(WATER, waterTaken);
+				getSettlement().retrieveAmountResource(WATER, waterTaken);
 			}
 		}
 		else {
@@ -607,7 +603,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				oxygenLeft = getAmountResourceStored(OXYGEN);
 		}
 		else {
-			oxygenLeft = getSettlement().getInventory().getAmountResourceStored(OXYGEN, false);
+			oxygenLeft = getSettlement().getAmountResourceStored(OXYGEN);
 		}
  
 		if (oxygenLeft < SMALL_AMOUNT) {
@@ -1024,6 +1020,22 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	
 	public double getCargoCapacity() {
 		return cargoCapacity;
+	}
+
+	public boolean setLUV(LightUtilityVehicle luv) {
+		if (!hasLUV()) {
+			this.luv = luv;
+			return true;
+		}
+		return false;
+	}
+	
+	public LightUtilityVehicle getLUV() {
+		return luv;
+	}
+	
+	public boolean hasLUV() {
+		return luv != null;
 	}
 	
 	@Override

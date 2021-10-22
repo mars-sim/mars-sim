@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -118,15 +118,14 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// Take field samples from inventory.
 		if (!isDone()) {
 			Unit container = person.getContainerUnit();
-			if (!(container instanceof MarsSurface)) {
-				Inventory inv = container.getInventory();
-				double totalRockSampleMass = inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false);
+			if (container.getUnitType() != UnitType.PLANET) {
+				double totalRockSampleMass = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
 				if (totalRockSampleMass >= SAMPLE_MASS) {
 					double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
 					if (fieldSampleMass > totalRockSampleMass) {
 						fieldSampleMass = totalRockSampleMass;
 					}
-					inv.retrieveAmountResource(ResourceUtil.rockSamplesID, fieldSampleMass);
+					((ResourceHolder)container).retrieveAmountResource(ResourceUtil.rockSamplesID, fieldSampleMass);
 					// Record the amount of rock samples being studied
 					person.getAssociatedSettlement().addResourceCollected(ResourceUtil.rockSamplesID, fieldSampleMass);
 				}

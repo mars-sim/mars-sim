@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatDrink.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -146,19 +146,12 @@ public class EatDrink extends Task implements Serializable {
 //		double foodAmount = 0;
 		double waterAmount = 0;
 		
-		Inventory inv = null;
 		Unit container = person.getContainerUnit();
 		if (container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
 			// Take preserved food from inventory if it is available.
 			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
 			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);
-		}
-		else if (container != null) {
-			inv = container.getInventory();	
-			// Take preserved food from inventory if it is available.
-			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
-			waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
 		}
 		
 		boolean food = false;
@@ -263,10 +256,8 @@ public class EatDrink extends Task implements Serializable {
 						walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
 						
 					// Take napkin from inventory if available.
-//					inv = person.getSettlement().getInventory();
-					if (inv != null) {
-						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinID, inv, false);
-					}				
+					if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
+						hasNapkin = true;				
 				}
 				
 				else if (foodAmount > 0) {
@@ -699,17 +690,16 @@ public class EatDrink extends Task implements Serializable {
 			ResourceHolder rh = (ResourceHolder) provider;
 			return (rh.retrieveAmountResource(resourceID, quantity) == 0D);
 		}
-		else {
-			Inventory inv = provider.getInventory();
-			double stored = inv.getAmountResourceStored(resourceID, true);
-			if (stored < quantity) {
-				quantity = stored;
-			}
-			else {
-				result = true;
-			}
-			inv.retrieveAmountResource(resourceID, quantity);
-		}
+//		else {
+//			double stored = inv.getAmountResourceStored(resourceID, true);
+//			if (stored < quantity) {
+//				quantity = stored;
+//			}
+//			else {
+//				result = true;
+//			}
+//			inv.retrieveAmountResource(resourceID, quantity);
+//		}
 		
 		return result;
 	}
@@ -726,10 +716,11 @@ public class EatDrink extends Task implements Serializable {
 			ResourceHolder rh = (ResourceHolder) provider;
 			return rh.getAmountResourceStored(resourceID);
 		}
-		else {
-			Inventory inv = provider.getInventory();
-			return inv.getAmountResourceStored(resourceID, true);
-		}
+//		else {
+//			Inventory inv = provider.getInventory();
+//			return inv.getAmountResourceStored(resourceID, true);
+//		}
+		return 0;
 	}
 	
 	/**
@@ -1040,23 +1031,12 @@ public class EatDrink extends Task implements Serializable {
 			if (proportion > MIN) {
 		
 				Unit containerUnit = person.getTopContainerUnit();
-				
-				Inventory inv = null;
 
-				if (containerUnit != null) {			
-					if (containerUnit instanceof MarsSurface) {
-						// Note: in future, may get dessert drink from one's EVA suit
-					}
-					else {
-						inv = containerUnit.getInventory();
-					}
-				}
-				
-				if (inv != null) {
+				if (containerUnit != null) {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					// Take dessert resource from inventory if it is available.
-					boolean hasDessert = Storage.retrieveAnResource(proportion, unpreparedDessertAR, inv, true);
+					boolean hasDessert = Storage.retrieveAnResource(proportion, unpreparedDessertAR, (ResourceHolder) containerUnit, true);
 					
 					if (hasDessert) {
 						// Consume water inside the dessert
@@ -1099,9 +1079,9 @@ public class EatDrink extends Task implements Serializable {
 		List<AmountResource> result = new ArrayList<>();
 
 		Unit containerUnit = person.getContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			Inventory inv = containerUnit.getInventory();
-
+		
+		if (containerUnit.getUnitType() != UnitType.PLANET) {
+			ResourceHolder rh = (ResourceHolder)containerUnit;
 			boolean option = true;
 
 			AmountResource[] ARs = PreparingDessert.getArrayOfDessertsAR();
@@ -1111,7 +1091,7 @@ public class EatDrink extends Task implements Serializable {
 				
 				boolean hasAR = false;
 				if (amountNeeded > MIN) {
-					hasAR = Storage.retrieveAnResource(amountNeeded, ar, inv, false);
+					hasAR = Storage.retrieveAnResource(amountNeeded, ar, rh, false);
 				}
 				if (option && hasAR) {
 					result.add(ar);
@@ -1215,11 +1195,8 @@ public class EatDrink extends Task implements Serializable {
 	protected void clearDown() {
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
-			Unit containerUnit = person.getContainerUnit();
 			if (person.isInside()) {
-				Inventory inv = containerUnit.getInventory();
-				if (NAPKIN_MASS > 0)
-					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, "EatDrink::endTask");
+				((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.solidWasteID, NAPKIN_MASS);	
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2021-09-05
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for getting manufacturing processes.
@@ -284,8 +285,7 @@ public final class ManufactureUtil {
 			
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-						ar, true, false);
+				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
@@ -328,7 +328,7 @@ public final class ManufactureUtil {
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
 		// settlement's inventory
-		Inventory inv = workshop.getBuilding().getInventory();
+		Settlement settlement = workshop.getBuilding().getSettlement();
 
 		// Check to see if workshop is full of processes.
 		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse()) {
@@ -346,7 +346,7 @@ public final class ManufactureUtil {
 //		}
 
 		// Check to see if process input items are available at settlement.
-        return areProcessInputsAvailable(process, inv);
+        return areProcessInputsAvailable(process, settlement);
 
 		// Check to see if room for process output items at settlement.
 		// if (!canProcessOutputsBeStored(process, inv)) result = false;
@@ -429,7 +429,7 @@ public final class ManufactureUtil {
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
 	 */
-	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv) {
+	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Settlement settlement) {
 		boolean result = true;
 
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -438,14 +438,14 @@ public final class ManufactureUtil {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 //                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
+				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
 				// Add demand tracking
-				inv.addAmountDemandTotalRequest(id, item.getAmount());
+//				inv.addAmountDemandTotalRequest(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = (inv.getItemResourceNum(id) >= (int) item.getAmount());
+				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
 				// Add tracking demand
-				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
+//				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}
@@ -565,35 +565,27 @@ public final class ManufactureUtil {
 	 */
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
-		Inventory inv = settlement.getInventory();
 		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
 
 		if (info.getType().equalsIgnoreCase("vehicle")) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits = inv.findAllUnitsOfClass(LightUtilityVehicle.class);
+				salvagableUnits = settlement.getVehicleTypeList(VehicleType.LUV);
 			} else {
-				salvagableUnits = inv.findAllUnitsOfClass(Rover.class);
-
-				// Remove rovers that aren't the right type.
-				Iterator<? extends Unit> i = salvagableUnits.iterator();
-				while (i.hasNext()) {
-					Rover rover = (Rover) i.next();
-					if (!rover.getDescription().equalsIgnoreCase(info.getItemName()))
-						i.remove();
-				}
+				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
+				salvagableUnits = settlement.getVehicleTypeList(type);
 			}
 
 			// Remove any reserved vehicles.
 			Iterator<? extends Unit> i = salvagableUnits.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicle.isReserved() || !isEmpty)
 					i.remove();
 			}
 		} else if (info.getType().equalsIgnoreCase("equipment")) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits = inv.findAllEquipmentType(eType);
+			salvagableUnits = settlement.getEquipmentTypeList(eType);
 		}
 
 		// Make sure container unit is settlement.
@@ -604,11 +596,11 @@ public final class ManufactureUtil {
 		}
 
 		// Make sure unit's inventory is empty.
-		Iterator<? extends Unit> j = salvagableUnits.iterator();
-		while (j.hasNext()) {
-			if (!j.next().getInventory().isEmpty(false))
-				j.remove();
-		}
+//		Iterator<? extends Unit> j = salvagableUnits.iterator();
+//		while (j.hasNext()) {
+//			if (!j.next().getInventory().isEmpty(false))
+//				j.remove();
+//		}
 
 		// If malfunctionable, find most worn unit.
 		if (salvagableUnits.size() > 0) {

@@ -15,10 +15,12 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -352,7 +354,7 @@ public class Trade extends RoverMission implements Serializable {
 		// If rover is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
 
-			tradingSettlement.getInventory().storeUnit(v);
+			tradingSettlement.addParkedVehicle(v);
 	
 			// Add vehicle to a garage if available.
 			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
@@ -517,7 +519,7 @@ public class Trade extends RoverMission implements Serializable {
 			towed.setReservedForMission(false);
 			getRover().setTowedVehicle(null);
 			towed.setTowingVehicle(null);
-			tradingSettlement.getInventory().storeUnit(towed);
+			tradingSettlement.addParkedVehicle(towed);
 			towed.findNewParkingLoc();
 		}
 	}
@@ -534,7 +536,7 @@ public class Trade extends RoverMission implements Serializable {
 					buyVehicle.setReservedForMission(true);
 					getRover().setTowedVehicle(buyVehicle);
 					buyVehicle.setTowingVehicle(getRover());
-					tradingSettlement.getInventory().retrieveUnit(buyVehicle);
+					tradingSettlement.removeParkedVehicle(buyVehicle);
 				} else {	
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
@@ -585,11 +587,11 @@ public class Trade extends RoverMission implements Serializable {
 			for (MissionMember mm: getMembers()) {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
-					if (person.isDeclaredDead()) {
+					if (!person.isDeclaredDead()) {
 						EVASuit suit0 = getVehicle().findEVASuit(person);
 						if (suit0 == null) { 
-							if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {
-								EVASuit suit1 = tradingSettlement.getInventory().findAnEVAsuit(person); 
+							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
+								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person); 
 								if (suit1 != null) {
 									boolean done = suit1.transfer(tradingSettlement, getVehicle());
 									if (!done)
@@ -624,7 +626,7 @@ public class Trade extends RoverMission implements Serializable {
 			}
 
 			// Embark from settlement
-			tradingSettlement.getInventory().retrieveUnit(getVehicle());
+			tradingSettlement.removeParkedVehicle(getVehicle());
 			setPhaseEnded(true);
 		}
 	}
@@ -641,7 +643,7 @@ public class Trade extends RoverMission implements Serializable {
 					sellVehicle.setReservedForMission(true);
 					getRover().setTowedVehicle(sellVehicle);
 					sellVehicle.setTowingVehicle(getRover());
-					getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
+					getStartingSettlement().removeParkedVehicle(sellVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
@@ -660,7 +662,7 @@ public class Trade extends RoverMission implements Serializable {
 			towed.setReservedForMission(false);
 			getRover().setTowedVehicle(null);
 			towed.setTowingVehicle(null);
-			disembarkSettlement.getInventory().storeUnit(towed);
+			disembarkSettlement.addParkedVehicle(towed);
 			towed.findNewParkingLoc();
 		}
 

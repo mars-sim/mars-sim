@@ -102,7 +102,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 				return 0D;
 			}
 			
-			int total = settlement.getVehicleNum(); 
+			int total = settlement.getOwnedVehicleNum(); 
 			int onMission = settlement.getMissionVehicles().size();
 			
        		if (total - onMission - totalCap > 0) {

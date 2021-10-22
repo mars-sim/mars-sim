@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DeliveryGoodsPanel.java
- * @date 2021-08-27
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -447,7 +447,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) DeliveryUtil.getNumInInventory(good, settlement.getInventory());
+					int amount = (int) DeliveryUtil.getNumInInventory(good, settlement);
 					if (checkForVehicle(good)) amount--;
 					goodsMap.put(good, amount);
 				}

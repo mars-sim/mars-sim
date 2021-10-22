@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2021-08-25
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -384,9 +383,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
         	endTask();
 			return 0;
 		}
-				
-		Inventory settlementInv = settlement.getInventory();
-
+		
 //		if (person != null)
 //			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
@@ -429,14 +426,14 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			double amount = vehicle.getAmountResourceStored(id);
 			if (amount > amountUnloading)
 				amount = amountUnloading;
-			double capacity = settlementInv.getAmountResourceRemainingCapacity(id, true, false);
+			double capacity = settlement.getAmountResourceRemainingCapacity(id);
 			if (capacity < amount) {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
 			try {
 				vehicle.retrieveAmountResource(id, amount);
-				settlementInv.storeAmountResource(id, amount, true);
+				settlement.storeAmountResource(id, amount);
 				
 				if (id != waterID && id != methaneID 
 						&& id != foodID && id != oxygenID) {
@@ -446,7 +443,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 					
-					settlementInv.addAmountSupply(id, amount);
+//					settlementInv.addAmountSupply(id, amount);
 					// Add to the daily output
 					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
@@ -486,7 +483,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					}
 				}
 				vehicle.retrieveItemResource(id, num);
-				settlementInv.storeItemResources(id, num);
+				settlement.storeItemResource(id, num);
 				amountUnloading -= (num * mass);
 			}
 
@@ -503,8 +500,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			if (towedVehicle != null) {
 				towingVehicle.setTowedVehicle(null);
 				towedVehicle.setTowingVehicle(null);
-				if (!settlementInv.containsUnit(towedVehicle)) {
-					settlementInv.storeUnit(towedVehicle);
+				if (!settlement.containsParkedVehicle(towedVehicle)) {
+					settlement.addParkedVehicle(towedVehicle);
 					towedVehicle.findNewParkingLoc();
 				}
 			}
@@ -550,20 +547,19 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param equipment the equipment.
 	 */
 	public static void unloadEquipmentInventory(Equipment equipment, Settlement settlement) {
-		Inventory sInv = settlement.getInventory();
-
+	
 		// Note: only unloading amount resources at the moment.
 		if (equipment instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) equipment;
 			for(int resource : rh.getAmountResourceIDs()) {
 				double amount = rh.getAmountResourceStored(resource);
-				double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
+				double capacity = settlement.getAmountResourceRemainingCapacity(resource);
 				if (amount > capacity) {
 					amount = capacity;
 				}
 				try {
 					rh.retrieveAmountResource(resource, amount);
-					sInv.storeAmountResource(resource, amount, true);
+					settlement.storeAmountResource(resource, amount);
 				} catch (Exception e) {
 				}
 			}

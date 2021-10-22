@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2021-10-12
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.equipment.Container;
@@ -125,8 +124,8 @@ implements Serializable {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available."); 
         	// Add bag demand
-        	settlement.getInventory().addItemDemand(
-        			EquipmentType.getResourceID(containerType), 1);    
+//        	settlement.getInventory().addItemDemand(
+//        			EquipmentType.getResourceID(containerType), 1);    
         	
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
@@ -329,7 +328,7 @@ implements Serializable {
         Container aBag = person.findContainer(containerType, false, resourceID);
         if (aBag == null) {
         	// Doesn't have a Bag
-        	aBag = settlement.getInventory().findContainer(containerType, true, resourceID);
+        	aBag = settlement.findContainer(containerType, true, resourceID);
 	        if (aBag != null) {
 	            	boolean successful = aBag.transfer(settlement, person);
 	            	if (!successful) {
@@ -428,10 +427,8 @@ implements Serializable {
             double amount = bag.getAmountResourceStored(resourceID);
 
             if (amount > 0) {
-	        	Inventory sInv = settlement.getInventory();
-	        	
-	            double settlementCap = sInv.getAmountResourceRemainingCapacity(
-	            		resourceID, true, false);
+      	
+	            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
 
 	            if (amount > settlementCap) {
 	            	amount = settlementCap;
@@ -447,7 +444,7 @@ implements Serializable {
 	            }
 
                 // Track supply
-                sInv.addAmountSupply(resourceID, amount);
+//                sInv.addAmountSupply(resourceID, amount);
                 // Transfer the bag
                 bag.transfer(person, settlement);
 				// Add to the daily output

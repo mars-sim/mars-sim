@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MicroInventory.java
- * @date 2021-10-12
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.data;
@@ -84,6 +84,31 @@ public class MicroInventory implements Serializable {
 		storageMap.put(resource, new ResourceStored(capacity));
 	}
 	 
+	/**
+	 * Adds the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void addCapacity(int resource, double capacity) {
+		double oldCap = getCapacity(resource);
+		storageMap.put(resource, new ResourceStored(oldCap + capacity));
+	}
+	
+	/**
+	 * Removes the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void removeCapacity(int resource, double capacity) {
+		double oldCap = getCapacity(resource);
+		if (oldCap > capacity)
+			storageMap.put(resource, new ResourceStored(oldCap - capacity));
+		else
+			storageMap.put(resource, new ResourceStored(0));
+	}
+	
 	/**
 	 * Gets the total weight of the stored resources
 	 * 

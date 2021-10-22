@@ -180,6 +180,31 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 	
 	/**
+	 * Adds a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot) {
+		if (!isRobotCrewmember(robot))
+			return robotOccupants.add(robot);
+		
+		return false;
+	}
+	
+	/**
+	 * Removes a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot) {
+		if (isRobotCrewmember(robot))
+			return robotOccupants.remove(robot);
+		return false;
+	}
+	
+	/**
 	 * Gets a collection of parts that can be attached to this vehicle.
 	 * 
 	 * @return collection of parts.
