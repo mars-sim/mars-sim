@@ -216,7 +216,7 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		// Create the date filed timestamp
 		createDateFiled();
-		
+
 		membersMap = new HashMap<>();
 		missionStatus = new CopyOnWriteArrayList<>();
 		members = new ConcurrentLinkedQueue<MissionMember>();

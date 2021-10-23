@@ -362,14 +362,14 @@ public abstract class Vehicle extends Unit
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;
 		}
 		
-		else if (this instanceof Drone || this instanceof LightUtilityVehicle) {
+		else if (vehicleType == VehicleType.DELIVERY_DRONE || vehicleType == VehicleType.LUV) {
 			
 			beginningMass = getBaseMass() + 300;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;
 		}
 		
-		if (this instanceof Drone || this instanceof Rover) {
+		if (vehicleType == VehicleType.DELIVERY_DRONE || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			// Gets the acceleration in m/s2
@@ -1135,7 +1135,7 @@ public abstract class Vehicle extends Unit
 		
 		Unit c = getContainerUnit();
 
-		if (c instanceof Settlement)
+		if (c.getUnitType() == UnitType.SETTLEMENT)
 			return (Settlement) c;
 		else
 			return null;
@@ -1520,7 +1520,7 @@ public abstract class Vehicle extends Unit
 					}
 
 					
-				} else if (mission instanceof BuildingConstructionMission) {
+				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
 					if (construction.getConstructionVehicles() != null) {
 						if (construction.getConstructionVehicles().contains(this)) {
@@ -1528,7 +1528,7 @@ public abstract class Vehicle extends Unit
 						}
 					}
 
-				} else if (mission instanceof BuildingSalvageMission) {
+				} else if (mission .getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
 					if (salvage.getConstructionVehicles().contains(this)) {
 						return mission;
@@ -1564,13 +1564,13 @@ public abstract class Vehicle extends Unit
 						return true;
 					}
 
-					if (mission instanceof Mining) {
+					if (mission.getMissionType() == MissionType.MINING) {
 						if (((Mining) mission).getLightUtilityVehicle() == this) {
 							return true;
 						}
 					}
 
-					if (mission instanceof Trade) {
+					if (mission.getMissionType() == MissionType.TRADE) {
 						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
 						if (towingRover != null) {
 							if (towingRover.getTowedVehicle() == this) {
@@ -1579,13 +1579,13 @@ public abstract class Vehicle extends Unit
 						}
 					}
 					
-					if (mission instanceof Delivery) {
+					if (mission.getMissionType() == MissionType.DELIVERY) {
 						if (((Delivery) mission).getVehicle() == this) {
 								return true;
 						}
 					}
 					
-				} else if (mission instanceof BuildingConstructionMission) {
+				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
 					if (construction.getConstructionVehicles() != null) {
 						if (construction.getConstructionVehicles().contains(this)) {
@@ -1593,7 +1593,7 @@ public abstract class Vehicle extends Unit
 						}
 					}
 
-				} else if (mission instanceof BuildingSalvageMission) {
+				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
 					if (salvage.getConstructionVehicles().contains(this)) {
 						return true;

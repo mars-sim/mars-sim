@@ -124,7 +124,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="nitrogen" value="110.0" />
-			
+
+			<!-- The carbon dioxide capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="carbon dioxide" value="8.0" />
+						
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="water" value="400.0" />
@@ -166,7 +170,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- The black water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="black water" value="60.0" />
-	
+			
 		</cargo>
 
 		<!-- Sickbay -->
@@ -213,7 +217,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<cargo total-capacity="3500.0">
 			<capacity resource="methane" value="220.0" />
 			<capacity resource="oxygen" value="176.0" />
-			<capacity resource="nitrogen" value="176.0" />			
+			<capacity resource="nitrogen" value="176.0" />	
+			<capacity resource="carbon dioxide" value="16.0" />		
 			<capacity resource="water" value="800.0" />
 			
 			<capacity resource="food" value="512.0" />
@@ -257,7 +262,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<cargo total-capacity="5000.0">
 			<capacity resource="methane" value="260.0" />
 			<capacity resource="oxygen" value="66.0" />
-			<capacity resource="nitrogen" value="66.0" />		
+			<capacity resource="nitrogen" value="66.0" />
+			<capacity resource="carbon dioxide" value="4.0" />					
 			<capacity resource="water" value="200.0" />
 			
 			<capacity resource="food" value="128.0" />			

@@ -54,9 +54,11 @@ extends TestCase {
 		unitManager.addUnit(settlement);
 		
 		vehicle = new Rover("Test Rover", "Cargo Rover", settlement);
+		settlement.addOwnedVehicle(vehicle);
 		unitManager.addUnit(vehicle);
 		
 		person = new Person("Jim Loader", settlement);
+		settlement.addACitizen(person);
 		unitManager.addUnit(person);
 		
 		// Make the person strong to get loading quicker
@@ -220,7 +222,7 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
 		
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,
@@ -235,7 +237,7 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
 		
 		testLoadOptionalResources(100, requiredResourcesMap,
 								  optionalResourcesMap,
@@ -259,7 +261,7 @@ extends TestCase {
 		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 5D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
 		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 5D);
 		
 		// Load the manifest

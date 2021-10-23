@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.data.ResourceHolder;

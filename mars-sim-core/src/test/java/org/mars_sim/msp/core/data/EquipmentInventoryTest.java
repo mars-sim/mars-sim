@@ -70,7 +70,7 @@ extends TestCase {
 		assertEquals("Rock stored", rockMass, inv.getAmountResourceStored(rock));
 
 		double expectedMass = co2Mass + rockMass + bag.getBaseMass();
-		assertEquals("Remaining capacity after bag load", CAPACITY_AMOUNT - expectedMass, inv.getAmountResourceRemainingCapacity(co2));
+		assertEquals("Remaining cargo capacity after bag load", CAPACITY_AMOUNT - expectedMass, inv.getRemainingCargoCapacity());//.getAmountResourceRemainingCapacity(co2));
 		assertEquals("Total mass after bag load", expectedMass, inv.getStoredMass());
 		assertEquals("Resources held in inventory", Set.of(co2, rock), inv.getAmountResourceIDs());
 		
@@ -169,8 +169,9 @@ extends TestCase {
 		int resource = ResourceUtil.co2ID;
 		int resource2  = ResourceUtil.oxygenID;
 
-		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getAmountResourceRemainingCapacity(resource));
-		assertEquals("Remaining capacity 2nd resource", CAPACITY_AMOUNT, inv.getAmountResourceRemainingCapacity(resource2));
+		// if Using general/cargo capacity instead of the dedicated capacity for a resource
+		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());//getAmountResourceRemainingCapacity(resource));
+		assertEquals("Remaining capacity 2nd resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());//getAmountResourceRemainingCapacity(resource2));
 		
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		inv.storeAmountResource(resource2, CAPACITY_AMOUNT/4);
