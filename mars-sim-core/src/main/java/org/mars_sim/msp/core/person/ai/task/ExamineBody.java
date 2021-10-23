@@ -374,9 +374,7 @@ public class ExamineBody extends Task implements Serializable {
 			cause = problem.toString().toLowerCase();
 			deathInfo.setCause(cause);
 		}
-//		logger.log(Level.WARNING,
-//				"[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination had been completed on "
-//						+ person + ". Cause of death : " + cause);
+
 		logger.log(worker, Level.WARNING, 1000, "Completed the postmortem exam on " 
 					+ patient.getName() + ". Cause of death : " + cause);
 

@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -715,16 +716,12 @@ public abstract class EVAOperation extends Task implements Serializable {
 		
 		if (p.isDeclaredDead()) {
 			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-//			cu.getInventory().retrieveUnit(p);
 			p.transfer(cu, s);
 		}
-		// Retrieve the person from the rover
 		else if (r != null) {
-//			r.getInventory().retrieveUnit(p);
 			p.transfer(r, s);
 		}
 		else if (p.isOutside()) {
-//			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
 			p.transfer(unitManager.getMarsSurface(), s);
 		}
 		
@@ -732,16 +729,15 @@ public abstract class EVAOperation extends Task implements Serializable {
 		int id = s.getIdentifier();
 		// Store the person into a medical building
 		BuildingManager.addToMedicalBuilding(p, id);
-		// Register the person
-//		p.setAssociatedSettlement(id);
-		
-		
+
 		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-//		Complaint complaint = p.getPhysicalCondition().getMostSerious();
+		Complaint complaint = p.getPhysicalCondition().getMostSerious();
 		HealthProblem problem = null;
 		for (HealthProblem hp : problems) {
-			if (problem.equals(hp))
+			if (complaint.getType() == hp.getType()) {
 				problem = hp;
+				break;
+			}
 		}
 		
 		// Register the historical event

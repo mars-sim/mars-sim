@@ -118,7 +118,8 @@ public class HistoricalEventManager implements Serializable {
 	public boolean isSameEvent(HistoricalEvent newEvent) {
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
-				if (e.getType() == newEvent.getType() && e.getCategory() == newEvent.getCategory()
+				if (e.getType() == newEvent.getType() 
+						&& e.getCategory() == newEvent.getCategory()
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing()) 
 						&& e.getWho().equals(newEvent.getWho())
