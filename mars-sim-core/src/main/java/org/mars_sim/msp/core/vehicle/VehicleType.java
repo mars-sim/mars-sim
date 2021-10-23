@@ -112,4 +112,17 @@ public enum VehicleType {
 		
 		return result;
 	}
+	
+	/**
+	 * Is this vehicle of a particular vehicle type a rover ?
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isRover(VehicleType type) {
+		if (type == EXPLORER_ROVER) return true;
+		if (type == TRANSPORT_ROVER) return true;
+		if (type == CARGO_ROVER) return true;
+		return false;
+	}
 }

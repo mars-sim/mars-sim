@@ -35,6 +35,7 @@ public class MarsSurface extends Unit implements Serializable {
 		super(NAME, null);
 		
 		setContainerUnit(null);
+		
 		setContainerID(Unit.OUTER_SPACE_UNIT_ID);
 
 		// This is hack playing on how the identifiers are created

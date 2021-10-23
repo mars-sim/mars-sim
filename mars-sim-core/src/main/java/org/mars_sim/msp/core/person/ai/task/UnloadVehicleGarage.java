@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The UnloadVehicleGarage class is a task for unloading fuel and supplies from
@@ -245,7 +246,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && !vehicle.isReserved()
+				if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
 						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
 					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {

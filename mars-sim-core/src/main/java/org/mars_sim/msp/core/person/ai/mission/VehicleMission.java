@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
@@ -433,7 +434,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Collection<Vehicle> vList = settlement.getParkedVehicles();
 			if (!vList.isEmpty()) {
 				for (Vehicle v : vList) {
-					if (v instanceof Rover
+					if (VehicleType.isRover(v.getVehicleType())
 							&& !v.haveStatusType(StatusType.MAINTENANCE)
 							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
 							&& isUsableVehicle(v)
@@ -481,7 +482,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 				
-				else if (vehicleCache instanceof Rover) {
+				else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
 					if (((Rover)vehicleCache).getCrewNum() != 0
 							|| (vehicleCache.getStoredMass() != 0D)) {
 						addPhase(VehicleMission.DISEMBARKING);
@@ -542,7 +543,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				vehicle.setEmergencyBeacon(true);
 
-				if (vehicle instanceof Rover && vehicle.isBeingTowed()) {
+				if (VehicleType.isRover(vehicle.getVehicleType()) && vehicle.isBeingTowed()) {
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					logger.log(vehicle, Level.INFO, 20_000, "Currently being towed by "
@@ -851,7 +852,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setPhaseEnded(true);
 		}
 
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			// Check the remaining trip if there's enough resource 
 			// Must set margin to false since it's not needed.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
@@ -1105,7 +1106,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				
 				// Manually override the number of wheel and battery needed for each mission
-				if (vehicle instanceof Rover) { 
+				if (VehicleType.isRover(vehicle.getVehicleType())) { 
 					Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
 					Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
 					result.put(wheel, 2);

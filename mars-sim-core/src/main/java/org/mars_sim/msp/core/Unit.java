@@ -476,23 +476,19 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public void setContainerUnit(Unit newContainer) {
 		Unit oldContainer = getContainerUnit();
 		
-		if ((newContainer != null) && newContainer.equals(oldContainer)) {
+		if (newContainer != null && newContainer.equals(oldContainer)) {
 			return;
 		}
 		
 		// 1. Set Coordinates
 		if (newContainer == null) {
+			// e.g. for MarsSurface and for a deceased person
 			// Set back to its previous container unit's coordinates
-			if (oldContainer != null)
-				setCoordinates(oldContainer.getCoordinates());
-		}
-		else if (this instanceof MarsSurface) {
-			// Do nothing
-		}
-		else if (newContainer instanceof MarsSurface){
-			// Do nothing
+			setContainerID(MARS_SURFACE_UNIT_ID);
 		}
 		else {
+			// Set the container ID
+			setContainerID(newContainer.getIdentifier());
 			// Slave the coordinates to that of the newContainer
 			setCoordinates(newContainer.getCoordinates());
 		}

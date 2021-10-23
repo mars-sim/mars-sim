@@ -87,6 +87,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.inject.Guice;
 
@@ -1075,7 +1076,7 @@ public class BuildingManager implements Serializable {
 		if (vehicle.isBeingTowed())
 			return g;
 		
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return g;
 		}
@@ -1123,7 +1124,7 @@ public class BuildingManager implements Serializable {
 		if (vehicle.isBeingTowed())
 			return false;
 		
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return false;
 		}
@@ -1177,7 +1178,7 @@ public class BuildingManager implements Serializable {
 		if (vehicle.isBeingTowed())
 			return false;
 		
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return false;
 		}
