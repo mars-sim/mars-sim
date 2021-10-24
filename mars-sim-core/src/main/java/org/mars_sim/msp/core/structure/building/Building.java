@@ -20,8 +20,10 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -1319,6 +1321,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		templateID = id;
 	}
 
+	/**
+	 * Gets the settlement it is currently associated with.
+	 *
+	 * @return settlement or null if none.
+	 */
 	public Settlement getSettlement() {
 		return settlement;
 	}
@@ -1352,6 +1359,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 *
+	 * @return associated settlement or null if none.
+	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getSettlement(); 
@@ -1463,6 +1475,41 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 	
 	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Gets the unit's container unit. Returns null if unit has no container unit.
+	 * 
+	 * @return the unit's container unit
+	 */
+	@Override
+	public Unit getContainerUnit() {
+		if (unitManager == null) // for maven test
+			return null;
+		return unitManager.getSettlementByID(containerID);
+	}
+	
+	/**
 	 * Gets the holder's unit instance
 	 * 
 	 * @return the holder's unit instance
@@ -1481,6 +1528,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Unit getUnit() {
 		return this;
 	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {

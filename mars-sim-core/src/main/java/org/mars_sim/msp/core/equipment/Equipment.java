@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -351,46 +353,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return salvageInfo;
 	}
 
-	
-	/**
-	 * Get the equipment's settlement, null if equipment is not at a settlement
-	 *
-	 * @return {@link Settlement} the equipment's settlement
-	 */
-	public Settlement getSettlement() {
 
-		if (getContainerID() == 0)
-			return null;
-		
-		Unit c = getContainerUnit();
-
-		if (c instanceof Settlement) {
-			return (Settlement) c;
-		}
-
-		else if (c instanceof Person) {
-			return c.getSettlement();
-		}
-		else if (c instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
-		}
-
-		return null;
-	}
 
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
 	 *
 	 * @return {@link Vehicle} the equipment's vehicle
 	 */
+	@Override
 	public Vehicle getVehicle() {
 		Unit container = getContainerUnit();
-		if (container instanceof Vehicle)
+		if (container.getUnitType() == UnitType.VEHICLE)
 			return (Vehicle) container;
-		if (container.getContainerUnit() instanceof Vehicle)
+		if (container.getContainerUnit().getUnitType() == UnitType.VEHICLE)
 			return (Vehicle) (container.getContainerUnit());
 		
 		return null;
@@ -438,6 +413,42 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return equipmentType;
 	}
 	
+	
+	/**
+	 * Get the equipment's settlement, null if equipment is not at a settlement
+	 *
+	 * @return {@link Settlement} the equipment's settlement
+	 */
+	public Settlement getSettlement() {
+
+		if (getContainerID() == 0)
+			return null;
+		
+		Unit c = getContainerUnit();
+
+		if (c.getUnitType() == UnitType.SETTLEMENT) {
+			return (Settlement) c;
+		}
+
+		else if (c.getUnitType() == UnitType.PERSON) {
+			return c.getSettlement();
+		}
+		else if (c.getUnitType() == UnitType.VEHICLE) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 *
+	 * @return associated settlement or null if none.
+	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
@@ -463,6 +474,73 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		microInventory.clean();
 	}
 
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updateEquipmentState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Updates the location state type of an equipment
+	 * 
+	 * @param newContainer
+	 */
+	public void updateEquipmentState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN;
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.INSIDE_SETTLEMENT;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
+	}
+	
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 

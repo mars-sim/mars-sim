@@ -134,6 +134,19 @@ public class MarsSurface extends Unit implements Serializable {
 	}
 	
 	/**
+	 * Gets the unit's container unit. Returns null if unit has no container unit.
+	 * 
+	 * @return the unit's container unit
+	 */
+	@Override
+	public Unit getContainerUnit() {
+		if (unitManager == null) // for maven test
+			return null;
+		// Note: there is no outer space unit
+		return this;
+	}
+	
+	/**
 	 * Gets the hash code for this object.
 	 * 
 	 * @return hash code.

@@ -2307,7 +2307,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					result.add(vehicle);
 			}
 			
-			else if (mission instanceof BuildingConstructionMission) {
+			else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
 
 			}
@@ -3645,30 +3645,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return GoodsManager.getBuyList();
 	}
 	
-	@Override
-	public UnitType getUnitType() {
-		return UnitType.SETTLEMENT;
-	}
-	
-	/**
-	 * Gets the holder's unit instance
-	 * 
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
-	}
-	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
 	
 	public int getSolCache() {
 		return solCache;
@@ -3933,6 +3909,68 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			currentStateType = LocationStateType.MARS_SURFACE;
+			// 3. Set containerID
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+		else {
+			setContainerID(MARS_SURFACE_UNIT_ID);
+		}
+	}
+	
+	/**
+	 * Gets the unit's container unit. Returns null if unit has no container unit.
+	 * 
+	 * @return the unit's container unit
+	 */
+	@Override
+	public Unit getContainerUnit() {
+		if (unitManager == null) // for maven test
+			return null;
+		return unitManager.getMarsSurface();
+	}
+
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.SETTLEMENT;
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 	
 	/**

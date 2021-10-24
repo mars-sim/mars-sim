@@ -375,16 +375,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	@Override
 	public Settlement getSettlement() {
+		
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 		
 		Unit c = getContainerUnit();
 
-		if (c instanceof Settlement) {
+		if (c.getUnitType() == UnitType.SETTLEMENT) {
 			return (Settlement) c;
 		}
 
-		else if (c instanceof Vehicle) {
+		else if (c.getUnitType() == UnitType.VEHICLE) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
@@ -403,17 +404,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public Vehicle getVehicle() {
 		if (isInVehicle())
 			return (Vehicle) getContainerUnit();
-		else
-			return null;
-	}
-
-	/**
-	 * Sets the unit's container unit. Overridden from Unit class.
-	 * 
-	 * @param containerUnit the unit to contain this unit.
-	 */
-	public void setContainerUnit(Unit containerUnit) {
-		super.setContainerUnit(containerUnit);
+		return null;
 	}
 
 	// TODO: allow parts to be recycled
@@ -754,6 +745,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * 
 	 * @return building
 	 */
+	@Override
 	public Building getBuildingLocation() {
 		return computeCurrentBuilding();
 	}
@@ -1443,6 +1435,73 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updateRobotState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Updates the location state type of a  robot
+	 * 
+	 * @param newContainer
+	 */
+	public void updateRobotState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN; 
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.INSIDE_SETTLEMENT;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
 	}
 	
 	/**

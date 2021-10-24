@@ -1130,21 +1130,15 @@ public abstract class Vehicle extends Unit
 	 */
 	public Settlement getSettlement() {
 		
-		if (getContainerID() == 0)
+		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 		
 		Unit c = getContainerUnit();
 
 		if (c.getUnitType() == UnitType.SETTLEMENT)
 			return (Settlement) c;
-		else
-			return null;
-//		
-//		 Unit topUnit = getTopContainerUnit();
-//		 
-//		 if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement)
-//		 topUnit; else return null;
-//		 
+		
+		return null;
 	}
 
 	/**
@@ -1456,6 +1450,11 @@ public abstract class Vehicle extends Unit
 		return associatedSettlementID;
 	}
 
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 *
+	 * @return associated settlement or null if none.
+	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return unitManager.getSettlementByID(associatedSettlementID);
@@ -1500,7 +1499,7 @@ public abstract class Vehicle extends Unit
 	
 	@Override
 	public Building getBuildingLocation() {
-		return this.getGarage();
+		return getGarage();
 	}
 
 	/**
@@ -2024,6 +2023,80 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updateVehicleState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Updates the location state type of a vehicle.
+	 * 
+	 * @apiNote (1) : WITHIN_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
+	 *
+	 * @apiNote (2) : WITHIN_SETTLEMENT_VICINITY can be used by a person or a vehicle.
+	 *
+	 * @apiNote (3) : If a vehicle may be in a garage inside a building, this vehicle is INSIDE_SETTLEMENT.
+	 *                If a vehicle is parked right outside a settlement, this vehicle is WITHIN_SETTLEMENT_VICINITY.
+	 * 
+	 * @param newContainer
+	 */
+	public void updateVehicleState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN;
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
 	}
 	
 	@Override

@@ -19,8 +19,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -481,6 +479,20 @@ implements Serializable, LocalBoundedObject {
     	return constructionManager;
     }
 
+	/**
+	 * Gets the associated settlement this unit is with
+	 * 
+	 * @return the associated settlement
+	 */
+	public Settlement getAssociatedSettlement() {
+		return settlement;
+	}
+	
+	/**
+	 * Gets the settlement this unit is with
+	 * 
+	 * @return the settlement
+	 */
     public Settlement getSettlement() {
     	return settlement;
     }

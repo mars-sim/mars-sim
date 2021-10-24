@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -65,6 +66,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -769,33 +771,27 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return the person's settlement
 	 */
 	public Settlement getSettlement() {
-//		System.out.println("Person: getContainerID() is " + getContainerID());
-		
+
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
-//		
-//		else if (vehicle == 0)
-//			return null;
-//
-//		else
-//			return unitManager.getSettlementByID(getContainerID());
 
 		Unit c = getContainerUnit();
 
-		if (c instanceof Settlement) {
+		if (c.getUnitType() == UnitType.SETTLEMENT) {
 			return (Settlement) c;
 		}
-
-		else if (c instanceof EVASuit || c instanceof Person || c instanceof Robot) {
-			return c.getSettlement();
-		}
 		
-		else if (c instanceof Vehicle) {
+		else if (c.getUnitType() == UnitType.VEHICLE) {
 			Building b = BuildingManager.getBuilding((Vehicle) c);
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
 		}
+		
+		else if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+			return c.getSettlement();
+		}
+		
 		return null;
 	}
 
@@ -1332,6 +1328,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @return building
 	 */
+	@Override
 	public Building getBuildingLocation() {
 //		if (currentBuilding != null) {
 //			return currentBuilding;
@@ -1447,9 +1444,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	@Override
 	public Vehicle getVehicle() {
 		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
-			Vehicle v = (Vehicle) getContainerUnit();
-//			setVehicle(v);
-			return v;
+			return (Vehicle) getContainerUnit();
 		}
 
 		return null;
@@ -1988,6 +1983,73 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	@Override
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updatePersonState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Updates the location state type of a person
+	 * 
+	 * @param newContainer
+	 */
+	public void updatePersonState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN; 
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.INSIDE_SETTLEMENT;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
 	}
 	
 	@Override
