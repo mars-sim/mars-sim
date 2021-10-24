@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 
@@ -39,6 +38,7 @@ import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -49,7 +49,6 @@ import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.robot.RobotConfig;
-import org.mars_sim.msp.core.science.ExperimentConfig;
 import org.mars_sim.msp.core.science.ScienceConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -68,10 +67,8 @@ public class SimulationConfig implements Serializable {
 
 	private static final long serialVersionUID = -5348007442971644450L;
 
-	private final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
+	private final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
 
-	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
 	
 	/** The version.txt denotes the xml build version. */	
 	public static final String VERSION_FILE = "version.txt";
@@ -160,7 +157,7 @@ public class SimulationConfig implements Serializable {
 	private transient RobotConfig robotConfig;
 	private transient QuotationConfig quotationConfig;
 	
-	private transient ExperimentConfig experimentConfig;
+	//private transient ExperimentConfig experimentConfig;
 	private transient ScienceConfig scienceConfig;
 
 	private transient List<String> excludedList;
@@ -186,30 +183,6 @@ public class SimulationConfig implements Serializable {
 	protected Object readResolve() throws ObjectStreamException {
 		return instance();
 	}
-
-	/*
-	 * -----------------------------------------------------------------------------
-	 * Static Members
-	 * -----------------------------------------------------------------------------
-	 */
-
-//	/** Eager Instantiation of Singleton Instance. */
-//	private static SimulationConfig instance = new SimulationConfig();
-//
-//	/*
-//	 * -----------------------------------------------------------------------------
-//	 * Public Static Methods
-//	 * -----------------------------------------------------------------------------
-//	 */
-//
-//	/**
-//	 * Gets a singleton instance of the simulation config.
-//	 * 
-//	 * @return SimulationConfig instance
-//	 */
-//	public static SimulationConfig instance() {
-//		return instance;
-//	}
 
 	/**
 	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
@@ -259,10 +232,9 @@ public class SimulationConfig implements Serializable {
 	 */
 	public void reloadConfig() {
 		simulationDoc = null;
-		
-		logger.info("Configurations reloading");
 		loadConfig();
 	}
+	
 	/**
 	 * Checks if the xml files are of the same version of the core engine.
 	 */
@@ -289,7 +261,7 @@ public class SimulationConfig implements Serializable {
 		
 		// Note: if "xml" exits as a file, delete it
 		if (xmlDirExist && xmlLoc.isFile()) {
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLoc +  "'" 
+			logger.config("'" + xmlLoc +  "'" 
 					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(xmlLoc);
@@ -311,8 +283,7 @@ public class SimulationConfig implements Serializable {
 		
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (xmlDirExist && xmlLoc.isDirectory()) {
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-			"The xml folder already existed.");		
+			logger.config("The xml folder already existed.");		
 
 			if (versionFileExist) {
 				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {   
@@ -342,22 +313,17 @@ public class SimulationConfig implements Serializable {
 		}
 		
 		if (!xmlDirExist)
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-				"The xml folder does not exist in user home.");	
+			logger.config("The xml folder does not exist in user home.");	
 		else if (!versionFileExist)
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-				"The version.txt does not exist.");	
+			logger.config("The version.txt does not exist.");	
 		else if (sameBuild)
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"The version.txt has the same BUILD " + buildText
+			logger.config("The version.txt has the same BUILD " + buildText
 					+ " as the core engine's.");
 		else if (!hasNonDigit(buildText))
-	    	LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"The version.txt in your home xml folder shows BUILD " + buildText 
+			logger.config("The version.txt in your home xml folder shows BUILD " + buildText 
 					+ ". The core engine uses BUILD " + Simulation.BUILD + ".");
 		else {
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-				"The version.txt is invalid.");
+			logger.config("The version.txt is invalid.");
 			invalid = true;
 		}
 		
@@ -369,8 +335,7 @@ public class SimulationConfig implements Serializable {
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case A1 : The build folder doesn't exist yet. " +
+				        	logger.config("Case A1 : The build folder doesn't exist yet. " +
 									"Back up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);   	
@@ -385,8 +350,7 @@ public class SimulationConfig implements Serializable {
 				            timestamp = timestamp.substring(0, lastIndxDot);				            
 				            String s1 = s0 + File.separator + timestamp;
 				            dir = new File(s1.trim());
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case A2 : The build folder " +
+							logger.config("Case A2 : The build folder " +
 									s0 + " already exists. Back up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
@@ -395,8 +359,7 @@ public class SimulationConfig implements Serializable {
 					else {		
 						if (!backupLoc.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case B1 : The backup folder doesn't exist. " +
+							logger.config("Case B1 : The backup folder doesn't exist. " +
 									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
@@ -410,8 +373,7 @@ public class SimulationConfig implements Serializable {
 				            String s2 = backupDir + File.separator + "unknown" + File.separator + timestamp;
 				            
 				            backupLoc = new File(s2);
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case B2 : The backup folder " +
+				            logger.config("Case B2 : The backup folder " +
 									backupDir + " already exists. Back up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
@@ -433,13 +395,13 @@ public class SimulationConfig implements Serializable {
 		if (!xmlLoc.exists() || xmlDirDeleted) {
 			// Create the xml folder
 			versionLoc.getParentFile().mkdirs();
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new xml folder was just created.");
+			logger.config("A new xml folder was just created.");
 			
 			List<String> lines = Arrays.asList(Simulation.BUILD);
 			try {
 				// Create the version.txt file
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
+				logger.config("A new version.txt file was just created.");
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
@@ -448,7 +410,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				// Create the exception.txt file
 				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
+				logger.config("A new exception.txt file was just created.");
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
@@ -459,7 +421,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				// Create the version.txt file
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
+				logger.config("A new version.txt file was just created.");
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
@@ -469,7 +431,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				// Create the exception.txt file
 				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
+				logger.config("A new exception.txt file was just created.");
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
@@ -508,9 +470,6 @@ public class SimulationConfig implements Serializable {
 				}
 			}
 		}
-		 
-		// either file or an empty directory 
-//		System.out.println("removing file or directory : " + dir.getName());
 		return true; 
 	}
     
@@ -539,7 +498,7 @@ public class SimulationConfig implements Serializable {
 			i = Integer.parseInt(str.trim());
 
 		} catch (NumberFormatException nfe) {
-			System.out.println("SimulationConfig : NumberFormatException found in " + parent + "->" + child
+			logger.severe("NumberFormatException found in " + parent + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
@@ -553,7 +512,7 @@ public class SimulationConfig implements Serializable {
 			d = Double.valueOf(str.trim()).doubleValue();
 
 		} catch (NumberFormatException nfe) {
-			System.out.println("SimulationConfig : NumberFormatException found in " + parent + "->" + child
+			logger.severe("NumberFormatException found in " + parent + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
@@ -997,7 +956,7 @@ public class SimulationConfig implements Serializable {
 	
 			            dir = new File(s1.trim());
 				            
-						LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+						logger.config(
 								"Checksum mismatched on " + f.getName() + ". "
 								+ s0 + " folder already exists. Back up " 
 								+ f.toString() + " to " + s1);
@@ -1024,7 +983,7 @@ public class SimulationConfig implements Serializable {
 	        }
 		}
 		catch (IOException e) {
-			logger.severe("Problem getting bundled XML " + e.getMessage());
+			logger.log(Level.SEVERE, "Problem getting bundled XML " + e.getMessage(), e);
 		}
         return f;
 	}
@@ -1103,22 +1062,18 @@ public class SimulationConfig implements Serializable {
 		mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
 		malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
 		cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
-//		logger.config("cropConfig");
 		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
-//		logger.config("vehicleConfig");
 		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
-//		logger.config("buildingConfig");
 		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 		manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
-//		logger.config("manufactureConfig");
 		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
 		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 		
-		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
+//		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 		scienceConfig = new ScienceConfig();
 		
 		

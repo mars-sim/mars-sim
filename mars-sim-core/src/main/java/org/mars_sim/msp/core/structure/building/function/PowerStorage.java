@@ -8,10 +8,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -30,9 +28,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(PowerStorage.class.getName());
-	
-    private static String sourceName = logger.getName();
+	private static final SimLogger logger = SimLogger.getLogger(PowerStorage.class.getName());
 
 	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
 	
@@ -97,14 +93,6 @@ implements Serializable {
 	 * It varies with SOC and discharge/charge current.
 	 */
 	private double terminalVoltage; 
-
-	/*
-	 * The minimum allowable voltage. It is this voltage that generally 
-	 * defines the “empty” state of the battery
-	 */
-	//private double cutoffVoltage; 
-
-	//private double selfDischargeRate;
 	
 	private double time;
 	
@@ -274,12 +262,7 @@ implements Serializable {
 	private void reconditionBattery() {
 		health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
 		
-		LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-				"the grid battery for "
-				//"r_total is " + Math.round(r_total*10D)/10D 
-				+ building.getNickName() + " in " + building.getSettlement()
-				+ " has just been reconditioned."
-				, null);
+		logger.info(building, "The grid battery has just been reconditioned.");
 	}
 	
 	

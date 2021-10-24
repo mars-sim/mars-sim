@@ -12,12 +12,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
@@ -41,10 +39,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(MeetTogether.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+    private static final SimLogger logger = SimLogger.getLogger(MeetTogether.class.getName());
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -215,8 +210,7 @@ implements Serializable {
 
 				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
 			
-				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " +  Msg.getString("Task.description.meetTogether.detail", candidate.getName()), null);
+				logger.fine(person, Msg.getString("Task.description.meetTogether.detail", candidate.getName()));
 	
 		        //if (isDone()) {
 		        //    return time;
@@ -251,9 +245,7 @@ implements Serializable {
 
 			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName())); //$NON-NLS-1$
 			
-			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-					"[" + inviter.getLocationTag().getLocale() + "] " 
-						+  Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()));
+			logger.fine(person, Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()));
     	}
 	    	
         return 0D;

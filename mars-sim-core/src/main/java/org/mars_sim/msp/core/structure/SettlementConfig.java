@@ -544,8 +544,6 @@ public class SettlementConfig implements Serializable {
 		if (result == null) {
 			throw new IllegalArgumentException("Template named '" + templateName + "' not found.");
 		}
-		
-		if (result == null) System.out.println("settlementTemplate == null");
 
 		return result;
 	}

@@ -8,17 +8,15 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -33,10 +31,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(MedicalStation.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(MedicalStation.class.getName());
 
 	/** Treatment level of the facility. */
 	private int level;
@@ -51,15 +46,12 @@ public class MedicalStation implements MedicalAid, Serializable {
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
 
-//	private MedicalCare medicalCare;
-
-	private Vehicle vehicle;
-
 	private Building building;
 
-	private static MedicalManager medManager;
+	private Vehicle vehicle;
 	
-//    private Map<Person, Point2D> bedMap = new HashMap<>();
+	private static MedicalManager medManager;
+
 
 	/**
 	 * Constructor.
@@ -68,12 +60,11 @@ public class MedicalStation implements MedicalAid, Serializable {
 	 * @param sickBeds Number of sickbeds.
 	 */
 	public MedicalStation(int level, int sickBeds) {
-//		this.medicalCare = medicalCare;
 		this.level = level;
 		this.sickBeds = sickBeds;
-		problemsBeingTreated = new CopyOnWriteArrayList<HealthProblem>();
-		problemsAwaitingTreatment = new CopyOnWriteArrayList<HealthProblem>();
-		restingRecoveryPeople = new CopyOnWriteArrayList<Person>();
+		problemsBeingTreated = new CopyOnWriteArrayList<>();
+		problemsAwaitingTreatment = new CopyOnWriteArrayList<>();
+		restingRecoveryPeople = new CopyOnWriteArrayList<>();
 
 
 		if (medManager == null) {
@@ -94,17 +85,17 @@ public class MedicalStation implements MedicalAid, Serializable {
 
 	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
-		return new CopyOnWriteArrayList<HealthProblem>(problemsAwaitingTreatment);
+		return new ArrayList<>(problemsAwaitingTreatment);
 	}
 
 	@Override
 	public List<HealthProblem> getProblemsBeingTreated() {
-		return new CopyOnWriteArrayList<HealthProblem>(problemsBeingTreated);
+		return new ArrayList<>(problemsBeingTreated);
 	}
 
 	@Override
 	public List<Person> getRestingRecoveryPeople() {
-		return new CopyOnWriteArrayList<Person>(restingRecoveryPeople);
+		return new ArrayList<>(restingRecoveryPeople);
 	}
 
 	/**
@@ -202,19 +193,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 			// Add the problem to the waiting queue.
 			problemsAwaitingTreatment.add(problem);
 		} else {
-			String loc0 = null;
-			String loc1 = null;
-			if (building != null) {
-				loc0 = building.getNickName();
-				loc1 = building.getLocationTag().getSettlementName();
-			} else if (vehicle != null) {
-				loc0 = vehicle.getName();
-				loc1 = loc0;
-			}
-
-			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
-					"[" + loc0 + "] " + problem.getIllness() + " cannot be treated in " + loc1 + "'s medical station.",
-					null);
+			logger.info(building, problem.getIllness() + " cannot be treated in medical station.");
 		}
 	}
 
@@ -246,18 +225,8 @@ public class MedicalStation implements MedicalAid, Serializable {
 			problemsBeingTreated.add(problem);
 			problemsAwaitingTreatment.remove(problem);
 		} else {
-			String loc0 = null;
-			String loc1 = null;
-			if (building != null) {
-				loc0 = building.getNickName();
-				loc1 = building.getLocationTag().getSettlementName();
-			} else if (vehicle != null) {
-				loc0 = vehicle.getName();
-				loc1 = loc0;
-			}
-
-			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, "[" + loc0 + "] " + problem.getIllness()
-					+ " cannot be treated in " + loc1 + "'s medical station is not equipped to handle.", null);
+			logger.warning(building, problem.getIllness()
+					+ " cannot be treated in medical station is not equipped to handle.");
 		}
 	}
 

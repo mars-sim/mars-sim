@@ -9,16 +9,11 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 // Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg 
@@ -36,10 +31,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger logger = Logger.getLogger(TerrainElevation.class.getName());
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
 		
 	private static final double DEG_TO_RAD = Math.PI/180;
 	
@@ -228,18 +219,6 @@ public class TerrainElevation implements Serializable {
 		if (rate < 1)
 			rate = 1;	
 		
-		String nameLoc = "";
-		Settlement s = CollectionUtils.findSettlement(currentLocation);
-		if (s != null) {
-			nameLoc = s.getName();
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
-					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
-					"[" + nameLoc + "]         Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
-					"[" + nameLoc + "]  Regolith Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
-		}
-		
 		return rate;
 	}
 	
@@ -295,18 +274,6 @@ public class TerrainElevation implements Serializable {
 //		// Save this site
 //		surfaceFeatures.setSites(currentLocation, site);
 		
-		String nameLoc = "";
-		Settlement s = CollectionUtils.findSettlement(currentLocation);
-		if (s != null) {
-			nameLoc = s.getName();
-			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
-					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
-					"[" + nameLoc + "]         Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
-			LogConsolidated.log(logger, Level.CONFIG, 10_000L, sourceName,
-					"[" + nameLoc + "]       Ice Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
-		}
-		
 		return rate;
 	}
 	
@@ -348,12 +315,6 @@ public class TerrainElevation implements Serializable {
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();
-		
-//		String s0 = String.format("  %3d %3d %3d  ", 
-//						red,
-//						green,
-//						blue); 
-//		System.out.print(s0);
 		
 		return new int[] {red, green, blue};
 	}

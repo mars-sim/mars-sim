@@ -14,16 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -38,10 +36,7 @@ public class Weather implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static final Logger logger = Logger.getLogger(Weather.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
 	// Static data
 	/** Extreme cold surface temperatures on Mars at Kelvin */
@@ -827,9 +822,8 @@ public class Weather implements Serializable, Temporal {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-							"[" + ds.getSettlements().get(0).getName() + "] On L_s = " + Math.round(L_s * 100.0) / 100.0
-									+ ", " + ds.getName() + " was first spotted near " + s + "."); 
+					logger.info(s, "On L_s = " + Math.round(L_s * 100.0) / 100.0
+									+ ", " + ds.getName()); 
 
 				}
 			}
@@ -853,10 +847,12 @@ public class Weather implements Serializable, Temporal {
 				} 
 		
 				if (ds.getSize() != 0)
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-							"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
+				{
+					Settlement closet = ds.getSettlements().get(0);
+					logger.info(closet, "DustStorm " + ds.getName()
 									+ " (size " + ds.getSize() + " with windspeed "
 									+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+				}
 			}
 		}
 	}

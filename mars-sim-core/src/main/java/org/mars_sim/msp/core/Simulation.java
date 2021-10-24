@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.logging.SimuLoggingFormatter;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -314,7 +315,7 @@ public class Simulation implements ClockListener, Serializable {
 		medicalManager = new MedicalManager();
 		
 		// Set instances for logging
-		LogConsolidated.initializeInstances(marsClock, earthClock);
+		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		simulationConfig = SimulationConfig.instance();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
@@ -331,6 +332,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio) {
+
 		// Initialize resources
 		ResourceUtil.getInstance();
 		
@@ -338,6 +340,9 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock = new MasterClock(timeRatio);
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
+
+		// Set instances for logging
+		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -395,8 +400,6 @@ public class Simulation implements ClockListener, Serializable {
         new ManufactureUtil();
         RoleUtil.initialize();
 
-		// Set instances for logging
-		LogConsolidated.initializeInstances(marsClock, earthClock);
 
 		// Initialize instances prior to UnitManager initiatiation		
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
@@ -605,6 +608,8 @@ public class Simulation implements ClockListener, Serializable {
 	 *  Re-initialize instances after loading from a saved sim
 	 */
 	private void reinitializeInstances() {
+		SimuLoggingFormatter.initializeInstances(masterClock);
+
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
 		
@@ -636,8 +641,6 @@ public class Simulation implements ClockListener, Serializable {
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
-		LogConsolidated.initializeInstances(marsClock, earthClock);
-	
 		SurfaceFeatures.initializeInstances(this); 
 	
 		// Gets config file instances
