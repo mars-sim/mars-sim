@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Bee.java
- * @date 2021-09-20
+ * @date 2021-10-21
  * @author Manny Kung
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -22,9 +21,8 @@ implements Serializable {
     /** default logger. */
 //	private static final Logger logger = Logger.getLogger(Bee.class.getName());
 
-//    private static final FunctionType FUNCTION = FunctionType.FARMING;
+//  private static final FunctionType FUNCTION = FunctionType.FARMING;
 
-    private Inventory inv;
     private Settlement settlement;
     private Building building;
     private Farming farm;
@@ -44,16 +42,14 @@ implements Serializable {
     private int deathRate = 0; // in %    
 
     public Bee(BeeHive hive, int beeType, String beeSpecies) {
-
     	this.hive = hive;
     	this.beeType = beeType;
     	this.beeSpecies = beeSpecies;
+    	
     	this.beeGrowing = hive.getBeeGrowing();
         this.farm = beeGrowing.getFarming();      
         this.building = farm.getBuilding();		
-        this.inv = building.getSettlementInventory();
         this.settlement = building.getSettlement();
-   
 	}
 
 
@@ -82,6 +78,5 @@ implements Serializable {
 	public void addBee() {
 		numOfBees++;
 	}
-	
-	
+
 }

@@ -7,17 +7,18 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -27,8 +28,8 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -37,7 +38,6 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
@@ -126,13 +126,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 		
 		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
+		Worker vo = vehicle.getOperator();
 //		Person driver = (Person) vo;
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(person);
 			
-		else if (!person.getName().equals(vo.getOperatorName())) {
+		else if (!person.getName().equals(vo.getName())) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
 	        // Replace the driver
@@ -181,14 +181,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
 		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
+		Worker vo = vehicle.getOperator();
 //		Robot roboDriver = (Robot) vo;
 		
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(robot);
 			
-		else if (!robot.getName().equals(vo.getOperatorName())) {
+		else if (!robot.equals(vo)) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
 	        // Replace the driver
@@ -264,25 +264,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		return startTripDistance;
 	}
 	
-	protected void clearDrivingTask(VehicleOperator vo) {
-		if (vo instanceof Person)
-			clearDrivingTask((Person)vo);
-			
-		else if (vo instanceof Robot)
-			clearDrivingTask((Robot)vo);
-	}
-	
-	protected void clearDrivingTask(Person person) {
+	protected void clearDrivingTask(Worker vo) {
     	// Clear the OperateVehicle task from the last driver
-		TaskManager taskManager = person.getMind().getTaskManager();
-		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
-		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
-		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
-	}
-	
-	protected void clearDrivingTask(Robot robot) {
-    	// Clear the OperateVehicle task from the last driver
-		BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
+		TaskManager taskManager = person.getTaskManager();
 		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
 		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
 		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
@@ -355,11 +339,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
-		
-        Inventory vInv = vehicle.getInventory();
+
         int fuelType = vehicle.getFuelType();
         
-        double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
+        double remainingFuel = vehicle.getAmountResourceStored(fuelType);
 
         if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
@@ -448,20 +431,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Case 2 : just used up the last drop of fuel 
         	fuelNeeded = remainingFuel;
         	
-        	try {
-		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-	    
-		    }
-		    catch (Exception e) {
-		    	logger.log(vehicle, Level.SEVERE, 10_000,  
-						"Unable to retrieve methane.");
-
-		    	// Turn on emergency beacon
-		    	turnOnBeacon();
-		    	
-	        	endTask();
-	        	return time;
-		    }
+		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
         	
         	// Update and reduce the distanceTraveled since there is not enough fuel
         	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
@@ -488,22 +458,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 // Update the fuel needed for distance traveled.
                 fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
-                try {
-    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-   
-    		    }
-    		    catch (Exception e) {
-    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
-    						"Unable to retrieve methane.");
-
-    		    	// Turn on emergency beacon
-    		    	turnOnBeacon();
-    		    	
-    	        	endTask();
-    	        	return time;
-    		    }
-                
- 		    	
+                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
+                	
 		        // Add distance traveled to vehicle's odometer.
 		        vehicle.addOdometerMileage(distanceTraveled);
 		        vehicle.addDistanceLastMaintenance(distanceTraveled);
@@ -547,20 +503,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
              // Update the fuel needed for distance traveled.
                 fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
-                try {
-    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-
-    		    }
-    		    catch (Exception e) {
-    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
-    						"Unable to retrieve methane.");
-
-    		    	// Turn on emergency beacon
-    		    	turnOnBeacon();
-    		    	
-    	        	endTask();
-    	        	return time;
-    		    }
+                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
                 	    	
                 // Determine new position.
                 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
@@ -817,7 +760,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 		
 		// Look up a person's prior pilot related training.
-        mod += baseSpeed * person.getPilotingMod();
+        mod += baseSpeed * getPilotingMod(person);
         	
         // Check for any crew emergency
 //        System.out.println("vehicle : " + vehicle);
@@ -828,6 +771,24 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return mod;
     }
     
+	/**
+	 * Calculate the piloting modifier for a Person based on their training
+	 * @param operator
+	 * @return
+	 */
+	private static double getPilotingMod(Person operator) {
+		List<TrainingType> trainings = operator.getTrainings();
+		double mod = 0;
+		if (trainings.contains(TrainingType.AVIATION_CERTIFICATION))
+			mod += .2;
+		if (trainings.contains(TrainingType.FLIGHT_SAFETY))
+			mod += .25;
+		if (trainings.contains(TrainingType.NASA_DESERT_RATS))
+			mod += .15;
+		
+		return mod;
+	}
+	
     /**
      * Gets the distance to the destination.
      * @return distance (km)
@@ -863,7 +824,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @param operator the vehicle operator.
      * @return average operating speed (km/h)
      */
-    public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator, Mission mission) {
+    public static double getAverageVehicleSpeed(Vehicle vehicle, Worker operator, Mission mission) {
     	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();
@@ -876,7 +837,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     			}
     			
     			// Look up a person's prior pilot related training.
-    			mod += baseSpeed * p.getPilotingMod();
+    			mod += baseSpeed * getPilotingMod(p);
     			
     			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
     			if (skill <= 5) {

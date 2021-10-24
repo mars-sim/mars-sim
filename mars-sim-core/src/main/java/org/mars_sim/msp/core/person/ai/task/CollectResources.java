@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResources.java
- * @date 2021-10-03
+ * @date 2021-10-12
  * @author Scott Davis
  */
 
@@ -9,15 +9,15 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -62,7 +62,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	/** The resource type. */
 	protected Integer resourceType;
 	/** The container type to use to collect resource. */
-	protected Integer containerType;
+	protected EquipmentType containerType;
 
 	/**
 	 * Constructor.
@@ -78,7 +78,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param containerType   the type of container to use to collect resource.
 	 */
 	public CollectResources(String taskName, Person person, Rover rover, Integer resourceType, double collectionRate,
-			double targettedAmount, double startingCargo, Integer containerType) {
+			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
@@ -105,12 +105,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 		setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
 
 		// Take container for collecting resource.
-		if (!hasContainers()) {
-			takeContainer();
+		if (!hasAContainer()) {
+			boolean hasIt = takeContainer();
 
 			// If container is not available, end task.
-			if (!hasContainers()) {        
-				logger.log(person, Level.FINE, 5000, 
+			if (!hasIt) {        
+				logger.log(person, Level.WARNING, 5000, 
 						"Unable to find containers to collect resources.", null);
 				endTask();
 			}
@@ -182,12 +182,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 
 	/**
-	 * Checks if the person is carrying any containers.
+	 * Checks if the person is carrying a container of this type.
 	 * 
-	 * @return true if carrying containers.
+	 * @return true if carrying a container of this type.
+	 * 
 	 */
-	private boolean hasContainers() {
-		return person.getInventory().containsEquipment(containerType);
+	private boolean hasAContainer() {
+		return person.containsEquipment(containerType);
 	}
 
 	/**
@@ -195,36 +196,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * 
 	 * @throws Exception if error taking container.
 	 */
-	private void takeContainer() {
-		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
-		if (container != null && person.getInventory().canStoreUnit(container, false)) {
-			container.transfer(rover, person);
+	private boolean takeContainer() {
+		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+
+		if (container != null) {
+			return container.transfer(rover, person);
 		}
-	}
-
-	/**
-	 * Gets the least full container in the rover.
-	 * 
-	 * @param inv           the inventory to look in.
-	 * @param containerType the container class to look for.
-	 * @param resourceType  the resource for capacity.
-	 * @return container.
-	 */
-	private static Unit findLeastFullContainer(Inventory inv, Integer containerType, Integer resource) {
-		Unit result = null;
-		double mostCapacity = 0D;
-
-		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
-		while (i.hasNext()) {
-			Unit container = i.next();
-			double remainingCapacity = ((Equipment)container).getAmountResourceRemainingCapacity(resource);
-			if (remainingCapacity > mostCapacity) {
-				result = container;
-				mostCapacity = remainingCapacity;
-			}
-		}
-
-		return result;
+		return false;
 	}
 
 	/**
@@ -261,8 +239,8 @@ public class CollectResources extends EVAOperation implements Serializable {
         		endTask();
 		}
 
-		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true, false);
-		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType, false) - startingCargo;
+		double remainingPersonCapacity = person.getAmountResourceRemainingCapacity(resourceType);
+		double currentSamplesCollected = rover.getAmountResourceStored(resourceType) - startingCargo;
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
 
@@ -291,12 +269,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 		checkForAccident(time);
 		
 		// Collect resources.
+		Container container = person.findContainer(containerType, false, resourceType);
 		if (samplesCollected <= sampleLimit) {
-			person.getInventory().storeAmountResource(resourceType, samplesCollected, true);
+			container.storeAmountResource(resourceType, samplesCollected);
 			return 0D;
 		} else {
 			if (sampleLimit >= 0D) {
-				person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
+				container.storeAmountResource(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
 			return time - (sampleLimit / collectionRate);
@@ -309,19 +288,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-
-		// Unload containers to rover's inventory.
-		if (containerType != null) {
-			Inventory pInv = person.getInventory();
-			if (pInv.containsEquipment(containerType)) {
-				// Load containers in rover.
-				Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
-				while (i.hasNext()) {
-					// Place this equipment within a rover outside on Mars
-					i.next().transfer(pInv, rover);
-				}
-			}
-		}
+		returnEquipmentToVehicle(rover);
 	}
 
 	/**
@@ -333,7 +300,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(MissionMember member, Rover rover, Integer containerType,
+	public static boolean canCollectResources(MissionMember member, Rover rover, EquipmentType containerType,
 			Integer resourceType) {
 
 		boolean result = false;
@@ -354,22 +321,22 @@ public class CollectResources extends EVAOperation implements Serializable {
 				return false;
 
 			// Checks if available container with remaining capacity for resource.
-			Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
+			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 			boolean containerAvailable = (container != null);
 
 			// Check if container and full EVA suit can be carried by person or is too
 			// heavy.
 			double carryMass = 0D;
 			if (container != null) {
-				carryMass += container.getMass();
+				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
+
+			EVASuit suit = InventoryUtil.getGoodEVASuit(rover, person);
 			if (suit != null) {
+				// Mass include everything
 				carryMass += suit.getMass();
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
 			}
-			double carryCapacity = person.getInventory().getGeneralCapacity();
+			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);
 
 			result = (containerAvailable && canCarryEquipment);

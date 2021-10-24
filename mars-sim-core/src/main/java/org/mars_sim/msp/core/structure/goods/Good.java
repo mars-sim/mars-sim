@@ -9,8 +9,7 @@ package org.mars_sim.msp.core.structure.goods;
 import java.io.Serializable;
 import java.util.List;
 
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
@@ -171,9 +170,8 @@ public class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @return equipment class
 	 */
-	public Class<? extends Equipment> getClassType() {
-//		if (getCategory() == GoodType.EQUIPMENT)
-		return EquipmentFactory.getEquipmentClass(name);
+	public EquipmentType getEquipmentType() {
+		return EquipmentType.convertName2Enum(name);
 	}
 
 	public int getID() {

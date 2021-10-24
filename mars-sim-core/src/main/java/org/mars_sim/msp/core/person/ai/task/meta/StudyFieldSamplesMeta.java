@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamplesMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -10,10 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -66,13 +65,15 @@ public class StudyFieldSamplesMeta extends MetaTask {
 	
 	        // Check that there are available field samples to study.
 	        try {
+	        	double samplesStored = 0D;
 	            Unit container = person.getContainerUnit();
-				if (!(container instanceof MarsSurface)) {
-	                Inventory inv = container.getInventory();
-	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false) < StudyFieldSamples.SAMPLE_MASS) {
-	                    return 0;
-	                }
+	            if (container instanceof ResourceHolder) {
+	            	samplesStored = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
 	            }
+	            
+	            if (samplesStored < StudyFieldSamples.SAMPLE_MASS) {
+                    return 0;
+                }
 	        }
 	        catch (Exception e) {
 	            logger.severe("getProbability(): " + e.getMessage());

@@ -219,14 +219,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		double speed = 0;
 		
 		if (person != null) {
-			person.caculateWalkSpeedMod();
-			double mod = person.getWalkSpeedMod();
-			speed = PERSON_WALKING_SPEED * mod;
+			speed = person.calculateWalkSpeed();
 
 		}
 		else if (robot != null) {
-			double mod = robot.getWalkSpeedMod();
-			speed = ROBOT_WALKING_SPEED * mod;
+			speed = robot.calculateWalkSpeed();
 		}
 		else {
 			throw new IllegalStateException("Do not know who is walking");
@@ -259,10 +256,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			double distanceToLocation = Point2D.distance(worker.getXLocation(), worker.getYLocation(),
 						location.getXLocation(), location.getYLocation());
 
-
 			if (coveredMeters >= distanceToLocation) {
 
-//					System.out.println("WalkSettlementInterior: 3 " + person);
 				// Set person at next path location, changing buildings if necessary.
 				worker.setXLocation(location.getXLocation());
 				worker.setYLocation(location.getYLocation());
@@ -278,12 +273,13 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			
 			else {
 				// Walk in direction of next path location.
+				
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());
+				
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, coveredMeters);
 
-//					System.out.println("WalkSettlementInterior: 4 " + person);
 				// Set person at next path location, changing buildings if necessary.
 				worker.setXLocation(location.getXLocation());
 				worker.setYLocation(location.getYLocation());
@@ -306,7 +302,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			endTask();
 		}
 		
-//		System.out.println("8 " + person + "  timeLeft: " + timeLeft);
 		return timeLeft;
 	}
 

@@ -192,6 +192,11 @@ public class StructuredResponse {
 				fmt.append(w);
 				fmt.append('d');			
 			}
+			else if (value instanceof Boolean) {
+				fmt.append(w);
+				fmt.append('s');			
+				value = ((Boolean)value).booleanValue() ? "Yes" : "No";
+			}
 			else if (value != null) {
 				fmt.append(w);
 				fmt.append('s');

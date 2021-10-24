@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineSite.java
- * @date 2021-10-03
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -241,14 +242,14 @@ public class MineSite extends EVAOperation implements Serializable {
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			// End operating light utility vehicle.
 			if (person != null) {
-				if (luv.getInventory().containsUnit(person)) {
-					luv.getInventory().retrieveUnit(person);
+				if (((Crewable)luv).isCrewmember(person)) {
+					luv.removePerson(person);
 					luv.setOperator(null);
 					operatingLUV = false;
 				}
 			} else if (robot != null) {
-				if (luv.getInventory().containsUnit(robot)) {
-					luv.getInventory().retrieveUnit(robot);
+				if (((Crewable)luv).isRobotCrewmember(robot)) {
+					luv.removeRobot(robot);
 					luv.setOperator(null);
 					operatingLUV = false;
 				}
@@ -264,10 +265,8 @@ public class MineSite extends EVAOperation implements Serializable {
 		if (!luv.getMalfunctionManager().hasMalfunction() 
 				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
 
-			if (luv.getInventory().canStoreUnit(person, false)) {
-				// Duplicated calling of canstoreUnit
-				luv.getInventory().storeUnit(person);
-
+			if (luv.addPerson(person)) {
+				
 				Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
 				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
 						vehicleLoc.getY(), luv);

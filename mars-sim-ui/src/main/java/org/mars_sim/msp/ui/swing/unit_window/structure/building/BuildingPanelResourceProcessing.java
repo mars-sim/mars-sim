@@ -52,14 +52,13 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Prepare resource processes label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for labels
-		WebLabel resourceProcessesLabel = new WebLabel(Msg.getString("BuildingPanelResourceProcessing.title"), WebLabel.CENTER);
-		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelResourceProcessing.title"), WebLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		add(resourceProcessesLabel, BorderLayout.NORTH);
+		add(titleLabel, BorderLayout.NORTH);
 
 		WebLabel supportedProcessesLabel = new WebLabel(Msg.getString("BuildingPanelResourceProcessing.supportedProcesses"), WebLabel.CENTER);
+		supportedProcessesLabel.setPadding(10, 5, 5, 5);
 		add(supportedProcessesLabel, BorderLayout.CENTER);
 
 		// Get all processes at building.

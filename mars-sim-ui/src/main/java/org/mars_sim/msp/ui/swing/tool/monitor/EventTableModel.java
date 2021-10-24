@@ -456,23 +456,23 @@ public class EventTableModel extends AbstractTableModel
 					else if (cause.equalsIgnoreCase("flu"))
 						phrase = " caught the flu";
 					else if (cause.equalsIgnoreCase("fever"))
-						phrase = " has a fever";
+						phrase = " had a fever";
 					else if (cause.equalsIgnoreCase("decompression"))
-						phrase = " is suffering from decompression";
+						phrase = " suffered from decompression";
 					else if (cause.equalsIgnoreCase("dehydration"))
-						phrase = " is suffering from dehydration";
+						phrase = " suffered from dehydration";
 					else if (cause.equalsIgnoreCase("freezing"))
-						phrase = " is freezing";
+						phrase = " was freezing";
 					else if (cause.equalsIgnoreCase("heat stroke"))
-						phrase = " is suffering from a heat stroke";
+						phrase = " suffered from a heat stroke";
 					else if (cause.equalsIgnoreCase("suffocation"))
-						phrase = " is suffocating";
+						phrase = " was suffocating";
 					else if (cause.equalsIgnoreCase("laceration"))
 						phrase = " suffered laceration";
 					else if (cause.equalsIgnoreCase("pulled muscle/tendon"))
 						phrase = " had a pulled muscle";
 					else
-						phrase = " is complaining about the " + cause;//" is suffering from ";
+						phrase = " complained about the " + cause;//" is suffering from ";
 					
 					willNotify = true;
 					
@@ -541,7 +541,7 @@ public class EventTableModel extends AbstractTableModel
 					header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 
 					if (who.toLowerCase().equals("none"))
-						message = "There is a " + eventType.getName() + " in " + location0 + " at " + location1
+						message = "There was a " + eventType.getName() + " in " + location0 + " at " + location1
 								+ ". Fortunately, no one was hurt.";
 					else
 						message = who + " was rattled by the " + eventType.getName() + " while " 

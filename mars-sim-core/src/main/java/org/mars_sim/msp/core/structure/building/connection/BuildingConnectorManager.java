@@ -15,15 +15,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -36,10 +35,7 @@ public class BuildingConnectorManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(BuildingConnectorManager.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(BuildingConnectorManager.class.getName());
 
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -346,9 +342,9 @@ public class BuildingConnectorManager implements Serializable {
 
 		if (validPath != null) {
 			result = true;
-		} else if (logger.isLoggable(Level.FINEST)) {
-			LogConsolidated.log(logger, Level.FINEST, 10000, sourceName,
-					"Unable to find valid interior walking path between " + building1 + " and " + building2, null);
+		}
+		else if (logger.isLoggable(Level.FINEST)) {
+			logger.fine(building1, "Unable to find valid interior walking path to " + building2);
 		}
 
 		return result;

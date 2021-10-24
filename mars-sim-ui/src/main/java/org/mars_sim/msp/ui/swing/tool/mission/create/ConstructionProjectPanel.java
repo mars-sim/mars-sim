@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @date 2021-08-28
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -33,7 +33,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -45,7 +44,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -544,15 +543,14 @@ class ConstructionProjectPanel extends WizardPanel {
         boolean result = true;
 
         Settlement settlement = getConstructionSettlement();
-        Inventory inv = settlement.getInventory();
-
+ 
         // Check amount resources.
         Iterator<Integer> i = stageInfo.getResources().keySet()
                 .iterator();
         while (i.hasNext()) {
         	Integer resource = i.next();
             double amount = stageInfo.getResources().get(resource);
-            if (inv.getAmountResourceStored(resource, false) < amount)
+            if (settlement.getAmountResourceStored(resource) < amount)
                 result = false;
         }
 
@@ -561,7 +559,7 @@ class ConstructionProjectPanel extends WizardPanel {
         while (j.hasNext()) {
         	Integer part = j.next();
             int number = stageInfo.getParts().get(part);
-            if (inv.getItemResourceNum(part) < number)
+            if (settlement.getItemResourceStored(part) < number)
                 result = false;
         }
 
@@ -578,8 +576,7 @@ class ConstructionProjectPanel extends WizardPanel {
         boolean result = true;
         
         Settlement settlement = getConstructionSettlement();
-        Inventory inv = settlement.getInventory();
-
+ 
         ConstructionStage stage = site.getCurrentConstructionStage();
         if (stage != null) {
         
@@ -589,7 +586,7 @@ class ConstructionProjectPanel extends WizardPanel {
             while (i.hasNext()) {
             	Integer resource = i.next();
                 double amount = stage.getRemainingResources().get(resource);
-                if (inv.getAmountResourceStored(resource, false) < amount) {
+                if (settlement.getAmountResourceStored(resource) < amount) {
                     result = false;
                 }
             }
@@ -599,7 +596,7 @@ class ConstructionProjectPanel extends WizardPanel {
             while (j.hasNext()) {
             	Integer part = j.next();
                 int number = stage.getRemainingParts().get(part);
-                if (inv.getItemResourceNum(part) < number) {
+                if (settlement.getItemResourceStored(part) < number) {
                     result = false;
                 }
             }
@@ -619,11 +616,10 @@ class ConstructionProjectPanel extends WizardPanel {
 
         Settlement settlement = getWizard().getMissionData()
                 .getConstructionSettlement();
-        Inventory inv = settlement.getInventory();
-
+ 
         // Check for LUV's.
         int luvsNeeded = stageInfo.getVehicles().size();
-        int luvsAvailable = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+        int luvsAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
         if (luvsAvailable < luvsNeeded)
             result = false;
 
@@ -646,7 +642,7 @@ class ConstructionProjectPanel extends WizardPanel {
         while (m.hasNext()) {
         	Integer part = m.next();
             int number = attachmentParts.get(part);
-            if (inv.getItemResourceNum(part) < number)
+            if (settlement.getItemResourceStored(part) < number)
                 result = false;
         }
 
@@ -722,7 +718,6 @@ class ConstructionProjectPanel extends WizardPanel {
          */
         private void populateMaterialsList() {
 
-            Inventory inv = getConstructionSettlement().getInventory();
             String selectedSite = (String) siteList.getSelectedValue();
             // Get construction site.
             Settlement settlement = getConstructionSettlement();
@@ -751,8 +746,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         	Integer resource = i.next();
                             double amountRequired = info.getResources().get(
                                     resource);
-                            double amountAvailable = inv.getAmountResourceStored(
-                                    resource, false);
+                            double amountAvailable = settlement.getAmountResourceStored(resource);
                             materialsList.add(new ConstructionMaterial(
                             		ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
                                     (int) amountAvailable, false));
@@ -763,7 +757,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         while (j.hasNext()) {
                         	Integer part = j.next();
                             int numRequired = info.getParts().get(part);
-                            int numAvailable = inv.getItemResourceNum(part);
+                            int numAvailable = settlement.getItemResourceStored(part);
                             materialsList.add(new ConstructionMaterial(
                             		ItemResourceUtil.findItemResource(part).getName(), 
                             		numRequired, numAvailable, false));
@@ -789,15 +783,14 @@ class ConstructionProjectPanel extends WizardPanel {
                         while (m.hasNext()) {
                         	Integer part = m.next();
                             int numRequired = attachmentParts.get(part);
-                            int numAvailable = inv.getItemResourceNum(part);
+                            int numAvailable = settlement.getItemResourceStored(part);
                             materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, true));
                         }
 
                         // Add construction vehicles.
                         int numVehiclesRequired = info.getVehicles().size();
-                        int numVehiclesAvailable = inv
-                                .findNumUnitsOfClass(LightUtilityVehicle.class);
+                        int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
                         materialsList.add(new ConstructionMaterial(
                                 "light utility vehicle", numVehiclesRequired,
                                 numVehiclesAvailable, true));
@@ -816,8 +809,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         	Integer resource = i.next();
                             double amountRequired = info.getResources().get(
                                     resource);
-                            double amountAvailable = inv.getAmountResourceStored(
-                                    resource, false);
+                            double amountAvailable = settlement.getAmountResourceStored(resource);
                             materialsList.add(new ConstructionMaterial(ResourceUtil.findAmountResource(resource)
                                     .getName(), (int) amountRequired,
                                     (int) amountAvailable, false));
@@ -828,7 +820,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         while (j.hasNext()) {
                         	Integer part = j.next();
                             int numRequired = info.getParts().get(part);
-                            int numAvailable = inv.getItemResourceNum(part);
+                            int numAvailable = settlement.getItemResourceStored(part);
                             materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, false));
                         }
@@ -853,15 +845,14 @@ class ConstructionProjectPanel extends WizardPanel {
                         while (m.hasNext()) {
                         	Integer part = m.next();
                             int numRequired = attachmentParts.get(part);
-                            int numAvailable = inv.getItemResourceNum(part);
+                            int numAvailable = settlement.getItemResourceStored(part);
                             materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, true));
                         }
 
                         // Add construction vehicles.
                         int numVehiclesRequired = info.getVehicles().size();
-                        int numVehiclesAvailable = inv
-                                .findNumUnitsOfClass(LightUtilityVehicle.class);
+                        int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
                         materialsList.add(new ConstructionMaterial(
                                 "light utility vehicle", numVehiclesRequired,
                                 numVehiclesAvailable, true));

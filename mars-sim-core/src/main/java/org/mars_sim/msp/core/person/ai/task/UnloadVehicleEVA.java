@@ -1,23 +1,23 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @date 2021-08-25
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -253,22 +254,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
-		Inventory vehicleInv = vehicle.getInventory();
-		
-		Inventory settlementInv = settlement.getInventory();
-		
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentList());
+			Iterator<Equipment> k = originalEqm.iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
-				Equipment equipment = (Equipment) k.next();
-
+				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
-				unloadEquipmentInventory(equipment);
-
-				equipment.transfer(vehicleInv, settlementInv);
-				
+				UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
+				equipment.transfer(vehicle, settlement);		
 				amountUnloading -= equipment.getMass();
+				
 				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
 					+ " from " + vehicle.getName() + ".");
 			}
@@ -276,33 +272,33 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		double totalAmount = 0;
 		// Unload amount resources.
-		Iterator<Integer> i = vehicleInv.getAllARStored(false).iterator();
+		Iterator<Integer> i = vehicle.getAmountResourceIDs().iterator();
 		while (i.hasNext() && (amountUnloading > 0D)) {
-			Integer resource = i.next();
-			double amount = vehicleInv.getAmountResourceStored(resource, false);
+			int id = i.next();
+			double amount = vehicle.getAmountResourceStored(id);
 			if (amount > amountUnloading) {
 				amount = amountUnloading;
 			}
-			double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true, false);
+			double capacity = settlement.getAmountResourceRemainingCapacity(id);
 			if (capacity < amount) {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
 			try {
-				vehicleInv.retrieveAmountResource(resource, amount);
-				settlementInv.storeAmountResource(resource, amount, true);
+				vehicle.retrieveAmountResource(id, amount);
+				settlement.storeAmountResource(id, amount);
 				
-				if (resource != waterID && resource != methaneID 
-						&& resource != foodID && resource != oxygenID) {
+				if (id != waterID && id != methaneID 
+						&& id != foodID && id != oxygenID) {
 					double laborTime = 0;
-					if (resource == iceID || resource == regolithID)
+					if (id == iceID || id == regolithID)
 						laborTime = CollectResources.LABOR_TIME;
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 					
-					settlementInv.addAmountSupply(resource, amount);
+//					settlement.addAmountSupply(id, amount);
 					// Add to the daily output
-					settlement.addOutput(resource, amount, laborTime);
+					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
 //		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
 				}
@@ -322,20 +318,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
-			Iterator<Integer> j = vehicleInv.getAllItemResourcesStored().iterator();
+			Iterator<Integer> j = vehicle.getItemResourceIDs().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
-				Integer resource = j.next();
-				Part part= (Part)(ItemResourceUtil.findItemResource(resource));
+				int id = j.next();
+				Part part = ItemResourceUtil.findItemResource(id);
 				double mass = part.getMassPerItem();
-				int num = vehicleInv.getItemResourceNum(resource);
+				int num = vehicle.getItemResourceStored(id);
 				if ((num * mass) > amountUnloading) {
 					num = (int) Math.round(amountUnloading / mass);
 					if (num == 0) {
 						num = 1;
 					}
 				}
-				vehicleInv.retrieveItemResources(resource, num);
-				settlementInv.storeItemResources(resource, num);
+				vehicle.retrieveItemResource(id, num);
+				settlement.storeItemResource(id, num);
 				amountUnloading -= (num * mass);
 				
 				totalItems += num;
@@ -354,8 +350,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			if (towedVehicle != null) {
 				towingVehicle.setTowedVehicle(null);
 				towedVehicle.setTowingVehicle(null);
-				if (!settlementInv.containsUnit(towedVehicle)) {
-					settlementInv.storeUnit(towedVehicle);
+				if (!settlement.containsParkedVehicle(towedVehicle)) {
+					settlement.addParkedVehicle(towedVehicle);
 					towedVehicle.findNewParkingLoc();
 				}
 			}
@@ -369,7 +365,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					
 					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
 					
-					p.transfer(vehicle, settlementInv);
+					p.transfer(vehicle, settlement);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					
@@ -411,22 +407,21 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return list of vehicles.
 	 */
 	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> result = new ArrayList<>();
 
 		if (settlement != null) {
 			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				
 				// Find unreserved vehicle parked at their home base. Visiting vehicles
 				// should not unloaded outside a mission
-				if (!vehicle.isReserved() &&
+				if (vehicle instanceof Rover && !vehicle.isReserved() &&
 						(vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
+					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
 					if (peopleOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -437,10 +432,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 						}
 					}
 
-					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
+					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
 					if (robotsOnboard == 0) {
 						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+							if (vehicle.getStoredMass() > 0D) {
 								needsUnloading = true;
 							}
 							if (vehicle instanceof Towing) {
@@ -523,31 +518,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		return UNLOADING;
 	}
 
-
-	/**
-	 * Unload the inventory from a piece of equipment.
-	 * 
-	 * @param equipment the equipment.
-	 */
-	private void unloadEquipmentInventory(Equipment equipment) {
-		Inventory sInv = settlement.getInventory();
-
-		// Note: only unloading amount resources at the moment.
-		int resource = equipment.getResource();
-		if (resource != -1) {
-			double amount = equipment.getAmountResourceStored(resource);
-			double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
-			if (amount > capacity) {
-				amount = capacity;
-			}
-			try {
-				equipment.retrieveAmountResource(resource, amount);
-				sInv.storeAmountResource(resource, amount, true);
-			} catch (Exception e) {
-			}
-		}
-	}
-
 	/**
 	 * Returns true if the vehicle is fully unloaded.
 	 * 
@@ -555,6 +525,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return is vehicle fully unloaded?
 	 */
 	static public boolean isFullyUnloaded(Vehicle vehicle) {
-		return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
+		return (vehicle.getStoredMass() == 0D);
 	}
 }

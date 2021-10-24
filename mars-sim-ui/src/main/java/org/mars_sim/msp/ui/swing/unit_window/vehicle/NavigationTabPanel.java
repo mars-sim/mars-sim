@@ -32,9 +32,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -88,7 +88,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String destinationTextCache;
     private String etaCache;
     
-    private VehicleOperator driverCache;
+    private Worker driverCache;
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -349,7 +349,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         driverButton.addActionListener(this);
         driverButton.setVisible(false);
         if (driverCache != null) {
-            driverButton.setText(driverCache.getOperatorName());
+            driverButton.setText(driverCache.getName());
             driverButton.setVisible(true);
         }
         
@@ -388,7 +388,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             }
             else {
                 driverButton.setVisible(true);
-                driverButton.setText(driverCache.getOperatorName());
+                driverButton.setText(driverCache.getName());
             }
         }
 

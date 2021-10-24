@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FoodProductionUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Manny Kung
  */
 
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -191,8 +190,7 @@ public final class FoodProductionUtil {
 	        int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(id, true,
-						false);
+				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(id);
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
@@ -202,8 +200,7 @@ public final class FoodProductionUtil {
 			int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} else if (item.getType() == ItemType.EQUIPMENT) {
-//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 //		} else if (item.getType().equals(ItemType.VEHICLE)) {
 //			Good good = GoodsUtil.getVehicleGood(item.getName());
@@ -232,10 +229,10 @@ public final class FoodProductionUtil {
 		if (kitchen.getTechLevel() < process.getTechLevelRequired())
 			result = false;
 
-		Inventory inv = kitchen.getBuilding().getSettlementInventory();
+		Settlement settlement = kitchen.getBuilding().getSettlement();
 
 		// Check to see if process input items are available at settlement.
-		if (!areProcessInputsAvailable(process, inv))
+		if (!areProcessInputsAvailable(process, settlement))
 			result = false;
 
 		// Check to see if room for process output items at settlement.
@@ -252,7 +249,7 @@ public final class FoodProductionUtil {
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
 	 */
-	private static boolean areProcessInputsAvailable(FoodProductionProcessInfo process, Inventory inv) {
+	private static boolean areProcessInputsAvailable(FoodProductionProcessInfo process, Settlement settlement) {
 		boolean result = true;
 
 		Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
@@ -261,15 +258,15 @@ public final class FoodProductionUtil {
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 //                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
+				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
 				// Add demand tracking
-				inv.addAmountDemandTotalRequest(id, item.getAmount());
+//				inv.addAmountDemandTotalRequest(id, item.getAmount());
 			} else if (ItemType.PART == item.getType()) {
 //				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = (inv.getItemResourceNum(id) >= (int) item.getAmount());
+				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
 				// Add tracking demand
-				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
+//				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
 						"FoodProduction process input: " + item.getType() + " not a valid type.");
@@ -323,8 +320,7 @@ public final class FoodProductionUtil {
 		} else if (ItemType.PART == item.getType()) {
 			result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 		} else if (ItemType.EQUIPMENT == item.getType()) {
-//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
+			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
 		}
 //		 else if (Type.VEHICLE.equals(item.getType())) {
 //		 result = GoodsUtil.getVehicleGood(item.getName());
@@ -349,7 +345,7 @@ public final class FoodProductionUtil {
 			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 			mass = item.getAmount() * part.getMassPerItem();
 		} else if (ItemType.EQUIPMENT == item.getType()) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
+			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		}
 //		 else if (Type.VEHICLE.equals(item.getType())) {

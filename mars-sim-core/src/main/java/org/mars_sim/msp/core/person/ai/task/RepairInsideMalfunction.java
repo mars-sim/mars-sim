@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * RepairMalfunction.java
- * @date 2021-08-28
+ * RepairInsideMalfunction.java
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,11 +28,12 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The RepairMalfunction class is a task to repair a malfunction.
+ * The RepairInsideMalfunction class is a task to repair a malfunction.
  */
 public class RepairInsideMalfunction extends Task implements Repair, Serializable {
 
@@ -279,7 +280,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			// Requires EVA repair on outside vehicles that the person isn't inside.
 			Vehicle vehicle = (Vehicle) entity;
 			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
-			boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
+			boolean personNotInVehicle = !((Crewable)vehicle).isCrewmember(person);
 			if (outsideVehicle && personNotInVehicle) {
 				result = true;
 			}

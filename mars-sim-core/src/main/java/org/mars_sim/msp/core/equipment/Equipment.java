@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * Equipment.java
- * @date 2021-10-03
+ * @date 2021-10-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
@@ -12,7 +11,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.MicroInventory;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -22,20 +24,20 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a EVA suit or a medpack.
  */
-public abstract class Equipment extends Unit implements Indoor, Salvagable, Temporal {
+public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -45,24 +47,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	// Data members.
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
+	
 	/** Unique identifier for the settlement that owns this equipment. */
 	private int associatedSettlementID;
-	
 	/** The identifier for the last owner of this equipment. */
 	private int lastOwner;
-	/** The equipment type. */
-	private final String type;
-	
-	private int resource = -1;
-	private double quantity;
-	
-	/** The SalvageInfo instance. */	
-	private SalvageInfo salvageInfo;
+
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
-	
-	private Set<Integer> resources;
-	
+	/** The SalvageInfo instance. */	
+	private SalvageInfo salvageInfo;
+	/** The MicroInventory instance. */
+	protected MicroInventory microInventory;
+
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -71,11 +68,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @param settlement the unit's owner
 	 */
 	protected Equipment(String name, String type, Settlement settlement) {
+		this(name, EquipmentType.convertName2Enum(type), type, settlement);
+	}
+
+	/**
+	 * Constructs an Equipment object
+	 * 
+	 * @param name     the name of the unit
+	 * @param type     the type of the unit
+	 * @param settlement the unit's owner
+	 */
+	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		
 		// Initialize data members.
-		this.type = type;
-		this.equipmentType = EquipmentType.convertName2Enum(type);
+		this.equipmentType = eType;
 		isSalvaged = false;
 		salvageInfo = null;
 		
@@ -83,32 +90,83 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
+		
+		microInventory = new MicroInventory(this);
 	}
 
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		// By default Equipment are passive objects
-		return false;
-	}
-
-	public int getResource() {
-		return resource;
+	/**
+	 * Gets a list of supported resources
+	 * 
+	 * @return a list of resource ids
+	 */
+	public Set<Integer> getAmountResourceIDs() {
+		return microInventory.getResourcesStored();
 	}
 	
-	public double getQuanity() {
-		return quantity;
+	/**
+	 * Gets all stored item resources 
+	 * 
+	 * @return
+	 */
+	public Set<Integer> getItemResourceIDs() {
+		return microInventory.getItemResourceIDs();
 	}
 	
-
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
 	@Override
 	public double getMass() {
-		// Note stored mass may be have a differnet implementation in subclasses
+		// Note stored mass may be have a different implementation in subclasses
 		return getStoredMass() + getBaseMass();
 	}
-
+	
+	/**
+	 * Gets the total weight of the stored resources
+	 * 
+	 * @return
+	 */
+	public double getStoredMass() {
+		return microInventory.getStoredMass();
+	}
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * 
+     * @return total capacity (kg).
+     */
+	public double getTotalCapacity() {
+		return ContainerUtil.getContainerCapacity(equipmentType);
+	}
+	
+	/**
+     * Gets the capacity of this resource that this container can hold.
+     * @return capacity (kg).
+     */
+    public double getCapacity(int resource) {
+        return microInventory.getCapacity(resource);
+    }
+	
+	/**
+	 * Sets the capacity of a particular resource
+	 * 
+	 * @param resource
+	 * @param capacity
+	 */
+	public void setCapacity(int resource, double capacity) {
+		microInventory.setCapacity(resource, capacity);
+	}
+	
+	/**
+	 * Is this resource supported ?
+	 * 
+	 * @param resource
+	 * @return true if this resource is supported
+	 */
+	public boolean isResourceSupported(int resource) {
+		return microInventory.isResourceSupported(resource);
+	}
+	
 	/**
 	 * Stores the resource
 	 * 
@@ -117,45 +175,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		// If this container has never been used before
-		if (this.resource == -1) {
-			// Question: if a bag was filled with regolith and later was emptied out
-			// should it be tagged for only regolith and NOT for another resource ?
-			this.resource = resource;
-			String name = ResourceUtil.findAmountResourceName(resource);
-			if (name != null) {
-//				logger.config(this, "Initialized for storing " + name + ".");
-			}
-			else {
-				logger.warning(this, "Resource " + resource + " is invalid.");
-				return quantity;
-			}
+		// Question: if a bag was filled with regolith and later was emptied out
+		// should it be tagged for only regolith and NOT for another resource ?
+		if (!isResourceSupported(resource)) {
+			// Allocate the capacity to this new resource
+			microInventory.setCapacity(resource, getTotalCapacity());
 		}
 		
-		if (this.resource == resource) {
-			
-			double newQ = this.quantity + quantity;
-			String name = ResourceUtil.findAmountResourceName(resource);
-			
-			if (newQ > getTotalCapacity()) {
-				double excess = newQ - getTotalCapacity();
-				logger.warning(this, "Storage is full. Excess " + Math.round(excess * 10.0)/10.0 + " kg " + name + ".");
-				this.quantity = getTotalCapacity();
-				return excess;
-			}
-			else {
-				this.quantity = newQ;
-//				logger.config(this, "Just added " + Math.round(quantity * 10.0)/10.0 + " kg " + name + ".");
-				return 0;
-			}
-		}
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-			logger.warning(this, "Invalid request for storing " + name 
-					+ ". Already have " + Math.round(this.quantity* 10.0)/10.0 + " kg " + storedResource + ".");
-			return quantity;
-		}
+		return microInventory.storeAmountResource(resource, quantity);
 	}
 	
 	/**
@@ -166,118 +193,75 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (this.resource == resource) {
-			double diff = this.quantity - quantity;
-			if (diff < 0) {
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(this, 10_000L, "Just retrieved all " + this.quantity + " kg of " 
-						+ name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
-				this.quantity = 0;
-				return diff;
-			}
-			else {
-				this.quantity = diff;
-				return 0;
-			}
+		if (isResourceSupported(resource)) {
+			return microInventory.retrieveAmountResource(resource, quantity);
 		}
-		else if (this.resource == -1) {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, 10_000L, "Cannot retrieve " + quantity + " kg of " 
-					+ name + ". Not being used for storing anything yet.");
-			return 0;
-		}
-		else {
-			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve " 
-					+ Math.round(quantity* 10.0)/10.0 + " kg "
-					+ requestedResource + ".");
-			return quantity;
-		}
+		
+//		else {
+//			String name = ResourceUtil.findAmountResourceName(resource);
+//			logger.warning(this, "No such resource. Cannot retrieve " 
+//					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+//			return quantity;
+//		}
+		return quantity;
 	}
 	
 	/**
-	 * Gets the capacity of this amount resource
+	 * Gets the capacity of a particular amount resource
 	 * 
 	 * @param resource
-	 * @return
+	 * @return capacity
 	 */
 	public double getAmountResourceCapacity(int resource) {
-		if (this.resource == resource || this.resource == -1) {
+		// Note: this method is different from 
+		// EVASuit's getAmountResourceRemainingCapacity 
+		if (isResourceSupported(resource)) {
 			return getTotalCapacity();
 		}
-		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
-			return 0;
-		}
+		return 0;
 	}
 	
 	/**
-	 * Obtains the remaining storage space 
+	 * Obtains the remaining storage space of a particular amount resource
 	 * 
 	 * @param resource
-	 * @return
+	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		if (this.resource == resource || this.resource == -1) {
-			return getTotalCapacity() - this.quantity;
-		}
-		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
-			return 0;
-		}
+		return microInventory.getAmountResourceRemainingCapacity(resource);
 	}
 	
+	
+	/**
+	 * Obtains the remaining storage quantity of a particular item resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	public int getItemResourceRemainingCapacity(int resource) {
+		return microInventory.getItemResourceRemainingCapacity(resource);
+	}
 	
 	/**
 	 * Gets the amount resource stored
 	 * 
 	 * @param resource
-	 * @return
+	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
-		if (this.resource == resource) {
-			return this.quantity;
-		}
-		else if (this.resource == - 1) {
-			return 0;
-		}
-		else {
-//			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
-//			String requestedResource = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "Invalid request. Not for " + requestedResource 
-//					+ ". Already storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
-			return 0;
-		}
+		return microInventory.getAmountResourceStored(resource);
 	}
-	
+    
 	/**
-	 * Gets the total weight of the stored resource
-	 * 
-	 * @return
-	 */
-	public double getStoredMass() {
-		return this.quantity;
-	}
-	
-	/**
-	 * Is this equipment empty ?
+	 * Gets the item resource stored
 	 * 
 	 * @param resource
-	 * @return
+	 * @return quantity
 	 */
-	public boolean isEmpty(int resource) {
-		if (this.resource == -1 || (this.resource == resource && this.quantity == 0))
-			return true;
-		
-		return false;
+	public double getItemResourceStored(int resource) {
+		return microInventory.getItemResourceStored(resource);
 	}
-
+			
 	/**
 	 * Is this equipment empty ? 
 	 * 
@@ -285,37 +269,28 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return
 	 */
 	public boolean isEmpty(boolean brandNew) {
-		// if resource is -1, it's never been used before	
-		if (brandNew && (resource == -1 && this.quantity == 0)) {
-			return true;
+		if (brandNew) {
+			return (getLastOwnerID() == -1);
 		}
-		// if it's not brand new, it doesn't matter if source is -1 or not
-		else if (resource == -1 || this.quantity == 0) {
-				return true;	
-		}
-		return false;
+
+		return microInventory.isEmpty();
 	}	
 
-	public boolean isBrandNew() {
-		if (resource == -1 && this.quantity == 0)
-			return true;
+	
+	/**
+	 * Does this unit have this resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasResource(int resource) {
+		for (int id: getAmountResourceIDs()) {
+			if (id == resource)
+				return true;
+		}
 		return false;
 	}
-
-	public boolean isUsed() {
-		if (resource != -1)
-			return true;
-		return false;
-	}
-
-	public boolean hasContent() {
-		if (quantity > 0)
-			return true;
-		return false;
-	}
-
-	public abstract double getTotalCapacity();
-
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
@@ -381,46 +356,19 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return salvageInfo;
 	}
 
-	
-	/**
-	 * Get the equipment's settlement, null if equipment is not at a settlement
-	 *
-	 * @return {@link Settlement} the equipment's settlement
-	 */
-	public Settlement getSettlement() {
 
-		if (getContainerID() == 0)
-			return null;
-		
-		Unit c = getContainerUnit();
-
-		if (c instanceof Settlement) {
-			return (Settlement) c;
-		}
-
-		else if (c instanceof Person) {
-			return c.getSettlement();
-		}
-		else if (c instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
-		}
-
-		return null;
-	}
 
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
 	 *
 	 * @return {@link Vehicle} the equipment's vehicle
 	 */
+	@Override
 	public Vehicle getVehicle() {
 		Unit container = getContainerUnit();
-		if (container instanceof Vehicle)
+		if (container.getUnitType() == UnitType.VEHICLE)
 			return (Vehicle) container;
-		if (container.getContainerUnit() instanceof Vehicle)
+		if (container.getContainerUnit().getUnitType() == UnitType.VEHICLE)
 			return (Vehicle) (container.getContainerUnit());
 		
 		return null;
@@ -463,21 +411,53 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	public int getLastOwnerID() {
 		return lastOwner;
 	}
-	
-	public String getType() {
-		return type;
-	}
-	
+
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}
 	
+	
+	/**
+	 * Get the equipment's settlement, null if equipment is not at a settlement
+	 *
+	 * @return {@link Settlement} the equipment's settlement
+	 */
+	public Settlement getSettlement() {
+
+		if (getContainerID() == 0)
+			return null;
+		
+		Unit c = getContainerUnit();
+
+		if (c.getUnitType() == UnitType.SETTLEMENT) {
+			return (Settlement) c;
+		}
+
+		else if (c.getUnitType() == UnitType.PERSON) {
+			return c.getSettlement();
+		}
+		else if (c.getUnitType() == UnitType.VEHICLE) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 *
+	 * @return associated settlement or null if none.
+	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.EQUIPMENT;
 	}
 
@@ -494,23 +474,150 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * Clean this container for future use
 	 */
 	public void clean() {
-		this.resource = -1;
-		this.quantity = 0;
+		microInventory.clean();
+	}
+
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updateEquipmentState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
 	}
 	
+	/**
+	 * Updates the location state type of an equipment
+	 * 
+	 * @param newContainer
+	 */
+	public void updateEquipmentState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN;
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.INSIDE_SETTLEMENT;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
+	}
+	
+	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+			
+		if (origin.getUnitType() == UnitType.PERSON
+			|| origin.getUnitType() == UnitType.ROBOT
+			|| origin.getUnitType() == UnitType.VEHICLE) {
+			transferred = ((EquipmentOwner)origin).removeEquipment(this);
+		}
+		else if (origin.getUnitType() == UnitType.PLANET) {
+			// do nothing. won't track equipment on the mars surface
+			transferred = true;
+		}
+		// Note: the origin is a settlement
+		else {
+			transferred = ((Settlement)origin).removeEquipment(this);
+		}
+		
+		if (transferred) {
+			
+			if (destination.getUnitType() == UnitType.PERSON
+				|| destination.getUnitType() == UnitType.ROBOT
+				|| destination.getUnitType() == UnitType.VEHICLE
+				) {
+				transferred = ((EquipmentOwner)destination).addEquipment(this);
+			}
+			else if (destination.getUnitType() == UnitType.PLANET) {
+				// do nothing. won't track equipment on the mars surface
+				transferred = true;
+			}
+			// Note: the destination is a settlement
+			else {
+				transferred = ((Settlement)destination).addEquipment(this);
+			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
+			}
+			else {
+				// Set the new container unit (which will internally set the container unit id)
+				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+			}
+		}
+		else {
+			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			// NOTE: need to revert back the retrieval action 
+		}
+		
+		return transferred;
+	}
 	
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 
 	 * @param obj
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Equipment e = (Equipment) obj;
-		return this.getIdentifier() == e.getIdentifier()
-				&& this.getNickName().equals(e.getNickName());
+		return this.getIdentifier() == e.getIdentifier();
 	}
 	
 	/**
@@ -518,9 +625,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
 		int hashCode = getNickName().hashCode();
-		hashCode *= type.hashCode();
+		hashCode *= getEquipmentType().hashCode() ;
 		hashCode *= getIdentifier();
 		return hashCode;
 	}

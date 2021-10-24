@@ -91,8 +91,8 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
         double result = 0D;
         // Add probability for all malfunctionable entities in person's local.
-        for (Malfunctionable entity : MalfunctionFactory.getMalfunctionables(settlement)) {
-
+        for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
+        	
             if (unit instanceof Robot && entity instanceof Vehicle) {
             	// Note that currently robot cannot go outside and board a vehicle
             	continue;

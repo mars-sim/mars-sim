@@ -66,6 +66,7 @@ public enum MissionStatus {
 	NO_INHABITABLE_BUILDING							("No inhabitable buildings"),
 	DESTINATION_IS_NULL								("Destination is null"),
 	NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES ("No settlement found to deliver emergency supplies"),
+	COULD_NOT_EXIT_SETTLEMENT						("Could not exit settlement"),
 	
 	// Site related
 	MINING_SITE_NOT_BE_DETERMINED					("Mining site could not be determined"),

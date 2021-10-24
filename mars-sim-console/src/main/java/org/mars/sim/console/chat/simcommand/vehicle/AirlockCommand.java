@@ -7,9 +7,6 @@
 
 package org.mars.sim.console.chat.simcommand.vehicle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
@@ -37,9 +34,7 @@ public class AirlockCommand extends ChatCommand {
 			StructuredResponse response = new StructuredResponse();
 			Airlock airlock = ((Rover)source).getAirlock();
 			
-			List<Airlock> i = new ArrayList<>();
-			i.add(airlock);
-			CommandHelper.outputAirlock(response, i);
+			CommandHelper.outputAirlockDetailed(response, "Internal", airlock);
 
 			context.println(response.getOutput());
 		}

@@ -8,13 +8,11 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -29,11 +27,8 @@ public class HealthProblem implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger logger = Logger.getLogger(HealthProblem.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(HealthProblem.class.getName());
 
 	private static final int DEGRADING = 0;
 	private static final int BEING_TREATED = 1;
@@ -78,7 +73,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		eventManager.registerNewEvent(newEvent);
 
-		logger.finest(person.getName() + " has a new health problem of " 
+		logger.fine(person, " had a new health problem of " 
 				+ complaintType.toString().toLowerCase());
 	}
 
@@ -90,7 +85,7 @@ public class HealthProblem implements Serializable {
 	public void setState(int newState) {
 		state = newState;
 		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, medicalManager.getComplaintByName(type));
-		logger.finer(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
+		logger.fine(getSufferer(), toString() + " setState(" + getStateString() + ")");
 	}
 
 	/**
@@ -249,8 +244,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		eventManager.registerNewEvent(treatedEvent);
 
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + getSufferer().getLocationTag().getLocale() + "] "
-						+ getSufferer().getName() + " began to receive treatment for " + toString().toLowerCase());
+		logger.info(getSufferer(), " began to receive treatment for " + toString().toLowerCase() + ".");
 	}
 
 	/**
@@ -341,8 +335,8 @@ public class HealthProblem implements Serializable {
 		setState(CURED);
 
 		// Create medical event for cured.
-//		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
-		eventManager.registerNewEvent(new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED));
+		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
+		eventManager.registerNewEvent(curedEvent);
 	}
 
 	/**
@@ -396,16 +390,16 @@ public class HealthProblem implements Serializable {
 
 					if (nextPhase == null) {
 						if (type.toString().equalsIgnoreCase("suffocation")) {
-							logger.info(sufferer + " was suffocated for too long and was dead.");
+							logger.info(sufferer, " was suffocated for too long and was dead.");
 						}
 						else {
-							logger.info(sufferer + " had been suffering from '" 
+							logger.info(sufferer, " suffered from '" 
 									+ type.toString() + "' too long and was dead.");
 						}
 						setState(DEAD);
 						condition.recordDead(this, false, "");
 					} else {
-						logger.info(sufferer + " had been suffering from '" 
+						logger.info(sufferer, " suffered from '" 
 								+ type.toString() + "', which was just degraded to " + nextPhase + ".");
 						result = nextPhase;
 					}

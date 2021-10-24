@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Robot.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Manny Kung
  */
 
@@ -10,14 +10,21 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -51,20 +58,18 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
- * The robot class represents a robot on Mars. It keeps track of everything
- * related to that robot
+ * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Equipment implements VehicleOperator, Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable, EquipmentOwner {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/* default logger. */
+	/** default logger. */
 	private static final  Logger logger = Logger.getLogger(Robot.class.getName());
-//	private static String sourceName = logger.getName();
 
 	// Static members
 	/** The base carrying capacity (kg) of a robot. */
@@ -75,11 +80,14 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
+	/** A small amount. */
+	private static final double SMALL_AMOUNT = 0.00001;
 	
-	/** The enum type of this equipment. */
+	/** The string type of this equipment. */
 	public static final String TYPE = "Robot";
-	
+	/** The string tag of operable. */	
 	private static final String OPERABLE = "Operable";
+	/** The string tag of inoperable. */
 	private static final String INOPERABLE = "Inoperable";
 	
 	
@@ -89,6 +97,8 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
+	/** The building the robot is at. */
+	private int currentBuildingInt;
 	/** The year of birth of this robot. */
 	private int year;
 	/** The month of birth of this robot. */
@@ -101,18 +111,27 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
+	/** The carrying capacity of the robot. */
+	private int carryingCapacity;
 	
 	/** Settlement X location (meters) from settlement center. */
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
 
+	/** The birthplace of the robot. */
+	private String birthplace;
+	/** The birth time of the robot. */
+	private String birthTimeStamp;
 	/** The nick name for this robot. e.g. Chefbot 001 */
 	private String nickName;
 	/** The country of the robot made. */
 	private String country;
 	/** The sponsor of the robot. */
 	private String sponsor;
+	
+	/** The Robot Type. */
+	private RobotType robotType;
 	
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
@@ -126,31 +145,23 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
-	/** The birthplace of the robot. */
-	private String birthplace;
-	/** The birth time of the robot. */
-	private String birthTimeStamp;
-	/** The TaskSchedule instance. */
-	//private TaskSchedule taskSchedule;
-	/** The Robot Type. */
-	private RobotType robotType;
-	/** The building the robot is at. */
-	private int currentBuildingInt;
-
+	/** The person's EquipmentInventory instance. */
+	private EquipmentInventory eqmInventory;
+	
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, robotType.getName(), settlement); // extending equipment
-		
-		// Store this robot to the settlement 
-		settlement.getInventory().storeUnit(this);
+		super(name, settlement.getCoordinates());
+	
 		// Add this robot to be owned by the settlement
 		settlement.addOwnedRobot(this);
-
+		// Set the container unit
+		setContainerUnit(settlement);
+		
 		// Initialize data members.
 		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
-//		System.out.println("(1) " + associatedSettlementID + " : " + settlement + " : " + name);
 		this.robotType = robotType;
+		
 		xLoc = 0D;
 		yLoc = 0D;
 		
@@ -190,22 +201,25 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 		botMind = new BotMind(this);
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this);
-
-		setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D);
-		height = 156 + RandomUtil.getRandomInt(22);
-
+		// Set base mass
+		setBaseMass(100);
+		// Set height
+		height = 150;
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
-		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
+		// Set carry capacity
+		carryingCapacity = (int) (BASE_CAPACITY + strength);	
+		// Construct the EquipmentInventory instance.
+		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
 
-	/**
-	 * Gets the total capacity of resource that this container can hold.
-	 * @return total capacity (kg).
-	 */
-	public double getTotalCapacity() {
-		return BASE_CAPACITY;
-	}
+//	/**
+//	 * Gets the total capacity of resource that this container can hold.
+//	 * @return total capacity (kg).
+//	 */
+//	public double getTotalCapacity() {
+//		return BASE_CAPACITY;
+//	}
 
 
 	/**
@@ -365,16 +379,17 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	 */
 	@Override
 	public Settlement getSettlement() {
+		
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 		
 		Unit c = getContainerUnit();
 
-		if (c instanceof Settlement) {
+		if (c.getUnitType() == UnitType.SETTLEMENT) {
 			return (Settlement) c;
 		}
 
-		else if (c instanceof Vehicle) {
+		else if (c.getUnitType() == UnitType.VEHICLE) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
@@ -393,29 +408,13 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	public Vehicle getVehicle() {
 		if (isInVehicle())
 			return (Vehicle) getContainerUnit();
-		else
-			return null;
-	}
-
-	/**
-	 * Sets the unit's container unit. Overridden from Unit class.
-	 * 
-	 * @param containerUnit the unit to contain this unit.
-	 */
-	public void setContainerUnit(Unit containerUnit) {
-		super.setContainerUnit(containerUnit);
-//		if (containerUnit instanceof Vehicle) {
-//			vehicle = containerUnit.getIdentifier();
-//		} else
-//			vehicle = -1;
+		return null;
 	}
 
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
-		Unit containerUnit = getContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			containerUnit.getInventory().retrieveUnit(this);
-		}
+		((Settlement)getContainerUnit()).removeOwnedRobot(this);
+		
 		isInoperable = true;
 		// Set home town
 		setAssociatedSettlement(-1);
@@ -622,15 +621,6 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	}
 
 	/**
-	 * Checks if the vehicle operator is fit for operating the vehicle.
-	 * 
-	 * @return true if vehicle operator is fit.
-	 */
-	public boolean isFitForOperatingVehicle() {
-		return isFit(); 
-	}
-
-	/**
 	 * Gets the name of the vehicle operator
 	 * 
 	 * @return vehicle operator name.
@@ -759,6 +749,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	 * 
 	 * @return building
 	 */
+	@Override
 	public Building getBuildingLocation() {
 		return computeCurrentBuilding();
 	}
@@ -907,61 +898,21 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	 * 
 	 * @return modifier
 	 */
-	public double getWalkSpeedMod() {
-		double mass = getInventory().getTotalInventoryMass(false);
-		double cap = getInventory().getGeneralCapacity();
-		// At full capacity, may still move at 10% 
-		return 1.1 - mass/cap;
+	public double calculateWalkSpeed() {
+		double mass = getMass();
+		// At full capacity, may still move at 10%.
+		// Make sure is doesn't go -ve and there is always some movement
+		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
 	}
 	
 	public int getAge() {
 		return age;
 	}
 
-	@Override
 	public boolean isFit() {
 		return !health.isInoperable();
 	}
 	
-	@Override
-	protected UnitType getUnitType() {
-		return UnitType.ROBOT;
-	}
-
-
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Robot r = (Robot) obj;
-		return this.getIdentifier() == r.getIdentifier()
-				&& this.robotType == r.getRobotType(); 
-//				&& this.nickName.equals(r.getNickName());
-	}
-
-	/**
-	 * Reinitialize references after loading from a saved sim
-	 */
-	public void reinit() {
-		botMind.reinit();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		if (salvageInfo != null)
-			salvageInfo.destroy();
-		salvageInfo = null;
-		attributes.destroy();
-		attributes = null;
-		botMind.destroy();
-		botMind = null;
-		health.destroy();
-		health = null;
-		skillManager.destroy();
-		skillManager = null;
-		birthTimeStamp = null;
-	}
 
 	/**
 	 * Generate a unique name for the Robot. Generated based on
@@ -1210,5 +1161,487 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 			robotType = RobotType.MAKERBOT;
 		}
 		return robotType;
+	}
+
+	/**
+	 * Gets the remaining carrying capacity available.
+	 * 
+	 * @return capacity (kg).
+	 */
+	public double getRemainingCarryingCapacity() {
+		double result = carryingCapacity - eqmInventory.getStoredMass();
+		if (result < 0)
+			return 0;
+		return result;
+	}
+	
+	/**
+	 * Get the capacity the robot can carry
+	 * 
+	 * @return capacity (kg)
+	 */
+	public double getCarryingCapacity() {
+		return carryingCapacity;
+	}
+	
+	/**
+	 * Obtains the remaining general storage space 
+	 * 
+	 * @return quantity
+	 */
+	@Override
+	public double getRemainingCargoCapacity() {
+		return eqmInventory.getRemainingCargoCapacity();
+	}
+	
+	/**
+	 * Mass of Equipment is the base mass plus what every it is storing
+	 */
+	@Override
+	public double getMass() {
+		// TODO because the PErson is not fully initialised in the constructor this
+		// can be null. The initialise method is the culprit.
+		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
+
+	}
+	
+	/**
+	 * Is this unit empty ? 
+	 * 
+	 * @return true if this unit doesn't carry any resources or equipment
+	 */
+	public boolean isEmpty() {
+		return (eqmInventory.getStoredMass() == 0D);
+	}	
+	
+
+	/**
+	 * Gets the stored mass
+	 */
+	@Override
+	public double getStoredMass() {
+		return eqmInventory.getStoredMass();
+	}
+	
+	/**
+	 * Get the equipment list
+	 * 
+	 * @return the equipment list
+	 */
+	@Override
+	public Set<Equipment> getEquipmentList() {
+		return eqmInventory.getEquipmentList();
+	}
+	
+	/**
+	 * Does this person possess an equipment of this equipment type
+	 * 
+	 * @param typeID
+	 * @return true if this person possess this equipment type
+	 */
+	@Override
+	public boolean containsEquipment(EquipmentType type) {
+		return eqmInventory.containsEquipment(type);
+	}
+	
+	/**
+	 * Adds an equipment to this person
+	 * 
+	 * @param equipment
+	 * @return true if this person can carry it
+	 */
+	@Override
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {	
+			e.setCoordinates(getCoordinates());
+//			e.setContainerUnit(this);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			return true;
+		}
+		return false;		
+	}
+	
+	/**
+	 * Remove an equipment 
+	 * 
+	 * @param equipment
+	 */
+	@Override
+	public boolean removeEquipment(Equipment equipment) {
+		return eqmInventory.removeEquipment(equipment);
+	}
+	
+	/**
+	 * Stores the item resource
+	 * 
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the item resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return eqmInventory.retrieveItemResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the item resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public int getItemResourceStored(int resource) {
+		return eqmInventory.getItemResourceStored(resource);
+	}
+	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		return eqmInventory.storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		return eqmInventory.retrieveAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory.getAmountResourceCapacity(resource);
+	}
+	
+	/**
+     * Gets the total capacity that this robot can hold.
+     * 
+     * @return total capacity (kg).
+     */
+	@Override
+	public double getTotalCapacity() {
+		return eqmInventory.getTotalCapacity();
+	}
+	
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return eqmInventory.getAmountResourceStored(resource);
+	}
+    
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return eqmInventory.getAmountResourceIDs();
+	}
+	
+	/**
+	 * Gets all stored item resources
+	 * 
+	 * @return all stored item resources.
+	 */
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		return eqmInventory.getItemResourceIDs();
+	}
+	
+
+	/**
+	 * Finds the number of empty containers of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerClass  the unit class.
+	 * @param brandNew  does it include brand new bag only
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
+	}
+	
+	/**
+	 * Finds a container in storage.
+	 * 
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	@Override
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
+		return eqmInventory.findContainer(containerType, empty, resource);
+	}
+	
+	/**
+	 * Finds all of the containers (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findAllContainers() {
+		return eqmInventory.findAllContainers();
+	}
+	
+	/**
+	 * Does it have this item resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasItemResource(int resource) {
+		return eqmInventory.hasItemResource(resource);
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			updateRobotState(newContainer);
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Updates the location state type of a  robot
+	 * 
+	 * @param newContainer
+	 */
+	public void updateRobotState(Unit newContainer) {
+		if (newContainer == null) {
+			currentStateType = LocationStateType.UNKNOWN; 
+			return;
+		}
+		
+		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Gets the location state type based on the type of the new container unit
+	 * 
+	 * @param newContainer
+	 * @return {@link LocationStateType}
+	 */
+	@Override
+	public LocationStateType getNewLocationState(Unit newContainer) {
+		
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
+			return LocationStateType.INSIDE_SETTLEMENT;
+		
+		if (newContainer.getUnitType() == UnitType.BUILDING)
+			return LocationStateType.INSIDE_SETTLEMENT;	
+		
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
+			return LocationStateType.INSIDE_VEHICLE;
+		
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
+			return LocationStateType.ON_PERSON_OR_ROBOT;
+
+		if (newContainer.getUnitType() == UnitType.PLANET)
+			return LocationStateType.MARS_SURFACE;
+		
+		return null;
+	}
+	
+	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+		// Will activate the block of codes below once robots become mobile again
+		
+//		// Check if the origin is a vehicle
+//		if (origin.getUnitType() == UnitType.VEHICLE) {
+//			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+//				transferred = ((Crewable)origin).removeRobot(this);
+//			}
+//			else {
+//				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
+//			}
+//		}
+//		else if (origin.getUnitType() == UnitType.PLANET) {
+//			transferred = ((MarsSurface)origin).removeRobot(this);
+//		}
+//		else if (origin.getUnitType() == UnitType.BUILDING) {
+//			// Retrieve this person from the settlement
+//			transferred = ((Building)origin).getSettlement().removeRobotWithin(this);
+//		}
+//		// Note: the origin is a settlement
+//		else {
+//			// Retrieve this person from the settlement
+//			transferred = ((Settlement)origin).removeRobotWithin(this);
+//		}	
+//		
+//		if (transferred) {
+//			// Check if the destination is a vehicle
+//			if (destination.getUnitType() == UnitType.VEHICLE) {
+//				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+//					transferred = ((Crewable)destination).addRobot(this);
+//				}
+//				else {
+//					logger.warning(this + "Not possible to be stored into " + origin + ".");
+//				}
+//			}
+//			else if (destination.getUnitType() == UnitType.PLANET) {
+//				transferred = ((MarsSurface)destination).addRobot(this);
+//			}
+//			// Note: the destination is a settlement
+//			else {
+//				transferred = ((Settlement)destination).addRobotWithin(this);
+//			}
+//			
+//			if (!transferred) {
+//				logger.warning(this + " cannot be stored into " + destination + ".");
+//				// NOTE: need to revert back the storage action 
+//			}
+//			else {
+//				// Set the new container unit (which will internally set the container unit id)
+//				setContainerUnit(destination);
+//				// Fire the unit event type
+//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+//				// Fire the unit event type
+//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+//			}
+//		}
+//		else {
+//			logger.warning(this + " cannot be retrieved from " + origin + ".");
+//			// NOTE: need to revert back the retrieval action 
+//		}
+		
+		return transferred;
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = getNickName().hashCode();
+		hashCode *= getRobotType().hashCode();
+		hashCode *= getIdentifier();
+		return hashCode;
+	}
+
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.ROBOT;
+	}
+
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
+
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
+	public void reinit() {
+		botMind.reinit();
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (salvageInfo != null)
+			salvageInfo.destroy();
+		salvageInfo = null;
+		attributes.destroy();
+		attributes = null;
+		botMind.destroy();
+		botMind = null;
+		health.destroy();
+		health = null;
+		skillManager.destroy();
+		skillManager = null;
+		birthTimeStamp = null;
 	}
 }

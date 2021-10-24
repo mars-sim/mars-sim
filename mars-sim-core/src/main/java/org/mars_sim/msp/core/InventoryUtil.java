@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryUtil.java
- * @date 2021-10-03
+ * @date 2021-10-20
  * @author Manny Kung
  */
 
@@ -13,9 +13,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -25,45 +29,28 @@ public class InventoryUtil {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(InventoryUtil.class.getName());
-
-	/**
-	 * Checks if a good EVA suit is in entity inventory.
-	 * 
-	 * @param inv the inventory to check.
-	 * @param {@link Person}
-	 * @return true if good EVA suit is in inventory
-	 */
-	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
-		return getGoodEVASuit(inv, p) != null;
-	}
 	
 	/**
 	 * Gets a good EVA suit
 	 * 
-	 * @param inv
+	 * @param housing The unit housing the airlock to be used.
 	 * @param p
 	 * @return
 	 */
-	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
-		// Gets the suit the person has used before
-		EVASuit suit = inv.findAnEVAsuit(p);
-		// Check if suit has any malfunctions.
-		if (suit != null) {
-			if (suit.getMalfunctionManager().hasMalfunction()) {
-				logger.log(p, Level.WARNING, 4_000,
-					suit.getName() + " malfunction and not usable.");
-			}
-			else {
-//				logger.log(p, Level.INFO, 4_000,
-//						"getGoodEVASuit: " + p + " found " + suit);
-				return suit;
+	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
+		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentList();
+ 		
+ 		// Find suit without malfunction
+ 		// TODO favorite a previous one
+		for(Equipment e : candidates) {
+			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
+					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
+				return (EVASuit)e;
 			}
 		}
-		// If the previous EVA suit has malfunction, get a new one
-		suit = getGoodEVASuitNResource(inv, p);
-//		logger.log(p, Level.INFO, 4_000,
-//				"getGoodEVASuit: " + p + " found " + suit);
-		return suit;
+
+		logger.warning(p, "Can not find an EVA suit in " + housing.getName());
+		return null;
 	}
 	
 	/**
@@ -72,41 +59,42 @@ public class InventoryUtil {
 	 * @param inv the inventory to check.
 	 * @return EVA suit or null if none available.
 	 */
-	public static EVASuit getGoodEVASuitNResource(Inventory inv, Person p) {
-		List<EVASuit> malSuits = new ArrayList<>(0);
+	public static EVASuit getGoodEVASuitNResource(EquipmentOwner owner, Person p) {
+//		List<EVASuit> malSuits = new ArrayList<>(0);
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
-		Collection<EVASuit> suits = inv.findAllEVASuits();
-		for (EVASuit suit : suits) {
-			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-			if (malfunction) {
-				logger.log(p, Level.WARNING, 50_000, 
+		List<EVASuit> suits = new ArrayList<>();
+		for (Equipment e : owner.getEquipmentList()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				EVASuit suit = (EVASuit)e;
+				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+				if (!malfunction) {
+					suits.add(suit);
+				}
+				else 
+					logger.log(p, Level.WARNING, 50_000, 
 						"Spotted the malfunction with " + suit.getName() + " when being examined.");
-				malSuits.add(suit);
-				suits.remove(suit);
-			}
-			
-			try {
-				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
-				if (!malfunction && hasEnoughResources) {			
-					if (p != null && suit.getLastOwner() == p) {
-						// Prefers to pick the same suit that a person has been tagged in the past
-//						logger.log(p, Level.INFO, 4_000,
-//								"getGoodEVASuitNResource: " + p + " found " + suit);
-						return suit;
-					}
-					else
-						// tag it as good suit for possible use below
-						goodSuits.add(suit);
-				}
-				else if (!malfunction && !hasEnoughResources) {
-					// tag it as no resource suit for possible use below
-					noResourceSuits.add(suit);					
-				}
 				
-			} catch (Exception e) {
-				logger.log(p, Level.SEVERE, 50_000,
-						"Could not find enough resources for " + suit.getName() + ".", e);
+				try {
+					boolean hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
+					if (!malfunction && hasEnoughResources) {			
+						if (p != null && suit.getLastOwner() == p) {
+							// Prefers to pick the same suit that a person has been tagged in the past
+							return suit;
+						}
+						else
+							// tag it as good suit for possible use below
+							goodSuits.add(suit);
+					}
+					else if (!malfunction && !hasEnoughResources) {
+						// tag it as no resource suit for possible use below
+						noResourceSuits.add(suit);					
+					}
+					
+				} catch (Exception ex) {
+					logger.log(p, Level.SEVERE, 50_000,
+							"Could not find enough resources for " + suit.getName() + ".", ex);
+				}
 			}
 		}
 
@@ -135,12 +123,14 @@ public class InventoryUtil {
 	 * @return true if enough supplies.
 	 * @throws Exception if error checking suit resources.
 	 */
-	private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
-		int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
+	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
+		int otherPeopleNum = 0; 
+		if (owner instanceof Settlement)
+			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
 
 		// Check if enough oxygen.
 		double neededOxygen = suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
-		double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+		double availableOxygen = owner.getAmountResourceStored(ResourceUtil.oxygenID);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);

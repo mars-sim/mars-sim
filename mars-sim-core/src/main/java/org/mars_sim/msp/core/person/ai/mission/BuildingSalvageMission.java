@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -46,7 +45,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/**
+/**s
  * Mission for salvaging a construction stage at a building construction site.
  */
 public class BuildingSalvageMission extends Mission implements Serializable {
@@ -294,9 +293,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			vehicle.setReservedForMission(true);
 			// Record the name of this vehicle in Mission
 			setReservedVehicle(vehicle.getName());
-			if (settlement.getInventory().containsUnit(vehicle)) {
-				settlement.getInventory().retrieveUnit(vehicle);
-			} else {
+			if (!settlement.removeParkedVehicle(vehicle)) {
 				logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 						, vehicle.getName(), settlement.getName()));
 				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
@@ -589,9 +586,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				while (l.hasNext()) {
 					Integer part = l.next();
 					try {
-						settlement.getInventory().retrieveItemResources(part, 1);
+						settlement.retrieveItemResource(part, 1);
 						if (vehicle != null) {
-							vehicle.getInventory().storeItemResources(part, 1);
+							vehicle.storeItemResource(part, 1);
 						}
 						luvAttachmentParts.add(part);
 					} catch (Exception e) {
@@ -633,9 +630,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
 							RandomUtil.getRandomDouble(360D));
 
-					if (settlement.getInventory().containsUnit(luvTemp)) {
-						settlement.getInventory().retrieveUnit(luvTemp);
-					} else {
+					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 								, luvTemp.getName(), settlement.getName()));
 						addMissionStatus(MissionStatus.LUV_NOT_RETRIEVED);
@@ -658,20 +653,15 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				GroundVehicle vehicle = i.next();
 				vehicle.setReservedForMission(false);
 
-				Inventory vInv = vehicle.getInventory();
-				Inventory sInv = settlement.getInventory();
-
 				// Store construction vehicle in settlement.
-				sInv.storeUnit(vehicle);
+				settlement.addParkedVehicle(vehicle);
 				vehicle.findNewParkingLoc();
 
 				// Store all construction vehicle attachments in settlement.
-				Iterator<Integer> j = vInv.getAllItemResourcesStored().iterator();
-				while (j.hasNext()) {
-					Integer attachmentPart = j.next();
-					int num = vInv.getItemResourceNum(attachmentPart);
-					vInv.retrieveItemResources(attachmentPart, num);
-					sInv.storeItemResources(attachmentPart, num);
+				for(int id : vehicle.getItemResourceIDs()) {
+					int num = vehicle.getItemResourceStored(id);
+					vehicle.retrieveItemResource(id, num);
+					settlement.storeItemResource(id, num);
 				}
 			}
 		}
@@ -728,10 +718,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			if (salvagedNumber > 0) {
 				Part p = ItemResourceUtil.findItemResource(part);
 				double mass = salvagedNumber * p.getMassPerItem();
-				double capacity = settlement.getInventory().getGeneralCapacity();
+				double capacity = settlement.getTotalCapacity();
 				if (mass <= capacity) {
-					settlement.getInventory().storeItemResources(part, salvagedNumber);
-					settlement.getInventory().addItemSupply(part, salvagedNumber);
+					settlement.storeItemResource(part, salvagedNumber);
+//					settlement.getInventory().addItemSupply(part, salvagedNumber);
 				}
 				// Recalculate settlement good value for salvaged part.
 //				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);

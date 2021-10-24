@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public class DroneMission extends VehicleMission {
+public abstract class DroneMission extends VehicleMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -118,7 +118,7 @@ public class DroneMission extends VehicleMission {
 
 			usable = drone.isVehicleReady();
 			
-			if (drone.getInventory().getTotalInventoryMass(false) > 0D)
+			if (drone.getStoredMass() > 0D)
 				usable = false;
 			
 			if (usable) {
@@ -156,7 +156,7 @@ public class DroneMission extends VehicleMission {
 			
 			usable = drone.isVehicleReady();
 				
-			if (drone.getInventory().getTotalInventoryMass(false) > 0D)
+			if (drone.getStoredMass() > 0D)
 				usable = false;
 
 			if (usable)
@@ -326,10 +326,13 @@ public class DroneMission extends VehicleMission {
 				recordStartMass();
 				
 				// Embark from settlement
-				if (settlement.getInventory().containsUnit(v))
-					v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
-					
-				setPhaseEnded(true);
+				if (v.transfer(settlement, unitManager.getMarsSurface())) {
+					setPhaseEnded(true);
+				}
+				else {
+					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+					endMission();
+				}
 			}
 		}
 	}
@@ -377,7 +380,7 @@ public class DroneMission extends VehicleMission {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If drone has not been parked at settlement, park it.
-				disembarkSettlement.getInventory().storeUnit(v);	
+				disembarkSettlement.addParkedVehicle(v);	
 			}
 
 			// Make sure the drone chasis is not overlapping a building structure in the settlement map
@@ -388,7 +391,7 @@ public class DroneMission extends VehicleMission {
 			v.correctVehicleReservation();
 
 			// Unload drone if necessary.
-			boolean droneUnloaded = drone.getInventory().getTotalInventoryMass(false) == 0D;
+			boolean droneUnloaded = drone.getStoredMass() == 0D;
 			
 			if (!droneUnloaded) {
 				

@@ -117,8 +117,8 @@ public class CommandHelper {
 			Set<Person> c = study.getCollaborativeResearchers();
 			for (Person person :  study.getInvitedResearchers()) {
 				response.appendTableRow(person.getName(),
-										(study.hasInvitedResearcherResponded(person) ? "Yes" : "No"),
-										(c.contains(person) ? "Yes" : "No"));
+										study.hasInvitedResearcherResponded(person),
+										c.contains(person));
 			}
 			break;
 		
@@ -193,11 +193,35 @@ public class CommandHelper {
 		
 		for (Airlock airlock : airlocks) {
 			response.appendTableRow(airlock.getEntityName(), airlock.getState().name(),
-									(airlock.isActivated() ? "Yes" : "No"),
+									airlock.isActivated(),
 									airlock.getOperatorName(),
 									String.format("%d/%d", airlock.getNumOccupants(), airlock.getCapacity()),
 									(airlock.isInnerDoorLocked() ? "LCK" : "ULK"),
 									(airlock.isOuterDoorLocked() ? "LCK" : "ULK"));
+		}
+	}
+	
+	/**
+	 * Display the details of a list of Airlocks
+	 * @param response Output for details.
+	 * @param airlocks
+	 */
+	public static void outputAirlockDetailed(StructuredResponse response, String name, Airlock airlock) {
+		response.appendLabeledString("Name", name);
+		response.appendLabeledString("Operator", airlock.getOperatorName());
+		response.appendLabeledString("State", airlock.getState().name());
+		response.appendLabeledString("Activated", (airlock.isActivated() ? "Yes" : "No"));
+		response.appendLabeledString("Doors", "Inner-" + (airlock.isInnerDoorLocked() ? "LCK" : "ULK")
+												+ " Outer-" + (airlock.isOuterDoorLocked() ? "LCK" : "ULK"));
+		response.appendLabeledString("Waiting", "Inner-" + airlock.getNumAwaitingInnerDoor()
+												+ " Outer-" + airlock.getNumAwaitingOuterDoor());
+		
+		response.appendTableHeading("Occupant", PERSON_WIDTH, "Has Suit");
+		for (int pID : airlock.getOccupants()) {
+			Person p = airlock.getPersonByID(pID);
+			if (p != null) {
+				response.appendTableRow(p.getName(), p.getSuit() != null ? "Yes" : "No");
+			}
 		}
 	}
 	

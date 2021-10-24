@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -115,7 +115,7 @@ implements Serializable {
 	    	Integer resource = i.next();
 	        double amountRequired = stage.getRemainingResources().get(resource);
 	        if (amountRequired > 0D) {
-	            double amountStored = settlement.getInventory().getAmountResourceStored(resource, false);
+	            double amountStored = settlement.getAmountResourceStored(resource);
 	            if (amountStored > 0D) {
 	                result = true;
 	            }
@@ -127,7 +127,7 @@ implements Serializable {
 	    	Integer part = j.next();
 	        int numRequired = stage.getRemainingParts().get(part);
 	        if (numRequired > 0) {
-	            int numStored = settlement.getInventory().getItemResourceNum(part);
+	            int numStored = settlement.getItemResourceStored(part);
 	            if (numStored > 0) {
 	                result = true;
 	            }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @date 2021-08-28
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -239,7 +238,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 			usable = vehicle.isVehicleReady();
 
-			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
 			return usable;
@@ -355,15 +354,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 			for (Integer resource : rescueResources.keySet()) {
 				double amount = (Double) rescueResources.get(resource);
-				Inventory roverInv = getRover().getInventory();
-				Inventory targetInv = vehicleTarget.getInventory();
-				double amountNeeded = amount - targetInv.getAmountResourceStored(resource, false);
+				double amountNeeded = amount - vehicleTarget.getAmountResourceStored(resource);
 
-				if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) > amountNeeded)) {
-					roverInv.retrieveAmountResource(resource, amountNeeded);
-
-					targetInv.storeAmountResource(resource, amountNeeded, true);
-
+				if ((amountNeeded > 0) && (getRover().getAmountResourceStored(resource) > amountNeeded)) {
+					getRover().retrieveAmountResource(resource, amountNeeded);
+					vehicleTarget.storeAmountResource(resource, amountNeeded);
 				}
 			}
 		}
@@ -786,11 +781,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	public Map<Integer, Number> getResourcesToLoad() {
 		// Override and full rover with fuel and life support resources.
 		Map<Integer, Number> result = new HashMap<Integer, Number>(4);
-		Inventory inv = getVehicle().getInventory();
-		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType(), false));
-		result.put(OXYGEN_ID, inv.getAmountResourceCapacity(OXYGEN_ID, false));
-		result.put(WATER_ID, inv.getAmountResourceCapacity(WATER_ID, false));
-		result.put(FOOD_ID, inv.getAmountResourceCapacity(FOOD_ID, false));
+
+		result.put(getVehicle().getFuelType(), getVehicle().getAmountResourceCapacity(getVehicle().getFuelType()));
+		result.put(OXYGEN_ID, getVehicle().getAmountResourceCapacity(OXYGEN_ID));
+		result.put(WATER_ID, getVehicle().getAmountResourceCapacity(WATER_ID));
+		result.put(FOOD_ID, getVehicle().getAmountResourceCapacity(FOOD_ID));
 
 		// Get parts too.
 		result.putAll(getSparePartsForTrip(getEstimatedTotalRemainingDistance()));

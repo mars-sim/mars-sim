@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleTest
- * @date 2021-09-29
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -54,11 +53,14 @@ extends TestCase {
 		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
 		
-		vehicle = new Rover("Test", "Cargo Rover", settlement);
+		vehicle = new Rover("Test Rover", "Cargo Rover", settlement);
+		settlement.addOwnedVehicle(vehicle);
 		unitManager.addUnit(vehicle);
 		
 		person = new Person("Jim Loader", settlement);
-		unitManager.addUnit(person);
+		settlement.addACitizen(person);
+		// Set the container unit
+		person.setContainerUnit(settlement);
 		
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
@@ -145,10 +147,11 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, requiredEquipMap);
 		checkVehicleEquipment(vehicle, optionalEquipMap);
 		
-		double optionalLoaded = vehicle.getInventory()
-						.findAllUnitsOfClass(missingId).size();
-
-		assertEquals("Optional Equipment loaded", 0D, optionalLoaded);
+		EquipmentType eType = EquipmentType.convertID2Type(missingId);
+		long optionalLoaded = vehicle.getEquipmentList().stream()
+				.filter(e -> (e.getEquipmentType() == eType))
+				.count();
+		assertEquals("Optional Equipment loaded", 0, optionalLoaded);
 	}
 
 
@@ -220,7 +223,7 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
 		
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,
@@ -235,7 +238,7 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
 		
 		testLoadOptionalResources(100, requiredResourcesMap,
 								  optionalResourcesMap,
@@ -247,11 +250,11 @@ extends TestCase {
 	 */
 	public void testLoadFull() throws Exception {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
+		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 5);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
 
 		Map<Integer, Integer> optionalEquipMap = new HashMap<>();
-		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10);
+		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5);
 	
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
@@ -259,8 +262,8 @@ extends TestCase {
 		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
 		
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 10D);
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
+		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 5D);
 		
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,
@@ -282,7 +285,7 @@ extends TestCase {
 		loadSettlementEquipment(settlement, equipmentManifest);
 		loadSettlementEquipment(settlement, optionalEquipmentManifest);
 
-		// Mkae sure Vehcile has capacity
+		// Make sure Vehicle has capacity
 		setResourcesCapacity(vehicle, resourcesManifest);
 		setResourcesCapacity(vehicle, optionalResourcesManifest);
 
@@ -307,8 +310,9 @@ extends TestCase {
 	 */
 	private void loadSettlementEquipment(Settlement settlement, Map<Integer, Integer> manifest) {
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
+			EquipmentType type = EquipmentType.convertID2Type(item.getKey());
 			for(int i = 0; i < item.getValue(); i++) {
-				EquipmentFactory.createEquipment(item.getKey(), settlement, false);
+				EquipmentFactory.createEquipment(type, settlement, false);
 			}
 		}
 	}
@@ -343,10 +347,10 @@ extends TestCase {
 		
 		double optionalLoaded;
 		if (missingId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			optionalLoaded = vehicle.getInventory().getAmountResourceStored(missingId, false);
+			optionalLoaded = vehicle.getAmountResourceStored(missingId);
 		}
 		else {
-			optionalLoaded = vehicle.getInventory().getItemResourceNum(missingId);
+			optionalLoaded = vehicle.getItemResourceStored(missingId);
 		}
 			
 		assertEquals("Optional resource loaded", 0D, optionalLoaded);
@@ -407,7 +411,7 @@ extends TestCase {
 			loadingCount++;
 		}
 		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Load operation not stopped", loaded);
+		assertTrue("Load operation stopped on load complete", loaded);
 		assertTrue("Loading controller complete", controller.isCompleted());
 		
 		return controller;
@@ -419,10 +423,12 @@ extends TestCase {
 	 * @param equipmentManifest
 	 */
 	private void checkVehicleEquipment(Vehicle source, Map<Integer, Integer> manifest) {
-		Inventory inv = source.getInventory();
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
-			int stored = inv.findAllUnitsOfClass(item.getKey()).size();
-			assertEquals("Equipment in vehicle " + EquipmentType.convertID2Type(item.getKey()).name(),
+			EquipmentType eType = EquipmentType.convertID2Type(item.getKey());
+			long stored = source.getEquipmentList().stream()
+					.filter(e -> (e.getEquipmentType() == eType))
+					.count();
+			assertEquals("Equipment in vehicle " + eType.name(),
 					item.getValue().intValue(), stored);
 		}
 	}
@@ -434,21 +440,21 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void checkVehicleResources(Vehicle source, Map<Integer, Number> requiredResourcesMap) {
-		Inventory inv = source.getInventory();
 
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
 
-				double stored = inv.getAmountResourceStored(key, false);
+				double stored = source.getAmountResourceStored(key);
 				double expected = resource.getValue().doubleValue();
 				assertLessThan("Vehicle amount resource stored " + resourceName, expected, stored);
 			}
 			else {
-				int stored = inv.getItemResourceNum(key);
+				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
-				assertEquals("Vehicle item resource stored " + key, expected, stored);
+				String itemName = ItemResourceUtil.findItemResourceName(key);
+				assertEquals("Vehicle item resource stored " + itemName, expected, stored);
 			}
 		}
 	}
@@ -466,12 +472,10 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void setResourcesCapacity(Vehicle target, Map<Integer, Number> requiredResourcesMap) {
-		Inventory inv = target.getInventory();
-
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				inv.addAmountResourceTypeCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
+				//target.getMicroInventory().setCapacity(resource.getKey(), resource.getValue().doubleValue() + EXTRA_RESOURCE);
 			}
 		}
 	}
@@ -482,17 +486,19 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void loadSettlementResources(Settlement target, Map<Integer, Number> requiredResourcesMap) {
-		Inventory settlementInv = target.getInventory();
+//		Inventory settlementInv = target.getInventory();
 
 		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				// Add extra to the stored to give a tolerance
 				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
-				settlementInv.addAmountResourceTypeCapacity(key, amount);
-				settlementInv.storeAmountResource(key, amount, true);
+				// Add extra to the capacity
+//				target.addAmountResourceTypeCapacity(key, amount + EXTRA_RESOURCE);
+				target.storeAmountResource(key, amount);
 			}
 			else {
-				settlementInv.storeItemResources(key, resource.getValue().intValue());
+				target.storeItemResource(key, resource.getValue().intValue());
 			}	
 		}
 	}

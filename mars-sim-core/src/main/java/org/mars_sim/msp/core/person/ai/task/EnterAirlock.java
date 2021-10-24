@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2021-10-03
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -22,7 +22,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -689,32 +691,39 @@ public class EnterAirlock extends Task implements Serializable {
 
 				if (remainingDoffingTime <= 0) {
 	
-					// 2a. Records the person as the owner
+					Settlement settlement = null;
+					Vehicle vehicle = null;
+					
+					if (airlock instanceof BuildingAirlock)
+						settlement = ((Building)airlock.getEntity()).getSettlement();
+					else
+						vehicle = (Vehicle)airlock.getEntity();
+					
+					// 2a. Records the person as the owner (if it hasn't been done)
 					suit.setLastOwner(person);
 					// 2b. Doff this suit. Deregister the suit from the person
 					person.registerSuit(null);
 	
-					Inventory entityInv = airlock.getEntityInventory();
-					// 2c Transfer the EVA suit from person to entityInv
-					suit.transfer(person, entityInv);
-	
-					// 2d. Return suit to entity's inventory.
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
 
-					if (entityInv != null) {
+					if (settlement != null) {
+						// 2c Transfer the EVA suit from person to settlement/vehicle
+						suit.transfer(person, settlement);
+						
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 	
-						// 2e. Unloads the resources from the EVA suit to the entityEnv
+						// 2d. Unloads the resources from the EVA suit to the entityEnv
+						ResourceHolder rh = (ResourceHolder)airlock.getEntity();
 						try {
 							// 2e1. Unload oxygen from the suit.
 							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
-							double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+							double oxygenCapacity = rh.getAmountResourceRemainingCapacity(oxygenID);
 							if (oxygenAmount > oxygenCapacity)
 								oxygenAmount = oxygenCapacity;
 	
 							suit.retrieveAmountResource(oxygenID, oxygenAmount);
-							entityInv.storeAmountResource(oxygenID, oxygenAmount, false);
-							entityInv.addAmountSupply(oxygenID, oxygenAmount);
+							rh.storeAmountResource(oxygenID, oxygenAmount);
+//							rh.addAmountSupply(oxygenID, oxygenAmount);
 	
 						} catch (Exception e) {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen : ");
@@ -723,32 +732,68 @@ public class EnterAirlock extends Task implements Serializable {
 	
 						// 2e2. Unload water from the suit.
 						double waterAmount = suit.getAmountResourceStored(waterID);
-						double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
+						double waterCapacity = rh.getAmountResourceRemainingCapacity(waterID);
 						if (waterAmount > waterCapacity)
 							waterAmount = waterCapacity;
 	
 						try {
 							suit.retrieveAmountResource(waterID, waterAmount);
-							entityInv.storeAmountResource(waterID, waterAmount, false);
-							entityInv.addAmountSupply(waterID, waterAmount);
+							rh.storeAmountResource(waterID, waterAmount);
+//							rh.addAmountSupply(waterID, waterAmount);
 	
 						} catch (Exception e) {
 							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");
 							// endTask();
 						}
-	
-						// Add experience
-						addExperience(time);
-	
-						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-	
-						setPhase(CLEAN_UP);
 					}
+					
 					else {
-						logger.log(person, Level.WARNING, 4_000,
-								"EVA suit's container has issues in " + airlock.getEntity().toString() 
-								+ ".");				
+						// 2c Transfer the EVA suit from person to settlement/vehicle
+						suit.transfer(person, vehicle);	
+					
+						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
+						
+						// 2d. Unloads the resources from the EVA suit to the entityEnv
+						try {
+							// 2e1. Unload oxygen from the suit.
+							double oxygenAmount = suit.getAmountResourceStored(oxygenID);
+							double oxygenCapacity = vehicle.getAmountResourceRemainingCapacity(oxygenID);
+							if (oxygenAmount > oxygenCapacity)
+								oxygenAmount = oxygenCapacity;
+	
+							suit.retrieveAmountResource(oxygenID, oxygenAmount);
+							vehicle.storeAmountResource(oxygenID, oxygenAmount);
+//							entityInv.addAmountSupply(oxygenID, oxygenAmount);
+	
+						} catch (Exception e) {
+							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen : ");
+							// endTask();
+						}
+	
+						// 2e2. Unload water from the suit.
+						double waterAmount = suit.getAmountResourceStored(waterID);
+						double waterCapacity = vehicle.getAmountResourceRemainingCapacity(waterID);
+						if (waterAmount > waterCapacity)
+							waterAmount = waterCapacity;
+	
+						try {
+							suit.retrieveAmountResource(waterID, waterAmount);
+							vehicle.storeAmountResource(waterID, waterAmount);
+//							entityInv.addAmountSupply(waterID, waterAmount);
+	
+						} catch (Exception e) {
+							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water.");
+							// endTask();
+						}
 					}
+					
+					// Add experience
+					addExperience(time);
+
+					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
+
+					setPhase(CLEAN_UP);
+					
 				}
 			}
 				

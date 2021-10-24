@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -180,7 +180,7 @@ public class ResourceProcess implements Serializable {
 	 * @param inventory       the inventory pool to use for processes.
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(double time, double productionLevel, Inventory inventory) {
+	public void processResources(double time, double productionLevel, Settlement settlement) {
 
 		double level = productionLevel;
 		
@@ -191,7 +191,7 @@ public class ResourceProcess implements Serializable {
 		if (runningProcess) {
 
 			// Get resource bottleneck
-			double bottleneck = getInputBottleneck(time, inventory);
+			double bottleneck = getInputBottleneck(time, settlement);
 			if (level > bottleneck)
 				level = bottleneck;
 
@@ -204,12 +204,12 @@ public class ResourceProcess implements Serializable {
 				double maxRate = input.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
-				double remainingAmount = inventory.getAmountResourceStored(resource, false);
+				double remainingAmount = settlement.getAmountResourceStored(resource);
 
 				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;
 
-				inventory.retrieveAmountResource(resource, resourceAmount);
+				settlement.retrieveAmountResource(resource, resourceAmount);
 			}
 
 			// Output resources to inventory.
@@ -219,12 +219,12 @@ public class ResourceProcess implements Serializable {
 				double maxRate = output.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
-				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false, false);
+				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
 				if (resourceAmount > remainingCapacity)
 					resourceAmount = remainingCapacity;
 		
-				inventory.storeAmountResource(resource, resourceAmount, false);
-				inventory.addAmountSupply(resource, resourceAmount);
+				settlement.storeAmountResource(resource, resourceAmount);
+//				inventory.addAmountSupply(resource, resourceAmount);
 			}
 		} else
 			level = 0D;
@@ -241,7 +241,7 @@ public class ResourceProcess implements Serializable {
 	 * @return bottleneck (0.0D - 1.0D)
 	 * @throws Exception if error getting input bottleneck.
 	 */
-	private double getInputBottleneck(double time, Inventory inventory) {
+	private double getInputBottleneck(double time, Settlement settlement) {
 
 		// Check for illegal argument.
 		if (time < 0D)
@@ -253,7 +253,7 @@ public class ResourceProcess implements Serializable {
 			Integer resource = input.getKey();
 			double maxRate = input.getValue();
 			double desiredResourceAmount = maxRate * time;
-			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
+			double inventoryResourceAmount = settlement.getAmountResourceStored(resource);
 			double proportionAvailable = 1D;
 			if (desiredResourceAmount > 0D)
 				proportionAvailable = inventoryResourceAmount / desiredResourceAmount;

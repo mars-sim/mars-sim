@@ -8,12 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -33,10 +31,7 @@ implements Serializable {
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(BiologyStudyFieldWork.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+    private static final SimLogger logger = SimLogger.getLogger(BiologyStudyFieldWork.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -120,10 +115,8 @@ implements Serializable {
             	return false;
             
             if (isGettingDark(person)) {
-    			LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
-    					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-    					+ person.getTaskDescription() + " due to getting too dark "
-    					+ " at " + person.getCoordinates().getFormattedString());
+    			logger.fine(person, "Ended "
+    					+ person.getTaskDescription() + " due to getting too dark.");
     			return false;
     		}
 

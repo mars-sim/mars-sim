@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResourceCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2021-10-21
  * @author Barry Evans
  */
 
@@ -103,7 +103,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayCO2(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.co2ID, false);
+		double reserve = settlement.getAmountResourceStored(ResourceUtil.co2ID);
 
 		response.appendHeading(GREENHOUSE_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
@@ -124,7 +124,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	}
 
 	private void displayWater(Settlement settlement, StructuredResponse response) {
-		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+		double reserve = settlement.getAmountResourceStored(ResourceUtil.waterID);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
 		
@@ -214,7 +214,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayOxygen(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		double reserve = settlement.getAmountResourceStored(ResourceUtil.oxygenID);
 
 		response.appendHeading(GREENHOUSE_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));

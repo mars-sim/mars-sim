@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
@@ -365,8 +365,8 @@ public class MedicalAssistance extends Task implements Serializable {
 
 	private void produceMedicalWaste() {
 		Unit containerUnit = person.getContainerUnit();
-		if (!(containerUnit instanceof MarsSurface)) {
-			Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteID, containerUnit.getInventory(),
+		if (containerUnit.getUnitType() != UnitType.PLANET) {
+			Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteID, containerUnit.getSettlement(),
 									"MedicalAssistence::produceMedicalWaste");
 		}
 	}

@@ -1,22 +1,20 @@
 /*
  * Mars Simulation Project
  * MeteorologyStudyFieldWork.java.java
- * @date 2021-08-28
+ * @date 2021-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -255,17 +253,20 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+				int rockSampleId = box.getResource();
+				if (rockSampleId == -1) {
+					// Box is empty so choose at random
+					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+					rockSampleId = ResourceUtil.rockIDs[randomNum];
+				}
+				logger.info(person, 10_000, "collectRockSamples::randomRock: " + rockSampleId);
 				
-				int randomNum = RandomUtil.getRandomInt((ResourceUtil.rockIDs).length);
-				int randomRock = ResourceUtil.rockIDs[randomNum];
-				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
-				
-				Inventory pInv = person.getInventory();
-		        SpecimenBox box = pInv.findASpecimenBox();
+		        
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				double cap = box.getAmountResourceRemainingCapacity(rockSampleId);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(randomRock, mass);
+					double excess = box.storeAmountResource(rockSampleId, mass);
 					totalCollected += mass - excess;
 				}
 			}
@@ -278,7 +279,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.getInventory().containsEquipment(EquipmentType.SPECIMEN_BOX);
+		return person.containsEquipment(EquipmentType.SPECIMEN_BOX);
 	}
 	
 	/**
@@ -312,56 +313,23 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	/**
 	 * Takes the least full specimen container from the rover, if any are available.
 	 * 
-	 * @throws Exception if error taking container.
+	 * @return true if the person receives a specimen container.
 	 */
-	private void takeSpecimenContainer() {
-		Unit container = findLeastFullContainer(rover);
+	private boolean takeSpecimenContainer() {
+		Container container = ContainerUtil.findLeastFullContainer(
+													rover, EquipmentType.SPECIMEN_BOX,
+													ResourceUtil.rockSamplesID);
 		if (container != null) {
-			if (person.getInventory().canStoreUnit(container, false)) {
-				container.transfer(rover, person);
-			}
+			return container.transfer(rover, person);
 		}
+		return false;
 	}
 
-	/**
-	 * Gets the least full specimen container in the rover.
-	 * 
-	 * @param rover the rover with the inventory to look in.
-	 * @return specimen container or null if none.
-	 */
-	private static SpecimenBox findLeastFullContainer(Rover rover) {
-		SpecimenBox result = null;
-		double mostCapacity = 0D;
-
-		Iterator<SpecimenBox> i = rover.getInventory().findAllSpecimenBoxes().iterator();
-		while (i.hasNext()) {
-			SpecimenBox container = i.next();
-			try {
-				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
-
-				if (remainingCapacity > mostCapacity) {
-					result = container;
-					mostCapacity = remainingCapacity;
-				}
-			} catch (Exception e) {
-	          	logger.log(Level.SEVERE, "Problems calling getAmountResourceRemainingCapacity(): "+ e.getMessage());
-			}
-		}
-
-		return result;
-	}
-	
 	/**
 	 * Transfer the Specimen box to the Vehicle
 	 */
 	@Override
 	protected void clearDown() {
-		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
-		// Load specimen container in rover.
-		Inventory pInv = person.getInventory();
-		if (pInv.containsEquipment(EquipmentType.SPECIMEN_BOX)) {
-			SpecimenBox box = pInv.findASpecimenBox();
-			box.transfer(pInv, rover);
-		}
+		returnEquipmentToVehicle(rover);
 	}
 }

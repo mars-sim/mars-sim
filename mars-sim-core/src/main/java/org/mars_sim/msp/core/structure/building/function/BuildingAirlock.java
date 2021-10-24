@@ -254,11 +254,6 @@ public class BuildingAirlock extends Airlock {
     }
 
     @Override
-    public Inventory getEntityInventory() {
-        return building.getInventory();
-    }
-
-    @Override
     public Object getEntity() {
         return building;
     }

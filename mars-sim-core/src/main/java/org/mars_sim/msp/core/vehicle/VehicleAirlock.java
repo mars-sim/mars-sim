@@ -184,15 +184,6 @@ extends Airlock {
 		return vehicle.getName();
 	}
 
-	/**
-	 * Gets the inventory of the entity this airlock is attached to.
-	 * @return inventory {@link Inventory}
-	 */
-	@Override
-	public Inventory getEntityInventory() {
-		return vehicle.getInventory();
-	}
-
 	@Override
 	public Object getEntity() {
 		return vehicle;

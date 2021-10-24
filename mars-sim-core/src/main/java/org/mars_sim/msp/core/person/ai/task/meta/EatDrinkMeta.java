@@ -1,14 +1,14 @@
-/**
+/*
  * Mars Simulation Project
- * EatNDrinkMeta.java
- * @version 3.2.0 2021-06-20
+ * EatDrinkMeta.java
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -46,15 +46,20 @@ public class EatDrinkMeta extends MetaTask {
 
 		double foodAmount = 0;
 		double waterAmount = 0;
-		
-		Inventory inv = null;
+
 		Unit container = person.getContainerUnit();
-		if (container != null) {
-			inv = container.getInventory();	
-			// Take preserved food from inventory if it is available.
-			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
-			waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
+		if (container != null && container instanceof ResourceHolder) {
+			ResourceHolder rh = (ResourceHolder) container;
+			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
+			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);	
 		}
+//		else {
+//			if (inv != null) {
+//				// Take preserved food from inventory if it is available.
+//				foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
+//				waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
+//			}
+//		}
 		
 		boolean food = false;
 		boolean water = false;

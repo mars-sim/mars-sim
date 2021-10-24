@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -94,7 +93,7 @@ implements Serializable {
 		try {
 			entity = getMaintenanceMalfunctionable();
 			if (entity != null) {
-				if (!Maintenance.hasMaintenanceParts(settlement.getInventory(), entity)) {		
+				if (!Maintenance.hasMaintenanceParts(settlement, entity)) {		
 		        	if (person.isOutside())
 		        		setPhase(WALK_BACK_INSIDE);
 		        	else
@@ -253,22 +252,20 @@ implements Serializable {
 		}
 
         // Add repair parts if necessary.
-		Inventory inv = settlement.getInventory();
 		entity = getMaintenanceMalfunctionable();
 		
-		if (entity != null && Maintenance.hasMaintenanceParts(inv, entity)) {
+		if (entity != null && Maintenance.hasMaintenanceParts(settlement, entity)) {
 			
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
-				inv.retrieveItemResources(part, number);
+				settlement.retrieveItemResource(part, number);
 				manager.maintainWithParts(part, number);
-				
 				// Add item demand
-				inv.addItemDemandTotalRequest(part, number);
-				inv.addItemDemand(part, number);
+//				inv.addItemDemandTotalRequest(part, number);
+//				inv.addItemDemand(part, number);
 			}
 
 	        // Add work to the maintenance
@@ -363,11 +360,7 @@ implements Serializable {
 		if (hasMalfunction)
 			return 0;
 		
-		boolean hasParts = false;
-		if (person != null)
-			hasParts = Maintenance.hasMaintenanceParts(person, malfunctionable);
-		else if (robot != null)
-			hasParts = Maintenance.hasMaintenanceParts(robot, malfunctionable);
+		boolean hasParts = Maintenance.hasMaintenanceParts(settlement, malfunctionable);
 		if (!hasParts)
 			return 0;
 		

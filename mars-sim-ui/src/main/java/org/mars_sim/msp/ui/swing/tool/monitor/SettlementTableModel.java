@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -174,7 +174,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Settlement settle = (Settlement) getUnit(rowIndex);
-			// BuildingManager bMgr = settle.getBuildingManager();
 			Map<Integer, Double> resourceMap = resourceCache.get(settle);
 
 			try {
@@ -360,7 +359,7 @@ public class SettlementTableModel extends UnitTableModel {
 				
 				if (tempColumnNum > -1) {
 					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
-					double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
+					double newValue = Math.round (getResourceStored((Settlement)unit, target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						resourceMap.put(target, newValue);
@@ -393,17 +392,17 @@ public class SettlementTableModel extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<>();
-
-				resourceMap.put(oxygenID, getResourceStored(newUnit, oxygenID));
-				resourceMap.put(waterID, getResourceStored(newUnit, waterID));
-				resourceMap.put(hydrogenID, getResourceStored(newUnit, hydrogenID));
-				resourceMap.put(methaneID, getResourceStored(newUnit, methaneID));
-				resourceMap.put(rockSamplesID, getResourceStored(newUnit, rockSamplesID));
-				resourceMap.put(regolithID, getResourceStored(newUnit, regolithID));
-				resourceMap.put(greyWaterID, getResourceStored(newUnit, greyWaterID));
-				resourceMap.put(blackWaterID, getResourceStored(newUnit, blackWaterID));
-				resourceMap.put(iceID, getResourceStored(newUnit, iceID));
-				resourceMap.put(co2ID, getResourceStored(newUnit, co2ID));
+				Settlement settlement = (Settlement)newUnit;
+				resourceMap.put(oxygenID, getResourceStored(settlement, oxygenID));
+				resourceMap.put(waterID, getResourceStored(settlement, waterID));
+				resourceMap.put(hydrogenID, getResourceStored(settlement, hydrogenID));
+				resourceMap.put(methaneID, getResourceStored(settlement, methaneID));
+				resourceMap.put(rockSamplesID, getResourceStored(settlement, rockSamplesID));
+				resourceMap.put(regolithID, getResourceStored(settlement, regolithID));
+				resourceMap.put(greyWaterID, getResourceStored(settlement, greyWaterID));
+				resourceMap.put(blackWaterID, getResourceStored(settlement, blackWaterID));
+				resourceMap.put(iceID, getResourceStored(settlement, iceID));
+				resourceMap.put(co2ID, getResourceStored(settlement, co2ID));
 
 				resourceCache.put(newUnit, resourceMap);
 			} catch (Exception e) {
@@ -431,10 +430,10 @@ public class SettlementTableModel extends UnitTableModel {
 	 * @param resource the resource to check.
 	 * @return integer amount of resource.
 	 */
-	private double getResourceStored(Unit unit, int resource) {
+	private double getResourceStored(Settlement settlement, int resource) {
 		// This is the quickest way but it may or may not work if the object reference
 		// of ARs have changed during (de)serialization.
-		return Math.round(unit.getInventory().getAmountResourceStored(resource, false) * 100.0) / 100.0;
+		return Math.round(settlement.getAmountResourceStored(resource) * 100.0) / 100.0;
 	}
 
 	/**

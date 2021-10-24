@@ -12,8 +12,8 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -48,6 +48,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** Minimum number of people to do mission. */
 	public final static int MIN_PEOPLE = 2;
 
+
 	/**
 	 * Constructor.
 	 * 
@@ -57,7 +58,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 		// Use CollectResourcesMission constructor.
 		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 
@@ -89,4 +90,37 @@ public class CollectRegolith extends CollectResourcesMission {
 		return "prospecting site " + siteNum;
 	}
 
+	@Override
+	protected double scoreLocation(Coordinates newLocation) {
+		return terrainElevation.getRegolithCollectionRate(null, newLocation);
+	}
+
+	/**
+	 * The main resource is regolith but on site it can cover numerous
+	 * sub-resources.
+	 * @return
+	 */
+	@Override
+	protected int [] getCollectibleResources() {
+		return ResourceUtil.REGOLITH_TYPES;
+	}
+
+	/**
+	 * THis implementatino can refine the resource being collected according to what is at the site.
+	 */
+	@Override
+	protected double calculateRate(Worker worker) {
+		
+		// Look for the regolith type that has the highest vp
+		double highest = 0;
+		for (int type: ResourceUtil.REGOLITH_TYPES) {
+			double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
+			if (highest < vp) {
+				highest = vp;
+				setResourceID(type);
+			}
+		}
+			
+		return terrainElevation.getRegolithCollectionRate(null, worker.getCoordinates());
+	}
 }

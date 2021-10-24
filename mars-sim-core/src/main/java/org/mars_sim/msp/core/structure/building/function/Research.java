@@ -12,10 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
@@ -34,17 +32,14 @@ implements Lab, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-	private static transient Logger logger = Logger.getLogger(Research.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Research.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-	
+
 	private static final int NUM_INSPECTIONS = 2;
 	
     private int techLevel;
     private int researcherCapacity = 0;
     private int researcherNum = 0;
-    private int solCache;
     
     private List<ScienceType> researchSpecialties;
 
@@ -198,11 +193,7 @@ implements Lab, Serializable {
         researcherNum --;
         if (researcherNum < 0) {
             researcherNum = 0;
-            Settlement s = building.getSettlement();
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					"[" + s + "] "
-					+ building + "'s lab has no researchers.");
-//            throw new IllegalStateException("Lab is already empty of researchers.");
+			logger.severe(building, "Lab has no researchers to remove.");
         }
     }
 	

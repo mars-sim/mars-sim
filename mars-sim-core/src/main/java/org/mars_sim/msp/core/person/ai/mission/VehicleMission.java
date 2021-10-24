@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMission.java
- * @date 2021-08-29
+ * @date 2021-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -33,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
@@ -110,7 +110,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
-	private VehicleOperator lastOperator;
+	private Worker lastOperator;
 	/** The mission lead of this mission. */
 	private MissionMember startingMember;
 	/** The current operate vehicle task. */
@@ -321,7 +321,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			boolean usable = vehicle.isVehicleReady();
 
-			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
 			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
@@ -434,7 +434,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Collection<Vehicle> vList = settlement.getParkedVehicles();
 			if (!vList.isEmpty()) {
 				for (Vehicle v : vList) {
-					if (v instanceof Rover
+					if (VehicleType.isRover(v.getVehicleType())
 							&& !v.haveStatusType(StatusType.MAINTENANCE)
 							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
 							&& isUsableVehicle(v)
@@ -472,7 +472,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
-					if (!vehicleCache.getInventory().isEmpty(false)) {
+					if (vehicleCache.getStoredMass() != 0D) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -482,8 +482,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 				
-				else if (vehicleCache instanceof Rover) {
-					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+				else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
+					if (((Rover)vehicleCache).getCrewNum() != 0
+							|| (vehicleCache.getStoredMass() != 0D)) {
 						addPhase(VehicleMission.DISEMBARKING);
 						setPhase(VehicleMission.DISEMBARKING);
 					}
@@ -542,7 +543,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				vehicle.setEmergencyBeacon(true);
 
-				if (vehicle instanceof Rover && vehicle.isBeingTowed()) {
+				if (VehicleType.isRover(vehicle.getVehicleType()) && vehicle.isBeingTowed()) {
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					logger.log(vehicle, Level.INFO, 20_000, "Currently being towed by "
@@ -582,7 +583,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// if a vehicle is at a settlement			
 				setPhaseEnded(true);
 				
-				if (!vehicle.getInventory().isEmpty(false))
+				if (vehicle.getStoredMass() != 0D)
 					setPhase(VehicleMission.DISEMBARKING);
 				
 				leaveVehicle();
@@ -668,7 +669,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			result *= factor;
 		}
 
-		double cap = vehicle.getInventory().getAmountResourceCapacity(vehicle.getFuelType(), false);
+		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
 		if (result > cap)
 			// Make sure the amount requested is less than the max resource cap of this vehicle 
 			result = cap;
@@ -801,7 +802,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// Someone should be driving or it's me !!!
 				becomeDriver = vehicle != null &&
 					((vehicle.getOperator() == null) 
-						|| (vehicle.getOperator().getOperatorName().equals(member.getName())));
+						|| (vehicle.getOperator().equals(member)));
 			}
 			else {
 				// None is driving
@@ -825,7 +826,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						assignTask((Robot)member, operateVehicleTask);
 
 					}
-					lastOperator = (VehicleOperator)member;
+					lastOperator = member;
 					return;
 				}
 			}
@@ -833,11 +834,25 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// If the destination has been reached, end the phase.
 		if (reachedDestination) {
+			Settlement base = destination.getSettlement();
+			if (vehicle.getAssociatedSettlement().equals(base)) {
+				logger.info(vehicle, "Arrived back home " + base.getName());
+				vehicle.transfer(vehicle.getContainerUnit(), base);
+				
+				// TODO There is a problem with the Vehicle not being on the
+				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
+				// This is temporary fix pending #474 which will revisit transfers
+				if (!base.equals(vehicle.getContainerUnit())) {
+					vehicle.setContainerUnit(base);
+					logger.warning(vehicle, "Had to force container to home base");
+				}
+			}
+			
 			reachedNextNode();
 			setPhaseEnded(true);
 		}
 
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			// Check the remaining trip if there's enough resource 
 			// Must set margin to false since it's not needed.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
@@ -853,7 +868,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 
-	public VehicleOperator getLastOperator() {
+	public Worker getLastOperator() {
 		return lastOperator;
 	}
 	
@@ -982,7 +997,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param operator the vehicle operator.
 	 * @return average speed (km/h)
 	 */
-	private double getAverageVehicleSpeedForOperator(VehicleOperator operator) {
+	private double getAverageVehicleSpeedForOperator(Worker operator) {
 		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator, this);
 	}
 
@@ -995,7 +1010,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = getEstimatedTotalRemainingDistance(); // getEstimatedTotalDistance();
+		double distance = getEstimatedTotalRemainingDistance(); 
 		if (distance > 0) {
 			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " 
 					+ Math.round(distance * 10.0)/10.0 + " km.");
@@ -1091,7 +1106,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				
 				// Manually override the number of wheel and battery needed for each mission
-				if (vehicle instanceof Rover) { 
+				if (VehicleType.isRover(vehicle.getVehicleType())) { 
 					Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
 					Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
 					result.put(wheel, 2);
@@ -1151,8 +1166,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean result = true;
 
 		if (vehicle != null) {
-			Inventory inv = vehicle.getInventory();
-
+		
 			for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
 				int id = entry.getKey();
 				Object value = entry.getValue();
@@ -1160,7 +1174,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
 					double amount = (Double) value;
-					double amountStored = inv.getAmountResourceStored(id, false);
+					double amountStored = vehicle.getAmountResourceStored(id);
 
 					if (amountStored < amount) {
 						String newLog = "Not enough " 
@@ -1174,7 +1188,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
  
 				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 					int num = (Integer) value;
-					int numStored = inv.getItemResourceNum(id);
+					int numStored = vehicle.getItemResourceStored(id);
 
 					if (numStored < num) {
 						String newLog = "Not enough " 
@@ -1384,11 +1398,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
+			String settlement = null;
 			
-			String settlement = ((Person)member).getAssociatedSettlement().getName();
-					
-			if (member instanceof Robot)
+			if (member instanceof Person) {
+				settlement = ((Person)member).getAssociatedSettlement().getName();
+			}
+			else {
 				settlement = ((Robot)member).getAssociatedSettlement().getName();
+			}
 				
 			// Creating mission emergency beacon event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, 
@@ -1540,16 +1557,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return getEquipmentNeededForRemainingMission(true);
 	}
 
-	/**
-	 * Gets the number and types of equipment needed for the mission.
-	 * 
-	 * @param useBuffer use time buffers in estimation if true.
-	 * @return map of equipment types and number.
-	 */
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
-	}
-	
+//	/**
+//	 * Gets the number and types of equipment needed for the mission.
+//	 * 
+//	 * @param useBuffer use time buffers in estimation if true.
+//	 * @return map of equipment types and number.
+//	 */
+//	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+//		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
+//	}
+//	
 
 	/**
 	 * Gets the optional containers needed for storing the optional resources when loading up the vehicle.
@@ -1570,8 +1587,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				double amount = (double) optionalResources.get(id);
 
 				// Obtain a container for storing the amount resource
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-				double capacity = ContainerUtil.getContainerCapacity(containerID);
+				EquipmentType containerType = ContainerUtil.getContainerClassToHoldResource(id);
+				int containerID = EquipmentType.getResourceID(containerType);
+				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);
 
 				if (result.containsKey(containerID)) {
@@ -1611,8 +1629,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				while (j.hasNext()) {
 					Integer part = j.next();
 					int number = parts.get(part);
-					if (vehicle.getInventory().getItemResourceNum(part) < number) {
-						vehicle.getInventory().addItemDemand(part, number);
+					if (vehicle.getItemResourceStored(part) < number) {
+//						vehicle.getInventory().addItemDemand(part, number);
 						result = true;
 					}
 				}

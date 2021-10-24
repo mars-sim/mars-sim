@@ -58,8 +58,6 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		// Create label panel
 		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create medical care label
 		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelLiving.title"), WebLabel.CENTER);

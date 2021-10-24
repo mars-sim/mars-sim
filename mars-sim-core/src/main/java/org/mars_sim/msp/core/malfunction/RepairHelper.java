@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RepairHelper.java
- * @date 2021-09-10
+ * @date 2021-10-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.malfunction;
@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
@@ -79,21 +79,21 @@ public final class RepairHelper {
 		if (malfunction == null)
 			throw new IllegalArgumentException("malfunction is null");
 
-		Inventory inv = containerUnit.getInventory();
 		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {	
 			Integer part = item.getKey();
 			int number = item.getValue();
-			if (inv.getItemResourceNum(part) < number) {
-				inv.addItemDemand(part, number);
+			if (((EquipmentOwner)containerUnit).getItemResourceStored(part) < number) {
+//					(((Vehicle)unit).addItemDemand(part, number);
 				result = false;
 			}
 		}
-
+		
 		return result;
 	}
 
 	/**
 	 * Claim any needed parts from the Inventory of the container. Valid that none may be needed.
+	 * 
 	 * @param containerUnit
 	 * @param malfunction
 	 */
@@ -104,14 +104,12 @@ public final class RepairHelper {
 			Map<Integer, Integer> parts = new HashMap<>(needed);
 			
 			// Add repair parts if necessary.
-			Inventory inv = containerUnit.getInventory();
 			for (Entry<Integer, Integer> part : parts.entrySet()) {
 				Integer id = part.getKey();
 				int number = part.getValue();
-				inv.retrieveItemResources(id, number);
-				malfunction.repairWithParts(id, number, inv);
+				((EquipmentOwner)containerUnit).retrieveItemResource(id, number);
+				malfunction.repairWithParts(id, number, containerUnit);
 			}
 		}
 	}
-
 }

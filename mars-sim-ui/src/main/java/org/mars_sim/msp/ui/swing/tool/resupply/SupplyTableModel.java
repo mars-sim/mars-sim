@@ -7,17 +7,19 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -50,7 +52,7 @@ extends AbstractTableModel {
 	public SupplyTableModel(Resupply resupply) {
 
 		// Initialize data members.
-		supplyList = new ArrayList<SupplyItem>();
+		supplyList = new ArrayList<>();
 
 		if (resupply != null) {
 			// Populate supply list from resupply mission.
@@ -65,7 +67,7 @@ extends AbstractTableModel {
 	private void populateSupplies(Resupply resupply) {
 
 		// Populate buildings.
-		List<String> buildingList = new ArrayList<String>(resupply.getNewBuildings().size());
+		List<String> buildingList = new ArrayList<>(resupply.getNewBuildings().size());
 		Iterator<BuildingTemplate> l = resupply.getNewBuildings().iterator();
 		while(l.hasNext()) {
 			buildingList.add(l.next().getBuildingType());
@@ -77,7 +79,7 @@ extends AbstractTableModel {
 
 		// Populate equipment.
 		List<String> sortEquipment =
-				new ArrayList<String>(resupply.getNewEquipment().keySet());
+				new ArrayList<>(resupply.getNewEquipment().keySet());
 		Collections.sort(sortEquipment);
 		Iterator<String> i = sortEquipment.iterator();
 		while (i.hasNext()) {
@@ -89,7 +91,7 @@ extends AbstractTableModel {
 
 		// Populate resources.
 		List<AmountResource> sortResources =
-				new ArrayList<AmountResource>(resupply.getNewResources().keySet());
+				new ArrayList<>(resupply.getNewResources().keySet());
 		Collections.sort(sortResources);
 		Iterator<AmountResource> j = sortResources.iterator();
 		while (j.hasNext()) {
@@ -102,7 +104,7 @@ extends AbstractTableModel {
 
 		// Populate parts.
 		List<Part> sortParts =
-		new ArrayList<Part>(resupply.getNewParts().keySet());
+					new ArrayList<>(resupply.getNewParts().keySet());
 		Collections.sort(sortParts);
 		Iterator<Part> k = sortParts.iterator();
 		while (k.hasNext()) {
@@ -123,7 +125,7 @@ extends AbstractTableModel {
 
 		// Create map of supplies and their numbers.
 		Map<String, Integer> supplyMap =
-				new HashMap<String, Integer>(supplies.size());
+				new HashMap<>(supplies.size());
 		Iterator<String> i = supplies.iterator();
 		while (i.hasNext()) {
 			String supplyType = i.next();
@@ -137,7 +139,7 @@ extends AbstractTableModel {
 		}
 
 		// Create and add supply item for each supply.
-		List<String> sortKeys = new ArrayList<String>(supplyMap.keySet());
+		List<String> sortKeys = new ArrayList<>(supplyMap.keySet());
 		Collections.sort(sortKeys);
 		Iterator<String> j = sortKeys.iterator();
 		while (j.hasNext()) {
@@ -235,7 +237,7 @@ extends AbstractTableModel {
 	  */
 	 public void removeSupplyItems(int[] rows) {
 
-		 List<SupplyItem> items = new ArrayList<SupplyItem>(rows.length);
+		 List<SupplyItem> items = new ArrayList<>(rows.length);
 		 for (int x = 0; x < rows.length; x++) {
 			 items.add(supplyList.get(rows[x]));
 		 }
@@ -250,7 +252,7 @@ extends AbstractTableModel {
 	  * @return list of supply items.
 	  */
 	 public List<SupplyItem> getSupplyItems() {
-		 return new ArrayList<SupplyItem>(supplyList);
+		 return new ArrayList<>(supplyList);
 	 }
 
 	 /**
@@ -260,7 +262,7 @@ extends AbstractTableModel {
 	 public static List<String> getCategoryList() {
 
 		 if (categoryList == null) {
-			 categoryList = new ArrayList<String>(5);
+			 categoryList = new ArrayList<>();
 			 categoryList.add(BUILDING);
 			 categoryList.add(VEHICLE);
 			 categoryList.add(EQUIPMENT);
@@ -273,14 +275,14 @@ extends AbstractTableModel {
 
 	 public static List<String> getSortedBuildingTypes() {
 		 Set<String> buildingTypes = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes();
-		 List<String> sortedBuildingTypes = new ArrayList<String>(buildingTypes);
+		 List<String> sortedBuildingTypes = new ArrayList<>(buildingTypes);
 		 Collections.sort(sortedBuildingTypes);
 		 return sortedBuildingTypes;
 	 }
 
 	 public static List<String> getSortedVehicleTypes() {
 		 Set<String> vehicleTypes = SimulationConfig.instance().getVehicleConfiguration().getVehicleTypes();
-		 List<String> sortedVehicleTypes = new ArrayList<String>(vehicleTypes);
+		 List<String> sortedVehicleTypes = new ArrayList<>(vehicleTypes);
 		 Collections.sort(sortedVehicleTypes);
 		 return sortedVehicleTypes;
 	 }
@@ -293,7 +295,7 @@ extends AbstractTableModel {
 
 		 if (categoryTypeMap == null) {
 			 // Create and populate category type map.
-			 categoryTypeMap = new HashMap<String, List<String>>(5);
+			 categoryTypeMap = new HashMap<>(5);
 
 			 // Create building type list.
 			 categoryTypeMap.put(BUILDING, getSortedBuildingTypes());
@@ -302,16 +304,17 @@ extends AbstractTableModel {
 			 categoryTypeMap.put(VEHICLE, getSortedVehicleTypes());
 
 			 // Create equipment type list.
-			 Set<String> equipmentTypes = EquipmentFactory.getEquipmentNames();
-			 List<String> sortedEquipmentTypes = new ArrayList<String>(equipmentTypes);
-			 Collections.sort(sortedEquipmentTypes);
+			 List<String> sortedEquipmentTypes = Arrays.stream(EquipmentType.values())
+					 						.map(EquipmentType::name)
+					 						.sorted()
+					 						.collect(Collectors.toList());
 			 categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
 
 			 // Create resource type list.
 			 categoryTypeMap.put(RESOURCE, ResourceUtil.getAmountResourceStringSortedList());
 
 			 // Create part type list.
-			 List<String> partNames = new ArrayList<String>();
+			 List<String> partNames = new ArrayList<>();
 			 Iterator<Part> j = Part.getParts().iterator();
 			 while (j.hasNext()) {
 				 partNames.add(j.next().getName());

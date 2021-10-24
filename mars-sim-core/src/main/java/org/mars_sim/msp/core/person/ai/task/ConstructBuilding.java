@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
@@ -351,7 +352,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 			// End operating light utility vehicle.
 			if (luv != null) {
-				if ((person != null) && luv.getInventory().containsUnit(person)) {
+				if ((person != null) && ((Crewable)luv).isCrewmember(person)) {
 					returnVehicle();
 				}
 //                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
@@ -387,7 +388,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 					if (tempLuv.getOperator() == null) {
 
 //                    	 if (person != null) {
-						tempLuv.getInventory().storeUnit(person);
+						tempLuv.addPerson(person);
 						tempLuv.setOperator(person);
 //                    	 }
 //
@@ -420,7 +421,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	private void returnVehicle() {
 //    	if (person != null)
-		luv.getInventory().retrieveUnit(person);
+		luv.removePerson(person);
 //		else if (robot != null)
 //	        luv.getInventory().retrieveUnit(robot);
 

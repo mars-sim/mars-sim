@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Walk.java
- * @date 2021-08-28
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,13 +14,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -136,8 +135,8 @@ public class Walk extends Task implements Serializable {
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = vehicle.getInventory().containsEVASuit(); //InventoryUtil.goodEVASuitAvailable(vehicle.getInventory(), person);
-					boolean wearingSuit = person.getInventory().containsEVASuit();
+					boolean roverSuit = vehicle.containsEquipment(EquipmentType.EVA_SUIT);
+					boolean wearingSuit = (person.getSuit() != null);
 					goodEVASuit = roverSuit || wearingSuit;
 
 					if (goodEVASuit) {
@@ -153,11 +152,10 @@ public class Walk extends Task implements Serializable {
 							walkToSettlement = true;
 						}
 					}
-
-				} else {
+				}
+				else {
 					// If on a LUV, retrieve person from vehicle.
-					// TODO : should we call endTask() instead ?
-					vehicle.getInventory().retrieveUnit(person);
+					person.transfer(vehicle, unitManager.getMarsSurface());
 				}
 			}
 
@@ -460,7 +458,7 @@ public class Walk extends Task implements Serializable {
 		try {
 			walkingSteps = new WalkingSteps(person, xLoc, yLoc, zLoc, interiorObject);
 		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot instantiate walking steps: "+ e.getMessage());
+          	logger.log(Level.SEVERE, "Cannot instantiate walking steps: " + e.getMessage());
 		}
 
 		if (walkingSteps != null)
@@ -902,8 +900,6 @@ public class Walk extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 		
 		if (person != null) {
-//			String loc = person.getModifiedLoc();
-
 			logger.log(person, Level.FINER, 4000, 
 					"Calling walkingExteriorPhase().");
 			
@@ -920,28 +916,23 @@ public class Walk extends Task implements Serializable {
 			if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
-					// setDescription("Walking to (" + xx + ", " + yy + ")");
 					setPhase(getWalkingStepPhase());
 				} 
 				else {
 					// setDescription("Arriving at (" + xx + ", " + yy + ")");
 					endTask();
 				}
-			} 
+			}
 			else {
 				if (person.isOutside()) {
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//		      				"[" + person.getLocale() + "] "
-//							+ person + " was " + loc
-//							+ " and starting WalkOutside task.");
-//					logger.info("Walking exterior from (" + x + ", " + y + ") to (" 
+					setDescription("Walking outside toward (" + xx + ", " + yy + ")");
+//					logger.info(person, "Walking outside from (" + x + ", " + y + ") to (" 
 //							+ xx + ", " + yy + ")");
-					
 					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
 				} 
 				else {
 					logger.log(person, Level.SEVERE, 5_000, 
-							"Already physically outside.");
+							"Not being outside.");
 					endTask();
 				}
 			}
@@ -1118,10 +1109,7 @@ public class Walk extends Task implements Serializable {
 			// Exit the rover parked inside a garage onto the settlement
 			if (person.isInVehicleInGarage()) {
 				person.transfer(rover, garageBuilding.getSettlement());
-			
-//				rover.getInventory().retrieveUnit(person);
-//				garageBuilding.getSettlementInventory().storeUnit(person); 
-			
+				
 				// Add the person onto the garage
 				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
@@ -1184,8 +1172,6 @@ public class Walk extends Task implements Serializable {
 			
 			// Place this person within a vehicle inside a garage in a settlement
 			person.transfer(garageBuilding, rover);
-//			garageBuilding.getSettlementInventory().retrieveUnit(person);
-//			rover.getInventory().storeUnit(person);
 			
 			// Remove the person from the garage
 			BuildingManager.removePersonFromBuilding(person, garageBuilding);		
@@ -1203,10 +1189,7 @@ public class Walk extends Task implements Serializable {
 			
 			// Place this robot within a vehicle inside a garage in a settlement
 			robot.transfer(garageBuilding, rover);
-						
-//			garageBuilding.getSettlementInventory().retrieveUnit(robot);
-//			rover.getInventory().storeUnit(robot);
-			
+		
 			// Remove the robot from the garage
 			BuildingManager.removeRobotFromBuilding(robot, garageBuilding);
 

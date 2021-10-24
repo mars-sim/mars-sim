@@ -1,22 +1,24 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2021-08-15
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
@@ -163,7 +165,7 @@ public abstract class RoverMission extends VehicleMission {
 
 			usable = vehicle.isVehicleReady();
 			
-			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 			
 			if (!(vehicle instanceof Rover))
@@ -207,7 +209,7 @@ public abstract class RoverMission extends VehicleMission {
 			if (!(vehicle instanceof Rover))
 				usable = false;
 			
-			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
 			if (usable)
@@ -380,11 +382,15 @@ public abstract class RoverMission extends VehicleMission {
 							// Store one or two EVA suit for person (if possible).
 							int limit = RandomUtil.getRandomInt(1, 2);
 							for (int i=0; i<limit; i++) {
-								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
-									EVASuit suit = settlement.getInventory().findAnEVAsuit(person);
-									if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
-										// Note : should add codes to have a person carries the extra EVA suit physically
-										suit.transfer(settlement, v);
+								if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1) {
+									
+									EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+									if (suit != null) {									
+										boolean success = suit.transfer(settlement, v);									
+										if (success)
+											logger.warning(person, "Received a spare EVA suit from " + settlement + " to " + v);
+										else
+											logger.warning(person, "Cannot transfer a spare EVA suit from " + settlement + " to " + v);
 									}
 								}
 							}
@@ -435,12 +441,13 @@ public abstract class RoverMission extends VehicleMission {
 					recordStartMass();
 					
 					// Embark from settlement
-//					if (v.isInSettlement())
-					if (settlement.getInventory().containsUnit(v))	
-//						settlement.getInventory().retrieveUnit(v);
-						v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
-						
-					setPhaseEnded(true);
+					if (v.transfer(settlement, unitManager.getMarsSurface())) {
+						setPhaseEnded(true);						
+					}
+					else {
+						addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+						endMission();
+					}
 				}
 			}
 		}
@@ -487,7 +494,7 @@ public abstract class RoverMission extends VehicleMission {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If rover has not been parked at settlement, park it.
-				disembarkSettlement.getInventory().storeUnit(v);	
+				disembarkSettlement.addParkedVehicle(v);	
 			}
 			
 			// Test if this rover is towing another vehicle or is being towed
@@ -503,7 +510,8 @@ public abstract class RoverMission extends VehicleMission {
 	        if (!isRoverInAGarage)
 	        	rover.findNewParkingLoc();
 	        
-			for (Person p : rover.getCrew()) {
+	        List<Person> currentCrew = new ArrayList<>(rover.getCrew());
+			for (Person p : currentCrew) {
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}
@@ -537,7 +545,7 @@ public abstract class RoverMission extends VehicleMission {
 			if (isNoOneInRover()) {
 
 				// Unload rover if necessary.
-				boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
+				boolean roverUnloaded = rover.getStoredMass() == 0D;
 				if (!roverUnloaded) {
 					if (member.isInSettlement() && ((Person)member).isFit()) {
 						// Note : Random chance of having person unload (this allows person to do other things
@@ -608,17 +616,19 @@ public abstract class RoverMission extends VehicleMission {
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
-				double fatigue = p.getFatigue(); // 0 to infinity
+				PhysicalCondition pc = p.getPhysicalCondition();
+				double fatigue = pc.getFatigue(); // 0 to infinity
 				double perf = p.getPerformanceRating(); // 0 to 1
-				double stress = p.getStress(); // 0 to 100
-				double energy = p.getEnergy(); // 100 to infinity
-				double hunger = p.getHunger(); // 0 to infinity
+				double stress = pc.getStress(); // 0 to 100
+				double energy = pc.getEnergy(); // 100 to infinity
+				double hunger = pc.getHunger(); // 0 to infinity
 
 				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
 				
-				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
+				if (p.isInVehicle()) {
 					// Checks to see if the person has an EVA suit	
-					if (!InventoryUtil.goodEVASuitAvailable(rover.getInventory(), p)) {
+					EVASuit suit = ((Vehicle)rover).findEVASuit(p);
+					if (suit == null) {
 
 						logger.warning(p, "Could not find a working EVA suit and needed to wait.");
 					
@@ -628,12 +638,13 @@ public abstract class RoverMission extends VehicleMission {
 						if (availableSuitNum > 0) {
 							// Deliver an EVA suit from the settlement to the rover
 							// Note: Need to generate a task for a person to hand deliver an extra suit
-							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(p);
-							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
-								
-								suit.transfer(disembarkSettlement, rover);
-							
-								logger.warning(p, "Received a spare EVA suit from the settlement.");
+							suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
+							if (suit != null) {				
+								boolean success = suit.transfer(disembarkSettlement, rover);
+								if (success)
+									logger.warning(p, "Received a spare EVA suit from " + disembarkSettlement + " to " + rover);
+								else
+									logger.warning(p, "Cannot transfer a spare EVA suit from " + disembarkSettlement + " to " + rover);
 							}
 						}
 					}
@@ -901,8 +912,9 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
 		Map<Integer, Number> map = new HashMap<>();
-		// Get an EVA suit.
-		EVASuit suit = InventoryUtil.getGoodEVASuit(startingSettlement.getInventory(), getStartingPerson());
+		
+		// Get an EVA suit from the staring settlement as an example of an EVA Suit
+		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingSettlement(), getStartingPerson());
 
 		// Determine needed repair parts for EVA suits.
 		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
@@ -953,13 +965,11 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
 	
-		Inventory vInv = rover.getInventory();
-	
 		double timeLimit = Double.MAX_VALUE;
 	
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(FOOD_ID, false);
+		double foodCapacity = rover.getAmountResourceCapacity(FOOD_ID);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -967,7 +977,7 @@ public abstract class RoverMission extends VehicleMission {
 	
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(WATER_ID, false);
+		double waterCapacity = rover.getAmountResourceCapacity(WATER_ID);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -975,7 +985,7 @@ public abstract class RoverMission extends VehicleMission {
 	
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(OXYGEN_ID, false);
+		double oxygenCapacity = rover.getAmountResourceCapacity(OXYGEN_ID);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;

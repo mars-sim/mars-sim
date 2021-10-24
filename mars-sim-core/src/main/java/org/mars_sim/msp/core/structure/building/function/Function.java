@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Function.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -478,11 +478,11 @@ public abstract class Function implements Serializable, Temporal {
 
 
 	protected boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
 	}
 
 
 	protected void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
 	}
 }

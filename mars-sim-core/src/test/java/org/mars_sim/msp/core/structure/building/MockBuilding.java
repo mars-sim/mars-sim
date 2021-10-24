@@ -1,9 +1,7 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -13,7 +11,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 public class MockBuilding extends Building {
 
 	/* default logger. */
-	private static final Logger logger = Logger.getLogger(Building.class.getName());
+//	private static final Logger logger = Logger.getLogger(Building.class.getName());
 	
     public MockBuilding() {
     	super();
@@ -82,11 +80,6 @@ public class MockBuilding extends Building {
 
 	public void addFunction(Function function) {
 	    functions.add(function);
-	}
-
-	@Override
-	public Inventory getInventory() {
-		return null;
 	}
 	
 	@Override

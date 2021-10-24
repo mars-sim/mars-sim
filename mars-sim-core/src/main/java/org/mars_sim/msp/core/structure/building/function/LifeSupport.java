@@ -1,10 +1,17 @@
-/**
+/*
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -15,13 +22,6 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The LifeSupport class is a building function for life support and managing
@@ -243,7 +243,7 @@ public class LifeSupport extends Function implements Serializable {
 				// If not, remove them as occupants.
 				Iterator<Person> i = occupants.iterator();
 				while (i.hasNext()) {
-					if (!building.getInventory().containsUnit(i.next()))
+					if (!building.getSettlement().containsPerson(i.next()))
 						i.remove();
 				}
 			}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Unit.java
- * @date 2021-09-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -20,8 +20,8 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
@@ -37,7 +37,9 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 
 /**
@@ -59,7 +61,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	// Data members
 	/** The unit containing this unit. */
-	private Integer containerID = MARS_SURFACE_UNIT_ID;
+	protected Integer containerID = MARS_SURFACE_UNIT_ID;
 	
 	// Unique Unit identifier
 	private int identifer;
@@ -76,8 +78,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/** The unit's location tag. */
 	private LocationTag tag;
-	/** The unit's inventory. */
-	private Inventory inventory;
 
 	/** The last pulse applied */
 	private long lastPulse = 0;
@@ -105,7 +105,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
 
-	// File for diagnositcs output
+	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
 		
 	/**
@@ -172,12 +172,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		
 		// Define the default LocationStateType of an unit at the start of the sim
 		// Instantiate Inventory as needed. Still needs to be pushed to subclass
-		// constrcutors
+		// constructors
 		switch(getUnitType()) {
 		case ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			this.inventory = new Inventory(this);
 			break;
 			
 		case EQUIPMENT:
@@ -188,7 +187,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case PERSON:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-			this.inventory = new Inventory(this);
 			break;
 		
 		case BUILDING:
@@ -199,13 +197,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			this.inventory = new Inventory(this);
 			break;
 		
 		case SETTLEMENT:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			this.inventory = new Inventory(this);
 			break;
 			
 		case CONSTRUCTION:
@@ -215,8 +211,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			
 		case PLANET:
 			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;	
-			this.inventory = new Inventory(this);
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
 			
 		default:
@@ -229,9 +224,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			// Set the unit's location coordinates
 			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
-			if (inventory != null) {
-				inventory.setCoordinates(location);
-			}
+			setCoordinates(location);	
 		}
 		
 		if (diagnosticFile != null) {
@@ -245,11 +238,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * some logical UnitTypes can have multiple implementation, e.g. Equipment.
 	 * @return
 	 */
-	protected abstract UnitType getUnitType();
+	public abstract UnitType getUnitType();
 
 	/**
-	 * Is this time pulse valid for the Unit.Has it been already applied?
+	 * Is this time pulse valid for the Unit. Has it been already applied?
 	 * The logic on this method can be commented out later on
+	 * 
 	 * @param pulse Pulse to apply
 	 * @return Valid to accept
 	 */
@@ -407,27 +401,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
 		
-		if (getUnitType() != UnitType.EQUIPMENT) {
-			inventory.setCoordinates(newLocation);
-		}
+//		if (getUnitType() != UnitType.EQUIPMENT
+//				&& getUnitType() != UnitType.PERSON
+//				&& getUnitType() != UnitType.ROBOT
+//				&& getUnitType() != UnitType.VEHICLE
+//				&& getUnitType() != UnitType.PLANET) {
+//			inventory.setCoordinates(newLocation);
+//		}
 		
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 	
-	/**
-	 * Gets the unit's inventory
-	 * 
-	 * @return the unit's inventory object
-	 */
-	public Inventory getInventory() {
-		if (getUnitType() == UnitType.EQUIPMENT) {
-			logger.severe(this + " does NOT use Inventory class anymore.");
-			return null;
-		}
-
-		return inventory;
-	}
-
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 * 
@@ -445,7 +429,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public void setContainerID(Integer id) {
 		containerID = id;
-//		inventory.setOwnerID(id);
 	}
 	
 	/**
@@ -456,8 +439,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public Unit getTopContainerUnit() {
 		Unit topUnit = getContainerUnit();
-		if (!(topUnit instanceof MarsSurface)) {
-			while (topUnit != null && topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
+		if (!(topUnit.getUnitType() == UnitType.PLANET)) {
+			while (topUnit != null && topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit().getUnitType() == UnitType.PLANET)) {
 				topUnit = topUnit.getContainerUnit();
 			}
 		}
@@ -489,18 +472,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-		Unit oldContainer = getContainerUnit();
+		if (newContainer != null && newContainer.equals(getContainerUnit())) {
+			return;
+		}
+		
 		// 1. Set Coordinates
 		if (newContainer == null) {
+			// e.g. for MarsSurface and for a deceased person
 			// Set back to its previous container unit's coordinates
-			if (oldContainer != null)
-				setCoordinates(oldContainer.getCoordinates());
-		}
-		else if (this instanceof MarsSurface) {
-			// Do nothing
-		}
-		else if (newContainer instanceof MarsSurface){
-			// Do nothing
 		}
 		else {
 			// Slave the coordinates to that of the newContainer
@@ -508,24 +487,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 			
 		// 2. Set LocationStateType
-		if (this instanceof Person || this instanceof Robot) {
-			updatePersonRobotState(newContainer);
-		}
-		else if (this instanceof Equipment) {
-			updateEquipmentState(newContainer);
-		}
-		else if (this instanceof Vehicle) {
-			updateVehicleState(newContainer);
-		}
-		else if (this instanceof Building) {
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		}
-		else if (this instanceof Settlement
-				|| this instanceof ConstructionSite) {
-			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-		}		
-		else if (this instanceof MarsSurface) {
+		if (getUnitType() == UnitType.PLANET) {
+			currentStateType = LocationStateType.OUTER_SPACE;
+			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+		}	
+		else if (getUnitType() == UnitType.CONSTRUCTION) {
 			currentStateType = LocationStateType.OUTER_SPACE;
 			containerID = (Integer) OUTER_SPACE_UNIT_ID;
 		}	
@@ -534,17 +500,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			containerID = (Integer) UNKNOWN_UNIT_ID;
 		}	
 		
-		// c. Set containerID
+		// 3. Set containerID
 		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_UNIT_ID) {
 			containerID = (Integer) UNKNOWN_UNIT_ID;
 		}
-		else 
+		else {
 			containerID = newContainer.getIdentifier();
-	
+		}
+		
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}
 
-	
 	/**
 	 * Gets the location state type based on the type of the new container unit
 	 * 
@@ -553,81 +519,29 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public LocationStateType getNewLocationState(Unit newContainer) {
 		
-		if (newContainer instanceof Settlement) {
-			if (this instanceof Person || this instanceof Robot || this instanceof Equipment)
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
+			if (getUnitType() == UnitType.PERSON || getUnitType() == UnitType.ROBOT || getUnitType() == UnitType.EQUIPMENT)
 				return LocationStateType.INSIDE_SETTLEMENT;
-			else if (this instanceof Vehicle)
+			else if (getUnitType() == UnitType.VEHICLE)
 				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		}
 		
-		if (newContainer instanceof Building)
+		if (newContainer.getUnitType() == UnitType.BUILDING)
 			return LocationStateType.INSIDE_SETTLEMENT;	
 		
-		if (newContainer instanceof Vehicle)
+		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
 		
-		if (newContainer instanceof ConstructionSite)
+		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
 			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
-		
-//		if (newContainer instanceof EVASuit)
-//			return LocationStateType.INSIDE_EVASUIT;
-		
-		if (newContainer instanceof Person)
+			
+		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer instanceof MarsSurface)
+		if (newContainer.getUnitType() == UnitType.PLANET)
 			return LocationStateType.MARS_SURFACE;
 		
 		return null;
-	}
-	
-	/**
-	 * Updates the location state type of a person or robot
-	 * 
-	 * @param newContainer
-	 */
-	public void updatePersonRobotState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN; 
-			return;
-		}
-		
-		currentStateType = getNewLocationState(newContainer);
-	}
-
-	/**
-	 * Updates the location state type of an equipment
-	 * 
-	 * @param newContainer
-	 */
-	public void updateEquipmentState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-		
-		currentStateType = getNewLocationState(newContainer);
-	}
-
-	/**
-	 * Updates the location state type of a vehicle.
-	 * 
-	 * @apiNote (1) : WITHIN_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
-	 *
-	 * @apiNote (2) : WITHIN_SETTLEMENT_VICINITY can be used by a person or a vehicle.
-	 *
-	 * @apiNote (3) : If a vehicle may be in a garage inside a building, this vehicle is INSIDE_SETTLEMENT.
-	 *                If a vehicle is parked right outside a settlement, this vehicle is WITHIN_SETTLEMENT_VICINITY.
-	 * 
-	 * @param newContainer
-	 */
-	public void updateVehicleState(Unit newContainer) {
-		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
-			return;
-		}
-		
-		currentStateType = getNewLocationState(newContainer);
 	}
 
 	/**
@@ -637,15 +551,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @throws Exception if error getting the mass.
 	 */
 	public double getMass() {
-		double invMass = 0;
-
-		if (inventory == null) { 
-			logger.severe(this + ": inventory is null.");
-		}
-		else 
-			invMass = inventory.getTotalInventoryMass(false);
-
-		return baseMass + invMass;
+		return baseMass;// + getStoredMass();
 	}
 
 	/**
@@ -748,67 +654,31 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	public abstract Settlement getSettlement();
 
+	/**
+	 * Gets the building this unit is at
+	 * 
+	 * @return the building
+	 */
 	public Building getBuildingLocation() {
-		if (this instanceof Equipment) {
-			return ((Equipment) this).getBuildingLocation();
-		} 
-		
-		else if (this instanceof Person) {
-			return ((Person) this).getBuildingLocation();
-		}
-
-		else if (this instanceof Robot) {
-			return ((Robot) this).getBuildingLocation();
-		}
-
-		else if (this instanceof Vehicle) {
-			return ((Vehicle) this).getBuildingLocation();
-		} 
-		
-		else
-			return null;
+		return null;
 	}
 
+	/**
+	 * Gets the associated settlement this unit is with
+	 * 
+	 * @return the associated settlement
+	 */
 	public Settlement getAssociatedSettlement() {
-		if (this instanceof Equipment) {
-			return ((Equipment) this).getAssociatedSettlement();
-		} 
-		
-		else if (this instanceof Person) {
-			return ((Person) this).getAssociatedSettlement();
-		}
-
-		else if (this instanceof Robot) {
-			return ((Robot) this).getAssociatedSettlement();
-		}
-
-		else if (this instanceof Vehicle) {
-			return ((Vehicle) this).getAssociatedSettlement();
-		} 
-		
-		else
-			return null;
+		return null;
 	}
 
+	/**
+	 * Get the vehicle this unit is in, null if not in vehicle
+	 *
+	 * @return the vehicle
+	 */
 	public Vehicle getVehicle() {
-		if (this instanceof Equipment) {
-			return ((Equipment) this).getVehicle();
-		} 
-		
-		else if (this instanceof Person) {
-			return ((Person) this).getVehicle();
-		}
-
-		else if (this instanceof Robot) {
-			return ((Robot) this).getVehicle();
-		}
-
-		else if (this instanceof Vehicle) {
-			return ((Vehicle) this).getVehicle();
-		} 
-		
-		else
-			return null;
+		return null;
 	}
 
 	/**
@@ -821,9 +691,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
 				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-		
-//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-//			return getContainerUnit().isInside();
 		
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInside();
@@ -841,33 +708,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.MARS_SURFACE == currentStateType
 				|| LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 			return true;
-		
-//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-//			return getContainerUnit().isOutside();
-		
+				
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isOutside();
 		
 		return false;
 	}
-	
-//	/**
-//	 * Checks if this unit is inside an airlock
-//	 * 
-//	 * @return true if the unit is inside an airlock
-//	 */
-//	public boolean isInAirlock() {
-//		if (LocationStateType.IN_AIRLOCK == currentStateType)
-//			return true;
-//		
-////		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-////			return getContainerUnit().isInAirlock();
-//		
-//		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
-//			return getContainerUnit().isInAirlock();
-//		
-//		return false;
-//	}
 	
 	/**
 	 * Is this unit inside a vehicle
@@ -893,9 +739,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return true if the unit is inside a settlement
 	 */
 	public boolean isInSettlement() {
-//		if (this instanceof Vehicle)
-//			System.out.println("Vehicle " + this + "'s location state type : " + currentStateType);
-			
+		
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
 		
@@ -903,28 +747,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (this instanceof Vehicle) {
-			// if the vehicle is parked in the vincinity of a settlement or a garage
+		if (getUnitType() == UnitType.VEHICLE) {
+			// if the vehicle is parked in the vicinity of a settlement or a garage
 			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 				return true;
 			
-			if (getContainerUnit() instanceof Settlement 
-					&& getContainerUnit().getInventory().containsUnit(this)) {
+			if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
+					&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
 				return true;
 			}
-			
 		}
-		
-//		if (LocationStateType.IN_AIRLOCK == currentStateType) {
-//			if (getContainerUnit() instanceof Settlement 
-//					&& getContainerUnit().getInventory().containsUnit(this)) {
-//				return true;
-//			}
-//		}
 
-//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-//			return getContainerUnit().isInSettlement();
-		
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInSettlement();
 		
@@ -946,7 +779,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (getContainerUnit() instanceof Vehicle) {
+		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
             // still inside the garage
             return BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null;
 		}
@@ -955,11 +788,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public double getTotalCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
-			if (this instanceof EVASuit)
-				return ((EVASuit)this).getTotalCapacity();
 			return ((Equipment)this).getTotalCapacity();
 		}
 		
+		// if Inventory is presents, use getGeneralCapacity
 		return 0;
 	}
 	
@@ -1000,38 +832,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		return origin.getInventory().transferUnit(this, destination);
+		return false;
 	}
 
-	/**
-	 * Transfer the unit from one owner's inventory to another owner
-	 * 
-	 * @param originInv {@link Inventory} the inventory of the original container unit
-	 * @param destination {@link Unit} the destination container unit
-	 */
-	public boolean transfer(Inventory originInv, Unit destination) {
-		return originInv.transferUnit(this, destination);
-	}
-	
-	/**
-	 * Transfer the unit from one owner to another owner's inventory
-	 * 
-	 * @param origin {@link Unit} the original container unit
-	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-	 */
-	public boolean transfer(Unit origin, Inventory destinationInv) {
-		return origin.getInventory().transferUnit(this, destinationInv.getOwner());
-	}
-	
-	/**
-	 * Transfer the unit from one owner's inventory to another owner's inventory
-	 * 
-	 * @param originInv {@link Inventory} the inventory of the original container unit
-	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-	 */
-	public boolean transfer(Inventory originInv, Inventory destinationInv) {
-		return originInv.transferUnit(this, destinationInv.getOwner());
-	}
 	/**
 	 * Compares this object with the specified object for order.
 	 * 
@@ -1051,7 +854,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	@Override
 	public String toString() {
-		// return name + " (" + identifier + ")";
 		return name;
 	}
 
@@ -1080,10 +882,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		location = null;
 		name = null;
 		description = null;
-		inventory.destroy();
-		inventory = null;
-//		containerUnit = null;
-		// if (listeners != null) listeners.clear();
 		listeners = null;
 	}
 

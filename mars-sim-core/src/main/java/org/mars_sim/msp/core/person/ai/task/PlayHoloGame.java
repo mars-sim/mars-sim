@@ -9,11 +9,9 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -34,10 +32,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(PlayHoloGame.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(PlayHoloGame.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.playHoloGame"); //$NON-NLS-1$
@@ -118,8 +113,7 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		setPhase(SETTING_UP_SCENES);
 
-		LogConsolidated.log(logger, Level.FINE, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
+		logger.fine(person, "Setting up hologames to play");
 		
 	}
 

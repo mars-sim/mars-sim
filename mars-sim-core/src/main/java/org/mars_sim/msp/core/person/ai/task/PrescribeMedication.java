@@ -380,9 +380,7 @@ implements Serializable {
 
 	public void produceMedicalWaste() {
 		if (!worker.isOutside()) {
-            Inventory inv = worker.getInventory();
-            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteID, inv, 
-            		"PrescribeMedication::produceMedicalWaste");
+            worker.storeAmountResource(ResourceUtil.toxicWasteID, AVERAGE_MEDICAL_WASTE);
         }
 	}
 

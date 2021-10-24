@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2021-09-05
+ * @date 2021-10-20
  * @author Scott Davis
  */
 
@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -42,6 +41,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for getting manufacturing processes.
@@ -230,7 +230,7 @@ public final class ManufactureUtil {
 			double salvagedGoodValue = 0D;
 			Good salvagedGood = null;
 			if (salvagedUnit instanceof Equipment) {
-				salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+				salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());
 			} else if (salvagedUnit instanceof Vehicle) {
 				salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
 			}
@@ -285,8 +285,7 @@ public final class ManufactureUtil {
 			
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-						ar, true, false);
+				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
@@ -303,9 +302,7 @@ public final class ManufactureUtil {
 		} 
 		
 		else if (item.getType() == ItemType.EQUIPMENT) {
-//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} 
 		
@@ -331,7 +328,7 @@ public final class ManufactureUtil {
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
 		// settlement's inventory
-		Inventory inv = workshop.getBuilding().getInventory();
+		Settlement settlement = workshop.getBuilding().getSettlement();
 
 		// Check to see if workshop is full of processes.
 		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse()) {
@@ -349,7 +346,7 @@ public final class ManufactureUtil {
 //		}
 
 		// Check to see if process input items are available at settlement.
-        return areProcessInputsAvailable(process, inv);
+        return areProcessInputsAvailable(process, settlement);
 
 		// Check to see if room for process output items at settlement.
 		// if (!canProcessOutputsBeStored(process, inv)) result = false;
@@ -432,7 +429,7 @@ public final class ManufactureUtil {
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
 	 */
-	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv) {
+	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Settlement settlement) {
 		boolean result = true;
 
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -441,14 +438,14 @@ public final class ManufactureUtil {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 //                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
+				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
 				// Add demand tracking
-				inv.addAmountDemandTotalRequest(id, item.getAmount());
+//				inv.addAmountDemandTotalRequest(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = (inv.getItemResourceNum(id) >= (int) item.getAmount());
+				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
 				// Add tracking demand
-				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
+//				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}
@@ -533,44 +530,6 @@ public final class ManufactureUtil {
 		return highestTechLevel;
 	}
 
-	/**
-	 * Gets a good for a manufacture process item.
-	 * 
-	 * @param item the manufacture process item.
-	 * @return good
-	 * @throws Exception if error determining good.
-	 */
-	public static Good getGood(ManufactureProcessItem item) {
-		Good result = null;
-		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
-			result = GoodsUtil.getResourceGood(ar);
-			if (result == null)
-				result = GoodsUtil.createResourceGood(ar);
-		} 
-		
-		else if (ItemType.PART.equals(item.getType())) {
-			ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
-			result = GoodsUtil.getResourceGood(ir);
-			if (result == null)
-				result = GoodsUtil.createResourceGood(ir);
-		} 
-		
-		else if (ItemType.EQUIPMENT.equals(item.getType())) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(equipmentClass);
-			if (result == null)
-				result = GoodsUtil.createEquipmentGood(equipmentClass);
-		} 
-		
-		else if (ItemType.VEHICLE.equals(item.getType())) {
-			result = GoodsUtil.getVehicleGood(item.getName());
-			if (result == null)
-				result = GoodsUtil.createVehicleGood(item.getName());
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the mass for a manufacturing process item.
@@ -587,7 +546,7 @@ public final class ManufactureUtil {
 		} else if (ItemType.PART.equals(item.getType())) {
 			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
+			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
 			mass = item.getAmount() * vehicleConfig.getEmptyMass(item.getName());
@@ -606,50 +565,42 @@ public final class ManufactureUtil {
 	 */
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
-		Inventory inv = settlement.getInventory();
-		Collection<Unit> salvagableUnits = new ArrayList<Unit>();
+		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
 
 		if (info.getType().equalsIgnoreCase("vehicle")) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits = inv.findAllUnitsOfClass(LightUtilityVehicle.class);
+				salvagableUnits = settlement.getVehicleTypeList(VehicleType.LUV);
 			} else {
-				salvagableUnits = inv.findAllUnitsOfClass(Rover.class);
-
-				// Remove rovers that aren't the right type.
-				Iterator<Unit> i = salvagableUnits.iterator();
-				while (i.hasNext()) {
-					Rover rover = (Rover) i.next();
-					if (!rover.getDescription().equalsIgnoreCase(info.getItemName()))
-						i.remove();
-				}
+				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
+				salvagableUnits = settlement.getVehicleTypeList(type);
 			}
 
 			// Remove any reserved vehicles.
-			Iterator<Unit> i = salvagableUnits.iterator();
+			Iterator<? extends Unit> i = salvagableUnits.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicle.isReserved() || !isEmpty)
 					i.remove();
 			}
 		} else if (info.getType().equalsIgnoreCase("equipment")) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(info.getItemName());
-			salvagableUnits = inv.findAllUnitsOfClass(equipmentClass);
+			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
+			salvagableUnits = settlement.getEquipmentTypeList(eType);
 		}
 
 		// Make sure container unit is settlement.
-		Iterator<Unit> i = salvagableUnits.iterator();
+		Iterator<? extends Unit> i = salvagableUnits.iterator();
 		while (i.hasNext()) {
 			if (i.next().getContainerUnit() != settlement)
 				i.remove();
 		}
 
 		// Make sure unit's inventory is empty.
-		Iterator<Unit> j = salvagableUnits.iterator();
-		while (j.hasNext()) {
-			if (!j.next().getInventory().isEmpty(false))
-				j.remove();
-		}
+//		Iterator<? extends Unit> j = salvagableUnits.iterator();
+//		while (j.hasNext()) {
+//			if (!j.next().getInventory().isEmpty(false))
+//				j.remove();
+//		}
 
 		// If malfunctionable, find most worn unit.
 		if (salvagableUnits.size() > 0) {
@@ -657,7 +608,7 @@ public final class ManufactureUtil {
 			if (firstUnit instanceof Malfunctionable) {
 				Unit mostWorn = null;
 				double lowestWearCondition = Double.MAX_VALUE;
-				Iterator<Unit> k = salvagableUnits.iterator();
+				Iterator<? extends Unit> k = salvagableUnits.iterator();
 				while (k.hasNext()) {
 					Unit unit = k.next();
 					Malfunctionable malfunctionable = (Malfunctionable) unit;

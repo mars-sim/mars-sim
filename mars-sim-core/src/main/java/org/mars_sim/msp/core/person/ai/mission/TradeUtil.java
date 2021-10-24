@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -14,14 +14,14 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for static methods for Trade Mission. TODO externalize strings
@@ -64,15 +65,13 @@ public final class TradeUtil {
 	private static final int MIN_NUM_EQUIPMENT = 10;
 	
 	/** Performance cache for equipment goods. */
-	private final static Map<Class<? extends Equipment>, Equipment> equipmentGoodCache = new HashMap<Class<? extends Equipment>, Equipment>(
-			5);
+	private final static Map<EquipmentType, Equipment> equipmentGoodCache = new HashMap<>();
 
 	/** Cache for the best trade settlement. */
 	public static Settlement bestTradeSettlementCache = null;
 
 	/** Cache for container types. */
-	private final static Map<Class<? extends Equipment>, Equipment> containerTypeCache = new HashMap<Class<? extends Equipment>, Equipment>(
-			3);
+	private final static Map<EquipmentType, Equipment> containerTypeCache = new HashMap<>();
 
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
@@ -288,7 +287,7 @@ public final class TradeUtil {
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
 		sellerGoodsManager.prepareForLoadCalculation();
 
-		double massCapacity = rover.getInventory().getGeneralCapacity();
+		double massCapacity = rover.getTotalCapacity();
 
 		// Subtract mission base mass (estimated).
 		double missionPartsMass = MISSION_BASE_MASS;
@@ -317,10 +316,10 @@ public final class TradeUtil {
 					// Add resource container if needed.
 					if (isAmountResource) {
 						resource = ResourceUtil.findAmountResource(good.getID());
-						Equipment container = getAvailableContainerForResource(resource,
+						Container container = getAvailableContainerForResource(resource,
 								sellingSettlement, tradeList);
 						if (container != null) {
-							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
+							Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
 							massCapacity -= container.getBaseMass();
 							int containerNum = 0;
 							if (tradeList.containsKey(containerGood))
@@ -516,8 +515,8 @@ public final class TradeUtil {
 
 		Part item = ItemResourceUtil.findItemResource(itemResourceGood.getID());
 
-		int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
-		int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
+		int sellingInventory = sellingSettlement.getItemResourceStored(item.getID());
+		int buyingInventory = buyingSettlement.getItemResourceStored(item.getID());
 
 		int numberTraded = 0;
 		if (tradeList.containsKey(itemResourceGood))
@@ -585,7 +584,7 @@ public final class TradeUtil {
 		if (tradedGoods.containsKey(good))
 			amountTraded += tradedGoods.get(good).doubleValue();
 
-		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
+		double sellingInventory = getNumInInventory(good, sellingSettlement);
 		double sellingSupplyAmount = sellingInventory - amountTraded - 1D;
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
@@ -596,7 +595,7 @@ public final class TradeUtil {
 		}
 		boolean allTraded = (sellingInventory <= amountTraded);
 
-		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
+		double buyingInventory = getNumInInventory(good, buyingSettlement);
 		double buyingSupplyAmount = buyingInventory + amountTraded + 1D;
 		if (buyingSupplyAmount < 0D)
 			buyingSupplyAmount = 0D;
@@ -612,7 +611,7 @@ public final class TradeUtil {
 
 			boolean isContainerAvailable = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				Equipment container = getAvailableContainerForResource(resource,
+				Container container = getAvailableContainerForResource(resource,
 						sellingSettlement, tradedGoods);
 				isContainerAvailable = (container != null);
 			}
@@ -634,7 +633,7 @@ public final class TradeUtil {
 			boolean enoughEquipment = true;
 			if (good.getCategory() == GoodCategory.EQUIPMENT
 					|| good.getCategory() == GoodCategory.CONTAINER) {	
-				if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
+				if (good.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					double remainingSuits = sellingInventory - amountTraded;
 					int requiredSuits = Trade.MAX_MEMBERS + 2;
 					enoughEVASuits = remainingSuits > requiredSuits;
@@ -687,7 +686,7 @@ public final class TradeUtil {
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			Class<? extends Equipment> type = good.getClassType();
+			EquipmentType type = good.getEquipmentType();
 			if (!equipmentGoodCache.containsKey(type)) {
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, settlement, true));
 			}
@@ -705,20 +704,21 @@ public final class TradeUtil {
 	 * @return number of goods in inventory.
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
-	public static double getNumInInventory(Good good, Inventory inventory) {
+	public static double getNumInInventory(Good good, Settlement settlement) {
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			return inventory.getAmountResourceStored(good.getID(), false);
+			return settlement.getAmountResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
-			return inventory.getItemResourceNum(good.getID());
+			return settlement.getItemResourceStored(good.getID());
 		} else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return inventory.findNumEmptyUnitsOfClass(EquipmentFactory.getEquipmentClass(good.getID()), false);
+			return settlement.findNumEmptyContainersOfType(good.getEquipmentType(), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
-			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
+			VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
+			Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				boolean isEmpty = vehicle.isEmpty();
 				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
 					count++;
 				}
@@ -738,24 +738,22 @@ public final class TradeUtil {
 	 * @return container for the resource or null if none.
 	 * @throws Exception if error.
 	 */
-	private static Equipment getAvailableContainerForResource(AmountResource resource, Settlement settlement,
+	private static Container getAvailableContainerForResource(AmountResource resource, Settlement settlement,
 			Map<Good, Integer> tradedGoods) {
 
-		Equipment result = null;
+		Container result = null;
 
-		Class<? extends Equipment> containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
-		Inventory settlementInv = settlement.getInventory();
+		int containersStored = settlement.findNumEmptyContainersOfType(containerType, false);
 
-		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerClass, false);
-
-		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;
 		if (tradedGoods.containsKey(containerGood))
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlementInv.findAnEmptyEquipment(containerClass, resource.getID());
+			result = settlement.findContainer(containerType, true, resource.getID());
 
 		return result;
 	}
@@ -815,7 +813,7 @@ public final class TradeUtil {
 	private static double getResourceTradeAmount(AmountResource resource, Settlement settlement) {
 		double result = 0D;
 
-		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType))

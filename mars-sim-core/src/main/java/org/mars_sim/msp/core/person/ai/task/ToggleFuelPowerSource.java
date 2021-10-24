@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -312,7 +312,7 @@ implements Serializable {
         boolean result = false;
 
         int resource = fuelSource.getFuelResourceID();
-        double stored = settlement.getInventory().getAmountResourceStored(resource, false);
+        double stored = settlement.getAmountResourceStored(resource);
         if (stored == 0D) {
             result = true;
         }

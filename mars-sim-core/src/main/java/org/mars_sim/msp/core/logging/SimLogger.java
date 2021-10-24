@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimLogger.java
- * @date 2021-09-05
+ * @date 2021-10-07
  * @author Barry Evans
  */
 
@@ -208,7 +208,7 @@ public class SimLogger {
 		outputMessage.append(COLON);
 		if (actor == null) {
 			// Actor unknown
-			outputMessage.append("").append(CLOSED_BRACKET_SPACE);
+			outputMessage.append("System").append(CLOSED_BRACKET_SPACE);
 		}
 		else if (actor instanceof Settlement) {
 			// Actor in bracket; it's top level

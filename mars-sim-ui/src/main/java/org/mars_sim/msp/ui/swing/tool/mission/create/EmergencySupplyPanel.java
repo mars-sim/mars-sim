@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EmergencySupplyPanel.java
- * @date 2021-09-04
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -34,13 +34,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.GasCanister;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
@@ -288,10 +285,10 @@ public class EmergencySupplyPanel extends WizardPanel {
 	private boolean hasEnoughContainers(Settlement settlement) {
 		boolean result = true;
 
-		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
-		containerMap.put(Bag.class, getNumberOfCargoContainers(Bag.class));
-		containerMap.put(Barrel.class, getNumberOfCargoContainers(Barrel.class));
-		containerMap.put(GasCanister.class, getNumberOfCargoContainers(GasCanister.class));
+		Map<EquipmentType, Integer> containerMap = new HashMap<>(3);
+		containerMap.put(EquipmentType.BAG, getNumberOfCargoContainers(EquipmentType.BAG));
+		containerMap.put(EquipmentType.BARREL, getNumberOfCargoContainers(EquipmentType.BARREL));
+		containerMap.put(EquipmentType.GAS_CANISTER, getNumberOfCargoContainers(EquipmentType.GAS_CANISTER));
 
 		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
 
@@ -301,10 +298,10 @@ public class EmergencySupplyPanel extends WizardPanel {
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				PhaseType phase = resource.getPhase();
-				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
+				EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
-				double capacity = ((Equipment)container).getAmountResourceCapacity(resource.getID());
+				Equipment container = EquipmentFactory.createEquipment(containerType, settlement, true);
+				double capacity = container.getAmountResourceCapacity(resource.getID());
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = cargoGoods.get(good);
 				if (resourceAmount > totalCapacity) {
@@ -334,7 +331,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
-	private int getNumberOfCargoContainers(Class<?> containerType) {
+	private int getNumberOfCargoContainers(EquipmentType containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
@@ -429,7 +426,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
+					int amount = (int) TradeUtil.getNumInInventory(good, settlement);
 					if (checkForVehicle(good))
 						amount--;
 					goodsMap.put(good, amount);

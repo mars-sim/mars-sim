@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -82,10 +82,10 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 		// Take bags for collecting mined minerals.
 		if (!hasBags()) {
-			takeBag();
+			boolean hasBag = takeBag();
 
 			// If bags are not available, end task.
-			if (!hasBags()) {
+			if (hasBag) {
 				logger.log(person, Level.INFO, 5_000,
 						"Unable to find more bags to collect mined minerals.", null);
 				endTask();
@@ -132,56 +132,26 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return true if carrying bags.
 	 */
 	private boolean hasBags() {
-		return worker.getInventory().containsEquipment(EquipmentType.BAG);
+		return worker.containsEquipment(EquipmentType.BAG);
 	}
 
 	/**
-	 * Takes the most full bag from the rover.
+	 * Takes the most least full bag from the rover.
 	 * 
 	 * @throws Exception if error taking bag.
 	 */
-	private void takeBag() {
-		Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+	private boolean takeBag() {
+		Container bag = ContainerUtil.findLeastFullContainer(rover,
+											EquipmentType.BAG,
+											mineralType.getID());
 		if (bag != null) {
 			if (person != null) {
-				if (person.getInventory().canStoreUnit(bag, false)) {
-					bag.transfer(rover, person);
-//					rover.getInventory().retrieveUnit(bag);
-//					person.getInventory().storeUnit(bag);
-				}
+				return bag.transfer(rover, person);
 			} else if (robot != null) {
-				if (robot.getInventory().canStoreUnit(bag, false)) {
-					bag.transfer(rover, robot);
-//					rover.getInventory().retrieveUnit(bag);
-//					robot.getInventory().storeUnit(bag);
-				}
+				return bag.transfer(rover, robot);
 			}
 		}
-	}
-
-	/**
-	 * Gets the most but not completely full bag of the resource in the rover.
-	 * 
-	 * @param inv          the inventory to look in.
-	 * @param resourceType the resource for capacity.
-	 * @return container.
-	 */
-	private static Bag findMostFullBag(Inventory inv, AmountResource resource) {
-		Bag result = null;
-		double leastCapacity = Double.MAX_VALUE;
-
-		Iterator<Bag> i = inv.findAllBags().iterator();
-		while (i.hasNext()) {
-			Bag bag = i.next();
-			double remainingCapacity = bag.getAmountResourceRemainingCapacity(resource.getID());
-
-			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
-				result = bag;
-				leastCapacity = remainingCapacity;
-			}
-		}
-
-		return result;
+		return false;
 	}
 
 	@Override
@@ -236,8 +206,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
 
-		double roverRemainingCap = rover.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
-				false);
+		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
 		
 		double weight = 0;
 		if (person != null)
@@ -250,8 +219,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			return .5 * time;
 		}
 			
-		remainingPersonCapacity = worker.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
-					false);
+		remainingPersonCapacity = worker.getAmountResourceRemainingCapacity(mineralType.getID());
 
 		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
@@ -271,7 +239,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		addExperience(time);
 
 		// Collect minerals.
-		worker.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
 
 		mission.collectMineral(mineralType, mineralsCollected);
 		
@@ -287,17 +255,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 	@Override
 	protected void clearDown() {
-
-		// Unload bag to rover's inventory.
-		Inventory pInv = worker.getInventory();
-		if (pInv.containsEquipment(EquipmentType.BAG)) {
-			// Load bags in rover.
-			Iterator<Bag> i = pInv.findAllBags().iterator();
-			while (i.hasNext()) {
-				// Place this equipment within a rover outside on Mars
-				i.next().transfer(pInv, rover);
-			}
-		}
+		returnEquipmentToVehicle(rover);
 	}
 
 	/**
@@ -328,22 +286,24 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				return false;
 
 			// Checks if available bags with remaining capacity for resource.
-			Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+			Container bag = ContainerUtil.findLeastFullContainer(rover,
+																EquipmentType.BAG,
+																mineralType.getID());
 			boolean bagAvailable = (bag != null);
 
 			// Check if bag and full EVA suit can be carried by person or is too heavy.
 			double carryMass = 0D;
 			if (bag != null) {
-				carryMass += bag.getMass();
+				carryMass += bag.getBaseMass();
 			}
 
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getContainerUnit(), person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getAmountResourceRemainingCapacity(oxygenID);
 				carryMass += suit.getAmountResourceRemainingCapacity(waterID);
 			}
-			double carryCapacity = person.getInventory().getGeneralCapacity();
+			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);
 
 			result = (bagAvailable && canCarryEquipment);

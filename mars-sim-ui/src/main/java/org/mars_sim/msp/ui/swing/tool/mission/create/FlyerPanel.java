@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FlyerPanel.java
- * @date 2021-08-27
+ * @date 2021-10-21
  * @author Manny Kung
  */
 
@@ -25,13 +25,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -230,7 +230,6 @@ class FlyerPanel extends WizardPanel {
 
 			if (row < units.size()) {
 				Drone vehicle = (Drone) getUnit(row);
-				Inventory inv = vehicle.getInventory();
 
 				try {
 					if (column == 0)
@@ -240,9 +239,9 @@ class FlyerPanel extends WizardPanel {
 					else if (column == 2)
 						result = (int) vehicle.getRange(wizard.getMissionBean().getMissionType());
 					else if (column == 3)
-						result = (int) inv.getGeneralCapacity();
+						result = (int) vehicle.getTotalCapacity();
 					else if (column == 4)
-						result = (int) inv.getTotalInventoryMass(true);
+						result = (int) vehicle.getStoredMass();
 					else if (column == 5)
 						result = vehicle.printStatusTypes();
 					else if (column == 6) {
@@ -269,7 +268,7 @@ class FlyerPanel extends WizardPanel {
 			Iterator<Vehicle> i = vehicles.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-				if (vehicle instanceof Drone)
+				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE)
 					units.add(vehicle);
 			}
 			fireTableDataChanged();
@@ -287,7 +286,7 @@ class FlyerPanel extends WizardPanel {
 			Drone vehicle = (Drone) getUnit(row);
 
 			if (column == 7) {
-				if (vehicle.getInventory().getTotalInventoryMass(true) > 0D)
+				if (vehicle.getStoredMass() > 0D)
 					result = true;
 			} else if (column == 8) {
 				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))

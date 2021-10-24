@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -314,8 +314,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				double demand = settlement.getGoodsManager().getAmountDemandValue(resource);
 				double rate = 0D;
 //				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
-				double remain = settlement.getInventory().getAmountResourceRemainingCapacity(resource,
-						true, false);
+				double remain = settlement.getAmountResourceRemainingCapacity(resource);
 //				double stored = cap - remain;
 		
 				if (input) {
@@ -357,7 +356,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		while (i.hasNext()) {
 			int resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
-				double stored = settlement.getInventory().getAmountResourceStored(resource, false);
+				double stored = settlement.getAmountResourceStored(resource);
 				if (stored == 0D) {
 					result = true;
 					break;

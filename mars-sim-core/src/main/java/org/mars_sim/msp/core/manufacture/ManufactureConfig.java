@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -90,7 +89,7 @@ public class ManufactureConfig implements Serializable {
 		}
 		
 		// Build the global list in a temp to avoid access before it is built
-		List<ManufactureProcessInfo> newList = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> newList = new ArrayList<>();
 
 		Element root = manufactureDoc.getRootElement();
 		List<Element> processNodes = root.getChildren(PROCESS);
@@ -119,7 +118,7 @@ public class ManufactureConfig implements Serializable {
 
 			Element inputs = processElement.getChild(INPUTS);
 			
-			List<ManufactureProcessItem> inputList = new ArrayList<ManufactureProcessItem>();
+			List<ManufactureProcessItem> inputList = new ArrayList<>();
 			
 			process.setInputList(inputList);
 
@@ -130,7 +129,7 @@ public class ManufactureConfig implements Serializable {
 
 			Element outputs = processElement.getChild(OUTPUTS);
 			
-			List<ManufactureProcessItem> outputList = new ArrayList<ManufactureProcessItem>();
+			List<ManufactureProcessItem> outputList = new ArrayList<>();
 			
 			process.setOutputList(outputList);
 
@@ -208,21 +207,12 @@ public class ManufactureConfig implements Serializable {
 			equipmentItem.setType(ItemType.EQUIPMENT);
 			String equipmentName = equipmentElement.getAttributeValue(NAME);
 
-			Set<String> names = EquipmentType.getNameSet();// EquipmentFactory.getEquipmentNames();
-			boolean result = false;
-			for (String s : names) {
-				if (s.equalsIgnoreCase(equipmentName)) {
-					result = true;
-				}
-			}
-
-			if (result) {
+			EquipmentType eType = EquipmentType.convertName2Enum(equipmentName);
+			if (eType != null) {
 				equipmentItem.setName(equipmentName);
 				equipmentItem.setAmount(Integer.parseInt(equipmentElement.getAttributeValue(NUMBER)));
 				list.add(equipmentItem);
-			} else
-				logger.severe("The equipment '" + equipmentName + "' shows up in manufacturing.xml but doesn't "
-						+ "exist in EquipmentType.");
+			}
 		}
 	}
 
@@ -267,7 +257,7 @@ public class ManufactureConfig implements Serializable {
 		
 		Element root = manufactureDoc.getRootElement();
 		List<Element> salvageNodes = root.getChildren(SALVAGE);
-		List<SalvageProcessInfo> newList = new ArrayList<SalvageProcessInfo>();
+		List<SalvageProcessInfo> newList = new ArrayList<>();
 		
 		Iterator<Element> i = salvageNodes.iterator();
 		while (i.hasNext()) {
@@ -283,7 +273,7 @@ public class ManufactureConfig implements Serializable {
 			salvage.setWorkTimeRequired(Double.parseDouble(salvageElement.getAttributeValue(WORK_TIME)));
 
 			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
-			List<PartSalvage> partSalvageList = new ArrayList<PartSalvage>();
+			List<PartSalvage> partSalvageList = new ArrayList<>();
 			salvage.setPartSalvageList(partSalvageList);
 
 			Iterator<Element> j = partSalvageNodes.iterator();
@@ -303,28 +293,5 @@ public class ManufactureConfig implements Serializable {
 
 		// Assign the newList now built
 		salvageList = Collections.unmodifiableList(newList);
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		if (manufactureProcessList != null) {
-			Iterator<ManufactureProcessInfo> i = manufactureProcessList.iterator();
-			while (i.hasNext()) {
-				i.next().destroy();
-			}
-//			manufactureProcessList.clear();
-			manufactureProcessList = null;
-		}
-
-		if (salvageList != null) {
-			Iterator<SalvageProcessInfo> j = salvageList.iterator();
-			while (j.hasNext()) {
-				j.next().destroy();
-			}
-//			salvageList.clear();
-			salvageList = null;
-		}
 	}
 }

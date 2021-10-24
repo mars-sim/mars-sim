@@ -87,6 +87,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.inject.Guice;
 
@@ -1067,18 +1068,75 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 * 
+	 * @return Building the garage it's in or has just been added to
+	 */
+	public Building addToGarageBuilding(Vehicle vehicle) {
+		Building g = null;
+		
+		if (vehicle.isBeingTowed())
+			return g;
+		
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
+			if (((Rover)vehicle).isTowingAVehicle())
+				return g;
+		}
+		
+		List<Building> garages = getGarages();
+		
+		if (garages.isEmpty()) {
+			// This settlement has no garages at all
+			if (vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.removeStatus(StatusType.GARAGED);
+			return g;
+		}
+		
+		for (Building garageBuilding : garages) {
+				g = garageBuilding;
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null && garage.containsVehicle(vehicle)) {
+					if (!vehicle.haveStatusType(StatusType.GARAGED))
+						vehicle.addStatus(StatusType.GARAGED);
+
+					logger.log(settlement, vehicle, Level.INFO, 60_000, 
+							   "Already inside " + garage.getBuilding().getNickName() + ".");
+					
+					return garageBuilding;
+				}
+		}
+		
+		logger.log(settlement, vehicle, Level.INFO, 60_000, 
+				"Just stowed inside " + g.getNickName() + ".");	
+		
+		return g;
+	}
+	
+	/**
+	 * Adds a vehicle to a random ground vehicle maintenance building within
+	 * a settlement.
+	 * 
+	 * @param vehicle    the vehicle to add.
+	 * @param settlement the settlement to find a building.
+	 * @throws BuildingException if vehicle cannot be added to any building.
+	 * 
 	 * @return true if it's already in the garage or added to a garage 
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
 		if (vehicle.isBeingTowed())
 			return false;
 		
-		if (vehicle instanceof Rover) {
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return false;
 		}
 		
 		List<Building> garages = getGarages();
+		
+		if (garages.isEmpty()) {
+			// This settlement has no garages at all
+			if (vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.removeStatus(StatusType.GARAGED);
+			return false;
+		}
 		
 		if (isInGarage(vehicle)) {
 			if (!vehicle.haveStatusType(StatusType.GARAGED))
@@ -1097,94 +1155,15 @@ public class BuildingManager implements Serializable {
 						vehicle.addStatus(StatusType.GARAGED);
 					
 					logger.log(settlement, vehicle, Level.INFO, 60_000, 
-							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
+ 							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 					return true;
 				}
 			}
 		}
 		
-		if (garages.isEmpty()) {
-			// This settlement has no garages at all
-			if (vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.removeStatus(StatusType.GARAGED);
-			return false;
-		}
-		
 		return false;
 	}
 
-	/**
-	 * Adds a vehicle to a random ground vehicle maintenance building within
-	 * a settlement.
-	 * 
-	 * @param vehicle    the vehicle to add.
-	 * @param settlement the settlement to find a building.
-	 * @throws BuildingException if vehicle cannot be added to any building.
-	 * 
-	 * @return true if it's already in the garage or added to a garage 
-	 */
-	public static boolean add2Garage(Vehicle vehicle) {
-		if (vehicle.isBeingTowed())
-			return false;
-		
-		if (vehicle instanceof Rover) {
-			if (((Rover)vehicle).isTowingAVehicle())
-				return false;
-		}
-		
-		Settlement settlement = vehicle.getSettlement();
-		List<Building> garages = settlement.getBuildingManager().getGarages();
-		
-		if (garages.isEmpty()) {
-			// This settlement has no garages
-			if (vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.removeStatus(StatusType.GARAGED);
-			return false;
-		}
-		
-		Building garageBldg = getBuilding(vehicle, settlement);	
-		if (garageBldg != null) {
-			// The following block of codes are for FIXING invalid states and setting them straight
-			if (!vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.addStatus(StatusType.GARAGED);
-			
-			return true;
-		}
-		
-		else {
-			// Checks if this settlement have open garage space
-			List<VehicleMaintenance> openGarages = new CopyOnWriteArrayList<VehicleMaintenance>();
-			for (Building garageBuilding : garages) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity())
-					openGarages.add(garage);
-			}
-	
-			if (openGarages.size() > 0) {
-				int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
-				
-				// Place this vehicle inside a building
-				VehicleMaintenance garage = openGarages.get(rand);
-				garage.addVehicle(vehicle);
-				
-				if (!vehicle.haveStatusType(StatusType.GARAGED))
-					vehicle.addStatus(StatusType.GARAGED);
-				
-				logger.log(settlement, vehicle, Level.INFO, 60_000, 
-						   "Stowed inside " + garage.getBuilding().getNickName() + ".");
-				return true;
-			}
-			
-			else {
-				if (vehicle.haveStatusType(StatusType.GARAGED))
-					vehicle.removeStatus(StatusType.GARAGED);
-				
-				logger.log(settlement, vehicle, Level.WARNING, 60_000, 
-						   "No available garage space found.");
-				return false;
-			}
-		}
-	}
 
 	/**
 	 * Checks if the vehicle is currently in a garage or not.
@@ -1194,14 +1173,10 @@ public class BuildingManager implements Serializable {
 	public boolean isInGarage(Vehicle vehicle) {
 		if (settlement != null) {
 			for (Building garageBuilding : getGarages()) {
-//				try {
-					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-					if (garage != null && garage.containsVehicle(vehicle)) {
-						return true;
-					}
-//				} catch (Exception e) {
-//					logger.log(null, vehicle, Level.SEVERE, 2000, "Not in a building.", e);
-//				}
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null && garage.containsVehicle(vehicle)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1560,32 +1535,6 @@ public class BuildingManager implements Serializable {
 		Building b = person.getBuildingLocation();
         return b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK);
     }
-	
-	
-	/**
-	 * Adds the person to the building if possible for maven testing
-	 * 
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
-	 */
-	public static void addPersonOrRobotToMockBuilding(Person person, Building building) {
-		if (building != null) {
-			try {
-				LifeSupport lifeSupport = building.getLifeSupport();
-
-				if (!lifeSupport.containsOccupant(person)) {
-					lifeSupport.addPerson(person);
-
-					person.setCurrentMockBuilding(building);
-				}
-
-			} catch (Exception e) {
-				logger.log(building, person, Level.SEVERE, 2000, "Could not be added", e);
-			}
-		}		
-		else 
-			logger.log(person, Level.SEVERE, 2000, "Building is null.");
-	}
 		
 	/**
 	 * Adds the person to the building if possible.

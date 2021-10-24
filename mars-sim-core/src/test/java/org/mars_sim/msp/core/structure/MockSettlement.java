@@ -31,7 +31,7 @@ public class MockSettlement extends Settlement {
 			logger.severe("unitManager is null");
 					
         // Set inventory total mass capacity.
-		getInventory().addGeneralCapacity(Double.MAX_VALUE);
+		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);
 
         // Initialize building manager
         buildingManager = new BuildingManager(this, "Mock Settlement");

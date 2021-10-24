@@ -1,14 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * Part.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -102,8 +102,7 @@ public class Part extends ItemResource {
 		// Obtain the total # of this part in used from all settlements
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
-			Inventory inv = s.getInventory();
-			int num = inv.getItemResourceNum(this);
+			int num = s.getItemResourceStored(getID());
 			numItem += num;
 		}
 

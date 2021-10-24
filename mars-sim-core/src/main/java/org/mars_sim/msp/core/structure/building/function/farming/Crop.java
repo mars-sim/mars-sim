@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Crop.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -325,8 +325,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.log(building, Level.INFO, 0, "Done growing" + capitalizedCropName
-						+ "'s tissue-culture. Transferring its plantflets to the field.");
+				logger.log(building, Level.INFO, 0, "Done growing " + capitalizedCropName
+						+ "'s tissue-culture. Transferring plantflets to the field.");
 				// if it's growing mushroom
 				setupMushroom();
 			}
@@ -376,9 +376,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public void setupMushroom() {
 		if (cropName.toLowerCase().contains(MUSHROOM)) {
 			
-			if (building.getInventory().hasItemResource(mushroomBoxID)) {
-				building.getInventory().retrieveItemResources(mushroomBoxID, 1);
-				building.getInventory().addItemDemand(mushroomBoxID, 2);
+			if (building.getSettlement().hasItemResource(mushroomBoxID)) {
+				building.getSettlement().retrieveItemResource(mushroomBoxID, 1);
+//				building.getInventory().addItemDemand(mushroomBoxID, 2);
 			}
 			// Require some dead matter for fungi to decompose
 			if (growingArea * .5 > MIN)
@@ -831,7 +831,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					dailyHarvest = 0;
 					return true;
 				}
-				// TODO: is it better off doing the actualHarvest computation once a day or
+				// Note: is it better off doing the actualHarvest computation once a day or
 				// every time
 				// Reset the daily work counter currentPhaseWorkCompleted back to zero
 				// currentPhaseWorkCompleted = 0D;
@@ -847,6 +847,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// max possible harvest within this period of time
 			double maxPeriodHarvest = maxHarvest * (time / growingTime);
 			// Compute each harvestModifiers and sum them up below
+			// Note: computeHarvest takes up 40% of all cpu utilization
 			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time);
 			// Add to the daily harvest.
 			dailyHarvest += maxPeriodHarvest * harvestModifier;
@@ -1042,7 +1043,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
-		double gw = building.getInventory().getAmountResourceStored(greywaterID, false);
+		double gw = building.getSettlement().getAmountResourceStored(greywaterID);
 		double greyWaterAvailable = Math.min(gw * unitManager.getSettlementByID(settlementID).getGreyWaterFilteringRate() * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
@@ -1068,7 +1069,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				retrieve(greyWaterUsed, greywaterID, true);
 			// TODO: track grey water as well ?
 			waterRequired = waterRequired - greyWaterUsed;
-			double waterAvailable = building.getInventory().getAmountResourceStored(waterID, false);
+			double waterAvailable = building.getSettlement().getAmountResourceStored(waterID);
 			
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
@@ -1093,7 +1094,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .0001);
 			}
 
-			double fertilizerAvailable = building.getInventory().getAmountResourceStored(fertilizerID, false);
+			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(fertilizerID);
 			// The amount of fertilizer to be used depends on the ratio of the grey water used
 			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed + .0001);
 			double fertilizerUsed = fertilizerRequired;
@@ -1163,7 +1164,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageOxygenNeeded * time / 1000) * growingArea;
-			double o2Available = building.getInventory().getAmountResourceStored(oxygenID, false);
+			double o2Available = building.getSettlement().getAmountResourceStored(oxygenID);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
@@ -1202,7 +1203,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageCarbonDioxideNeeded * time / 1000) * growingArea;
-			double cO2Available = building.getInventory().getAmountResourceStored(carbonDioxideID, false);
+			double cO2Available = building.getSettlement().getAmountResourceStored(carbonDioxideID);
 			double cO2Used = cO2Req;
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest
@@ -1217,7 +1218,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// farm.addCO2Cache(-cO2Used);
 				cumulative_co2 = cumulative_co2 - cO2Used;
 			}
-			// TODO: research how much high amount of CO2 may facilitate the crop growth and
+			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
 
 //			co2Modifier = cO2Used / cO2Req;
@@ -1319,6 +1320,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		computeWaterFertilizer(growthFactor, time);
 
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
+		// Note: computeGases takes up 25% of all cpu utilization
 		computeGases(effectivePAR, growthFactor, time);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
@@ -1385,11 +1387,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 	
 	public boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
 	}
 	
 	public void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
 	}
 	
 	public boolean equals(Object obj) {

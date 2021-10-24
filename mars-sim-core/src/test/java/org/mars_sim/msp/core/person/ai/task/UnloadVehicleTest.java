@@ -1,21 +1,18 @@
-/**
+/*
  * Mars Simulation Project
- * LoadVehicleTest.java
- * @version 3.1.0 2017-01-21
+ * UnloadVehicleTest.java
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -69,32 +66,29 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 
-		
-		Inventory settlementInv = settlement.getInventory();
-		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
-		settlementInv.addAmountResourceTypeCapacity(food, 100D);
-		settlementInv.addAmountResourceTypeCapacity(water, 100D);
-		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
+		settlement.getEquipmentInventory().addCapacity(oxygen.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(food.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(water.getID(), 100D);
+		settlement.getEquipmentInventory().addCapacity(methane.getID(), 100D);
 
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 		
-		Inventory vehicleInv = vehicle.getInventory();
-		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
-		vehicleInv.storeAmountResource(oxygen, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
-		vehicleInv.storeAmountResource(food, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
-		vehicleInv.storeAmountResource(water, 100D, true);
-		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
-		vehicleInv.storeAmountResource(methane, 100D, true);
-		vehicleInv.addGeneralCapacity(100D);
-		vehicleInv.storeItemResources(hammer.getID(), 5);
-		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
-			unitManager.addUnit(eqm);
-			vehicleInv.storeUnit(eqm);
-		}
+//		Inventory vehicleInv = vehicle.getInventory();
+//		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
+//		vehicleInv.storeAmountResource(oxygen, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
+//		vehicleInv.storeAmountResource(food, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
+//		vehicleInv.storeAmountResource(water, 100D, true);
+//		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
+//		vehicleInv.storeAmountResource(methane, 100D, true);
+//		vehicleInv.addGeneralCapacity(100D);
+//		vehicleInv.storeItemResources(hammer.getID(), 5);
+//		for (int x = 0; x < 5; x++) {
+//			Equipment eqm = EquipmentFactory.createEquipment(EquipmentType.SPECIMEN_BOX, settlement, false);
+//			vehicleInv.storeUnit(eqm);
+//		}
 
 //		BuildingManager buildingManager = settlement.getBuildingManager();
         MockBuilding b0 = new MockBuilding(settlement.getBuildingManager(), "B0");

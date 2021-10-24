@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -226,19 +225,17 @@ implements Serializable {
         if (skill > 1) workTime += workTime * (.2D * skill);
 
         // Add repair parts if necessary.
-        Inventory inv = settlement.getInventory();
-        if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
+        if (Maintenance.hasMaintenanceParts(settlement, vehicle)) {
             Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
             Iterator<Integer> j = parts.keySet().iterator();
             while (j.hasNext()) {
             	Integer part = j.next();
                 int number = parts.get(part);
-                inv.retrieveItemResources(part, number);
+                settlement.retrieveItemResource(part, number);
                 manager.maintainWithParts(part, number);
-                
 				// Add item demand
-				inv.addItemDemandTotalRequest(part, number);
-				inv.addItemDemand(part, number);
+//				inv.addItemDemandTotalRequest(part, number);
+//				inv.addItemDemand(part, number);
             }
         }
         else {

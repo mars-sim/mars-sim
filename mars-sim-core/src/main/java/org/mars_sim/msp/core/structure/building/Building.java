@@ -12,20 +12,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -82,7 +87,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Building class is a settlement's building.
  */
 public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
-		LocalBoundedObject, InsidePathLocation, Temporal, Serializable {
+		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -342,24 +347,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	protected Building() {
 		super("Mock Building", new Coordinates(0D, 0D));
-	}
-	
-	/**
-	 * Gets the settlement inventory of this building.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getSettlementInventory() {
-		return settlement.getInventory();
-	}
-
-	/**
-	 * Gets the settlement inventory of this building.
-	 * 
-	 * @return inventory
-	 */
-	public Inventory getInventory() {
-		return settlement.getInventory();
 	}
 
 	/**
@@ -1271,19 +1258,20 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							int courage = person.getNaturalAttributeManager()
 									.getAttribute(NaturalAttributeType.COURAGE);
 							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100 - courage / 100D;
+							PhysicalCondition pc = person.getPhysicalCondition();
 							if (factor > 1)
-								person.getPhysicalCondition().setStress(person.getStress() * factor);
+								pc.setStress(pc.getStress() * factor);
 
 							victimName = person.getName();
 							mal.setTraumatized(victimName);
 
 							// Store the meteorite fragment in the settlement
-							getInventory().storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass(), true);
+							settlement.storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass());
 							
 							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0 
 									+ " kg of meteorite fragments in " + getNickName() + ".");
 							
-							if (person.getStress() > 30)
+							if (pc.getStress() > 30)
 								logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
 							
 						}
@@ -1333,6 +1321,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		templateID = id;
 	}
 
+	/**
+	 * Gets the settlement it is currently associated with.
+	 *
+	 * @return settlement or null if none.
+	 */
 	public Settlement getSettlement() {
 		return settlement;
 	}
@@ -1366,6 +1359,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 *
+	 * @return associated settlement or null if none.
+	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getSettlement(); 
@@ -1404,10 +1402,135 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 	
 	@Override
-	protected UnitType getUnitType() {
+	public UnitType getUnitType() {
 		return UnitType.BUILDING;
 	}
 
+
+	/**
+	 * Gets the amount resource stored
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return getSettlement().getAmountResourceStored(resource);
+	}
+
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param resource the amount resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		return getSettlement().storeAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Retrieves the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		return getSettlement().retrieveAmountResource(resource, quantity);
+	}
+	
+	/**
+	 * Gets the capacity of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		return getSettlement().getAmountResourceCapacity(resource);
+	}
+
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 * 
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return getSettlement().getAmountResourceRemainingCapacity(resource);
+	}
+
+	/**
+	 * Gets all stored amount resources
+	 * 
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return getSettlement().getAmountResourceIDs();
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 * 
+	 * @param newContainer the unit to contain this unit.
+	 */
+	@Override
+	public void setContainerUnit(Unit newContainer) {
+		if (newContainer != null) {
+			if (newContainer.equals(getContainerUnit())) {
+				return;
+			}
+			// 1. Set Coordinates
+			setCoordinates(newContainer.getCoordinates());
+			// 2. Set LocationStateType
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			// 3. Set containerID
+			// Q: what to set for a deceased person ?
+			setContainerID(newContainer.getIdentifier());
+			// 4. Fire the container unit event
+			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+		}
+	}
+	
+	/**
+	 * Gets the unit's container unit. Returns null if unit has no container unit.
+	 * 
+	 * @return the unit's container unit
+	 */
+	@Override
+	public Unit getContainerUnit() {
+		if (unitManager == null) // for maven test
+			return null;
+		return unitManager.getSettlementByID(containerID);
+	}
+	
+	/**
+	 * Gets the holder's unit instance
+	 * 
+	 * @return the holder's unit instance
+	 */
+	@Override
+	public Unit getHolder() {
+		return this;
+	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

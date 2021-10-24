@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -18,8 +19,10 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 
-public class BuildingKit extends Equipment implements Serializable, Malfunctionable, Salvagable {
+public class BuildingKit extends Equipment
+	implements Serializable, Malfunctionable, Salvagable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -155,12 +158,21 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
+	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 }

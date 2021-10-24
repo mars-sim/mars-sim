@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -192,20 +191,20 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add repair parts if necessary.
-		Inventory inv = worker.getTopContainerUnit().getInventory();
+		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
+			Settlement settlement = worker.getSettlement();
 
-		if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
-				inv.retrieveItemResources(part, number);
-				manager.maintainWithParts(part, number);
-				
+				// This is within a garage in a settlement
+				settlement.retrieveItemResource(part, number);
+				manager.maintainWithParts(part, number);			
 				// Add item demand
-				inv.addItemDemandTotalRequest(part, number);
-				inv.addItemDemand(part, number);
+//				inv.addItemDemandTotalRequest(part, number);
+//				inv.addItemDemand(part, number);
 			}
 		} else {
 			endTask();

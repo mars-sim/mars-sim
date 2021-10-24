@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MiningMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.ExploredLocation;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -67,7 +68,7 @@ public class MiningMeta extends AbstractMetaMission {
 	    			return 0;
 	       		
 	            // Check if there are enough bags at the settlement for collecting minerals.
-	            if (settlement.getInventory().findNumBags(true, false) < Mining.NUMBER_OF_LARGE_BAGS)
+	            if (settlement.findNumContainersOfType(EquipmentType.BAG) < Mining.NUMBER_OF_LARGE_BAGS)
 	            	return 0;
 	
 	            // Check if available light utility vehicles.

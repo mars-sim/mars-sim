@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadingController.java
- * @date 2021-10-03
+ * @date 2021-10-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -89,21 +88,21 @@ public class LoadingController implements Serializable {
 		this.optionalEquipmentManifest = new HashMap<>(optionalEquipment);
 		
 		// Reduce what is already in the Vehicle
-		Inventory inv = vehicle.getInventory();
-		removeVehicleResources(inv, this.resourcesManifest);
-		removeVehicleResources(inv, this.optionalResourcesManifest);
-		removeVehicleEquipment(inv, this.equipmentManifest);
-		removeVehicleEquipment(inv, this.optionalEquipmentManifest);
+		removeVehicleResources(resourcesManifest);
+		removeVehicleResources(optionalResourcesManifest);
+		removeVehicleEquipment(equipmentManifest);
+		removeVehicleEquipment(optionalEquipmentManifest);
 	}
 
 	/*
 	 * Remove any equipment the Vehicle has from the manifest. Equipment completely loaded
 	 * in the vehicle will be removed from the manifest.
 	 */
-	private void removeVehicleEquipment(Inventory inv, Map<Integer, Integer> equipment) {
+	private void removeVehicleEquipment(Map<Integer, Integer> equipment) {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
 		for (Integer eqmId : ids) {
-			int amountLoaded = inv.findAllUnitsOfClass(eqmId).size();			
+			EquipmentType eType = EquipmentType.convertID2Type(eqmId);
+			int amountLoaded = vehicle.findNumEmptyContainersOfType(eType, false);			
 			if (amountLoaded > 0) {
 				int newAmount = equipment.get(eqmId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -120,17 +119,29 @@ public class LoadingController implements Serializable {
 	 * Remove any resources the Vehicle has from the manifest. Resource completely loaded
 	 * in the vehicle will be removed from the manifest.
 	 */
-	private void removeVehicleResources(Inventory source, Map<Integer, Number> resources) {
+	private void removeVehicleResources(Map<Integer, Number> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
 			double amountLoaded;
 			if (resourceId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
-				amountLoaded = source.getAmountResourceStored(resourceId, false);
+				amountLoaded = vehicle.getAmountResourceStored(resourceId);
+				double capacity = vehicle.getAmountResourceCapacity(resourceId);
+				double amountRequired = resources.get(resourceId).doubleValue();
+				if (capacity < amountRequired) {
+					// So the vehicle can not handle the Manifest volume
+					// Adjust the manifest down
+					resources.put(resourceId, (capacity - amountLoaded));
+					logger.warning(vehicle, "Can not hold the "
+									+ ResourceUtil.findAmountResourceName(resourceId)
+									+ " in the manifest (" + amountRequired
+									+ ") as capacity is " + capacity);
+					amountLoaded = 0;
+				}
 			}
 			else {
 				// Load item resources
-				amountLoaded = source.getItemResourceNum(resourceId);
+				amountLoaded = vehicle.getItemResourceStored(resourceId);
 			}
 			
 			if (amountLoaded > 0) {
@@ -158,11 +169,11 @@ public class LoadingController implements Serializable {
 
 		// Temporarily remove rover from settlement so that inventory doesn't get mixed
 		// in.
-		Inventory sInv = settlement.getInventory();
+//		Inventory sInv = settlement.getInventory();
 		boolean vehicleInSettlement = false;
-		if (sInv.containsUnit(vehicle)) {
+		if (settlement.containsParkedVehicle(vehicle)) {
 			vehicleInSettlement = true;
-			sInv.retrieveUnit(vehicle);
+			settlement.removeParkedVehicle(vehicle);
 		}
 				
 		// Load equipment
@@ -187,14 +198,14 @@ public class LoadingController implements Serializable {
 		
 		// Put rover back into settlement.
 		if (vehicleInSettlement) {
-			sInv.storeUnit(vehicle);
+			settlement.addParkedVehicle(vehicle);
 		}
 
 		// Should the load stop for this worker? Either fully loaded or did not
 		// use load amount (that means load couldn't complete it
 		boolean completed = isCompleted();
 		if (completed) {
-			logger.info(vehicle, "Loading completed by " + worker.getName());
+			logger.fine(vehicle, "Loading completed by " + worker.getName());
 		}
 		return (amountLoading > 0D) || completed;
 	}
@@ -246,8 +257,8 @@ public class LoadingController implements Serializable {
 	 */
 	private double loadAmountResource(String loader, double amountLoading, Integer resource,
 									  Map<Integer, Number> manifest, boolean mandatory) {
-		Inventory vInv = vehicle.getInventory();
-		Inventory sInv = vehicle.getSettlement().getInventory();
+
+//		Inventory sInv = vehicle.getSettlement().getInventory();
 		String resourceName = ResourceUtil.findAmountResourceName(resource);
 
 		// Determine amount to load. 
@@ -256,13 +267,17 @@ public class LoadingController implements Serializable {
 		double amountToLoad = Math.min(amountNeeded, amountLoading);
 		
 		// Check the amount to load is not too small.
-		amountToLoad = Math.max(SMALLEST_RESOURCE_LOAD, amountToLoad);
+		if (amountToLoad < SMALLEST_RESOURCE_LOAD) {
+			// Too small to load
+			amountToLoad = 0;
+			amountNeeded = 0;
+		}
 		
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
-			double settlementStored = sInv.getAmountResourceStored(resource, false);
+			double settlementStored = settlement.getAmountResourceStored(resource);
 			// add tracking demand
-			sInv.addAmountDemandTotalRequest(resource, amountToLoad);
+//			sInv.addAmountDemandTotalRequest(resource, amountToLoad);
 		
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
@@ -282,9 +297,9 @@ public class LoadingController implements Serializable {
 			}	
 			
 			// Check remaining capacity in vehicle inventory.
-			double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
+			double remainingCapacity = vehicle.getAmountResourceRemainingCapacity(resource);
 			if (remainingCapacity < amountToLoad) {
-				if (mandatory) {
+				if (mandatory && ((amountToLoad - remainingCapacity) > SMALLEST_RESOURCE_LOAD)) {
 					// Will load up as much required resource as possible
 					logger.warning(vehicle, "Not enough capacity for loading " 
 							+ Math.round(amountToLoad * 100D) / 100D + " kg "
@@ -299,11 +314,9 @@ public class LoadingController implements Serializable {
 			// Load resource from settlement inventory to vehicle inventory.
 			try {
 				// Take resource from the settlement
-				sInv.retrieveAmountResource(resource, amountToLoad);
+				settlement.retrieveAmountResource(resource, amountToLoad);
 				// Store resource in the vehicle
-				vInv.storeAmountResource(resource, amountToLoad, true);
-				// Track amount demand
-				sInv.addAmountDemand(resource, amountToLoad);
+				vehicle.storeAmountResource(resource, amountToLoad);
 			} catch (Exception e) {
 				logger.severe(vehicle, "Cannot transfer from settlement to vehicle: ", e);
 				return amountLoading;
@@ -343,8 +356,7 @@ public class LoadingController implements Serializable {
 	 */
 	private double loadItemResource(String loader, double amountLoading, Integer id, Map<Integer, Number> manifest, boolean mandatory) {
 
-		Inventory vInv = vehicle.getInventory();
-		Inventory sInv = vehicle.getSettlement().getInventory();
+//		Inventory sInv = vehicle.getSettlement().getInventory();
 		Part p = ItemResourceUtil.findItemResource(id);
 		boolean usedSupply = false;
 		
@@ -355,10 +367,10 @@ public class LoadingController implements Serializable {
 		int amountToLoad = Math.min(amountNeeded, amountCouldLoad);
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
-			int settlementStored = sInv.getItemResourceNum(id);
+			int settlementStored = settlement.getItemResourceStored(id);
 			
 			// add tracking demand
-			sInv.addItemDemand(id, amountToLoad);
+//			sInv.addItemDemand(id, amountToLoad);
 		
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
@@ -374,7 +386,10 @@ public class LoadingController implements Serializable {
 			}	
 			
 			// Check remaining capacity in vehicle inventory.
-			double remainingMassCapacity = vInv.getRemainingGeneralCapacity(false);
+			double remainingMassCapacity = vehicle.getTotalCapacity() - vehicle.getStoredMass();
+			if (remainingMassCapacity < 0D) {
+				remainingMassCapacity = 0D;
+			}
 			double loadingMass = amountToLoad * p.getMassPerItem();
 			if (remainingMassCapacity < loadingMass) {
 				if (mandatory) {
@@ -391,9 +406,9 @@ public class LoadingController implements Serializable {
 			// Load item from settlement inventory to vehicle inventory.
 			try {
 				// Take resource from the settlement
-				sInv.retrieveItemResources(id, amountToLoad);
+				settlement.retrieveItemResource(id, amountToLoad);
 				// Store resource in the vehicle
-				vInv.storeItemResources(id, amountToLoad);
+				vehicle.storeItemResource(id, amountToLoad);
 			} catch (Exception e) {
 				logger.severe(vehicle, "Cannot transfer Item from settlement to vehicle: ", e);
 				return amountLoading;
@@ -430,21 +445,24 @@ public class LoadingController implements Serializable {
 	 */
 	private double loadEquipment(double amountLoading, Map<Integer, Integer> manifest, boolean mandatory) {
 
-		Inventory vInv = vehicle.getInventory();
-		Inventory sInv = settlement.getInventory();
+//		Inventory sInv = settlement.getInventory();
 
 		Set<Integer> eqmIds = new HashSet<>(manifest.keySet());
 		for(Integer equipmentType : eqmIds) {
 			int amountNeeded = manifest.get(equipmentType);
 			if (amountNeeded > 0) {
 				// How many available ?
-				List<Unit> units = new ArrayList<>(sInv.findAllUnitsOfClass(equipmentType));
-				for(Unit u : units) {
-					Equipment eq = (Equipment) u;
+				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
+				List<Equipment> list = new ArrayList<>(settlement.getEquipmentTypeList(eType));
+				for(Equipment eq : list) {
 					if (eq.isEmpty(true)) {
-						if (vInv.canStoreUnit(eq, false)) {
-							// Put this equipment into a vehicle
-							eq.transfer(sInv, vInv);
+						// Put this equipment into a vehicle
+						boolean done = eq.transfer(settlement, vehicle);
+						
+						if (!done) {
+                			logger.warning(vehicle, "Cannot store Equipment " + eq.getName());
+						}
+						else {
 							amountLoading -= eq.getMass();
 							amountNeeded--;
 							
@@ -452,9 +470,6 @@ public class LoadingController implements Serializable {
 							if ((amountNeeded == 0) || (amountLoading <= 0D)) {
 								break;
 							}
-						}
-						else {
-                			logger.warning(vehicle, "Cannot store Equipment " + eq.getName());
 						}
 					}
 				}

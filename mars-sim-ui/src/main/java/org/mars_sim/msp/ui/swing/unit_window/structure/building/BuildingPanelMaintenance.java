@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -52,6 +53,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -69,13 +71,13 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
-	/** The Inventory instance. */
-	private Inventory inv;
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
-
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	/** The wear condition label. */
-	private JLabel wearConditionLabel;
+	private WebLabel wearConditionLabel;
 	/** The last completed label. */
 	private JLabel lastCompletedLabel;
 	/** Label for parts. */
@@ -91,6 +93,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/** Parts for maintenance **/
 	private Map<Part, List<String>> standardMaintParts;
 
+	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	/**
 	 * Constructor.
@@ -104,29 +107,28 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		super(malfunctionable, desktop);
 
 		// Initialize data members.
-		inv = malfunctionable.getInventory();
 		this.malfunctionable = malfunctionable;
+		this.settlement = malfunctionable.getSettlement();
 		manager = malfunctionable.getMalfunctionManager();
 		standardMaintParts = getStandardMaintParts(malfunctionable);
 	
 		// Set the layout
 		setLayout(new BorderLayout(1, 1));
 		
-		WebPanel labelPanel = new WebPanel(new GridLayout(6, 1, 2, 2));
+		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 2, 1));
 		add(labelPanel, BorderLayout.NORTH);
 		
 		// Create maintenance label.
-		JLabel maintenanceLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
-		maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		JLabel titleLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(maintenanceLabel);
-
-		labelPanel.add(new JLabel(" "));
+		labelPanel.add(titleLabel);
 		
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
-		wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
+		wearConditionLabel = new WebLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 				JLabel.CENTER);
+//		wearConditionLabel.setPadding(5, 5, 5, 5);
 		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		labelPanel.add(wearConditionLabel);
 
@@ -179,7 +181,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		tablePanel.setBorder(title);
 		
 		// Create the parts table model
-		tableModel = new PartTableModel(inv);
+		tableModel = new PartTableModel();
 
 		// Create the parts table
 		table = new ZebraJTable(tableModel);
@@ -325,27 +327,23 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
 		private int size;
 		
-//		private Inventory inventory;
-
 		private List<Part> parts = new ArrayList<>();
 		private List<String> functions = new ArrayList<>();
 		private List<Integer> max = new ArrayList<>();
 		private List<Double> probability = new ArrayList<>();
 
-		
 		/**
 		 * hidden constructor.
 		 * 
 		 * @param inventory {@link Inventory}
 		 */
-		private PartTableModel(Inventory inventory) {
+		private PartTableModel() {
 			
 			size = standardMaintParts.size();
 			
 			for (Part p: standardMaintParts.keySet()) {
 
 				List<String> fList = standardMaintParts.get(p);
-				PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 				for (MaintenanceScope me: partConfig.getMaintenance(fList, p)) {
 					parts.add(p);
 					functions.add(me.getName());
@@ -415,7 +413,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		
 		Map<Part, List<String>> maint = new LinkedHashMap<>();
 	
-		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
 			Part part = maintenance.getPart();
 			List<String> list = null;
 			if (maint.containsKey(part)) {

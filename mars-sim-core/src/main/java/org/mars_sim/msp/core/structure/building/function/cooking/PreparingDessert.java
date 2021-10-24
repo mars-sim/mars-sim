@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PreparingDessert.java
- * @date 2021-08-29
+ * @date 2021-10-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -14,7 +14,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -83,7 +82,7 @@ public class PreparingDessert extends Function implements Serializable {
 	private static int NUM_DESSERTS = availableDesserts.length;
 
 	private static int waterID = ResourceUtil.waterID;
-	private static int greyWaterID = ResourceUtil.greyWaterID;
+//	private static int greyWaterID = ResourceUtil.greyWaterID;
 	private static int foodWasteID = ResourceUtil.foodWasteID;
 	public static int NaClOID = ResourceUtil.NaClOID;
 
@@ -149,10 +148,6 @@ public class PreparingDessert extends Function implements Serializable {
 		servingsOfDessert = new CopyOnWriteArrayList<>();
 
 		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
-	}
-
-	public Inventory getInventory() {
-		return building.getInventory();
 	}
 
 	public static String[] getArrayOfDesserts() {

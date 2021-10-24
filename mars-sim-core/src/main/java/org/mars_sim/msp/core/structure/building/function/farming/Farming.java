@@ -1,7 +1,7 @@
-/**
-* Mars Simulation Project
+/*
+ * Mars Simulation Project
  * Farming.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -81,7 +79,6 @@ public class Farming extends Function implements Serializable {
 	public static final double O2_RATE = .75;
 	public static final double MIN  = .00001D;// 0.0000000001;
 
-	
 //	 private static ItemResource LED_Item;
 //	 private static ItemResource HPS_Item;
 //	 private int numLEDInUse;
@@ -89,7 +86,7 @@ public class Farming extends Function implements Serializable {
 //	/** The number of crop types available. */
 //	private static int cropTypeNum;
 	/** The number of High Power Sodium Lamp needed. */
-	private int numHPSinNeed;
+//	private int numHPSinNeed;
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -325,15 +322,14 @@ public class Farming extends Function implements Serializable {
 
 		while (flag) {
 			chosen = cropConfig.getRandomCropType();
-//			System.out.println("1. chosen: " + chosen);
 			flag = hasTooMany(chosen.getName());
 		}
 
 		// if it's a mushroom, add increases the item demand of the mushroom containment
 		// kit before the crop is planted
-		if (chosen.getName().toLowerCase().contains(MUSHROOM))
-			building.getInventory().addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
-//		System.out.println("2. chosen: " + chosen);
+//		if (chosen.getName().toLowerCase().contains(MUSHROOM))
+			; // do nothing
+//			building.getInventory().addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
 		return chosen;
 	}
 
@@ -420,10 +416,10 @@ public class Farming extends Function implements Serializable {
 
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
-		// TODO: adjust how much old soil should be turned to crop waste
+		// Note: adjust how much old soil should be turned to crop waste
 		store(amount, ResourceUtil.cropWasteID, "Farming::provideNewSoil");
 
-		// TODO: adjust how much new soil is needed to replenish the soil bed
+		// Note: adjust how much new soil is needed to replenish the soil bed
 		if (amount > MIN)
 			retrieve(amount, ResourceUtil.soilID, true);
 
@@ -460,11 +456,8 @@ public class Farming extends Function implements Serializable {
 		boolean available = false;
 
 		try {
-
-			Inventory inv = building.getInventory();
-			
-			double amountStored = inv.getAmountResourceStored(tissueID, false);
-			inv.addAmountDemandTotalRequest(tissueID, amountStored);
+			double amountStored = building.getSettlement().getAmountResourceStored(tissueID);
+//			building.getSettlement().addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
 				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName + ".");
@@ -488,8 +481,8 @@ public class Farming extends Function implements Serializable {
 			}
 
 			if (available) {
-				inv.retrieveAmountResource(tissueID, requestedAmount);
-				inv.addAmountDemand(tissueID, requestedAmount);
+				building.getSettlement().retrieveAmountResource(tissueID, requestedAmount);
+//				inv.addAmountDemand(tissueID, requestedAmount);
 			}
 
 		} catch (Exception e) {
@@ -741,7 +734,7 @@ public class Farming extends Function implements Serializable {
 				// Reset cumulativeDailyPAR
 				for (Crop c : crops)
 					c.resetPAR();
-				// TODO: will need to limit the size of the other usage maps
+				// Note: will need to limit the size of the other usage maps
 			}
 	
 			// Determine the production level.
@@ -829,7 +822,7 @@ public class Farming extends Function implements Serializable {
 
 		powerRequired += getTotalLightingPower();
 
-		// TODO: add separate auxiliary power for subsystem, not just lighting power
+		// Note: add separate auxiliary power for subsystem, not just lighting power
 
 		return powerRequired;
 	}
@@ -1004,7 +997,7 @@ public class Farming extends Function implements Serializable {
 		boolean isDone = false;
 		int cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-		double amountAvailable = building.getInventory().getAmountResourceStored(tissueID, false);
+		double amountAvailable = building.getSettlement().getAmountResourceStored(tissueID);
 		double amountExtracted = 0;
 
 		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
@@ -1014,7 +1007,7 @@ public class Farming extends Function implements Serializable {
 			// TODO: ask trader to barter the tissue culture from other settlements
 			if (amountAvailable == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
-				double amount = building.getInventory().getAmountResourceStored(cropID, false);
+				double amount = building.getSettlement().getAmountResourceStored(cropID);
 				// TODO : Check for the health condition
 				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;// * RandomUtil.getRandomInt(5, 15);
 
