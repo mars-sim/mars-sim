@@ -8,10 +8,11 @@
 package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.Collection;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Container;
@@ -46,8 +47,12 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		if (source instanceof EquipmentOwner) {
 			equipment = ((EquipmentOwner)source).getEquipmentList();
 		}
+		else {
+			context.println("Sorry this Entity does not hold Equipment");
+			return false;
+		}
 		
-		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");
+		SortedMap<String,String> entries = new TreeMap<>();
 		for (Equipment e : equipment) {
 			String stored = null;
 			
@@ -82,9 +87,16 @@ public class EquipmentCommand extends AbstractUnitCommand {
 
 			
 			if (stored != null) {
-				buffer.appendTableRow(e.getName(), stored);
+				entries.put(e.getName(), stored);
 			}
 		}
+
+		// Output entrires which will be order via TreeMap
+		buffer.appendTableHeading("Equipment", 20, "Stored (kg)");
+		for(String name : entries.keySet()) {
+			buffer.appendTableRow(name, entries.get(name));			
+		}
+		
 		context.println(buffer.getOutput());
 		return true;
 	}

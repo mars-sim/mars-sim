@@ -234,7 +234,7 @@ extends TestCase {
 		
 		assertInsideSettllement("Initial Person", person, settlement);
 		
-		Rover vehicle = new Rover("Rover", VehicleType.EXPLORER_ROVER.name(), settlement);
+		Rover vehicle = new Rover("Rover", "cargo rover", settlement);
         unitManager.addUnit(vehicle);
 		
 		assertTrue("Transfer to vehicle", person.transfer(settlement, vehicle));
