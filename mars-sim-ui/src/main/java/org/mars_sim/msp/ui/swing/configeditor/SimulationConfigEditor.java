@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -157,6 +158,10 @@ public class SimulationConfigEditor {
 	
 	private InitialSettlementModel settlementTableModel;
 	private JTable settlementTable;
+	
+	private ArrivingSettlementModel arrivalTableModel;
+	private JTable arrivalTable;
+		
 	private JLabel errorLabel;
 	private JButton startButton;
 	private WebFrame<?> f;
@@ -178,6 +183,8 @@ public class SimulationConfigEditor {
 	private AuthorityEditor authorityEditor;
 
 	private UserConfigurableControl<Scenario> configControl;
+
+	private JTabbedPane tabPanel;
 
 	/**
 	 * Constructor
@@ -274,62 +281,21 @@ public class SimulationConfigEditor {
 			topPanel.add(gameModeLabel);
 		}
 		
+		tabPanel = new JTabbedPane();
+		f.add(tabPanel, BorderLayout.CENTER);
+		
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
-		f.add(settlementScrollPane, BorderLayout.CENTER);
-
-		// Create settlement table.
-		settlementTableModel = new InitialSettlementModel(settlementConfig, raFactory);
+		tabPanel.add("Initial Settlement", settlementScrollPane);
+		createSettlementTable(settlementScrollPane);
 		
-		settlementTable = new JTable(settlementTableModel);
-		settlementTable.setRowSelectionAllowed(true);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SETTLEMENT_COL).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SPONSOR_COL).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.PHASE_COL).setPreferredWidth(40);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SETTLER_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.BOT_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LAT_COL).setPreferredWidth(35);
-		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LON_COL).setPreferredWidth(35);
-		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		settlementTable.setBackground(java.awt.Color.WHITE);
-
-		TableStyle.setTableStyle(settlementTable);
-
-		settlementScrollPane.setViewportView(settlementTable);
-
-		// Create combo box for editing sponsor column in settlement table.
-		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.SPONSOR_COL);
-		WebComboBox sponsorCB = new WebComboBox();
-		sponsorCB.setModel(new UserConfigurableComboModel(raFactory, false));
-		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
+		// Second tab
+		JScrollPane arrivalScrolPane = new JScrollPane();
+		arrivalScrolPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
+		tabPanel.add("Arriving Settlements", arrivalScrolPane);
+		createArrivalTable(arrivalScrolPane);
 		
-		// Create combo box for editing crew column in settlement table.
-		// Use a custom model to inherit new Crews
-		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL);
-		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
-		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
-		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
-		
-		// Create combo box for editing template column in settlement table.
-		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.PHASE_COL);
-		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
-		for (SettlementTemplate st : settlementConfig.getSettlementTemplates()) {
-			templateCB.addItem(st.getTemplateName());
-		}
-		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
-		
-		
-		// Align content to center of cell
-		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-		TableColumn column = null;
-		for (int ii = 0; ii < settlementTableModel.getColumnCount(); ii++) {
-			column = settlementTable.getColumnModel().getColumn(ii);
-			column.setCellRenderer(defaultTableCellRenderer);
-		}
-
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
 		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
@@ -343,7 +309,7 @@ public class SimulationConfigEditor {
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				addDefaultNewSettlement();
+				addNewRows();
 			}
 		});
 		configurationButtonInnerTopPanel.add(addButton);
@@ -369,7 +335,12 @@ public class SimulationConfigEditor {
 		
 		// Monitor table models for errors
 		settlementTableModel.addTableModelListener(new TableModelListener() {
-			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				checkModelErrors();
+			}
+		});
+		arrivalTableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				checkModelErrors();
@@ -383,6 +354,7 @@ public class SimulationConfigEditor {
 			protected void displayItem(Scenario newDisplay) {
 				clearError();
 				settlementTableModel.loadDefaultSettlements(newDisplay);
+				arrivalTableModel.loadDefaultSettlements(newDisplay);
 			}
 
 			@Override
@@ -487,43 +459,156 @@ public class SimulationConfigEditor {
 		JRootPane rootPane = SwingUtilities.getRootPane(startButton); 
 		rootPane.setDefaultButton(startButton);
 	}
+
+	private void createSettlementTable(JScrollPane settlementScrollPane) {
+		// Create settlement table.
+		settlementTableModel = new InitialSettlementModel(settlementConfig, raFactory);
+		
+		settlementTable = new JTable(settlementTableModel);
+		settlementTable.setRowSelectionAllowed(true);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SETTLEMENT_COL).setPreferredWidth(80);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SPONSOR_COL).setPreferredWidth(80);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.PHASE_COL).setPreferredWidth(40);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SETTLER_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.BOT_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LAT_COL).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LON_COL).setPreferredWidth(35);
+		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		settlementTable.setBackground(java.awt.Color.WHITE);
+
+		TableStyle.setTableStyle(settlementTable);
+
+		settlementScrollPane.setViewportView(settlementTable);
+
+		// Create combo box for editing sponsor column in settlement table.
+		setSponsorEditor(settlementTable, InitialSettlementModel.SPONSOR_COL);
+		
+		// Create combo box for editing crew column in settlement table.
+		// Use a custom model to inherit new Crews
+		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL);
+		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
+		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
+		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
+		
+		// Create combo box for editing template column in settlement table.
+		setTemplateEditor(settlementTable, InitialSettlementModel.PHASE_COL);		
+		
+		// Align content to center of cell
+		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+		TableColumn column = null;
+		for (int ii = 0; ii < settlementTableModel.getColumnCount(); ii++) {
+			column = settlementTable.getColumnModel().getColumn(ii);
+			column.setCellRenderer(defaultTableCellRenderer);
+		}
+	}
 	
+	private void setTemplateEditor(JTable table, int column) {
+		TableColumn templateColumn = table.getColumnModel().getColumn(column);
+		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
+		for (SettlementTemplate st : settlementConfig.getSettlementTemplates()) {
+			templateCB.addItem(st.getTemplateName());
+		}
+		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
+	}
+
+	private void createArrivalTable(JScrollPane parentScrollPane) {
+		// Create  table.
+		arrivalTableModel = new ArrivingSettlementModel(settlementConfig, raFactory);
+		
+		arrivalTable = new JTable(arrivalTableModel);
+		arrivalTable.setRowSelectionAllowed(true);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.SPONSOR_COL).setPreferredWidth(80);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.TEMPLATE_COL).setPreferredWidth(40);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.SETTLER_COL).setPreferredWidth(30);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.ARRIVAL_COL).setPreferredWidth(20);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.BOT_COL).setPreferredWidth(30);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.LAT_COL).setPreferredWidth(35);
+		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.LON_COL).setPreferredWidth(35);
+		arrivalTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		arrivalTable.setBackground(java.awt.Color.WHITE);
+
+		TableStyle.setTableStyle(arrivalTable);
+
+		parentScrollPane.setViewportView(arrivalTable);
+
+		// Create combo box for editing sponsor column in settlement table.
+		setSponsorEditor(arrivalTable, ArrivingSettlementModel.SPONSOR_COL);
+		
+		// Create combo box for editing template column in settlement table.
+		setTemplateEditor(arrivalTable, ArrivingSettlementModel.TEMPLATE_COL);
+		
+		// Align content to center of cell
+		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+		TableColumn column = null;
+		for (int ii = 0; ii < arrivalTableModel.getColumnCount(); ii++) {
+			column = arrivalTable.getColumnModel().getColumn(ii);
+			column.setCellRenderer(defaultTableCellRenderer);
+		}
+	}
+	
+	private void setSponsorEditor(JTable table, int column) {
+		TableColumn sponsorColumn = table.getColumnModel().getColumn(column);
+		WebComboBox sponsorCB = new WebComboBox();
+		sponsorCB.setModel(new UserConfigurableComboModel(raFactory, false));
+		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
+	}
+
 	/**
 	 * Check the table models for errors
 	 */
 	private void checkModelErrors() {
-		String settlementErrors = settlementTableModel.getErrorMessage();
-		if (settlementErrors != null) {
-			if (!hasError) {
-				hasError = true;
-				errorLabel.setText(settlementErrors);
-				startButton.setEnabled(false);
-				configControl.allowSaving(false);
-			}
+		String errorMessage  = settlementTableModel.getErrorMessage();
+		if (errorMessage == null) {
+			errorMessage = arrivalTableModel.getErrorMessage();
+		}
+		
+		if (!hasError && (errorMessage != null)) {
+			hasError = true;
+			errorLabel.setText(errorMessage);
+			startButton.setEnabled(false);
+			configControl.allowSaving(false);
 		}
 		else {
 			clearError();
 		}
 	}
 	
+	private boolean isSettlementSelected() {
+		return tabPanel.getSelectedIndex() == 0;
+	}
+	
 	/**
 	 * Adds a new settlement with default values.
 	 */
-	private void addDefaultNewSettlement() {
+	private void addNewRows() {
 		// Get any known Reporting Authority
 		String sponsor = raFactory.getItemNames().iterator().next();
 		String template = determineNewSettlementTemplate();
 		Coordinates location = determineNewSettlementLocation();
 
-		settlementTableModel.addPartialSettlement(sponsor, template, location);
+		if (isSettlementSelected()) {
+			settlementTableModel.addPartialSettlement(sponsor, template, location);
+		}
+		else {
+			arrivalTableModel.addPartialArrival(sponsor, template, location);
+		}
 	}
 
 	/**
 	 * Removes the settlements selected on the table.
 	 */
 	private void removeSelectedSettlements() {
-		int[] rows = settlementTable.getSelectedRows();
-		settlementTableModel.removeSettlements(rows);
+		if (isSettlementSelected()) {
+			int[] rows = settlementTable.getSelectedRows();
+			settlementTableModel.removeSettlements(rows);
+		}
+		else {
+			int[] rows = arrivalTable.getSelectedRows();
+			arrivalTableModel.removeArrival(rows);			
+		}
 	}
 
 	/**
@@ -562,7 +647,7 @@ public class SimulationConfigEditor {
 	 */
 	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		List<ArrivingSettlement> arrivals = null;
+		List<ArrivingSettlement> arrivals = arrivalTableModel.getArrivals();
 		return new Scenario(name, description, is, arrivals, false);
 	}
 

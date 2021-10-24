@@ -75,6 +75,27 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			initialSettlementList.addContent(settlementElement);
 		}
 		root.addContent(initialSettlementList);
+		
+		// Add the initial settlements
+		Element arrivalList = new Element(ARRIVING_SETTLEMENT_LIST);
+		for (ArrivingSettlement arrival : item.getArrivals()) {
+			Element aElement = new Element(ARRIVING_SETTLEMENT);
+			saveOptionalAttribute(aElement, NAME_ATTR, arrival.getSettlementName());
+			saveOptionalAttribute(aElement, TEMPLATE_ATTR, arrival.getTemplate());
+			saveOptionalAttribute(aElement, PERSONS_ATTR, Integer.toString(arrival.getPopulationNum()));
+			saveOptionalAttribute(aElement, ROBOTS_ATTR, Integer.toString(arrival.getNumOfRobots()));
+			saveOptionalAttribute(aElement, SPONSOR_ATTR, arrival.getSponsorCode());
+			saveOptionalAttribute(aElement, ARRIVAL_ATTR, Integer.toString(arrival.getArrivalSols()));
+
+			if (arrival.getLandingLocation() != null) {
+				Element locationElement = createLocationElement(arrival.getLandingLocation());
+				aElement.addContent(locationElement);
+			}
+			
+			arrivalList.addContent(aElement);
+		}		
+		root.addContent(arrivalList);
+		
 		return doc;
 	}
 

@@ -46,7 +46,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 	private String sponsorCode;
 
-	private double arrivalSols;
+	private int arrivalSols;
 	
 	/**
 	 * Constructor.
@@ -179,6 +179,14 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.launchDate = launchDate;
 	}
 
+	/**
+	 * The original arrival delay
+	 * @return
+	 */
+	public int getArrivalSols() {
+		return arrivalSols;
+	}
+	
 	/**
 	 * Gets the arrival date of the settlement.
 	 * 
