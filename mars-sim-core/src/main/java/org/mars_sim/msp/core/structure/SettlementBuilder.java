@@ -257,6 +257,8 @@ public final class SettlementBuilder {
 						false);
 				unitManager.addUnit(equipment);
 				settlement.addEquipment(equipment);
+				// Set the container unit
+				equipment.setContainerUnit(settlement);
 			}
 		}
 	}
@@ -295,6 +297,8 @@ public final class SettlementBuilder {
 			unitManager.addUnit(robot);
 			
 			settlement.addOwnedRobot(robot);
+			// Set the container unit
+			robot.setContainerUnit(settlement);
 		}
 	}
 
@@ -372,6 +376,8 @@ public final class SettlementBuilder {
 			unitManager.addUnit(person);
 			
 			settlement.addACitizen(person);
+			// Set the container unit
+			person.setContainerUnit(settlement);
 			
 			relationshipManager.addInitialSettler(person, settlement);
 
@@ -476,7 +482,9 @@ public final class SettlementBuilder {
 				unitManager.addUnit(person);
 				
 				settlement.addACitizen(person);
-		
+				// Set the container unit
+				person.setContainerUnit(settlement);
+				
 				// Set the person as a preconfigured crew member
 				Map<String, Integer> relMap = m.getRelationshipMap();
 				if (relMap != null) {
@@ -605,6 +613,8 @@ public final class SettlementBuilder {
 					unitManager.addUnit(robot);
 					
 					settlement.addOwnedRobot(robot);
+					// Set the container unit
+					robot.setContainerUnit(settlement);
 				}
 			}
 		}

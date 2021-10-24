@@ -59,7 +59,8 @@ extends TestCase {
 		
 		person = new Person("Jim Loader", settlement);
 		settlement.addACitizen(person);
-		unitManager.addUnit(person);
+		// Set the container unit
+		person.setContainerUnit(settlement);
 		
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);

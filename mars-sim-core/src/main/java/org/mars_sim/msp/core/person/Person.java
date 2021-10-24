@@ -73,6 +73,7 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Person class represents a person on Mars. It keeps track of everything
@@ -246,7 +247,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		
 		// Add this person as a citizen
 		settlement.addACitizen(this);
-
+		// Set the container unit
+		setContainerUnit(settlement);
+		
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		// Create PersonAttributeManager instance
@@ -285,6 +288,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		// Add this person as a citizen
 		settlement.addACitizen(this);
+		// Set the container unit
+		setContainerUnit(settlement);
 	}
 
 	/*
@@ -1780,7 +1785,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
-			e.setContainerUnit(this);
+//			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2052,6 +2057,77 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return null;
 	}
 	
+	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+
+		// Check if the origin is a vehicle
+		if (origin.getUnitType() == UnitType.VEHICLE) {
+			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+				transferred = ((Crewable)origin).removePerson(this);
+			}
+			else {
+				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
+			}
+		}
+		else if (origin.getUnitType() == UnitType.PLANET) {
+			transferred = ((MarsSurface)origin).removePerson(this);
+		}
+		else if (origin.getUnitType() == UnitType.BUILDING) {
+			// Retrieve this person from the settlement
+			transferred = ((Building)origin).getSettlement().removePeopleWithin(this);
+		}
+		// Note: the origin is a settlement
+		else {
+			// Retrieve this person from the settlement
+			transferred = ((Settlement)origin).removePeopleWithin(this);
+		}	
+		
+		if (transferred) {
+			// Check if the destination is a vehicle
+			if (destination.getUnitType() == UnitType.VEHICLE) {
+				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+					transferred = ((Crewable)destination).addPerson(this);
+				}
+				else {
+					logger.warning(this + "Not possible to be stored into " + origin + ".");
+				}
+			}
+			else if (destination.getUnitType() == UnitType.PLANET) {
+				transferred = ((MarsSurface)destination).addPerson(this);
+			}
+			// Note: the destination is a settlement
+			else {
+				transferred = ((Settlement)destination).addPeopleWithin(this);
+			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
+			}
+			else {
+				// Set the new container unit (which will internally set the container unit id)
+				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+			}
+		}
+		else {
+			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			// NOTE: need to revert back the retrieval action 
+		}
+		
+		return transferred;
+	}
+	
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.PERSON;
@@ -2085,8 +2161,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		condition.reinit();
 	}
 
-	// Look to refactor and use the base UNit equals & hashCode
-	
+	/**
+	 * Compares if an object is the same as this equipment 
+	 * 
+	 * @param obj
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -2100,6 +2180,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * 
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
 		// Hash must be constant and not depend upon changing attributes
 		return getIdentifier() % 64;

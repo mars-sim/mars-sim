@@ -224,9 +224,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			// Set the unit's location coordinates
 			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
-//			if (inventory != null) {
-			setCoordinates(location);
-//			}		
+			setCoordinates(location);	
 		}
 		
 		if (diagnosticFile != null) {
@@ -834,124 +832,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		boolean transferred = false;
-		
-		// Check if this unit is a person 
-		if (getUnitType() == UnitType.PERSON) {
-			// Check if the origin is a vehicle
-			if (origin.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-					transferred = ((Crewable)origin).removePerson((Person)this);
-				}
-				else {
-					logger.warning(this + "Not possible to be retrieved from " + origin + ".");
-				}
-			}
-			else if (origin.getUnitType() == UnitType.PLANET) {
-				transferred = ((MarsSurface)origin).removePerson((Person)this);
-			}
-			else if (origin.getUnitType() == UnitType.BUILDING) {
-				// Retrieve this person from the settlement
-				transferred = ((Building)origin).getSettlement().removePeopleWithin((Person)this);
-//				transferred = origin.getInventory().retrieveUnit(this, true);
-			}
-			// Note: the origin is a settlement
-			else {
-				// Retrieve this person from the settlement
-				transferred = ((Settlement)origin).removePeopleWithin((Person)this);
-//				transferred = origin.getInventory().retrieveUnit(this, true);
-			}
-		}
-		// Check if this unit is a vehicle
-		else if (getUnitType() == UnitType.VEHICLE) {
-			if (origin.getUnitType() == UnitType.PLANET) {
-				transferred = ((MarsSurface)origin).removeVehicle((Vehicle)this);
-			}
-			else {
-				transferred = ((Settlement)origin).removeParkedVehicle((Vehicle)this);
-			}
-		}
-		// Check if this unit is a equipment
-		else if (getUnitType() == UnitType.EQUIPMENT) {		
-			if (origin.getUnitType() == UnitType.PERSON
-				|| origin.getUnitType() == UnitType.VEHICLE) {
-				transferred = ((EquipmentOwner)origin).removeEquipment((Equipment)this);
-			}
-			else if (origin.getUnitType() == UnitType.PLANET) {
-				// do nothing. won't track equipment on the mars surface
-				transferred = true;
-			}
-			// Note: the origin is a settlement
-			else {
-				transferred = ((Settlement)origin).removeEquipment((Equipment)this);
-			}
-		}
-		
-		if (transferred) {
-			// Check if this unit is a person 
-			if (getUnitType() == UnitType.PERSON) {
-				// Check if the destination is a vehicle
-				if (destination.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-						transferred = ((Crewable)destination).addPerson((Person)this);
-					}
-					else {
-						logger.warning(this + "Not possible to be stored into " + origin + ".");
-					}
-				}
-				else if (destination.getUnitType() == UnitType.PLANET) {
-					transferred = ((MarsSurface)destination).addPerson((Person)this);
-				}
-				// Note: the destination is a settlement
-				else {
-					transferred = ((Settlement)destination).addPeopleWithin((Person)this);
-//					transferred = ((Settlement)destination).addPerson((Person)this);
-				}
-			}
-			// Check if this unit is a vehicle
-			else if (getUnitType() == UnitType.VEHICLE) {
-				if (destination.getUnitType() == UnitType.PLANET) {
-					transferred = ((MarsSurface)destination).addVehicle((Vehicle)this);
-				}
-				else {
-					transferred = ((Settlement)destination).addParkedVehicle((Vehicle)this);
-				}
-			}
-			// Check if this unit is a equipment
-			else if (getUnitType() == UnitType.EQUIPMENT) {
-				if (destination.getUnitType() == UnitType.PERSON
-					|| destination.getUnitType() == UnitType.VEHICLE) {
-					transferred = ((EquipmentOwner)destination).addEquipment((Equipment)this);
-				}
-				else if (destination.getUnitType() == UnitType.PLANET) {
-					// do nothing. won't track equipment on the mars surface
-					transferred = true;
-				}
-				// Note: the destination is a settlement
-				else {
-					transferred = ((Settlement)destination).addEquipment((Equipment)this);
-				}
-			}
-			
-			if (!transferred) {
-				logger.warning(this + " cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action 
-			}
-			else {
-				// Set the new container unit (which will internally set the container unit id)
-				setContainerUnit(destination);
-				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
-			}
-		}
-		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
-			// NOTE: need to revert back the retrieval action 
-		}
-		
-		return transferred;
+		return false;
 	}
 
 	/**

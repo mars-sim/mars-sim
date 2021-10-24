@@ -63,7 +63,9 @@ public final class EquipmentFactory {
 		
 		// Add this equipment as being owned by this settlement
 		settlement.addEquipment(newEqm);
-
+		// Set the container unit
+		newEqm.setContainerUnit(settlement);
+		
 		return newEqm;
 	}
 	

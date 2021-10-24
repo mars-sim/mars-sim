@@ -484,6 +484,8 @@ public class Resupply implements Serializable, Transportable {
 				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
 				settlement.addEquipment(equipment);
+				// Set the container unit
+				equipment.setContainerUnit(settlement);
 			}
 		}
 
@@ -550,6 +552,8 @@ public class Resupply implements Serializable, Transportable {
 			unitManager.addUnit(immigrant);
 			
 			settlement.addACitizen(immigrant);
+			// Set the container unit
+			immigrant.setContainerUnit(settlement);
 			
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);

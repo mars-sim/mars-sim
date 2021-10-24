@@ -389,6 +389,8 @@ public class FoodProduction extends Function implements Serializable {
 							unitManager.addUnit(equipment);
 							// Add this equipment as being owned by this settlement
 							settlement.addEquipment(equipment);
+							// Set the container unit
+							equipment.setContainerUnit(settlement);
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}

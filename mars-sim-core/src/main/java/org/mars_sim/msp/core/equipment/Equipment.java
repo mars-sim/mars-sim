@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MicroInventory;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -28,7 +29,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
@@ -542,10 +545,73 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 	
 	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+			
+		if (origin.getUnitType() == UnitType.PERSON
+			|| origin.getUnitType() == UnitType.ROBOT
+			|| origin.getUnitType() == UnitType.VEHICLE) {
+			transferred = ((EquipmentOwner)origin).removeEquipment(this);
+		}
+		else if (origin.getUnitType() == UnitType.PLANET) {
+			// do nothing. won't track equipment on the mars surface
+			transferred = true;
+		}
+		// Note: the origin is a settlement
+		else {
+			transferred = ((Settlement)origin).removeEquipment(this);
+		}
+		
+		if (transferred) {
+			
+			if (destination.getUnitType() == UnitType.PERSON
+				|| destination.getUnitType() == UnitType.ROBOT
+				|| destination.getUnitType() == UnitType.VEHICLE
+				) {
+				transferred = ((EquipmentOwner)destination).addEquipment(this);
+			}
+			else if (destination.getUnitType() == UnitType.PLANET) {
+				// do nothing. won't track equipment on the mars surface
+				transferred = true;
+			}
+			// Note: the destination is a settlement
+			else {
+				transferred = ((Settlement)destination).addEquipment(this);
+			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
+			}
+			else {
+				// Set the new container unit (which will internally set the container unit id)
+				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+			}
+		}
+		else {
+			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			// NOTE: need to revert back the retrieval action 
+		}
+		
+		return transferred;
+	}
+	
+	/**
 	 * Compares if an object is the same as this equipment 
 	 * 
 	 * @param obj
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -559,6 +625,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * 
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
 		int hashCode = getNickName().hashCode();
 		hashCode *= getEquipmentType().hashCode() ;

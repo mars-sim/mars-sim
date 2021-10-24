@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -1772,7 +1773,7 @@ public abstract class Vehicle extends Unit
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
-			e.setContainerUnit(this);
+//			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2099,6 +2100,57 @@ public abstract class Vehicle extends Unit
 		return null;
 	}
 	
+	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+		
+		if (origin.getUnitType() == UnitType.PLANET) {
+			transferred = ((MarsSurface)origin).removeVehicle(this);
+		}
+		else {
+			transferred = ((Settlement)origin).removeParkedVehicle(this);
+		}
+
+		if (transferred) {
+			if (destination.getUnitType() == UnitType.PLANET) {
+				transferred = ((MarsSurface)destination).addVehicle(this);
+			}
+			else {
+				transferred = ((Settlement)destination).addParkedVehicle(this);
+			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
+			}
+			else {
+				// Set the new container unit (which will internally set the container unit id)
+				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+			}
+		}
+		else {
+			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			// NOTE: need to revert back the retrieval action 
+		}
+		
+		return transferred;
+	}
+	
+	/**
+	 * Compares if an object is the same as this unit 
+	 * 
+	 * @param obj
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

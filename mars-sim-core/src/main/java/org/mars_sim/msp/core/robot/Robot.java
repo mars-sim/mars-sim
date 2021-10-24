@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
+import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -57,6 +58,7 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The robot class represents operating a robot on Mars.
@@ -152,7 +154,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	
 		// Add this robot to be owned by the settlement
 		settlement.addOwnedRobot(this);
-
+		// Set the container unit
+		setContainerUnit(settlement);
+		
 		// Initialize data members.
 		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
@@ -1250,7 +1254,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
-			e.setContainerUnit(this);
+//			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -1502,6 +1506,78 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return LocationStateType.MARS_SURFACE;
 		
 		return null;
+	}
+	
+	/**
+	 * Transfer the unit from one owner to another owner
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	@Override
+	public boolean transfer(Unit origin, Unit destination) {
+		boolean transferred = false;
+		// Will activate the block of codes below once robots become mobile again
+		
+//		// Check if the origin is a vehicle
+//		if (origin.getUnitType() == UnitType.VEHICLE) {
+//			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+//				transferred = ((Crewable)origin).removeRobot(this);
+//			}
+//			else {
+//				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
+//			}
+//		}
+//		else if (origin.getUnitType() == UnitType.PLANET) {
+//			transferred = ((MarsSurface)origin).removeRobot(this);
+//		}
+//		else if (origin.getUnitType() == UnitType.BUILDING) {
+//			// Retrieve this person from the settlement
+//			transferred = ((Building)origin).getSettlement().removeRobotWithin(this);
+//		}
+//		// Note: the origin is a settlement
+//		else {
+//			// Retrieve this person from the settlement
+//			transferred = ((Settlement)origin).removeRobotWithin(this);
+//		}	
+//		
+//		if (transferred) {
+//			// Check if the destination is a vehicle
+//			if (destination.getUnitType() == UnitType.VEHICLE) {
+//				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+//					transferred = ((Crewable)destination).addRobot(this);
+//				}
+//				else {
+//					logger.warning(this + "Not possible to be stored into " + origin + ".");
+//				}
+//			}
+//			else if (destination.getUnitType() == UnitType.PLANET) {
+//				transferred = ((MarsSurface)destination).addRobot(this);
+//			}
+//			// Note: the destination is a settlement
+//			else {
+//				transferred = ((Settlement)destination).addRobotWithin(this);
+//			}
+//			
+//			if (!transferred) {
+//				logger.warning(this + " cannot be stored into " + destination + ".");
+//				// NOTE: need to revert back the storage action 
+//			}
+//			else {
+//				// Set the new container unit (which will internally set the container unit id)
+//				setContainerUnit(destination);
+//				// Fire the unit event type
+//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+//				// Fire the unit event type
+//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+//			}
+//		}
+//		else {
+//			logger.warning(this + " cannot be retrieved from " + origin + ".");
+//			// NOTE: need to revert back the retrieval action 
+//		}
+		
+		return transferred;
 	}
 	
 	/**
