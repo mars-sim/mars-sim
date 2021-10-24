@@ -54,7 +54,9 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     private static final String ICON_IMAGE = "/icons/landerhab16.png";
 	private static final String MARS_SIM =  
 			  "      Mars Simulation Project\n"
-    		+ "                  v3.2.0\n"
+    		+ "                   "
+			+ Simulation.VERSION
+			+ "\n"
     		+ "                   2021";
 	
 	private static final int DEFAULT_WIDTH = 1024;
