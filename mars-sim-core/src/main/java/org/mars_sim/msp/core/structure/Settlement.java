@@ -3660,6 +3660,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return this;
 	}
 	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
 	public int getSolCache() {
 		return solCache;
 	}

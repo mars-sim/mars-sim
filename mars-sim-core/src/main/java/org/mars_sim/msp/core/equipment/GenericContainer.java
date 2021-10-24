@@ -221,4 +221,14 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public Unit getHolder() {
 		return this;
 	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
 }

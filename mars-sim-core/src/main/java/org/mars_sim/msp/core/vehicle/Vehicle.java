@@ -353,7 +353,7 @@ public abstract class Vehicle extends Unit
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 		
 		// Set the capacities for each supported resource
-		eqmInventory.setResourceCapacities(capacities);
+		eqmInventory.setResourceCapacityMap(capacities);
 		
 		if (this instanceof Rover) {
 		
@@ -1653,6 +1653,16 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public Unit getHolder() {
+		return this;
+	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
 		return this;
 	}
 	

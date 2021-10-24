@@ -1077,13 +1077,20 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			
 			if (!transferred) {
 				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
 			}
 			else {
+				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		else {
 			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			// NOTE: need to revert back the retrieval action 
 		}
 		
 		return transferred;

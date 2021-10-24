@@ -58,6 +58,16 @@ public class MarsSurface extends Unit implements Serializable {
 		return UnitType.PLANET;
 	}
 	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
 	@Override
 	public Settlement getSettlement() {
 		return null;

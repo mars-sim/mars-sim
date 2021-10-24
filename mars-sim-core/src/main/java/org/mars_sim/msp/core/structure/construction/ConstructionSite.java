@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -546,25 +547,13 @@ implements Serializable, LocalBoundedObject {
 		return UnitType.CONSTRUCTION;
 	}
 	
-//	/**
-//	 * Finds the string name of the amount resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findAmountResourceName(int resource) {
-//		return ResourceUtil.findAmountResourceName(resource);
-//	}
-//	
-//	/**
-//	 * Finds the string name of the item resource
-//	 * 
-//	 * @param resource
-//	 * @return resource string name
-//	 */
-//	@Override
-//	public String findItemResourceName(int resource) {
-//		return ItemResourceUtil.findItemResourceName(resource);
-//	}
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
 }

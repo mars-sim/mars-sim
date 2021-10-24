@@ -1472,6 +1472,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return this;
 	}
 
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
 	
 	public boolean equals(Object obj) {
 		return super.equals(obj);
@@ -1500,6 +1509,4 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		skillManager = null;
 		birthTimeStamp = null;
 	}
-
-
 }

@@ -66,16 +66,18 @@ public class Storage extends Function implements Serializable {
 		// Set the capacities for each supported resource
 		Settlement owner = building.getSettlement();
 		EquipmentInventory inv = owner.getEquipmentInventory();
-		inv.setResourceCapacity(resourceCapacities, true);
+		// Set capacity of resources for this building.
+		inv.setResourceCapacityMap(resourceCapacities, true);
 		
 		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
+		// Add stock or general or cargo capacity to this building.
 		inv.addCargoCapacity(stockCapacity);
 
-		// Obtains initial resources map for this building.
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
+		// Add capacity to each initial resource for this building.
+//		inv.setResourceCapacityMap(initialResources, true);
 		
-		// Obtains initial resources set for this building.		
-		
+		// Add initial resources to this building.		
 		for (Entry<Integer, Double> i : initialResources.entrySet()) {
 			double initialAmount = i.getValue();
 			int resourceId = i.getKey();
@@ -84,7 +86,7 @@ public class Storage extends Function implements Serializable {
 			double excess = inv.storeAmountResource(resourceId, initialAmount);
 			if (excess > 0D) {
 				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
-				logger.warning(building, "Can not store excess (" + excess + "kg) of the initial resource " + resourceName);
+				logger.warning(building, "Cannot store " + excess + " kg of " + resourceName + " as an initial resource.");
 			}
 		}
 	}
@@ -296,7 +298,7 @@ public class Storage extends Function implements Serializable {
 
 			} catch (Exception e) {
 				logger.log(rh.getHolder(), Level.SEVERE, 10_000, 
-						"Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
+						"Issues with storeAmountResource on " + ResourceUtil.findAmountResourceName(id) + " : ", e);
 			}
 		} else {
 			result = false;

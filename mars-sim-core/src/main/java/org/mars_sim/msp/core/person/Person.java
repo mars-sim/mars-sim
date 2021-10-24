@@ -2006,6 +2006,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
+	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
 	public void reinit() {

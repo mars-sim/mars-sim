@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -163,5 +164,15 @@ public class BuildingKit extends Equipment
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
+	}
+	
+	/**
+	 * What is this entity 
+	 * 
+	 * @return
+	 */
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 }

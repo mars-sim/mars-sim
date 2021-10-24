@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentInventory.java
- * @date 2021-10-20
+ * @date 2021-10-23
  * @author Barry Evans
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -190,8 +191,9 @@ public class EquipmentInventory
 
 		if (shortfall > 0D) {
 			for (Equipment e: equipmentList) {
-				if (e instanceof ResourceHolder)
-				shortfall = ((ResourceHolder) e).retrieveAmountResource(resource, shortfall);
+//				if (e instanceof ResourceHolder)
+//				shortfall = ((ResourceHolder) e).retrieveAmountResource(resource, shortfall);
+				shortfall = e.retrieveAmountResource(resource, shortfall);
 				if (shortfall == 0D) {
 					return 0D;
 				}
@@ -292,11 +294,14 @@ public class EquipmentInventory
 	@Override
 	public double getAmountResourceStored(int resource) {
 		double result = microInventory.getAmountResourceStored(resource);
-
-		for (Equipment e: equipmentList) {
-			if (e instanceof ResourceHolder) {
-				result += ((ResourceHolder) e).getAmountResourceStored(resource);
-			}
+		
+		Iterator<Equipment> i = equipmentList.iterator(); // new HashSet<Equipment>(equipmentList).iterator();
+		while (i.hasNext()) {
+			result += i.next().getAmountResourceStored(resource);
+//			Equipment e = i.next();
+//			if (e instanceof ResourceHolder) {
+//				result += e.getAmountResourceStored(resource);
+//			}
 		}
 
 		return result;
@@ -437,10 +442,11 @@ public class EquipmentInventory
 	
 	/**
 	 * Set the resource capacities.
+	 * 
 	 * TODO should be keyed on resourceID not string.
 	 * @param capacities
 	 */
-	public void setResourceCapacities(Map<String, Double> capacities) {
+	public void setResourceCapacityMap(Map<String, Double> capacities) {
 		for (Entry<String, Double> v : capacities.entrySet()) {
 			AmountResource foundResource = ResourceUtil.findAmountResource(v.getKey());
 			if (foundResource != null) {
@@ -452,9 +458,9 @@ public class EquipmentInventory
 	/**
 	 * Set the resource capacities.
 	 * @param capacities
-	 * @param add Should these be added to the current values
+	 * @param add Should these be added to the current values (or else it should be set to the current value)
 	 */
-	public void setResourceCapacity(Map<Integer, Double> capacities, boolean add) {
+	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean add) {
 		for (Entry<Integer, Double> v : capacities.entrySet()) {
 			Integer foundResource = v.getKey();
 			if (add) {

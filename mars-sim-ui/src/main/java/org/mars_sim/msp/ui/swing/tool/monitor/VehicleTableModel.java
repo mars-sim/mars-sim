@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-23
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -148,14 +149,14 @@ public class VehicleTableModel extends UnitTableModel {
 	}
 
 
-	private static int foodID = ResourceUtil.foodID;
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int methaneID = ResourceUtil.methaneID;
-	private static int rockSamplesID = ResourceUtil.rockSamplesID;
-	private static int iceID = ResourceUtil.iceID;
+	private final static int foodID = ResourceUtil.foodID;
+	private final static int oxygenID = ResourceUtil.oxygenID;
+	private final static int waterID = ResourceUtil.waterID;
+	private final static int methaneID = ResourceUtil.methaneID;
+	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
+	private final static int iceID = ResourceUtil.iceID;
 
-	private static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	private final static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -431,7 +432,7 @@ public class VehicleTableModel extends UnitTableModel {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		
-		if (unit instanceof Vehicle) {
+		if (unit.getUnitType() == UnitType.VEHICLE) {
 			Vehicle vehicle = (Vehicle) unit;
 			int unitIndex = -1;
 			Object source = event.getTarget();
@@ -452,7 +453,7 @@ public class VehicleTableModel extends UnitTableModel {
 				else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
 				else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
 						eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-					if (source instanceof Person) columnNum = CREW;
+					if (((Unit)source).getUnitType() == UnitType.PERSON) columnNum = CREW;
 //					else if (source instanceof Robot) columnNum = BOTS;
 				}
 				else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
@@ -469,6 +470,8 @@ public class VehicleTableModel extends UnitTableModel {
 						
 					else if (source instanceof Integer) {
 						target = (Integer)source;
+//						if (target < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+//							; // continue
 						if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
 							// if it's an item resource, quit
 							return;
@@ -630,7 +633,7 @@ public class VehicleTableModel extends UnitTableModel {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
 			
-			if (unit instanceof Vehicle) {
+			if (unit.getUnitType() == UnitType.VEHICLE) {
 				boolean change = false;
 				if (mode == GameMode.COMMAND) {
 					if (unit.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
