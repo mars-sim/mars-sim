@@ -49,7 +49,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
 
         double result = 0D;
         
-        if (person.isInside()) {
+        if (person.isInSettlement()) {
 
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))

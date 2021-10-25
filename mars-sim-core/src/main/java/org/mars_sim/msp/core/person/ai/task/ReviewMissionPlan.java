@@ -101,7 +101,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 //		logger.info(person + " was reviewing mission plan.");
 				
-		if (person.isInside()) {
+		if (person.isInSettlement()) {
 
 			List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 	        
