@@ -93,7 +93,7 @@
 			</plugin>
 			<plugin>
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin 
-					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
+					 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.3.0</version>

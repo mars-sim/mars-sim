@@ -182,7 +182,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 Currently, mars-sim does not require JavaFX. 
 
  ```
-Specifically, the official release v3.1.0 to v3.2.0 of mars-sim do not 
+Note 1 : Specifically, the official release of v3.1.0, v3.2.0 and v3.3.0 of mars-sim do not 
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
  ```
  
@@ -207,7 +207,7 @@ For windows platform, choose MSI version that will automatically set up the envi
 
 ### OS Platforms
 
-Assuming that OpenJDK 11.0.12 is being used,
+Assuming that OpenJDK 11 is being used
 
 #### Linux
 
@@ -266,7 +266,8 @@ in a command prompt window.
 
 5. It's very typical for a machine to have multiple versions of Java installed.
 To check if a particular Oracle version of Java is being *enabled*, 
-start **Java Control Panel (JCP)** in Windows's Control Panel as follows :  
+start [Java Control Panel (JCP)](https://www.java.com/en/download/help/win_controlpanel.html) 
+from the Control Panel as follows :  
 
 * Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
 * Type `Configure Java`. 
