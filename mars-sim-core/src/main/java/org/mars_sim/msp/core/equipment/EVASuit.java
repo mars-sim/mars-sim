@@ -488,16 +488,6 @@ public class EVASuit extends Equipment
 		return this;
 	}
 
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;

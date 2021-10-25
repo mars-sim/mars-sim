@@ -669,10 +669,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			result *= factor;
 		}
 
-		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
-		if (result > cap)
-			// Make sure the amount requested is less than the max resource cap of this vehicle 
-			result = cap;
+//		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
+//		if (result > cap)
+//			// Make sure the amount requested is less than the max resource cap of this vehicle 
+//			result = cap;
 		
 		logger.info(vehicle, 30_000, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
 				+ "fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "

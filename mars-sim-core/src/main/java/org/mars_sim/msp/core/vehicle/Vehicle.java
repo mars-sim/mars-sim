@@ -379,6 +379,7 @@ public abstract class Vehicle extends Unit
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
+		setCoordinates(settlement.getCoordinates());
 		
 		// Set initial parked location and facing at settlement.
 		findNewParkingLoc();
@@ -1657,16 +1658,6 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
-	/**
 	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
 	 * or an auto-generated one.
 	 * @param type
@@ -2038,7 +2029,11 @@ public abstract class Vehicle extends Unit
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			if (newContainer.getUnitType() != UnitType.PLANET) {
+				// Do not inherit the location of a Planet.
+				setCoordinates(newContainer.getCoordinates());
+			}
+			
 			// 2. Set LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID

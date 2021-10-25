@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -39,7 +38,7 @@ public class EquipmentInventory
 	// default logger.
 //	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
 	
-	private Loggable owner;
+	private Unit owner;
 	
 	private double cargoCapacity;
 	
@@ -52,7 +51,7 @@ public class EquipmentInventory
 	/**
 	 * 
 	 */
-	public EquipmentInventory(Loggable owner, double cargoCapacity) {
+	public EquipmentInventory(Unit owner, double cargoCapacity) {
 
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;

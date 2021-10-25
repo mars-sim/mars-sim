@@ -129,7 +129,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final int REGOLITH_ID = ResourceUtil.regolithID;
 	private static final int SAND_ID = ResourceUtil.sandID;
 	private static final int ICE_ID = ResourceUtil.iceID;
-	
+	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
+
+	// Threshold to adjust filtering rate
+	private static final double GREY_WATER_THRESHOLD = 0.00001;
+
 	public static final double MIN_WATER_RESERVE = 400D; // per person
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 	// Initial mission passing score
@@ -167,7 +171,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.co2ID,
 				METHANE_ID,
 				WATER_ID,
-				ResourceUtil.greyWaterID,
+				GREY_WATER_ID,
 				ResourceUtil.blackWaterID,
 				ResourceUtil.rockSamplesID,
 				ICE_ID,
@@ -1353,14 +1357,23 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Decrease the Mission score. 
 		minimumPassingScore *= 0.9D;
 		
-		solCache = solElapsed;
+		// Check the Grey water situation
+		if (getAmountResourceStored(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+			// Adjust the grey water filtering rate
+			changeGreyWaterFilteringRate(false);
+			double r = getGreyWaterFilteringRate();
+			logger.log(this, Level.WARNING, 1_000,  
+					"Low stores of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
+		}
+		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+			// Adjust the grey water filtering rate
+			changeGreyWaterFilteringRate(true);
+			double r = getGreyWaterFilteringRate();
+			logger.log(this, Level.WARNING, 10_000, 
+					   "Low capacity for grey water increases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
+		}
 		
-//		int size = samplingResources.length;
-//		for (int i=0; i<size; i++) {
-//			int id = samplingResources[i];
-//			double amount = calculateDailyAverageResource(solCache - 1, id);
-////			map.put(id, amount);
-//		}
+		solCache = solElapsed;
 	}
 
 	private void refreshResourceStat() {
@@ -3337,14 +3350,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return chainOfCommand.applyCommander(profile);
 	}
 
-	public void increaseGreyWaterFilteringRate() {
-		if (greyWaterFilteringRate < 100) {
+	private void changeGreyWaterFilteringRate(boolean increase) {
+		if (increase && (greyWaterFilteringRate < 100)) {
 			greyWaterFilteringRate = 1.1 * greyWaterFilteringRate;
 		}
-	}
-
-	public void decreaseGreyWaterFilteringRate() {
-		if (greyWaterFilteringRate > .01) {
+		else if (!increase && (greyWaterFilteringRate > .01)) {
 			greyWaterFilteringRate = 0.9 * greyWaterFilteringRate;
 		}
 	}
@@ -3960,16 +3970,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	@Override
 	public Unit getHolder() {
-		return this;
-	}
-	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
 		return this;
 	}
 	

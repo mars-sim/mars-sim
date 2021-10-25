@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -557,15 +556,5 @@ implements Serializable, LocalBoundedObject {
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
-	}
-	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
 	}
 }

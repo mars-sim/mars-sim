@@ -1519,17 +1519,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
