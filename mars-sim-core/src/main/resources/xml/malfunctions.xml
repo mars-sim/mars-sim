@@ -1061,6 +1061,31 @@
 			<part name="fiberglass cloth" number="5" probability="10" />
 			<part name="work gloves" number="1" probability="20" />	
 		</repair-parts-list>
+	</malfunction>
+
+	<!-- Wall Air leak -->
+	<malfunction name="Wall Air Leak">
+		<severity value="90" />
+		<probability value="5.0" />
+		<repair-inside time="30.0" />
+		<system-list>
+			<system name="life support" />
+			<system name="farming" />
+		</system-list>
+		<effect-list>
+			<effect type="resource" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Heartburn" probability="10.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="airleak patch" number="2" probability="75" />
+			<part name="work gloves" number="1" probability="15" />			
+			<part name="fiberglass cloth" number="1" probability="5" />
+			<part name="polycarbonate roofing" number="1" probability="10" />				
+		</repair-parts-list>
 
 	</malfunction>
 

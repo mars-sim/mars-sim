@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.3.1</version>
+		<version>3.4.0</version>
 	</parent>
 	<artifactId>mars-sim-headless</artifactId>
 	<name>mars-sim-headless</name>
@@ -30,7 +30,7 @@
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
-		    <version>3.9</version>
+		    <version>3.12.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-cli</groupId>
@@ -83,7 +83,7 @@
 			</plugin>
 			<plugin>
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin/3.1.0 
-					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
+					 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.3.0</version>

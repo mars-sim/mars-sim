@@ -24,10 +24,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -36,7 +34,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.data.DataLogger;
-import org.mars_sim.msp.core.data.DataRoot;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
