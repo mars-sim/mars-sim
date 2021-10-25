@@ -701,7 +701,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		List<Equipment> held = new ArrayList<>(person.getEquipmentList());
 		for(Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
-			e.transfer(person, destination);
+			e.transfer(destination);
 		}
 	}
 
@@ -715,14 +715,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static void rescueOperation(Rover r, Person p, Settlement s) {
 		
 		if (p.isDeclaredDead()) {
-			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-			p.transfer(cu, s);
+//			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+			p.transfer(s);
 		}
 		else if (r != null) {
-			p.transfer(r, s);
+			p.transfer(s);
 		}
 		else if (p.isOutside()) {
-			p.transfer(unitManager.getMarsSurface(), s);
+			p.transfer(s);
 		}
 		
 		// Gets the settlement id

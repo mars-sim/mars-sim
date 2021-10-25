@@ -356,6 +356,31 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 	
 	/**
+	 * Adds a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot) {
+		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Removes a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot) {
+		if (isRobotCrewmember(robot))
+			return robotOccupants.remove(robot);
+		return false;
+	}
+	
+	/**
 	 * Returns true if life support is working properly and is not out of oxygen or
 	 * water.
 	 * 

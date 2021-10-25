@@ -320,7 +320,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 													rover, EquipmentType.SPECIMEN_BOX,
 													ResourceUtil.rockSamplesID);
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}

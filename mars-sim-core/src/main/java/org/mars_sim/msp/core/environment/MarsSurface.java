@@ -14,6 +14,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -29,6 +30,8 @@ public class MarsSurface extends Unit implements Serializable {
 	
 	private List<Person> personList = new ArrayList<>();
 
+	private List<Robot> robotList = new ArrayList<>();
+	
 	private List<Vehicle> vehicleList = new ArrayList<>();
 
 	public MarsSurface() {
@@ -94,6 +97,31 @@ public class MarsSurface extends Unit implements Serializable {
 	public boolean removePerson(Person person) {
 		if (personList.contains(person))
 			return personList.remove(person);
+		return false;
+	}
+	
+	/**
+	 * Adds a robot
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot) {
+		if (!robotList.contains(robot) && robotList.add(robot)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Removes a robot
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot) {
+		if (robotList.contains(robot))
+			return robotList.remove(robot);
 		return false;
 	}
 	

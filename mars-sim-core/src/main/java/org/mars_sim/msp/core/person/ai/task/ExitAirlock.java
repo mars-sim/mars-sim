@@ -759,7 +759,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// if a person hasn't donned the suit yet
 			try {
 				// 1. Transfer the EVA suit from settlement/vehicle to person
-				suit.transfer(housing, person);	
+				suit.transfer(person);	
 				// 2. set the person as the owner
 				suit.setLastOwner(person);
 				// 3. register the suit the person will take into the airlock to don

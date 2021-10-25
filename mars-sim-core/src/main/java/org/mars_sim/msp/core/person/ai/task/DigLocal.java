@@ -330,7 +330,7 @@ implements Serializable {
         	// Doesn't have a Bag
         	aBag = settlement.findContainer(containerType, true, resourceID);
 	        if (aBag != null) {
-	            	boolean successful = aBag.transfer(settlement, person);
+	            	boolean successful = aBag.transfer(person);
 	            	if (!successful) {
 	            		aBag = null;
 	                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
@@ -446,7 +446,7 @@ implements Serializable {
                 // Track supply
 //                sInv.addAmountSupply(resourceID, amount);
                 // Transfer the bag
-                bag.transfer(person, settlement);
+                bag.transfer(settlement);
 				// Add to the daily output
 				settlement.addOutput(resourceID, amount, getTimeCompleted());
 	            // Recalculate settlement good value for output item.

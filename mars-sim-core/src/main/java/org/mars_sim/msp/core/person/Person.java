@@ -2061,30 +2061,30 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-
+		Unit cu = getContainerUnit();
+		UnitType ut = cu.getUnitType();
+		
 		// Check if the origin is a vehicle
-		if (origin.getUnitType() == UnitType.VEHICLE) {
-			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-				transferred = ((Crewable)origin).removePerson(this);
+		if (ut == UnitType.VEHICLE) {
+			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {
-				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
+				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (origin.getUnitType() == UnitType.PLANET) {
-			transferred = ((MarsSurface)origin).removePerson(this);
+		else if (ut == UnitType.PLANET) {
+			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-		else if (origin.getUnitType() == UnitType.BUILDING) {
+		else if (ut == UnitType.BUILDING) {
 			// Retrieve this person from the settlement
-			transferred = ((Building)origin).getSettlement().removePeopleWithin(this);
+			transferred = ((Building)cu).getSettlement().removePeopleWithin(this);
 		}
-		// Note: the origin is a settlement
 		else {
 			// Retrieve this person from the settlement
-			transferred = ((Settlement)origin).removePeopleWithin(this);
+			transferred = ((Settlement)cu).removePeopleWithin(this);
 		}	
 		
 		if (transferred) {
@@ -2094,13 +2094,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 					transferred = ((Crewable)destination).addPerson(this);
 				}
 				else {
-					logger.warning(this + "Not possible to be stored into " + origin + ".");
+					logger.warning(this + "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
-			// Note: the destination is a settlement
 			else {
 				transferred = ((Settlement)destination).addPeopleWithin(this);
 			}
@@ -2119,7 +2118,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

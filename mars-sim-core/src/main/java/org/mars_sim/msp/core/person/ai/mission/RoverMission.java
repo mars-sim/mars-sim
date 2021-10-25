@@ -386,7 +386,7 @@ public abstract class RoverMission extends VehicleMission {
 									
 									EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
 									if (suit != null) {									
-										boolean success = suit.transfer(settlement, v);									
+										boolean success = suit.transfer(v);									
 										if (success)
 											logger.warning(person, "Received a spare EVA suit from " + settlement + " to " + v);
 										else
@@ -441,7 +441,7 @@ public abstract class RoverMission extends VehicleMission {
 					recordStartMass();
 					
 					// Embark from settlement
-					if (v.transfer(settlement, unitManager.getMarsSurface())) {
+					if (v.transfer(unitManager.getMarsSurface())) {
 						setPhaseEnded(true);						
 					}
 					else {
@@ -640,7 +640,7 @@ public abstract class RoverMission extends VehicleMission {
 							// Note: Need to generate a task for a person to hand deliver an extra suit
 							suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
 							if (suit != null) {				
-								boolean success = suit.transfer(disembarkSettlement, rover);
+								boolean success = suit.transfer(rover);
 								if (success)
 									logger.warning(p, "Received a spare EVA suit from " + disembarkSettlement + " to " + rover);
 								else
@@ -708,16 +708,15 @@ public abstract class RoverMission extends VehicleMission {
 	private void rescueOperation(Rover r, Person p, Settlement s) {
 		
 		if (p.isDeclaredDead()) {
-			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-//			cu.getInventory().retrieveUnit(p);
-			p.transfer(cu, s);
+//			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+			p.transfer(s);
 		}
 		// Retrieve the person from the rover
 		else if (r != null) {
-			p.transfer(r, s);
+			p.transfer(s);
 		}
 		else if (p.isOutside()) {
-			p.transfer(unitManager.getMarsSurface(), s);
+			p.transfer(s);
 		}
 				
 		// Gets the settlement id

@@ -125,7 +125,7 @@ extends Airlock {
     	boolean successful = false;
     	if (person.isOutside()) {						
             // 1.1. Transfer a person from the surface of Mars to the vehicle
-    		successful = person.transfer(marsSurface, vehicle);
+    		successful = person.transfer(vehicle);
         
 			if (successful)
 				logger.log(person, Level.FINER, 0,
@@ -154,7 +154,7 @@ extends Airlock {
 		if (person.isInVehicle()) {
 
             // 5.1. Transfer a person from the vehicle to the surface of Mars
-			successful = person.transfer(vehicle, marsSurface);
+			successful = person.transfer(marsSurface);
 			
 			if (successful) {
 				// 5.2 Set the person's coordinates to that of the settlement's

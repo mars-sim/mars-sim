@@ -344,7 +344,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Collection<Vehicle> parkedVehicles = new ConcurrentLinkedQueue<Vehicle>();
 	/** The list of people currently within the settlement. */
 	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
-
+	/** The settlement's list of robots within. */
+	private Collection<Robot> robotsWithin = new ConcurrentLinkedQueue<Robot>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -2148,6 +2149,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return false;
 	}
 
+	/**
+	 * Adds a robot to be owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public boolean addRobot(Robot r) {
+		if (!robotsWithin.contains(r) && robotsWithin.add(r)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes a robot from being owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public boolean removeRobot(Robot r) {
+		if (robotsWithin.contains(r)) {
+			return robotsWithin.remove(r);
+		}
+		return false;
+	}
+	
 	/**
 	 * Adds a parked vehicle
 	 * 

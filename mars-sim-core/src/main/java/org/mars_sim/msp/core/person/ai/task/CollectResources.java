@@ -200,7 +200,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}

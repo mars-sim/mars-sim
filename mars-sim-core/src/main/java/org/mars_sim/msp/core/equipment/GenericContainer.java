@@ -221,4 +221,9 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public Unit getHolder() {
 		return this;
 	}
+
+//	@Override
+//	public boolean transfer(Unit newOwner) {
+//		return super.transfer(newOwner);
+//	}
 }

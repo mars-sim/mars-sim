@@ -181,7 +181,7 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
         unitManager.addUnit(vehicle);
 
-		vehicle.transfer(settlement, surface);
+		vehicle.transfer(surface);
 
 		assertOnSurface("After transfer from Settlement", vehicle);
 	}
@@ -195,10 +195,10 @@ extends TestCase {
 		
 		assertInsideSettllement("Initial equipment", bag, settlement);
 		
-		assertTrue("Transfer to surface", bag.transfer(settlement, surface));
+		assertTrue("Transfer to surface", bag.transfer(surface));
 		assertOnSurface("On surface", bag);
 		
-		assertTrue("Transfer to settlement", bag.transfer(surface, settlement));
+		assertTrue("Transfer to settlement", bag.transfer(settlement));
 		assertInsideSettllement("After return", bag, settlement);
 
 	}
@@ -215,10 +215,10 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
         unitManager.addUnit(vehicle);
 		
-		assertTrue("Transfer to vehicle", bag.transfer(settlement, vehicle));
+		assertTrue("Transfer to vehicle", bag.transfer(vehicle));
 		assertInVehicle("In vehcile", bag, vehicle);
 		
-		assertTrue("Transfer to settlement", bag.transfer(vehicle, settlement));
+		assertTrue("Transfer to settlement", bag.transfer(settlement));
 		assertInsideSettllement("After return", bag, settlement);
 
 	}
@@ -237,11 +237,11 @@ extends TestCase {
 		Rover vehicle = new Rover("Rover", "cargo rover", settlement);
         unitManager.addUnit(vehicle);
 		
-		assertTrue("Transfer to vehicle", person.transfer(settlement, vehicle));
+		assertTrue("Transfer to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		
-		assertTrue("Transfer to settlement", person.transfer(vehicle, settlement));
+		assertTrue("Transfer to settlement", person.transfer(settlement));
 		assertInsideSettllement("After return", person, settlement);
 
 	}

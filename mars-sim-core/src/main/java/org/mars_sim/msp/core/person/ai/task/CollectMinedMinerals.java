@@ -146,9 +146,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 											mineralType.getID());
 		if (bag != null) {
 			if (person != null) {
-				return bag.transfer(rover, person);
+				return bag.transfer(person);
 			} else if (robot != null) {
-				return bag.transfer(rover, robot);
+				return bag.transfer(robot);
 			}
 		}
 		return false;

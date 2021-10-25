@@ -461,7 +461,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 											+ towedVehicle.getName() + " during an Rescue Operation.");
 						
 						// Retrieve the person if he/she is dead
-						p.transfer(towedVehicle, disembarkSettlement);
+						p.transfer(disembarkSettlement);
 						
 						int id = disembarkSettlement.getIdentifier();
 						BuildingManager.addToMedicalBuilding(p, id);

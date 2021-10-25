@@ -21,7 +21,7 @@ public interface Container extends ResourceHolder {
 	
 	public double getBaseMass();
 
-	public boolean transfer(Unit currentOwner, Unit newOwner);
+	public boolean transfer(Unit newOwner);
 
 	public double getStoredMass();
 	

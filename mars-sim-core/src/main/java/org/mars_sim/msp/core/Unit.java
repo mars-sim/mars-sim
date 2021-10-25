@@ -825,15 +825,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	
-	/**
-	 * Transfer the unit from one owner to another owner
-	 * 
-	 * @param origin {@link Unit} the original container unit
-	 * @param destination {@link Unit} the destination container unit
-	 */
-	public boolean transfer(Unit origin, Unit destination) {
-		return false;
-	}
+//	/**
+//	 * Transfer the unit from one owner to another owner
+//	 * 
+//	 * @param origin {@link Unit} the original container unit
+//	 * @param destination {@link Unit} the destination container unit
+//	 */
+//	public boolean transfer(Unit origin, Unit destination) {
+//		return false;
+//	}
 
 	/**
 	 * Compares this object with the specified object for order.

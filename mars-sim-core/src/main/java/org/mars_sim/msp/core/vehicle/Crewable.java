@@ -90,4 +90,20 @@ public interface Crewable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person);
+	
+	/**
+	 * Removes a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot);
+	
+	/**
+	 * Adds a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot);
 }

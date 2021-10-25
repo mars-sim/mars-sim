@@ -338,7 +338,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 											ResourceUtil.rockSamplesID);
 
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}

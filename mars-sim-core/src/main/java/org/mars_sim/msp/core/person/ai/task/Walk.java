@@ -155,7 +155,7 @@ public class Walk extends Task implements Serializable {
 				}
 				else {
 					// If on a LUV, retrieve person from vehicle.
-					person.transfer(vehicle, unitManager.getMarsSurface());
+					person.transfer(unitManager.getMarsSurface());
 				}
 			}
 
@@ -1108,7 +1108,7 @@ public class Walk extends Task implements Serializable {
 			
 			// Exit the rover parked inside a garage onto the settlement
 			if (person.isInVehicleInGarage()) {
-				person.transfer(rover, garageBuilding.getSettlement());
+				person.transfer(garageBuilding.getSettlement());
 				
 				// Add the person onto the garage
 				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
@@ -1127,7 +1127,7 @@ public class Walk extends Task implements Serializable {
 
 			if (robot.isInVehicleInGarage()) {
 				// Exit the rover inside a garage onto the settlement
-				robot.transfer(rover, garageBuilding.getSettlement());
+				robot.transfer(garageBuilding.getSettlement());
 		
 				BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
 				
@@ -1171,7 +1171,7 @@ public class Walk extends Task implements Serializable {
 					+ ".");
 			
 			// Place this person within a vehicle inside a garage in a settlement
-			person.transfer(garageBuilding, rover);
+			person.transfer(rover);
 			
 			// Remove the person from the garage
 			BuildingManager.removePersonFromBuilding(person, garageBuilding);		
@@ -1188,7 +1188,7 @@ public class Walk extends Task implements Serializable {
 					+ ".");
 			
 			// Place this robot within a vehicle inside a garage in a settlement
-			robot.transfer(garageBuilding, rover);
+			robot.transfer(rover);
 		
 			// Remove the robot from the garage
 			BuildingManager.removeRobotFromBuilding(robot, garageBuilding);

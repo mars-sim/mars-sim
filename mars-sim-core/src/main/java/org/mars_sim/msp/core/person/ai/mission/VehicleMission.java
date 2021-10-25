@@ -837,7 +837,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Settlement base = destination.getSettlement();
 			if (vehicle.getAssociatedSettlement().equals(base)) {
 				logger.info(vehicle, "Arrived back home " + base.getName());
-				vehicle.transfer(vehicle.getContainerUnit(), base);
+				vehicle.transfer(base);
 				
 				// TODO There is a problem with the Vehicle not being on the
 				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase

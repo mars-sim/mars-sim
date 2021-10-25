@@ -2101,15 +2101,15 @@ public abstract class Vehicle extends Unit
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
+		Unit cu = getContainerUnit();
 		
-		if (origin.getUnitType() == UnitType.PLANET) {
-			transferred = ((MarsSurface)origin).removeVehicle(this);
+		if (cu.getUnitType() == UnitType.PLANET) {
+			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
 		else {
-			transferred = ((Settlement)origin).removeParkedVehicle(this);
+			transferred = ((Settlement)cu).removeParkedVehicle(this);
 		}
 
 		if (transferred) {
@@ -2134,7 +2134,7 @@ public abstract class Vehicle extends Unit
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

@@ -548,39 +548,32 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-			
-		if (origin.getUnitType() == UnitType.PERSON
-			|| origin.getUnitType() == UnitType.ROBOT
-			|| origin.getUnitType() == UnitType.VEHICLE) {
-			transferred = ((EquipmentOwner)origin).removeEquipment(this);
+		Unit cu = getContainerUnit();
+		
+		if (cu.getUnitType() == UnitType.SETTLEMENT) {
+			transferred = ((Settlement)cu).removeEquipment(this);
 		}
-		else if (origin.getUnitType() == UnitType.PLANET) {
+		else if (cu.getUnitType() == UnitType.PLANET) {
 			// do nothing. won't track equipment on the mars surface
 			transferred = true;
 		}
-		// Note: the origin is a settlement
 		else {
-			transferred = ((Settlement)origin).removeEquipment(this);
+			transferred = ((EquipmentOwner)cu).removeEquipment(this);
 		}
 		
 		if (transferred) {
 			
-			if (destination.getUnitType() == UnitType.PERSON
-				|| destination.getUnitType() == UnitType.ROBOT
-				|| destination.getUnitType() == UnitType.VEHICLE
-				) {
-				transferred = ((EquipmentOwner)destination).addEquipment(this);
+			if (destination.getUnitType() == UnitType.SETTLEMENT) {
+				transferred = ((Settlement)destination).addEquipment(this);
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				// do nothing. won't track equipment on the mars surface
 				transferred = true;
 			}
-			// Note: the destination is a settlement
 			else {
-				transferred = ((Settlement)destination).addEquipment(this);
+				transferred = ((EquipmentOwner)destination).addEquipment(this);
 			}
 			
 			if (!transferred) {
@@ -597,7 +590,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

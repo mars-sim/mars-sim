@@ -326,7 +326,7 @@ public abstract class DroneMission extends VehicleMission {
 				recordStartMass();
 				
 				// Embark from settlement
-				if (v.transfer(settlement, unitManager.getMarsSurface())) {
+				if (v.transfer(unitManager.getMarsSurface())) {
 					setPhaseEnded(true);
 				}
 				else {

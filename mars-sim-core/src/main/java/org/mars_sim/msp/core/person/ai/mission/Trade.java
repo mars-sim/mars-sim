@@ -593,7 +593,7 @@ public class Trade extends RoverMission implements Serializable {
 							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
 								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person); 
 								if (suit1 != null) {
-									boolean done = suit1.transfer(tradingSettlement, getVehicle());
+									boolean done = suit1.transfer(getVehicle());
 									if (!done)
 										logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
 								} else {

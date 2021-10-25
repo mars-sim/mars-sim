@@ -708,7 +708,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 					if (settlement != null) {
 						// 2c Transfer the EVA suit from person to settlement/vehicle
-						suit.transfer(person, settlement);
+						suit.transfer(settlement);
 						
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 	
@@ -749,7 +749,7 @@ public class EnterAirlock extends Task implements Serializable {
 					
 					else {
 						// 2c Transfer the EVA suit from person to settlement/vehicle
-						suit.transfer(person, vehicle);	
+						suit.transfer(vehicle);	
 					
 						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
 						
