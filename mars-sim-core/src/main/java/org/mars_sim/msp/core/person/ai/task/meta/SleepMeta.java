@@ -45,10 +45,12 @@ public class SleepMeta extends MetaTask {
     	if (person.isOutside())
     		return 0;
     	
-        Building b = person.getBuildingLocation();
-        if ((b != null) && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-        	return 0;
-        }
+    	if (person.isInSettlement()) {
+	        Building b = person.getBuildingLocation();
+	        if ((b != null) && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+	        	return 0;
+	        }
+    	}
     		
    		CircadianClock circadian = person.getCircadianClock();
    		PhysicalCondition pc = person.getPhysicalCondition();

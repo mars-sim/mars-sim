@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.vehicle;
 import java.awt.geom.Point2D;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;

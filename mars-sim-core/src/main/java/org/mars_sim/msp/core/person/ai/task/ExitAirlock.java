@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;

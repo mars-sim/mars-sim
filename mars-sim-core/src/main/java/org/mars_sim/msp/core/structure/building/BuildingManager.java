@@ -949,7 +949,7 @@ public class BuildingManager implements Serializable {
 				addPersonOrRobotToBuildingRandomLocation(unit, building);
 			} 
 			
-			else if (!person.getLocale().contains("Mock")) {
+			else {
 				logger.warning(unit, "No inhabitable buildings available");
 			}
 

@@ -400,15 +400,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
-		
-//		if (getUnitType() != UnitType.EQUIPMENT
-//				&& getUnitType() != UnitType.PERSON
-//				&& getUnitType() != UnitType.ROBOT
-//				&& getUnitType() != UnitType.VEHICLE
-//				&& getUnitType() != UnitType.PLANET) {
-//			inventory.setCoordinates(newLocation);
-//		}
-		
+
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 	
@@ -427,7 +419,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return containerID;
 	}
 	
-	public void setContainerID(Integer id) {
+	protected void setContainerID(Integer id) {
 		containerID = id;
 	}
 	
@@ -646,10 +638,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	public LocationTag getLocationTag() {
 		return tag;
-	}
-	
-	public String getLocale() {
-		return tag.getLocale();
 	}
 
 	public abstract Settlement getSettlement();

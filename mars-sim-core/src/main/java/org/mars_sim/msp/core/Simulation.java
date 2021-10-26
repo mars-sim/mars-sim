@@ -306,7 +306,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = environment.getSurfaceFeatures();
 		
-		Inventory.initializeInstances(unitManager);
         RoleUtil.initialize();
 
 		medicalManager = new MedicalManager();
@@ -369,7 +368,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Build objects
 		unitManager.addUnit(marsSurface);
 				
-		Inventory.initializeInstances(unitManager);
 		// Initialize the Airlock instance
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 	
@@ -620,8 +618,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 
-		// Re-initialize the Inventory instance		
-		Inventory.initializeInstances(unitManager);
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance

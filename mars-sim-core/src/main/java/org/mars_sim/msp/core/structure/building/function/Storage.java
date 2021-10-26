@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
