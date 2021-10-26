@@ -63,6 +63,10 @@ public class Farming extends Function implements Serializable {
 	private static final int MAX_NUM_SOLS = 14;
 	private static final int MAX_SAME_CROPTYPE = 3;
 	
+	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
+	private static final int SOIL_ID = ResourceUtil.soilID;
+	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
+	
 	public static final String MUSHROOM = "mushroom";
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
@@ -116,7 +120,7 @@ public class Farming extends Function implements Serializable {
 	private Map<Integer, String> cropHistory;
 
 	/** The crop usage on each crop in this facility [kg/sol]. */
-	private Map<String,SolMetricDataLogger<Integer>> cropUsage;
+	private Map<String, SolMetricDataLogger<Integer>> cropUsage;
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
     
@@ -417,11 +421,11 @@ public class Farming extends Function implements Serializable {
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
 		// Note: adjust how much old soil should be turned to crop waste
-		store(amount, ResourceUtil.cropWasteID, "Farming::provideNewSoil");
+		store(amount, CROP_WASTE_ID, "Farming::provideNewSoil");
 
 		// Note: adjust how much new soil is needed to replenish the soil bed
 		if (amount > MIN)
-			retrieve(amount, ResourceUtil.soilID, true);
+			retrieve(amount, SOIL_ID, true);
 
 	}
 
@@ -433,7 +437,7 @@ public class Farming extends Function implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
 		if (amount > MIN)
-			retrieve(amount, ResourceUtil.fertilizerID, true);
+			retrieve(amount, FERTILIZER_ID, true);
 	}
 
 	/**

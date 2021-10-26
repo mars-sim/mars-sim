@@ -196,6 +196,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 	
 	private double edibleBiomass;
 	
+	private double co2Cache = 0;
+	
+	private final double co2Threshold;
+	
+	private double o2Cache = 0;
+	
+	private final double o2Threshold;
+	
 	/** The cache values of the pastor environment factors influencing the crop */
 	private Double[] environmentalFactor = new Double[] { 
 			1.0,   // light, 0
@@ -212,7 +220,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private PhaseType phaseType;
 	private CropCategoryType cropCategoryType;
 
-//	private Inventory inv;
 	private Farming farm;
 	private Building building;
 
@@ -222,14 +229,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private List<Phase> phases = null;
 
-	private static int waterID = ResourceUtil.waterID;
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int carbonDioxideID = ResourceUtil.co2ID;
-	private static int greywaterID = ResourceUtil.greyWaterID;
-	private static int cropWasteID = ResourceUtil.cropWasteID;
-	private static int fertilizerID = ResourceUtil.fertilizerID;
+	private final static int WATER_ID = ResourceUtil.waterID;
+	private final static int OXYGEN_ID = ResourceUtil.oxygenID;
+	private final static int CO2_ID = ResourceUtil.co2ID;
+	private final static int GREY_WATER_ID = ResourceUtil.greyWaterID;
+	private final static int CROP_WASTE_ID = ResourceUtil.cropWasteID;
+	private final static int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	
-	private static int mushroomBoxID = ItemResourceUtil.mushroomBoxID;
+	private final static int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
 
 	private static Simulation sim = Simulation.instance();
 	private static SurfaceFeatures surface;
@@ -264,7 +271,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 		this.farm = farm;
 		this.settlementID = settlement.getIdentifier();
 		this.isStartup = isStartup;
-
+		this.co2Threshold = growingArea;
+		this.o2Threshold = growingArea;
+		
 		inedibleBiomass = cropType.getInedibleBiomass();	
 		edibleBiomass = cropType.getEdibleBiomass();
 		
@@ -376,13 +385,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public void setupMushroom() {
 		if (cropName.toLowerCase().contains(MUSHROOM)) {
 			
-			if (building.getSettlement().hasItemResource(mushroomBoxID)) {
-				building.getSettlement().retrieveItemResource(mushroomBoxID, 1);
+			if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
+				building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
 //				building.getInventory().addItemDemand(mushroomBoxID, 2);
 			}
 			// Require some dead matter for fungi to decompose
 			if (growingArea * .5 > MIN)
-				retrieve(growingArea * .5, cropWasteID, true);
+				retrieve(growingArea * .5, CROP_WASTE_ID, true);
 		}
 	}
 
@@ -504,7 +513,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					store(amt, cropWasteID, "Crop::trackHealth");
+					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
 					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -520,7 +529,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					store(amt, cropWasteID, "Crop::trackHealth");
+					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
 					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -737,7 +746,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double inedible = harvestMass / edibleBiomass * inedibleBiomass;
 		double cropWaste = inedible * RATIO_LEAVES;
 		if (cropWaste > 0) {
-			store(cropWaste, cropWasteID, "Crop::generateCropWaste");
+			store(cropWaste, CROP_WASTE_ID, "Crop::generateCropWaste");
 //			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + settlement + "] A total "  
 //							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
@@ -1043,7 +1052,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
-		double gw = building.getSettlement().getAmountResourceStored(greywaterID);
+		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * unitManager.getSettlementByID(settlementID).getGreyWaterFilteringRate() * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
@@ -1057,7 +1066,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			greyWaterUsed = waterRequired;
 //			totalWaterUsed = greyWaterUsed;
 			if (greyWaterUsed > MIN)
-				retrieve(greyWaterUsed, greywaterID, true);
+				retrieve(greyWaterUsed, GREY_WATER_ID, true);
 			// TODO: track grey water as well ?
 			waterModifier = 1D;
 		}
@@ -1066,15 +1075,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
 			if (greyWaterUsed > MIN)
-				retrieve(greyWaterUsed, greywaterID, true);
+				retrieve(greyWaterUsed, GREY_WATER_ID, true);
 			// TODO: track grey water as well ?
 			waterRequired = waterRequired - greyWaterUsed;
-			double waterAvailable = building.getSettlement().getAmountResourceStored(waterID);
+			double waterAvailable = building.getSettlement().getAmountResourceStored(WATER_ID);
 			
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
 				if (waterUsed > MIN) {
-					retrieve(waterUsed, waterID, true);
+					retrieve(waterUsed, WATER_ID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
 				}
@@ -1085,7 +1094,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// not enough water
 				waterUsed = waterAvailable;
 				if (waterUsed > MIN) {
-					retrieve(waterUsed, waterID, true);
+					retrieve(waterUsed, WATER_ID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
 				}
@@ -1094,7 +1103,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .0001);
 			}
 
-			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(fertilizerID);
+			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(FERTILIZER_ID);
 			// The amount of fertilizer to be used depends on the ratio of the grey water used
 			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed + .0001);
 			double fertilizerUsed = fertilizerRequired;
@@ -1110,7 +1119,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 
 			if (fertilizerUsed > MIN) {
-				retrieve(fertilizerUsed, fertilizerID, true);
+				retrieve(fertilizerUsed, FERTILIZER_ID, true);
 			}
 
 			adjustEnvironmentFactor(fertilizerModifier, 1);
@@ -1164,7 +1173,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageOxygenNeeded * time / 1000) * growingArea;
-			double o2Available = building.getSettlement().getAmountResourceStored(oxygenID);
+			double o2Available = building.getSettlement().getAmountResourceStored(OXYGEN_ID);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
@@ -1172,7 +1181,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			if (o2Used > o2Available)
 				o2Used = o2Available;
 			if (o2Used > MIN) {
-				retrieve(o2Used, oxygenID, true);
+				retrieveO2(o2Used);
 				// farm.addO2Cache(-o2Used);
 				cumulative_o2 = cumulative_o2 - o2Used;
 			}
@@ -1184,7 +1193,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
 			if (cO2Gen > MIN) {
-				store(cO2Gen, carbonDioxideID, "Crop::computeGases");
+				storeCO2(cO2Gen);
 				// farm.addCO2Cache(cO2Gen);
 				cumulative_co2 = cumulative_co2 + cO2Gen;
 			}
@@ -1203,7 +1212,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageCarbonDioxideNeeded * time / 1000) * growingArea;
-			double cO2Available = building.getSettlement().getAmountResourceStored(carbonDioxideID);
+			double cO2Available = building.getSettlement().getAmountResourceStored(CO2_ID);
 			double cO2Used = cO2Req;
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest
@@ -1214,7 +1223,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
 			if (cO2Used > MIN) {
-				retrieve(cO2Used, carbonDioxideID, true);
+				retrieveCO2(cO2Used);
 				// farm.addCO2Cache(-cO2Used);
 				cumulative_co2 = cumulative_co2 - cO2Used;
 			}
@@ -1232,7 +1241,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 //			System.out.println("cO2Used : " + cO2Used);
 			if (o2Gen > 0) {
-				store(o2Gen, oxygenID, "Crop::computeGases");
+				storeO2(o2Gen);
 				// farm.addO2Cache(o2Gen);
 				cumulative_o2 = cumulative_o2 + o2Gen;
 			}
@@ -1386,14 +1395,111 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return identifier;
 	}
 	
+	/**
+	 * Retrieve the carbon dioxide
+	 * 
+	 * @param amount
+	 * @return
+	 */
+	public boolean retrieveCO2(double amount) {
+		boolean result = false;
+		co2Cache -= amount;
+		if (co2Cache > -co2Threshold) {
+			result = retrieve(amount, CO2_ID, true);
+		}
+		if (!result) {
+			co2Cache += amount;
+		}
+		return result;
+	}
+	
+	/**
+	 * Retrieve the oxygen 
+	 * 
+	 * @param amount
+	 * @return
+	 */
+	public boolean retrieveO2(double amount) {
+		boolean result = false;
+		o2Cache -= amount;
+		if (o2Cache > -co2Threshold) {
+			result = retrieve(amount, OXYGEN_ID, true);
+		}
+		if (!result) {
+			o2Cache += amount;
+		}
+		return result;
+	}
+	
+	/**
+	 * Retrieves the amount resource
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param value
+	 * @return
+	 */
 	public boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
+		if (building.getSettlement().retrieveAmountResource(resource, amount) == 0)
+			return true;
+		return false;
+//		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
 	}
 	
-	public void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
+	/**
+	 * Stores the carbon dioxide
+	 * 
+	 * @param amount
+	 * @return
+	 */
+	public boolean storeCO2(double amount) {
+		boolean result = false;
+		co2Cache += amount;
+		if (co2Cache < co2Threshold) {
+			result = store(amount, CO2_ID, "Crop::computeGases");
+		}
+		if (!result) {
+			co2Cache -= amount;
+		}
+		return result;
+	}
+
+	/**
+	 * Stores the oxygen
+	 * 
+	 * @param amount
+	 * @return
+	 */
+	public boolean storeO2(double amount) {
+		boolean result = false;
+		o2Cache += amount;
+		if (o2Cache < o2Threshold) {
+			result = store(amount, OXYGEN_ID, "Crop::computeGases");
+		}
+		if (!result) {
+			o2Cache -= amount;
+		}
+		return result;
 	}
 	
+	/**
+	 * Stores the amount resource
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param source
+	 * @return
+	 */
+	public boolean store(double amount, int resource, String source) {
+		if (building.getSettlement().storeAmountResource(resource, amount) == 0)
+			return true;
+		return false;
+//		return Storage.storeAnResource(amount, resource, building.getSettlement(), source);
+	}
+	
+	/**
+	 * Compares if the object is the same as this crop
+	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
