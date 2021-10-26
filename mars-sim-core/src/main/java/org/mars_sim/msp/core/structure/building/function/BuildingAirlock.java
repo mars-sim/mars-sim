@@ -221,10 +221,7 @@ public class BuildingAirlock extends Airlock {
             // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
             successful = person.transfer(marsSurface);
             
-			if (successful) {
-				// 5.2 Remove the person from the building
-	            BuildingManager.removePersonFromBuilding(person, building);
-	         
+			if (successful) {	         
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				

@@ -8,8 +8,8 @@
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -28,11 +28,11 @@ public class MarsSurface extends Unit implements Serializable {
 	
 	private static final String NAME = "Mars Surface";
 	
-	private List<Person> personList = new ArrayList<>();
+	private Set<Person> personList = new HashSet<>();
 
-	private List<Robot> robotList = new ArrayList<>();
+	private Set<Robot> robotList = new HashSet<>();
 	
-	private List<Vehicle> vehicleList = new ArrayList<>();
+	private Set<Vehicle> vehicleList = new HashSet<>();
 
 	public MarsSurface() {
 		super(NAME, null);
@@ -47,13 +47,9 @@ public class MarsSurface extends Unit implements Serializable {
 		}
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Unit u = (Unit) obj;
-		return this.getName().equals(u.getName())
-				&& this.getIdentifier() == ((Unit) obj).getIdentifier() ;
+		return super.equals(obj);
 	}
 	
 	@Override
@@ -66,14 +62,6 @@ public class MarsSurface extends Unit implements Serializable {
 		return null;
 	}
 	
-	public List<Person> getPersonList() {
-		return personList;
-	}
-
-	public List<Vehicle> getVehicleList() {
-		return vehicleList;
-	}
-
 	/**
 	 * Adds a person
 	 * 
@@ -81,11 +69,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!personList.contains(person) && personList.add(person)) {
-			person.setContainerUnit(this);
-			return true;
+		synchronized (personList) {
+			return personList.add(person);
 		}
-		return false;
 	}
 	
 	/**
@@ -95,9 +81,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the person can be removed
 	 */
 	public boolean removePerson(Person person) {
-		if (personList.contains(person))
+		synchronized (personList) {
 			return personList.remove(person);
-		return false;
+		}
 	}
 	
 	/**
@@ -107,10 +93,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!robotList.contains(robot) && robotList.add(robot)) {
-			return true;
+		synchronized (robotList) {
+			return robotList.add(robot);
 		}
-		return false;
 	}
 	
 	/**
@@ -120,9 +105,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the robot can be removed
 	 */
 	public boolean removeRobot(Robot robot) {
-		if (robotList.contains(robot))
+		synchronized (robotList) {
 			return robotList.remove(robot);
-		return false;
+		}
 	}
 	
 	/**
@@ -132,11 +117,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the vehicle can be added
 	 */
 	public boolean addVehicle(Vehicle vehicle) {
-		if (!vehicleList.contains(vehicle) && vehicleList.add(vehicle)) {
-			vehicle.setContainerUnit(this);
-			return true;
+		synchronized (vehicleList) {
+			return vehicleList.add(vehicle);
 		}
-		return false;
 	}
 	
 	/**
@@ -146,9 +129,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the vehicle can be removed
 	 */
 	public boolean removeVehicle(Vehicle vehicle) {
-		if (vehicleList.contains(vehicle))
+		synchronized (vehicleList) {
 			return vehicleList.remove(vehicle);
-		return false;
+		}
 	}
 	
 	/**
@@ -169,8 +152,8 @@ public class MarsSurface extends Unit implements Serializable {
 	 * 
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
-		int hashCode = (int) ( (1.0 + getName().hashCode()) * (1.0 + getIdentifier()));
-		return hashCode;
+		return super.hashCode();
 	}
 }
