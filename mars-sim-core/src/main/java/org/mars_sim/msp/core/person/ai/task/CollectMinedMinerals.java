@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -55,9 +54,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	// Data members
 	private Rover rover; // Rover used.
 	protected AmountResource mineralType;
-
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
 
 	/**
 	 * Constructor
@@ -300,8 +296,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getContainerUnit(), person);
 			if (suit != null) {
 				carryMass += suit.getMass();
-				carryMass += suit.getAmountResourceRemainingCapacity(oxygenID);
-				carryMass += suit.getAmountResourceRemainingCapacity(waterID);
+				carryMass += suit.getAmountResourceRemainingCapacity(OXYGEN_ID);
+				carryMass += suit.getAmountResourceRemainingCapacity(WATER_ID);
 			}
 			double carryCapacity = person.getCarryingCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);

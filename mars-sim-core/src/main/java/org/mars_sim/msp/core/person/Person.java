@@ -57,7 +57,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -107,9 +106,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private static final double highW;
 	/** The average low weight of a person. */
 	private static final double lowW;
-	
-	private final static int OXYGEN = ResourceUtil.oxygenID;
-	private final static int WATER = ResourceUtil.waterID;
 	
 	// Transient data members
 	/** The extrovert score of a person. */

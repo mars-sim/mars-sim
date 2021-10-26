@@ -336,15 +336,11 @@ public class CookMeal extends Task implements Serializable {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
 			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings);
+			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(getKitchensNeedingCooks(kitchenBuildings));
 
 			if (kitchenBuildings.size() > 0) {
-
-				Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						kitchenBuildings);
-
-				result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
+				result = RandomUtil.getWeightedRandomObject(BuildingManager.getBestRelationshipBuildings(person,
+						kitchenBuildings));
 			}
 		}
 
@@ -358,8 +354,7 @@ public class CookMeal extends Task implements Serializable {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
 			List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
 			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-			kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
+			kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(getKitchensNeedingCooks(kitchenBuildings));
 
 			if (kitchenBuildings.size() > 0) {
 				int selected = RandomUtil.getRandomInt(kitchenBuildings.size() - 1);
@@ -384,8 +379,7 @@ public class CookMeal extends Task implements Serializable {
 			Iterator<Building> i = kitchenBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				Cooking kitchen = building.getCooking();
-				if (kitchen.getNumCooks() < kitchen.getCookCapacity()) {
+				if (!building.getCooking().isFull()) {
 					result.add(building);
 				}
 			}

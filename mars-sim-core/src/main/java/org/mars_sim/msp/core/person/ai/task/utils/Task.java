@@ -80,6 +80,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 
+	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	protected static final int FOOD_ID = ResourceUtil.foodID;
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int ICE_ID = ResourceUtil.iceID;
+	protected static final int REGOLITH_ID = ResourceUtil.regolithID;
+	protected static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
+	
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
