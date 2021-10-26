@@ -271,8 +271,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 		this.farm = farm;
 		this.settlementID = settlement.getIdentifier();
 		this.isStartup = isStartup;
-		this.co2Threshold = growingArea;
-		this.o2Threshold = growingArea;
+		this.co2Threshold = growingArea/10.0;
+		this.o2Threshold = growingArea/10.0;
 		
 		inedibleBiomass = cropType.getInedibleBiomass();	
 		edibleBiomass = cropType.getEdibleBiomass();
@@ -1403,12 +1403,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean retrieveCO2(double amount) {
 		boolean result = false;
-		co2Cache -= amount;
-		if (co2Cache > -co2Threshold) {
-			result = retrieve(amount, CO2_ID, true);
+		if (co2Cache - amount < -co2Threshold) {
+			result = retrieve(co2Cache, CO2_ID, true);
+			co2Cache = -amount;
 		}
-		if (!result) {
-			co2Cache += amount;
+		else {
+			co2Cache -= amount;
 		}
 		return result;
 	}
@@ -1421,12 +1421,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean retrieveO2(double amount) {
 		boolean result = false;
-		o2Cache -= amount;
-		if (o2Cache > -co2Threshold) {
-			result = retrieve(amount, OXYGEN_ID, true);
+		if (o2Cache - amount < -o2Threshold) {
+			result = retrieve(o2Cache, OXYGEN_ID, true);
+			o2Cache = -amount;
 		}
-		if (!result) {
-			o2Cache += amount;
+		else {
+			o2Cache -= amount;
 		}
 		return result;
 	}
@@ -1454,11 +1454,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean storeCO2(double amount) {
 		boolean result = false;
-		co2Cache += amount;
-		if (co2Cache < co2Threshold) {
-			result = store(amount, CO2_ID, "Crop::computeGases");
+		if (co2Cache + amount > co2Threshold) {
+			result = store(co2Cache, CO2_ID, "Crop::computeGases");
+			co2Cache = amount;
 		}
-		if (!result) {
+		else {
 			co2Cache -= amount;
 		}
 		return result;
@@ -1472,11 +1472,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean storeO2(double amount) {
 		boolean result = false;
-		o2Cache += amount;
-		if (o2Cache < o2Threshold) {
-			result = store(amount, OXYGEN_ID, "Crop::computeGases");
+		if (o2Cache + amount > o2Threshold) {
+			result = store(o2Cache, OXYGEN_ID, "Crop::computeGases");
+			o2Cache = amount;
 		}
-		if (!result) {
+		else {
 			o2Cache -= amount;
 		}
 		return result;
