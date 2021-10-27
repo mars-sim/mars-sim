@@ -10,20 +10,15 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -120,8 +115,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
 	// Data members
-	/** The settlement's unique identifier */
-	private int settlementID;
 	/** The crop identifier (unique only within a greenhouse). */
 	private int identifier;
 	/** True if this crop is generated at the start of the sim . */
@@ -238,10 +231,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	
 	private final static int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
 
-	private static Simulation sim = Simulation.instance();
-	private static SurfaceFeatures surface;
 	private static CropConfig cropConfig;
-	private static UnitManager unitManager = sim.getUnitManager();
 	
 
 	/**
@@ -252,16 +242,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @param growingArea     the area occupied by the crop [m^2]
 	 * @param dailyMaxHarvest - Maximum possible food harvest for crop. (kg/sol)
 	 * @param farm            - Farm crop being grown in.
-	 * @param settlement      - the settlement the crop is located at.
 	 * @param isStartup       - true if this crop is generated at the start of the
 	 *                        sim)
 	 * @param tissuePercent   the percentage of ticarbonDioxideIDure available based
 	 *                        on the requested amount
 	 */
-	public Crop(int identifier, CropType cropType, double growingArea, double dailyMaxHarvest, Farming farm, Settlement settlement,
+	public Crop(int identifier, CropType cropType, double growingArea, double dailyMaxHarvest, Farming farm, 
 			boolean isStartup, double tissuePercent) {
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		surface = sim.getMars().getSurfaceFeatures();
 
 		this.identifier = identifier;
 		this.cropTypeID = cropType.getID();
@@ -269,7 +256,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 		this.farm = farm;
-		this.settlementID = settlement.getIdentifier();
 		this.isStartup = isStartup;
 		this.co2Threshold = growingArea/10.0;
 		this.o2Threshold = growingArea/10.0;
@@ -793,10 +779,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	
 	/**
 	 * Time passing for crop.
+	 * @param solarIrradiance 
+	 * @param greyFilterRate 
 	 * 
 	 * @param time - amount of time passing (millisols)
 	 */
-	public boolean timePassing(ClockPulse pulse, double productionLevel) {
+	public boolean timePassing(ClockPulse pulse, double productionLevel,
+							   double solarIrradiance, double greyFilterRate) {
 
 		int current = getCurrentPhaseNum();
 		int length = phases.size();
@@ -857,7 +846,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 			double maxPeriodHarvest = maxHarvest * (time / growingTime);
 			// Compute each harvestModifiers and sum them up below
 			// Note: computeHarvest takes up 40% of all cpu utilization
-			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time);
+			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
+													solarIrradiance,
+													greyFilterRate);
 			// Add to the daily harvest.
 			dailyHarvest += maxPeriodHarvest * harvestModifier;
 			// Add to the cumulative harvest.				
@@ -898,16 +889,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * Computes the effects of the available sunlight and artificial light
 	 * 
 	 * @param time
+	 * @param solarIrradiance 
 	 * @return instantaneous PAR or uPAR
 	 */
-	private double computeLight(ClockPulse pulse, double time) {
+	private double computeLight(ClockPulse pulse, double time, double solarIrradiance) {
 		double lightModifier = 0;
 
 		int msols = pulse.getMarsTime().getMillisolInt();
 		// Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		// Calculate instantaneous PAR from solar irradiance
-		double uPAR = wattToPhotonConversionRatio 
-				* surface.getSolarIrradiance(unitManager.getSettlementByID(settlementID).getCoordinates());
+		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
 		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 																							// period of time
@@ -1046,14 +1037,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * 
 	 * @param needFactor
 	 * @param time
+	 * @param greyFilterRate 
 	 */
-	private void computeWaterFertilizer(double needFactor, double time) {
+	private void computeWaterFertilizer(double needFactor, double time, double greyFilterRate) {
 		// Calculate water usage kg per sol
 		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
 		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
-		double greyWaterAvailable = Math.min(gw * unitManager.getSettlementByID(settlementID).getGreyWaterFilteringRate() * time, gw);
+		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
 //		double totalWaterUsed = 0;
@@ -1273,12 +1265,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/**
 	 * Computes each input and output constituent for a crop for the specified
 	 * period of time and return the overall harvest modifier
+	 * @param solarIrradiance 
+	 * @param greyFilterRate 
 	 * 
 	 * @param the maximum possible growth/harvest
 	 * @param a   period of time in millisols
 	 * @return the harvest modifier
 	 */
-	private double computeHarvest(double maxPeriodHarvest, ClockPulse pulse, double time) {
+	private double computeHarvest(double maxPeriodHarvest, ClockPulse pulse,
+						double time, double solarIrradiance, double greyFilterRate) {
 
 		double harvestModifier = 1D;
 
@@ -1319,14 +1314,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Fungi consumes O2 and release CO2
 			uPAR = 0;
 		} else {
-			uPAR = computeLight(pulse, time);
+			uPAR = computeLight(pulse, time, solarIrradiance);
 		}
 		
 		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
 		computeTemperature();
 
 		// STEP 3 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(growthFactor, time);
+		computeWaterFertilizer(growthFactor, time, greyFilterRate);
 
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization
@@ -1510,14 +1505,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * @param cropConfig2 
 	 * 
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(SurfaceFeatures sf, UnitManager u) {
-		surface = sf;
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		unitManager = u;
+	public static void initializeInstances(CropConfig cropConfig2) {
+		cropConfig = cropConfig2;
 	}
 	
 	/**
@@ -1527,7 +1521,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		phaseType = null;
 		cropCategoryType = null;
 		farm = null;
-		surface = null;
 		phases = null;
 
 	}

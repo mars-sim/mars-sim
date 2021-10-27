@@ -405,7 +405,7 @@ public class Farming extends Function implements Serializable {
 		}
 
 		Crop crop = new Crop(getNextIdentifier(), cropType, cropArea, dailyMaxHarvest, 
-				this, building.getSettlement(), isStartup, percentAvailable);
+				this, isStartup, percentAvailable);
 		
 		return crop;
 	}
@@ -748,6 +748,9 @@ public class Farming extends Function implements Serializable {
 			else if (building.getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = .5D;
 	
+			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());
+			double greyFilterRate = building.getSettlement().getGreyWaterFilteringRate();
+			
 			// Call timePassing on each crop.
 			Iterator<Crop> i = crops.iterator();
 
@@ -755,10 +758,10 @@ public class Farming extends Function implements Serializable {
 				Crop crop = i.next();
 				
 				try {
-					crop.timePassing(pulse, productionLevel);
+					crop.timePassing(pulse, productionLevel, solarIrradiance, greyFilterRate);
 				
 				} catch (Exception e) {
-					logger.log(building.getSettlement(), building, Level.WARNING, 1000, crop.getCropName() + " ran into issues ", e);
+					logger.severe(building, crop.getCropName() + " ran into issues ", e);
 				}
 				
 				// Remove old crops.

@@ -59,14 +59,6 @@ public class TendGreenhouse extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
-
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeInspecting;
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeCleaning;
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeSampling;
-	
 	
 	// Data members
 	/** The greenhouse the person is tending. */

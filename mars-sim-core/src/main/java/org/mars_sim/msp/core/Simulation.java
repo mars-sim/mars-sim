@@ -379,10 +379,13 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		
+
+		// Initialise the Building Functions
 		ResourceProcess.initializeInstances(marsClock);
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
 								     environment.getWeather(), unitManager);
+		Crop.initializeInstances(cc);
+
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 		
@@ -394,8 +397,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize ManufactureUtil
         new ManufactureUtil();
         RoleUtil.initialize();
-
-
+        
 		// Initialize instances prior to UnitManager initiatiation		
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
@@ -684,7 +686,7 @@ public class Simulation implements ClockListener, Serializable {
 			
 		// Miscs.
 		CompositionOfAir.initializeInstances(pc, unitManager);
-		Crop.initializeInstances(surfaceFeatures, unitManager);
+		Crop.initializeInstances(simulationConfig.getCropConfiguration());
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		PowerSource.initializeInstances(environment, surfaceFeatures, orbit, weather);
 		ResourceProcess.initializeInstances(marsClock);
