@@ -104,10 +104,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public static final String TISSUE_CULTURE = "tissue culture";
 	/** The string reference for mustard */
 	public static final String MUSTARD = "Mustard";
-	/** The string reference for seed */
-	public static final String SEED = "Seed";
-	/** The string reference for sesame */
-	public static final String SESAME = "Sesame";
 	/** The string reference for mushroom */	
 	public static final String MUSHROOM = "mushroom";
 	
@@ -119,11 +115,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private int identifier;
 	/** True if this crop is generated at the start of the sim . */
 	private boolean isStartup;
-	/**
-	 * True if this crop has seeds. e.g. the mustard seed must be extracted from the
-	 * white mustard plant
-	 */
-	private boolean hasSeed = false;
+
 	/** True if this crop is a seeded plant. e.g. the sesame plant */
 	private boolean isSeedPlant = false;
 	/** The total amount of light received by this crop. */	
@@ -252,7 +244,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		this.identifier = identifier;
 		this.cropTypeID = cropType.getID();
-		this.cropCategoryType = cropConfig.getCropCategoryType(cropTypeID);
+		this.cropCategoryType = cropType.getCropCategoryType();
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 		this.farm = farm;
@@ -268,7 +260,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();
-		capitalizedCropName = Conversion.capitalize(cropName);
+		capitalizedCropName = Conversion.capitalize(cropType.getName());
+		
 		// Note : growingTime is in millisols
 		growingTime = cropType.getGrowingTime();
 		// Note : growingDay in sols
@@ -276,25 +269,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 		maxHarvest = dailyMaxHarvest * growingDay;
 		// Set to zero initially
 		remainingHarvest = 0;
-		
-		// Add special case for extracting seeds from White Mustard
-		if (cropName.contains(MUSTARD)) //.equalsIgnoreCase("White " + MUSTARD))
-			hasSeed = true;
+			
+		cropID = cropType.getCropID();
+		seedID = cropType.getSeedID();
+		isSeedPlant = cropType.isSeedPlant();
 
-		else if (cropName.equalsIgnoreCase(SESAME))
-			isSeedPlant = true;
-
-		if (hasSeed) {
-			massRatio = 1;//inedibleBiomass / edibleBiomass;
-			seedID = ResourceUtil.findIDbyAmountResourceName(MUSTARD + " " + SEED);
+		if (seedID > 0) {
+			massRatio = 1;
 		}
-
-		if (isSeedPlant) {
-			massRatio = 1;//inedibleBiomass / edibleBiomass;
-			seedID = ResourceUtil.findIDbyAmountResourceName(cropName + " " + SEED);
-		}
-
-		cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
 
 		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
@@ -639,7 +621,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 						// Note the purpose for this plant is primarily the seeds 
 						store(lastHarvest, seedID, source);
 					}
-					else if (hasSeed && lastHarvest * massRatio > 0) {
+					else if ((seedID > 0) && lastHarvest * massRatio > 0) {
 						// White Mustard has leaves as food. Also extract Mustard Seed
 						store(lastHarvest * massRatio, seedID, source);
 						store(lastHarvest, cropID, source);
@@ -698,7 +680,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 							// Note the purpose for this plant is primarily the seeds 
 							store(modifiedHarvest, seedID, source);
 						}
-						else if (hasSeed && modifiedHarvest * massRatio > 0) {
+						else if ((seedID > 0) && modifiedHarvest * massRatio > 0) {
 							// White Mustard has leaves as food. Also extract Mustard Seed
 							store(modifiedHarvest * massRatio, seedID, source);
 							store(modifiedHarvest, cropID, source);
