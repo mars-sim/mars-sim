@@ -2323,7 +2323,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return collection of associated equipment.
 	 */
 	public Collection<Equipment> getAllAssociatedEquipment() {	
-		return getEquipmentList();
+		return getEquipmentSet();
 	}
 	
 	/**
@@ -3733,8 +3733,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return the equipment list
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return eqmInventory.getEquipmentList();
+	public Set<Equipment> getEquipmentSet() {
+		return eqmInventory.getEquipmentSet();
 	}
 	
 	/**
@@ -3743,7 +3743,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return the equipment list
 	 */
 	public Set<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
-		return eqmInventory.getEquipmentList().stream()
+		return eqmInventory.getEquipmentSet().stream()
 				.filter(e -> e.getEquipmentType() == equipmentType)
 				.collect(Collectors.toSet());
 	}

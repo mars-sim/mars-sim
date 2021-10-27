@@ -698,7 +698,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
 		// Return containers in rover Take a copy as the original will change.
-		List<Equipment> held = new ArrayList<>(person.getEquipmentList());
+		List<Equipment> held = new ArrayList<>(person.getEquipmentSet());
 		for(Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
 			e.transfer(destination);

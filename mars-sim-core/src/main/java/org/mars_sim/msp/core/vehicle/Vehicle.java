@@ -1729,8 +1729,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return eqmInventory.getEquipmentList();
+	public Set<Equipment> getEquipmentSet() {
+		return eqmInventory.getEquipmentSet();
 	}
 	
 	/**
@@ -1918,7 +1918,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public EVASuit findEVASuit(Person person) {
 		EVASuit goodSuit = null;
-		for (Equipment e : eqmInventory.getEquipmentList()) {
+		for (Equipment e : eqmInventory.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
@@ -1970,7 +1970,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public int findNumEVASuits() {
 		int result = 0;
-		for (Equipment e : eqmInventory.getEquipmentList()) {
+		for (Equipment e : eqmInventory.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				result++;
 			}	

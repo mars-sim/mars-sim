@@ -404,7 +404,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             		|| unit.getUnitType() == UnitType.VEHICLE
             		|| unit.getUnitType() == UnitType.SETTLEMENT
             		) {
-            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentList()) {
+            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentSet()) {
 					String name = e.getName();
 					types.put(name, e.getEquipmentType().getName());
 					contentOwner.put(name, getContentOwner(e));
@@ -507,7 +507,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             		|| unit.getUnitType() == UnitType.VEHICLE
             		|| unit.getUnitType() == UnitType.SETTLEMENT
             		) {
-            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentList()) {
+            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentSet()) {
             		newTypes.put(e.getName(), e.getEquipmentType().getName());
 					newContentOwner.put(e.getName(), getContentOwner(e));
 					newMass.put(e.getName(), e.getMass());

@@ -64,7 +64,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		Map<String,String> entries = new TreeMap<>();
 		Collection<Equipment> equipment = null;
 		if (eqmOwner != null) {
-			equipment = eqmOwner.getEquipmentList();
+			equipment = eqmOwner.getEquipmentSet();
 		}
 
 		if (input != null) {

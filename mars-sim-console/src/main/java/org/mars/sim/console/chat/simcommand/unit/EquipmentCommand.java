@@ -45,7 +45,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		
 		Collection<Equipment> equipment = null;
 		if (source instanceof EquipmentOwner) {
-			equipment = ((EquipmentOwner)source).getEquipmentList();
+			equipment = ((EquipmentOwner)source).getEquipmentSet();
 		}
 		else {
 			context.println("Sorry this Entity does not hold Equipment");

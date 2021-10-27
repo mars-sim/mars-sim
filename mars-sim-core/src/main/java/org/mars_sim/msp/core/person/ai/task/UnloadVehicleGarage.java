@@ -402,7 +402,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			// Take own copy as the equipment list changes as we remove items. ??
-			List<Equipment> held = new ArrayList<>(vehicle.getEquipmentList());
+			List<Equipment> held = new ArrayList<>(vehicle.getEquipmentSet());
 			Iterator<Equipment> k = held.iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();

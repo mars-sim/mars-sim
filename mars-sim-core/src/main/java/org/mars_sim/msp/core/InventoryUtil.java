@@ -38,7 +38,7 @@ public class InventoryUtil {
 	 * @return
 	 */
 	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
-		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentList();
+		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentSet();
  		
  		// Find suit without malfunction
  		// TODO favorite a previous one
@@ -64,7 +64,7 @@ public class InventoryUtil {
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
-		for (Equipment e : owner.getEquipmentList()) {
+		for (Equipment e : owner.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();

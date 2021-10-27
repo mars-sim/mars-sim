@@ -12,7 +12,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.data.ResourceHolder;
 
 public interface EquipmentOwner extends ResourceHolder {
-	
+	  
 	/**
 	 * Gets the total mass held in this entity.
 	 * 
@@ -32,7 +32,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * 
 	 * @return
 	 */
-	Set<Equipment> getEquipmentList();
+	Set<Equipment> getEquipmentSet();
 	
 	/**
 	 * Does this person possess an equipment of this equipment type
