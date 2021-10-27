@@ -1530,6 +1530,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		else if (ut == UnitType.BUILDING) {
 			// Retrieve this person from the settlement
 			transferred = ((Building)cu).getSettlement().removeRobot(this);
+			BuildingManager.removeRobotFromBuilding(this, ((Building)cu));
 		}
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removeRobot(this);

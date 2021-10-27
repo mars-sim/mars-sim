@@ -2077,12 +2077,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (ut == UnitType.BUILDING) {
 			// Retrieve this person from the settlement
 			transferred = ((Building)cu).getSettlement().removePeopleWithin(this);
-			currentBuildingInt = -1;
+			BuildingManager.removePersonFromBuilding(this, ((Building)cu));
 		}
 		else {
 			// Retrieve this person from the settlement
 			transferred = ((Settlement)cu).removePeopleWithin(this);
-			currentBuildingInt = -1;
 		}	
 		
 		if (transferred) {

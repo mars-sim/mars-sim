@@ -913,7 +913,7 @@ public abstract class RoverMission extends VehicleMission {
 		Map<Integer, Number> map = new HashMap<>();
 		
 		// Get an EVA suit from the staring settlement as an example of an EVA Suit
-		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingSettlement(), getStartingPerson());
+		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingPerson());
 
 		// Determine needed repair parts for EVA suits.
 		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();

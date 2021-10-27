@@ -330,7 +330,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(rover, person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
 			if (suit != null) {
 				// Mass include everything
 				carryMass += suit.getMass();

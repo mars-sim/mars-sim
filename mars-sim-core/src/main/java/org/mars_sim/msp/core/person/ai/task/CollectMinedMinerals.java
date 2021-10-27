@@ -293,7 +293,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += bag.getBaseMass();
 			}
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getContainerUnit(), person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getAmountResourceRemainingCapacity(OXYGEN_ID);

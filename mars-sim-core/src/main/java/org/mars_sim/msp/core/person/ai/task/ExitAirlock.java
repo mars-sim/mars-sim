@@ -1080,7 +1080,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return true if person can exit the entity
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
-
+		boolean result = false;
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
 			// TODO: if incapacitated, should someone else help this person to get out?
@@ -1095,21 +1095,21 @@ public class ExitAirlock extends Task implements Serializable {
 					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getVehicle().getCoordinates());
 					if (nearbySettlement != null)
 						// Attempt a rescue operation
-						EVAOperation.rescueOperation((Rover)(person.getVehicle()), person, nearbySettlement);
+						result = EVAOperation.rescueOperation((Rover)(person.getVehicle()), person, nearbySettlement);
 				}
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getCoordinates());
 //					Settlement nearbySettlement =  ((Building) (airlock.getEntity())).getSettlement()
 					if (nearbySettlement != null)
 						// Attempt a rescue operation
-						EVAOperation.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
+						result = EVAOperation.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
 				}
 				
 			} catch (Exception e) {
 				logger.log(person, Level.SEVERE, 4_000, "Could not get new action: ", e);
 			}
 
-			return false;
+			return result;
 		}
 		
 		// Check if person is outside.
@@ -1122,7 +1122,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else if (person.isInSettlement()) {
 			
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getSettlement(), person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
 			// Check if EVA suit is available.
 			if (suit != null) {
 				airlock.resetCheckEVASuit();			
@@ -1141,7 +1141,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else if (person.isInVehicle()) {
 			
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person.getVehicle(), person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
 			// Check if EVA suit is available.
 			if (suit != null) {		
 				airlock.resetCheckEVASuit();			

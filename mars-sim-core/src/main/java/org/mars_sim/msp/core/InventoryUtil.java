@@ -37,8 +37,9 @@ public class InventoryUtil {
 	 * @param p
 	 * @return
 	 */
-	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
-		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentSet();
+	public static EVASuit getGoodEVASuit(Person p) {
+		Unit cu = p.getContainerUnit();
+		Collection<Equipment> candidates = ((EquipmentOwner) cu).getEquipmentSet();
  		
  		// Find suit without malfunction
  		// TODO favorite a previous one
@@ -49,7 +50,7 @@ public class InventoryUtil {
 			}
 		}
 
-		logger.warning(p, "Can not find an EVA suit in " + housing.getName());
+		logger.warning(p, "Could not find an EVA suit in " + cu.getName());
 		return null;
 	}
 	

@@ -48,10 +48,10 @@ public class EquipmentInventory
 	private double cargoCapacity;
 	
 	/** Locally held equipment set**/
-	private transient Set<Equipment> equipmentSet;
+	private Set<Equipment> equipmentSet;
 
 	/** For serialization use only **/
-	private Set<Integer> equipmentInts;
+//	private Set<Integer> equipmentInts;
 	
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
@@ -63,11 +63,11 @@ public class EquipmentInventory
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;
 		
-		// Create equipment set		
+		// Create equipment set
 		equipmentSet = new HashSet<>();
 		
 		// Create equipment integer set		
-		equipmentInts = new HashSet<>();
+//		equipmentInts = new HashSet<>();
 		
 		// Create microInventory instance		
 		microInventory = new MicroInventory(owner);
@@ -532,33 +532,49 @@ public class EquipmentInventory
 		return getItemResourceIDs().contains(resource);
 	}
 
-	
-	private void readObject(ObjectInputStream aIntputStream) throws ClassNotFoundException, IOException {
-		aIntputStream.defaultReadObject();
-		
-		// Create equipment set		
-		equipmentSet = new HashSet<>();
-		
-		// Assemble equipmentSet
-	    if (equipmentInts != null && !equipmentInts.isEmpty()) {
-		    for (Integer i: equipmentInts) {
-		    	equipmentSet.add(unitManager.getEquipmentByID(i));
-		    }
-	    }
-	}
-	
-	private void writeObject(ObjectOutputStream aOutputStream) throws IOException {
-		aOutputStream.defaultWriteObject();
-		
-	    // Clear previous equipmentInts
+//	/**
+//	 * Read objects from an ObjectInputStream
+//	 * 
+//	 * @param aIntputStream
+//	 * @throws ClassNotFoundException
+//	 * @throws IOException
+//	 */
+//	private void readObject(ObjectInputStream aIntputStream) throws ClassNotFoundException, IOException {
+//		aIntputStream.defaultReadObject();
+//		
+//		// Create equipment set		
+//		equipmentSet = new HashSet<>();
+//		
+//		// Reassemble equipmentSet
+//	    if (equipmentInts != null && !equipmentInts.isEmpty()) {
+////	    	System.out.println("equipmentInts != null && !equipmentInts.isEmpty()");
+//		    for (Integer i: equipmentInts) {
+//		    	Equipment e = unitManager.getEquipmentByID(i);
+//		    	System.out.println(e);// + " in " + e.getContainerUnit());
+//		    	equipmentSet.add(unitManager.getEquipmentByID(i));
+//		    }
+//	    }
+//	}
+//	
+//	/**
+//	 * Write objects to an ObjectOutputStream
+//	 * 
+//	 * @param aOutputStream
+//	 * @throws IOException
+//	 */
+//	private void writeObject(ObjectOutputStream aOutputStream) throws IOException {
+//	    // Clear previous equipmentInts
 //	    equipmentInts.clear();
-		
-		// Create equipment integer set		
-		equipmentInts = new HashSet<>();
-	    
-	    // Assemble equipmentInts
-	    for (Equipment e: equipmentSet) {
-	    	equipmentInts.add(e.getIdentifier());
-	    }
-    }
+//		
+//		// Create equipment integer set		
+////		equipmentInts = new HashSet<>();
+//	    
+//	    // Assemble equipmentInts
+//	    for (Equipment e: equipmentSet) {
+//	    	equipmentInts.add(e.getIdentifier());
+//	    }
+//	    
+//		aOutputStream.defaultWriteObject();
+//		
+//    }
 }

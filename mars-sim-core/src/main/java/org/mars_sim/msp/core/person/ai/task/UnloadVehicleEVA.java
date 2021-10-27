@@ -362,15 +362,18 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
+						
+					if (p.transfer(settlement)) {
 					
-					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
-					
-					p.transfer(settlement);
-					
-					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
-					
-					p.setAssociatedSettlement(settlement.getIdentifier());
-//					p.getMind().getTaskManager().clearTask();
+						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
+						
+						p.setAssociatedSettlement(settlement.getIdentifier());
+						
+						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
+					}
+					else {
+						logger.warning(worker, "failed to retrieve the dead body of " + p + " from " + vehicle.getName());
+					}
 				}
 			}
 		}

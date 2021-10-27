@@ -712,36 +712,40 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param p the person
 	 * @param s the settlement
 	 */
-	public static void rescueOperation(Rover r, Person p, Settlement s) {
-		
+	public static boolean rescueOperation(Rover r, Person p, Settlement s) {
+		boolean result = false;
 		if (p.isDeclaredDead()) {
 //			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-			p.transfer(s);
+			result = p.transfer(s);
 		}
 		else if (r != null) {
-			p.transfer(s);
+			result = p.transfer(s);
 		}
 		else if (p.isOutside()) {
-			p.transfer(s);
+			result = p.transfer(s);
 		}
 		
-		// Gets the settlement id
-		int id = s.getIdentifier();
-		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, id);
-
-		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
-		HealthProblem problem = null;
-		for (HealthProblem hp : problems) {
-			if (complaint.getType() == hp.getType()) {
-				problem = hp;
-				break;
+		if (result) {
+			// Gets the settlement id
+			int id = s.getIdentifier();
+			// Store the person into a medical building
+			BuildingManager.addToMedicalBuilding(p, id);
+	
+			Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
+			Complaint complaint = p.getPhysicalCondition().getMostSerious();
+			HealthProblem problem = null;
+			for (HealthProblem hp : problems) {
+				if (complaint.getType() == hp.getType()) {
+					problem = hp;
+					break;
+				}
 			}
+			
+			// Register the historical event
+			HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
+			registerNewEvent(rescueEvent);
 		}
 		
-		// Register the historical event
-		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
-		registerNewEvent(rescueEvent);
+		return result;
 	}
 }

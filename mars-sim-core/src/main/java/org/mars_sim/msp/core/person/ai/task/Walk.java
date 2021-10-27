@@ -155,7 +155,12 @@ public class Walk extends Task implements Serializable {
 				}
 				else {
 					// If on a LUV, retrieve person from vehicle.
-					person.transfer(unitManager.getMarsSurface());
+					if (person.transfer(unitManager.getMarsSurface())) {
+						logger.info(person, "successfully retrieved " + person + " from " + vehicle.getName());
+					}
+					else {
+						logger.warning(worker, "failed to retrieve " + person + " from " + vehicle.getName());
+					}
 				}
 			}
 
@@ -1108,14 +1113,21 @@ public class Walk extends Task implements Serializable {
 			
 			// Exit the rover parked inside a garage onto the settlement
 			if (person.isInVehicleInGarage()) {
-				person.transfer(garageBuilding.getSettlement());
 				
-				// Add the person onto the garage
-				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
+				if (person.transfer(garageBuilding.getSettlement())) {
+					logger.log(person, Level.FINER, 4000, 
+						"Just exited rover " + rover.getName() 
+						+ " inside " + garageBuilding + ".");
+					
+					// Add the person onto the garage
+					BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
-				logger.log(person, Level.INFO, 4000,
-					"Just exit the rover " + rover.getName() 
-					+ ".");
+				}
+				else {
+					logger.log(person, Level.WARNING, 4000, 
+						"Failed to exit rover " + rover.getName() 
+						+ " inside " + garageBuilding + ".");
+				}
 			}
 		} 
 		
@@ -1165,20 +1177,18 @@ public class Walk extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.walk.enteringRoverInsideGarage")); //$NON-NLS-1$
 		
 		if (person != null) {
-
-			logger.log(person, Level.FINER, 4000, 
-					"About to enter rover " + rover.getName() 
-					+ ".");
 			
 			// Place this person within a vehicle inside a garage in a settlement
-			person.transfer(rover);
-			
-			// Remove the person from the garage
-			BuildingManager.removePersonFromBuilding(person, garageBuilding);		
-			
-			logger.log(person, Level.FINER, 4000, 
+			if (person.transfer(rover)) {
+				logger.log(person, Level.FINER, 4000, 
 					"Just entered rover " + rover.getName() 
-					+ ".");
+					+ " inside " + garageBuilding + ".");
+			}
+			else {
+				logger.log(person, Level.WARNING, 4000, 
+					"Failed to enter rover " + rover.getName() 
+					+ " inside " + garageBuilding + ".");
+			}
 		} 
 		
 		else if (robot != null) {
