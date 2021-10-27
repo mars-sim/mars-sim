@@ -175,9 +175,10 @@
 		antioxidant or an antimicrobial agent, as a treatment for allergies,
 		in cancer treatment and cancer prevention.	</resource>	
 
-<!-- Food resources derived from animal -->
+<!-- Food resources derived from fish -->
 	<resource name="fish meat" type="animal" phase="solid" edible="true">meat from fish</resource>
-	
+	<resource name="fish patty" type="animal" phase="solid" edible="true">patty made of fish meat</resource>
+
 <!-- Chemical food resources -->
 	<resource name="baking powder" type="chemical" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
