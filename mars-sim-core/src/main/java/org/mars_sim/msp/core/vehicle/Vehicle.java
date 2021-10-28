@@ -2096,6 +2096,37 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		// Note: in future, will distinguish between INSIDE_SETTLEMENT
+		// and WITHIN_SETTLEMENT_VICINITY.
+		// For now, both are the same.
+		
+		// if the vehicle is parked in the vicinity of a settlement
+		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
+			return true;
+		
+		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
+				&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit

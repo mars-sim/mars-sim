@@ -1508,6 +1508,34 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+			// if the vehicle is parked in a garage
+			return ((Vehicle)getContainerUnit()).isInSettlement();
+		}
+
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
@@ -1527,17 +1555,19 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (ut == UnitType.BUILDING) {
-			// Retrieve this person from the settlement
-			transferred = ((Building)cu).getSettlement().removeRobot(this);
-			BuildingManager.removeRobotFromBuilding(this, ((Building)cu));
-		}
+//		else if (ut == UnitType.BUILDING) {
+//			// Retrieve this person from the settlement
+//			transferred = ((Building)cu).getSettlement().removeRobot(this);
+//			BuildingManager.removeRobotFromBuilding(this, ((Building)cu));
+//		}
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
 		}
 		else {
-			// Retrieve this person from the settlement
+			// Question: should we remove this unit from settlement's robotWithin list
+			// especially if it is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removeRobot(this);
+			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
 		}	
 		
 		if (transferred) {

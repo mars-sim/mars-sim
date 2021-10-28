@@ -543,6 +543,34 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+			// if the vehicle is parked in a garage
+			return ((Vehicle)getContainerUnit()).isInSettlement();
+		}
+
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
@@ -556,7 +584,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			transferred = ((Settlement)cu).removeEquipment(this);
 		}
 		else if (cu.getUnitType() == UnitType.PLANET) {
-			// do nothing. won't track equipment on the mars surface
+			// do nothing. mars surface currently doesn't track equipment
 			transferred = true;
 		}
 		else {
@@ -569,7 +597,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				transferred = ((Settlement)destination).addEquipment(this);
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
-				// do nothing. won't track equipment on the mars surface
+				// do nothing. mars surface currently doesn't track equipment
 				transferred = true;
 			}
 			else {

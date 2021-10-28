@@ -1071,7 +1071,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		Vehicle vehicle = getVehicle();
 		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
 
-			if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
+			if (vehicle.isInVehicleInGarage()) {
 				// if the vehicle is inside a garage
 				return vehicle.getSettlement();
 			}
@@ -2027,6 +2027,34 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+			// if the vehicle is parked in a garage
+			return ((Vehicle)getContainerUnit()).isInSettlement();
+		}
+
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
@@ -2049,14 +2077,13 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-		else if (ut == UnitType.BUILDING) {
-			// Retrieve this person from the settlement
-			transferred = ((Building)cu).getSettlement().removePeopleWithin(this);
-			BuildingManager.removePersonFromBuilding(this, ((Building)cu));
-		}
-		else {
-			// Retrieve this person from the settlement
+//		else if (ut == UnitType.BUILDING) {
+//		}
+		else if (ut == UnitType.SETTLEMENT) {
+			// Question: should we remove this person from settlement's peopleWithin list
+			// especially if he is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removePeopleWithin(this);
+			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}	
 		
 		if (transferred) {
@@ -2072,7 +2099,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
-			else {
+			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addPeopleWithin(this);
 			}
 			

@@ -735,20 +735,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (getUnitType() == UnitType.VEHICLE) {
-			// if the vehicle is parked in the vicinity of a settlement or a garage
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
-				return true;
-			
-			if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
-					&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
-				return true;
-			}
-		}
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInSettlement();
-		
 		return false;
 	}
 	
@@ -762,18 +748,24 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 	
 	/**
-	 * Is this unit in a vehicle inside a garage
+	 * Is this unit inside a vehicle in a garage ?
 	 * 
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+		Unit cu = getContainerUnit();
+		if (cu.getUnitType() == UnitType.VEHICLE) {
             // still inside the garage
-            return BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null;
+            return BuildingManager.isInAGarage((Vehicle)cu);
 		}
 		return false;
 	}
 	
+	/**
+	 * Gets the total capacity of this unit
+	 * 
+	 * @return
+	 */
 	public double getTotalCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
 			return ((Equipment)this).getTotalCapacity();
