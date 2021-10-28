@@ -99,9 +99,6 @@ public abstract class Airlock implements Serializable {
 	/** People waiting for the airlock by the outer door. */
     private Set<Integer> awaitingOuterDoor;
 
-	/** The lookup map for occupants. */
-//	private transient Map<Integer, Person> lookupPerson;
-
 	/** The occupant reservation map. */
 	private Map<Integer, Integer> reservationMap;
 

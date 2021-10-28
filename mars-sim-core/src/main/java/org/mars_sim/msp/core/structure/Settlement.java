@@ -1704,6 +1704,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return airlock or null if none available.
 	 */
 	public Airlock getClosestAvailableAirlock(Person person) {
+			
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
@@ -1711,12 +1712,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
+			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+			
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
-				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
-						person.getYLocation());
-				if (distance < leastDistance) {
-					result = building.getEVA().getAirlock();
-					leastDistance = distance;
+				if (!chamberFull || (chamberFull && !reservationFull)) {
+					double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
+							person.getYLocation());
+					if (distance < leastDistance) {
+						result = building.getEVA().getAirlock();
+						leastDistance = distance;
+					}
 				}
 			}
 		}
@@ -1782,41 +1788,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
 		Airlock result = null;
 
-//		List<Building> pressurizedBldgs = new ArrayList<>();
-//		List<Building> depressurizedBldgs = new ArrayList<>();
-//		List<Building> selectedPool = new ArrayList<>();
-//		
-//		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
-//			Airlock airlock = airlockBdg.getEVA().getAirlock();
-//			if (airlock.isPressurized()	|| airlock.isPressurizing())
-//				pressurizedBldgs.add(airlockBdg);
-//			else if (airlock.isDepressurized() || airlock.isDepressurizing())
-//				depressurizedBldgs.add(airlockBdg);
-//		}
-//		
-//		if (pressurizedBldgs.size() > 1) {
-//			selectedPool = pressurizedBldgs;
-//		}
-//		
-//		else if (pressurizedBldgs.size() == 1) {
-//			return pressurizedBldgs.get(0).getEVA().getAirlock();
-//		}
-//		
-//		else if (depressurizedBldgs.size() > 1) {
-//			selectedPool = depressurizedBldgs;
-//		}
-//		
-//		else if (depressurizedBldgs.size() == 1) {
-//			return depressurizedBldgs.get(0).getEVA().getAirlock();
-//		}
-//		
-//		else {
-//			return null;
-//		}
-		
 		// Search the closest of the buildings
 		double leastDistance = Double.MAX_VALUE;
-//		for(Building building : selectedPool) {
+
 		for(int id: availableAirlocks) {
 			Building building = unitManager.getBuildingByID(id);
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
@@ -1908,12 +1882,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
-//		BuildingManager manager = buildingManager;
+
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
-
-			if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().isChamberFull();
+			boolean reservationFull = nextBuilding.getEVA().getAirlock().isReservationFull();
+			
+			// Select airlock that fulfill either conditions: 
+			// 1. Chambers are NOT full 
+			// 2. Chambers are full but the reservation is NOT full			
+			if ((!chamberFull || (chamberFull && !reservationFull))
+				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
 				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), xLocation,
 						yLocation);
