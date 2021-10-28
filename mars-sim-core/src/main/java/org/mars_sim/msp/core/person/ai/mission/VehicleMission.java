@@ -1034,7 +1034,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			// Add the methane resource
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING)
+					|| useMargin)
 				// Use margin only when estimating how much fuel needed before starting the mission
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true));
 			else

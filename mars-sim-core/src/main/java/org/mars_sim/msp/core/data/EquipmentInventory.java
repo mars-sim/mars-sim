@@ -7,14 +7,10 @@
 
 package org.mars_sim.msp.core.data;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -49,9 +45,6 @@ public class EquipmentInventory
 	
 	/** Locally held equipment set**/
 	private Set<Equipment> equipmentSet;
-
-	/** For serialization use only **/
-//	private Set<Integer> equipmentInts;
 	
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
@@ -65,9 +58,6 @@ public class EquipmentInventory
 		
 		// Create equipment set
 		equipmentSet = new HashSet<>();
-		
-		// Create equipment integer set		
-//		equipmentInts = new HashSet<>();
 		
 		// Create microInventory instance		
 		microInventory = new MicroInventory(owner);
@@ -305,13 +295,10 @@ public class EquipmentInventory
 	public double getAmountResourceStored(int resource) {
 		double result = microInventory.getAmountResourceStored(resource);
 		
-		Iterator<Equipment> i = equipmentSet.iterator(); // new HashSet<Equipment>(equipmentList).iterator();
-		while (i.hasNext()) {
-			result += i.next().getAmountResourceStored(resource);
-//			Equipment e = i.next();
-//			if (e instanceof ResourceHolder) {
-//				result += e.getAmountResourceStored(resource);
-//			}
+		for(Equipment e: equipmentSet) {
+			if (e instanceof ResourceHolder) {
+				result += e.getAmountResourceStored(resource);
+			}
 		}
 
 		return result;
@@ -330,7 +317,7 @@ public class EquipmentInventory
 		int result = 0;
 		for (Equipment e : equipmentSet) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
-			if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
+			if (e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
 				result++;
 			}
 		}
@@ -348,7 +335,7 @@ public class EquipmentInventory
 		int result = 0;
 		for (Equipment e : equipmentSet) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
-			if ((e != null) && (e.getEquipmentType() == containerType)) {
+			if ((e.getEquipmentType() == containerType)) {
 				result++;
 			}
 		}
@@ -367,7 +354,7 @@ public class EquipmentInventory
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		for (Equipment e : equipmentSet) {
-			if (e != null && e.getEquipmentType() == containerType) {
+			if (e.getEquipmentType() == containerType) {
 				Container c = (Container) e;
 				// Check it matches the resource spec
 				int containerResource = c.getResource();
@@ -531,50 +518,4 @@ public class EquipmentInventory
 	public boolean hasItemResource(int resource) {
 		return getItemResourceIDs().contains(resource);
 	}
-
-//	/**
-//	 * Read objects from an ObjectInputStream
-//	 * 
-//	 * @param aIntputStream
-//	 * @throws ClassNotFoundException
-//	 * @throws IOException
-//	 */
-//	private void readObject(ObjectInputStream aIntputStream) throws ClassNotFoundException, IOException {
-//		aIntputStream.defaultReadObject();
-//		
-//		// Create equipment set		
-//		equipmentSet = new HashSet<>();
-//		
-//		// Reassemble equipmentSet
-//	    if (equipmentInts != null && !equipmentInts.isEmpty()) {
-////	    	System.out.println("equipmentInts != null && !equipmentInts.isEmpty()");
-//		    for (Integer i: equipmentInts) {
-//		    	Equipment e = unitManager.getEquipmentByID(i);
-//		    	System.out.println(e);// + " in " + e.getContainerUnit());
-//		    	equipmentSet.add(unitManager.getEquipmentByID(i));
-//		    }
-//	    }
-//	}
-//	
-//	/**
-//	 * Write objects to an ObjectOutputStream
-//	 * 
-//	 * @param aOutputStream
-//	 * @throws IOException
-//	 */
-//	private void writeObject(ObjectOutputStream aOutputStream) throws IOException {
-//	    // Clear previous equipmentInts
-//	    equipmentInts.clear();
-//		
-//		// Create equipment integer set		
-////		equipmentInts = new HashSet<>();
-//	    
-//	    // Assemble equipmentInts
-//	    for (Equipment e: equipmentSet) {
-//	    	equipmentInts.add(e.getIdentifier());
-//	    }
-//	    
-//		aOutputStream.defaultWriteObject();
-//		
-//    }
 }

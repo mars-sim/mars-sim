@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -238,7 +238,7 @@ public class MicroInventory implements Serializable {
 	 */
 	private void updateAmountResourceTotalMass() {
 		// Note: to avoid ConcurrentModificationException, use new ArrayList 
-		totalMass = new ArrayList<>(storageMap.values()).stream().mapToDouble(r -> r.storedAmount).sum();	
+		totalMass = storageMap.values().stream().mapToDouble(r -> r.storedAmount).sum();	
 	}
 
 	/**

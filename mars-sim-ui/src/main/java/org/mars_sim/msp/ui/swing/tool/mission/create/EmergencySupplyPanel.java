@@ -35,8 +35,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -300,14 +298,13 @@ public class EmergencySupplyPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Equipment container = EquipmentFactory.createEquipment(containerType, settlement, true);
-				double capacity = container.getAmountResourceCapacity(resource.getID());
+				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = cargoGoods.get(good);
 				if (resourceAmount > totalCapacity) {
 					double neededCapacity = resourceAmount - totalCapacity;
 					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
-					String containerName = container.getName().toLowerCase();
+					String containerName = containerType.getName();
 					if (neededContainerNum > 1)
 						containerName = containerName + "s";
 					errorMessageLabel.setText(

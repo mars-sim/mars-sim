@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -62,15 +61,9 @@ public final class DeliveryUtil {
 
 	/** Minimum number of repair parts to leave at settlement. */
 	private static final int MIN_NUM_EQUIPMENT = 10;
-	
-	/** Performance cache for equipment goods. */
-	private final static Map<EquipmentType, Equipment> equipmentGoodCache = new HashMap<>();
 
 	/** Cache for the best delivery settlement. */
 	public static Settlement bestDeliverySettlementCache = null;
-
-	/** Cache for container types. */
-	private final static Map<EquipmentType, Equipment> containerTypeCache = new HashMap<>();
 
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
@@ -335,7 +328,7 @@ public final class DeliveryUtil {
 					else {
 						int number = 1;
 						if (isAmountResource)
-							number = (int) getResourceDeliveryAmount(resource, buyingSettlement);
+							number = (int) getResourceDeliveryAmount(resource);
 						else if (isItemResource)
 							number = itemResourceNum;
 						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
@@ -348,14 +341,14 @@ public final class DeliveryUtil {
 					double goodNum = 1D;
 					
 					if (isAmountResource)
-						goodNum = getResourceDeliveryAmount(resource, buyingSettlement);
+						goodNum = getResourceDeliveryAmount(resource);
 					if (isItemResource)
 						goodNum = itemResourceNum;
 					
 					double buyGoodValue = buyerGoodsManager.determineGoodValueWithSupply(good, (supply + currentNum + goodNum));
 					
 					if (isAmountResource) {
-						double deliveryAmount = getResourceDeliveryAmount(resource, buyingSettlement);
+						double deliveryAmount = getResourceDeliveryAmount(resource);
 						buyGoodValue *= deliveryAmount;
 					}
 					if (isItemResource) {
@@ -406,7 +399,7 @@ public final class DeliveryUtil {
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				double amount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()), settlement);
+				double amount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));
 				if (amount < 1) {
 					multiplier = 1;
 				}
@@ -615,7 +608,7 @@ public final class DeliveryUtil {
 		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyQuantity);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			resource = ResourceUtil.findAmountResource(good.getID());
-			sellingValue *= getResourceDeliveryAmount(resource, sellingSettlement);
+			sellingValue *= getResourceDeliveryAmount(resource);
 		}
 		boolean allDelivered = (sellingInventory <= quantityDelivered);
 
@@ -625,7 +618,7 @@ public final class DeliveryUtil {
 			buyingSupplyQuantity = 0D;
 		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyQuantity);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE)
-			buyingValue *= getResourceDeliveryAmount(resource, buyingSettlement);
+			buyingValue *= getResourceDeliveryAmount(resource);
 
 		boolean profitable = (buyingValue > sellingValue);
 		boolean hasBuyValue = buyingValue > 0D;
@@ -650,7 +643,7 @@ public final class DeliveryUtil {
 
 			boolean enoughResourceForContainer = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				enoughResourceForContainer = (sellingSupplyQuantity >= getResourceDeliveryAmount(resource, sellingSettlement));
+				enoughResourceForContainer = (sellingSupplyQuantity >= getResourceDeliveryAmount(resource));
 			}
 
 			boolean enoughEVASuits = true;
@@ -711,16 +704,12 @@ public final class DeliveryUtil {
 	private static boolean hasCapacityInInventory(Good good, Settlement settlement, double remainingCapacity, boolean hasVehicle) {
 		boolean result = false;
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			result = (remainingCapacity >= getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()), settlement));
+			result = (remainingCapacity >= getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID())));
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE)
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodCategory.EQUIPMENT
 				|| good.getCategory() == GoodCategory.CONTAINER) {
-			EquipmentType type = good.getEquipmentType();
-			if (!equipmentGoodCache.containsKey(type)) {
-				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, settlement, true));
-			}
-			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
+			result = (remainingCapacity >= EquipmentFactory.getEquipmentMass(good.getEquipmentType()));
 		} else if (good.getCategory() == GoodCategory.VEHICLE)
 			result = !hasVehicle;
 		return result;
@@ -816,22 +805,10 @@ public final class DeliveryUtil {
 	 * @return amount (kg) of resource to delivery.
 	 * @throws Exception if error determining container.
 	 */
-	private static double getResourceDeliveryAmount(AmountResource resource, Settlement settlement) {
-		double result = 0D;
+	private static double getResourceDeliveryAmount(AmountResource resource) {
 
 		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
-		Equipment container = null;
-		if (containerTypeCache.containsKey(containerType))
-			container = containerTypeCache.get(containerType);
-		else { 
-			container = EquipmentFactory.createEquipment(containerType, settlement, true);
-			containerTypeCache.put(containerType, container);
-		}
-
-		result = container.getAmountResourceCapacity(resource.getID());
-
-		return result;
+		return ContainerUtil.getContainerCapacity(containerType);
 	}
-	
 }
