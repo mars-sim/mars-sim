@@ -199,8 +199,8 @@ public class EVASuit extends Equipment
 		}
 		else {
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, name + " is not allowed to be stored " 
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg.");
+			logger.warning(this, name + "Not allowed to be stored in " 
+					+ this + ".");
 			return quantity;
 		}	
 	}
@@ -317,6 +317,7 @@ public class EVASuit extends Equipment
 				
 				if (oxygenTaken > oxygenLeft)
 					oxygenTaken = oxygenLeft;
+
 				if (oxygenTaken > 0)
 					retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 							

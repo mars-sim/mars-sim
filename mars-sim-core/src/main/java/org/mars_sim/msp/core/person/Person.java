@@ -1063,58 +1063,33 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	private LifeSupportInterface getLifeSupportType() {
 
-		LifeSupportInterface result = null;
-		List<LifeSupportInterface> lifeSupportUnits = new CopyOnWriteArrayList<LifeSupportInterface>();
-
-		Settlement settlement = getSettlement();
-		if (settlement != null) {
-			lifeSupportUnits.add(settlement);
+		if (isInSettlement()) {
+			// if the person is inside 
+			return getSettlement();
 		}
 
-		else {
-			
-			Vehicle vehicle = getVehicle();
-			if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
+		Vehicle vehicle = getVehicle();
+		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
 
-				if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
-					// if the vehicle is inside a garage
-					lifeSupportUnits.add(vehicle.getSettlement());
-				}
-
-				else {
-					lifeSupportUnits.add((LifeSupportInterface) vehicle);
-				}
+			if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
+				// if the vehicle is inside a garage
+				return vehicle.getSettlement();
 			}
+
+			else {
+				return (LifeSupportInterface) vehicle;
+			}
+		}
+
+		EVASuit suit = getSuit();
+		if (suit != null) {
+			return suit;
 		}
 
 		// Note: in future a person may rely on a portable gas mask
-		// for breathing 
+		// for breathing
 		
-//		// Get all contained units.
-//		Collection<Integer> IDs = getInventory().getContainedUnitIDs();
-//		for (Integer id : IDs) {
-//			Unit u = unitManager.getUnitByID(id);
-//			if (u instanceof LifeSupportInterface)
-//				lifeSupportUnits.add((LifeSupportInterface) u);
-//		}
-
-		// If more than one find the best
-		if (lifeSupportUnits.size() > 1) {
-			for (LifeSupportInterface goodUnit : lifeSupportUnits) {
-				// Call Vehicle or Settlement's lifeSupportCheck
-				if (result == null && goodUnit.lifeSupportCheck()) {
-					result = goodUnit;
-				}
-			}
-		}
-
-		// If no good units, just get first life support unit.
-		if ((result == null) && (lifeSupportUnits.size() > 0)) {
-			result = lifeSupportUnits.get(0);
-		}
-
-//		System.out.println(name + " in " + getLocationTag().getImmediateLocation() + " is on " + result.toString() + " life support.");
-		return result;
+		return null;
 	}
 
 	/**
