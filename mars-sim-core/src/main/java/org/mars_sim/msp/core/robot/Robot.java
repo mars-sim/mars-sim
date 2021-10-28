@@ -1518,12 +1518,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
 		
-		// if the vehicle is parked in a garage
+		// if the unit is in a settlement
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
 		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-			// if the vehicle is parked in a garage
+			// if the  unit is in a vehicle 
 			return ((Vehicle)getContainerUnit()).isInSettlement();
 		}
 

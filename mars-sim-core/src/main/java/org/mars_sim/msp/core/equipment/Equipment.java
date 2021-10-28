@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -553,15 +554,28 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
 		
-		// if the vehicle is parked in a garage
+		// if the unit is in a settlement
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
+		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+			return getContainerUnit().isInSettlement();
+		
 		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-			// if the vehicle is parked in a garage
+			// if the unit is in a vehicle 
 			return ((Vehicle)getContainerUnit()).isInSettlement();
 		}
 
+		if (getContainerUnit().getUnitType() == UnitType.PERSON) {
+			// if the unit is on a person
+			return ((Person)getContainerUnit()).isInSettlement();
+		}
+		
+		if (getContainerUnit().getUnitType() == UnitType.ROBOT) {
+			// if the unit is on a robot
+			return ((Robot)getContainerUnit()).isInSettlement();
+		}
+		
 		// Note: may consider the scenario of this unit
 		// being carried in by another person or a robot
 //		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)

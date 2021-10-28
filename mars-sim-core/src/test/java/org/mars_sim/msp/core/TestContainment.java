@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import junit.framework.TestCase;
 
@@ -42,7 +41,6 @@ extends TestCase {
         unitManager = sim.getUnitManager();
         
         Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, unitManager);
-        
         
 		settlement = new MockSettlement();
         unitManager.addUnit(settlement);
@@ -106,7 +104,7 @@ extends TestCase {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
 		assertNull(msg + ": Settlement", source.getSettlement());
 		
-		assertFalse(msg + ": InSettlement", source.isInSettlement());
+		assertTrue(msg + ": InSettlement", source.isInSettlement());
 		assertTrue(msg + ": IsInside", source.isInside());
 		assertFalse(msg + ": IsOutside", source.isOutside());
 
@@ -152,7 +150,8 @@ extends TestCase {
 	public void testVehicleInGarage() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
-		
+        settlement.addOwnedVehicle(vehicle);
+        
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
 		
 		assertTrue("Parking vehicle in garage", settlement.getBuildingManager().addToGarage(vehicle));
@@ -214,9 +213,10 @@ extends TestCase {
 		
 		Vehicle vehicle = new MockVehicle(settlement);
         unitManager.addUnit(vehicle);
+        settlement.addOwnedVehicle(vehicle);
 		
 		assertTrue("Transfer to vehicle", bag.transfer(vehicle));
-		assertInVehicle("In vehcile", bag, vehicle);
+		assertInVehicle("In vehicle", bag, vehicle);
 		
 		assertTrue("Transfer to settlement", bag.transfer(settlement));
 		assertInsideSettllement("After return", bag, settlement);
@@ -231,11 +231,13 @@ extends TestCase {
 
 		Person person = new Person("Test Bill", settlement);
 		unitManager.addUnit(person);
+		settlement.addACitizen(person);
 		
 		assertInsideSettllement("Initial Person", person, settlement);
 		
 		Rover vehicle = new Rover("Rover", "cargo rover", settlement);
         unitManager.addUnit(vehicle);
+        settlement.addOwnedVehicle(vehicle);
 		
 		assertTrue("Transfer to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);
