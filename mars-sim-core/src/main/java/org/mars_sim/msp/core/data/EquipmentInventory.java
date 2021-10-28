@@ -15,9 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -48,8 +46,6 @@ public class EquipmentInventory
 	
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
-	
-	public static UnitManager unitManager = Simulation.instance().getUnitManager();  
 
 	public EquipmentInventory(Unit owner, double cargoCapacity) {
 
@@ -57,7 +53,7 @@ public class EquipmentInventory
 		this.cargoCapacity = cargoCapacity;
 		
 		// Create equipment set
-		equipmentSet = new HashSet<>();
+		equipmentSet = new UnitSet<>();
 		
 		// Create microInventory instance		
 		microInventory = new MicroInventory(owner);

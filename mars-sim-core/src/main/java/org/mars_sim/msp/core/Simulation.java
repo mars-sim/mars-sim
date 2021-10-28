@@ -34,6 +34,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
@@ -514,7 +515,10 @@ public class Simulation implements ClockListener, Serializable {
 			relationshipManager = (RelationshipManager) ois.readObject();		
 			unitManager = (UnitManager) ois.readObject();		
 			masterClock = (MasterClock) ois.readObject();	
-		} finally {
+			
+			UnitSet.reinit(unitManager);
+		}
+		finally {
 			
 			if (ois != null) {
 				ois.close();
