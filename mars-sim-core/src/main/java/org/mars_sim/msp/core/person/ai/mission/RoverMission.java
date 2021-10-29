@@ -16,7 +16,6 @@ import java.util.Map;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -316,9 +315,8 @@ public abstract class RoverMission extends VehicleMission {
 			if (isVehicleLoadable()) {
 				
 				if (member.isInSettlement()) {
-					// Load rover
-					// Random chance of having person load (this allows person to do other things
-					// sometimes)
+					// Note: randomly select this member to load resources for the rover
+					// This allows person to do other important things such as eating
 					if (RandomUtil.lessThanRandPercent(75)) {
 						if (member instanceof Person) {
 							Person person = (Person) member;
@@ -332,31 +330,16 @@ public abstract class RoverMission extends VehicleMission {
 
 								assignTask(person,
 											new LoadVehicleGarage(person, this));
-							} else {
-								// Check if it is day time.
+							} else if (!hasAnotherMission) {
+								// Note: Should check if it is day time to do EVA
 								assignTask(person, new LoadVehicleEVA(person, this));
-
 							}
 						}
 					}
 				}
-				else {
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						
-						boolean hasAnotherMission = true; 
-						Mission m = person.getMission();
-						if (m != null && m != this)
-							hasAnotherMission = true; 
-						
-						if (!hasAnotherMission) {
-						// Check if it is day time.
-							assignTask(person, new LoadVehicleEVA(person, this));
-						}
-					}
-				}
-				
-			} else {
+			}
+			
+			else {
 				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 				return;
@@ -372,27 +355,32 @@ public abstract class RoverMission extends VehicleMission {
 
 			if (member instanceof Person) {
 				Person person = (Person) member;
-				// If person is not aboard the rover, board rover.
+				
+				// If person is not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
 					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
 					
-						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+						boolean canDo = assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+						if (!canDo) {
+							logger.warning(person, "Unable to walk to " + v + ".");
+						}
 						
 						if (!isDone() && isRoverInAGarage) {
-							// Store one or two EVA suit for person (if possible).
-							int limit = RandomUtil.getRandomInt(1, 2);
-							for (int i=0; i<limit; i++) {
-								if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1) {
-									
-									EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-									if (suit != null) {									
-										boolean success = suit.transfer(v);									
-										if (success)
-											logger.warning(person, "Received a spare EVA suit from " + settlement + " to " + v);
-										else
-											logger.warning(person, "Cannot transfer a spare EVA suit from " + settlement + " to " + v);
-									}
+							
+							if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
+									&& v.findNumContainersOfType(EquipmentType.EVA_SUIT) 
+										< (int)(getMembers().size() * 1.5)) {
+								
+								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+								if (suit != null) {									
+									boolean success = suit.transfer(v);									
+									if (success)
+										logger.info(person, "Transferred " + suit + " as spares from " 
+												+ settlement + " to " + v + ".");
+									else
+										logger.warning(person, "Unable to transfer a spare EVA suit from " 
+												+ settlement + " to " + v + ".");
 								}
 							}
 						}
@@ -401,7 +389,6 @@ public abstract class RoverMission extends VehicleMission {
 					else { // this crew member cannot find the walking steps to enter the rover
 						logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 								v.getName()));
-
 					}
 				}
 			}
@@ -409,14 +396,13 @@ public abstract class RoverMission extends VehicleMission {
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
 				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
-					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+					boolean canDo = assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));			
+					if (!canDo) {
+						logger.warning(robot, "Unable to walk to " + v + ".");
+					}
 				} else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 							v.getName()));
-//							logger.warning(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-//									v.getName()));
-//							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-//							endMission();
 				}
 			}
 
@@ -495,7 +481,14 @@ public abstract class RoverMission extends VehicleMission {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If rover has not been parked at settlement, park it.
-				v.transfer(disembarkSettlement);
+				boolean done = v.transfer(disembarkSettlement);
+				
+				if (done) {
+					logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
+				}
+				else {
+					logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
+				}
 //				disembarkSettlement.addParkedVehicle(v);	
 			}
 			
@@ -525,12 +518,12 @@ public abstract class RoverMission extends VehicleMission {
 				
 				// Initiate an rescue operation
 				// Note : Gets a lead person to perform it and give him a rescue badge
-				rescueOperation(rover, p, disembarkSettlement);
+				if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500))	
+					rescueOperation(rover, p, disembarkSettlement);
 			}
 			
 			// Reset the vehicle reservation
 			v.correctVehicleReservation();
-
 
 			// Check if any people still aboard the rover who aren't mission members
 			// and direct them into the settlement.
@@ -625,14 +618,14 @@ public abstract class RoverMission extends VehicleMission {
 				double energy = pc.getEnergy(); // 100 to infinity
 				double hunger = pc.getHunger(); // 0 to infinity
 
-				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
+				boolean hasStrength = fatigue < 1000 && perf > .2 && stress < 60 && energy > 750 && hunger < 1000;
 				
 				if (p.isInVehicle()) {
-					// Checks to see if the person has an EVA suit	
+					// Checks to see if the rover has any EVA suit	
 					EVASuit suit = ((Vehicle)rover).findEVASuit(p);
 					if (suit == null) {
 
-						logger.warning(p, "Could not find a working EVA suit and needed to wait.");
+						logger.warning(p, "Could not find a working EVA suit in " + rover + " and needed to wait.");
 					
 						// If the person does not have an EVA suit	
 						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
@@ -644,9 +637,9 @@ public abstract class RoverMission extends VehicleMission {
 							if (suit != null) {				
 								boolean success = suit.transfer(rover);
 								if (success)
-									logger.warning(p, "Received a spare EVA suit from " + disembarkSettlement + " to " + rover);
+									logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + rover);
 								else
-									logger.warning(p, "Cannot transfer a spare EVA suit from " + disembarkSettlement + " to " + rover);
+									logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + rover);
 							}
 						}
 					}
@@ -655,12 +648,12 @@ public abstract class RoverMission extends VehicleMission {
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
-						logger.info(p, 20_000, "Still had strength left and would help unload cargo.");
+						logger.info(p, 20_000, "Still had strength to help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}
 					else {
-						logger.info(p, 20_000, "Has no more strength and walked back to the settlement.");
+						logger.info(p, 20_000, "No more strength left. Walking back to the settlement.");
 						// walk back home
 						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					}
@@ -711,14 +704,30 @@ public abstract class RoverMission extends VehicleMission {
 		
 		if (p.isDeclaredDead()) {
 //			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-			p.transfer(s);
+			if (p.transfer(s)) {
+				logger.info(p, "Done emergency transfer of the body from " 
+						+ r + " to " + s + ".");
+			}
+			else
+				logger.info(p, "Unable to do emergency transfer of the body from " 
+						+ r + " to " + s + ".");
 		}
 		// Retrieve the person from the rover
-		else if (r != null) {
-			p.transfer(s);
+		else if (r != null && !p.isInSettlement()) {
+			if (p.transfer(s)) {
+				logger.info(p, "Done emergency transfer from " 
+						+ r + " to " + s + ".");
+			}
+			else
+				logger.info(p, "Unable to do emergency transfer from " 
+						+ r + " to " + s + ".");
 		}
 		else if (p.isOutside()) {
-			p.transfer(s);
+			if (p.transfer(s)) {
+				logger.info(p, "Done emergency transfer to " + s + ".");
+			}
+			else
+				logger.info(p, "Unable to do emergency transfer to " + s + ".");
 		}
 				
 		// Gets the settlement id

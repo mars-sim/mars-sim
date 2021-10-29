@@ -1902,6 +1902,17 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
+	}
+	
+	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType

@@ -49,18 +49,14 @@ public class UnloadVehicleEVAMeta extends MetaTask {
     public double getProbability(Person person) {
         double result = 0D;
 
-        if (person.isInSettlement()) {
+        Settlement settlement = person.getSettlement();
+        
+        if (settlement != null) {
        
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
             	return 0;
-            
-        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-            
-//	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-//	        	return 0;
-//	        }
-	        
+                    
 	    	// Check for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 	

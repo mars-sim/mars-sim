@@ -674,10 +674,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			// Make sure the amount requested is less than the max resource cap of this vehicle 
 //			result = cap;
 		
-		logger.info(vehicle, 30_000, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
-				+ "composite fuel margin factor: " + Math.round(factor * 10.0)/10.0 + "   "
-				+ "Amount of fuel: " + Math.round(result * 10.0)/10.0 + " kg");
+		logger.info(vehicle, 30_000, "Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+				+ "Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+				+ "Fuel Margin: " + Math.round(factor * 10.0)/10.0 + "   "
+				+ "Fuel: " + Math.round(result * 10.0)/10.0 + " kg");
 		
 		return result;
 	}
@@ -1075,7 +1075,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuilder buffer = new StringBuilder();
 	
-				buffer.append("Fetching spare parts - ");
+				buffer.append("Fetching spare parts (");
 
 				// Note: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1100,11 +1100,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (number > 0) {
 						result.put(id, number);								
 						buffer
-						.append("ID: ").append(id).append(" ")
+						.append("id:").append(id).append(" ")
 						.append(ItemResourceUtil.findItemResourceName(id)).append(" ")
-						.append("x").append(number).append("   ");
+						.append("x").append(number).append("  ");
 					}
 				}
+				
+				buffer.append(")");
 				
 				// Manually override the number of wheel and battery needed for each mission
 				if (VehicleType.isRover(vehicle.getVehicleType())) { 

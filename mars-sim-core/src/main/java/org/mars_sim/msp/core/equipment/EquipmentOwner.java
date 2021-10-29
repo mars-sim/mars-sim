@@ -101,6 +101,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
 	
 	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	public int findNumContainersOfType(EquipmentType containerType);
+	
+	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType

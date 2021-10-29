@@ -212,15 +212,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
 
-//	/**
-//	 * Gets the total capacity of resource that this container can hold.
-//	 * @return total capacity (kg).
-//	 */
-//	public double getTotalCapacity() {
-//		return BASE_CAPACITY;
-//	}
-
-
 	/**
 	 * Create a string representing the birth time of the person.
 	 *
@@ -304,25 +295,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean isRightOutsideSettlement() {
         return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
     }
-
-//	/**
-//	 * @return {@link LocationSituation} the robot's location
-//	 */
-//	@Override
-//	public LocationSituation getLocationSituation() {
-//		if (isInoperable)
-//			return LocationSituation.DECOMMISSIONED;
-//		else {
-//			Unit container = getContainerUnit();
-//			if (container instanceof Settlement)
-//				return LocationSituation.IN_SETTLEMENT;
-//			else if (container instanceof Vehicle)
-//				return LocationSituation.IN_VEHICLE;
-//			else if (container instanceof MarsSurface)
-//				return LocationSituation.OUTSIDE;
-//		}
-//		return LocationSituation.UNKNOWN;
-//	}
 
 	/**
 	 * Gets the robot's X location at a settlement.
@@ -1405,6 +1377,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
+	}
+	
+	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
 	}
 	
 	/**

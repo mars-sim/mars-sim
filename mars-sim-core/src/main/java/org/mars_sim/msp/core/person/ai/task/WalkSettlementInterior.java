@@ -116,8 +116,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, "Was unable to walk. No valid interior path.");
-				person.getMind().getTaskManager().clearAllTasks("No walking routeS");
+				logger.warning(person, "Unable to walk. No valid interior path.");
+				person.getMind().getTaskManager().clearAllTasks("No walking routes.");
 				return;
 				// TODO: if it's the astronomy observatory building, it will call it thousands of time
 				// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
@@ -268,6 +268,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 					logger.severe(worker, "Unable to change building.");
 //					endTask();
 //					return 0;
+					person.getMind().getTaskManager().clearAllTasks("Unable to change building");
 				}
 				
 				if (!walkingPath.isEndOfPath()) {

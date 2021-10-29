@@ -39,18 +39,20 @@ public class InventoryUtil {
 	 */
 	public static EVASuit getGoodEVASuit(Person p) {
 		Unit cu = p.getContainerUnit();
-		Collection<Equipment> candidates = ((EquipmentOwner) cu).getEquipmentSet();
+		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
  		
  		// Find suit without malfunction
  		// TODO favorite a previous one
-		for(Equipment e : candidates) {
+		for (Equipment e : candidates) {
 			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
 					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
 				return (EVASuit)e;
 			}
 		}
 
-		logger.warning(p, "Could not find an EVA suit in " + cu.getName());
+		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
+		
+		logger.warning(p, "Could not find a good EVA suit in " + cu.getName() + "(" + numEVASuit + ").");
 		return null;
 	}
 	

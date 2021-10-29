@@ -74,14 +74,10 @@ public class LoadVehicleEVAMeta extends MetaTask {
 		
     	double result = 0D;
         
-    	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-    	
+        Settlement settlement = person.getSettlement();
+        
     	if (settlement != null) {
-       	
-//	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-//	        	return 0;
-//	        }
-	        
+       	 
             if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
             	return 0;
                  

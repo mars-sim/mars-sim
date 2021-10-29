@@ -327,6 +327,7 @@ public class EquipmentInventory
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
+	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
 		int result = 0;
 		for (Equipment e : equipmentSet) {

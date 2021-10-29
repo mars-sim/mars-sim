@@ -542,7 +542,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				createSubTask(newSubTask);
 			}
 
-			else {
+			else if (!subTask.getDescription().equalsIgnoreCase(newSubTask.getDescription())) {
 				subTask.addSubTask(newSubTask);
 			}
 		}
