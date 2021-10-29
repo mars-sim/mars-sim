@@ -222,6 +222,20 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return Conversion.capitalize(name);
 	}
 
+	@Override
+	public int hashCode() {
+		return id % 32;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		CropType c = (CropType) obj;
+		return this.id == c.id;
+	}
+	
 	public List<Phase> getPhases() {
 		return phases;
 	}

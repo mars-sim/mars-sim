@@ -67,7 +67,7 @@ public class CropConfig implements Serializable {
 	/** A list of crop type. */
 	private List<CropType> cropTypes;
 	/** The lookup table for crop type. */
-	private Map<Integer, CropType> lookUpCropType = new HashMap<>();
+	private Map<String, CropType> lookUpCropType = new HashMap<>();
 
 	/** Lookup of crop phases **/
 	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
@@ -163,14 +163,14 @@ public class CropConfig implements Serializable {
 			// Set up the default growth phases of a crop
 			List<Phase> phases = lookupPhases.get(cat);
 			
-			CropType cropType = new CropType(cropID, name, growingTime * 1000D,
+			CropType cropType = new CropType(cropID++, name, growingTime * 1000D,
 									cat, lifeCycle, edibleBiomass,
 									edibleWaterContent, inedibleBiomass,
 									dailyPAR, phases, seedName, seedPlant );
 
 			newList.add(cropType);
 
-			lookUpCropType.put(cropID++, cropType);
+			lookUpCropType.put(name.toLowerCase(), cropType);
 		}
 		
 
@@ -400,31 +400,13 @@ public class CropConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the crop type
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public CropType getCropTypeByID(int id) {
-		return lookUpCropType.get(id);
-	}
-
-	/**
 	 * Returns the crop type instance by its name
 	 * 
 	 * @param name
 	 * @return
 	 */
 	public CropType getCropTypeByName(String name) {
-		CropType c = null;
-		for (CropType ct : lookUpCropType.values()) {
-			String n = ct.getName();
-			if (n.equalsIgnoreCase(name)) {
-				return ct;
-			}
-		}
-		
-		return c;
+		return lookUpCropType.get(name.toLowerCase());
 	}
 	
 	/**
@@ -452,20 +434,7 @@ public class CropConfig implements Serializable {
 	public CropType getRandomCropType() {
 		return cropTypes.get(RandomUtil.getRandomInt(cropTypes.size() - 1));
 	}
-	
-	/**
-	 * Picks a crop type randomly
-	 * 
-	 * @return crop type
-	 */
-	public String getCropTypeNameByID(int id) {
-		return getCropTypeByID(id).getName();
-	}
-	
-	public CropCategoryType getCropCategoryType(int id) {
-		return getCropTypeByID(id).getCropCategoryType();
-	}
-	
+
 	/**
 	 * Gets the average growing time for all crops.
 	 * 
@@ -512,19 +481,5 @@ public class CropConfig implements Serializable {
 		}
 		
 		return farmingAreaNeededPerPerson;
-	}
-	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		if (cropTypes != null) {
-			cropTypes = null;
-		}
-		consumptionRates = null;
-		cropTypeNames = null;
-		cropTypes = null;
-		lookUpCropType = null;
-		lookupPhases = null;
 	}
 }

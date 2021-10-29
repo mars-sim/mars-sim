@@ -13,12 +13,10 @@ import java.util.stream.Collectors;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
@@ -47,9 +45,7 @@ public class CropCommand extends AbstractSettlementCommand {
 				 					.stream().map(Building::getFarming)
 									.collect(Collectors.toList());
 		// Display each farm seperately
-		for (Farming farm : farms) {
-			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-			
+		for (Farming farm : farms) {			
 			response.append(farm.getBuilding().getNickName());
 			response.appendBlankLine();
 			if (farm.getNumCrops2Plant() > 0) {
@@ -60,7 +56,7 @@ public class CropCommand extends AbstractSettlementCommand {
 									"Phase", CROP_PHASE_WIDTH, "Grown %", "Harvest");
 			List<Crop> crops = farm.getCrops().stream().sorted().collect(Collectors.toList());
 			for (Crop crop : crops) {
-				response.appendTableRow(crop.getCropName(), cropConfig.getCropCategoryType(crop.getCropTypeID()).getName(),
+				response.appendTableRow(crop.getCropName(), crop.getCropType().getCropCategoryType().getName(),
 										crop.getHealthCondition()*100D,
 										crop.getPhaseType().getName(), crop.getPercentGrowth(),
 										crop.getMaxHarvest());

@@ -250,7 +250,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		// Obtain the crop with the highest VP to work on in the lab
 		CropType type = greenhouse.selectVPCrop();
 			
-		if (greenhouse.checkBotanyLab(type.getID(), worker))  {
+		if (greenhouse.checkBotanyLab(type, worker))  {
 			
 			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Growing "
 					+ type.getName() + Farming.TISSUE_CULTURE 
@@ -332,7 +332,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		if (type != null) {
-			boolean hasWork = greenhouse.checkBotanyLab(type.getID(), worker);
+			boolean hasWork = greenhouse.checkBotanyLab(type, worker);
 
 			if (hasWork) {
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
