@@ -1140,6 +1140,10 @@ public abstract class Vehicle extends Unit
 		if (c.getUnitType() == UnitType.SETTLEMENT)
 			return (Settlement) c;
 		
+		// If this unit is an LUV and it is within a rover
+		if (c.getUnitType() == UnitType.VEHICLE) {
+			return c.getSettlement();
+		}
 		return null;
 	}
 

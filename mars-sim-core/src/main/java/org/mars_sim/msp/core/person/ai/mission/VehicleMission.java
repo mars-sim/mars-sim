@@ -241,7 +241,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public LoadingController prepareLoadingPlan(Settlement loadingSite) {
 		if ((loadingPlan == null) || !loadingPlan.getSettlement().equals(loadingSite)) {
-			logger.info(vehicle, "Prepared a loading plan sourced from " + loadingSite.getName());
+			logger.info(vehicle, 10_000L, "Prepared a loading plan sourced from " + loadingSite.getName());
 			loadingPlan = new LoadingController(loadingSite, vehicle,
 												getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(),

@@ -1293,14 +1293,13 @@ public abstract class Mission implements Serializable, Temporal {
 			
 		if (startingMember != null)	{
 			Person p = (Person)startingMember;
-			if (p.isInSettlement())
-				result = p.getSettlement().getCoordinates();
-				
-			else if (p.isInVehicle() && p.getVehicle() != null)
-				result = p.getVehicle().getCoordinates();
-			
+			Settlement s = p.getSettlement();
+			if (s != null)
+				return s.getCoordinates();	
+			if (p.isInVehicle())
+				return p.getVehicle().getCoordinates();
 			else
-				result = p.getCoordinates();
+				return p.getCoordinates();
 			
 		} else {
 			StringBuilder s = new StringBuilder();

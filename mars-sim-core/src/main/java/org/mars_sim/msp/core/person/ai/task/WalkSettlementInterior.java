@@ -232,7 +232,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
-			logger.severe(worker, "Was unable to continue walking due to missing path objects.");
+			logger.severe(worker, "Unable to continue walking due to missing path objects.");
 			endTask();
 			return 0;
 		}
@@ -264,7 +264,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 				coveredMeters -= distanceToLocation;
 				
-				changeBuildings(location);
+				if (!changeBuildings(location)) {
+					logger.severe(worker, "Unable to change building.");
+//					endTask();
+//					return 0;
+				}
 				
 				if (!walkingPath.isEndOfPath()) {
 					walkingPath.iteratePathLocation();
@@ -411,7 +415,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * 
 	 * @param location the path location the person has reached.
 	 */
-	private void changeBuildings(InsidePathLocation location) {
+	private boolean changeBuildings(InsidePathLocation location) {
 
 		if (location instanceof Hatch) {
 			// If hatch leads to new building, place person in the new building.
@@ -454,9 +458,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				} 
 				
 				else {
-					logger.severe(worker, "Bad connection (" 
+					logger.severe(worker, "Bad building connection (" 
 							+ connector.getBuilding1() + " <--> " + connector.getBuilding2()
 							+ ").");
+					return false;
 				}
 
 				if (newBuilding != null) {
@@ -468,6 +473,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				}
 			}
 		}
+		
+		return true;
 	}
 	
 	/**

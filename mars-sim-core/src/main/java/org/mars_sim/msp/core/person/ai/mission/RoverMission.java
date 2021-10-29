@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -913,21 +914,23 @@ public abstract class RoverMission extends VehicleMission {
 		Map<Integer, Number> map = new HashMap<>();
 		
 		// Get an EVA suit from the staring settlement as an example of an EVA Suit
-		EVASuit suit = InventoryUtil.getGoodEVASuit(getStartingPerson());
+		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, getStartingPerson().getAssociatedSettlement(), true);
 
-		// Determine needed repair parts for EVA suits.
-		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-		Iterator<Integer> i = parts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			String name = ItemResourceUtil.findItemResourceName(part);
-			for (String n : ItemResourceUtil.EVASUIT_PARTS) {
-				if (n.equalsIgnoreCase(name)) {
-					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
-					if (number > 0) {
-						if (map.containsKey(part))
-							number += map.get(part).intValue();
-						map.put(part, number);
+		if (suit != null) {
+			// Determine needed repair parts for EVA suits.
+			Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
+			Iterator<Integer> i = parts.keySet().iterator();
+			while (i.hasNext()) {
+				Integer id = i.next();
+				String name = ItemResourceUtil.findItemResourceName(id);
+				for (String n : ItemResourceUtil.EVASUIT_PARTS) {
+					if (n.equalsIgnoreCase(name)) {
+						int number = (int) Math.round(parts.get(id) * numberMalfunctions);
+						if (number > 0) {
+							if (map.containsKey(id))
+								number += map.get(id).intValue();
+							map.put(id, number);
+						}
 					}
 				}
 			}

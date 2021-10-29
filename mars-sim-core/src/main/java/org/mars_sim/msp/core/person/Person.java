@@ -780,14 +780,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return (Settlement) c;
 		}
 		
-		else if (c.getUnitType() == UnitType.VEHICLE) {
-			Building b = BuildingManager.getBuilding((Vehicle) c);
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
+		if (c.getUnitType() == UnitType.VEHICLE) {
+			return c.getSettlement();
 		}
 		
-		else if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
 			return c.getSettlement();
 		}
 		

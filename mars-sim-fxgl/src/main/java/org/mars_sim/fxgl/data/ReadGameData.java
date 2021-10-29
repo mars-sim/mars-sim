@@ -30,7 +30,7 @@ public class ReadGameData {
             return Optional.of(reader.lines().collect(Collectors.toList()));
 
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         return Optional.empty();

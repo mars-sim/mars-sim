@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -1309,7 +1310,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (person != null) {
 			// If person is in a settlement, walk to random building.
-			if (person.isInSettlement()) {
+			Settlement s = person.getSettlement();
+			if (s != null) {
 
 //				Building currentBuilding = person.getBuildingLocation();
 //
@@ -1318,7 +1320,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //					return;
 //				}
 				
-				List<Building> buildingList = person.getSettlement().getBuildingManager()
+				List<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 				// Randomize its order
 				Collections.shuffle(buildingList);	

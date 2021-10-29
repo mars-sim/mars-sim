@@ -314,7 +314,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The map of mission modifiers. */
 	private Map<MissionType, Integer> missionModifiers;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private Map<MissionType,Integer> missionRange = new EnumMap<>(MissionType.class);
+	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
 	/** The equipment map cache. */
 	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
 	/** The settlement's map of adjacent buildings. */

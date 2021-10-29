@@ -388,11 +388,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return (Settlement) c;
 		}
 
-		else if (c.getUnitType() == UnitType.VEHICLE) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
+		if (c.getUnitType() == UnitType.VEHICLE) {
+			return c.getSettlement();
+		}
+		
+		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+			return c.getSettlement();
 		}
 
 		return null;

@@ -199,7 +199,7 @@ public class UnitSet<T extends Unit>
 	}
     	
     /**
-     * Convert the temp list of UNit identifiers into the Unit references
+     * Convert the temp list of Unit identifiers into the Unit references
      * into the internal set.
      * @param mgr
      */
