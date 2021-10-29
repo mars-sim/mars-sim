@@ -3969,6 +3969,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		return false;
+	}
+	
+	/**
 	 * Gets the holder's unit instance
 	 * 
 	 * @return the holder's unit instance

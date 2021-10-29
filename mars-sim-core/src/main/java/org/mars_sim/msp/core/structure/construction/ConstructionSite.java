@@ -557,4 +557,14 @@ implements Serializable, LocalBoundedObject {
 	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
 	}
+	
+	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		return false;
+	}
 }

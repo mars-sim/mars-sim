@@ -100,7 +100,22 @@ extends TestCase {
 
 	
 	
-	private static void assertInVehicle(String msg, Unit source, Vehicle vehicle) {
+	private static void assertInVehicle(String msg, Person source, Vehicle vehicle) {
+		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
+		assertNotNull(msg + ": Settlement", source.getSettlement());
+		
+		assertTrue(msg + ": InSettlement", source.isInSettlement());
+		assertTrue(msg + ": IsInside", source.isInside());
+		assertFalse(msg + ": IsOutside", source.isOutside());
+
+		assertTrue(msg + ": isInVehicle", source.isInVehicle());
+		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
+		
+		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
+		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
+	}
+
+	private static void assertInVehicle(String msg, Equipment source, Vehicle vehicle) {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
 		assertNull(msg + ": Settlement", source.getSettlement());
 		
@@ -114,7 +129,6 @@ extends TestCase {
 		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
 		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
 	}
-
 	
 	private void assertOnSurface(String msg, Unit source) {
 		assertEquals(msg + ": Location state type", LocationStateType.MARS_SURFACE, source.getLocationStateType());
