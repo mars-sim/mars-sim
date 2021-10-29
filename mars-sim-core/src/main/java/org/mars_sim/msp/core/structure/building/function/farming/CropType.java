@@ -213,6 +213,69 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return dailyPAR;
 	}
 
+	public int getID() {
+		return id;
+	}
+
+	/**
+	 * Get the next phase in the growing sequence
+	 * @param phaseType
+	 * @return
+	 */
+	public PhaseType getNextPhaseType(PhaseType phaseType) {
+		int nextId = 1;
+
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == phaseType) {
+				return phases.get(nextId).getPhaseType();
+			}
+			nextId++;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the Phase for a specific PhaseType
+	 * @param phaseType
+	 * @return
+	 */
+	public Phase getPhase(PhaseType phaseType) {
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == phaseType) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * What percentage complete has to be completed for the specified phase
+	 * to advance to the next one
+	 * @param phaseType
+	 * @return
+	 */
+	public double getNextPhasePercentage(PhaseType phaseType) {
+		double result = 0;
+		for(Phase p : phases) {
+			result += p.getPercentGrowth();
+			if (p.getPhaseType() == phaseType)
+				return result;
+		}
+		return result;
+	}
+
+	
+	/**
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	public int compareTo(CropType c) {
+		return name.compareToIgnoreCase(c.name);
+	}
+
 	/**
 	 * String representation of this cropType.
 	 * 
@@ -234,29 +297,5 @@ public class CropType implements Serializable, Comparable<CropType> {
 		if (this.getClass() != obj.getClass()) return false;
 		CropType c = (CropType) obj;
 		return this.id == c.id;
-	}
-	
-	public List<Phase> getPhases() {
-		return phases;
-	}
-
-	public int getID() {
-		return id;
-	}
-	
-	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(CropType c) {
-		return name.compareToIgnoreCase(c.name);
-	}
-
-	public void destroy() {
-		phases = null;
-		cropCategoryType = null;
 	}
 }

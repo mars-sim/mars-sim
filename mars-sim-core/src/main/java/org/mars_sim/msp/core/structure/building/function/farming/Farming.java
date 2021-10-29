@@ -1235,17 +1235,7 @@ public class Farming extends Function implements Serializable {
 
 		lab = null;
 
-//		Iterator<CropType> i = cropListInQueue.iterator();
-//		while (i.hasNext()) {
-//			i.next().destroy();
-//		}
-
 		cropListInQueue = null;
-
-		Iterator<Crop> ii = crops.iterator();
-		while (ii.hasNext()) {
-			ii.next().destroy();
-		}
 
 		crops = null;
 
