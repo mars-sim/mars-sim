@@ -421,6 +421,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 *
 	 * @return {@link Settlement} the equipment's settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
 
 		if (getContainerID() == 0)
@@ -437,7 +438,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		if (c.getUnitType() == UnitType.VEHICLE) {
-			return c.getSettlement();
+			return ((Vehicle)c).getSettlement();
 		}
 		
 		return null;

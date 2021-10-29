@@ -769,6 +769,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @return the person's settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
 
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
@@ -781,7 +782,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		}
 		
 		if (c.getUnitType() == UnitType.VEHICLE) {
-			return c.getSettlement();
+			return ((Vehicle)c).getSettlement();
 		}
 		
 		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {

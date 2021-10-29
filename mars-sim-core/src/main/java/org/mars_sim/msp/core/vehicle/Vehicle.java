@@ -1130,6 +1130,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return the settlement the vehicle is parked at
 	 */
+	@Override
 	public Settlement getSettlement() {
 		
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
@@ -1142,7 +1143,7 @@ public abstract class Vehicle extends Unit
 		
 		// If this unit is an LUV and it is within a rover
 		if (c.getUnitType() == UnitType.VEHICLE) {
-			return c.getSettlement();
+			return ((Vehicle)c).getSettlement();
 		}
 		
 		return null;

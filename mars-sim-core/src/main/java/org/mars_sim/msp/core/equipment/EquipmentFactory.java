@@ -59,8 +59,8 @@ public final class EquipmentFactory {
 		default:
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 		}
-		unitManager.addUnit(newEqm);
 		
+		unitManager.addUnit(newEqm);
 		// Add this equipment as being owned by this settlement
 		settlement.addEquipment(newEqm);
 		// Set the container unit

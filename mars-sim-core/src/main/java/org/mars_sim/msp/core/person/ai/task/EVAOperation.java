@@ -638,9 +638,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
 		Airlock result = null;
-
-		if (person.isInSettlement()) {
-			result = person.getSettlement().getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+		
+		Settlement s = person.getSettlement();
+		if (s != null) {
+			result = s.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
 		} 
 		
 		else if (person.isInVehicle()) {
@@ -656,8 +657,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
 		Airlock result = null;
 
-		if (robot.isInSettlement()) {
-			result = robot.getSettlement().getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
+		Settlement s = robot.getSettlement();
+		if (s != null) {
+			result = s.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
 		} 
 		
 		else if (robot.isInVehicle()) {

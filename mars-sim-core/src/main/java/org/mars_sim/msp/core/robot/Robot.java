@@ -361,7 +361,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		if (c.getUnitType() == UnitType.VEHICLE) {
-			return c.getSettlement();
+			return ((Vehicle)c).getSettlement();
 		}
 		
 		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {

@@ -673,7 +673,7 @@ public class Walk extends Task implements Serializable {
 	 */
 	private double walkingSettlementInteriorPhase(double time) {
 		double timeLeft = time;
-		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
+//		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 		
 		if (person != null) {
 			logger.log(person, Level.FINE, 0,
@@ -709,13 +709,11 @@ public class Walk extends Task implements Serializable {
 					}
 					else {
 						logger.log(person, Level.SEVERE, 5_000,
-			      				"Could notfind a destination building to go.");
+			      				"Could not find a destination building to go.");
 						endTask();
 					}
 				} else if (person.isOutside()) {
-					logger.log(person, Level.SEVERE, 5_000,
-							"Was not in a building.");
-//					endTask();
+					logger.log(person, Level.SEVERE, 5_000, "Not in a building.");
 					// do this for now so as to debug why this happen and how often
 					setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
 					// considered "cheating"
@@ -751,7 +749,7 @@ public class Walk extends Task implements Serializable {
 					// step.building.getNickName());
 					addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
 				} else {
-					logger.log(robot , Level.SEVERE, 5_000,"Was not in a building.");
+					logger.log(robot , Level.SEVERE, 5_000, "Not in a building.");
 //	        		logger.info(robot + " may be at " + robot.getBuildingLocation());
 //	        		logger.info(robot + "'s location is " + robot.getLocationSituation());
 //	        		logger.info(robot + " is in " + robot.getSettlement());
