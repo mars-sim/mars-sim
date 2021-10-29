@@ -242,7 +242,7 @@ implements MouseListener {
 		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
 
 		// Prepare crop table model
-		cropTableModel = new CropTableModel(farm, cropConfig);
+		cropTableModel = new CropTableModel(farm);
 
 		// Prepare crop table
 		WebTable cropTable = new WebTable(cropTableModel){
@@ -405,10 +405,9 @@ implements MouseListener {
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
-            int id = crop.getCropTypeID();
-            CropType ct = cropConfig.getCropTypeByID(id);
+            CropType ct = crop.getCropType();
         	cropName = Conversion.capitalize(crop.getCropName());
-            cat = cropConfig.getCropCategoryType(id).getName();
+            cat = ct.getCropCategoryType().getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
         	mass1 = ct.getInedibleBiomass();
@@ -635,7 +634,6 @@ implements MouseListener {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		private Farming farm;
-		private CropConfig cropConfig;
 		private java.util.List<Crop> crops;
 		private ImageIcon redDot;
 		private ImageIcon redHalfDot;
@@ -644,9 +642,8 @@ implements MouseListener {
 		private ImageIcon greenDot;
 		private ImageIcon greenHalfDot;
 
-		private CropTableModel(Farming farm, CropConfig cropConfig) {
+		private CropTableModel(Farming farm) {
 			this.farm = farm;
-			this.cropConfig = cropConfig;
 			crops = farm.getCrops();
 			redDot = ImageLoader.getIcon("RedDot");
 			redHalfDot = ImageLoader.getIcon("dot_red_half");
@@ -693,9 +690,7 @@ implements MouseListener {
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
-            int id = crop.getCropTypeID();
-//            CropType ct = CropConfig.getCropTypeByID(id);
-			String category = cropConfig.getCropCategoryType(id).getName();
+			String category = crop.getCropType().getCropCategoryType().getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();

@@ -67,30 +67,17 @@ public class Farming extends Function implements Serializable {
 	private static final int SOIL_ID = ResourceUtil.soilID;
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	
-	public static final String MUSHROOM = "mushroom";
-	public static final String FERTILIZER = "fertilizer";
-	public static final String SOIL = "soil";
-	public static final String CROP_WASTE = "crop waste";
 	public static final String TISSUE_CULTURE = " " + FoodType.TISSUE.getName();
-	public static final String CORN = "corn";
-//	 public static final String LED_KIT = "light emitting diode kit";
-//	 public static final String HPS_LAMP = "high pressure sodium lamp";
+	private static final String CORN = "corn";
+	
+	/** The average temperature tolerance of a crop [in C]. */
+	private static final double T_TOLERANCE = 3D;
 	
 	/** The amount of crop tissue culture needed for each square meter of growing area. */
-	public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
-	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
-	public static final double CO2_RATE = 400;
-	public static final double O2_RATE = .75;
-	public static final double MIN  = .00001D;// 0.0000000001;
+	private static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
+	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
+	private static final double MIN  = .00001D;// 0.0000000001;
 
-//	 private static ItemResource LED_Item;
-//	 private static ItemResource HPS_Item;
-//	 private int numLEDInUse;
-//	 private int cacheNumLED;
-//	/** The number of crop types available. */
-//	private static int cropTypeNum;
-	/** The number of High Power Sodium Lamp needed. */
-//	private int numHPSinNeed;
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -112,8 +99,6 @@ public class Farming extends Function implements Serializable {
 
 	/** List of crop types in queue */
 	private List<String> cropListInQueue;
-//	/** List of crop types the greenhouse is currently growing */
-//	private List<Integer> plantedCrops;
 	/** List of crops the greenhouse is currently growing */
 	private List<Crop> crops;
 	/** A map of all the crops ever planted in this greenhouse. */
@@ -194,13 +179,11 @@ public class Farming extends Function implements Serializable {
 		CropType ct = null;
 		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
-//		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		int totalCropTypes = cropConfig.getNumCropTypes();
 
 		// Attempt to find a unique crop but limit the number of attempts
 		int attempts = 0;
 		while ((attempts < totalCropTypes) && cropAlreadyPlanted) {
-//			System.out.println(attempts);
 			// Startup select random but later use VP	
 			if (isStartup) {
 				ct = cropConfig.getRandomCropType();
@@ -212,7 +195,7 @@ public class Farming extends Function implements Serializable {
 			// If accepting corn or not CORN then check if it is planted
 			if (!noCorn || !ct.getName().equalsIgnoreCase(CORN)) {
 				attempts++;
-				cropAlreadyPlanted = hasTooMany(ct.getName());
+				cropAlreadyPlanted = hasTooMany(ct);
 			}
 		}
 		return ct;
@@ -230,7 +213,6 @@ public class Farming extends Function implements Serializable {
 		CropType chosen = null;
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
-//		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		for (CropType c : cropConfig.getCropTypes()) {
 			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
@@ -257,10 +239,6 @@ public class Farming extends Function implements Serializable {
 			// get the last two planted crops
 			last2CT = cropHistory.get(size - 2);
 			lastCT = cropHistory.get(size - 1);
-//			System.out.println("0 : " + cropHistory.get(0));
-//			System.out.println("1 : " + cropHistory.get(1));
-//			System.out.println("last2CT : " + last2CT);
-//			System.out.println("lastCT : " + lastCT);
 	
 			if (no_1_crop.getName().equalsIgnoreCase(last2CT) || no_1_crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
@@ -322,11 +300,11 @@ public class Farming extends Function implements Serializable {
 		} else
 			chosen = no_1_crop;
 
-		boolean flag = hasTooMany(chosen.getName());
+		boolean flag = hasTooMany(chosen);
 
 		while (flag) {
 			chosen = cropConfig.getRandomCropType();
-			flag = hasTooMany(chosen.getName());
+			flag = hasTooMany(chosen);
 		}
 
 		// if it's a mushroom, add increases the item demand of the mushroom containment
@@ -343,10 +321,10 @@ public class Farming extends Function implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public boolean hasTooMany(String name) {
+	private boolean hasTooMany(CropType name) {
 		int num = 0;
 		for (Crop c : crops) {
-			if (c.getCropName().equalsIgnoreCase(name))
+			if (c.getCropType().equals(name))
 				num++;
 		}
 
@@ -653,7 +631,7 @@ public class Farming extends Function implements Serializable {
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
 				if (lastCrop != null) {
-					if (c.getCropTypeID() == lastCrop.getCropTypeID())
+					if (c.getCropType().equals(lastCrop.getCropType()))
 						return c;
 					// else if (cropAssignment.get(unit) == c) {
 					// updateAssignmentMap(unit);
@@ -750,15 +728,22 @@ public class Farming extends Function implements Serializable {
 	
 			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());
 			double greyFilterRate = building.getSettlement().getGreyWaterFilteringRate();
-			
-			// Call timePassing on each crop.
-			Iterator<Crop> i = crops.iterator();
 
-			while (i.hasNext()) {
-				Crop crop = i.next();
+			// Compute the effect of the temperature
+			double temperatureModifier = 1D;
+			double tempNow = building.getCurrentTemperature();
+			double tempInitial = building.getInitialTemperature();
+			if (tempNow > (tempInitial + T_TOLERANCE))
+				temperatureModifier = tempInitial / tempNow;
+			else if (tempNow < (tempInitial - T_TOLERANCE))
+				temperatureModifier = tempNow / tempInitial;
+
+			// Call timePassing on each crop.
+			for( Crop crop : crops) {
 				
 				try {
-					crop.timePassing(pulse, productionLevel, solarIrradiance, greyFilterRate);
+					crop.timePassing(pulse, productionLevel, solarIrradiance,
+									 greyFilterRate, temperatureModifier);
 				
 				} catch (Exception e) {
 					logger.severe(building, crop.getCropName() + " ran into issues ", e);
@@ -861,8 +846,7 @@ public class Farming extends Function implements Serializable {
 
 		// Add power required to sustain growing or harvest-ready crops.
 		for (Crop crop : crops) {
-			if ((crop.getCurrentPhaseNum() > 2 && crop.getCurrentPhaseNum() < crop.getPhases().size() - 1)
-					|| crop.getCurrentPhaseNum() == 2)
+			if (crop.needsPower()) 
 				powerRequired += powerSustainingCrop;
 		}
 
@@ -909,10 +893,10 @@ public class Farming extends Function implements Serializable {
 	 * Checks to see if a botany lab with an open research slot is available and
 	 * performs cell tissue extraction
 	 * 
-	 * @param cropTypeID
+	 * @param type
 	 * @return true if work has been done
 	 */
-	public boolean checkBotanyLab(int cropTypeID, Worker worker) {
+	public boolean checkBotanyLab(CropType type, Worker worker) {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
@@ -931,7 +915,7 @@ public class Farming extends Function implements Serializable {
 			hasEmptySpace = lab.addResearcher();
 
 			if (hasEmptySpace) {
-				boolean workDone = growCropTissue(lab, cropTypeID, worker);// , true);
+				boolean workDone = growCropTissue(lab, type, worker);// , true);
 				lab.removeResearcher();
 				return workDone;
 			}
@@ -949,7 +933,7 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							boolean workDone = growCropTissue(lab1, cropTypeID, worker);// true);
+							boolean workDone = growCropTissue(lab1, type, worker);// true);
 							lab.removeResearcher();
 							return workDone;
 						}
@@ -965,7 +949,7 @@ public class Farming extends Function implements Serializable {
 		// Check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			return growCropTissue(lab, cropTypeID, worker);// , false);
+			return growCropTissue(lab, type, worker);// , false);
 		} 
 		
 		else {
@@ -979,7 +963,7 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						boolean workDone = growCropTissue(lab2, cropTypeID, worker);// , false);
+						boolean workDone = growCropTissue(lab2, type, worker);// , false);
 						return workDone;
 					}
 				}
@@ -995,14 +979,14 @@ public class Farming extends Function implements Serializable {
 	 * @param lab
 	 * @param croptype
 	 */
-	private boolean growCropTissue(Research lab, int cropTypeID, Worker worker) {
-		String cropName = cropConfig.getCropTypeNameByID(cropTypeID);
+	private boolean growCropTissue(Research lab, CropType type, Worker worker) {
+		String cropName = type.getName();
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
 		boolean isDone = false;
-		int cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
+		int cropID = type.getCropID();
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
 		double amountAvailable = building.getSettlement().getAmountResourceStored(tissueID);
 		double amountExtracted = 0;

@@ -314,8 +314,7 @@ public class CropTableModel extends UnitTableModel {
 			while (k.hasNext()) {
 				kk++;
 				Crop crop = k.next();
-				int id = crop.getCropTypeID();
-				String catName = cropConfig.getCropCategoryType(id).getName();
+				String catName = crop.getCropType().getCropCategoryType().getName();
 				int num = getCategoryNum(catName);
 				int val = intList.get(num) + 1;
 				intList.set(num, val);
@@ -335,7 +334,6 @@ public class CropTableModel extends UnitTableModel {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		
 		if (mode == GameMode.COMMAND) {
@@ -355,8 +353,7 @@ public class CropTableModel extends UnitTableModel {
 		
 		else if (eventType == UnitEventType.CROP_EVENT) {
 			Crop crop = (Crop) target;
-			int id = crop.getCropTypeID();
-			String catName = cropConfig.getCropCategoryType(id).getName();
+			String catName = crop.getCropType().getCropCategoryType().getName();
 
 			try {
 				int tempColumnNum = -1;
@@ -391,8 +388,6 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	public int getNewValue(Unit unit, String cropCat) {
 
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-
 		int result = 0;
 		// Recompute only the total number of cropType having cropCategory = cropCat
 		// Examine match the CropType within List<CropType> having having cropCategory
@@ -411,8 +406,7 @@ public class CropTableModel extends UnitTableModel {
 				Iterator<Crop> j = cropsList.iterator();
 				while (j.hasNext()) {
 					Crop crop = j.next();
-					int id = crop.getCropTypeID();
-					String catName = cropConfig.getCropCategoryType(id).getName();
+					String catName = crop.getCropType().getCropCategoryType().getName();
 					if (catName.equals(cropCat))
 						total++;
 				}
@@ -482,12 +476,10 @@ public class CropTableModel extends UnitTableModel {
 		StringBuilder tt = new StringBuilder();
 		Building b = buildings.get(row);
 		int catNum = cropCatMap.get(b).get(col);
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		Farming f = b.getFarming();
 		for (Crop c : f.getCrops()) {
-				int id = c.getCropTypeID();
-				String catStr = cropConfig.getCropCategoryType(id).toString();
+				String catStr = c.getCropType().getCropCategoryType().toString();
 			if (getCategoryNum(catStr) == catNum)
 				tt.append(c.getCropName()).append(System.lineSeparator());
 		}
