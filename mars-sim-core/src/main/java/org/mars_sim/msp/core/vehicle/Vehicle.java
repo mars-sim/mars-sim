@@ -2144,7 +2144,7 @@ public abstract class Vehicle extends Unit
 		if (cu.getUnitType() == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
-		else {
+		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			transferred = ((Settlement)cu).removeParkedVehicle(this);
 		}
 
@@ -2152,7 +2152,7 @@ public abstract class Vehicle extends Unit
 			if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
 			}
-			else {
+			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addParkedVehicle(this);
 			}
 			

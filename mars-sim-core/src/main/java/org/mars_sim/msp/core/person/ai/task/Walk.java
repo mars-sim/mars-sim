@@ -1129,7 +1129,7 @@ public class Walk extends Task implements Serializable {
 						+ " inside " + garageBuilding + ".");
 				}
 			}
-		} 
+		}
 		
 		else if (robot != null) {
 
@@ -1137,15 +1137,23 @@ public class Walk extends Task implements Serializable {
 					"About to exit rover " + rover.getName()
 					+ ".");			
 
+			// Exit the rover parked inside a garage onto the settlement
 			if (robot.isInVehicleInGarage()) {
-				// Exit the rover inside a garage onto the settlement
-				robot.transfer(garageBuilding.getSettlement());
-		
-				BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
 				
-				logger.log(robot, Level.FINER, 4000, 
-						"Just exited rover " + rover.getName()
-						+ ".");
+				if (robot.transfer(garageBuilding.getSettlement())) {
+					logger.log(robot, Level.FINER, 4000, 
+						"Just exited rover " + rover.getName() 
+						+ " inside " + garageBuilding + ".");
+					
+					// Add the robot onto the garage
+					BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
+	
+				}
+				else {
+					logger.log(robot, Level.WARNING, 4000, 
+						"Failed to exit rover " + rover.getName() 
+						+ " inside " + garageBuilding + ".");
+				}
 			}
 		}
 
@@ -1193,19 +1201,17 @@ public class Walk extends Task implements Serializable {
 		
 		else if (robot != null) {
 			
-			logger.log(person, Level.FINER, 4000, 
-					"About to enter rover " + rover.getName()
-					+ ".");
-			
 			// Place this robot within a vehicle inside a garage in a settlement
-			robot.transfer(rover);
-		
-			// Remove the robot from the garage
-			BuildingManager.removeRobotFromBuilding(robot, garageBuilding);
-
-			logger.log(robot, Level.FINER, 4000, 
-					"Just entered rover " + rover.getName()
-					+ ".");
+			if (robot.transfer(rover)) {
+				logger.log(robot, Level.FINER, 4000, 
+					"Just entered rover " + rover.getName() 
+					+ " inside " + garageBuilding + ".");
+			}
+			else {
+				logger.log(robot, Level.WARNING, 4000, 
+					"Failed to enter rover " + rover.getName() 
+					+ " inside " + garageBuilding + ".");
+			}
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {

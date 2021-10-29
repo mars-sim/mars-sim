@@ -375,16 +375,18 @@ public abstract class DroneMission extends VehicleMission {
 		Drone drone = (Drone) v;
 
 		if (v != null) {
-			// Add vehicle to a garage if available.
-			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If drone has not been parked at settlement, park it.
-				disembarkSettlement.addParkedVehicle(v);	
+				v.transfer(disembarkSettlement);
+//				disembarkSettlement.addParkedVehicle(v);	
 			}
 
+			// Add vehicle to a garage if available.
+			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+			
 			// Make sure the drone chasis is not overlapping a building structure in the settlement map
-	        if (!isInAGarage())
+	        if (!inAGarage)
 	        	drone.findNewParkingLoc();
 
 			// Reset the vehicle reservation

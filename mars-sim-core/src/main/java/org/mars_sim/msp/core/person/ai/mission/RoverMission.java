@@ -495,7 +495,8 @@ public abstract class RoverMission extends VehicleMission {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If rover has not been parked at settlement, park it.
-				disembarkSettlement.addParkedVehicle(v);	
+				v.transfer(disembarkSettlement);
+//				disembarkSettlement.addParkedVehicle(v);	
 			}
 			
 			// Test if this rover is towing another vehicle or is being towed

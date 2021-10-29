@@ -424,6 +424,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (person != null) {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
+					BuildingManager.removePersonFromBuilding(person, currentBuilding);
 					BuildingManager.addPersonOrRobotToBuilding(worker, hatch.getBuilding());
 				}
 			} 
@@ -431,6 +432,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			else if (robot != null) {
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
+					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
 					BuildingManager.addPersonOrRobotToBuilding(robot, hatch.getBuilding());
 				}
 			}
@@ -466,10 +468,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 				if (newBuilding != null) {
 					
-					if (person != null)
+					if (person != null) {
+						BuildingManager.removePersonFromBuilding(person, currentBuilding);
 						BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
-					else if (robot != null)
+					}
+					else if (robot != null) {
+						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
 						BuildingManager.addPersonOrRobotToBuilding(robot, newBuilding);
+					}
 				}
 			}
 		}
