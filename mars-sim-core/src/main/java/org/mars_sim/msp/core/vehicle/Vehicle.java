@@ -1144,6 +1144,7 @@ public abstract class Vehicle extends Unit
 		if (c.getUnitType() == UnitType.VEHICLE) {
 			return c.getSettlement();
 		}
+		
 		return null;
 	}
 

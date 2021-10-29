@@ -117,7 +117,7 @@ extends TestCase {
 
 	private static void assertInVehicle(String msg, Equipment source, Vehicle vehicle) {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
-		assertNull(msg + ": Settlement", source.getSettlement());
+		assertNotNull(msg + ": Settlement", source.getSettlement());
 		
 		assertTrue(msg + ": InSettlement", source.isInSettlement());
 		assertTrue(msg + ": IsInside", source.isInside());
