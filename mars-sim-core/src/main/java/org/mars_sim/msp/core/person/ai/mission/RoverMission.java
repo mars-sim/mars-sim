@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -277,6 +278,34 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
+	 * Does the vehicle have at least the baseline numbers of EVA suits ?
+	 * 
+	 * @param vehicle
+	 * @return
+	 */
+	protected boolean hasBaselineNumEVASuit(Vehicle vehicle) {
+		boolean result = false;
+		
+		int numV = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
+		
+		int baseline = (int)(getMembers().size() * 1.5);
+
+		int numP = 0;
+		
+		for (Person p: ((Crewable)vehicle).getCrew()) {
+			if (p.getSuit() != null)
+				numP++;
+			else if (p.getInventorySuit() != null)
+				numP++;
+		}
+		
+		if (numV + numP > baseline)
+			return true;
+		
+		return result;
+	}
+	
+	/**
 	 * Performs the embark from settlement phase of the mission.
 	 * 
 	 * @param member the mission member currently performing the mission
@@ -369,8 +398,7 @@ public abstract class RoverMission extends VehicleMission {
 						if (!isDone() && isRoverInAGarage) {
 							
 							if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
-									&& v.findNumContainersOfType(EquipmentType.EVA_SUIT) 
-										< (int)(getMembers().size() * 1.5)) {
+									&& !hasBaselineNumEVASuit(v)) {
 								
 								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
 								if (suit != null) {									
@@ -596,63 +624,54 @@ public abstract class RoverMission extends VehicleMission {
 	}
 	
 	/**
-	 * Checks on a person's status to see if he can walk home or be rescued
+	 * Checks on a person's status to see if he can walk home or else be rescued
 	 * 
 	 * @param rover
 	 * @param p
 	 * @param disembarkSettlement
 	 */
 	private void checkPersonStatus(Rover rover, Person p, Settlement disembarkSettlement) {
+		
+		if (p.getSuit() == null && p.isInVehicle()) {
+			// Checks to see if the rover has any EVA suit	
+			EVASuit suit = ((Vehicle)rover).findEVASuit(p);
+			
+			if (suit == null) {
+
+				logger.warning(p, "Could not find a working EVA suit in " + rover + " and needed to wait.");
+			
+				// If the person does not have an EVA suit	
+				int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
+			
+				if (availableSuitNum > 0) {
+					// Deliver an EVA suit from the settlement to the rover
+					// Note: Need to generate a task for a person to hand deliver an extra suit
+					suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
+					if (suit != null) {				
+						boolean success = suit.transfer(rover);
+						if (success)
+							logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + rover);
+						else
+							logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + rover);
+					}
+				}
+			}
+		}
+		
 		if (p.isInVehicle() || p.isOutside()) {
 			// Get random inhabitable building at emergency settlement.
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+			
 			if (destinationBuilding != null) {
 				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
-				PhysicalCondition pc = p.getPhysicalCondition();
-				double fatigue = pc.getFatigue(); // 0 to infinity
-				double perf = p.getPerformanceRating(); // 0 to 1
-				double stress = pc.getStress(); // 0 to 100
-				double energy = pc.getEnergy(); // 100 to infinity
-				double hunger = pc.getHunger(); // 0 to infinity
-
-				boolean hasStrength = fatigue < 1000 && perf > .2 && stress < 60 && energy > 750 && hunger < 1000;
-				
-				if (p.isInVehicle()) {
-					// Checks to see if the rover has any EVA suit	
-					EVASuit suit = ((Vehicle)rover).findEVASuit(p);
-					if (suit == null) {
-
-						logger.warning(p, "Could not find a working EVA suit in " + rover + " and needed to wait.");
-					
-						// If the person does not have an EVA suit	
-						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
-					
-						if (availableSuitNum > 0) {
-							// Deliver an EVA suit from the settlement to the rover
-							// Note: Need to generate a task for a person to hand deliver an extra suit
-							suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
-							if (suit != null) {				
-								boolean success = suit.transfer(rover);
-								if (success)
-									logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + rover);
-								else
-									logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + rover);
-							}
-						}
-					}
-				}
+				boolean hasStrength = p.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 				
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
-					if (hasStrength) {
-						logger.info(p, 20_000, "Still had strength to help unload cargo.");
-						// help unload the cargo
-						unloadCargo(p, rover);
-					}
-					else {
+					if (!hasStrength) {
 						logger.info(p, 20_000, "No more strength left. Walking back to the settlement.");
 						// walk back home
 						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
@@ -661,11 +680,8 @@ public abstract class RoverMission extends VehicleMission {
 				} 
 				
 				else if (!hasStrength) {
-
-					// Help this person put on an EVA suit
-					// Note: consider inflatable medical tent for emergency transport of incapacitated personnel
-					
-					// This person needs to be rescued.
+					// Note 1: Help this person put on an EVA suit
+					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
 					logger.info(p, 
 							 Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
 									disembarkSettlement.getNickName())); //$NON-NLS-1$

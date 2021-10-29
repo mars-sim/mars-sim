@@ -1599,10 +1599,24 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 	/**
 	 * Gets the EVA suit the person has donned on
+	 * 
 	 * @return
 	 */
 	public EVASuit getSuit() {
 		return suit;
+	}
+	
+	/**
+	 * Gets the EVA suit the person has in inventory
+	 * 
+	 * @return
+	 */
+	public EVASuit getInventorySuit() {
+		for (Equipment e: getEquipmentSet()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT)
+				return (EVASuit)e;
+		}
+		return null;
 	}
 	
 	public int getExtrovertmodifier() {
