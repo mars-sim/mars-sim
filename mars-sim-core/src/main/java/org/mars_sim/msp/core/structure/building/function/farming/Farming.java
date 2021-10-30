@@ -67,7 +67,6 @@ public class Farming extends Function implements Serializable {
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	
 	public static final String TISSUE_CULTURE = " " + FoodType.TISSUE.getName();
-	private static final String CORN = "corn";
 	
 	/** The average temperature tolerance of a crop [in C]. */
 	private static final double T_TOLERANCE = 3D;
@@ -135,8 +134,9 @@ public class Farming extends Function implements Serializable {
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
 
+		Map<CropType,Integer> alreadyPlanted = new HashMap<>();
 		for (int x = 0; x < defaultCropNum; x++) {
-			CropType cropType = pickACrop(true, false);
+			CropType cropType = pickACrop(alreadyPlanted);
 			if (cropType == null) {
 				break;// for avoiding NullPointerException during maven test
 			}
@@ -145,6 +145,8 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 				cropHistory.put(crop.getIdentifier(), cropType.getName());
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+				
+				alreadyPlanted.merge(cropType, 1, Integer::sum);
 			}
 		}
 	}
@@ -155,9 +157,7 @@ public class Farming extends Function implements Serializable {
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropType}
 	 */
-	public CropType pickACrop(boolean isStartup, boolean noCorn) {
-		// TODO: need to specify the person who is doing it using the work time in the
-		// lab
+	private CropType pickACrop(Map<CropType,Integer> cropsPlanted) {
 		CropType ct = null;
 		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
@@ -166,19 +166,10 @@ public class Farming extends Function implements Serializable {
 		// Attempt to find a unique crop but limit the number of attempts
 		int attempts = 0;
 		while ((attempts < totalCropTypes) && cropAlreadyPlanted) {
-			// Startup select random but later use VP	
-			if (isStartup) {
-				ct = cropConfig.getRandomCropType();
-			}
-			else {
-				ct = selectVPCrop();
-			}
-				
-			// If accepting corn or not CORN then check if it is planted
-			if (!noCorn || !ct.getName().equalsIgnoreCase(CORN)) {
-				attempts++;
-				cropAlreadyPlanted = hasTooMany(ct);
-			}
+			ct = cropConfig.getRandomCropType();
+
+			attempts++;
+			cropAlreadyPlanted = cropsPlanted.getOrDefault(ct, 0) > MAX_SAME_CROPTYPE;
 		}
 		return ct;
 	}
@@ -262,10 +253,6 @@ public class Farming extends Function implements Serializable {
 			}
 		}
 
-		// else {
-		// plantedCropList has 2 crops or no crops
-		// }
-
 		if (compareVP) {
 			// compare secondVP with highestVP
 			// if their VP are within 15%, toss a dice
@@ -289,11 +276,6 @@ public class Farming extends Function implements Serializable {
 			flag = hasTooMany(chosen);
 		}
 
-		// if it's a mushroom, add increases the item demand of the mushroom containment
-		// kit before the crop is planted
-//		if (chosen.getName().toLowerCase().contains(MUSHROOM))
-			; // do nothing
-//			building.getInventory().addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
 		return chosen;
 	}
 
@@ -313,7 +295,7 @@ public class Farming extends Function implements Serializable {
         return num > MAX_SAME_CROPTYPE;
     }
 
-	public double getCropValue(AmountResource resource) {
+	private double getCropValue(AmountResource resource) {
 		return building.getSettlement().getGoodsManager().getGoodValuePerItem(resource.getID());
 	}
 
@@ -325,7 +307,7 @@ public class Farming extends Function implements Serializable {
 	 * @param designatedGrowingArea
 	 * @return Crop
 	 */
-	public Crop plantACrop(CropType cropType, boolean isStartup, double designatedGrowingArea) {
+	private Crop plantACrop(CropType cropType, boolean isStartup, double designatedGrowingArea) {
 		// Implement new way of calculating amount of food in kg,
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
@@ -373,7 +355,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Retrieves new soil when planting new crop
 	 */
-	public void provideNewSoil(double cropArea) {
+	private void provideNewSoil(double cropArea) {
 		// Replace some amount of old soil with new soil
 
 		double rand = RandomUtil.getRandomDouble(1.2);
@@ -392,8 +374,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Retrieves the fertilizer and add to the soil when planting the crop
 	 */
-
-	public void provideFertilizer(double cropArea) {
+	private void provideFertilizer(double cropArea) {
 		double rand = RandomUtil.getRandomDouble(2);
 		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
 		if (amount > MIN)
@@ -408,7 +389,7 @@ public class Farming extends Function implements Serializable {
 	 * @param cropArea
 	 * @return percentAvailable
 	 */
-	public double useTissueCulture(CropType cropType, double cropArea) {
+	private double useTissueCulture(CropType cropType, double cropArea) {
 		double percent = 0;
 
 		double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
@@ -603,7 +584,7 @@ public class Farming extends Function implements Serializable {
 	 * @param unit     a person or a bot
 	 * @return crop or null if none found.
 	 */
-	public Crop getNeedyCrop(Crop lastCrop) {
+	private Crop getNeedyCrop(Crop lastCrop) {
 		if (crops == null || crops.isEmpty())
 			return null;
 		
