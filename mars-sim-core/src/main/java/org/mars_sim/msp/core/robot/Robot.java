@@ -1480,7 +1480,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return LocationStateType.INSIDE_VEHICLE;
 		
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 			
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;

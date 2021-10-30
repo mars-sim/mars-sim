@@ -2040,7 +2040,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return LocationStateType.INSIDE_VEHICLE;
 		
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 			
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
@@ -2111,8 +2111,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 //		else if (ut == UnitType.BUILDING) {
 //		}
 		else if (ut == UnitType.SETTLEMENT) {
-			// Question: should we remove this person from settlement's peopleWithin list
-			// especially if he is still inside the garage of a settlement
+			// Q1: should one remove this person from settlement's peopleWithin list,
+			//     especially if he is still inside the garage of a settlement ?
+			// Q2: should it be the vehicle's responsibility to remove the person from the settlement 
+			//     as the vehicle leaves the garage ?
 			transferred = ((Settlement)cu).removePeopleWithin(this);
 			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}	

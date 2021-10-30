@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -84,6 +85,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -946,11 +948,11 @@ public class BuildingManager implements Serializable {
 
 			if (building != null) {
 				// Add the person to a random building loc
-				addPersonOrRobotToBuildingRandomLocation(unit, building);
+				addPersonOrRobotToBuildingRandomLocation(person, building);
 			} 
 			
 			else {
-				logger.warning(unit, "No inhabitable buildings available");
+				logger.warning(person, "No inhabitable buildings available");
 			}
 
 		}
@@ -1055,9 +1057,7 @@ public class BuildingManager implements Serializable {
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// unit.getName());
 			}
-
 		}
-
 	}
 	
 	/**
@@ -1071,14 +1071,13 @@ public class BuildingManager implements Serializable {
 	 * @return Building the garage it's in or has just been added to
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
-		Building g = null;
-		
+
 		if (vehicle.isBeingTowed())
-			return g;
+			return null;
 		
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
-				return g;
+				return null;
 		}
 		
 		List<Building> garages = getGarages();
@@ -1087,27 +1086,77 @@ public class BuildingManager implements Serializable {
 			// This settlement has no garages at all
 			if (vehicle.haveStatusType(StatusType.GARAGED))
 				vehicle.removeStatus(StatusType.GARAGED);
-			return g;
+			return null;
 		}
 		
 		for (Building garageBuilding : garages) {
-				g = garageBuilding;
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null && garage.containsVehicle(vehicle)) {
+			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+			
+			if (garage != null && garage.containsVehicle(vehicle)) {
+				
+				if (!vehicle.haveStatusType(StatusType.GARAGED))
+					vehicle.addStatus(StatusType.GARAGED);
+
+				logger.log(settlement, vehicle, Level.INFO, 60_000, 
+						   "Already inside " + garage.getBuilding().getNickName() + ".");
+				
+				// Update the vehicle's location state type
+				if (LocationStateType.INSIDE_SETTLEMENT != vehicle.getLocationStateType())
+					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				
+				return garageBuilding;
+			}
+			else {
+				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+					
+					garage.addVehicle(vehicle);
+					
 					if (!vehicle.haveStatusType(StatusType.GARAGED))
 						vehicle.addStatus(StatusType.GARAGED);
-
-					logger.log(settlement, vehicle, Level.INFO, 60_000, 
-							   "Already inside " + garage.getBuilding().getNickName() + ".");
 					
+					// Update the vehicle's location state type
+					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+					
+					logger.log(settlement, vehicle, Level.INFO, 60_000, 
+ 							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
 					return garageBuilding;
 				}
+			}
 		}
 		
-		logger.log(settlement, vehicle, Level.INFO, 60_000, 
-				"Just stowed inside " + g.getNickName() + ".");	
+		return null;
+	}
+	
+	/**
+	 * Removes a vehicle from garage
+	 * 
+	 * @param vehicle
+	 * @return
+	 */
+	public static boolean removeFromGarage(Vehicle vehicle) {
+		// If the vehicle is in a garage, put the vehicle outside.
+		Building garage = getBuilding(vehicle);
+		if (garage != null) {
+			garage.getVehicleMaintenance().removeVehicle(vehicle);
+			// Update the vehicle's location state type
+			vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+			// Remove the human occupants from the settlement's peopleWithin roster
+			if (vehicle instanceof Crewable) {
+				for (Person p: ((Crewable)vehicle).getCrew()) {
+					p.transfer(vehicle);
+	//				settlement.removePeopleWithin(p);
+				}
+				// Remove the robot occupants from the settlement's robotsWithin roster
+				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
+					r.transfer(vehicle);
+	//				settlement.removeRobot(r);
+				}
+			}
+
+			return true;
+		}
 		
-		return g;
+		return false;
 	}
 	
 	/**
@@ -1153,6 +1202,9 @@ public class BuildingManager implements Serializable {
 					garage.addVehicle(vehicle);
 					if (!vehicle.haveStatusType(StatusType.GARAGED))
 						vehicle.addStatus(StatusType.GARAGED);
+					
+					// Update the vehicle's location state type
+					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 					
 					logger.log(settlement, vehicle, Level.INFO, 60_000, 
  							   "Stowed inside " + garage.getBuilding().getNickName() + ".");

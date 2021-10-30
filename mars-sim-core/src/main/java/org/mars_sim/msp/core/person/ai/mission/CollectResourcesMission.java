@@ -84,9 +84,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
 	private Integer resourceID;
-	
-	protected static TerrainElevation terrainElevation;
-	
+
 	/**
 	 * Constructor
 	 * 

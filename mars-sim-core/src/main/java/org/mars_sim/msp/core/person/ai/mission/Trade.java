@@ -618,12 +618,8 @@ public class Trade extends RoverMission implements Serializable {
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (!isDone() && isEveryoneInRover()) {
 
-			// Remove from garage if in garage.
-			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-			if (garageBuilding != null) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				garage.removeVehicle(getVehicle());
-			}
+			// If the rover is in a garage, put the rover outside.
+			BuildingManager.removeFromGarage(getVehicle());
 
 			// Embark from settlement
 			tradingSettlement.removeParkedVehicle(getVehicle());

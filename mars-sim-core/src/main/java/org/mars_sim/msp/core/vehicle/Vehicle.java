@@ -1439,12 +1439,15 @@ public abstract class Vehicle extends Unit
 
 	public void relocateVehicle() {
 
-		Building b = getGarage();
-		if (b != null) {
-			b.getGroundVehicleMaintenance().removeVehicle(this);
-		}
-		else // Call findNewParkingLoc() in GroundVehicle
+		if (!BuildingManager.removeFromGarage(this))
 			findNewParkingLoc();
+		
+//		Building b = getGarage();
+//		if (b != null) {
+//			b.getGroundVehicleMaintenance().removeVehicle(this);
+//		}
+//		else // Call findNewParkingLoc() in GroundVehicle
+//			findNewParkingLoc();
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -2051,11 +2054,9 @@ public abstract class Vehicle extends Unit
 				// Do not inherit the location of a Planet.
 				setCoordinates(newContainer.getCoordinates());
 			}
-			
 			// 2. Set LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -2081,6 +2082,15 @@ public abstract class Vehicle extends Unit
 		}
 		
 		currentStateType = getNewLocationState(newContainer);
+	}
+	
+	/**
+	 * Updates the location state type directly
+	 * 
+	 * @param type
+	 */
+	public void updateLocationStateType(LocationStateType type) {
+		currentStateType = type;
 	}
 	
 	/**
