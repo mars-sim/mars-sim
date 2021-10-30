@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2021-10-20
+ * @date 2021-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -433,36 +433,36 @@ public abstract class RoverMission extends VehicleMission {
 							v.getName()));
 				}
 			}
+		}
+		
+		// If rover is loaded and everyone is aboard, embark from settlement.
+		if (!isDone()) {
+			
+			// Set the members' work shift to on-call to get ready
+			for (MissionMember m : getMembers()) {
+				Person pp = (Person) m;
+				if (pp.getShiftType() != ShiftType.ON_CALL)
+					pp.setShiftType(ShiftType.ON_CALL);
+			}
 
-			// If rover is loaded and everyone is aboard, embark from settlement.
-			if (!isDone()) {
-				
-				// Set the members' work shift to on-call to get ready
-				for (MissionMember m : getMembers()) {
-					Person pp = (Person) m;
-					if (pp.getShiftType() != ShiftType.ON_CALL)
-						pp.setShiftType(ShiftType.ON_CALL);
+			if (isEveryoneInRover()) {
+		
+				// Remove from garage if in garage.
+				Building garage = BuildingManager.getBuilding(v);
+				if (garage != null) {
+					garage.getVehicleMaintenance().removeVehicle(v);
 				}
 
-				if (isEveryoneInRover()) {
-			
-					// Remove from garage if in garage.
-					Building garage = BuildingManager.getBuilding(v);
-					if (garage != null) {
-						garage.getVehicleMaintenance().removeVehicle(v);
-					}
-	
-					// Record the start mass right before departing the settlement
-					recordStartMass();
-					
-					// Embark from settlement
-					if (v.transfer(unitManager.getMarsSurface())) {
-						setPhaseEnded(true);						
-					}
-					else {
-						addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-						endMission();
-					}
+				// Record the start mass right before departing the settlement
+				recordStartMass();
+				
+				// Embark from settlement
+				if (v.transfer(unitManager.getMarsSurface())) {
+					setPhaseEnded(true);						
+				}
+				else {
+					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+					endMission();
 				}
 			}
 		}

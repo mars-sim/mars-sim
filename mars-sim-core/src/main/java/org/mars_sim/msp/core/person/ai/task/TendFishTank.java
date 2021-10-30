@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * TendGreenhouse.java
- * @version 3.2.0 2021-06-20
- * @author Scott Davis
+ * TendFishTank.java
+ * @date 2021-10-29
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The TendFishery class is a task for tending the fishery in a
+ * The TendFishTank class is a task for tending the fishery in a
  * settlement. This is an effort driven task.
  */
 public class TendFishTank extends Task implements Serializable {
@@ -81,7 +81,7 @@ public class TendFishTank extends Task implements Serializable {
 		building = getAvailableFishTank(person);
 		if (building != null) {
 			
-			fishTank = (Fishery) building.getFunction(FunctionType.FISHERY);
+			fishTank = building.getFishery();
 
 			// Walk to fish tank.
 			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
@@ -125,7 +125,7 @@ public class TendFishTank extends Task implements Serializable {
 		// Get available greenhouse if any.
 		building = getAvailableFishTank(person);
 		if (building != null) {			
-			fishTank = (Fishery) building.getFunction(FunctionType.FISHERY);
+			fishTank = building.getFishery();
 
 			// Walk to fishtank.
 			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
@@ -331,7 +331,7 @@ public class TendFishTank extends Task implements Serializable {
 
 
 	/**
-	 * Gets an available building with fis tanks that the person can use. Returns null if no
+	 * Gets an available building with fish tanks that the person can use. Returns null if no
 	 * greenhouse is currently available.
 	 * 
 	 * @param person the person
