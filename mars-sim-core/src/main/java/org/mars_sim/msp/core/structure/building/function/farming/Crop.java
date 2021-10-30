@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -114,8 +115,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double currentPhaseWorkCompleted = 0;
 	/** The daily harvest for crop [in kg/per sol]. */
 	private double dailyHarvest;
-	/** The maximum possible daily harvest [in kg/per sol]. */
-	private double dailyMaxHarvest;
 	/** The total amount harvested [in kg]. */
 	private double totalHarvest;
 	/** The growing phase time completed thus far [in millisols]. */
@@ -163,14 +162,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 	
 	private final double o2Threshold;
 	
+	private final static int LIGHT_FACTOR = 0;
+	private final static int FERTILIZER_FACTOR = 1;
+	private final static int TEMPERATURE_FACTOR = 2;
+	private final static int WATER_FACTOR = 3;
+	private final static int O2_FACTOR = 4;
+	private final static int CO2_FACTOR = 5;
+	
 	/** The cache values of the pastor environment factors influencing the crop */
-	private Double[] environmentalFactor = new Double[] { 
-			1.0,   // light, 0
-			1.0,   // fertilizer, 1
-			1.0,   // temperature, 2
-			1.0,   // water, 3
-			1.0,   // o2, 4
-			1.0 }; // co2, 5
+	private double[] environmentalFactor = new double[CO2_FACTOR+1];
 
 	private CropType cropSpec;
 
@@ -211,12 +211,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 		this.identifier = identifier;
 		this.cropSpec = cropType;
 		this.growingArea = growingArea;
-		this.dailyMaxHarvest = dailyMaxHarvest;
 		this.farm = farm;
 		this.isStartup = isStartup;
 		this.co2Threshold = growingArea/10.0;
 		this.o2Threshold = growingArea/10.0;
 
+		// Set up env factor to be balanced
+		Arrays.fill(environmentalFactor, 1D);
+		
 		building = farm.getBuilding();
 
 		// Note : growingTime is in millisols
@@ -459,7 +461,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		int size = environmentalFactor.length;
 		for (int i=0; i< size; i++) {		
 			if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {
-				if (i == 0)
+				if (i == LIGHT_FACTOR)
 					total = total + 1;
 				else
 					total = total + environmentalFactor[i];
@@ -745,7 +747,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (phaseType == PhaseType.FINISHED) {
 			dailyHarvest = 0;
 			totalHarvest = 0;
-			growingTimeCompleted = 0;
 		}
 		return true;
 	}
@@ -859,7 +860,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			lightModifier = 1;
 		}
 		
-		adjustEnvironmentFactor(lightModifier, 0);
+		adjustEnvironmentFactor(lightModifier, LIGHT_FACTOR);
 
 		return uPAR;
 
@@ -876,13 +877,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private void computeWaterFertilizer(double needFactor, double time, double greyFilterRate) {
 		// Calculate water usage kg per sol
 		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
-//		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
 		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
-//		double totalWaterUsed = 0;
+
 
 		double waterModifier = 0;
 		double fertilizerModifier = 0;
@@ -890,7 +890,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// First water crops with grey water if it is available.
 		if (greyWaterAvailable >= waterRequired) {
 			greyWaterUsed = waterRequired;
-//			totalWaterUsed = greyWaterUsed;
+
 			if (greyWaterUsed > MIN)
 				retrieve(greyWaterUsed, GREY_WATER_ID, true);
 			// TODO: track grey water as well ?
@@ -948,7 +948,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				retrieve(fertilizerUsed, FERTILIZER_ID, true);
 			}
 
-			adjustEnvironmentFactor(fertilizerModifier, 1);
+			adjustEnvironmentFactor(fertilizerModifier, FERTILIZER_FACTOR);
 
 		}
 
@@ -966,7 +966,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// Record the amount of water taken up by the crop
 		cumulative_water_usage = cumulative_water_usage + waterUsed;// * .95;
 
-		adjustEnvironmentFactor(waterModifier, 3);
+		adjustEnvironmentFactor(waterModifier, WATER_FACTOR);
 
 	}
 
@@ -980,7 +980,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	private void computeGases(double uPAR, double needFactor, double time) {
 		double watt = uPAR / time / conversion_factor * growingArea * 1000; 
-//		System.out.println("uPAR : " + uPAR + "  Watt : " + watt);
+
 		// Note: uPAR includes both sunlight and artificial light
 		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0, co2Modifier = 0;
@@ -1008,13 +1008,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 				o2Used = o2Available;
 			if (o2Used > MIN) {
 				retrieveO2(o2Used);
-				// farm.addO2Cache(-o2Used);
 				cumulative_o2 = cumulative_o2 - o2Used;
 			}
 
-//			o2Modifier = o2Used / o2Required;
-
-			adjustEnvironmentFactor(o2Modifier, 4);
+			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
@@ -1049,10 +1046,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
-
-//			co2Modifier = cO2Used / cO2Req;
-
-			adjustEnvironmentFactor(co2Modifier, 5);
+			
+			adjustEnvironmentFactor(co2Modifier, CO2_FACTOR);
 
 			// 6CO2 + 6H2O + sunlight -> C6H12O6 + 6O2
 			//
@@ -1064,7 +1059,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 				cumulative_o2 = cumulative_o2 + o2Gen;
 			}
 		}
-
 	}
 
 	/**
@@ -1126,19 +1120,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
-		double uPAR = 0;
-
-		if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {// cropSpec.getName().contains("mushroom")) {
-			environmentalFactor[0] = 1D;
-			// Set uPAR to zero since mushrooms are fungi, neeed no sunlight
-			// Fungi consumes O2 and release CO2
-			uPAR = 0;
-		} else {
-			uPAR = computeLight(pulse, time, solarIrradiance);
+		if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {
+			adjustEnvironmentFactor(1D, LIGHT_FACTOR);
+		}
+		else {
+			computeLight(pulse, time, solarIrradiance);
 		}
 		
 		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
-		adjustEnvironmentFactor(temperatureModifier, 2);
+		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_FACTOR);
 
 		// STEP 3 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
 		computeWaterFertilizer(growthFactor, time, greyFilterRate);
@@ -1153,15 +1143,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// Tune harvestModifier
 		// Note that light is the dorminant environmental factor
 		if (phaseType == PhaseType.GERMINATION) {
-			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[0];
+			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
 		}
 		else if ((phaseType != PhaseType.PLANTING) && (phaseType != PhaseType.INCUBATION)) {
-			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[0];
+			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
 		}
 		
-		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environmentalFactor[1]
-				+ .15 * harvestModifier * environmentalFactor[2] + .15 * harvestModifier * environmentalFactor[3]
-				+ .15 * harvestModifier * environmentalFactor[4] + .15 * harvestModifier * environmentalFactor[5];
+		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environmentalFactor[FERTILIZER_FACTOR]
+						+ .15 * harvestModifier * environmentalFactor[TEMPERATURE_FACTOR]
+						+ .15 * harvestModifier * environmentalFactor[WATER_FACTOR]
+						+ .15 * harvestModifier * environmentalFactor[O2_FACTOR]
+						+ .15 * harvestModifier * environmentalFactor[CO2_FACTOR];
 
 		// TODO: research how the above 6 factors may affect crop growth for different
 		// crop categories
@@ -1324,11 +1316,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	@Override
 	public String toString() {
-		return "Crop [cropSpec.getName()=" + cropSpec.getName() + " @ " + building + "]";
+		return "Crop [name=" + cropSpec.getName() + " @ " + building + "]";
 	}
 
 	@Override
 	public int compareTo(Crop o) {
-		return cropSpec.getName().compareTo(o.getCropName());
+		return cropSpec.compareTo(o.getCropType());
 	}
 }

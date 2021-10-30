@@ -7,12 +7,11 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.UnitEventType;
@@ -90,13 +89,6 @@ public class Farming extends Function implements Serializable {
 	private double maxGrowingArea;
 	private double remainingGrowingArea;
 
-	/** The amount of air moisture in the greenhouse */
-	private double moisture = 0;
-	/** The amount of O2 generated in the greenhouse */
-	private double o2 = 0;
-	/** The amount of CO2 consumed in the greenhouse */
-	private double cO2 = 0;
-
 	/** List of crop types in queue */
 	private List<String> cropListInQueue;
 	/** List of crops the greenhouse is currently growing */
@@ -130,9 +122,9 @@ public class Farming extends Function implements Serializable {
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 		
-		cropListInQueue = new CopyOnWriteArrayList<>();
-		crops = new CopyOnWriteArrayList<>();
-		cropHistory = new ConcurrentHashMap<>();
+		cropListInQueue = new ArrayList<>();
+		crops = new ArrayList<>();
+		cropHistory = new HashMap<>();
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
 
@@ -151,21 +143,11 @@ public class Farming extends Function implements Serializable {
 			else {
 				Crop crop = plantACrop(cropType, true, 0);
 				crops.add(crop);
-				cropHistory.put(crop.getIdentifier(), cropType.getName());//crop.getCropName());
+				cropHistory.put(crop.getIdentifier(), cropType.getName());
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 			}
 		}
 	}
-
-	/**
-	 * Obtains the next identifier and increment the counter
-	 * 
-	 * @return
-	 */
-	private int getNextIdentifier() {
-		return identifer++;
-	}
-
 
 	/**
 	 * Picks a crop type
@@ -382,7 +364,7 @@ public class Farming extends Function implements Serializable {
 
 		}
 
-		Crop crop = new Crop(getNextIdentifier(), cropType, cropArea, dailyMaxHarvest, 
+		Crop crop = new Crop(identifer++, cropType, cropArea, dailyMaxHarvest, 
 				this, isStartup, percentAvailable);
 		
 		return crop;
@@ -627,34 +609,21 @@ public class Farming extends Function implements Serializable {
 		
 		Crop result = null;
 
-		List<Crop> needyCrops = new CopyOnWriteArrayList<>();
+		List<Crop> needyCrops = new ArrayList<>();
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
 				if (lastCrop != null) {
 					if (c.getCropType().equals(lastCrop.getCropType()))
 						return c;
-					// else if (cropAssignment.get(unit) == c) {
-					// updateAssignmentMap(unit);
-					// return c;
-					// }
 				} else
 					needyCrops.add(c);
 			}
 		}
 
-		int size = needyCrops.size();
-		if (size == 1)
-			result = needyCrops.get(0);
-		else if (size == 2) {
-			result = needyCrops.get(RandomUtil.getRandomInt(1));
-			// updateCropAssignment(unit, result);
+		if (!needyCrops.isEmpty()) {
+			result = needyCrops.get(RandomUtil.getRandomInt(0,
+								needyCrops.size() - 1));
 		}
-		else if (size > 2) {
-			result = needyCrops.get(RandomUtil.getRandomInt(0, size - 1));
-			// updateCropAssignment(unit, result);
-		}
-
-		// if (result == null) logger.info("getNeedyCrop() is null");
 
 		return result;
 	}
@@ -684,14 +653,6 @@ public class Farming extends Function implements Serializable {
 		return result;
 	}
 
-	public double TotalPercentGrowth() {
-		int sum = 0;
-		for (Crop crop : crops) {
-			sum += crop.getPercentGrowth();
-		}
-		return sum;
-	}
-	
 	/**
 	 * Time passing for the building.
 	 * 
@@ -739,7 +700,8 @@ public class Farming extends Function implements Serializable {
 				temperatureModifier = tempNow / tempInitial;
 
 			// Call timePassing on each crop.
-			for( Crop crop : crops) {
+			List<Crop> toRemove = new ArrayList<>();
+			for(Crop crop : crops) {
 				
 				try {
 					crop.timePassing(pulse, productionLevel, solarIrradiance,
@@ -753,10 +715,13 @@ public class Farming extends Function implements Serializable {
 				if (crop.getPhaseType() == PhaseType.FINISHED) {
 					// Take back the growing area
 					remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
-					crops.remove(crop);
+					toRemove.add(crop);
 					numCrops2Plant++;
 				}
 			}
+			
+			// Remove finished crops
+			crops.removeAll(toRemove);
 		}
 		return valid;
 	}
@@ -765,26 +730,25 @@ public class Farming extends Function implements Serializable {
 			
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
-			String n = null;
+			CropType ct;
 			int size = cropListInQueue.size();
 			if (size > 0) {
-				n = cropListInQueue.get(0);
+				String n = cropListInQueue.get(0);
 				cropListInQueue.remove(0);
+				ct = cropConfig.getCropTypeByName(n);
 			}
 
 			else {
-				CropType ct = selectVPCrop();
-				n = ct.getName();
+				ct = selectVPCrop();
 			}
 
-//			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-			if (n != null && !n.equals("")) {
-				Crop crop = plantACrop(cropConfig.getCropTypeByName(n), false, 0);
+			if (ct != null) {
+				Crop crop = plantACrop(ct, false, 0);
 				crops.add(crop);
-				cropHistory.put(crop.getIdentifier(), n);
+				cropHistory.put(crop.getIdentifier(), crop.getCropName());
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + n + ".");
+				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
 				
 				numCrops2Plant--;
 				break;
@@ -825,12 +789,7 @@ public class Farming extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getTotalLightingPower() {
-		double powerRequired = 0D;
-
-		for (Crop c : crops)
-			powerRequired += c.getLightingPower();
-
-		return powerRequired;
+		return crops.stream().mapToDouble(Crop::getLightingPower).sum();
 	}
 
 	/**
@@ -873,20 +832,6 @@ public class Farming extends Function implements Serializable {
 																				// millisols
 
 		return aveGrowingCyclesPerOrbit;
-	}
-
-	/**
-	 * Gets the estimated maximum harvest for one orbit.
-	 * 
-	 * @return max harvest (kg)
-	 */
-	public double getEstimatedHarvestPerOrbit() {
-		// Add max harvest for each crop.
-		double totalMaxHarvest = 0D;
-		for (Crop crop : crops)
-			totalMaxHarvest += crop.getMaxHarvest();
-
-		return totalMaxHarvest * getAverageGrowingCyclesPerOrbit(); // 40 kg * 668 sols / 50
 	}
 
 	/**
@@ -1079,84 +1024,6 @@ public class Farming extends Function implements Serializable {
 
 	public void markCleaned(String s) {
 		houseKeeping.cleaned(s);
-	}
-
-	/**
-	 * Adds air moisture to this farm
-	 * 
-	 * @param value the amount of air moisture in kg
-	 */
-	public void addMoisture(double value) {
-		moisture += value;
-	}
-
-	/**
-	 * Adds O2 to this farm
-	 * 
-	 * @param value the amount of O2 cached in kg
-	 */
-	public void addO2Cache(double value) {
-		o2 += value;
-	}
-
-	/**
-	 * Adds CO2 to this farm
-	 * 
-	 * @param value the amount of CO2 cached in kg
-	 */
-	public void addCO2Cache(double value) {
-		cO2 += value;
-	}
-
-	public double getMoisture() {
-		return moisture;
-	}
-
-	/**
-	 * Retrieves the air moisture from this farm
-	 * 
-	 * @return the amount of air moisture in kg retrieved
-	 */
-	public double retrieveMoisture(double amount) {
-		// double m = moisture;
-		// Do NOT directly set to zero since a crop may be accessing the method
-		// addMoisture() and change the
-		// value of moisture at the same time.
-		moisture = moisture - amount;
-		// Note : The amount of moisture will be monitored by the CompositionOfAir
-		return amount;
-	}
-
-	public double getO2() {
-		return o2;
-	}
-
-	/**
-	 * Retrieves the O2 generated from this farm
-	 * 
-	 * @return the amount of O2 in kg retrieved
-	 */
-	public double retrieveO2(double amount) {
-		// double gas = o2;
-		o2 = o2 - amount;
-		// Note : The amount of o2 will be monitored by the CompositionOfAir
-		return amount;
-	}
-
-	public double getCO2() {
-		return cO2;
-	}
-
-	/**
-	 * Retrieves the CO2 consumed from this farm
-	 * 
-	 * @return the amount of CO2 in kg retrieved
-	 */
-	public double retrieveCO2(double amount) {
-		// double gas = co2;
-		cO2 = cO2 - amount;
-		// Note : The amount of co2 will be monitored by the CompositionOfAir
-		return amount;
 	}
 
 	/**
