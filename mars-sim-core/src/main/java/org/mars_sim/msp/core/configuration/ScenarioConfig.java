@@ -40,7 +40,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String ARRIVAL_ATTR = "arrival-in-sols";
 	
 	// Default scenario
-	public static final String[] PREDEFINED_SCENARIOS = {"Default"};
+	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
 
 	
 	public ScenarioConfig() {
