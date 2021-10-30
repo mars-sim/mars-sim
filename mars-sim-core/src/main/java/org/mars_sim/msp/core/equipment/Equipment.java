@@ -437,13 +437,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			return c.getSettlement();
 		}
 
-		if (c.getUnitType() == UnitType.VEHICLE) {
+		if (isInVehicleInGarage()) {
 			return ((Vehicle)c).getSettlement();
 		}
 		
 		return null;
 	}
-	
+
 	/**
 	 * Gets the settlement the person is currently associated with.
 	 *
@@ -560,9 +560,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInSettlement();
 		
-		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-			// if the unit is in a vehicle 
-			return ((Vehicle)getContainerUnit()).isInSettlement();
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+			// if the vehicle is parked in a garage
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
 		}
 
 		if (getContainerUnit().getUnitType() == UnitType.PERSON) {

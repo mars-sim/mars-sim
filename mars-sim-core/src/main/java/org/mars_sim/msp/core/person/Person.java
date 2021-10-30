@@ -781,7 +781,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return (Settlement) c;
 		}
 		
-		if (c.getUnitType() == UnitType.VEHICLE) {
+		if (isInVehicleInGarage()) {
 			return ((Vehicle)c).getSettlement();
 		}
 		
@@ -1061,16 +1061,18 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	private LifeSupportInterface getLifeSupportType() {
 
-		if (isInSettlement()) {
+		Settlement settlement = getSettlement();
+		if (settlement != null) {
 			// if the person is inside 
-			return getSettlement();
+			return settlement;
 		}
 
 		Vehicle vehicle = getVehicle();
 		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
 
 			if (vehicle.isInVehicleInGarage()) {
-				// if the vehicle is inside a garage
+				// Note: if the vehicle is inside a garage
+				// continue to use settlement's life support
 				return vehicle.getSettlement();
 			}
 
@@ -2060,14 +2062,20 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
 		
-		// if the vehicle is parked in a garage
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
 			// if the vehicle is parked in a garage
-			return ((Vehicle)getContainerUnit()).isInSettlement();
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
 		}
+		
+//		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+//			// if the vehicle is parked in a garage
+//			return ((Vehicle)getContainerUnit()).isInSettlement();
+//		}
 
 		// Note: may consider the scenario of this unit
 		// being carried in by another person or a robot

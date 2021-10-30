@@ -1188,7 +1188,8 @@ public abstract class Vehicle extends Unit
 		}
 		
 		// If it's back at a settlement and is NOT in a garage
-		else if (getSettlement() != null && !isVehicleInAGarage()) {
+//		else if (getSettlement() != null && !isVehicleInAGarage()) {
+		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
 				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
@@ -1228,7 +1229,7 @@ public abstract class Vehicle extends Unit
 	public boolean isVehicleInAGarage() {
 		return (BuildingManager.getBuilding(this) != null);
 	}
-	
+
 	/**
 	 * Resets the vehicle reservation status
 	 */
@@ -2091,11 +2092,16 @@ public abstract class Vehicle extends Unit
 	@Override
 	public LocationStateType getNewLocationState(Unit newContainer) {
 		
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
+			if (isVehicleInAGarage()) {
+				return LocationStateType.INSIDE_SETTLEMENT;
+			}
+			else
+				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		}
 		
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
+//		if (newContainer.getUnitType() == UnitType.BUILDING)
+//			return LocationStateType.INSIDE_SETTLEMENT;	
 		
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
@@ -2127,9 +2133,9 @@ public abstract class Vehicle extends Unit
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		// Note: in future, will distinguish between INSIDE_SETTLEMENT
-		// and WITHIN_SETTLEMENT_VICINITY.
-		// For now, both are the same.
+		// Note: in future, WITHIN_SETTLEMENT_VICINITY will 
+		// mean that the vehicle is NOT in the settlement.
+		// But for now, it loosely means the vehicle is still in the settlement.
 		
 		// if the vehicle is parked in the vicinity of a settlement
 		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
