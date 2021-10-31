@@ -224,7 +224,7 @@
 						<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-scripting-compiler -->
 						<dependency>
 						    <groupId>org.jetbrains.kotlin</groupId>
-						    <artifactId>kotlin-mes-compiler</artifactId>
+						    <artifactId>kotlin-scripting-compiler</artifactId>
 						    <version>${kotlin.version}</version>
 						</dependency>						
 					</dependencies>					
