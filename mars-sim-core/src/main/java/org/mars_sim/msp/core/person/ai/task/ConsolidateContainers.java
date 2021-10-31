@@ -207,55 +207,63 @@ implements Serializable {
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
                 double amount = e.getAmountResourceStored(resourceID);
-                // Move resource in container to top inventory if possible.
-                double topRemainingCapacity = eo.getAmountResourceRemainingCapacity(resourceID);
-                if (topRemainingCapacity > 0D) {
-                    double loadAmount = topRemainingCapacity;
-                    if (loadAmount > amount) {
-                        loadAmount = amount;
-                    }
-                    
-                    if (loadAmount > remainingAmountLoading) {
-                        loadAmount = remainingAmountLoading;
-                    }
-                    
-                    e.retrieveAmountResource(resourceID, loadAmount);
-                    // Below is causing java.lang.IllegalStateException: Amount resource: grey water of amount: 0.8680257260930375 could not be stored in inventory.
-                    eo.storeAmountResource(resourceID, loadAmount);
-                    remainingAmountLoading -= loadAmount;
-                    amount -= loadAmount;
-                }
-                
-                // Check if container is empty.
-                if (e.getAmountResourceStored(resourceID) > 0D) {
-                    // Go through each other container in top inventory and try to consolidate resource.
-                    Iterator<Container> k = eo.findAllContainers().iterator();
-                    while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
-                    	Container otherUnit = k.next();
-                        if (otherUnit != e && otherUnit instanceof Container) {
-                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
-                            if (otherAmount > 0D) {
-                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
-                                if (otherRemainingCapacity > 0D) {
-                                    double loadAmount = otherRemainingCapacity;
-                                    amount = e.getAmountResourceStored(resourceID);
-                                    
-                                    if (loadAmount > amount) {
-                                        loadAmount = amount;
-                                    }
-
-                                    if (loadAmount > remainingAmountLoading) {
-                                        loadAmount = remainingAmountLoading;
-                                    }
-                                    
-                                    e.retrieveAmountResource(resourceID, loadAmount);
-                                    otherUnit.storeAmountResource(resourceID, loadAmount);
-                                    remainingAmountLoading -= loadAmount;
-                                    amount -= loadAmount;
-                                }
-                            }
-                        }
-                    }
+                if (amount > 0D) {
+	                // Move resource in container to top inventory if possible.
+	                double topRemainingCapacity = eo.getAmountResourceRemainingCapacity(resourceID);
+	                if (topRemainingCapacity > 0D) {
+	                    double loadAmount = topRemainingCapacity;
+	                    if (loadAmount > amount) {
+	                        loadAmount = amount;
+	                    }
+	                    
+	                    if (loadAmount > remainingAmountLoading) {
+	                        loadAmount = remainingAmountLoading;
+	                    }
+	                    
+	                    e.retrieveAmountResource(resourceID, loadAmount);
+	                    
+	                    eo.storeAmountResource(resourceID, loadAmount);
+	                    remainingAmountLoading -= loadAmount;
+	                    amount -= loadAmount;
+	                    if (remainingAmountLoading <= 0D) {
+	                    	break;
+	                    }
+	                }
+	                
+	                // Check if container is empty.
+	                if (e.getAmountResourceStored(resourceID) > 0D) {
+	                    // Go through each other container in top inventory and try to consolidate resource.
+	                    Iterator<Container> k = eo.findAllContainers().iterator();
+	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
+	                    	Container otherUnit = k.next();
+	                        if (otherUnit != e && otherUnit instanceof Container) {
+	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
+	                            if (otherAmount > 0D) {
+	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
+	                                if (otherRemainingCapacity > 0D) {
+	                                    double loadAmount = otherRemainingCapacity;
+	                                    amount = e.getAmountResourceStored(resourceID);
+	                                    
+	                                    if (loadAmount > amount) {
+	                                        loadAmount = amount;
+	                                    }
+	
+	                                    if (loadAmount > remainingAmountLoading) {
+	                                        loadAmount = remainingAmountLoading;
+	                                    }
+	                                    
+	                                    e.retrieveAmountResource(resourceID, loadAmount);
+	                                    otherUnit.storeAmountResource(resourceID, loadAmount);
+	                                    remainingAmountLoading -= loadAmount;
+	                                    amount -= loadAmount;
+	            	                    if (remainingAmountLoading <= 0D) {
+	            	                    	break;
+	            	                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                }
                 }
             }
         }

@@ -123,9 +123,6 @@ implements Serializable {
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available."); 
-        	// Add bag demand
-//        	settlement.getInventory().addItemDemand(
-//        			EquipmentType.getResourceID(containerType), 1);    
         	
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
@@ -299,7 +296,7 @@ implements Serializable {
         
         if (finishedCollecting) {
      	
-            logger.log(person, Level.INFO, 4_000, "Collected a total of " 
+            logger.log(person, Level.FINE, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
         		+ " kg " + resourceName + "."); 
          
@@ -433,18 +430,17 @@ implements Serializable {
 	            if (amount > settlementCap) {
 	            	amount = settlementCap;
 	            	
-	            	logger.log(person, Level.INFO, 0,
+	            	logger.warning(person, 
 	            			resourceName + " storage full. Could only check in " 
 	            			+ Math.round(amount*10.0)/10.0 + " kg.");
 	            }
 	            
 	            else {
-	            	logger.log(person, Level.INFO, 0, 
+	            	logger.fine(person,  
 	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");	
 	            }
 
-                // Track supply
-//                sInv.addAmountSupply(resourceID, amount);
+
                 // Transfer the bag
                 bag.transfer(settlement);
 				// Add to the daily output

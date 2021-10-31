@@ -533,8 +533,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 			int multiplier = 5;
 			
 			if (currentPhaseWorkCompleted >= w * 1.01) {
-				// Harvest is over. Close out this phase
-				double overWorkTime = currentPhaseWorkCompleted - w;
 				// Modify parameter list to include crop name
 				double lastHarvest = multiplier * dailyHarvest * workTime / w;
 
@@ -544,7 +542,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					remainingHarvest -= lastHarvest;					
 					totalHarvest += lastHarvest;
 					
-					remainingTime = overWorkTime;
+					remainingTime = Math.min(workTime, currentPhaseWorkCompleted - w);
 
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
@@ -597,7 +595,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			currentPhaseWorkCompleted += workTime;
 
 			if (currentPhaseWorkCompleted >= w * 1.01) {
-				remainingTime = currentPhaseWorkCompleted - w;
+				remainingTime = Math.min(workTime, currentPhaseWorkCompleted - w);
 				currentPhaseWorkCompleted = 0D;
 			}
 			break;
