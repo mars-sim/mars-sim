@@ -360,7 +360,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return (Settlement) c;
 		}
 
-		if (c.getUnitType() == UnitType.VEHICLE) {
+		if (isInVehicleInGarage()) {
 			return ((Vehicle)c).getSettlement();
 		}
 		
@@ -1480,7 +1480,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return LocationStateType.INSIDE_VEHICLE;
 		
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 			
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
@@ -1501,14 +1501,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
-		
-		// if the unit is in a settlement
+
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-			// if the  unit is in a vehicle 
-			return ((Vehicle)getContainerUnit()).isInSettlement();
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+			// if the vehicle is parked in a garage
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
 		}
 
 		// Note: may consider the scenario of this unit

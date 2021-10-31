@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -354,7 +355,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = environment.getSurfaceFeatures();
 		surfaceFeatures.initializeTransientData();
-				
+		
+		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, environment, 
 				environment.getWeather(), surfaceFeatures, missionManager);
@@ -411,7 +413,7 @@ public class Simulation implements ClockListener, Serializable {
 							
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
-				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
+				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 		
@@ -641,7 +643,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
 		SurfaceFeatures.initializeInstances(this); 
-	
+		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
+		
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
@@ -705,7 +708,7 @@ public class Simulation implements ClockListener, Serializable {
 	
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
-				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
+				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances

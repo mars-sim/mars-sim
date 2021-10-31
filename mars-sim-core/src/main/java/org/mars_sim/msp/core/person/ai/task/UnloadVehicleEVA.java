@@ -259,10 +259,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		if (amountUnloading > 0D) {
 			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentSet());
 			Iterator<Equipment> k = originalEqm.iterator();
-			while (k.hasNext() && (amountUnloading > 0D)) {
-				
+			while (k.hasNext() && (amountUnloading > 0D)) {	
 				Equipment equipment = k.next();
-				if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				
+				if (vehicle instanceof Crewable && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					int numSuit = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
 					int numCrew = ((Crewable)vehicle).getCrewNum();
 					// Note: Ensure each crew member in the vehicle has an EVA suit to wear

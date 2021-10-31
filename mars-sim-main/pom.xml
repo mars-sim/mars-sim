@@ -93,7 +93,9 @@
 			</plugin>
 			<plugin>
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin 
-					 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
+					 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB 
+					 For creating a self-contained Jar file containing the code from modules along with dependencies
+				-->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.3.0</version>

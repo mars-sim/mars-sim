@@ -1188,7 +1188,8 @@ public abstract class Vehicle extends Unit
 		}
 		
 		// If it's back at a settlement and is NOT in a garage
-		else if (getSettlement() != null && !isVehicleInAGarage()) {
+//		else if (getSettlement() != null && !isVehicleInAGarage()) {
+		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
 				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
@@ -1228,7 +1229,7 @@ public abstract class Vehicle extends Unit
 	public boolean isVehicleInAGarage() {
 		return (BuildingManager.getBuilding(this) != null);
 	}
-	
+
 	/**
 	 * Resets the vehicle reservation status
 	 */
@@ -1438,12 +1439,15 @@ public abstract class Vehicle extends Unit
 
 	public void relocateVehicle() {
 
-		Building b = getGarage();
-		if (b != null) {
-			b.getGroundVehicleMaintenance().removeVehicle(this);
-		}
-		else // Call findNewParkingLoc() in GroundVehicle
+		if (!BuildingManager.removeFromGarage(this))
 			findNewParkingLoc();
+		
+//		Building b = getGarage();
+//		if (b != null) {
+//			b.getGroundVehicleMaintenance().removeVehicle(this);
+//		}
+//		else // Call findNewParkingLoc() in GroundVehicle
+//			findNewParkingLoc();
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -2050,11 +2054,9 @@ public abstract class Vehicle extends Unit
 				// Do not inherit the location of a Planet.
 				setCoordinates(newContainer.getCoordinates());
 			}
-			
 			// 2. Set LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -2083,6 +2085,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Updates the location state type directly
+	 * 
+	 * @param type
+	 */
+	public void updateLocationStateType(LocationStateType type) {
+		currentStateType = type;
+	}
+	
+	/**
 	 * Gets the location state type based on the type of the new container unit
 	 * 
 	 * @param newContainer
@@ -2091,11 +2102,16 @@ public abstract class Vehicle extends Unit
 	@Override
 	public LocationStateType getNewLocationState(Unit newContainer) {
 		
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
+			if (isVehicleInAGarage()) {
+				return LocationStateType.INSIDE_SETTLEMENT;
+			}
+			else
+				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		}
 		
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
+//		if (newContainer.getUnitType() == UnitType.BUILDING)
+//			return LocationStateType.INSIDE_SETTLEMENT;	
 		
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
@@ -2127,9 +2143,9 @@ public abstract class Vehicle extends Unit
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		// Note: in future, will distinguish between INSIDE_SETTLEMENT
-		// and WITHIN_SETTLEMENT_VICINITY.
-		// For now, both are the same.
+		// Note: in future, WITHIN_SETTLEMENT_VICINITY will 
+		// mean that the vehicle is NOT in the settlement.
+		// But for now, it loosely means the vehicle is still in the settlement.
 		
 		// if the vehicle is parked in the vicinity of a settlement
 		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
