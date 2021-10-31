@@ -43,13 +43,12 @@ public class CropConfig implements Serializable {
 	private static final String GROWING_TIME = "growing-time";
 	private static final String CROP_CATEGORY = "crop-category";
 	private static final String LIFE_CYCLE = "life-cycle";
-	// private static final String PPF = "ppf";
-	// private static final String PHOTOPERIOD = "photoperiod";
 	private static final String EDIBLE_BIOMASS = "edible-biomass";
 	private static final String EDIBLE_WATER_CONTENT = "edible-water-content";
 	private static final String INEDIBLE_BIOMASS = "inedible-biomass";
 	private static final String DAILY_PAR = "daily-PAR";
-	// private static final String HARVEST_INDEX = "harvest-index";
+	private static final String SEED_NAME = "seed-name";
+	private static final String SEED_PLANT = "seed-plant";
 
 	/** The next crop ID. */
 	private int cropID = 0;
@@ -68,7 +67,7 @@ public class CropConfig implements Serializable {
 	/** A list of crop type. */
 	private List<CropType> cropTypes;
 	/** The lookup table for crop type. */
-	private Map<Integer, CropType> lookUpCropType = new HashMap<>();
+	private Map<String, CropType> lookUpCropType = new HashMap<>();
 
 	/** Lookup of crop phases **/
 	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
@@ -137,14 +136,6 @@ public class CropConfig implements Serializable {
 			// Add checking against the crop category enum
 			CropCategoryType cat = CropCategoryType.valueOf(cropCategory.toUpperCase());
 
-			// Get ppf
-			// String ppfStr = crop.getAttributeValue(PPF);
-			// double ppf = Double.parseDouble(ppfStr);
-
-			// Get photoperiod
-			// String photoperiodStr = crop.getAttributeValue(PHOTOPERIOD);
-			// double photoperiod = Double.parseDouble(photoperiodStr);
-
 			// Get edibleBiomass
 			String edibleBiomassStr = crop.getAttributeValue(EDIBLE_BIOMASS);
 			double edibleBiomass = Double.parseDouble(edibleBiomassStr);
@@ -161,28 +152,25 @@ public class CropConfig implements Serializable {
 			String dailyPARStr = crop.getAttributeValue(DAILY_PAR);
 			double dailyPAR = Double.parseDouble(dailyPARStr);
 
-			// Get harvestIndex
-			// String harvestIndexStr = crop.getAttributeValue(HARVEST_INDEX);
-			// double harvestIndex = Double.parseDouble(harvestIndexStr);
+			// Get Seed values
+			boolean seedPlant = false;
+			String seedName = crop.getAttributeValue(SEED_NAME);
+			String seedPlantPAR = crop.getAttributeValue(SEED_PLANT);
+			if (seedPlantPAR != null) {
+				seedPlant = Boolean.valueOf(seedPlantPAR);
+			}
 
 			// Set up the default growth phases of a crop
 			List<Phase> phases = lookupPhases.get(cat);
-
-//				int sum = 0;
-//				for (int i : phases.keySet()) {
-//					sum += phases.get(i).getPercentGrowth();
-//				}
-//				
-//				System.out.println(cat + " : " + sum);
 			
-			CropType cropType = new CropType(name, growingTime * 1000D, cat, lifeCycle, edibleBiomass,
-					edibleWaterContent, inedibleBiomass, dailyPAR, phases);
-
-			cropType.setID(cropID);
+			CropType cropType = new CropType(cropID++, name, growingTime * 1000D,
+									cat, lifeCycle, edibleBiomass,
+									edibleWaterContent, inedibleBiomass,
+									dailyPAR, phases, seedName, seedPlant );
 
 			newList.add(cropType);
 
-			lookUpCropType.put(cropID++, cropType);
+			lookUpCropType.put(name.toLowerCase(), cropType);
 		}
 		
 
@@ -412,31 +400,13 @@ public class CropConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the crop type
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public CropType getCropTypeByID(int id) {
-		return lookUpCropType.get(id);
-	}
-
-	/**
 	 * Returns the crop type instance by its name
 	 * 
 	 * @param name
 	 * @return
 	 */
 	public CropType getCropTypeByName(String name) {
-		CropType c = null;
-		for (CropType ct : lookUpCropType.values()) {
-			String n = ct.getName();
-			if (n.equalsIgnoreCase(name)) {
-				return ct;
-			}
-		}
-		
-		return c;
+		return lookUpCropType.get(name.toLowerCase());
 	}
 	
 	/**
@@ -464,20 +434,7 @@ public class CropConfig implements Serializable {
 	public CropType getRandomCropType() {
 		return cropTypes.get(RandomUtil.getRandomInt(cropTypes.size() - 1));
 	}
-	
-	/**
-	 * Picks a crop type randomly
-	 * 
-	 * @return crop type
-	 */
-	public String getCropTypeNameByID(int id) {
-		return getCropTypeByID(id).getName();
-	}
-	
-	public CropCategoryType getCropCategoryType(int id) {
-		return getCropTypeByID(id).getCropCategoryType();
-	}
-	
+
 	/**
 	 * Gets the average growing time for all crops.
 	 * 
@@ -524,19 +481,5 @@ public class CropConfig implements Serializable {
 		}
 		
 		return farmingAreaNeededPerPerson;
-	}
-	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		if (cropTypes != null) {
-			cropTypes = null;
-		}
-		consumptionRates = null;
-		cropTypeNames = null;
-		cropTypes = null;
-		lookUpCropType = null;
-		lookupPhases = null;
 	}
 }
