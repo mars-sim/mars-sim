@@ -93,8 +93,22 @@ public class EquipmentInventory
 		Collection<Container> result = new HashSet<>();
 		for (Equipment e : equipmentSet) {
 			if (e != null && e instanceof Container) {
-				Container c = (Container)e;
-				result.add(c);
+				result.add((Container)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findContainersOfType(EquipmentType type) {
+		Collection<Container> result = new HashSet<>();
+		for (Equipment e : equipmentSet) {
+			if (e != null && e instanceof Container && type == e.getEquipmentType()) {
+				result.add((Container)e);
 			}
 		}
 		return result;

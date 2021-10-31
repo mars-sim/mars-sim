@@ -1414,6 +1414,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
+	}
+	
+	/**
 	 * Does it have this item resource ?
 	 * 
 	 * @param resource

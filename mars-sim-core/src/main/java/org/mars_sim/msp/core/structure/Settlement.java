@@ -2268,6 +2268,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
+	}
+	
+	/**
 	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
 	 * 

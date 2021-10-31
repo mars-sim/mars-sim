@@ -26,6 +26,13 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return collection of containers or empty collection if none.
 	 */
 	public Collection<Container> findAllContainers();
+
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findContainersOfType(EquipmentType type);
 	
 	/**
 	 * Get the equipment list

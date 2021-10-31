@@ -17,6 +17,7 @@ import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -72,6 +73,8 @@ public class CropConfig implements Serializable {
 	/** Lookup of crop phases **/
 	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
 
+	private final static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -460,7 +463,7 @@ public class CropConfig implements Serializable {
 	public double getFarmingAreaNeededPerPerson() {
 		if (farmingAreaNeededPerPerson < 0) {
 			// Determine average amount (kg) of food required per person per orbit.
-			double neededFoodPerSol = SimulationConfig.instance().getPersonConfig().getFoodConsumptionRate();
+			double neededFoodPerSol = personConfig.getFoodConsumptionRate();
 	
 			// Determine average amount (kg) of food produced per farm area (m^2).
 			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();

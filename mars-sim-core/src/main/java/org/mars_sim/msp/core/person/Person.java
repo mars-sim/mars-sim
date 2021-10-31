@@ -1748,6 +1748,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
+	}
+	
+	/**
 	 * Does this person possess an equipment of this equipment type
 	 * 
 	 * @param typeID
