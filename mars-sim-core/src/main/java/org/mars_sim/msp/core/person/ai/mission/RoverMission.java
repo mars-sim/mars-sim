@@ -448,19 +448,20 @@ public abstract class RoverMission extends VehicleMission {
 			if (isEveryoneInRover()) {
 		
 				// If the rover is in a garage, put the rover outside.
-				if (BuildingManager.removeFromGarage(v)) {
-
-					// Record the start mass right before departing the settlement
-					recordStartMass();
-					
-					// Embark from settlement
-					if (v.transfer(unitManager.getMarsSurface())) {
-						setPhaseEnded(true);						
-					}
-					else {
-						addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-						endMission();
-					}
+				if (v.isInAGarage()) {
+					BuildingManager.removeFromGarage(v);
+				}
+				
+				// Record the start mass right before departing the settlement
+				recordStartMass();
+				
+				// Embark from settlement
+				if (v.transfer(unitManager.getMarsSurface())) {
+					setPhaseEnded(true);						
+				}
+				else {
+					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+					endMission();
 				}
 			}
 		}
@@ -502,90 +503,86 @@ public abstract class RoverMission extends VehicleMission {
 					+ " triggered by " + member.getName() +  ".");
 		
 		Rover rover = (Rover) v;
+		Settlement currentSettlement = v.getSettlement();
+		
+		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
+			// If rover has not been parked at settlement, park it.		
+			if (v.transfer(disembarkSettlement)) {
+				logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
+			}
+			else {
+				logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
+			}
+//			disembarkSettlement.addParkedVehicle(v);	
+		}
+		
+		// Test if this rover is towing another vehicle or is being towed
+        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
+        
+		// Add vehicle to a garage if available.
+		boolean isRoverInAGarage = false;
+        if (!tethered) {
+        	isRoverInAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+        }
 
-		if (v != null) {
-			Settlement currentSettlement = v.getSettlement();
-			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
-				// If rover has not been parked at settlement, park it.		
-				if (v.transfer(disembarkSettlement)) {
-					logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
-				}
-				else {
-					logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
-				}
-//				disembarkSettlement.addParkedVehicle(v);	
+		// Make sure the rover chasis is not overlapping a building structure in the settlement map
+        if (!isRoverInAGarage)
+        	rover.findNewParkingLoc();     
+        
+        Set<Person> currentCrew = new HashSet<>(rover.getCrew());
+		for (Person p : currentCrew) {
+			// See if this person needs an EVA suit
+	        getEVASuit(rover, p, disembarkSettlement);
+	        
+			if (p.isDeclaredDead()) {
+				logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 			}
 			
-			// Test if this rover is towing another vehicle or is being towed
-	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
-	        
-			// Add vehicle to a garage if available.
-			boolean isRoverInAGarage = false;
-	        if (!tethered) {// && v.getGarage() == null) {
-	        	isRoverInAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-	        }
-
-			// Make sure the rover chasis is not overlapping a building structure in the settlement map
-	        if (!isRoverInAGarage)
-	        	rover.findNewParkingLoc();
-	        
-	        Set<Person> currentCrew = new HashSet<>(rover.getCrew());
-			for (Person p : currentCrew) {
-				if (p.isDeclaredDead()) {
-					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
-				}
-				
-				else {
-					// the person is still inside the vehicle
-					// See if this person can come home 
-				}
-				
-				// Initiate an rescue operation
-				// Note : Gets a lead person to perform it and give him a rescue badge
-				if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500))	
-					rescueOperation(rover, p, disembarkSettlement);
+			// Initiate an rescue operation
+			// Note : Gets a lead person to perform it and give him a rescue badge
+			else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+				rescueOperation(rover, p, disembarkSettlement);
 			}
 			
+			else if (isRoverInAGarage) {
+				// Welcome this person home
+		        p.transfer(disembarkSettlement);
+				BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+			}
+		}
+		
+		// Unload rover if necessary.
+		boolean roverUnloaded = rover.getStoredMass() == 0D;
+		if (!roverUnloaded) {
+			// Note : Set random chance of having person unloading resources,
+			// thus allowing person to do other urgent things 
+			for (Person p : rover.getCrew()) {
+				if (p.isFit()) {
+					if (RandomUtil.lessThanRandPercent(50)) {
+						unloadCargo(p, rover);
+					}
+				}
+				else {
+			        // Assign a walk task
+			        walkBackHome(rover, p, disembarkSettlement);
+				}
+			}
+		}   
+        
+		// Check to see if no one is in the rover, unload the resources and end phase.
+		if (roverUnloaded) {
+			for (Person p : rover.getCrew()) {
+				// Assign a walk task
+		        walkBackHome(rover, p, disembarkSettlement);
+			}
+			// If the rover is in a garage, put the rover outside.
+			BuildingManager.removeFromGarage(v);				
+			// Leave the vehicle.
+			leaveVehicle();
 			// Reset the vehicle reservation
 			v.correctVehicleReservation();
-
-			// Check if any people still aboard the rover who aren't mission members
-			// and direct them into the settlement.
-			if (rover.getCrewNum() > 0) {
-				
-				Iterator<Person> i = new HashSet<>(rover.getCrew()).iterator();
-				while (i.hasNext()) {
-					Person p = i.next();
-					checkPersonStatus(rover, p, disembarkSettlement);
-				}
-			}
-
-			// Check to see if no one is in the rover, unload the resources and end phase.
-			if (isNoOneInRover()) {
-
-				// Unload rover if necessary.
-				boolean roverUnloaded = rover.getStoredMass() == 0D;
-				if (!roverUnloaded) {
-					if (member.isInSettlement() && ((Person)member).isFit()) {
-						// Note : Random chance of having person unload (this allows person to do other things
-						// sometimes)
-						if (RandomUtil.lessThanRandPercent(50)) {
-							unloadCargo((Person)member, rover);
-						}				
-					}		
-				}
-				
-				else {
-					// End the phase.
-
-					// If the rover is in a garage, put the rover outside.
-					BuildingManager.removeFromGarage(v);
-					
-					// Leave the vehicle.
-					leaveVehicle();
-					setPhaseEnded(true);
-				}
-			}
+			// End the phase.
+			setPhaseEnded(true);
 		}
 	}
 
@@ -616,14 +613,13 @@ public abstract class RoverMission extends VehicleMission {
 	}
 	
 	/**
-	 * Checks on a person's status to see if he can walk home or else be rescued
+	 * Gets an EVA suit
 	 * 
 	 * @param rover
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	private void checkPersonStatus(Rover rover, Person p, Settlement disembarkSettlement) {
-		
+	private void getEVASuit(Rover rover, Person p, Settlement disembarkSettlement) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 			// Checks to see if the rover has any EVA suit	
 			EVASuit suit = ((Vehicle)rover).findEVASuit(p);
@@ -649,6 +645,16 @@ public abstract class RoverMission extends VehicleMission {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Checks on a person's status to see if he can walk home or else be rescued
+	 * 
+	 * @param rover
+	 * @param p
+	 * @param disembarkSettlement
+	 */
+	private void walkBackHome(Rover rover, Person p, Settlement disembarkSettlement) {
 		
 		if (p.isInVehicle() || p.isOutside()) {
 			// Get random inhabitable building at emergency settlement.
@@ -668,7 +674,6 @@ public abstract class RoverMission extends VehicleMission {
 						// walk back home
 						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					}
-					
 				} 
 				
 				else if (!hasStrength) {
@@ -694,9 +699,7 @@ public abstract class RoverMission extends VehicleMission {
 			}
 			
 			else {
-				logger.severe("No inhabitable buildings at " + disembarkSettlement);
-				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
-				endMission();
+				logger.severe(p, 20_000L, "No airlock found at " + disembarkSettlement);
 			}
 		}
 	}

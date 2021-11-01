@@ -1451,16 +1451,8 @@ public abstract class Vehicle extends Unit
 	public abstract void findNewParkingLoc();
 
 	public void relocateVehicle() {
-
 		if (!BuildingManager.removeFromGarage(this))
 			findNewParkingLoc();
-		
-//		Building b = getGarage();
-//		if (b != null) {
-//			b.getGroundVehicleMaintenance().removeVehicle(this);
-//		}
-//		else // Call findNewParkingLoc() in GroundVehicle
-//			findNewParkingLoc();
 	}
 
 	public static double getFuelRangeErrorMargin() {

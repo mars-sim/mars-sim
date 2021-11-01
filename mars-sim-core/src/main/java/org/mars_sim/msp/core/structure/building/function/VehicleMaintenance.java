@@ -99,16 +99,6 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				building + " already full.");
 			return false;
 		}
-		
-		// Remove vehicle from any other garage that it might be in.
-//			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
-//			while (i.hasNext()) {
-//				Building building = i.next();
-//				VehicleMaintenance garage = building.getVehicleMaintenance();
-//				if (garage.containsVehicle(vehicle)) {
-//					garage.removeVehicle(vehicle);
-//				}
-//			}
 
 		// Add vehicle to building.
 		if (vehicles.add(vehicle)) {
@@ -117,11 +107,13 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				// Transfer the human occupants to the settlement
 				for (Person p: ((Crewable)vehicle).getCrew()) {
 					building.getSettlement().addPeopleWithin(p);
+					p.setContainerUnit(building.getSettlement());
 					BuildingManager.addPersonOrRobotToBuilding(p, building);
 				}
 				// Transfer the robot occupants to the settlement
 				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
 					building.getSettlement().addRobot(r);
+					r.setContainerUnit(building.getSettlement());
 					BuildingManager.addPersonOrRobotToBuilding(r, building);
 				}
 //					// Transfer the equipment to the settlement
@@ -181,11 +173,13 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 					// Remove the human occupants from the settlement
 					for (Person p: ((Crewable)vehicle).getCrew()) {
 						building.getSettlement().removePeopleWithin(p);
+						p.setContainerUnit(vehicle);
 						BuildingManager.removePersonFromBuilding(p, building);
 					}
 					// Remove the robot occupants from the settlement
 					for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
 						building.getSettlement().removeRobot(r);
+						r.setContainerUnit(vehicle);
 						BuildingManager.removeRobotFromBuilding(r, building);
 					}
 					// Remove the equipment from the settlement's equipment set

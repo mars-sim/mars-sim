@@ -2044,9 +2044,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
-		if (!peopleWithin.contains(p)) {
-			return peopleWithin.add(p);
-		}
+		if (peopleWithin.contains(p))
+			return true;	
 		return false;
 	}
 	
@@ -2057,8 +2056,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if added successfully
 	 */
 	public boolean addPeopleWithin(Person p) {
-		if (!peopleWithin.contains(p) && peopleWithin.add(p)) {
-//			p.setContainerUnit(this);
+		if (peopleWithin.contains(p))
+			return true;
+		if (peopleWithin.add(p)) {
+			p.setContainerUnit(this);
 			return true;
 		}
 		return false;
@@ -2071,9 +2072,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if removed successfully
 	 */
 	public boolean removePeopleWithin(Person p) {
-		if (peopleWithin.contains(p)) {
-			return peopleWithin.remove(p);
-		}
+		if (!peopleWithin.contains(p))
+			return true;
+		if (peopleWithin.remove(p))
+			return true;	
 		return false;
 	}
 	
@@ -2084,10 +2086,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if removed successfully
 	 */
 	public boolean addACitizen(Person p) {
-		if (!citizens.contains(p) && citizens.add(p)) {
+		if (citizens.contains(p))
+			return true;
+		if (citizens.add(p)) {
 			addPeopleWithin(p);
 			p.setCoordinates(getCoordinates());
-//			p.setContainerUnit(this);
+			p.setContainerUnit(this);
 			// Update the numCtizens
 			numCitizens = citizens.size();
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
@@ -2102,11 +2106,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param p the person
 	 */
 	public boolean removeACitizen(Person p) {
-		if (citizens.contains(p)) {
-			citizens.remove(p);
+		if (!citizens.contains(p)) 
+			return true;
+		if (citizens.remove(p)) {
 			// Update the numCtizens
 			numCitizens = citizens.size();
-//			System.out.println("numCitizens: " + numCitizens);
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			return true;
 		}
@@ -2119,7 +2123,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean addOwnedRobot(Robot r) {
-		if (!ownedRobots.contains(r) && ownedRobots.add(r)) {
+		if (ownedRobots.contains(r))
+			return true;
+		if (ownedRobots.add(r)) {
 			r.setCoordinates(getCoordinates());
 			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
@@ -2135,8 +2141,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean removeOwnedRobot(Robot r) {
-		if (ownedRobots.contains(r)) {
-			ownedRobots.remove(r);
+		if (!ownedRobots.contains(r))
+			return true;
+		if (ownedRobots.remove(r)) {
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			numOwnedBots = ownedRobots.size();
 			return true;
@@ -2150,7 +2157,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean addRobot(Robot r) {
-		if (!robotsWithin.contains(r) && robotsWithin.add(r)) {
+		if (robotsWithin.contains(r))
+			return true;
+		if (robotsWithin.add(r)) {
 			return true;
 		}
 		return false;
@@ -2162,9 +2171,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean removeRobot(Robot r) {
-		if (robotsWithin.contains(r)) {
-			return robotsWithin.remove(r);
-		}
+		if (!robotsWithin.contains(r))
+			return true;
+		if (robotsWithin.remove(r))
+			return true;
+		
 		return false;
 	}
 	
@@ -2175,9 +2186,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be added
 	 */
 	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (!parkedVehicles.contains(vehicle) && parkedVehicles.add(vehicle)) {
+		if (parkedVehicles.contains(vehicle))
+			return true;			
+		if (parkedVehicles.add(vehicle)) {
 			vehicle.setContainerUnit(this);
-//			numOwnedVehicles = ownedVehicles.size();
 			return true;
 		}
 		return false;
@@ -2190,8 +2202,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be removed
 	 */
 	public boolean removeParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle) && parkedVehicles.remove(vehicle)) {
-//			numOwnedVehicles = ownedVehicles.size();
+		if (!parkedVehicles.contains(vehicle))
+			return true;
+		if (parkedVehicles.remove(vehicle)) {
 			return true;
 		}
 		return false;
@@ -2217,14 +2230,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the vehicle can be added
 	 */
 	public boolean addOwnedVehicle(Vehicle vehicle) {
-		if (!ownedVehicles.contains(vehicle))
-			if (ownedVehicles.add(vehicle)) {
-				addParkedVehicle(vehicle);
-				vehicle.setCoordinates(getCoordinates());
-				vehicle.setContainerUnit(this);
-				numOwnedVehicles = ownedVehicles.size();
-				return true;
-			}
+		if (ownedVehicles.contains(vehicle))
+			return true;
+		if (ownedVehicles.add(vehicle)) {
+			addParkedVehicle(vehicle);
+			vehicle.setCoordinates(getCoordinates());
+			vehicle.setContainerUnit(this);
+			numOwnedVehicles = ownedVehicles.size();
+			return true;
+		}
 		return false;
 	}
 	
@@ -2235,10 +2249,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the vehicle can be removed
 	 */
 	public boolean removeOwnedVehicle(Vehicle vehicle) {
-		if (ownedVehicles.contains(vehicle))
-			if (ownedVehicles.remove(vehicle)) {
-				numOwnedVehicles = ownedVehicles.size();
-			}
+		if (!ownedVehicles.contains(vehicle))
+			return true;
+		if (ownedVehicles.remove(vehicle)) {
+			numOwnedVehicles = ownedVehicles.size();
+			return true;
+		}
 		return false;
 	}
 	
@@ -2251,7 +2267,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
-//			e.setContainerUnit(this);
+			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

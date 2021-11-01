@@ -620,7 +620,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 			
 			if (!transferred) {
-				logger.warning(this + " cannot be stored into " + destination + ".");
+				logger.warning(this + " could not be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action 
 			}
 			else {
@@ -633,7 +633,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + cu + ".");
+			logger.warning(this + " could not be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

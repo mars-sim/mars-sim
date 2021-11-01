@@ -125,8 +125,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	private transient double cachedDistance = -1;
 	
-	protected static TerrainElevation terrainElevation;
-	
 	/**
 	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
 	 * 

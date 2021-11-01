@@ -317,8 +317,10 @@ public abstract class DroneMission extends VehicleMission {
 				}
 
 				// If the rover is in a garage, put the rover outside.
-				BuildingManager.removeFromGarage(v);
-
+				if (v.isInAGarage()) {
+					BuildingManager.removeFromGarage(v);
+				}
+				
 				// Record the start mass right before departing the settlement
 				recordStartMass();
 				

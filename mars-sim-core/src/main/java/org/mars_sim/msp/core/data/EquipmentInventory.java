@@ -325,7 +325,8 @@ public class EquipmentInventory
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		int result = 0;
-		for (Equipment e : equipmentSet) {
+		Set<Equipment> set = new HashSet<>(equipmentSet);
+		for (Equipment e : set) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
 			if (e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
 				result++;

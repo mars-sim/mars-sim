@@ -511,13 +511,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 			// If the rover is in a garage, put the rover outside.
 			BuildingManager.removeFromGarage(getVehicle());
-			
-			// Remove from garage if in garage.
-			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-			if (garageBuilding != null) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				garage.removeVehicle(getVehicle());
-			}
 
 			// Embark from settlement
 			tradingSettlement.removeParkedVehicle(getVehicle());
