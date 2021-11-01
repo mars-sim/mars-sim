@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,15 +29,19 @@ public class MarsSurface extends Unit implements Serializable {
 	
 	private static final String NAME = "Mars Surface";
 	
-	private Set<Person> personList = new HashSet<>();
+	private Set<Person> personList;
 
-	private Set<Robot> robotList = new HashSet<>();
+	private Set<Robot> robotList;
 	
-	private Set<Vehicle> vehicleList = new HashSet<>();
+	private Set<Vehicle> vehicleList;
 
 	public MarsSurface() {
 		super(NAME, null);
 		
+		personList = new UnitSet<>();
+		robotList = new UnitSet<>();
+		vehicleList = new UnitSet<>();
+				
 		setContainerUnit(null);
 		
 		setContainerID(Unit.OUTER_SPACE_UNIT_ID);

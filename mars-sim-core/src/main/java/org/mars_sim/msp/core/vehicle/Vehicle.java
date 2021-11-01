@@ -65,7 +65,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -716,7 +718,7 @@ public abstract class Vehicle extends Unit
 	private void checkStatus() {
 		// Update status based on current situation.
 		if (speed == 0) {
-			if (getGarage() != null) {
+			if (isInAGarage()) {
 				addStatus(StatusType.GARAGED);
 				removeStatus(StatusType.PARKED);
 			}
@@ -754,6 +756,26 @@ public abstract class Vehicle extends Unit
 		if (malfunctionManager.hasMalfunction()) {
 			addStatus(StatusType.MALFUNCTION);	
 		}
+	}
+	
+	/**
+	 * Checks if the vehicle is currently in a garage or not.
+	 * 
+	 * @return true if vehicle is in a garage.
+	 */
+	public boolean isInAGarage() {
+
+		Settlement settlement = getSettlement();
+		if (settlement != null) {
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			for (Building garageBuilding : list) {
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null && garage.containsVehicle(this)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -1090,7 +1112,6 @@ public abstract class Vehicle extends Unit
 		this.direction.setDirection(direction.getDirection());
 	}
 
-
 	/**
 	 * Gets the instantaneous acceleration of the vehicle [m/s2]
 	 * @return
@@ -1179,8 +1200,9 @@ public abstract class Vehicle extends Unit
 			return false;
 		}
 		
-		// Checks status.
-		checkStatus();
+//		int msol = pulse.getMarsTime().getMillisolInt();
+//		// Checks status.
+//		checkStatus();
 		
 		if (haveStatusType(StatusType.MOVING)) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
@@ -1219,15 +1241,6 @@ public abstract class Vehicle extends Unit
 		correctVehicleReservation();
 
 		return true;
-	}
-	
-	/**
-	 * Checks if the vehicle is currently in a garage or not.
-	 * 
-	 * @return true if vehicle is in a garage.
-	 */
-	public boolean isVehicleInAGarage() {
-		return (BuildingManager.getBuilding(this) != null);
 	}
 
 	/**
@@ -2113,7 +2126,7 @@ public abstract class Vehicle extends Unit
 	public LocationStateType getNewLocationState(Unit newContainer) {
 		
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (isVehicleInAGarage()) {
+			if (isInAGarage()) {
 				return LocationStateType.INSIDE_SETTLEMENT;
 			}
 			else

@@ -449,7 +449,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @return true if drone is in a garage.
 	 */
 	protected boolean isInAGarage() {
-		return BuildingManager.isInAGarage(getVehicle());
+		return getVehicle().isInAGarage();
 	}
 	
 	@Override

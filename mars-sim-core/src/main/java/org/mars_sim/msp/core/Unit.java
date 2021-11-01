@@ -16,30 +16,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.Environment;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
@@ -739,7 +731,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		Unit cu = getContainerUnit();
 		if (cu.getUnitType() == UnitType.VEHICLE) {
 			// still inside the garage
-			return BuildingManager.isInAGarage((Vehicle) cu);
+			return ((Vehicle)cu).isInAGarage();
 		}
 		return false;
 	}

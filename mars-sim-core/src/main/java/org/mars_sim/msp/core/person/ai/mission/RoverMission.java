@@ -7,11 +7,11 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -274,7 +274,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if rover is in a garage.
 	 */
 	protected boolean isInAGarage() {
-		return BuildingManager.isInAGarage(getVehicle());
+		return getVehicle().isInAGarage();
 	}
 
 	/**
@@ -448,18 +448,19 @@ public abstract class RoverMission extends VehicleMission {
 			if (isEveryoneInRover()) {
 		
 				// If the rover is in a garage, put the rover outside.
-				BuildingManager.removeFromGarage(v);
+				if (BuildingManager.removeFromGarage(v)) {
 
-				// Record the start mass right before departing the settlement
-				recordStartMass();
-				
-				// Embark from settlement
-				if (v.transfer(unitManager.getMarsSurface())) {
-					setPhaseEnded(true);						
-				}
-				else {
-					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-					endMission();
+					// Record the start mass right before departing the settlement
+					recordStartMass();
+					
+					// Embark from settlement
+					if (v.transfer(unitManager.getMarsSurface())) {
+						setPhaseEnded(true);						
+					}
+					else {
+						addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+						endMission();
+					}
 				}
 			}
 		}
@@ -505,10 +506,8 @@ public abstract class RoverMission extends VehicleMission {
 		if (v != null) {
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
-				// If rover has not been parked at settlement, park it.
-				boolean done = v.transfer(disembarkSettlement);
-				
-				if (done) {
+				// If rover has not been parked at settlement, park it.		
+				if (v.transfer(disembarkSettlement)) {
 					logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
 				}
 				else {
@@ -530,7 +529,7 @@ public abstract class RoverMission extends VehicleMission {
 	        if (!isRoverInAGarage)
 	        	rover.findNewParkingLoc();
 	        
-	        List<Person> currentCrew = new ArrayList<>(rover.getCrew());
+	        Set<Person> currentCrew = new HashSet<>(rover.getCrew());
 			for (Person p : currentCrew) {
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
@@ -554,7 +553,7 @@ public abstract class RoverMission extends VehicleMission {
 			// and direct them into the settlement.
 			if (rover.getCrewNum() > 0) {
 				
-				Iterator<Person> i = rover.getCrew().iterator();
+				Iterator<Person> i = new HashSet<>(rover.getCrew()).iterator();
 				while (i.hasNext()) {
 					Person p = i.next();
 					checkPersonStatus(rover, p, disembarkSettlement);

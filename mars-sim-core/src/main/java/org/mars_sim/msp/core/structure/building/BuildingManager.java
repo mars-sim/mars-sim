@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -1084,8 +1085,7 @@ public class BuildingManager implements Serializable {
 		
 		if (garages.isEmpty()) {
 			// This settlement has no garages at all
-			if (vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.removeStatus(StatusType.GARAGED);
+			vehicle.removeStatus(StatusType.GARAGED);
 			return null;
 		}
 		
@@ -1094,29 +1094,15 @@ public class BuildingManager implements Serializable {
 			
 			if (garage != null && garage.containsVehicle(vehicle)) {
 				
-				if (!vehicle.haveStatusType(StatusType.GARAGED))
-					vehicle.addStatus(StatusType.GARAGED);
-
 				logger.log(settlement, vehicle, Level.INFO, 60_000, 
 						   "Already inside " + garage.getBuilding().getNickName() + ".");
-				
-				// Update the vehicle's location state type
-				if (LocationStateType.INSIDE_SETTLEMENT != vehicle.getLocationStateType())
-					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-				
+					
 				return garageBuilding;
 			}
 			else {
-				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-					
-					garage.addVehicle(vehicle);
-					
-					if (!vehicle.haveStatusType(StatusType.GARAGED))
-						vehicle.addStatus(StatusType.GARAGED);
-					
-					// Update the vehicle's location state type
-					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-					
+				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
+					&& garage.addVehicle(vehicle)) {
+
 					logger.log(settlement, vehicle, Level.INFO, 60_000, 
  							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
 					return garageBuilding;
@@ -1136,29 +1122,13 @@ public class BuildingManager implements Serializable {
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.
 		Building garage = getBuilding(vehicle);
-		if (garage != null) {
-			garage.getVehicleMaintenance().removeVehicle(vehicle);
-			// Update the vehicle's location state type
-			vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
-			// Remove the human occupants from the settlement's peopleWithin roster
-			if (vehicle instanceof Crewable) {
-				for (Person p: ((Crewable)vehicle).getCrew()) {
-					p.transfer(vehicle);
-	//				settlement.removePeopleWithin(p);
-				}
-				// Remove the robot occupants from the settlement's robotsWithin roster
-				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
-					r.transfer(vehicle);
-	//				settlement.removeRobot(r);
-				}
-			}
-
+		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle)) {
 			return true;
 		}
 		
 		return false;
 	}
-	
+
 	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within
 	 * a settlement.
@@ -1182,14 +1152,12 @@ public class BuildingManager implements Serializable {
 		
 		if (garages.isEmpty()) {
 			// This settlement has no garages at all
-			if (vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.removeStatus(StatusType.GARAGED);
+			vehicle.removeStatus(StatusType.GARAGED);
 			return false;
 		}
 		
 		if (isInGarage(vehicle)) {
-			if (!vehicle.haveStatusType(StatusType.GARAGED))
-				vehicle.addStatus(StatusType.GARAGED);
+			vehicle.addStatus(StatusType.GARAGED);
 			
 			return true;
 		}
@@ -1198,11 +1166,9 @@ public class BuildingManager implements Serializable {
 			// Checks if this settlement have open garage space
 			for (Building garageBuilding : garages) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-					garage.addVehicle(vehicle);
-					if (!vehicle.haveStatusType(StatusType.GARAGED))
-						vehicle.addStatus(StatusType.GARAGED);
-					
+				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
+					&& garage.addVehicle(vehicle)) {
+						
 					// Update the vehicle's location state type
 					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 					

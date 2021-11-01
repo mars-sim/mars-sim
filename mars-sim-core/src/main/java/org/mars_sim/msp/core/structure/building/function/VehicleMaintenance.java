@@ -17,7 +17,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -79,40 +83,60 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * Add vehicle to building if there's room.
 	 * 
 	 * @param vehicle the vehicle to be added.
-	 * @throws BuildingException if vehicle cannot be added.
+	 * @return true if vehicle can be added.
 	 */
-	public void addVehicle(Vehicle vehicle) {
-		boolean valid = true;
+	public boolean addVehicle(Vehicle vehicle) {
+
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) {
 			logger.log(vehicle, Level.INFO, 1000, 
-				"Already garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
-			 valid = false;
+				"Already garaged in " + building + ".");
+			 return false;
 		}
 		
 		if (vehicles.size() >= vehicleCapacity) {
 			logger.log(vehicle, Level.INFO, 1000,
-					BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
-				+ " already full.");
-			 valid = false;
+				building + " already full.");
+			return false;
 		}
 		
-		if (valid) {
-			// Remove vehicle from any other garage that it might be in.
-			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				VehicleMaintenance garage = building.getVehicleMaintenance();
-				if (garage.containsVehicle(vehicle)) {
-					garage.removeVehicle(vehicle);
+		// Remove vehicle from any other garage that it might be in.
+//			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
+//			while (i.hasNext()) {
+//				Building building = i.next();
+//				VehicleMaintenance garage = building.getVehicleMaintenance();
+//				if (garage.containsVehicle(vehicle)) {
+//					garage.removeVehicle(vehicle);
+//				}
+//			}
+
+		// Add vehicle to building.
+		if (vehicles.add(vehicle)) {
+	
+			if (vehicle instanceof Crewable) {
+				// Transfer the human occupants to the settlement
+				for (Person p: ((Crewable)vehicle).getCrew()) {
+					p.transfer(building.getSettlement());
+					BuildingManager.addPersonOrRobotToBuilding(p, building);
 				}
-			}
-	
-			// Add vehicle to building.
-			vehicles.add(vehicle);
-			vehicle.addStatus(StatusType.PARKED);
+				// Transfer the robot occupants to the settlement
+				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
+					r.transfer(building.getSettlement());
+					BuildingManager.addPersonOrRobotToBuilding(r, building);
+				}
+//					// Transfer the equipment to the settlement
+//					for (Equipment e: vehicle.getEquipmentSet()) {
+//						e.transfer(building.getSettlement());
+//					}
+			}		
+		
 			vehicle.removeStatus(StatusType.MOVING);
-	
+			vehicle.removeStatus(StatusType.PARKED);
+			vehicle.addStatus(StatusType.GARAGED);
+		
+			// Update the vehicle's location state type
+			vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+		
 			// Put vehicle in assigned parking location within building.
 			ParkingLocation location = getEmptyParkingLocation();
 			double newXLoc = 0D;
@@ -133,33 +157,63 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
 	
 			logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
+			
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**
-	 * Remove vehicle from building if it's in the building.
+	 * Remove vehicle from garage building.
 	 * 
 	 * @param vehicle the vehicle to be removed.
-	 * @throws BuildingException if vehicle is not in the building.
+	 * @return true if successfully removed
 	 */
-	public void removeVehicle(Vehicle vehicle) {
-		if (!containsVehicle(vehicle))
-			return;
-		else {
-			vehicles.remove(vehicle);
-
-			ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
-			if (parkedLoc != null) {
-				parkedLoc.clearParking();
-			}
-
-			vehicle.removeStatus(StatusType.PARKED);
-			vehicle.removeStatus(StatusType.GARAGED);
-			
-			vehicle.findNewParkingLoc();
-
-			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
+	public boolean removeVehicle(Vehicle vehicle) {
+		if (!containsVehicle(vehicle)) {
+			return false;
 		}
+		else {
+			if (vehicles.remove(vehicle)) {
+
+				if (vehicle instanceof Crewable) {
+					// Remove the human occupants from the settlement
+					for (Person p: ((Crewable)vehicle).getCrew()) {
+						p.transfer(vehicle);
+						BuildingManager.removePersonFromBuilding(p, building);
+					}
+					// Remove the robot occupants from the settlement
+					for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
+						r.transfer(vehicle);
+						BuildingManager.removeRobotFromBuilding(r, building);
+					}
+					// Remove the equipment from the settlement's equipment set
+//					for (Equipment e: vehicle.getEquipmentSet()) {
+//						e.transfer(vehicle);
+//					}
+				}
+				
+				ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
+				if (parkedLoc != null) {
+					parkedLoc.clearParking();
+				}
+	
+				vehicle.removeStatus(StatusType.GARAGED);
+				vehicle.addStatus(StatusType.PARKED);
+				
+				// Update the vehicle's location state type
+				vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+
+				vehicle.findNewParkingLoc();
+	
+				logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	
