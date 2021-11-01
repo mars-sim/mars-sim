@@ -81,7 +81,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
 			logger.warning(person, "Started WalkSettlementInterior task when not in a settlement.");
-//			person.getMind().getTaskManager().clearAllTasks();
+			person.getMind().getTaskManager().clearAllTasks("Not in a settlement");
 			return;
 		}
 

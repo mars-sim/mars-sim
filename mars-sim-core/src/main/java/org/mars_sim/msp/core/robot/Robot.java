@@ -150,11 +150,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
-	
-		// Add this robot to be owned by the settlement
-		settlement.addOwnedRobot(this);
-		// Set the container unit
-		setContainerUnit(settlement);
 		
 		// Initialize data members.
 		this.nickName = name;
@@ -184,10 +179,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	public void initialize() {
-		// Put robot in proper building.
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
 		unitManager = sim.getUnitManager();
+		
+		// Add this robot to be owned by the settlement
+		unitManager.getSettlementByID(associatedSettlementID).addOwnedRobot(this);
+		// Set the container unit
+//		setContainerUnit(settlement);
+		// Put robot in proper building.
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -1612,9 +1612,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = getNickName().hashCode();
+		int hashCode = getIdentifier();
 		hashCode *= getRobotType().hashCode();
-		hashCode *= getIdentifier();
 		return hashCode;
 	}
 

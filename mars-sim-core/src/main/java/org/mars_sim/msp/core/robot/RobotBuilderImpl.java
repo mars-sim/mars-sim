@@ -19,10 +19,6 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 
 	private Robot robot;
 
-	//public RobotBuilderImpl() {
-	//	robot = new Robot("tester", null);
-	//}
-
 	public RobotBuilderImpl(String name, Settlement settlement, RobotType robotType) {
 		robot = new Robot(name, settlement, robotType);
 	}

@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -335,17 +336,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Set<Integer> availableAirlocks = new HashSet<>();
 
 	/** The settlement's list of citizens. */
-	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
+	private Set<Person> citizens;// = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of owned robots. */
-	private Collection<Robot> ownedRobots = new ConcurrentLinkedQueue<Robot>();
+	private Set<Robot> ownedRobots;// = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's list of owned vehicles. */
-	private Collection<Vehicle> ownedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	private Set<Vehicle> ownedVehicles;// = new ConcurrentLinkedQueue<Vehicle>();
 	/** The settlement's list of parked vehicles. */
-	private Collection<Vehicle> parkedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	private Set<Vehicle> parkedVehicles;// = new ConcurrentLinkedQueue<Vehicle>();
 	/** The list of people currently within the settlement. */
-	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
+	private Set<Person> peopleWithin;// = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of robots within. */
-	private Collection<Robot> robotsWithin = new ConcurrentLinkedQueue<Robot>();
+	private Set<Robot> robotsWithin;// = new ConcurrentLinkedQueue<Robot>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -395,6 +396,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		this.templateID = id;
 		this.location = location;
 
+		citizens = new UnitSet<>();
+		ownedRobots = new UnitSet<>();
+		ownedVehicles = new UnitSet<>();
+		parkedVehicles = new UnitSet<>();
+		peopleWithin = new UnitSet<>();
+		robotsWithin = new UnitSet<>();
+		
 		if (missionManager == null) {// for passing maven test
 			missionManager = sim.getMissionManager();
 		}
@@ -431,6 +439,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Determine the reporting authority
 		this.ra = sponsor;
 
+		citizens = new UnitSet<>();
+		ownedRobots = new UnitSet<>();
+		ownedVehicles = new UnitSet<>();
+		parkedVehicles = new UnitSet<>();
+		peopleWithin = new UnitSet<>();
+		robotsWithin = new UnitSet<>();
+		
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
 
@@ -2106,7 +2121,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean addOwnedRobot(Robot r) {
 		if (!ownedRobots.contains(r) && ownedRobots.add(r)) {
 			r.setCoordinates(getCoordinates());
-//			r.setContainerUnit(this);
+			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			numOwnedBots = ownedRobots.size();
 			return true;

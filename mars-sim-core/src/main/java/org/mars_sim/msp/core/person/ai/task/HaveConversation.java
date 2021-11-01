@@ -354,6 +354,7 @@ implements Serializable {
 	                
 	                // Add 1 point to invitee's opinion of the one who starts the conversation
 	                Relationship relationship = relationshipManager.getRelationship(invitee, person);
+	                if (relationship == null) System.out.println("relationship == null");
 	                double currentOpinion = relationship.getPersonOpinion(invitee);
 	                relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
 	            }
