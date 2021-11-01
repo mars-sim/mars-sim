@@ -134,9 +134,9 @@ public class Farming extends Function implements Serializable {
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
 
-		Map<CropType,Integer> alreadyPlanted = new HashMap<>();
+		Map<CropSpec,Integer> alreadyPlanted = new HashMap<>();
 		for (int x = 0; x < defaultCropNum; x++) {
-			CropType cropType = pickACrop(alreadyPlanted);
+			CropSpec cropType = pickACrop(alreadyPlanted);
 			if (cropType == null) {
 				break;// for avoiding NullPointerException during maven test
 			}
@@ -155,10 +155,10 @@ public class Farming extends Function implements Serializable {
 	 * Picks a crop type
 	 * 
 	 * @param isStartup - true if it is called at the start of the sim
-	 * @return {@link CropType}
+	 * @return {@link CropSpec}
 	 */
-	private CropType pickACrop(Map<CropType,Integer> cropsPlanted) {
-		CropType ct = null;
+	private CropSpec pickACrop(Map<CropSpec,Integer> cropsPlanted) {
+		CropSpec ct = null;
 		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
 		int totalCropTypes = cropConfig.getNumCropTypes();
@@ -179,15 +179,15 @@ public class Farming extends Function implements Serializable {
 	 * 
 	 * @return CropType
 	 */
-	public CropType selectVPCrop() {
+	public CropSpec selectVPCrop() {
 
-		CropType no_1_crop = null;
-		CropType no_2_crop = null;
-		CropType chosen = null;
+		CropSpec no_1_crop = null;
+		CropSpec no_2_crop = null;
+		CropSpec chosen = null;
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
 
-		for (CropType c : cropConfig.getCropTypes()) {
+		for (CropSpec c : cropConfig.getCropTypes()) {
 			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
 			if (cropVP >= no_1_crop_VP) {
 				if (no_1_crop != null) {
@@ -285,7 +285,7 @@ public class Farming extends Function implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	private boolean hasTooMany(CropType name) {
+	private boolean hasTooMany(CropSpec name) {
 		int num = 0;
 		for (Crop c : crops) {
 			if (c.getCropType().equals(name))
@@ -307,7 +307,7 @@ public class Farming extends Function implements Serializable {
 	 * @param designatedGrowingArea
 	 * @return Crop
 	 */
-	private Crop plantACrop(CropType cropType, boolean isStartup, double designatedGrowingArea) {
+	private Crop plantACrop(CropSpec cropType, boolean isStartup, double designatedGrowingArea) {
 		// Implement new way of calculating amount of food in kg,
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
@@ -389,7 +389,7 @@ public class Farming extends Function implements Serializable {
 	 * @param cropArea
 	 * @return percentAvailable
 	 */
-	private double useTissueCulture(CropType cropType, double cropArea) {
+	private double useTissueCulture(CropSpec cropType, double cropArea) {
 		double percent = 0;
 
 		double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
@@ -711,7 +711,7 @@ public class Farming extends Function implements Serializable {
 			
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
-			CropType ct;
+			CropSpec ct;
 			int size = cropListInQueue.size();
 			if (size > 0) {
 				String n = cropListInQueue.get(0);
@@ -822,7 +822,7 @@ public class Farming extends Function implements Serializable {
 	 * @param type
 	 * @return true if work has been done
 	 */
-	public boolean checkBotanyLab(CropType type, Worker worker) {
+	public boolean checkBotanyLab(CropSpec type, Worker worker) {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
@@ -905,7 +905,7 @@ public class Farming extends Function implements Serializable {
 	 * @param lab
 	 * @param croptype
 	 */
-	private boolean growCropTissue(Research lab, CropType type, Worker worker) {
+	private boolean growCropTissue(Research lab, CropSpec type, Worker worker) {
 		String cropName = type.getName();
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible

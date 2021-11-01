@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -248,7 +248,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	private double growingTissue(double time) {		
 		// Obtain the crop with the highest VP to work on in the lab
-		CropType type = greenhouse.selectVPCrop();
+		CropSpec type = greenhouse.selectVPCrop();
 			
 		if (greenhouse.checkBotanyLab(type, worker))  {
 			
@@ -317,7 +317,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double samplingPhase(double time) {
 
-		CropType type = null;
+		CropSpec type = null;
 		
 		int rand = RandomUtil.getRandomInt(5);
 

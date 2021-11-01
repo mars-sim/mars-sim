@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -192,7 +192,7 @@ public class Cooking extends Function implements Serializable {
 	 * @return water content ( 1 is equal to 100% )
 	 */
 	private double getCropWaterContent(String name) {
-		CropType c = SimulationConfig.instance().getCropConfiguration().getCropTypeByName(name);
+		CropSpec c = SimulationConfig.instance().getCropConfiguration().getCropTypeByName(name);
 		
 		if (c == null)
 			return 0;

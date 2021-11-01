@@ -172,7 +172,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** The cache values of the pastor environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR+1];
 
-	private CropType cropSpec;
+	private CropSpec cropSpec;
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
@@ -205,7 +205,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @param tissuePercent   the percentage of ticarbonDioxideIDure available based
 	 *                        on the requested amount
 	 */
-	public Crop(int identifier, CropType cropType, double growingArea, double dailyMaxHarvest, Farming farm, 
+	public Crop(int identifier, CropSpec cropType, double growingArea, double dailyMaxHarvest, Farming farm, 
 			boolean isStartup, double tissuePercent) {
 
 		this.identifier = identifier;
@@ -322,7 +322,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 *
 	 * @return crop type ID
 	 */
-	public CropType getCropType() {
+	public CropSpec getCropType() {
 		return cropSpec;
 	}
 

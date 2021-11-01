@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 /**
  * The CropType class is a type of crop.
  */
-public class CropType implements Serializable, Comparable<CropType> {
+public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -85,7 +85,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @param seedName 
 	 * @param a                  map of phases
 	 */
-	CropType(int id, String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
+	CropSpec(int id, String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
 			List<Phase> phases, String seedName, boolean seedOnly) {
 
@@ -272,7 +272,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
-	public int compareTo(CropType c) {
+	public int compareTo(CropSpec c) {
 		return name.compareToIgnoreCase(c.name);
 	}
 
@@ -295,7 +295,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
-		CropType c = (CropType) obj;
+		CropSpec c = (CropSpec) obj;
 		return this.id == c.id;
 	}
 }

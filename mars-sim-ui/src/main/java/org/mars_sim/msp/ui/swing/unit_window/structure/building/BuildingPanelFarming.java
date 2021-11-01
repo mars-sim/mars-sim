@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.building.function.farming.PhaseType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -405,7 +405,7 @@ implements MouseListener {
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
-            CropType ct = crop.getCropType();
+            CropSpec ct = crop.getCropType();
         	cropName = Conversion.capitalize(crop.getCropName());
             cat = ct.getCropCategoryType().getName();
         	mass0 = ct.getEdibleBiomass();
@@ -438,7 +438,7 @@ implements MouseListener {
         
         if (col == -1) {
         	cropName = Conversion.capitalize(n);
-        	CropType cType = cropConfig.getCropTypeByName(n);
+        	CropSpec cType = cropConfig.getCropTypeByName(n);
             cat = cType.getCropCategoryType().getName();
         	mass0 = cType.getEdibleBiomass();
         	water = 100 * cType.getEdibleWaterContent();
