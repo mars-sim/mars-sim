@@ -16,31 +16,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.Environment;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
-
 
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
@@ -54,21 +45,21 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(Unit.class.getName());
-	
+
 	public static final int OUTER_SPACE_UNIT_ID = Integer.MAX_VALUE;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
 	public static final Integer UNKNOWN_UNIT_ID = -1;
-	
+
 	// Data members
 	/** The unit containing this unit. */
 	protected Integer containerID = MARS_SURFACE_UNIT_ID;
-	
+
 	// Unique Unit identifier
 	private int identifer;
-	
+
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-	
+
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
@@ -81,7 +72,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/** The last pulse applied */
 	private long lastPulse = 0;
-	
+
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -92,14 +83,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	protected static Simulation sim = Simulation.instance();
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
-	
+
 	protected static MarsClock marsClock;
 	protected static EarthClock earthClock;
 	protected static MasterClock masterClock;
-	
+
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
-	
+
 	protected static Environment mars;
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
@@ -107,20 +98,20 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
-		
+
 	/**
 	 * Enable the detailed diagnostics
-	 * @throws FileNotFoundException 
+	 * 
+	 * @throws FileNotFoundException
 	 */
 	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
 		if (diagnostics) {
 			if (diagnosticFile == null) {
 				String filename = SimulationFiles.getLogDir() + "/unit-create.txt";
-				diagnosticFile  = new PrintWriter(filename);
+				diagnosticFile = new PrintWriter(filename);
 				logger.config("Diagnostics enabled to " + filename);
 			}
-		}
-		else if (diagnosticFile != null){
+		} else if (diagnosticFile != null) {
 			diagnosticFile.close();
 			diagnosticFile = null;
 		}
@@ -128,26 +119,24 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Log the creation of a new Unit
+	 * 
 	 * @param entry
 	 */
 	private static void logCreation(Unit entry) {
 		StringBuilder output = new StringBuilder();
-		output.append(MarsClockFormat.getDateTimeStamp(marsClock))
-				.append(" Id:").append(entry.getIdentifier())
-				.append(" Type:").append(entry.getUnitType())
-				.append(" Name:").append(entry.getName());
-		
+		output.append(MarsClockFormat.getDateTimeStamp(marsClock)).append(" Id:").append(entry.getIdentifier())
+				.append(" Type:").append(entry.getUnitType()).append(" Name:").append(entry.getName());
+
 		synchronized (diagnosticFile) {
 			diagnosticFile.println(output.toString());
 			diagnosticFile.flush();
 		}
 	}
-	
+
 	public final int getIdentifier() {
 		return identifer;
 	}
-	
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -158,8 +147,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
-		this.baseMass = 0;//Double.MAX_VALUE;
-		
+		this.baseMass = 0;// Double.MAX_VALUE;
+
 		this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
 
 		unitManager = sim.getUnitManager();
@@ -169,80 +158,81 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 		// Calculate the new Identifier for this type
 		identifer = unitManager.generateNewId(getUnitType());
-		
+
 		// Define the default LocationStateType of an unit at the start of the sim
 		// Instantiate Inventory as needed. Still needs to be pushed to subclass
 		// constructors
-		switch(getUnitType()) {
+		switch (getUnitType()) {
 		case ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			break;
-			
+
 		case EQUIPMENT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			break;
-			
+
 		case PERSON:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			break;
-		
+
 		case BUILDING:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			break;
-		
+
 		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
-		
+
 		case SETTLEMENT:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
-			
+
 		case CONSTRUCTION:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
-			
+
 		case PLANET:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
-			
+
 		default:
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
-		
+
 		this.location = new Coordinates(0D, 0D);
 
 		if (location != null) {
 			// Set the unit's location coordinates
 			this.location.setCoords(location);
 			// Set the unit's inventory location coordinates
-			setCoordinates(location);	
+			setCoordinates(location);
 		}
-		
+
 		if (diagnosticFile != null) {
 			logCreation(this);
 		}
 	}
 
 	/**
-	 * What logical UnitType of this object in terms of the management.
-	 * This is NOT a direct mapping to the concreate subclass of Unit since
-	 * some logical UnitTypes can have multiple implementation, e.g. Equipment.
+	 * What logical UnitType of this object in terms of the management. This is NOT
+	 * a direct mapping to the concreate subclass of Unit since some logical
+	 * UnitTypes can have multiple implementation, e.g. Equipment.
+	 * 
 	 * @return
 	 */
 	public abstract UnitType getUnitType();
 
 	/**
-	 * Is this time pulse valid for the Unit. Has it been already applied?
-	 * The logic on this method can be commented out later on
+	 * Is this time pulse valid for the Unit. Has it been already applied? The logic
+	 * on this method can be commented out later on
 	 * 
 	 * @param pulse Pulse to apply
 	 * @return Valid to accept
@@ -254,19 +244,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			long expectedPulse = lastPulse + 1;
 			if (expectedPulse != newPulse) {
 				// Pulse out of sequence; maybe missed one
-				logger.warning(getName() + " expected pulse #" + expectedPulse
-						+ " but received " + newPulse);
+				logger.warning(getName() + " expected pulse #" + expectedPulse + " but received " + newPulse);
 			}
 			lastPulse = newPulse;
-		}
-		else {
+		} else {
 			// Seen already
-			logger.severe(getName() + " rejected pulse #" + newPulse
-						+ ", last pulse was " + lastPulse);
+			logger.severe(getName() + " rejected pulse #" + newPulse + ", last pulse was " + lastPulse);
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Change the unit's name
 	 * 
@@ -274,7 +261,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public final void changeName(String newName) {
 //		String oldName = this.name;
-		
+
 		// Create an event here ?
 		setName(newName);
 	}
@@ -382,8 +369,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		this.notes = notes;
 		fireUnitUpdate(UnitEventType.NOTES_EVENT, notes);
 	}
-	
-	
+
 	/**
 	 * Gets the unit's location
 	 * 
@@ -400,18 +386,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		location.setCoords(newLocation);
-		
-//		if (getUnitType() != UnitType.EQUIPMENT
-//				&& getUnitType() != UnitType.PERSON
-//				&& getUnitType() != UnitType.ROBOT
-//				&& getUnitType() != UnitType.VEHICLE
-//				&& getUnitType() != UnitType.PLANET) {
-//			inventory.setCoordinates(newLocation);
-//		}
-		
+
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
-	
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 * 
@@ -426,36 +404,39 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public int getContainerID() {
 		return containerID;
 	}
-	
-	public void setContainerID(Integer id) {
+
+	protected void setContainerID(Integer id) {
 		containerID = id;
 	}
-	
+
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle, Person or Robot) 
-	 * If it's on the surface of Mars, then the topmost container is MarsSurface. 
+	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
+	 * Person or Robot) If it's on the surface of Mars, then the topmost container
+	 * is MarsSurface.
 	 * 
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {
 		Unit topUnit = getContainerUnit();
 		if (!(topUnit.getUnitType() == UnitType.PLANET)) {
-			while (topUnit != null && topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit().getUnitType() == UnitType.PLANET)) {
+			while (topUnit != null && topUnit.getContainerUnit() != null
+					&& !(topUnit.getContainerUnit().getUnitType() == UnitType.PLANET)) {
 				topUnit = topUnit.getContainerUnit();
 			}
 		}
 
 		return topUnit;
 	}
-	
+
 	/**
-	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle, Person or Robot) 
-	 * If it's on the surface of Mars, then the topmost container is MarsSurface. 
+	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
+	 * Person or Robot) If it's on the surface of Mars, then the topmost container
+	 * is MarsSurface.
 	 * 
 	 * @return the unit's topmost container unit
 	 */
 	public int getTopContainerID() {
-				
+
 		int topID = getContainerUnit().getContainerID();
 		if (topID != Unit.MARS_SURFACE_UNIT_ID) {
 			while (topID != Unit.MARS_SURFACE_UNIT_ID) {
@@ -465,7 +446,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 		return topID;
 	}
-	
+
 	/**
 	 * Sets the unit's container unit.
 	 * 
@@ -475,39 +456,35 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (newContainer != null && newContainer.equals(getContainerUnit())) {
 			return;
 		}
-		
+
 		// 1. Set Coordinates
 		if (newContainer == null) {
 			// e.g. for MarsSurface and for a deceased person
 			// Set back to its previous container unit's coordinates
-		}
-		else {
+		} else {
 			// Slave the coordinates to that of the newContainer
 			setCoordinates(newContainer.getCoordinates());
 		}
-			
+
 		// 2. Set LocationStateType
 		if (getUnitType() == UnitType.PLANET) {
 			currentStateType = LocationStateType.OUTER_SPACE;
 			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-		}	
-		else if (getUnitType() == UnitType.CONSTRUCTION) {
+		} else if (getUnitType() == UnitType.CONSTRUCTION) {
 			currentStateType = LocationStateType.OUTER_SPACE;
 			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-		}	
-		else {
+		} else {
 			currentStateType = LocationStateType.UNKNOWN;
 			containerID = (Integer) UNKNOWN_UNIT_ID;
-		}	
-		
+		}
+
 		// 3. Set containerID
 		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_UNIT_ID) {
 			containerID = (Integer) UNKNOWN_UNIT_ID;
-		}
-		else {
+		} else {
 			containerID = newContainer.getIdentifier();
 		}
-		
+
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}
 
@@ -518,29 +495,30 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return {@link LocationStateType}
 	 */
 	public LocationStateType getNewLocationState(Unit newContainer) {
-		
+
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (getUnitType() == UnitType.PERSON || getUnitType() == UnitType.ROBOT || getUnitType() == UnitType.EQUIPMENT)
+			if (getUnitType() == UnitType.PERSON || getUnitType() == UnitType.ROBOT
+					|| getUnitType() == UnitType.EQUIPMENT)
 				return LocationStateType.INSIDE_SETTLEMENT;
 			else if (getUnitType() == UnitType.VEHICLE)
 				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		}
-		
+
 		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
-		
+			return LocationStateType.INSIDE_SETTLEMENT;
+
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
-		
+
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
 			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
-			
+
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
 		if (newContainer.getUnitType() == UnitType.PLANET)
 			return LocationStateType.MARS_SURFACE;
-		
+
 		return null;
 	}
 
@@ -572,7 +550,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public double getBaseMass() {
 		return baseMass;
 	}
-    
+
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if (listeners == null)
 			return false;
@@ -632,24 +610,19 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 		final UnitEvent ue = new UnitEvent(this, updateType, target);
 		synchronized (listeners) {
-			 Iterator<UnitListener> i = listeners.iterator();
-				 while (i.hasNext()) {
-				 i.next().unitUpdate(ue);
-			 }
+			Iterator<UnitListener> i = listeners.iterator();
+			while (i.hasNext()) {
+				i.next().unitUpdate(ue);
+			}
 		}
 	}
 
-	
 	public LocationStateType getLocationStateType() {
 		return currentStateType;
 	}
 
 	public LocationTag getLocationTag() {
 		return tag;
-	}
-	
-	public String getLocale() {
-		return tag.getLocale();
 	}
 
 	public abstract Settlement getSettlement();
@@ -682,8 +655,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Is this unit inside an environmentally enclosed breathable living space
-	 * such as inside a settlement or a vehicle (NOT including in an EVA Suit)
+	 * Is this unit inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit)
 	 * 
 	 * @return true if the unit is inside a breathable environment
 	 */
@@ -691,15 +664,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
 				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-		
+
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInside();
-		
+
 		return false;
 	}
 
 	/**
-	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit 
+	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
 	 * and being outside the settlement/building/vehicle
 	 * 
 	 * @return true if the unit is outside
@@ -708,13 +681,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (LocationStateType.MARS_SURFACE == currentStateType
 				|| LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 			return true;
-				
+
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isOutside();
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Is this unit inside a vehicle
 	 * 
@@ -723,47 +696,23 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public boolean isInVehicle() {
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-		
+
 //		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
 //			return getContainerUnit().isInVehicle();
-		
+
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInVehicle();
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
 	 * 
 	 * @return true if the unit is inside a settlement
 	 */
-	public boolean isInSettlement() {
-		
-		if (containerID == MARS_SURFACE_UNIT_ID)
-			return false;
-		
-		// if the vehicle is parked in a garage
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-		
-		if (getUnitType() == UnitType.VEHICLE) {
-			// if the vehicle is parked in the vicinity of a settlement or a garage
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
-				return true;
-			
-			if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
-					&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
-				return true;
-			}
-		}
+	public abstract boolean isInSettlement();
 
-		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-			return getContainerUnit().isInSettlement();
-		
-		return false;
-	}
-	
 	/**
 	 * Is this unit in the vicinity of a settlement
 	 * 
@@ -772,44 +721,49 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public boolean isInSettlementVicinity() {
 		return tag.isInSettlementVicinity();
 	}
-	
+
 	/**
-	 * Is this unit in a vehicle inside a garage
+	 * Is this unit inside a vehicle in a garage ?
 	 * 
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-            // still inside the garage
-            return BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null;
+		Unit cu = getContainerUnit();
+		if (cu.getUnitType() == UnitType.VEHICLE) {
+			// still inside the garage
+			return ((Vehicle)cu).isInAGarage();
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Gets the total capacity of this unit
+	 * 
+	 * @return
+	 */
 	public double getTotalCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
-			return ((Equipment)this).getTotalCapacity();
+			return ((Equipment) this).getTotalCapacity();
 		}
-		
+
 		// if Inventory is presents, use getGeneralCapacity
 		return 0;
 	}
-	
-	
+
 	/**
 	 * Loads instances
 	 * 
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
-	 * @param e {@link EarthClock}
-	 * @param s {@link Simulation}
-	 * @param m {@link Environment}
-	 * @param w {@link Weather}
-	 * @param u {@link UnitManager}
+	 * @param e  {@link EarthClock}
+	 * @param s  {@link Simulation}
+	 * @param m  {@link Environment}
+	 * @param w  {@link Weather}
+	 * @param u  {@link UnitManager}
 	 * @param mm {@link MissionManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Environment m, Weather w, SurfaceFeatures sf, MissionManager mm) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, Environment m,
+			Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
@@ -819,20 +773,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		surfaceFeatures = sf;
 		missionManager = mm;
 	}
-	
+
 	public static void setUnitManager(UnitManager u) {
 		unitManager = u;
-	}
-
-	
-	/**
-	 * Transfer the unit from one owner to another owner
-	 * 
-	 * @param origin {@link Unit} the original container unit
-	 * @param destination {@link Unit} the destination container unit
-	 */
-	public boolean transfer(Unit origin, Unit destination) {
-		return false;
 	}
 
 	/**
@@ -857,14 +800,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return name;
 	}
 
-
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
 		return this.getIdentifier() == ((Unit) obj).getIdentifier();
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
 	 * 
@@ -874,7 +819,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		int hashCode = getIdentifier() % 32;
 		return hashCode;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

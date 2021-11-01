@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MicroInventory;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -29,9 +28,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
-import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
@@ -92,6 +89,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		associatedSettlementID = settlement.getIdentifier();
 		
 		microInventory = new MicroInventory(this);
+		
+		settlement.addEquipment(this);
 	}
 
 	/**
@@ -422,6 +421,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 *
 	 * @return {@link Settlement} the equipment's settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
 
 		if (getContainerID() == 0)
@@ -433,19 +433,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			return (Settlement) c;
 		}
 
-		else if (c.getUnitType() == UnitType.PERSON) {
+		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
 			return c.getSettlement();
 		}
-		else if (c.getUnitType() == UnitType.VEHICLE) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
-		}
 
+		if (isInVehicleInGarage()) {
+			return ((Vehicle)c).getSettlement();
+		}
+		
 		return null;
 	}
-	
+
 	/**
 	 * Gets the settlement the person is currently associated with.
 	 *
@@ -545,44 +543,80 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the unit is in a settlement
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+			return getContainerUnit().isInSettlement();
+		
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+			// if the vehicle is parked in a garage
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
+		}
+
+		if (getContainerUnit().getUnitType() == UnitType.PERSON) {
+			// if the unit is on a person
+			return ((Person)getContainerUnit()).isInSettlement();
+		}
+		
+		if (getContainerUnit().getUnitType() == UnitType.ROBOT) {
+			// if the unit is on a robot
+			return ((Robot)getContainerUnit()).isInSettlement();
+		}
+		
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-			
-		if (origin.getUnitType() == UnitType.PERSON
-			|| origin.getUnitType() == UnitType.ROBOT
-			|| origin.getUnitType() == UnitType.VEHICLE) {
-			transferred = ((EquipmentOwner)origin).removeEquipment(this);
+		Unit cu = getContainerUnit();
+		
+		if (cu.getUnitType() == UnitType.SETTLEMENT) {
+			transferred = ((Settlement)cu).removeEquipment(this);
 		}
-		else if (origin.getUnitType() == UnitType.PLANET) {
-			// do nothing. won't track equipment on the mars surface
+		else if (cu.getUnitType() == UnitType.PLANET) {
+			// do nothing. mars surface currently doesn't track equipment
 			transferred = true;
 		}
-		// Note: the origin is a settlement
 		else {
-			transferred = ((Settlement)origin).removeEquipment(this);
+			transferred = ((EquipmentOwner)cu).removeEquipment(this);
 		}
 		
 		if (transferred) {
 			
-			if (destination.getUnitType() == UnitType.PERSON
-				|| destination.getUnitType() == UnitType.ROBOT
-				|| destination.getUnitType() == UnitType.VEHICLE
-				) {
-				transferred = ((EquipmentOwner)destination).addEquipment(this);
+			if (destination.getUnitType() == UnitType.SETTLEMENT) {
+				transferred = ((Settlement)destination).addEquipment(this);
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
-				// do nothing. won't track equipment on the mars surface
+				// do nothing. mars surface currently doesn't track equipment
 				transferred = true;
 			}
-			// Note: the destination is a settlement
 			else {
-				transferred = ((Settlement)destination).addEquipment(this);
+				transferred = ((EquipmentOwner)destination).addEquipment(this);
 			}
 			
 			if (!transferred) {
@@ -599,7 +633,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

@@ -112,7 +112,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			}
 		}
 		else {
-			logger.warning(worker, "Can not find a Malfunction to work on for in my vicinity");
+			logger.warning(worker, "Could not find a malfunction to work on for in my vicinity.");
 			endTask();
 		}
 	}

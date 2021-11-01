@@ -68,7 +68,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 
 		RoleType roleType = person.getRole().getType();
 		
-		if (person.isInside()) {
+		if (person.isInSettlement()) {
 
 			if (roleType != null && roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
 					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {

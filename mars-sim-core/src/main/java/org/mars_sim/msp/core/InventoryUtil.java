@@ -37,19 +37,22 @@ public class InventoryUtil {
 	 * @param p
 	 * @return
 	 */
-	public static EVASuit getGoodEVASuit(Unit housing, Person p) {
-		Collection<Equipment> candidates = ((EquipmentOwner) housing).getEquipmentList();
+	public static EVASuit getGoodEVASuit(Person p) {
+		Unit cu = p.getContainerUnit();
+		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
  		
  		// Find suit without malfunction
  		// TODO favorite a previous one
-		for(Equipment e : candidates) {
+		for (Equipment e : candidates) {
 			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
 					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
 				return (EVASuit)e;
 			}
 		}
 
-		logger.warning(p, "Can not find an EVA suit in " + housing.getName());
+		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
+		
+		logger.warning(p, "Could not find a good EVA suit in " + cu.getName() + "(" + numEVASuit + ").");
 		return null;
 	}
 	
@@ -64,7 +67,7 @@ public class InventoryUtil {
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
-		for (Equipment e : owner.getEquipmentList()) {
+		for (Equipment e : owner.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();

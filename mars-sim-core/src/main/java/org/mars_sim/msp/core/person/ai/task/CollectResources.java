@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -200,7 +199,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}
@@ -256,7 +255,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType == ResourceUtil.iceID) {
+		if (resourceType == ICE_ID) {
 			if (surfaceFeatures.inPolarRegion(person.getCoordinates())) {
 				samplesCollected *= 3D;
 			}
@@ -331,7 +330,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(rover, person);
+			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
 			if (suit != null) {
 				// Mass include everything
 				carryMass += suit.getMass();

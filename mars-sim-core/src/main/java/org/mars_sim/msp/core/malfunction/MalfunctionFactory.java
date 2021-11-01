@@ -127,7 +127,7 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<? extends Unit> inventoryUnits = null;
 		
 		if (source instanceof EquipmentOwner) {
-			inventoryUnits = ((EquipmentOwner)source).getEquipmentList();
+			inventoryUnits = ((EquipmentOwner)source).getEquipmentSet();
 		}
 		
 		if (!inventoryUnits.isEmpty()) {
@@ -165,7 +165,7 @@ public final class MalfunctionFactory implements Serializable {
 		entities.add(entity);
 	
 		if (entity instanceof Robot) {
-			Collection<Equipment> inventoryUnits = ((EquipmentOwner)entity).getEquipmentList();
+			Collection<Equipment> inventoryUnits = ((EquipmentOwner)entity).getEquipmentSet();
 			if (inventoryUnits.size() > 0) {
 				for (Equipment e : inventoryUnits) {
 					if (e instanceof Malfunctionable) {

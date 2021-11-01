@@ -217,7 +217,6 @@ public class LocationTag implements LocationState, Serializable {
 				return e.getSettlement().getName();
 
 		}
-
 		
 		else if (b != null) {
 			return b.getSettlement().getName();
@@ -344,8 +343,9 @@ public class LocationTag implements LocationState, Serializable {
 				
 				return UNKNOWN;
 			} 
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType() || v.isRightOutsideSettlement())
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
 				return findSettlementVicinity().getName() + VICINITY;
+			
 			return MARS_SURFACE;
 		}
 		

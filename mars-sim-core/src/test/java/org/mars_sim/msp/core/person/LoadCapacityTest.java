@@ -7,29 +7,16 @@
 
 package org.mars_sim.msp.core.person;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.function.Function;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import junit.framework.TestCase;
 

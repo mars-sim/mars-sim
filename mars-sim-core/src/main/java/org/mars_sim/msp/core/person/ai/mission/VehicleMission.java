@@ -241,7 +241,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public LoadingController prepareLoadingPlan(Settlement loadingSite) {
 		if ((loadingPlan == null) || !loadingPlan.getSettlement().equals(loadingSite)) {
-			logger.info(vehicle, "Prepared a loading plan sourced from " + loadingSite.getName());
+			logger.info(vehicle, 10_000L, "Prepared a loading plan sourced from " + loadingSite.getName());
 			loadingPlan = new LoadingController(loadingSite, vehicle,
 												getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(),
@@ -669,15 +669,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			result *= factor;
 		}
 
-		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
-		if (result > cap)
-			// Make sure the amount requested is less than the max resource cap of this vehicle 
-			result = cap;
+//		double cap = vehicle.getAmountResourceCapacity(vehicle.getFuelType());
+//		if (result > cap)
+//			// Make sure the amount requested is less than the max resource cap of this vehicle 
+//			result = cap;
 		
-		logger.info(vehicle, 30_000, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
-				+ "composite fuel margin factor: " + Math.round(factor * 10.0)/10.0 + "   "
-				+ "Amount of fuel: " + Math.round(result * 10.0)/10.0 + " kg");
+		logger.info(vehicle, 30_000, "Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+				+ "Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+				+ "Fuel Margin: " + Math.round(factor * 10.0)/10.0 + "   "
+				+ "Fuel: " + Math.round(result * 10.0)/10.0 + " kg");
 		
 		return result;
 	}
@@ -837,7 +837,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Settlement base = destination.getSettlement();
 			if (vehicle.getAssociatedSettlement().equals(base)) {
 				logger.info(vehicle, "Arrived back home " + base.getName());
-				vehicle.transfer(vehicle.getContainerUnit(), base);
+				vehicle.transfer(base);
 				
 				// TODO There is a problem with the Vehicle not being on the
 				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
@@ -1034,7 +1034,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			// Add the methane resource
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING)
+					|| useMargin)
 				// Use margin only when estimating how much fuel needed before starting the mission
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true));
 			else
@@ -1074,7 +1075,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuilder buffer = new StringBuilder();
 	
-				buffer.append("Fetching spare parts - ");
+				buffer.append("Fetching spare parts (");
 
 				// Note: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1099,11 +1100,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (number > 0) {
 						result.put(id, number);								
 						buffer
-						.append("ID: ").append(id).append(" ")
+						.append("id:").append(id).append(" ")
 						.append(ItemResourceUtil.findItemResourceName(id)).append(" ")
-						.append("x").append(number).append("   ");
+						.append("x").append(number).append("  ");
 					}
 				}
+				
+				buffer.append(")");
 				
 				// Manually override the number of wheel and battery needed for each mission
 				if (VehicleType.isRover(vehicle.getVehicleType())) { 

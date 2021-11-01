@@ -120,7 +120,7 @@ public final class ContainerUtil {
 		Container result = null;
 		double mostCapacity = 0D;
 
-		for(Equipment e : owner.getEquipmentList()) {
+		for(Equipment e : owner.getEquipmentSet()) {
 			if (e.getEquipmentType() == containerType) {
 				Container container = (Container) e;
 				double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);

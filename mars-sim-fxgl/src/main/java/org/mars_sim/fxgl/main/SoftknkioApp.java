@@ -82,7 +82,7 @@ public class SoftknkioApp extends GameApplication {
                 throw new ReadGameStateException();
             }
         } catch (ReadGameStateException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

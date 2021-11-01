@@ -40,7 +40,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person); 
+        super(NAME, COLLECT_ICE, ICE_ID, EquipmentType.BAG, person); 
         if (!isDone()) {
         	setCollectionRate(getSettlement().getIceCollectionRate());
         }

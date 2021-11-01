@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -44,10 +43,11 @@ public class InventoryCommand extends AbstractUnitCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
 
-		EquipmentOwner eqmOwner = null;
-		if (source instanceof EquipmentOwner) {
-			eqmOwner = (EquipmentOwner)source;
+		if (!(source instanceof EquipmentOwner)) {
+			context.println("Sorry this Unit does not have an inventory");
+			return false;
 		}
+		EquipmentOwner eqmOwner = (EquipmentOwner)source;
 		
 		StructuredResponse buffer = new StructuredResponse();
 		String capacity = "Limitless";
@@ -64,7 +64,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		Map<String,String> entries = new TreeMap<>();
 		Collection<Equipment> equipment = null;
 		if (eqmOwner != null) {
-			equipment = eqmOwner.getEquipmentList();
+			equipment = eqmOwner.getEquipmentSet();
 		}
 
 		if (input != null) {
@@ -82,11 +82,10 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		
 		// Add Items
-		if (eqmOwner != null) {
-			extractResources(eqmOwner, input, entries);
-		}
+		extractResources(eqmOwner, input, entries);
 
-		// Displa all as a singel table
+
+		// Display all as a singel table
 		buffer.appendTableHeading("Item", 30, "Amount", 10);
 		for (Entry<String, String> row : entries.entrySet()) {
 			buffer.appendTableRow(row.getKey(), row.getValue());
@@ -141,35 +140,6 @@ public class InventoryCommand extends AbstractUnitCommand {
 		for (AmountResource ar : amountResources) {
 			String name = ar.getName();
 			double amount = eqmOwner.getAmountResourceStored(ar.getID());
-			if (amount > 0) {
-				entries.put(name, "" + String.format(CommandHelper.KG_FORMAT, amount));
-			}
-		}
-	}
-
-	private void extractResources(Inventory inv, String input, Map<String, String> entries) {
-		Set<ItemResource> itemResources = inv.getAllIRStored();
-		if (input != null) {
-			// Filter according to input
-			itemResources = itemResources.stream().filter(i -> i.getName().contains(input)).collect(Collectors.toSet());
-		}
-		for (ItemResource ir : itemResources) {
-			String name = ir.getName();
-			int amount = inv.getItemResourceNum(ir);
-			if (amount > 0) {
-				entries.put(name, "" + amount);
-			}
-		}
-		
-		// Add Resources allow dirty to avoid updating
-		Set<AmountResource> amountResources = inv.getAllAmountResourcesStored(true);
-		if (input != null) {
-			// Filter according to input
-			amountResources = amountResources.stream().filter(a -> a.getName().contains(input)).collect(Collectors.toSet());
-		}
-		for (AmountResource ar : amountResources) {
-			String name = ar.getName();
-			double amount = inv.getAmountResourceStored(ar, true);
 			if (amount > 0) {
 				entries.put(name, "" + String.format(CommandHelper.KG_FORMAT, amount));
 			}

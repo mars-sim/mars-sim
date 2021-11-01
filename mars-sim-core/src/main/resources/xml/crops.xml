@@ -19,6 +19,9 @@
 	<!ATTLIST crop edible-water-content CDATA #REQUIRED>
 	<!ATTLIST crop inedible-biomass CDATA #REQUIRED>
 	<!ATTLIST crop daily-PAR CDATA #REQUIRED>
+	<!ATTLIST crop seed-name CDATA #IMPLIED>
+	<!ATTLIST crop seed-plant (true|false) #IMPLIED>
+	
 ]>
 
 <!-- Read References 1 to 25 at the bottom -->
@@ -275,7 +278,8 @@
 	      	-->
 
 	  <crop name="White Mustard" growing-time="82.5" crop-category="leaves" life-cycle="annual"
-	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56" />
+	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
+	    	seed-name="Mustard Seed" />
 
 		<!-- ~82.5 day from https://www.hort.purdue.edu/newcrop/afcm/mustard.html
 			Varieties of yellow mustard usually mature in 80 to 85 days whereas brown and oriental types require 90 to 95 days.
@@ -417,7 +421,8 @@
 
 
 	    <crop name="Sesame" growing-time="100" crop-category="flowers" life-cycle="annual"
-	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28" />
+	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28"
+	    	seed-name="Sesame Seed" seed-plant="true"/>
 	    	<!--http://en.wiki2.org/wiki/Sesame
 	    	~50 to 80 seeds per capsule
 	    	7.2 Metric Ton/hectare 

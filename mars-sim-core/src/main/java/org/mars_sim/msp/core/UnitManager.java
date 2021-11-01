@@ -83,27 +83,27 @@ public class UnitManager implements Serializable, Temporal {
 	
 	/** A map of all map display units (settlements and vehicles). */
 	private volatile List<Unit> displayUnits;
-	/** A map of all units with its unit identifier. */
-	//private volatile Map<Integer, Unit> lookupUnit;// = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
-	private volatile Map<Integer, Settlement> lookupSettlement;// = new HashMap<>();
+	private volatile Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
 	private volatile Map<Integer, ConstructionSite> lookupSite;
 	/** A map of persons with its unit identifier. */
-	private volatile Map<Integer, Person> lookupPerson;// = new HashMap<>();
+	private volatile Map<Integer, Person> lookupPerson;
 	/** A map of robots with its unit identifier. */
-	private volatile Map<Integer, Robot> lookupRobot;// = new HashMap<>();
+	private volatile Map<Integer, Robot> lookupRobot;
 	/** A map of vehicle with its unit identifier. */
-	private volatile Map<Integer, Vehicle> lookupVehicle;// = new HashMap<>();
+	private volatile Map<Integer, Vehicle> lookupVehicle;
 	/** A map of equipment (excluding robots and vehicles) with its unit identifier. */
-	private volatile Map<Integer, Equipment> lookupEquipment;// = new HashMap<>();
+	private volatile Map<Integer, Equipment> lookupEquipment;
 	/** A map of building with its unit identifier. */
-	private volatile Map<Integer, Building> lookupBuilding;// = new HashMap<>();
+	private volatile Map<Integer, Building> lookupBuilding;
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 
 	private static MalfunctionFactory factory;
+
+	private static ThreadLocal<Settlement> activeSettlement = new ThreadLocal<>();
 	
 	/** The instance of MarsSurface. */
 	private MarsSurface marsSurface;
@@ -126,7 +126,7 @@ public class UnitManager implements Serializable, Temporal {
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
-		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+		listeners = new CopyOnWriteArrayList<>();
 
 		factory = sim.getMalfunctionFactory();		
 	}
@@ -205,7 +205,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return {@link List<Settlement>}
 	 */
 	public List<Settlement> getCommanderSettlements() {
-		List<Settlement> settlements = new ArrayList<Settlement>();
+		List<Settlement> settlements = new ArrayList<>();
 		
 		Person cc = getPersonByID(commanderID);
 		// Add the commander's associated settlement
@@ -411,6 +411,10 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 	
+	/**
+	 * Add a Settlement to the managed list and activate it for time pulses.
+	 * @param s
+	 */
 	public void activateSettlement(Settlement s) {
 		if (!lookupSettlement.containsKey(s.getIdentifier())) {
 			throw new IllegalStateException("Do not know new Settlement "
@@ -419,6 +423,29 @@ public class UnitManager implements Serializable, Temporal {
 		
 		SettlementTask st = new SettlementTask(s);
 		settlementTaskList.add(st);
+	}
+	
+	/**
+	 * This method validates whether teh current active Settlement in this thread matches
+	 * the owner of an entity. This is a Thread specific method.
+	 * @param operation
+	 * @param owner
+	 */
+	public static void validateActiveSettlement(String operation, Unit owner) {
+		Settlement currentSettlement = activeSettlement .get();
+		Settlement owningSettlement;
+		if (owner instanceof Settlement) {
+			owningSettlement = (Settlement) owner;
+		}
+		else {
+			owningSettlement = owner.getAssociatedSettlement();
+		}
+		if ((currentSettlement != null) && !currentSettlement.equals(owningSettlement)) {
+			// Log an error but don't throw an exception; use a temp exception to get a stack trace
+			logger.log(Level.SEVERE, operation + " is executed by "
+					+ currentSettlement.getName() + " but owner is " + owningSettlement.getName(),
+					new IllegalStateException(operation));
+		}
 	}
 	
 	/**
@@ -443,10 +470,7 @@ public class UnitManager implements Serializable, Temporal {
 		} 
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-      logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
-      // Note: Use printStackTrace for debugging only. Must comment out printStackTrace 
-      // or else sonarcloud gives an "E" grade.
-      // ee.printStackTrace();
+			logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting
@@ -470,7 +494,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return the number of settlements
 	 */
 	public int getSettlementNum() {
-		return lookupSettlement.size();//CollectionUtils.getSettlement(units).size();
+		return lookupSettlement.size();
 	}
 
 	/**
@@ -479,13 +503,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of settlements
 	 */
 	public Collection<Settlement> getSettlements() {
-		if (lookupSettlement != null && !lookupSettlement.isEmpty()) {
-			return Collections.unmodifiableCollection(lookupSettlement.values());//CollectionUtils.getSettlement(units); 
-		}
-		else {
-//			logger.severe("lookupSettlement is null.");
-			return new ArrayList<>();
-		}
+		return Collections.unmodifiableCollection(lookupSettlement.values());
 	}
 
 	/**
@@ -494,7 +512,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of vehicles
 	 */
 	public Collection<Vehicle> getVehicles() {
-		return Collections.unmodifiableCollection(lookupVehicle.values());//CollectionUtils.getVehicle(units);
+		return Collections.unmodifiableCollection(lookupVehicle.values());
 	}
 
 	/**
@@ -503,7 +521,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return the number of people
 	 */
 	public int getTotalNumPeople() {
-		return lookupPerson.size();//CollectionUtils.getPerson(units).size();
+		return lookupPerson.size();
 	}
 
 	/**
@@ -512,7 +530,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of people
 	 */
 	public Collection<Person> getPeople() {
-		return Collections.unmodifiableCollection(lookupPerson.values());//CollectionUtils.getPerson(units);
+		return Collections.unmodifiableCollection(lookupPerson.values());
 	}
 
 	/**
@@ -521,7 +539,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of Robots
 	 */
 	public Collection<Robot> getRobots() {
-		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
+		return Collections.unmodifiableCollection(lookupRobot.values());
 	}
 
 	private void addDisplayUnit(Unit unit) {
@@ -536,7 +554,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<Unit> getDisplayUnits() {
-		return displayUnits; //findDisplayUnits();	
+		return displayUnits; 
 	}
 
 	/**
@@ -546,7 +564,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();
 		}
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
@@ -560,7 +578,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();
 		}
 		if (listeners.contains(oldListener)) {
 			listeners.remove(oldListener);
@@ -575,7 +593,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();
 		}
 		synchronized (listeners) {
 			for (UnitManagerListener listener : listeners) {
@@ -701,7 +719,9 @@ public class UnitManager implements Serializable, Temporal {
 		@Override
 		public String call() throws Exception {
 			try {
-				settlement.timePassing(currentPulse);	
+				activeSettlement.set(settlement);
+				settlement.timePassing(currentPulse);
+				activeSettlement.set(null);
 			}
 			catch (RuntimeException rte) {
 				String msg = "Problem with pulse on " + settlement.getName()

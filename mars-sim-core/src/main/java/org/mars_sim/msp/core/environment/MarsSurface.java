@@ -8,12 +8,14 @@
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -27,13 +29,19 @@ public class MarsSurface extends Unit implements Serializable {
 	
 	private static final String NAME = "Mars Surface";
 	
-	private List<Person> personList = new ArrayList<>();
+	private Set<Person> personList;
 
-	private List<Vehicle> vehicleList = new ArrayList<>();
+	private Set<Robot> robotList;
+	
+	private Set<Vehicle> vehicleList;
 
 	public MarsSurface() {
 		super(NAME, null);
 		
+		personList = new UnitSet<>();
+		robotList = new UnitSet<>();
+		vehicleList = new UnitSet<>();
+				
 		setContainerUnit(null);
 		
 		setContainerID(Unit.OUTER_SPACE_UNIT_ID);
@@ -44,13 +52,9 @@ public class MarsSurface extends Unit implements Serializable {
 		}
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Unit u = (Unit) obj;
-		return this.getName().equals(u.getName())
-				&& this.getIdentifier() == ((Unit) obj).getIdentifier() ;
+		return super.equals(obj);
 	}
 	
 	@Override
@@ -58,29 +62,11 @@ public class MarsSurface extends Unit implements Serializable {
 		return UnitType.PLANET;
 	}
 	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
 	@Override
 	public Settlement getSettlement() {
 		return null;
 	}
 	
-	public List<Person> getPersonList() {
-		return personList;
-	}
-
-	public List<Vehicle> getVehicleList() {
-		return vehicleList;
-	}
-
 	/**
 	 * Adds a person
 	 * 
@@ -88,11 +74,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!personList.contains(person) && personList.add(person)) {
-			person.setContainerUnit(this);
-			return true;
+		synchronized (personList) {
+			return personList.add(person);
 		}
-		return false;
 	}
 	
 	/**
@@ -102,9 +86,33 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the person can be removed
 	 */
 	public boolean removePerson(Person person) {
-		if (personList.contains(person))
+		synchronized (personList) {
 			return personList.remove(person);
-		return false;
+		}
+	}
+	
+	/**
+	 * Adds a robot
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot) {
+		synchronized (robotList) {
+			return robotList.add(robot);
+		}
+	}
+	
+	/**
+	 * Removes a robot
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot) {
+		synchronized (robotList) {
+			return robotList.remove(robot);
+		}
 	}
 	
 	/**
@@ -114,11 +122,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the vehicle can be added
 	 */
 	public boolean addVehicle(Vehicle vehicle) {
-		if (!vehicleList.contains(vehicle) && vehicleList.add(vehicle)) {
-			vehicle.setContainerUnit(this);
-			return true;
+		synchronized (vehicleList) {
+			return vehicleList.add(vehicle);
 		}
-		return false;
 	}
 	
 	/**
@@ -128,9 +134,9 @@ public class MarsSurface extends Unit implements Serializable {
 	 * @param true if the vehicle can be removed
 	 */
 	public boolean removeVehicle(Vehicle vehicle) {
-		if (vehicleList.contains(vehicle))
+		synchronized (vehicleList) {
 			return vehicleList.remove(vehicle);
-		return false;
+		}
 	}
 	
 	/**
@@ -147,12 +153,23 @@ public class MarsSurface extends Unit implements Serializable {
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		return false;
+	}
+	
+	
+	/**
 	 * Gets the hash code for this object.
 	 * 
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
-		int hashCode = (int) ( (1.0 + getName().hashCode()) * (1.0 + getIdentifier()));
-		return hashCode;
+		return super.hashCode();
 	}
 }

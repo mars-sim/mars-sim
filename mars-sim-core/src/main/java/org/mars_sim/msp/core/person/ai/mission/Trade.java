@@ -593,7 +593,7 @@ public class Trade extends RoverMission implements Serializable {
 							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
 								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person); 
 								if (suit1 != null) {
-									boolean done = suit1.transfer(tradingSettlement, getVehicle());
+									boolean done = suit1.transfer(getVehicle());
 									if (!done)
 										logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
 								} else {
@@ -618,12 +618,8 @@ public class Trade extends RoverMission implements Serializable {
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (!isDone() && isEveryoneInRover()) {
 
-			// Remove from garage if in garage.
-			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-			if (garageBuilding != null) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				garage.removeVehicle(getVehicle());
-			}
+			// If the rover is in a garage, put the rover outside.
+			BuildingManager.removeFromGarage(getVehicle());
 
 			// Embark from settlement
 			tradingSettlement.removeParkedVehicle(getVehicle());

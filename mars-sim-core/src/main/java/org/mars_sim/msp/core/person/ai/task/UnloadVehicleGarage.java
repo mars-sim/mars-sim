@@ -402,13 +402,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			// Take own copy as the equipment list changes as we remove items. ??
-			List<Equipment> held = new ArrayList<>(vehicle.getEquipmentList());
+			List<Equipment> held = new ArrayList<>(vehicle.getEquipmentSet());
 			Iterator<Equipment> k = held.iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {
 				Equipment equipment = k.next();
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment, settlement);
-				equipment.transfer(vehicle, settlement);
+				equipment.transfer(settlement);
 				amountUnloading -= equipment.getMass();
 
 				if (!vehicle.getName().contains("Mock")) {
@@ -515,15 +515,17 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					logger.log(worker, Level.INFO, 0,"was retrieving the dead body of " + p + " from " + vehicle.getName() + ".");
-
-					// Retrieve the dead person and place this person within a settlement	
-					p.transfer(p, settlement);
-					
-					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
-
-					p.setAssociatedSettlement(settlement.getIdentifier());
-					
+					if (p.transfer(settlement)) {
+						
+						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
+						
+						p.setAssociatedSettlement(settlement.getIdentifier());
+						
+						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
+					}
+					else {
+						logger.warning(worker, "failed to retrieve the dead body of " + p + " from " + vehicle.getName());
+					}
 				}
 			}
 		}

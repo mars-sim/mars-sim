@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * TendGreenhouseMeta.java
- * @version 3.2.0 2021-06-20
- * @author Scott Davis
+ * TendFishTankMeta.java
+ * @date 2021-10-29
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 
 /**
@@ -118,7 +117,7 @@ public class TendFishTankMeta extends MetaTask {
 	 * @return
 	 */
 	private int getOutstandingTask(Building building) {
-		Fishery fistTank = (Fishery) building.getFunction(FunctionType.FISHERY);
+		Fishery fistTank = building.getFishery();
 		
 		return  fistTank.getUncleaned().size() + fistTank.getUninspected().size() + fistTank.getSurplusStock()
 				+ fistTank.getWeedDemand();

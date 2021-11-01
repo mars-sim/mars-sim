@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Fishery.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-29
  * @author Barry Evans
  */
 
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Fishery function that is responsble for aquetic farming
+ * The Fishery function that is responsible for aquatic farming
  */
 public class Fishery extends Function implements Serializable {	
 
@@ -104,6 +104,7 @@ public class Fishery extends Function implements Serializable {
 	private List<Herbivore> fish;   
 	/** A Vector of our weeds. */
 	private List<Plant> weeds;
+	
 	private HouseKeeping houseKeeping;
 	
 	/** How long has the weed been tendered **/
@@ -171,7 +172,7 @@ public class Fishery extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				Fishery fishFarm = building.getFishery();//(Fishery) building.getFunction(FunctionType.FISHERY);
+				Fishery fishFarm = building.getFishery();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += fishFarm.getNumFish() * wearModifier;
 			}
@@ -216,6 +217,7 @@ public class Fishery extends Function implements Serializable {
 	/**
 	* Simulate life in the pond, using the values indicated in the
 	* documentation.
+	* 
 	* @param fish
 	*   Vector of fish
 	* @param weeds
@@ -391,7 +393,7 @@ public class Fishery extends Function implements Serializable {
 			Herbivore removed = fish.remove(1);
 			
 			// Fish stored as KG, 90% is useful
-			store((removed.getSize()*0.9D) * KG_PER_OUNCE, ResourceUtil.fishMeatID, "Fishery::catchFish");
+			store((removed.getSize() * 0.9D) * KG_PER_OUNCE, ResourceUtil.fishMeatID, "Fishery::catchFish");
 			
 			// Fish Oil is 1% of fish size, a guess
 			store((removed.getSize() * 0.01D) * KG_PER_OUNCE, ResourceUtil.fishOilID, "Fishery::catchFish");

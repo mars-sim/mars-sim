@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -220,29 +219,10 @@ public class SimLogger {
 		else {
 			// Need container hierarchy in brackets
 			if (location == null) {
-				if (actor instanceof Building) {
-					location = actor.getAssociatedSettlement();
-				}
-				
-				else {
-					location = actor.getContainerUnit();
-				}
-			}
-			
-			// On the surface
-			if (location == null) {
-				// Unknown location
-				outputMessage.append("Unknown");
-			}
-			else if (location.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID) {
-				// On the surface use coordinate
-				Coordinates coords = actor.getCoordinates();
-				outputMessage.append(coords.getFormattedLatitudeString());
-				outputMessage.append(' ');
-				outputMessage.append(coords.getFormattedLongitudeString());
+				outputMessage.append(LocationFormat.getLocationDescription(actor));
 			}
 			else {
-				locationDescription(location, outputMessage);
+				outputMessage.append(LocationFormat.getLocationDescription(actor, location));
 			}
 			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
 		}

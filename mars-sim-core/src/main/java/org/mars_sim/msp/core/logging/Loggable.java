@@ -20,13 +20,6 @@ public interface Loggable {
 	 * What is the settlement of this entity.
 	 */
 	Settlement getAssociatedSettlement();
-
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	Unit getUnit();
 	
 	/**
 	 * Where is this entity held

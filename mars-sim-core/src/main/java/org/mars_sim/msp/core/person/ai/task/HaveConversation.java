@@ -151,7 +151,7 @@ implements Serializable {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
                 detail)); //$NON-NLS-1$
         	//logger.info(person.getName() + " is chatting with " + detail);
-			logger.log(worker, Level.FINE, 5000, "Was chatting with " + detail);
+			logger.log(worker, Level.FINE, 5000, "Chatted with " + detail + ".");
         }	
     }
     
@@ -345,13 +345,16 @@ implements Serializable {
 	            else if (person.isInVehicle()) {
 	            	talkTo(invitee);
 	            }
-
+	            else
+	            	return 0D;
+	            
 	            if (relationshipManager != null && !relationshipManager.hasRelationship(invitee, person)) {
 	                // Add new communication meeting relationship.
 	                relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
 	                
 	                // Add 1 point to invitee's opinion of the one who starts the conversation
 	                Relationship relationship = relationshipManager.getRelationship(invitee, person);
+	                if (relationship == null) System.out.println("relationship == null");
 	                double currentOpinion = relationship.getPersonOpinion(invitee);
 	                relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
 	            }

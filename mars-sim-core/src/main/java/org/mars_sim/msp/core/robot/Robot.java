@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -151,11 +150,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
-	
-		// Add this robot to be owned by the settlement
-		settlement.addOwnedRobot(this);
-		// Set the container unit
-		setContainerUnit(settlement);
 		
 		// Initialize data members.
 		this.nickName = name;
@@ -185,10 +179,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	public void initialize() {
-		// Put robot in proper building.
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
 		unitManager = sim.getUnitManager();
+		
+		// Add this robot to be owned by the settlement
+		unitManager.getSettlementByID(associatedSettlementID).addOwnedRobot(this);
+		// Set the container unit
+//		setContainerUnit(settlement);
+		// Put robot in proper building.
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -212,15 +211,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
-
-//	/**
-//	 * Gets the total capacity of resource that this container can hold.
-//	 * @return total capacity (kg).
-//	 */
-//	public double getTotalCapacity() {
-//		return BASE_CAPACITY;
-//	}
-
 
 	/**
 	 * Create a string representing the birth time of the person.
@@ -306,25 +296,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
         return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
     }
 
-//	/**
-//	 * @return {@link LocationSituation} the robot's location
-//	 */
-//	@Override
-//	public LocationSituation getLocationSituation() {
-//		if (isInoperable)
-//			return LocationSituation.DECOMMISSIONED;
-//		else {
-//			Unit container = getContainerUnit();
-//			if (container instanceof Settlement)
-//				return LocationSituation.IN_SETTLEMENT;
-//			else if (container instanceof Vehicle)
-//				return LocationSituation.IN_VEHICLE;
-//			else if (container instanceof MarsSurface)
-//				return LocationSituation.OUTSIDE;
-//		}
-//		return LocationSituation.UNKNOWN;
-//	}
-
 	/**
 	 * Gets the robot's X location at a settlement.
 	 * 
@@ -389,11 +360,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return (Settlement) c;
 		}
 
-		else if (c.getUnitType() == UnitType.VEHICLE) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
+		if (isInVehicleInGarage()) {
+			return ((Vehicle)c).getSettlement();
+		}
+		
+		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+			return c.getSettlement();
 		}
 
 		return null;
@@ -1229,8 +1201,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return the equipment list
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return eqmInventory.getEquipmentList();
+	public Set<Equipment> getEquipmentSet() {
+		return eqmInventory.getEquipmentSet();
 	}
 	
 	/**
@@ -1408,6 +1380,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
+	}
+	
+	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType
@@ -1428,6 +1411,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public Collection<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
 	}
 	
 	/**
@@ -1497,7 +1490,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return LocationStateType.INSIDE_VEHICLE;
 		
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 			
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
@@ -1509,73 +1502,106 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+			// if the vehicle is parked in a garage
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
+		}
+
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-		// Will activate the block of codes below once robots become mobile again
+		Unit cu = getContainerUnit();
+		UnitType ut = cu.getUnitType();
+
+		// Check if the origin is a vehicle
+		if (ut == UnitType.VEHICLE) {
+			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+				transferred = ((Crewable)cu).removeRobot(this);
+			}
+			else {
+				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
+			}
+		}
+//		else if (ut == UnitType.BUILDING) {
+//			// Retrieve this person from the settlement
+//			transferred = ((Building)cu).getSettlement().removeRobot(this);
+//			BuildingManager.removeRobotFromBuilding(this, ((Building)cu));
+//		}
+		else if (ut == UnitType.PLANET) {
+			transferred = ((MarsSurface)cu).removeRobot(this);
+		}
+		else {
+			// Question: should we remove this unit from settlement's robotWithin list
+			// especially if it is still inside the garage of a settlement
+			transferred = ((Settlement)cu).removeRobot(this);
+			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
+		}	
 		
-//		// Check if the origin is a vehicle
-//		if (origin.getUnitType() == UnitType.VEHICLE) {
-//			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-//				transferred = ((Crewable)origin).removeRobot(this);
-//			}
-//			else {
-//				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
-//			}
-//		}
-//		else if (origin.getUnitType() == UnitType.PLANET) {
-//			transferred = ((MarsSurface)origin).removeRobot(this);
-//		}
-//		else if (origin.getUnitType() == UnitType.BUILDING) {
-//			// Retrieve this person from the settlement
-//			transferred = ((Building)origin).getSettlement().removeRobotWithin(this);
-//		}
-//		// Note: the origin is a settlement
-//		else {
-//			// Retrieve this person from the settlement
-//			transferred = ((Settlement)origin).removeRobotWithin(this);
-//		}	
-//		
-//		if (transferred) {
-//			// Check if the destination is a vehicle
-//			if (destination.getUnitType() == UnitType.VEHICLE) {
-//				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-//					transferred = ((Crewable)destination).addRobot(this);
-//				}
-//				else {
-//					logger.warning(this + "Not possible to be stored into " + origin + ".");
-//				}
-//			}
-//			else if (destination.getUnitType() == UnitType.PLANET) {
-//				transferred = ((MarsSurface)destination).addRobot(this);
-//			}
-//			// Note: the destination is a settlement
-//			else {
-//				transferred = ((Settlement)destination).addRobotWithin(this);
-//			}
-//			
-//			if (!transferred) {
-//				logger.warning(this + " cannot be stored into " + destination + ".");
-//				// NOTE: need to revert back the storage action 
-//			}
-//			else {
-//				// Set the new container unit (which will internally set the container unit id)
-//				setContainerUnit(destination);
-//				// Fire the unit event type
-//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-//				// Fire the unit event type
-//				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
-//			}
-//		}
-//		else {
-//			logger.warning(this + " cannot be retrieved from " + origin + ".");
-//			// NOTE: need to revert back the retrieval action 
-//		}
+		if (transferred) {
+			// Check if the destination is a vehicle
+			if (destination.getUnitType() == UnitType.VEHICLE) {
+				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+					transferred = ((Crewable)destination).addRobot(this);
+				}
+				else {
+					logger.warning(this + "Not possible to be stored into " + cu + ".");
+				}
+			}
+			else if (destination.getUnitType() == UnitType.BUILDING) {
+				transferred = ((Building)cu).getSettlement().addRobot(this);
+			}
+			else if (destination.getUnitType() == UnitType.PLANET) {
+				transferred = ((MarsSurface)destination).addRobot(this);
+			}
+			else {
+				transferred = ((Settlement)destination).addRobot(this);
+			}
+			
+			if (!transferred) {
+				logger.warning(this + " cannot be stored into " + destination + ".");
+				// NOTE: need to revert back the storage action 
+			}
+			else {
+				// Set the new container unit (which will internally set the container unit id)
+				setContainerUnit(destination);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				// Fire the unit event type
+				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+			}
+		}
+		else {
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back the retrieval action 
+		}
 		
 		return transferred;
 	}
@@ -1586,9 +1612,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = getNickName().hashCode();
+		int hashCode = getIdentifier();
 		hashCode *= getRobotType().hashCode();
-		hashCode *= getIdentifier();
 		return hashCode;
 	}
 
@@ -1607,16 +1632,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return this;
 	}
 
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}

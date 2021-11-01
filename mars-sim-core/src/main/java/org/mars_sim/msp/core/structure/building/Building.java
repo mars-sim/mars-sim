@@ -1406,7 +1406,16 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return UnitType.BUILDING;
 	}
 
-
+	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		return true;
+	}
+	
 	/**
 	 * Gets the amount resource stored
 	 * 
@@ -1518,17 +1527,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Unit getHolder() {
 		return this;
 	}
-	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
 	
 	@Override
 	public boolean equals(Object obj) {

@@ -36,7 +36,7 @@
 
 	<meal-list>
 		<!--  A MAIN DISH will have dry mass with a total proportion of 0.8
-		        while a SIDE DISH will have the remaining proportion of 0.2 -->
+		        while a SIDE DISH will have the remaining proportion of 0.5 -->
 
 		<main-dish id="0" name="Kidney Bean Fried Rice" oil="0.1" salt="0.01" category="meal">
 			<!-- ingredient id shows the decreasing order of importance. e.g. ingredient with id = "0" is more important than one with id = "4" -->
@@ -162,19 +162,21 @@
 			<ingredient id="5" name="Leaves" proportion="0.1"/>			
 		</main-dish>
 
-		
-		<!--  SOUP BELOW
-		      dry mass in the total proportion of .5 kg -->
-
-		<main-dish id="16" name="Sesame Miso Soup" oil="0.01" salt="0.005" category="meal">
-			<ingredient id="0" name="Tofu" proportion="0.20"/>
-			<ingredient id="1" name="Water" proportion="0.25"/>
-			<ingredient id="2" name="Sesame" proportion="0.015"/>
-			<ingredient id="3" name="Spring Onion" proportion="0.025"/>
-			<ingredient id="4" name="Soy Sauce" proportion="0.010"/>
-			<ingredient id="5" name="Leaves" proportion="0.05"/>
+		<main-dish id="16" name="filet sandwich" oil="0.05" salt="0.01" category="meal">
+			<ingredient id="0" name="fish patty" proportion="0.3"/>
+			<ingredient id="1" name="white bread" proportion="0.2"/>
+			<ingredient id="2" name="lettuce" proportion="0.15"/>
+			<ingredient id="3" name="tomato" proportion="0.15"/>
 		</main-dish>
 
+		<main-dish id="17" name="sushi plate" oil="0.05" salt="0.01" category="meal">
+			<ingredient id="0" name="fish meat" proportion="0.3"/>
+			<ingredient id="1" name="morel mushroom" proportion="0.15"/>
+			<ingredient id="2" name="tofu" proportion="0.15"/>
+			<ingredient id="3" name="white rice" proportion="0.15"/>
+			<ingredient id="4" name="rice vinegar" proportion="0.05"/>
+		</main-dish>
+		
 		<!--  SIDE DISH BELOW
 		      each side dish will have dry mass in the total proportion of 0.5
 				TODO: will convert element tag to side dish -->
@@ -250,6 +252,15 @@
 			<ingredient id="2" name="Water" proportion="0.25"/>
 		</side-dish>
 		
+		<side-dish id="13" name="Sesame Miso Soup" oil="0.01" salt="0.005" category="meal">
+			<ingredient id="0" name="Tofu" proportion="0.20"/>
+			<ingredient id="1" name="Water" proportion="0.25"/>
+			<ingredient id="2" name="Sesame" proportion="0.015"/>
+			<ingredient id="3" name="Spring Onion" proportion="0.025"/>
+			<ingredient id="4" name="Soy Sauce" proportion="0.010"/>
+			<ingredient id="5" name="Leaves" proportion="0.05"/>
+		</side-dish>
+				
 	</meal-list>
 
 </meal-configuration>

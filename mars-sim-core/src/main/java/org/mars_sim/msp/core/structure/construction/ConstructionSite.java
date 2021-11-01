@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -560,12 +559,12 @@ implements Serializable, LocalBoundedObject {
 	}
 	
 	/**
-	 * What is this entity 
+	 * Is this unit inside a settlement
 	 * 
-	 * @return
+	 * @return true if the unit is inside a settlement
 	 */
 	@Override
-	public Unit getUnit() {
-		return this;
+	public boolean isInSettlement() {
+		return false;
 	}
 }

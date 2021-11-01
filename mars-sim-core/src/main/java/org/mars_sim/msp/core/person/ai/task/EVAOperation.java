@@ -638,9 +638,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
 		Airlock result = null;
-
-		if (person.isInSettlement()) {
-			result = person.getSettlement().getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+		
+		Settlement s = person.getSettlement();
+		if (s != null) {
+			result = s.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
 		} 
 		
 		else if (person.isInVehicle()) {
@@ -656,8 +657,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
 		Airlock result = null;
 
-		if (robot.isInSettlement()) {
-			result = robot.getSettlement().getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
+		Settlement s = robot.getSettlement();
+		if (s != null) {
+			result = s.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
 		} 
 		
 		else if (robot.isInVehicle()) {
@@ -698,10 +700,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
 		// Return containers in rover Take a copy as the original will change.
-		List<Equipment> held = new ArrayList<>(person.getEquipmentList());
+		List<Equipment> held = new ArrayList<>(person.getEquipmentSet());
 		for(Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
-			e.transfer(person, destination);
+			e.transfer(destination);
 		}
 	}
 
@@ -712,36 +714,40 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param p the person
 	 * @param s the settlement
 	 */
-	public static void rescueOperation(Rover r, Person p, Settlement s) {
-		
+	public static boolean rescueOperation(Rover r, Person p, Settlement s) {
+		boolean result = false;
 		if (p.isDeclaredDead()) {
-			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
-			p.transfer(cu, s);
+//			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+			result = p.transfer(s);
 		}
 		else if (r != null) {
-			p.transfer(r, s);
+			result = p.transfer(s);
 		}
 		else if (p.isOutside()) {
-			p.transfer(unitManager.getMarsSurface(), s);
+			result = p.transfer(s);
 		}
 		
-		// Gets the settlement id
-		int id = s.getIdentifier();
-		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, id);
-
-		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
-		HealthProblem problem = null;
-		for (HealthProblem hp : problems) {
-			if (complaint.getType() == hp.getType()) {
-				problem = hp;
-				break;
+		if (result) {
+			// Gets the settlement id
+			int id = s.getIdentifier();
+			// Store the person into a medical building
+			BuildingManager.addToMedicalBuilding(p, id);
+	
+			Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
+			Complaint complaint = p.getPhysicalCondition().getMostSerious();
+			HealthProblem problem = null;
+			for (HealthProblem hp : problems) {
+				if (complaint.getType() == hp.getType()) {
+					problem = hp;
+					break;
+				}
 			}
+			
+			// Register the historical event
+			HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
+			registerNewEvent(rescueEvent);
 		}
 		
-		// Register the historical event
-		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
-		registerNewEvent(rescueEvent);
+		return result;
 	}
 }

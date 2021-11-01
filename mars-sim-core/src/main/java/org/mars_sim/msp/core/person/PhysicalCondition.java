@@ -68,6 +68,8 @@ public class PhysicalCondition implements Serializable {
 	/** Life support maximum value. */
 	private static final int MAX_VALUE = 1;
 	
+	public static final int OXYGEN_ID = ResourceUtil.oxygenID; 
+	
 	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
 	public static final double MENTAL_BREAKDOWN = 100D;
 	/** Stress jump resulting from being in an accident. */
@@ -1176,9 +1178,8 @@ public class PhysicalCondition implements Serializable {
 			}
 			else {
 				double amountRecieved = support.provideOxygen(amount);
-
 				// Track the amount consumed
-				person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
+				person.addConsumptionTime(OXYGEN_ID, amountRecieved);
 				// Note: how to model how much oxygen we need properly ?			
 				double required = amount / 2D; 
 	

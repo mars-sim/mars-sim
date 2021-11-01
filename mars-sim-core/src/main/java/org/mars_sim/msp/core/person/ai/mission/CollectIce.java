@@ -87,9 +87,6 @@ public class CollectIce extends CollectResourcesMission {
 		double totalRate = 0;
 		int size = locations.size();
 		
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-
 		for (Coordinates location : locations) {
 			totalRate += terrainElevation.getIceCollectionRate(location);
 		}

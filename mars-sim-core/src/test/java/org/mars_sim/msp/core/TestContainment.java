@@ -16,11 +16,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import junit.framework.TestCase;
 
@@ -42,7 +42,6 @@ extends TestCase {
         unitManager = sim.getUnitManager();
         
         Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, unitManager);
-        
         
 		settlement = new MockSettlement();
         unitManager.addUnit(settlement);
@@ -75,7 +74,7 @@ extends TestCase {
 	}
 
 	/**
-	 * Test condition of a vehicle parked outside a settlement
+	 * Test condition of a vehicle parked in the vicinity of a settlement
 	 * @param msg
 	 * @param source
 	 * @param base
@@ -95,6 +94,27 @@ extends TestCase {
 		assertEquals(msg + ": Top container", base, source.getTopContainerUnit());
 	}
 
+	/**
+	 * Test condition of a vehicle garaged inside a settlement
+	 * @param msg
+	 * @param source
+	 * @param base
+	 */
+	private void assertVehicleGaraged(String msg, Vehicle source, Settlement base) {
+		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
+		assertEquals(msg + ": Settlement", base, source.getSettlement());
+		
+		assertTrue(msg + ": InSettlement", source.isInSettlement());
+		assertTrue(msg + ": IsInside", source.isInside());
+		assertFalse(msg + ": IsOutside", source.isOutside());
+
+		assertFalse(msg + ": isInVehicle", source.isInVehicle());
+		assertNull(msg + ": Vehicle", source.getVehicle());
+		
+		assertEquals(msg + ": Container", base, source.getContainerUnit());
+		assertEquals(msg + ": Top container", base, source.getTopContainerUnit());
+	}
+	
 	private static void assertInBuilding(String msg, Person source, Building base, Settlement home) {
 		assertInsideSettllement(msg, source, home);
 		assertEquals(msg + ": Building", base, source.getBuildingLocation());
@@ -102,11 +122,13 @@ extends TestCase {
 
 	
 	
-	private static void assertInVehicle(String msg, Unit source, Vehicle vehicle) {
-		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
-		assertNull(msg + ": Settlement", source.getSettlement());
+	private static void assertInVehicle(String msg, Person source, Vehicle vehicle) {
+		assertEquals(msg + ": person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
+		assertNull(msg + ": person is still in settlement as vehicle is in settlement", source.getSettlement());
 		
+		assertFalse(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
+		
 		assertTrue(msg + ": IsInside", source.isInside());
 		assertFalse(msg + ": IsOutside", source.isOutside());
 
@@ -117,6 +139,22 @@ extends TestCase {
 		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
 	}
 
+	private static void assertInVehicle(String msg, Equipment source, Vehicle vehicle) {
+		assertEquals(msg + ": bag's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
+		assertNull(msg + ": bag is still in settlement as vehicle is in settlement", source.getSettlement());
+		
+		assertFalse(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
+		assertFalse(msg + ": InSettlement", source.isInSettlement());
+		
+		assertTrue(msg + ": IsInside", source.isInside());
+		assertFalse(msg + ": IsOutside", source.isOutside());
+
+		assertTrue(msg + ": isInVehicle", source.isInVehicle());
+		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
+		
+		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
+		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
+	}
 	
 	private void assertOnSurface(String msg, Unit source) {
 		assertEquals(msg + ": Location state type", LocationStateType.MARS_SURFACE, source.getLocationStateType());
@@ -152,14 +190,13 @@ extends TestCase {
 	public void testVehicleInGarage() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
-		
+        settlement.addOwnedVehicle(vehicle);
+        
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
 		
 		assertTrue("Parking vehicle in garage", settlement.getBuildingManager().addToGarage(vehicle));
 		
-		// TODO surely this is wrong and should be checking the Vehicle is inSide the settlement
-		assertVehicleParked("Vehicle in garage", vehicle, settlement);
-
+		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
 	}
 
 	/*
@@ -181,7 +218,7 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
         unitManager.addUnit(vehicle);
 
-		vehicle.transfer(settlement, surface);
+		vehicle.transfer(surface);
 
 		assertOnSurface("After transfer from Settlement", vehicle);
 	}
@@ -195,10 +232,10 @@ extends TestCase {
 		
 		assertInsideSettllement("Initial equipment", bag, settlement);
 		
-		assertTrue("Transfer to surface", bag.transfer(settlement, surface));
+		assertTrue("Transfer to surface", bag.transfer(surface));
 		assertOnSurface("On surface", bag);
 		
-		assertTrue("Transfer to settlement", bag.transfer(surface, settlement));
+		assertTrue("Transfer to settlement", bag.transfer(settlement));
 		assertInsideSettllement("After return", bag, settlement);
 
 	}
@@ -214,11 +251,15 @@ extends TestCase {
 		
 		Vehicle vehicle = new MockVehicle(settlement);
         unitManager.addUnit(vehicle);
+        settlement.addOwnedVehicle(vehicle);
 		
-		assertTrue("Transfer to vehicle", bag.transfer(settlement, vehicle));
-		assertInVehicle("In vehcile", bag, vehicle);
+        // Vehicle leaves garage
+        BuildingManager.removeFromGarage(vehicle);
+
+		assertTrue("Vehicle leaving garage. Transfer bag from settlement to vehicle", bag.transfer(vehicle));
+		assertInVehicle("In vehicle", bag, vehicle);
 		
-		assertTrue("Transfer to settlement", bag.transfer(vehicle, settlement));
+		assertTrue("Transfer bag from vehicle back to settlement", bag.transfer(settlement));
 		assertInsideSettllement("After return", bag, settlement);
 
 	}
@@ -231,17 +272,22 @@ extends TestCase {
 
 		Person person = new Person("Test Bill", settlement);
 		unitManager.addUnit(person);
+		settlement.addACitizen(person);
 		
 		assertInsideSettllement("Initial Person", person, settlement);
 		
-		Rover vehicle = new Rover("Rover", VehicleType.EXPLORER_ROVER.name(), settlement);
+		Rover vehicle = new Rover("Rover", "cargo rover", settlement);
         unitManager.addUnit(vehicle);
+        settlement.addOwnedVehicle(vehicle);
 		
-		assertTrue("Transfer to vehicle", person.transfer(settlement, vehicle));
+        // Vehicle leaves garage
+        BuildingManager.removeFromGarage(vehicle);
+        
+		assertTrue("Vehicle leaving garage. Transfer person from settlement to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		
-		assertTrue("Transfer to settlement", person.transfer(vehicle, settlement));
+		assertTrue("Transfer person from vehicle back to settlement", person.transfer(settlement));
 		assertInsideSettllement("After return", person, settlement);
 
 	}

@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -260,12 +259,11 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				probability = .8;
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
-				int rockSampleId = ResourceUtil.rockSamplesID;
-		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockSampleId);
+		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, ROCK_SAMPLES_ID);
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(rockSampleId);
+				double cap = box.getAmountResourceRemainingCapacity(ROCK_SAMPLES_ID);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(rockSampleId, mass);
+					double excess = box.storeAmountResource(ROCK_SAMPLES_ID, mass);
 					totalCollected += mass - excess;
 				}
 			}
@@ -335,10 +333,10 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
 											rover, EquipmentType.SPECIMEN_BOX,
-											ResourceUtil.rockSamplesID);
+											ROCK_SAMPLES_ID);
 
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}

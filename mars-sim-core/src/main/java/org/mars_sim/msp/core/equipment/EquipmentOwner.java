@@ -12,7 +12,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.data.ResourceHolder;
 
 public interface EquipmentOwner extends ResourceHolder {
-	
+	  
 	/**
 	 * Gets the total mass held in this entity.
 	 * 
@@ -26,13 +26,20 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return collection of containers or empty collection if none.
 	 */
 	public Collection<Container> findAllContainers();
+
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findContainersOfType(EquipmentType type);
 	
 	/**
 	 * Get the equipment list
 	 * 
 	 * @return
 	 */
-	Set<Equipment> getEquipmentList();
+	Set<Equipment> getEquipmentSet();
 	
 	/**
 	 * Does this person possess an equipment of this equipment type
@@ -99,6 +106,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return number of empty containers.
 	 */
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
+	
+	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	public int findNumContainersOfType(EquipmentType containerType);
 	
 	/**
 	 * Finds a container in storage.

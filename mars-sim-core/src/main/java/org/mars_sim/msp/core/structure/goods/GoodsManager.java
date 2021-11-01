@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
@@ -207,11 +209,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 
-	private static final double GAS_CANISTER_DEMAND = 4;
-	private static final double SPECIMEN_BOX_DEMAND = 2;
-	private static final double LARGE_BAG_DEMAND = .2;
-	private static final double BAG_DEMAND = 2;
-	private static final double BARREL_DEMAND = 5;
+	private static final double GAS_CANISTER_DEMAND = 1;
+	private static final double SPECIMEN_BOX_DEMAND = 5;
+	private static final double LARGE_BAG_DEMAND = .5;
+	private static final double BAG_DEMAND = .1;
+	private static final double BARREL_DEMAND = .2;
 
 	private static final double SCRAP_METAL_DEMAND = .05;
 	private static final double INGOT_METAL_DEMAND = .05;
@@ -3292,7 +3294,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand (# of equipment).
 	 */
 	private double determineEquipmentDemand(EquipmentType type) {
-		double demand = 0;
+		double baseDemand = 1;
 
 		double areologistFactor = (1 + getJobNum(JobType.AREOLOGIST)) / 3.0;
 
@@ -3300,59 +3302,64 @@ public class GoodsManager implements Serializable, Temporal {
 			return ROBOT_FACTOR ;
 
 		// Determine number of EVA suits that are needed
-		if (type == EquipmentType.EVA_SUIT) {
+		else if (type == EquipmentType.EVA_SUIT) {
 			// Add the whole EVA Suit demand.
-			demand += getWholeEVASuitDemand();
+			baseDemand += getWholeEVASuitDemand();
 
-			return demand * eVASuitMod * EVA_SUIT_VALUE;
+			return baseDemand += eVASuitMod * EVA_SUIT_VALUE;
 		}
 
-		// Determine the number of containers that are needed.
-//		PhaseType containerPhase = ContainerUtil.getContainerPhase(type);
-//		double containerCapacity = ContainerUtil.getContainerCapacity(type);
-//
-//		double totalPhaseOverfill = 0D;
-//		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
-//		while (i.hasNext()) {
-//			AmountResource resource = i.next();
-//			if (resource.getPhase() == containerPhase) {
-//				double settlementCapacity = settlement.getInventory()
-//						.getAmountResourceCapacityNoContainers(resource);
-//
-//				double resourceDemand = getAmountDemandValue(resource.getID());
-//
-//				if (resourceDemand > settlementCapacity) {
-//					double resourceOverfill = resourceDemand - settlementCapacity;
-//					totalPhaseOverfill += resourceOverfill;
-//				}
-//			}
-//		}
-
-		double ratio = computeUsageFactor(type);
-		switch (type) {
-		case BAG:
-			return demand * ratio * settlement.getRegolithCollectionRate() * areologistFactor * BAG_DEMAND;
-		
-		case LARGE_BAG:
-			return demand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * LARGE_BAG_DEMAND;
+		else {
+			// Determine the number of containers that are needed.
 			
-		case BARREL:
-			return demand * ratio * CollectIce.REQUIRED_BARRELS * areologistFactor * BARREL_DEMAND;
+			double containerCapacity = ContainerUtil.getContainerCapacity(type);
+			double totalPhaseOverfill = 0D;
 			
-		case SPECIMEN_BOX:
-			return demand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
+			Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
+			while (i.hasNext()) {
+				AmountResource resource = i.next();
+				
+				if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == type) {
+					double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+	
+					double resourceDemand = getAmountDemandValue(resource.getID());
+	
+					if (resourceDemand > settlementCapacity) {
+						double resourceOverfill = resourceDemand - settlementCapacity;
+						totalPhaseOverfill += resourceOverfill;
+					}
+				}
+			}
 			
-		case GAS_CANISTER:
-			return demand * ratio * PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND;
+			baseDemand += totalPhaseOverfill * containerCapacity;
 			
-		default:
-			throw new IllegalArgumentException("Do not know how to calculate demand for " + type);
+			double ratio = computeUsageFactor(type);
+			
+			switch (type) {
+				case BAG:
+					return Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
+				
+				case LARGE_BAG:
+					return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;
+					
+				case BARREL:
+					return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * BARREL_DEMAND;
+					
+				case SPECIMEN_BOX:
+					return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
+					
+				case GAS_CANISTER:
+					return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
+					
+				default:
+					throw new IllegalArgumentException("Do not know how to calculate demand for " + type);
+			}
 		}
 	}
 
 	/**
-	 * Computes the usage factor (N + the used number of container / the total number)
-	 * of a class of container
+	 * Computes the usage factor (the used number of container / the total number)
+	 * of a type of container
 	 * 
 	 * @param containerType
 	 * @return the usage factor
@@ -3360,23 +3367,22 @@ public class GoodsManager implements Serializable, Temporal {
 	private double computeUsageFactor(EquipmentType containerType) {
 		int numUsed = 0;
 
-		Set<Equipment> equipmentList = settlement.getEquipmentTypeList(containerType);
+		Collection<Container> equipmentList = settlement.findContainersOfType(containerType);
 		
-		// TODO need to revisit this
-//		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-//		while (i.hasNext()) {
-//			Mission mission = i.next();
-//			if (mission instanceof VehicleMission) {
-//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-//					equipmentList.addAll(vehicle.findNumEmptyContainersOfType(containerType, initialized) findAllEquipmentType(containerType));
-//				}
-//			}
-//		}
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
+					equipmentList.addAll(vehicle.findContainersOfType(containerType));
+				}
+			}
+		}
 
 		double total = equipmentList.size();
-		for(Equipment e: equipmentList) {
-			if (!e.isEmpty(false))
+		for(Container c: equipmentList) {
+			if (c.getStoredMass() > 0)
 				numUsed++;
 		}
 

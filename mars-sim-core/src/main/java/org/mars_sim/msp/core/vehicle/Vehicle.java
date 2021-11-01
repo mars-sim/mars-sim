@@ -65,7 +65,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -379,6 +381,7 @@ public abstract class Vehicle extends Unit
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
+		setCoordinates(settlement.getCoordinates());
 		
 		// Set initial parked location and facing at settlement.
 		findNewParkingLoc();
@@ -715,7 +718,7 @@ public abstract class Vehicle extends Unit
 	private void checkStatus() {
 		// Update status based on current situation.
 		if (speed == 0) {
-			if (getGarage() != null) {
+			if (isInAGarage()) {
 				addStatus(StatusType.GARAGED);
 				removeStatus(StatusType.PARKED);
 			}
@@ -753,6 +756,26 @@ public abstract class Vehicle extends Unit
 		if (malfunctionManager.hasMalfunction()) {
 			addStatus(StatusType.MALFUNCTION);	
 		}
+	}
+	
+	/**
+	 * Checks if the vehicle is currently in a garage or not.
+	 * 
+	 * @return true if vehicle is in a garage.
+	 */
+	public boolean isInAGarage() {
+
+		Settlement settlement = getSettlement();
+		if (settlement != null) {
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			for (Building garageBuilding : list) {
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null && garage.containsVehicle(this)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -1089,7 +1112,6 @@ public abstract class Vehicle extends Unit
 		this.direction.setDirection(direction.getDirection());
 	}
 
-
 	/**
 	 * Gets the instantaneous acceleration of the vehicle [m/s2]
 	 * @return
@@ -1129,6 +1151,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return the settlement the vehicle is parked at
 	 */
+	@Override
 	public Settlement getSettlement() {
 		
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
@@ -1138,6 +1161,11 @@ public abstract class Vehicle extends Unit
 
 		if (c.getUnitType() == UnitType.SETTLEMENT)
 			return (Settlement) c;
+		
+		// If this unit is an LUV and it is within a rover
+		if (c.getUnitType() == UnitType.VEHICLE) {
+			return ((Vehicle)c).getSettlement();
+		}
 		
 		return null;
 	}
@@ -1172,8 +1200,9 @@ public abstract class Vehicle extends Unit
 			return false;
 		}
 		
-		// Checks status.
-		checkStatus();
+//		int msol = pulse.getMarsTime().getMillisolInt();
+//		// Checks status.
+//		checkStatus();
 		
 		if (haveStatusType(StatusType.MOVING)) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
@@ -1181,7 +1210,8 @@ public abstract class Vehicle extends Unit
 		}
 		
 		// If it's back at a settlement and is NOT in a garage
-		else if (getSettlement() != null && !isVehicleInAGarage()) {
+//		else if (getSettlement() != null && !isVehicleInAGarage()) {
+		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
 				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
@@ -1212,16 +1242,7 @@ public abstract class Vehicle extends Unit
 
 		return true;
 	}
-	
-	/**
-	 * Checks if the vehicle is currently in a garage or not.
-	 * 
-	 * @return true if vehicle is in a garage.
-	 */
-	public boolean isVehicleInAGarage() {
-		return (BuildingManager.getBuilding(this) != null);
-	}
-	
+
 	/**
 	 * Resets the vehicle reservation status
 	 */
@@ -1431,12 +1452,15 @@ public abstract class Vehicle extends Unit
 
 	public void relocateVehicle() {
 
-		Building b = getGarage();
-		if (b != null) {
-			b.getGroundVehicleMaintenance().removeVehicle(this);
-		}
-		else // Call findNewParkingLoc() in GroundVehicle
+		if (!BuildingManager.removeFromGarage(this))
 			findNewParkingLoc();
+		
+//		Building b = getGarage();
+//		if (b != null) {
+//			b.getGroundVehicleMaintenance().removeVehicle(this);
+//		}
+//		else // Call findNewParkingLoc() in GroundVehicle
+//			findNewParkingLoc();
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -1657,16 +1681,6 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
-	/**
 	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
 	 * or an auto-generated one.
 	 * @param type
@@ -1738,8 +1752,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return eqmInventory.getEquipmentList();
+	public Set<Equipment> getEquipmentSet() {
+		return eqmInventory.getEquipmentSet();
 	}
 	
 	/**
@@ -1750,6 +1764,16 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Collection<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
 	}
 	
 	/**
@@ -1906,6 +1930,17 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
+	}
+	
+	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType
@@ -1927,7 +1962,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public EVASuit findEVASuit(Person person) {
 		EVASuit goodSuit = null;
-		for (Equipment e : eqmInventory.getEquipmentList()) {
+		for (Equipment e : eqmInventory.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
@@ -1979,7 +2014,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public int findNumEVASuits() {
 		int result = 0;
-		for (Equipment e : eqmInventory.getEquipmentList()) {
+		for (Equipment e : eqmInventory.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				result++;
 			}	
@@ -2038,11 +2073,13 @@ public abstract class Vehicle extends Unit
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			if (newContainer.getUnitType() != UnitType.PLANET) {
+				// Do not inherit the location of a Planet.
+				setCoordinates(newContainer.getCoordinates());
+			}
 			// 2. Set LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -2071,6 +2108,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Updates the location state type directly
+	 * 
+	 * @param type
+	 */
+	public void updateLocationStateType(LocationStateType type) {
+		currentStateType = type;
+	}
+	
+	/**
 	 * Gets the location state type based on the type of the new container unit
 	 * 
 	 * @param newContainer
@@ -2079,11 +2125,16 @@ public abstract class Vehicle extends Unit
 	@Override
 	public LocationStateType getNewLocationState(Unit newContainer) {
 		
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
+			if (isInAGarage()) {
+				return LocationStateType.INSIDE_SETTLEMENT;
+			}
+			else
+				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		}
 		
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
+//		if (newContainer.getUnitType() == UnitType.BUILDING)
+//			return LocationStateType.INSIDE_SETTLEMENT;	
 		
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
@@ -2101,27 +2152,58 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		// Note: in future, WITHIN_SETTLEMENT_VICINITY will 
+		// mean that the vehicle is NOT in the settlement.
+		// But for now, it loosely means the vehicle is still in the settlement.
+		
+		// if the vehicle is parked in the vicinity of a settlement
+		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
+			return true;
+		
+		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT 
+				&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
+		Unit cu = getContainerUnit();
 		
-		if (origin.getUnitType() == UnitType.PLANET) {
-			transferred = ((MarsSurface)origin).removeVehicle(this);
+		if (cu.getUnitType() == UnitType.PLANET) {
+			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
-		else {
-			transferred = ((Settlement)origin).removeParkedVehicle(this);
+		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
+			transferred = ((Settlement)cu).removeParkedVehicle(this);
 		}
 
 		if (transferred) {
 			if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
 			}
-			else {
+			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addParkedVehicle(this);
 			}
 			
@@ -2139,7 +2221,7 @@ public abstract class Vehicle extends Unit
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		

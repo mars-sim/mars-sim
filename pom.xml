@@ -7,15 +7,15 @@
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.3.1</version>
+	<version>3.4.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.3.1</project.version>
+		<project.version>3.4.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
-		<junit-jupiter.version>5.7.2</junit-jupiter.version>
+		<junit-jupiter.version>5.8.1</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
         <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -27,7 +27,7 @@
 		<!-- mapstruct.version>1.1.0.Final</mapstruct.version -->
 		<libgdx.version>1.10.0</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<kotlin.version>1.5.20</kotlin.version>
+		<kotlin.version>1.5.31</kotlin.version>
 		<!--  TextIO needs 1.8 -->
 		<slf4j.version>1.8.0-beta4</slf4j.version>
 		
@@ -204,11 +204,29 @@
 		                </execution>
 					</executions>
 					<dependencies>
+						<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-common
+						<dependency>
+						    <groupId>org.jetbrains.kotlin</groupId>
+						    <artifactId>kotlin-stdlib-common</artifactId>
+						    <version>${kotlin.version}</version>
+						</dependency-->					
 						<dependency>
 							<groupId>org.jetbrains.kotlin</groupId>
 							<artifactId>kotlin-stdlib</artifactId>
 							<version>${kotlin.version}</version>
 						</dependency>
+						<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-compiler -->
+						<dependency>
+						    <groupId>org.jetbrains.kotlin</groupId>
+						    <artifactId>kotlin-compiler</artifactId>
+						    <version>${kotlin.version}</version>
+						</dependency>							
+						<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-scripting-compiler -->
+						<dependency>
+						    <groupId>org.jetbrains.kotlin</groupId>
+						    <artifactId>kotlin-scripting-compiler</artifactId>
+						    <version>${kotlin.version}</version>
+						</dependency>						
 					</dependencies>					
 					<!--dependencies>
 						<dependency>

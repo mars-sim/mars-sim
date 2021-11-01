@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -59,14 +59,6 @@ public class TendGreenhouse extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
-
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeInspecting;
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeCleaning;
-	/** The total time spent in inspecting the greenhouse. */
-	private double timeSampling;
-	
 	
 	// Data members
 	/** The greenhouse the person is tending. */
@@ -256,9 +248,9 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	private double growingTissue(double time) {		
 		// Obtain the crop with the highest VP to work on in the lab
-		CropType type = greenhouse.selectVPCrop();
+		CropSpec type = greenhouse.selectVPCrop();
 			
-		if (greenhouse.checkBotanyLab(type.getID(), worker))  {
+		if (greenhouse.checkBotanyLab(type, worker))  {
 			
 			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Growing "
 					+ type.getName() + Farming.TISSUE_CULTURE 
@@ -325,7 +317,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double samplingPhase(double time) {
 
-		CropType type = null;
+		CropSpec type = null;
 		
 		int rand = RandomUtil.getRandomInt(5);
 
@@ -340,7 +332,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		if (type != null) {
-			boolean hasWork = greenhouse.checkBotanyLab(type.getID(), worker);
+			boolean hasWork = greenhouse.checkBotanyLab(type, worker);
 
 			if (hasWork) {
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",

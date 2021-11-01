@@ -364,23 +364,25 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param newTask
 	 */
 	public void startTask(Task newTask) {
-		// Save the current task as last task
-		lastTask = currentTask;
-		
-		// End the current task properly
-		if ((currentTask != null) && !currentTask.isDone()) {
-			String des = newTask.getDescription();
-
-			logger.info(worker, 20_000, "Quit " + des + " to start new Task "
-						+ newTask.getDescription());
-			currentTask.endTask();
+		if (newTask != null) {
+			// Save the current task as last task
+			lastTask = currentTask;
+			
+			// End the current task properly
+			if ((currentTask != null) && !currentTask.isDone()) {
+				String des = currentTask.getDescription();
+	
+				logger.info(worker, 20_000, "Quit '" + des + "' to start new Task '"
+							+ newTask.getDescription() + "'.");
+				currentTask.endTask();
+			}
+			
+			// Make the new task as the current task
+			currentTask = newTask;
+			
+			// Send out the task event
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 		}
-		
-		// Make the new task as the current task
-		currentTask = newTask;
-		
-		// Send out the task event
-		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 	}
 	
 	/**

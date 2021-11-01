@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -256,17 +257,34 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentList());
+			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentSet());
 			Iterator<Equipment> k = originalEqm.iterator();
-			while (k.hasNext() && (amountUnloading > 0D)) {
+			while (k.hasNext() && (amountUnloading > 0D)) {	
 				Equipment equipment = k.next();
-				// Unload inventories of equipment (if possible)
-				UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
-				equipment.transfer(vehicle, settlement);		
-				amountUnloading -= equipment.getMass();
 				
-				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
-					+ " from " + vehicle.getName() + ".");
+				if (vehicle instanceof Crewable && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+					int numSuit = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
+					int numCrew = ((Crewable)vehicle).getCrewNum();
+					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
+					if (numSuit > numCrew) {
+						// Unload the EVA suit 
+						UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
+						equipment.transfer(settlement);		
+						amountUnloading -= equipment.getMass();
+						
+						logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
+							+ " from " + vehicle.getName() + ".");
+					}
+				}
+				else {
+					// Unload inventories of equipment (if possible)
+					UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
+					equipment.transfer(settlement);		
+					amountUnloading -= equipment.getMass();
+					
+					logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
+						+ " from " + vehicle.getName() + ".");
+				}
 			}
 		}
 
@@ -362,15 +380,18 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
+						
+					if (p.transfer(settlement)) {
 					
-					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
-					
-					p.transfer(vehicle, settlement);
-					
-					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
-					
-					p.setAssociatedSettlement(settlement.getIdentifier());
-//					p.getMind().getTaskManager().clearTask();
+						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
+						
+						p.setAssociatedSettlement(settlement.getIdentifier());
+						
+						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
+					}
+					else {
+						logger.warning(worker, "failed to retrieve the dead body of " + p + " from " + vehicle.getName());
+					}
 				}
 			}
 		}

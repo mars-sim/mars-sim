@@ -7,14 +7,13 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -53,13 +52,13 @@ public class MicroInventory implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(MicroInventory.class.getName());
 
 	/** The owner of this micro inventory. */
-	private Loggable owner;
+	private Unit owner;
 	/** A map of resources. */
 	private Map<Integer, ResourceStored> storageMap = new HashMap<>();
 	
 	private double totalMass = 0D;
 	
-	public MicroInventory(Loggable owner) {
+	public MicroInventory(Unit owner) {
 		this.owner = owner;
 	}
 	
@@ -180,7 +179,7 @@ public class MicroInventory implements Serializable {
 
 		updateAmountResourceTotalMass();
 		// Fire the unit event type
-		owner.getUnit().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
+		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
 		return excess;
 	}
 	
@@ -220,8 +219,9 @@ public class MicroInventory implements Serializable {
 			
 			// Update the total mass
 			updateItemResourceTotalMass();
+			
 			// Fire the unit event type
-			owner.getUnit().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ItemResourceUtil.findItemResource(resource));
+			owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 		}
 		else {
 			missing = quantity;
@@ -237,7 +237,7 @@ public class MicroInventory implements Serializable {
 	 */
 	private void updateAmountResourceTotalMass() {
 		// Note: to avoid ConcurrentModificationException, use new ArrayList 
-		totalMass = new ArrayList<>(storageMap.values()).stream().mapToDouble(r -> r.storedAmount).sum();	
+		totalMass = storageMap.values().stream().mapToDouble(r -> r.storedAmount).sum();	
 	}
 
 	/**
@@ -274,8 +274,8 @@ public class MicroInventory implements Serializable {
 		double remaining = s.storedAmount - quantity;
 		if (remaining < 0) {
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(owner, 10_000L, "Just retrieved all " + quantity + " kg of " 
-					+ name + " but lacked " + Math.round(-remaining * 10.0)/10.0 + " kg.");
+			logger.warning(owner, 10_000L, "Just retrieved all of " + quantity + " kg " 
+					+ name + " and still lacked " + Math.round(-remaining * 1_000.0)/1_000.0 + " kg.");
 			shortfall = -remaining;
 			remaining = 0;
 		}
@@ -283,8 +283,9 @@ public class MicroInventory implements Serializable {
 		s.storedAmount = remaining;
 		// Update the total mass
 		updateAmountResourceTotalMass();
+		
 		// Fire the unit event type
-		owner.getUnit().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
+		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;
 	}
 	
@@ -316,7 +317,7 @@ public class MicroInventory implements Serializable {
 		// Update the total mass
 		updateItemResourceTotalMass();
 		// Fire the unit event type
-		owner.getUnit().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ItemResourceUtil.findItemResource(resource));
+		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;
 	}
 	

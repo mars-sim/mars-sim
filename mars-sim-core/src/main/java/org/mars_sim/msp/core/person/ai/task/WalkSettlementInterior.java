@@ -81,7 +81,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
 			logger.warning(person, "Started WalkSettlementInterior task when not in a settlement.");
-//			person.getMind().getTaskManager().clearAllTasks();
+			person.getMind().getTaskManager().clearAllTasks("Not in a settlement");
 			return;
 		}
 
@@ -116,8 +116,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, "Was unable to walk. No valid interior path.");
-				person.getMind().getTaskManager().clearAllTasks("No walking routeS");
+				logger.warning(person, "Unable to walk. No valid interior path.");
+				person.getMind().getTaskManager().clearAllTasks("No walking routes.");
 				return;
 				// TODO: if it's the astronomy observatory building, it will call it thousands of time
 				// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
@@ -232,7 +232,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
-			logger.severe(worker, "Was unable to continue walking due to missing path objects.");
+			logger.severe(worker, "Unable to continue walking due to missing path objects.");
 			endTask();
 			return 0;
 		}
@@ -264,7 +264,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 				coveredMeters -= distanceToLocation;
 				
-				changeBuildings(location);
+				if (!changeBuildings(location)) {
+					logger.severe(worker, "Unable to change building.");
+//					endTask();
+//					return 0;
+					person.getMind().getTaskManager().clearAllTasks("Unable to change building");
+				}
 				
 				if (!walkingPath.isEndOfPath()) {
 					walkingPath.iteratePathLocation();
@@ -411,7 +416,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * 
 	 * @param location the path location the person has reached.
 	 */
-	private void changeBuildings(InsidePathLocation location) {
+	private boolean changeBuildings(InsidePathLocation location) {
 
 		if (location instanceof Hatch) {
 			// If hatch leads to new building, place person in the new building.
@@ -420,6 +425,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (person != null) {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
+					BuildingManager.removePersonFromBuilding(person, currentBuilding);
 					BuildingManager.addPersonOrRobotToBuilding(worker, hatch.getBuilding());
 				}
 			} 
@@ -427,6 +433,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			else if (robot != null) {
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
+					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
 					BuildingManager.addPersonOrRobotToBuilding(robot, hatch.getBuilding());
 				}
 			}
@@ -454,20 +461,27 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				} 
 				
 				else {
-					logger.severe(worker, "Bad connection (" 
+					logger.severe(worker, "Bad building connection (" 
 							+ connector.getBuilding1() + " <--> " + connector.getBuilding2()
 							+ ").");
+					return false;
 				}
 
 				if (newBuilding != null) {
 					
-					if (person != null)
+					if (person != null) {
+						BuildingManager.removePersonFromBuilding(person, currentBuilding);
 						BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
-					else if (robot != null)
+					}
+					else if (robot != null) {
+						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
 						BuildingManager.addPersonOrRobotToBuilding(robot, newBuilding);
+					}
 				}
 			}
 		}
+		
+		return true;
 	}
 	
 	/**

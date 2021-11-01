@@ -57,8 +57,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -66,7 +64,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -109,9 +106,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private static final double highW;
 	/** The average low weight of a person. */
 	private static final double lowW;
-	
-	private final static int OXYGEN = ResourceUtil.oxygenID;
-	private final static int WATER = ResourceUtil.waterID;
 	
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -775,6 +769,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @return the person's settlement
 	 */
+	@Override
 	public Settlement getSettlement() {
 
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
@@ -786,14 +781,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return (Settlement) c;
 		}
 		
-		else if (c.getUnitType() == UnitType.VEHICLE) {
-			Building b = BuildingManager.getBuilding((Vehicle) c);
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
+		if (isInVehicleInGarage()) {
+			return ((Vehicle)c).getSettlement();
 		}
 		
-		else if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
 			return c.getSettlement();
 		}
 		
@@ -1069,58 +1061,35 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	private LifeSupportInterface getLifeSupportType() {
 
-		LifeSupportInterface result = null;
-		List<LifeSupportInterface> lifeSupportUnits = new CopyOnWriteArrayList<LifeSupportInterface>();
-
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			lifeSupportUnits.add(settlement);
+			// if the person is inside 
+			return settlement;
 		}
 
-		else {
-			
-			Vehicle vehicle = getVehicle();
-			if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
+		Vehicle vehicle = getVehicle();
+		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
 
-				if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
-					// if the vehicle is inside a garage
-					lifeSupportUnits.add(vehicle.getSettlement());
-				}
-
-				else {
-					lifeSupportUnits.add((LifeSupportInterface) vehicle);
-				}
+			if (vehicle.isInVehicleInGarage()) {
+				// Note: if the vehicle is inside a garage
+				// continue to use settlement's life support
+				return vehicle.getSettlement();
 			}
+
+			else {
+				return (LifeSupportInterface) vehicle;
+			}
+		}
+
+		EVASuit suit = getSuit();
+		if (suit != null) {
+			return suit;
 		}
 
 		// Note: in future a person may rely on a portable gas mask
-		// for breathing 
+		// for breathing
 		
-//		// Get all contained units.
-//		Collection<Integer> IDs = getInventory().getContainedUnitIDs();
-//		for (Integer id : IDs) {
-//			Unit u = unitManager.getUnitByID(id);
-//			if (u instanceof LifeSupportInterface)
-//				lifeSupportUnits.add((LifeSupportInterface) u);
-//		}
-
-		// If more than one find the best
-		if (lifeSupportUnits.size() > 1) {
-			for (LifeSupportInterface goodUnit : lifeSupportUnits) {
-				// Call Vehicle or Settlement's lifeSupportCheck
-				if (result == null && goodUnit.lifeSupportCheck()) {
-					result = goodUnit;
-				}
-			}
-		}
-
-		// If no good units, just get first life support unit.
-		if ((result == null) && (lifeSupportUnits.size() > 0)) {
-			result = lifeSupportUnits.get(0);
-		}
-
-//		System.out.println(name + " in " + getLocationTag().getImmediateLocation() + " is on " + result.toString() + " life support.");
-		return result;
+		return null;
 	}
 
 	/**
@@ -1632,10 +1601,24 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 	/**
 	 * Gets the EVA suit the person has donned on
+	 * 
 	 * @return
 	 */
 	public EVASuit getSuit() {
 		return suit;
+	}
+	
+	/**
+	 * Gets the EVA suit the person has in inventory
+	 * 
+	 * @return
+	 */
+	public EVASuit getInventorySuit() {
+		for (Equipment e: getEquipmentSet()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT)
+				return (EVASuit)e;
+		}
+		return null;
 	}
 	
 	public int getExtrovertmodifier() {
@@ -1750,8 +1733,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return the equipment list
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return eqmInventory.getEquipmentList();
+	public Set<Equipment> getEquipmentSet() {
+		return eqmInventory.getEquipmentSet();
 	}
 	
 	/**
@@ -1762,6 +1745,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	@Override
 	public Collection<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	@Override
+	public Collection<Container> findContainersOfType(EquipmentType type){
+		return eqmInventory.findContainersOfType(type);
 	}
 	
 	/**
@@ -1939,6 +1932,17 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * Finds the number of containers of a particular type
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return eqmInventory.findNumContainersOfType(containerType);
+	}
+	
+	/**
 	 * Finds a container in storage.
 	 * 
 	 * @param containerType
@@ -2046,7 +2050,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return LocationStateType.INSIDE_VEHICLE;
 		
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 			
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
@@ -2058,35 +2062,71 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+			// if the vehicle is parked in a garage
+			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+				return true;
+			}
+		}
+		
+//		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
+//			// if the vehicle is parked in a garage
+//			return ((Vehicle)getContainerUnit()).isInSettlement();
+//		}
+
+		// Note: may consider the scenario of this unit
+		// being carried in by another person or a robot
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
+//			return getContainerUnit().isInSettlement();
+		
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	@Override
-	public boolean transfer(Unit origin, Unit destination) {
+	public boolean transfer(Unit destination) {
 		boolean transferred = false;
-
+		Unit cu = getContainerUnit();
+		UnitType ut = cu.getUnitType();
+		
 		// Check if the origin is a vehicle
-		if (origin.getUnitType() == UnitType.VEHICLE) {
-			if (((Vehicle)origin).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-				transferred = ((Crewable)origin).removePerson(this);
+		if (ut == UnitType.VEHICLE) {
+			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {
-				logger.warning(this + "Not possible to be retrieved from " + origin + ".");
+				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (origin.getUnitType() == UnitType.PLANET) {
-			transferred = ((MarsSurface)origin).removePerson(this);
+		else if (ut == UnitType.PLANET) {
+			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-		else if (origin.getUnitType() == UnitType.BUILDING) {
-			// Retrieve this person from the settlement
-			transferred = ((Building)origin).getSettlement().removePeopleWithin(this);
-		}
-		// Note: the origin is a settlement
-		else {
-			// Retrieve this person from the settlement
-			transferred = ((Settlement)origin).removePeopleWithin(this);
+//		else if (ut == UnitType.BUILDING) {
+//		}
+		else if (ut == UnitType.SETTLEMENT) {
+			// Q1: should one remove this person from settlement's peopleWithin list,
+			//     especially if he is still inside the garage of a settlement ?
+			// Q2: should it be the vehicle's responsibility to remove the person from the settlement 
+			//     as the vehicle leaves the garage ?
+			transferred = ((Settlement)cu).removePeopleWithin(this);
+			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}	
 		
 		if (transferred) {
@@ -2096,14 +2136,13 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 					transferred = ((Crewable)destination).addPerson(this);
 				}
 				else {
-					logger.warning(this + "Not possible to be stored into " + origin + ".");
+					logger.warning(this + "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
-			// Note: the destination is a settlement
-			else {
+			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addPeopleWithin(this);
 			}
 			
@@ -2121,7 +2160,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + origin + ".");
+			logger.warning(this + " cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action 
 		}
 		
@@ -2140,16 +2179,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	@Override
 	public Unit getHolder() {
-		return this;
-	}
-	
-	/**
-	 * What is this entity 
-	 * 
-	 * @return
-	 */
-	@Override
-	public Unit getUnit() {
 		return this;
 	}
 	

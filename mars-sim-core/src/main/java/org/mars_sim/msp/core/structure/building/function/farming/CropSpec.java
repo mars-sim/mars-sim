@@ -9,12 +9,13 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 import java.io.Serializable;
 import java.util.List;
 
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The CropType class is a type of crop.
  */
-public class CropType implements Serializable, Comparable<CropType> {
+public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -63,6 +64,12 @@ public class CropType implements Serializable, Comparable<CropType> {
 	/** The type of crop */
 	private CropCategoryType cropCategoryType;
 
+	private int cropID;
+
+	private int seedID = -1;
+
+	private boolean seedOnly;
+
 	/**
 	 * Constructor.
 	 * 
@@ -74,12 +81,15 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
 	 * @param dailyPAR
+	 * @param seedOnly 
+	 * @param seedName 
 	 * @param a                  map of phases
 	 */
-	public CropType(String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
+	CropSpec(int id, String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
-			List<Phase> phases) {
+			List<Phase> phases, String seedName, boolean seedOnly) {
 
+		this.id = id;
 		this.name = name;
 		this.growingTime = growingTime;
 		this.cropCategoryType = cropCategoryType;
@@ -89,7 +99,13 @@ public class CropType implements Serializable, Comparable<CropType> {
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
 		this.phases = phases;
-
+		
+		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
+		if (seedName != null) {
+			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
+			this.seedOnly = seedOnly;
+		}
+		
 	}
 
 	/**
@@ -98,9 +114,32 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @return name
 	 */
 	public String getName() {
-		return name;// Conversion.capitalize(name);
+		return name;
 	}
 
+	/**
+	 * Get the Resource ID assigned to this crop.
+	 * @return
+	 */
+	public int getCropID() {
+		return cropID;
+	}
+	
+	/**
+	 * Get the Resource ID assigned to the seed of the crop..
+	 * @return
+	 */
+	public int getSeedID() {
+		return seedID;
+	}
+	
+	/**
+	 * Does this crop only produce a the seed.
+	 */
+	public boolean isSeedPlant() {
+		return seedOnly;
+	}
+	
 	/**
 	 * Gets the crop type's life cycle type.
 	 * 
@@ -174,6 +213,69 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return dailyPAR;
 	}
 
+	public int getID() {
+		return id;
+	}
+
+	/**
+	 * Get the next phase in the growing sequence
+	 * @param phaseType
+	 * @return
+	 */
+	public PhaseType getNextPhaseType(PhaseType phaseType) {
+		int nextId = 1;
+
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == phaseType) {
+				return phases.get(nextId).getPhaseType();
+			}
+			nextId++;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the Phase for a specific PhaseType
+	 * @param phaseType
+	 * @return
+	 */
+	public Phase getPhase(PhaseType phaseType) {
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == phaseType) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * What percentage complete has to be completed for the specified phase
+	 * to advance to the next one
+	 * @param phaseType
+	 * @return
+	 */
+	public double getNextPhasePercentage(PhaseType phaseType) {
+		double result = 0;
+		for(Phase p : phases) {
+			result += p.getPercentGrowth();
+			if (p.getPhaseType() == phaseType)
+				return result;
+		}
+		return result;
+	}
+
+	
+	/**
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	public int compareTo(CropSpec c) {
+		return name.compareToIgnoreCase(c.name);
+	}
+
 	/**
 	 * String representation of this cropType.
 	 * 
@@ -183,33 +285,17 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return Conversion.capitalize(name);
 	}
 
-	public List<Phase> getPhases() {
-		return phases;
+	@Override
+	public int hashCode() {
+		return id % 32;
 	}
 
-
-	public void setID(int id) {
-		this.id = id;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		CropSpec c = (CropSpec) obj;
+		return this.id == c.id;
 	}
-	
-	public int getID() {
-		return id;
-	}
-	
-	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(CropType c) {
-		return name.compareToIgnoreCase(c.name);
-	}
-
-	public void destroy() {
-		phases = null;
-		cropCategoryType = null;
-	}
-
 }

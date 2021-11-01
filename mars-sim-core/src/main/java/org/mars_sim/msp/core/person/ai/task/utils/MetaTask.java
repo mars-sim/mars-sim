@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -22,6 +23,12 @@ import org.mars_sim.msp.core.time.MarsClock;
  * constructing task instances.
  */
 public abstract class MetaTask {
+	
+	protected static final int FOOD_ID = ResourceUtil.foodID;
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int ICE_ID = ResourceUtil.iceID;
+	protected static final int REGOLITH_ID = ResourceUtil.regolithID;
+	
 	/**
 	 *  Defines the type of Worker support by this Task
 	 */

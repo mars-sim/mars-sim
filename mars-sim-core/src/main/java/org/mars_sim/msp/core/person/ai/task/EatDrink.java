@@ -150,8 +150,8 @@ public class EatDrink extends Task implements Serializable {
 		if (container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
 			// Take preserved food from inventory if it is available.
-			foodAmount = rh.getAmountResourceStored(ResourceUtil.foodID);
-			waterAmount = rh.getAmountResourceStored(ResourceUtil.waterID);
+			foodAmount = rh.getAmountResourceStored(FOOD_ID);
+			waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 		
 		boolean food = false;
@@ -640,7 +640,7 @@ public class EatDrink extends Task implements Serializable {
 			Unit container = person.getContainerUnit();
 			if (person.isInside()) {	
 				// Take preserved food from inventory if it is available.
-				boolean haveFood = retrieveAnResource(proportion, ResourceUtil.foodID, container);
+				boolean haveFood = retrieveAnResource(proportion, FOOD_ID, container);
 				
 				if (haveFood) {
 					// Add to cumulativeProportion
@@ -923,7 +923,7 @@ public class EatDrink extends Task implements Serializable {
 				double amount = waterFinal / 1000D;
 
 				if (amount > MIN) {
-					double available = suit.getAmountResourceStored(ResourceUtil.waterID);
+					double available = suit.getAmountResourceStored(WATER_ID);
 					if (available >= amount)
 						haswater = true;
 				}				
@@ -937,9 +937,9 @@ public class EatDrink extends Task implements Serializable {
 					pc.setThirst(new_thirst);
 
 					if (amount > MIN) {
-						suit.retrieveAmountResource(ResourceUtil.waterID, amount);
+						suit.retrieveAmountResource(WATER_ID, amount);
 						// Track the water consumption
-						person.addConsumptionTime(ResourceUtil.waterID, amount);
+						person.addConsumptionTime(WATER_ID, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 					}
@@ -958,7 +958,7 @@ public class EatDrink extends Task implements Serializable {
 					double amount = waterFinal / 1000D / level / levelModifier;
 
 					if (amount > MIN) {
-						double available = storedAnResource(containerUnit, ResourceUtil.waterID);
+						double available = storedAnResource(containerUnit, WATER_ID);
 						if (available >= amount)
 							haswater = true;
 					}				
@@ -972,9 +972,9 @@ public class EatDrink extends Task implements Serializable {
 						pc.setThirst(new_thirst);
 	
 						if (amount > MIN) {
-							retrieveAnResource(amount, ResourceUtil.waterID, containerUnit);
+							retrieveAnResource(amount, WATER_ID, containerUnit);
 							// Track the water consumption
-							person.addConsumptionTime(ResourceUtil.waterID, amount);
+							person.addConsumptionTime(WATER_ID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 						}

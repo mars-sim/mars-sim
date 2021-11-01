@@ -797,5 +797,18 @@
 		</outputs>
 	</process>
 
+	<process name="Make fish patty from fish meat"
+		tech="2" skill="1" work-time="25" process-time="25"
+			power-required="0.5">
+		<description>A fish patty is made of
+			textured fish meat and other ingredients. </description>
+		<inputs>
+			<resource name="fish meat" amount="3" />
+			<resource name="table salt" amount="0.01" />
+		</inputs>
+		<outputs>
+			<resource name="fish patty" amount="3" />
+		</outputs>
+	</process>
 
 </foodProduction-processes>

@@ -538,7 +538,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 					EVASuit suit0 = getVehicle().findEVASuit(person);
 					if (suit0 == null) {				
 						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person); 
-						if (!suit1.transfer(emergencySettlement, getVehicle())) {
+						if (!suit1.transfer(getVehicle())) {
 							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
 						}
 					}			
@@ -570,12 +570,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (isEveryoneInRover()) {
 
-			// Remove from garage if in garage.
-			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-			if (garageBuilding != null) {
-				VehicleMaintenance garage = garageBuilding.getGroundVehicleMaintenance();
-				garage.removeVehicle(getVehicle());
-			}
+			// If the rover is in a garage, put the rover outside.
+			BuildingManager.removeFromGarage(getVehicle());
 
 			// Embark from settlement
 			emergencySettlement.removeParkedVehicle(getVehicle());

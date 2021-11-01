@@ -316,17 +316,14 @@ public abstract class DroneMission extends VehicleMission {
 					}
 				}
 
-				// Remove from garage if in garage.
-				Building garage = BuildingManager.getBuilding(v);
-				if (garage != null) {
-					garage.getVehicleMaintenance().removeVehicle(v);
-				}
+				// If the rover is in a garage, put the rover outside.
+				BuildingManager.removeFromGarage(v);
 
 				// Record the start mass right before departing the settlement
 				recordStartMass();
 				
 				// Embark from settlement
-				if (v.transfer(settlement, unitManager.getMarsSurface())) {
+				if (v.transfer(unitManager.getMarsSurface())) {
 					setPhaseEnded(true);
 				}
 				else {
@@ -375,16 +372,18 @@ public abstract class DroneMission extends VehicleMission {
 		Drone drone = (Drone) v;
 
 		if (v != null) {
-			// Add vehicle to a garage if available.
-			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
 			Settlement currentSettlement = v.getSettlement();
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If drone has not been parked at settlement, park it.
-				disembarkSettlement.addParkedVehicle(v);	
+				v.transfer(disembarkSettlement);
+//				disembarkSettlement.addParkedVehicle(v);	
 			}
 
+			// Add vehicle to a garage if available.
+			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+			
 			// Make sure the drone chasis is not overlapping a building structure in the settlement map
-	        if (!isInAGarage())
+	        if (!inAGarage)
 	        	drone.findNewParkingLoc();
 
 			// Reset the vehicle reservation
@@ -413,13 +412,9 @@ public abstract class DroneMission extends VehicleMission {
 			else {
 				// End the phase.
 
-				// If the drone is in a garage, put the drone outside.
-				if (inAGarage) {
-					Building garage = BuildingManager.getBuilding(v);
-					if (garage != null)
-						garage.getVehicleMaintenance().removeVehicle(v);
-				}
-
+				// If the rover is in a garage, put the rover outside.
+				BuildingManager.removeFromGarage(v);
+				
 				// Leave the vehicle.
 				leaveVehicle();
 				setPhaseEnded(true);
@@ -454,7 +449,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @return true if drone is in a garage.
 	 */
 	protected boolean isInAGarage() {
-		return BuildingManager.isInAGarage(getVehicle());
+		return getVehicle().isInAGarage();
 	}
 	
 	@Override

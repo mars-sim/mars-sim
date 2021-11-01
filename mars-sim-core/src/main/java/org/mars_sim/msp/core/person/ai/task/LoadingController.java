@@ -457,7 +457,7 @@ public class LoadingController implements Serializable {
 				for(Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						// Put this equipment into a vehicle
-						boolean done = eq.transfer(settlement, vehicle);
+						boolean done = eq.transfer(vehicle);
 						
 						if (!done) {
                 			logger.warning(vehicle, "Cannot store Equipment " + eq.getName());

@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github.mars-sim</groupId>
-		<version>3.3.1</version>
+		<version>3.4.0</version>
 	</parent>
 	<artifactId>mars-sim-mapdata</artifactId>
 	<name>mars-sim-mapdata</name>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.0-jre</version>
+			<version>31.0.1-jre</version>
 		</dependency>			
 	</dependencies>
 </project>

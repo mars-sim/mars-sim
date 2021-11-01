@@ -318,10 +318,8 @@ public class MineSite extends EVAOperation implements Serializable {
 			amountExcavated *= mineralConcentration / 100D;
 			amountExcavated *= getEffectiveSkillLevel();
 
-			AmountResource mineralResource = ResourceUtil.findAmountResource(mineralName);
-			Mining mission = (Mining) worker.getMission();
-
-			mission.excavateMineral(mineralResource, amountExcavated);
+			((Mining) worker.getMission()).excavateMineral(
+					ResourceUtil.findAmountResource(mineralName), amountExcavated);
 		}
 	}
 

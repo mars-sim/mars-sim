@@ -82,7 +82,7 @@ public abstract class Job {
 			break; // $NON-NLS-1$
 		}
 		key.append(jobType.getName());
-		return Msg.getString(key.toString()); // $NON-NLS-1$
+		return Msg.getString(key.toString().replace(" ", "")); // $NON-NLS-1$
 	}
 
 	public JobType getType() {

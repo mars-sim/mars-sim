@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class VehicleSpecCommand extends ChatCommand {
 
 	public static final ChatCommand SPEC = new VehicleSpecCommand();
+	private static final String KM_KG_FORMAT = "%.2f km/kg";
 
 	private VehicleSpecCommand() {
 		super(VehicleChat.VEHICLE_GROUP, "spe", "specs", "What are the vehicle specs.");
@@ -63,8 +64,9 @@ public class VehicleSpecCommand extends ChatCommand {
 			buffer.appendLabeledString("Power Source", fuel);
 			buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 			buffer.appendLabeledString("Base Range Est.", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
-			buffer.appendLabeledString("Base Fuel Consumption Est.", 
-								Math.round(source.getBaseFuelEconomy() * 100.0) / 100.0 + " km/kg");
+			buffer.appendLabeledString("Base Fuel Economy", String.format(KM_KG_FORMAT, source.getBaseFuelEconomy()));
+			buffer.appendLabeledString("Est. Average Economy", String.format(KM_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
+			buffer.appendLabeledString("Actual Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
 		}
 		else {
 			buffer.appendLabeledString("Power Source", fuel);

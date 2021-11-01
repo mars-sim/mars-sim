@@ -108,6 +108,11 @@ public abstract class TravelMission extends Mission {
 		lastStopNavpoint = currentNavPoint;
 
 		setTravelStatus(AT_NAVPOINT);
+
+		// Need to recalculate what is left to travel to get resoruces loaded
+		// for return
+		computeEstimatedTotalDistance();
+
 	}
 	
 	/**

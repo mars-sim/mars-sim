@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -39,26 +37,24 @@ public class EquipmentInventory
 	// default logger.
 //	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
 	
-	private Loggable owner;
+	private Unit owner;
 	
 	private double cargoCapacity;
 	
-	/** Locally held Equipment **/
-	private Set<Equipment> equipmentList;
-
+	/** Locally held equipment set**/
+	private Set<Equipment> equipmentSet;
+	
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
-	
-	/**
-	 * 
-	 */
-	public EquipmentInventory(Loggable owner, double cargoCapacity) {
+
+	public EquipmentInventory(Unit owner, double cargoCapacity) {
 
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;
 		
-		// Create equipment list instance		
-		equipmentList = new HashSet<>();
+		// Create equipment set
+		equipmentSet = new UnitSet<>();
+		
 		// Create microInventory instance		
 		microInventory = new MicroInventory(owner);
 	
@@ -71,20 +67,20 @@ public class EquipmentInventory
 	@Override
 	public double getStoredMass() {
 		double result = 0;
-		for (Equipment e: equipmentList) {
+		for (Equipment e: equipmentSet) {
 			result += e.getMass();
 		}
 		return result +  microInventory.getStoredMass();
 	}
 	
 	/**
-	 * Get the equipment list
+	 * Get the equipment set
 	 * 
 	 * @return
 	 */
 	@Override
-	public Set<Equipment> getEquipmentList() {
-		return Collections.unmodifiableSet(equipmentList);
+	public Set<Equipment> getEquipmentSet() {
+		return Collections.unmodifiableSet(equipmentSet);
 	}
 
 	/**
@@ -95,10 +91,24 @@ public class EquipmentInventory
 	@Override
 	public Collection<Container> findAllContainers() {
 		Collection<Container> result = new HashSet<>();
-		for (Equipment e : equipmentList) {
+		for (Equipment e : equipmentSet) {
 			if (e != null && e instanceof Container) {
-				Container c = (Container)e;
-				result.add(c);
+				result.add((Container)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findContainersOfType(EquipmentType type) {
+		Collection<Container> result = new HashSet<>();
+		for (Equipment e : equipmentSet) {
+			if (e != null && e instanceof Container && type == e.getEquipmentType()) {
+				result.add((Container)e);
 			}
 		}
 		return result;
@@ -112,7 +122,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
-		for (Equipment e: equipmentList) {
+		for (Equipment e: equipmentSet) {
 			if (type == e.getEquipmentType()) {
 				return true;
 			}
@@ -128,9 +138,9 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		boolean contained = equipmentList.contains(equipment);
+		boolean contained = equipmentSet.contains(equipment);
 		if (!contained && (cargoCapacity >= getStoredMass() + equipment.getMass())) {
-			equipmentList.add(equipment);
+			equipmentSet.add(equipment);
 			return true;
 		}
 		return contained;		
@@ -143,7 +153,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		return equipmentList.remove(equipment);
+		return equipmentSet.remove(equipment);
 	}
 	
 	/**
@@ -190,7 +200,7 @@ public class EquipmentInventory
 		}
 
 		if (shortfall > 0D) {
-			for (Equipment e: equipmentList) {
+			for (Equipment e: equipmentSet) {
 //				if (e instanceof ResourceHolder)
 //				shortfall = ((ResourceHolder) e).retrieveAmountResource(resource, shortfall);
 				shortfall = e.retrieveAmountResource(resource, shortfall);
@@ -242,7 +252,7 @@ public class EquipmentInventory
 	public double getAmountResourceCapacity(int resource) {
 		double result = 0;
 
-		for (Equipment e: equipmentList) {
+		for (Equipment e: equipmentSet) {
 			result += e.getCapacity(resource);
 		}
 		
@@ -295,13 +305,10 @@ public class EquipmentInventory
 	public double getAmountResourceStored(int resource) {
 		double result = microInventory.getAmountResourceStored(resource);
 		
-		Iterator<Equipment> i = equipmentList.iterator(); // new HashSet<Equipment>(equipmentList).iterator();
-		while (i.hasNext()) {
-			result += i.next().getAmountResourceStored(resource);
-//			Equipment e = i.next();
-//			if (e instanceof ResourceHolder) {
-//				result += e.getAmountResourceStored(resource);
-//			}
+		for(Equipment e: equipmentSet) {
+			if (e instanceof ResourceHolder) {
+				result += e.getAmountResourceStored(resource);
+			}
 		}
 
 		return result;
@@ -318,9 +325,9 @@ public class EquipmentInventory
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		int result = 0;
-		for (Equipment e : equipmentList) {
+		for (Equipment e : equipmentSet) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
-			if ((e != null) && e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
+			if (e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
 				result++;
 			}
 		}
@@ -334,11 +341,12 @@ public class EquipmentInventory
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
+	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
 		int result = 0;
-		for (Equipment e : equipmentList) {
+		for (Equipment e : equipmentSet) {
 			// The contained unit has to be an Equipment that is empty and of the correct type
-			if ((e != null) && (e.getEquipmentType() == containerType)) {
+			if ((e.getEquipmentType() == containerType)) {
 				result++;
 			}
 		}
@@ -356,8 +364,8 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		for (Equipment e : equipmentList) {
-			if (e != null && e.getEquipmentType() == containerType) {
+		for (Equipment e : equipmentSet) {
+			if (e.getEquipmentType() == containerType) {
 				Container c = (Container) e;
 				// Check it matches the resource spec
 				int containerResource = c.getResource();
@@ -380,7 +388,7 @@ public class EquipmentInventory
 	@Override
 	public Set<Integer> getItemResourceIDs() {
 		Set<Integer> set = new HashSet<>(microInventory.getItemResourceIDs());
-		for (Equipment e: equipmentList) {
+		for (Equipment e: equipmentSet) {
 			set.addAll(e.getItemResourceIDs());
 		}
 		
@@ -395,7 +403,7 @@ public class EquipmentInventory
 	public Set<Integer> getAmountResourceIDs() {
 		Set<Integer> set = new HashSet<Integer>(); 
 		set.addAll(microInventory.getResourcesStored());
-		for (Equipment e: equipmentList) {
+		for (Equipment e: equipmentSet) {
 			if (e instanceof ResourceHolder) {
 				set.addAll(((ResourceHolder) e).getAmountResourceIDs());
 			}
@@ -411,7 +419,7 @@ public class EquipmentInventory
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		if (!equipmentList.isEmpty())
+		if (!equipmentSet.isEmpty())
 			return false;
 		return microInventory.isEmpty();
 	}
@@ -521,5 +529,4 @@ public class EquipmentInventory
 	public boolean hasItemResource(int resource) {
 		return getItemResourceIDs().contains(resource);
 	}
-
 }

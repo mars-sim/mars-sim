@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -33,8 +31,6 @@ public class Storage extends Function implements Serializable {
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Storage.class.getName());
-
-	private static int greyWaterID = ResourceUtil.greyWaterID;
 
 	private Map<Integer, Double> resourceCapacities;
 
@@ -258,15 +254,6 @@ public class Storage extends Function implements Serializable {
 					// Vent or drain 1% of resource
 					double ventAmount = 0.01 * rh.getAmountResourceCapacity(id);
 					rh.retrieveAmountResource(id, ventAmount);
-				
-					// Adjust the grey water filtering rate
-					if (id == greyWaterID && rh.getHolder().getUnitType() == UnitType.SETTLEMENT) {
-						Settlement s = (Settlement)(rh.getHolder());
-						s.increaseGreyWaterFilteringRate();
-						double r = s.getGreyWaterFilteringRate();
-						logger.log(s, Level.WARNING, 10_000, method  
-								+ "Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
-					}
 				}
 
 				else if (remainingCapacity < amount) {
@@ -356,14 +343,7 @@ public class Storage extends Function implements Serializable {
 
 				if (amountStored < 0.00001) {
 					result = false;
-					if (id == greyWaterID && rh.getHolder().getUnitType() == UnitType.SETTLEMENT) {
-						Settlement s = (Settlement)rh;
-						// Adjust the grey water filtering rate
-						s.decreaseGreyWaterFilteringRate();
-						double r = s.getGreyWaterFilteringRate();
-						logger.log(s, Level.WARNING, 1_000,  
-								"Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
-					}
+
 				
 				} else if (amountStored < amount) {
 					amount = amountStored;

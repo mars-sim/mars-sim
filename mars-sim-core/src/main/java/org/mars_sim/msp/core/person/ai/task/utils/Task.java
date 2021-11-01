@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -80,6 +81,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 
+	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	protected static final int FOOD_ID = ResourceUtil.foodID;
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int ICE_ID = ResourceUtil.iceID;
+	protected static final int REGOLITH_ID = ResourceUtil.regolithID;
+	protected static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
+	
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
@@ -534,7 +542,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				createSubTask(newSubTask);
 			}
 
-			else {
+			else if (!subTask.getDescription().equalsIgnoreCase(newSubTask.getDescription())) {
 				subTask.addSubTask(newSubTask);
 			}
 		}
@@ -1302,7 +1310,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (person != null) {
 			// If person is in a settlement, walk to random building.
-			if (person.isInSettlement()) {
+			Settlement s = person.getSettlement();
+			if (s != null) {
 
 //				Building currentBuilding = person.getBuildingLocation();
 //
@@ -1311,7 +1320,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //					return;
 //				}
 				
-				List<Building> buildingList = person.getSettlement().getBuildingManager()
+				List<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 				// Randomize its order
 				Collections.shuffle(buildingList);	

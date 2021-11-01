@@ -123,9 +123,6 @@ implements Serializable {
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available."); 
-        	// Add bag demand
-//        	settlement.getInventory().addItemDemand(
-//        			EquipmentType.getResourceID(containerType), 1);    
         	
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
@@ -299,7 +296,7 @@ implements Serializable {
         
         if (finishedCollecting) {
      	
-            logger.log(person, Level.INFO, 4_000, "Collected a total of " 
+            logger.log(person, Level.FINE, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
         		+ " kg " + resourceName + "."); 
          
@@ -330,7 +327,7 @@ implements Serializable {
         	// Doesn't have a Bag
         	aBag = settlement.findContainer(containerType, true, resourceID);
 	        if (aBag != null) {
-	            	boolean successful = aBag.transfer(settlement, person);
+	            	boolean successful = aBag.transfer(person);
 	            	if (!successful) {
 	            		aBag = null;
 	                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
@@ -433,20 +430,19 @@ implements Serializable {
 	            if (amount > settlementCap) {
 	            	amount = settlementCap;
 	            	
-	            	logger.log(person, Level.INFO, 0,
+	            	logger.warning(person, 
 	            			resourceName + " storage full. Could only check in " 
 	            			+ Math.round(amount*10.0)/10.0 + " kg.");
 	            }
 	            
 	            else {
-	            	logger.log(person, Level.INFO, 0, 
+	            	logger.fine(person,  
 	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");	
 	            }
 
-                // Track supply
-//                sInv.addAmountSupply(resourceID, amount);
+
                 // Transfer the bag
-                bag.transfer(person, settlement);
+                bag.transfer(settlement);
 				// Add to the daily output
 				settlement.addOutput(resourceID, amount, getTimeCompleted());
 	            // Recalculate settlement good value for output item.

@@ -36,7 +36,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;

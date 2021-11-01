@@ -318,9 +318,9 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	private boolean takeSpecimenContainer() {
 		Container container = ContainerUtil.findLeastFullContainer(
 													rover, EquipmentType.SPECIMEN_BOX,
-													ResourceUtil.rockSamplesID);
+													ROCK_SAMPLES_ID);
 		if (container != null) {
-			return container.transfer(rover, person);
+			return container.transfer(person);
 		}
 		return false;
 	}

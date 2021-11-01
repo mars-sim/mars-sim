@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -170,7 +169,7 @@ public class BuildingAirlock extends Airlock {
 			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
             // 1.1. Transfer a person from the surface of Mars to the building inventory
-			successful = person.transfer(marsSurface, settlement);
+			successful = person.transfer(settlement);
             
 			if (successful) {
 	            // 1.2 Add the person to the building
@@ -220,12 +219,9 @@ public class BuildingAirlock extends Airlock {
   			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                         
             // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
-            successful = person.transfer(settlement, marsSurface);
+            successful = person.transfer(marsSurface);
             
-			if (successful) {
-				// 5.2 Remove the person from the building
-	            BuildingManager.removePersonFromBuilding(person, building);
-	         
+			if (successful) {	         
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				

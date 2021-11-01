@@ -148,7 +148,7 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, optionalEquipMap);
 		
 		EquipmentType eType = EquipmentType.convertID2Type(missingId);
-		long optionalLoaded = vehicle.getEquipmentList().stream()
+		long optionalLoaded = vehicle.getEquipmentSet().stream()
 				.filter(e -> (e.getEquipmentType() == eType))
 				.count();
 		assertEquals("Optional Equipment loaded", 0, optionalLoaded);
@@ -425,7 +425,7 @@ extends TestCase {
 	private void checkVehicleEquipment(Vehicle source, Map<Integer, Integer> manifest) {
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
 			EquipmentType eType = EquipmentType.convertID2Type(item.getKey());
-			long stored = source.getEquipmentList().stream()
+			long stored = source.getEquipmentSet().stream()
 					.filter(e -> (e.getEquipmentType() == eType))
 					.count();
 			assertEquals("Equipment in vehicle " + eType.name(),

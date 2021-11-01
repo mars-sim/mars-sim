@@ -197,10 +197,10 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 //		Inventory rcInv = returnContainer.getInventory();
 
 		// Unload all units.
-		Iterator<Equipment> j = luv.getEquipmentList().iterator();
+		Iterator<Equipment> j = luv.getEquipmentSet().iterator();
 		while (j.hasNext()) {
 			Equipment unit = j.next();
-			if (!unit.transfer(luv, returnContainer)) {
+			if (!unit.transfer(returnContainer)) {
 				logger.severe(unit, "Cannot be stored in " + returnContainer.getName());
 			}
 		}

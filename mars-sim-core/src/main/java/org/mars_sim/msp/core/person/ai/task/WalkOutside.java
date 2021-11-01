@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -587,10 +588,16 @@ public class WalkOutside extends Task implements Serializable {
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = 0;
 		
-		// Check for accident.
-		checkForAccident(person.getSuit(), time, BASE_ACCIDENT_CHANCE, getEffectiveSkillLevel(), "EVA");
-
 		if (person != null) {
+			// Check for accident.
+			EVASuit suit = person.getSuit();
+			if (suit != null) {
+
+				// EVA operations skill modification.
+				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA");
+			}
+			
 			// Check for radiation exposure during the EVA operation.
 			// checkForRadiation(time);
 			// If there are any EVA problems, end walking outside task.

@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github.mars-sim</groupId>
-		<version>3.3.1</version>
+		<version>3.4.0</version>
 	</parent>
 	<artifactId>mars-sim-core</artifactId>
 	<name>mars-sim-core</name>
@@ -81,17 +81,19 @@
 		    <version>20200518</version>
 		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io : 269k
-			 13 KB-->
+			 13 KB
+			 Usage: FileUtils -->
 		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
-		    <version>2.7</version>
+		    <version>2.11.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 : 564 KB -->	
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 : 564 KB 
+			 Usage: StopWatch, StringUtils-->	
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
-		    <version>3.11</version>
+		    <version>3.12.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 : 2.1 MB -->
 		<dependency>
@@ -191,10 +193,28 @@
 	                </execution>
 				</executions>
 				<dependencies>
+					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-common
+					<dependency>
+					    <groupId>org.jetbrains.kotlin</groupId>
+					    <artifactId>kotlin-stdlib-common</artifactId>
+					    <version>${kotlin.version}</version>
+					</dependency-->	
 					<dependency>
 						<groupId>org.jetbrains.kotlin</groupId>
 						<artifactId>kotlin-stdlib</artifactId>
 						<version>${kotlin.version}</version>
+					</dependency>
+					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-compiler -->
+					<dependency>
+					    <groupId>org.jetbrains.kotlin</groupId>
+					    <artifactId>kotlin-compiler</artifactId>
+					    <version>${kotlin.version}</version>
+					</dependency>						
+					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-scripting-compiler -->
+					<dependency>
+					    <groupId>org.jetbrains.kotlin</groupId>
+					    <artifactId>kotlin-scripting-compiler</artifactId>
+					    <version>${kotlin.version}</version>
 					</dependency>
 				</dependencies>					
 				<!--dependencies>

@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -192,7 +192,7 @@ public class Cooking extends Function implements Serializable {
 	 * @return water content ( 1 is equal to 100% )
 	 */
 	private double getCropWaterContent(String name) {
-		CropType c = SimulationConfig.instance().getCropConfiguration().getCropTypeByName(name);
+		CropSpec c = SimulationConfig.instance().getCropConfiguration().getCropTypeByName(name);
 		
 		if (c == null)
 			return 0;
@@ -272,19 +272,15 @@ public class Cooking extends Function implements Serializable {
 	public int getNumCooks() {
 		int result = 0;
 		
-		LifeSupport lifeSupport = getBuilding().getLifeSupport();
-		for (Person p : lifeSupport.getOccupants()) {
-			Task task = p.getMind().getTaskManager().getTask();
-			if (task instanceof CookMeal) {
+		for (Person p : getBuilding().getLifeSupport().getOccupants()) {
+			if (p.getMind().getTaskManager().getTask() instanceof CookMeal) {
 				result++;
 			}
 		}
 
 		// Officiate Chefbot's contribution as cook
-		RoboticStation rs = getBuilding().getRoboticStation();
-		for (Robot r : rs.getRobotOccupants()) {	
-			Task task = r.getBotMind().getBotTaskManager().getTask();
-			if (task instanceof CookMeal) {
+		for (Robot r : getBuilding().getRoboticStation().getRobotOccupants()) {	
+			if (r.getBotMind().getBotTaskManager().getTask() instanceof CookMeal) {
 				result++;
 			}
 		}
@@ -948,6 +944,13 @@ public class Cooking extends Function implements Serializable {
 	/** The last cooked meal. */
 	public String getlastCookedMeal() {
 		return lastCookedMeal;	
+	}
+	
+	public boolean isFull() {
+		if (getNumCooks() < getCookCapacity()) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Override

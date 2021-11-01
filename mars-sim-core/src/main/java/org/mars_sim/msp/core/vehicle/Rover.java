@@ -10,9 +10,11 @@ package org.mars_sim.msp.core.vehicle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -20,6 +22,7 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -120,9 +123,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private List<Point2D> sickBayActivitySpots;
 	
 	/** The rover's occupants. */
-	private List<Person> occupants = new ArrayList<>();
+	private Set<Person> occupants;
 	/** The rover's robot occupants. */
-	private List<Robot> robotOccupants = new ArrayList<>();
+	private Set<Robot> robotOccupants;
 	
 	/** The rover's airlock. */
 	private Airlock airlock;
@@ -146,6 +149,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Use GroundVehicle constructor
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
+		occupants = new UnitSet<>();
+		robotOccupants = new UnitSet<>();
+		
 		// Set crew capacity
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		crewCapacity = vehicleConfig.getCrewSize(type);
@@ -288,24 +294,24 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets a list of the robot crewmembers.
+	 * Gets a set of the robot crewmembers.
 	 * 
-	 * @return robot crewmembers as Collection
+	 * @return robot crewmembers
 	 */
-	public List<Person> getCrew() {
+	public Set<Person> getCrew() {
 		if (occupants == null || occupants.isEmpty())
-			return new ArrayList<>();
+			return new UnitSet<>();
 		return occupants;
 	}
 
 	/**
-	 * Gets a list of the robot crewmembers.
+	 * Gets a set of the robot crewmembers.
 	 * 
-	 * @return robot crewmembers as Collection
+	 * @return robot crewmembers
 	 */
-	public List<Robot> getRobotCrew() {
+	public Set<Robot> getRobotCrew() {
 		if (robotOccupants == null || robotOccupants.isEmpty())
-			return new ArrayList<>();
+			return new UnitSet<>();
 		return robotOccupants;
 	}
 
@@ -337,7 +343,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 */
 	public boolean addPerson(Person person) {
 		if (!isCrewmember(person) && occupants.add(person)) {
-//			person.setContainerUnit(this);
+			person.setContainerUnit(this);
 			return true;
 		}
 		return false;
@@ -352,6 +358,32 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public boolean removePerson(Person person) {
 		if (isCrewmember(person))
 			return occupants.remove(person);
+		return false;
+	}
+	
+	/**
+	 * Adds a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be added
+	 */
+	public boolean addRobot(Robot robot) {
+		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
+			robot.setContainerUnit(this);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Removes a robot as crewmember
+	 * 
+	 * @param robot
+	 * @param true if the robot can be removed
+	 */
+	public boolean removeRobot(Robot robot) {
+		if (isRobotCrewmember(robot))
+			return robotOccupants.remove(robot);
 		return false;
 	}
 	

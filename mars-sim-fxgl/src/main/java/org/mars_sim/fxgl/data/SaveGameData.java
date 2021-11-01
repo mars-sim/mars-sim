@@ -31,7 +31,7 @@ public class SaveGameData {
             writer.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 }
