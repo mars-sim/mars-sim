@@ -116,12 +116,12 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			if (vehicle instanceof Crewable) {
 				// Transfer the human occupants to the settlement
 				for (Person p: ((Crewable)vehicle).getCrew()) {
-					p.transfer(building.getSettlement());
+					building.getSettlement().addPeopleWithin(p);
 					BuildingManager.addPersonOrRobotToBuilding(p, building);
 				}
 				// Transfer the robot occupants to the settlement
 				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
-					r.transfer(building.getSettlement());
+					building.getSettlement().addRobot(r);
 					BuildingManager.addPersonOrRobotToBuilding(r, building);
 				}
 //					// Transfer the equipment to the settlement
@@ -180,12 +180,12 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				if (vehicle instanceof Crewable) {
 					// Remove the human occupants from the settlement
 					for (Person p: ((Crewable)vehicle).getCrew()) {
-						p.transfer(vehicle);
+						building.getSettlement().removePeopleWithin(p);
 						BuildingManager.removePersonFromBuilding(p, building);
 					}
 					// Remove the robot occupants from the settlement
 					for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
-						r.transfer(vehicle);
+						building.getSettlement().removeRobot(r);
 						BuildingManager.removeRobotFromBuilding(r, building);
 					}
 					// Remove the equipment from the settlement's equipment set
