@@ -19,16 +19,25 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
@@ -223,7 +232,7 @@ public class SimulationConfigEditor {
 			}
 		});
 		
-		f.setSize(HORIZONTAL_SIZE, 360);
+		f.setSize(HORIZONTAL_SIZE, 350);
 		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
 		
 		// Sets the dialog content panel.
@@ -301,7 +310,7 @@ public class SimulationConfigEditor {
 		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
 
 		// Create configuration button inner top panel.
-		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
+		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(4, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
 
 		// Create add settlement button.
@@ -362,8 +371,23 @@ public class SimulationConfigEditor {
 				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
+		
+		// Add an Export button
+		JButton exportButton = new JButton("Export"); //$NON-NLS-1$
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {	
+				exportScenario();
+			}
+		});
+		configControl.getPane().add(exportButton);
+		JButton importButton = new JButton("Import"); //$NON-NLS-1$
+		importButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {	
+				importScenario();
+			}
+		});
+		configControl.getPane().add(importButton);
 		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
-
 		
 		// Create the bottom button panel.
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -406,7 +430,7 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(startButton);
 		 
 		// Edit Authority button.
-		JButton authorityButton = new JButton("  Edit Authorities  "); //$NON-NLS-1$
+		JButton authorityButton = new JButton("Authorities"); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
 		authorityButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -415,7 +439,7 @@ public class SimulationConfigEditor {
 		});
 		
 		// Edit Crew button.
-		JButton crewButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
+		JButton crewButton = new JButton("Crew"); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		crewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -435,8 +459,11 @@ public class SimulationConfigEditor {
         });
 
 		bottomButtonPanel.add(cb);
-		bottomButtonPanel.add(authorityButton);
-		bottomButtonPanel.add(crewButton);
+		//bottomButtonPanel.add(authorityButton);
+		//bottomButtonPanel.add(crewButton);
+		
+		configurationButtonInnerTopPanel.add(authorityButton);
+		configurationButtonInnerTopPanel.add(crewButton);
 		
 		// Force a load of the default Scenario
 		configControl.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
@@ -460,6 +487,86 @@ public class SimulationConfigEditor {
 		rootPane.setDefaultButton(startButton);
 	}
 
+	/**
+	 * Export the selected Scenario
+	 */
+	private void exportScenario() {
+		Scenario sc = configControl.getSeletedItem();
+		
+		// Prompt user for saved file
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Specify location to save export");   
+		fileChooser.setSelectedFile(new File(sc.getName().replace(' ', '_') + "-export.zip"));
+		int userSelection = fileChooser.showSaveDialog(f);
+		
+		// Did the user select
+		File fileToSave = null;
+		if (userSelection == JFileChooser.APPROVE_OPTION) {
+		    fileToSave = fileChooser.getSelectedFile();
+		}
+		else {
+			return;
+		}
+		
+		// Request the export to the specified location
+		String errorMessage = null;
+		List<String> exported = null;
+		try {
+			exported = scenarioConfig.createExport(sc, raFactory, crewConfig,
+												   new FileOutputStream(fileToSave));
+		} catch (IOException e) {
+			errorMessage = "Problem : " + e.getMessage();
+		}
+		
+		showScenarioConfirmation("Export", errorMessage, exported);
+
+	}
+	
+	private void showScenarioConfirmation(String direction, String errorMessage, List<String> exported) {
+		String outcome = errorMessage;
+		if (outcome == null) {
+			StringBuilder builder = new  StringBuilder();
+			builder.append(direction).append(" ");
+			builder.append(exported.stream().collect(Collectors.joining(",\n")));
+			outcome = builder.toString();
+		}
+		
+		// Show dialog
+		JOptionPane.showMessageDialog(f,
+			    outcome,
+			    direction + " outcome",
+			    (errorMessage != null ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE));
+	}
+
+	private void importScenario() {
+		// Prompt user for saved file
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select the scenario export to load");   
+		int userSelection = fileChooser.showOpenDialog(f);
+		
+		// Did the user select
+		File fileToOpen = null;
+		if (userSelection == JFileChooser.APPROVE_OPTION) {
+		    fileToOpen = fileChooser.getSelectedFile();
+		}
+		else {
+			return;
+		}
+		
+		String errorMessage = null;
+		List<String> imported = null;
+		// Request the export to the specified location
+		try {
+			imported  = scenarioConfig.importScenario(new FileInputStream(fileToOpen),
+										  raFactory, crewConfig);
+		} catch (IOException e) {
+			errorMessage = "Problem : " + e.getMessage();
+		}
+		
+		showScenarioConfirmation("Import", errorMessage, imported);
+		configControl.reload();
+	}
+	
 	private void createSettlementTable(JScrollPane settlementScrollPane) {
 		// Create settlement table.
 		settlementTableModel = new InitialSettlementModel(settlementConfig, raFactory);

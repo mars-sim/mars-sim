@@ -51,6 +51,7 @@ public class MarsProject {
 	private static final String NOGUI = "nogui";
 	private static final String DISPLAYHELP = "help";
 	private static final String GENERATEHELP = "html";
+	private static final String SITEEDITOR = "editor";
 
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
@@ -60,6 +61,8 @@ public class MarsProject {
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
+
+	private boolean useSiteEditor;
 
 
 	/**
@@ -91,6 +94,8 @@ public class MarsProject {
 				.desc("Disable the main UI").build());
 		options.addOption(Option.builder(GENERATEHELP)
 				.desc("Generate HTML help").build());
+		options.addOption(Option.builder(SITEEDITOR)
+				.desc("Start the Scenario Editor").build());
 		
 		CommandLineParser commandline = new DefaultParser();
 		try {
@@ -108,6 +113,9 @@ public class MarsProject {
 			if (line.hasOption(NOGUI)) {
 				useGUI = false;
 			}
+			if (line.hasOption(SITEEDITOR)) {
+				useSiteEditor = true;
+			}
 			if (line.hasOption(GENERATEHELP)) {
 				generateHelp();
 			}
@@ -120,7 +128,10 @@ public class MarsProject {
 		// Do it
 		try {
 			if (useGUI) {
-				MainWindow.startSplash();
+				if (!useSiteEditor) {
+					MainWindow.startSplash();
+				}
+				
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
 				// SplashWindow and SimulationConfigEditor
 				if (!MainWindow.OS.contains("linux")) {
@@ -132,27 +143,16 @@ public class MarsProject {
 			// Preload the Config
 			simulationConfig.loadConfig();
 			
+			if (useSiteEditor) {
+				startScenarioEditor(builder);
+			}
 			// Get user choices if there is no template defined or a preload
-			if (!builder.isFullyDefined()) {
+			else if (!builder.isFullyDefined()) {
 				logger.config("Please go to the console's Main Menu to choose an option.");
 				
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
-					// Start sim config editor
-					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
-					logger.config("Start the Site Editor...");
-					editor.waitForCompletion();
-					
-					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
-					if (crew != null) {
-						// Set the actual CrewConfig as it has editted entries
-						builder.setCrewConfig(crew);
-					}
-					
-					Scenario scenario = editor.getScenario();
-					if (scenario != null) {
-						builder.setScenario(scenario);
-					}
+					startScenarioEditor(builder);
 				}
 			
 				else if (type == 2) {
@@ -186,6 +186,24 @@ public class MarsProject {
 			// Catch everything
 			exitWithError("Problem starting " + e.getMessage(), e);
 
+		}
+	}
+
+	private void startScenarioEditor(SimulationBuilder builder) {
+		// Start sim config editor
+		SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
+		logger.config("Start the Site Editor...");
+		editor.waitForCompletion();
+		
+		UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
+		if (crew != null) {
+			// Set the actual CrewConfig as it has editted entries
+			builder.setCrewConfig(crew);
+		}
+		
+		Scenario scenario = editor.getScenario();
+		if (scenario != null) {
+			builder.setScenario(scenario);
 		}
 	}
 

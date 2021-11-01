@@ -6,14 +6,28 @@
  */
 package org.mars_sim.msp.core.configuration;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.person.Crew;
+import org.mars_sim.msp.core.person.Member;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 
 /**
@@ -50,6 +64,138 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		loadUserDefined();
 	}
 
+	/**
+	 * Generate an export of a Scenario including any custom UserConfigurables
+	 * 
+	 * @param item
+	 * @return Items exported
+	 * @throws IOException 
+	 */
+	public List<String> createExport(Scenario item,
+							 UserConfigurableConfig<ReportingAuthority> raFactory,
+							 UserConfigurableConfig<Crew> crewFactory,
+							 OutputStream output) throws IOException {
+		
+		ZipOutputStream zos = new ZipOutputStream(output);
+		
+		List<String> manifest = new ArrayList<>();
+		
+		// Find any Reporting authority & crew that are not bundled
+		// ReportingAuthority are exprted as one
+		Set<UserConfigurable> crewExported = new HashSet<>();
+		Set<UserConfigurable> raToExport = new HashSet<>();
+		for(InitialSettlement initial : item.getSettlements()) {
+			// Extract RA
+			queueReportingAuthority(raFactory, raToExport, initial.getSponsor());
+
+			// Don't extract bundled crew or those already exported
+			if (initial.getCrew() != null) {
+				Crew crew = crewFactory.getItem(initial.getCrew());
+				if (!crew.isBundled() && !crewExported.contains(crew)) {
+					extractUserConfigurable(crewFactory, crew, zos, manifest);
+					crewExported.add(crew);
+					
+					// Also check the Members are not using an unbundled RA
+					for(Member member : crew.getTeam()) {
+						queueReportingAuthority(raFactory, raToExport, member.getSponsorCode());
+					}
+				}
+			}
+		}
+		
+		// Export any found unbundled Reporting Authorities
+		for(UserConfigurable ra : raToExport) {
+			extractUserConfigurable(raFactory, ra, zos, manifest);
+		}
+		
+		// Finally add the Scenario contents itself
+		extractUserConfigurable(this, item, zos, manifest);
+		zos.close();
+		
+		return manifest;
+	}
+
+	/**
+	 * Add unbundled ReportingAuthority to the list
+	 * @param raFactory
+	 * @param raToExport
+	 * @param name
+	 */
+	private void queueReportingAuthority(UserConfigurableConfig<ReportingAuthority> raFactory,
+			Set<UserConfigurable> raToExport, String name) {
+		if (name != null) {
+			ReportingAuthority found = raFactory.getItem(name);
+			if (!found.isBundled()) {
+				raToExport.add(found);
+			}
+		}
+	}
+	
+	/**
+	 * Add a single UserConfigurable to a Zip as a seperate Zip Entry.
+	 * @param manifest 
+	 * @throws IOException
+	 */
+	private static void extractUserConfigurable(UserConfigurableConfig<? extends UserConfigurable> factory, 
+										UserConfigurable item,
+										ZipOutputStream zos,
+										List<String> manifest) throws IOException {
+		
+		 // Add the non bundled ReportingAuthority as a ZIP Entry
+		 String filename = factory.getItemFilename(item.getName());
+		 manifest.add(getEstimateName(filename));
+		 
+		 zos.putNextEntry(new ZipEntry(filename));
+		 InputStream raContents = factory.getRawConfigContents(filename, false);
+		 raContents.transferTo(zos);		
+		 zos.closeEntry();
+	}
+	
+	/**
+	 * Take the contents and 
+	 * @param contents
+	 * @param raFactory 
+	 * @throws IOException
+	 */
+	public List <String> importScenario(InputStream contents,
+			 				   UserConfigurableConfig<ReportingAuthority> raFactory,
+			 				   UserConfigurableConfig<Crew> crewFactory)
+			 	throws IOException {
+		List<String> manifest = new ArrayList<>();
+		
+	    ZipInputStream zis = new ZipInputStream(contents);
+	    ZipEntry zipEntry = zis.getNextEntry();
+	    
+	    // Get each entry off the ZIP
+	    while (zipEntry != null) {
+	    	// All contents go into the User Configuration folder
+	        File destFile = new File(SimulationFiles.getUserConfigDir(), zipEntry.getName());
+			manifest.add(getEstimateName(zipEntry.getName()));
+
+	        // Need to check if the file is already there
+	        // write file content and add a comment
+	        FileOutputStream fos = new FileOutputStream(destFile);	        
+	        zis.transferTo(fos);
+	        fos.close();
+	   
+	        // Get next entry
+	        zipEntry = zis.getNextEntry();
+	    }
+	    zis.closeEntry();
+	    zis.close();
+	    contents.close();
+	    
+	    // Reload the user Configurable items after the import
+	    raFactory.loadUserDefined();
+	    crewFactory.loadUserDefined();
+	    loadUserDefined();
+	    
+	    return manifest;
+	}
+	
+	/**
+	 * Converts a Scenario into an XML representation
+	 */
 	@Override
 	protected Document createItemDoc(Scenario item) {
 		Element root = new Element(SCENARIO_CONFIG);

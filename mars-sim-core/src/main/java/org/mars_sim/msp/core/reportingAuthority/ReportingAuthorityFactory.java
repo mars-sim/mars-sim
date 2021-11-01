@@ -103,16 +103,17 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
 		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
 		for (Element authorityNode : authorityNodes) {
-			addItem(parseXMLAuthority(authorityNode));
+			addItem(parseXMLAuthority(authorityNode, true));
 		}
 	}
 	
 	/**
 	 * Parse an Authority XML Element and create a Reporting Authority object.
 	 * @param authorityNode
+	 * @param predefined Is this a repdefined RA
 	 * @return
 	 */
-	private ReportingAuthority parseXMLAuthority(Element authorityNode) {
+	private ReportingAuthority parseXMLAuthority(Element authorityNode, boolean predefined) {
 		String code = authorityNode.getAttributeValue(CODE_ATTR);
 		String name = authorityNode.getAttributeValue(NAME_ATTR);
 		String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
@@ -136,9 +137,9 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				.map(a -> a.getAttributeValue(NAME_ATTR))
 				.collect(Collectors.toList());
 		
-		return new ReportingAuthority(code, name, agenda,
-													countries, settlementNames,
-													roverNames);
+		return new ReportingAuthority(code, name, predefined, agenda,
+									  countries, settlementNames,
+									  roverNames);
 	}
 	
 	/**
@@ -188,7 +189,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	@Override
 	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
-		return parseXMLAuthority(doc.getRootElement());
+		return parseXMLAuthority(doc.getRootElement(), false);
 	}
 
 	/**

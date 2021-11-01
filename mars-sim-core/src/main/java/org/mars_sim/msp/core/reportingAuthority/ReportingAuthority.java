@@ -36,11 +36,12 @@ implements UserConfigurable, Serializable {
 
 	private boolean predefined;
  
-	public ReportingAuthority(String name, String description,
+	public ReportingAuthority(String name, String description, boolean predefined,
 							  MissionAgenda agenda, List<String> countries,
 							  List<String> names, List<String> vehicleNames) {
 		this.description  = description;
 		this.name = name;
+		this.predefined = predefined;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;

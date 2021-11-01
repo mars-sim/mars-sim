@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -55,7 +56,7 @@ public class AuthorityEditor  {
 			content = new JPanel();
 			content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 			content.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			content.setBorder(BorderFactory.createTitledBorder(title));
+			//content.setBorder(BorderFactory.createTitledBorder(title));
 
 			model = new DefaultListModel<String>();
 			JList<String> list = new JList<>(model);
@@ -148,7 +149,7 @@ public class AuthorityEditor  {
 		
 		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE, true);
 		f.setIconImage(MainWindow.getIconImage());
-		f.setResizable(false);
+		//f.setResizable(false);
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -196,7 +197,7 @@ public class AuthorityEditor  {
 		ta.setAlignmentX(Component.LEFT_ALIGNMENT);
 		ta.setEditable(false);
 		//ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
-		ta.setColumns(30);
+		ta.setColumns(20);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);
 		agendaPanel.add(ta);
@@ -204,12 +205,14 @@ public class AuthorityEditor  {
 		contentPane.add(agendaPanel);
 		
 		// Add List panels
+		JTabbedPane tabs = new JTabbedPane();
 		countries = new TextList(Msg.getString("AuthorityEditor.country"));
-		contentPane.add(countries.getContent());
+		tabs.addTab(Msg.getString("AuthorityEditor.country"), countries.getContent());
 		settlementNames = new TextList(Msg.getString("AuthorityEditor.settlement"));
-		contentPane.add(settlementNames.getContent());
+		tabs.addTab(Msg.getString("AuthorityEditor.settlement"), settlementNames.getContent());
 		vehicleNames = new TextList(Msg.getString("AuthorityEditor.vehicle"));
-		contentPane.add(vehicleNames.getContent());
+		tabs.addTab(Msg.getString("AuthorityEditor.vehicle"), vehicleNames.getContent());
+		contentPane.add(tabs);
 		
 		// Create button panel.
 		UserConfigurableControl<ReportingAuthority> control = new UserConfigurableControl<ReportingAuthority>(f, "Authority",
@@ -254,7 +257,7 @@ public class AuthorityEditor  {
 	 */
 	private ReportingAuthority commitChanges(String name, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
-		ReportingAuthority newRA = new ReportingAuthority(name, description,
+		ReportingAuthority newRA = new ReportingAuthority(name, description, false,
 														  raFactory.getAgenda(agendaName),
 														  countries.getItems(),
 														  settlementNames.getItems(),
