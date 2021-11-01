@@ -153,7 +153,6 @@ public class UnitSet<T extends Unit>
 	 */
     private void readObject(ObjectInputStream ois) 
       throws ClassNotFoundException, IOException {
-        ois.defaultReadObject();
         ids = (int []) ois.readObject();
         
         registerInitialisation(this);
@@ -167,13 +166,14 @@ public class UnitSet<T extends Unit>
 	 */
     private void writeObject(ObjectOutputStream oos) 
 	      throws IOException {
-        oos.defaultWriteObject();
         int [] heldIDs = new int[units.size()];
         int i = 0;
         for(Unit u : units) {
         	heldIDs[i++] = u.getIdentifier();
         }
-        oos.writeObject(heldIDs);
+        
+        // Not shared so trim the effort
+        oos.writeUnshared(heldIDs);
 	}
 
 	/**
