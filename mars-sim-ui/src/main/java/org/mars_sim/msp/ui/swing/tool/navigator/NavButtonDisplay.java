@@ -112,13 +112,13 @@ implements MouseListener {
 		hotSpots[8] = new Rectangle(0, 61, 15, 28);
 	}
 
-	/**
-	 * Update coordinates
-	 * @param newCenter the new center position
-	 */
-	public void updateCoords(Coordinates newCenter) {
-		centerCoords.setCoords(newCenter);
-	}
+//	/**
+//	 * Update coordinates
+//	 * @param newCenter the new center position
+//	 */
+//	public void updateCoords(Coordinates newCenter) {
+//		centerCoords.setCoords(newCenter);
+//	}
 
 	/**
 	 * Override paintComponent method. Paints buttons and lit button

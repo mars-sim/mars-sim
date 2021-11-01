@@ -207,15 +207,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 
-		this.location = new Coordinates(0D, 0D);
 
 		if (location != null) {
 			// Set the unit's location coordinates
-			this.location.setCoords(location);
-			// Set the unit's inventory location coordinates
 			setCoordinates(location);
 		}
-
+		else
+			this.location = new Coordinates(0D, 0D);
+		
 		if (diagnosticFile != null) {
 			logCreation(this);
 		}
@@ -385,7 +384,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param newLocation the new location of the unit
 	 */
 	public void setCoordinates(Coordinates newLocation) {
-		location.setCoords(newLocation);
+		location = newLocation;
 
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}

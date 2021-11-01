@@ -319,7 +319,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		} else if (!centerCoords.equals(newCenter)) {
 			if (newCenter != null) {
 				recreateMap = true;
-				centerCoords.setCoords(newCenter);
+				centerCoords = newCenter;
 			} 
 //			else
 //				centerCoords = null;

@@ -216,7 +216,7 @@ public class Coordinates implements Serializable {
 	public void setCoords(Coordinates newCoordinates) {
 		changed = true;
 		// Update coordinates
-			if (newCoordinates != null) {
+		if (newCoordinates != null) {
 			setPhi(newCoordinates.phi);
 			setTheta(newCoordinates.theta);
 	

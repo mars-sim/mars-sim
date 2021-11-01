@@ -1120,7 +1120,8 @@ public class Walk extends Task implements Serializable {
 					logger.log(person, Level.INFO, 4_000, 
 						"Exited rover " + rover.getName() 
 						+ " inside " + garageBuilding + ".");
-					
+					endTask();
+					return timeLeft;
 				}
 //				else {
 //					logger.log(person, Level.WARNING, 4_000, 
@@ -1145,7 +1146,8 @@ public class Walk extends Task implements Serializable {
 					logger.log(robot, Level.INFO, 4_000, 
 						"Exited rover " + rover.getName() 
 						+ " inside " + garageBuilding + ".");
-					
+					endTask();
+					return timeLeft;
 				}
 //				else {
 //					logger.log(robot, Level.WARNING, 4_000, 
@@ -1195,6 +1197,8 @@ public class Walk extends Task implements Serializable {
 				logger.log(person, Level.INFO, 4_000, 
 						"Entered rover " + rover.getName() 
 						+ " inside " + garageBuilding + ".");
+				endTask();
+				return timeLeft;
 			}
 //			else {
 //				logger.log(person, Level.WARNING, 4_000, 
@@ -1216,6 +1220,8 @@ public class Walk extends Task implements Serializable {
 				logger.log(robot, Level.INFO, 4_000, 
 					"Entered rover " + rover.getName() 
 					+ " inside " + garageBuilding + ".");
+				endTask();
+				return timeLeft;
 			}
 //			else {
 //				logger.log(robot, Level.WARNING, 4_000, 

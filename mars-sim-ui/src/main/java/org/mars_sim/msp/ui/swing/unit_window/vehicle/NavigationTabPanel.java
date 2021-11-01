@@ -463,7 +463,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	if (destinationLocationCache == null)
         		destinationLocationCache = new Coordinates(vehicleMission.getNextNavpoint().getLocation());
         	else 
-        		destinationLocationCache.setCoords(vehicleMission.getNextNavpoint().getLocation());
+        		destinationLocationCache = vehicleMission.getNextNavpoint().getLocation();
             destinationLatitudeLabel.setText("" +
                     destinationLocationCache.getFormattedLatitudeString());
             destinationLongitudeLabel.setText("" +

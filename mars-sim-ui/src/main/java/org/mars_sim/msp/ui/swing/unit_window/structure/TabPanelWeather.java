@@ -522,7 +522,7 @@ extends TabPanel {
 	    	// TODO: if a person goes outside the settlement for servicing an equipment
 	    	// does the coordinate (down to how many decimal) change?
 	        if (!locationCache.equals(location)) {
-	            locationCache.setCoords(location);
+	            locationCache = location;
 	            latitudeLabel.setText(getLatitudeString());
 	            longitudeLabel.setText(getLongitudeString());
 	        }

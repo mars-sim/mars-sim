@@ -326,7 +326,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	public void showGlobe(Coordinates newCenter) {
 		if (!centerCoords.equals(newCenter)) {
 			recreate = true;
-			centerCoords.setCoords(newCenter);
+			centerCoords = newCenter;
 		}
 		updateDisplay();
 	}

@@ -107,7 +107,7 @@ public class MarsMap {
 		// Initialize variables
 		imageDone = false;
 
-		centerCoords.setCoords(adjNewCenter);
+		centerCoords = adjNewCenter;
 
 		// double PI_half = Math.PI / 2D;
 		// double PI_double = Math.PI * 2D;

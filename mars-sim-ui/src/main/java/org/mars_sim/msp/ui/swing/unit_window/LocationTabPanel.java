@@ -672,7 +672,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		// does the coordinate (down to how many decimal) change?
 		Coordinates location = unit.getCoordinates();
 		if (!locationCache.equals(location)) {
-			locationCache.setCoords(location);
+			locationCache = location;
 
 			String dir_N_S = null;
 			String dir_E_W = null;

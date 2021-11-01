@@ -328,7 +328,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
-					logger.log(person, Level.FINE, 0,
+					logger.log(person, Level.FINE, 4_000,
 							"Found " + ((Building)interiorObject).getNickName()
 							+ " as the closet building with an airlock to enter.");
 				}
@@ -336,14 +336,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					logger.log(person, Level.INFO, 0,
+					logger.log(person, Level.INFO, 4_000,
 							"Near " + r.getName()
 							+ ". Had to walk back inside the vehicle.");
 				}
 			}
 			
 			if (interiorObject == null) {
-				logger.log(person, Level.SEVERE, 0, "Trying to walk somewhere. interiorObject is null.");
+				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null.");
 				addSubTask(new Walk(person));
 			}
 			
@@ -357,7 +357,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 						!LocalAreaUtil.isLocationWithinLocalBoundedObject(
 								returnInsideLoc.getX(),	returnInsideLoc.getY(), interiorObject)) {
 					
-					logger.log(person, Level.SEVERE, 0, "Trying to walk somewhere. returnInsideLoc failed.");
+					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. returnInsideLoc failed.");
 					addSubTask(new Walk(person));
 				}
 			}
@@ -376,7 +376,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
 						
-				logger.log(person, Level.FINE, 10_000, 
+				logger.log(person, Level.FINE, 4_000, 
 							"Near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
@@ -388,13 +388,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 				} 
 				
 				else {
-					logger.log(person, Level.SEVERE, 0, "Trying to walk somewhere. cannot walk all steps.");
+					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. cannot walk all steps.");
 					addSubTask(new Walk(person));
 				}
 			}
 			
 			else {
-				logger.log(person, Level.SEVERE, 0, "Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
+				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
 				addSubTask(new Walk(person));
 			}
 		}
