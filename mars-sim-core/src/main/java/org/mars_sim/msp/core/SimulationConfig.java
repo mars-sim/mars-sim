@@ -895,14 +895,15 @@ public class SimulationConfig implements Serializable {
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
 	public File getBundledXML(String filename) {
-//		String fullPathName = SimulationFiles.getXMLDir() + File.separator + filename + XML_EXTENSION;
-//		String fullPathName = File.separator + XML_FOLDER + File.separator + filename + XML_EXTENSION;
-		String fullPathName = "/" + XML_FOLDER + "/" + filename + XML_EXTENSION;
+		if (!filename.endsWith(XML_EXTENSION)) {
+			filename = filename + XML_EXTENSION;
+		}
+		String fullPathName = "/" + XML_FOLDER + "/" + filename;
 		
-		File f = new File(SimulationFiles.getXMLDir(), filename + XML_EXTENSION);
+		File f = new File(SimulationFiles.getXMLDir(), filename);
 		String checksumOldFile = null;
 		
-		File testf = new File(SimulationFiles.getXMLDir(), filename); // no xml extension
+		File testf = new File(SimulationFiles.getXMLDir(), filename + ".tst"); 
 		String checksumTestFile = null;
 				
 		// Since the xml file does NOT exist in the home directory, start the input stream for copying
@@ -930,7 +931,7 @@ public class SimulationConfig implements Serializable {
 			else {
 				// if the xml file doesn't exist
 				if(testf.renameTo(f)) {
-					logger.config(f.getName() + " didn't exist. Just got created.");
+					logger.config(f.getName() + " didn't exist localy. Just got created.");
 				} else {
 					logger.config("Error in renaming the test xml file " + testf.getName());
 				}  

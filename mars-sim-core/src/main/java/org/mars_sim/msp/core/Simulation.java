@@ -394,8 +394,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
-		transportManager = new TransportManager(simulationConfig.getSettlementConfiguration(),
-												simulationConfig.getReportingAuthorityFactory());
+		transportManager = new TransportManager(eventManager);
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -511,9 +510,9 @@ public class Simulation implements ClockListener, Serializable {
 			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
-			transportManager = (TransportManager) ois.readObject();
-			creditManager = (CreditManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
+			creditManager = (CreditManager) ois.readObject();
+			transportManager = (TransportManager) ois.readObject();
 			relationshipManager = (RelationshipManager) ois.readObject();		
 			unitManager = (UnitManager) ois.readObject();		
 			masterClock = (MasterClock) ois.readObject();	
@@ -668,7 +667,6 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
 											   simulationConfig.getPartConfiguration());
-		TransportManager.initializeInstances(eventManager);
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 				
@@ -909,9 +907,9 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(missionManager);
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);
-			oos.writeObject(transportManager);
-			oos.writeObject(creditManager);
 			oos.writeObject(eventManager);
+			oos.writeObject(creditManager);
+			oos.writeObject(transportManager);
 			oos.writeObject(relationshipManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);

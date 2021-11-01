@@ -8,8 +8,11 @@
 package org.mars_sim.msp.core.configuration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This is a manager class of a catagory of UserConfigurable class.
@@ -75,31 +79,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * Load the user defined configuration items.
 	 */
 	protected void loadUserDefined() {
-		// Scan the old saved directory to move any saved files
-		// This can be dropped in a later release
-		File savedDir = new File(SimulationFiles.getSaveDir());
-		String[] found = savedDir.list();
-		if (found != null) {
-		    for (String oldUserFile : found) {
-		    	if (oldUserFile.startsWith(itemPrefix)
-		    			&& oldUserFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-		    		try {
-		    			File oldPath = new File(SimulationFiles.getSaveDir(), oldUserFile);
-		    			File newPath = new File(SimulationFiles.getUserConfigDir(), oldUserFile);
-						FileUtils.moveFile(oldPath, newPath);
-		    			logger.info("Moving user configuration file " + oldUserFile + " from old location to new");
-	
-		    		}
-		    		catch (Exception e) {
-		    			logger.warning("Problem moving old file " + oldUserFile + ": " + e.getMessage());
-		    		}
-		    	}
-			}
-		}
-	    
 		// Scan saved items folder
 		File configDir = new File(SimulationFiles.getUserConfigDir());
-		found = configDir.list();
+		String [] found = configDir.list();
 		if (found != null) {
 		    for (String userFile : configDir.list()) {
 		    	if (userFile.startsWith(itemPrefix)
@@ -128,16 +110,35 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 	
 	/**
-	 * Load a create from external or bundled XML.
+	 * Load a c0nfiguration from external or bundled XML.
 	 * @param name
 	 * @return
 	 */
 	protected void loadItem(String file, boolean predefined) {
-		
-		Document doc = parseXMLFileAsJDOMDocument(file, predefined);
-		if (doc == null) {
+		InputStream contents = getRawConfigContents(file, predefined);
+		if (contents == null) {
 			throw new IllegalStateException("Can not find " + file);
 		}
+		
+		Document doc;
+        try {
+    		SAXBuilder builder = new SAXBuilder();
+    		
+    		if (predefined) { // For bundled
+    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    		}
+    		else { // for user
+    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    		}
+	        doc = builder.build(contents);
+	    }
+	    catch (JDOMException | IOException e) {
+          	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
+			throw new IllegalStateException("Problem parsing " + file);
+
+	    }
 		
 		T result = parseItemXML(doc, predefined);
 		knownItems.put(result.getName(), result);
@@ -168,7 +169,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		knownItems.remove(name);
 
 		String filename = getItemFilename(name);
-		File oldFile = new File(SimulationFiles.getUserConfigDir(), filename + SimulationConfig.XML_EXTENSION);
+		File oldFile = new File(SimulationFiles.getUserConfigDir(), filename);
 		if (oldFile.delete()) {
 			logger.info("Deleted file " + oldFile.getAbsolutePath());
 		}
@@ -180,59 +181,55 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param crewName
 	 * @return
 	 */
-	private String getItemFilename(String name) {
+	protected String getItemFilename(String name) {
 		// Replace spaces 
-		return itemPrefix + name.toLowerCase().replace(' ', '_');
+		return itemPrefix + name.toLowerCase().replace(' ', '_') + SimulationConfig.XML_EXTENSION;
 	}
 	
 	/**
-	 * Parses an XML file into a DOM document.
-	 * 
-	 * @param filename the path of the file.
-	 * @param useDTD   true if the XML DTD should be used.
-	 * @return DOM document
-	 * @throws IOException
-	 * @throws JDOMException
-	 * @throws Exception     if XML could not be parsed or file could not be found.
+	 * Estimate the configurable name from the file name
+	 * @param configFile
+	 * @return
 	 */
-	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-		SAXBuilder builder = new SAXBuilder();
+	protected static String getEstimateName(String configFile) {
+		return Conversion.capitalize(configFile.replace('_', ' ')
+						 .substring(0, configFile.length() - SimulationConfig.XML_EXTENSION.length()));
+	}
+	
+	/**
+	 * Location and stream the contents of the required configuration item
+	 * @param filename Name of the item to locate
+	 * @param bundled Is it bundled with the application
+	 * @throws FileNotFoundException 
+	 */
+	protected InputStream getRawConfigContents(String filename, boolean bundled) {
 		String path = "";
 		
-		if (useDTD) { // For bundled
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		if (bundled) { // For bundled
 			path = SimulationFiles.getXMLDir() + File.separator + DEFAULT_DIR;
 			
 			// Bundled XML files need to be copied out of the CONF sub folder.
 			// Must use the '/' for paths in the classpath.
 			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + "/" + filename );
-			filename += SimulationConfig.XML_EXTENSION;
 		}
 		else { // for user
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			path = SimulationFiles.getUserConfigDir();
 		}
-
-	    Document document = null;
 	    
 		File f = new File(path, filename);
 		if (!f.exists()) {
 			return null;
 		}
-		
 		if (f.exists() && f.canRead()) {
-	        
-	        try {
-		        document = builder.build(f);
-		    }
-		    catch (JDOMException | IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
-		    }
+			try {
+				return new FileInputStream(f);
+			}
+			catch (FileNotFoundException e) {
+				logger.warning("Problem reading file " + f.getAbsolutePath() + ":" + e);
+			}
 		}
 		
-	    return document;
+	    return null;
 	}
 
 	
@@ -245,7 +242,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		String storagePath = SimulationFiles.getUserConfigDir();
 		
 		String filename = getItemFilename(item.getName());
-		File itemFile = new File(storagePath, filename + SimulationConfig.XML_EXTENSION);
+		File itemFile = new File(storagePath, filename);
 		
 		// Create save directory if it doesn't exist.
 		if (!itemFile.getParentFile().exists()) {

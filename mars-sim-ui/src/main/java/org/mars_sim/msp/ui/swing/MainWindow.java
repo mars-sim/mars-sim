@@ -1289,7 +1289,9 @@ extends JComponent implements ClockListener {
 	 * Disposes the splash window frame
 	 */
 	public void disposeSplash() {
-		splashWindow.remove();
+		if (splashWindow != null) {
+			splashWindow.remove();
+		}
 		splashWindow = null;
 	}
 

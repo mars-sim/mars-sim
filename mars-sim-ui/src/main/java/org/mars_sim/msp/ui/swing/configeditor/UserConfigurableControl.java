@@ -10,6 +10,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -128,6 +130,13 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		}
 	}
 
+	/**
+	 * What was the last selected item
+	 * @return
+	 */
+	public T getSeletedItem() {
+		return selected;
+	}
 
 	/**
 	 * Displayed this new item which is now selected
@@ -230,9 +239,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 				T newSelected = createItem(newName, descriptionTF.getText());
 				if (newSelected != null) {
 					config.saveItem(newSelected); 
-
 					itemCB.addElement(newName);
-					selectItem(newName);
+					setSelectedItem(newName);
 				}
 			}
 			break;
@@ -281,5 +289,20 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	public void allowSaving(boolean saveAllowed) {
 		saveButton.setEnabled(!selected.isBundled() && saveAllowed);
 		saveAsButton.setEnabled(saveAllowed);
+	}
+	
+	/**
+	 * Reload any items from the config repository
+	 */
+	public void reload() {
+		List<String> items = new ArrayList<>(config.getItemNames());
+		for (int i = 0; i < itemCB.getSize(); i++) {
+			items.remove(itemCB.getElementAt(i));
+		}
+		
+		// What is left is new
+		if (!items.isEmpty()) {
+			itemCB.addAll(items);
+		}
 	}
 }

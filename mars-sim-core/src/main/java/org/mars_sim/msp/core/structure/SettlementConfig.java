@@ -69,14 +69,8 @@ public class SettlementConfig implements Serializable {
 	private static final String CONNECTION_LIST = "connection-list";
 	private static final String CONNECTION = "connection";
 	private static final String NUMBER = "number";
-	private static final String ROBOTS_NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
-	private static final String LOCATION = "location";
-	private static final String LONGITUDE = "longitude";
-	private static final String LATITUDE = "latitude";
-	private static final String POPULATION = "population";
-	private static final String NUM_OF_ROBOTS = "number-of-robots";
 	private static final String VALUE = "value";
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
@@ -86,10 +80,7 @@ public class SettlementConfig implements Serializable {
 	private static final String AMOUNT = "amount";
 	private static final String PART = "part";
 	private static final String PART_PACKAGE = "part-package";
-	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
-	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 
-	
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
@@ -99,7 +90,6 @@ public class SettlementConfig implements Serializable {
 
 	// Data members
 	private List<SettlementTemplate> settlementTemplates;
-	private List<NewArrivingSettlement> newArrivingSettlements;
 	private Map<Integer, String> templateMap = new HashMap<>();
 
 	/**
@@ -111,11 +101,9 @@ public class SettlementConfig implements Serializable {
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
 		settlementTemplates = new ArrayList<SettlementTemplate>();
-		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
 		loadMissionControl(settlementDoc);
 		loadLifeSupportRequirements(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
-		loadNewArrivingSettlements(settlementDoc);
 	}
 
 	/**
@@ -435,95 +423,6 @@ public class SettlementConfig implements Serializable {
 	public int getTemplateID() {
 		return templateID;
 	}
-	
-	
-	/**
-	 * Load new arriving settlements.
-	 * 
-	 * @param settlementDoc DOM document with settlement configuration.
-	 */
-	private void loadNewArrivingSettlements(Document settlementDoc) {
-		Element root = settlementDoc.getRootElement();
-		Element arrivingSettlementList = root.getChild(NEW_ARRIVING_SETTLEMENT_LIST);
-		List<Element> settlementNodes = arrivingSettlementList.getChildren(ARRIVING_SETTLEMENT);
-		for (Element settlementElement : settlementNodes) {
-			NewArrivingSettlement arrivingSettlement = new NewArrivingSettlement();
-
-			String settlementName = settlementElement.getAttributeValue(NAME);
-			if (settlementName.equals(RANDOM))
-				arrivingSettlement.randomName = true;
-			else
-				arrivingSettlement.name = settlementName;
-
-			arrivingSettlement.template = settlementElement.getAttributeValue(TEMPLATE);
-
-			arrivingSettlement.arrivalTime = Double.parseDouble(settlementElement.getAttributeValue(ARRIVAL_TIME));
-
-			List<Element> locationNodes = settlementElement.getChildren(LOCATION);
-			if (locationNodes.size() > 0) {
-				Element locationElement = locationNodes.get(0);
-
-				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
-				if (longitudeString.equals(RANDOM))
-					arrivingSettlement.randomLongitude = true;
-				else
-					arrivingSettlement.longitude = longitudeString;
-
-				String latitudeString = locationElement.getAttributeValue(LATITUDE);
-				if (latitudeString.equals(RANDOM))
-					arrivingSettlement.randomLatitude = true;
-				else
-					arrivingSettlement.latitude = latitudeString;
-			} else {
-				arrivingSettlement.randomLongitude = true;
-				arrivingSettlement.randomLatitude = true;
-			}
-
-			Element populationElement = settlementElement.getChild(POPULATION);
-			String numberStr = populationElement.getAttributeValue(NUMBER);
-			int number = Integer.parseInt(numberStr);
-			if (number < 0) {
-				throw new IllegalStateException("populationNumber cannot be less than zero: " + number);
-			}
-			arrivingSettlement.populationNumber = number;
-
-			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
-			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("numOfRobots cannot be less than zero: " + number);
-			}
-			arrivingSettlement.numOfRobots = number;
-
-			Element sponsorElement = settlementElement.getChild(SPONSOR);
-			arrivingSettlement.sponsor = sponsorElement.getAttributeValue(NAME);
-
-			newArrivingSettlements.add(arrivingSettlement);
-		}
-	}
-
-	/**
-	 * Obtains the key of a value in a particular map
-	 * 
-	 * @param map
-	 * @param name
-	 * @return
-	 */
-	private int getMapKey(Map<Integer, String> map, String name) {
-		int result = -1;
-		if (map.containsValue(name)) {
-			for (Map.Entry<Integer, String> e : map.entrySet()) {
-				Integer key = e.getKey();
-				Object value2 = e.getValue();
-				if ((value2.toString()).equalsIgnoreCase(name)) {
-					result = key;
-				}
-			}
-		}
-
-		return result;
-	}
-
 
 	/**
 	 * Gets the settlement template that matches a template name.
@@ -558,151 +457,6 @@ public class SettlementConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the number of new arriving settlements.
-	 * 
-	 * @return number of settlements.
-	 */
-	public int getNumberOfNewArrivingSettlements() {
-		return newArrivingSettlements.size();
-	}
-
-	/**
-	 * Gets the name of a new arriving settlement or 'random' if the name is to
-	 * chosen randomly from the settlement name list.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return settlement name
-	 */
-	public String getNewArrivingSettlementName(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			if (settlement.randomName)
-				return RANDOM;
-			else
-				return settlement.name;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the template used by a new arriving settlement.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return settlement template name.
-	 */
-	public String getNewArrivingSettlementTemplate(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size()))
-			return newArrivingSettlements.get(index).template;
-		else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the templateID used by an New Arriving settlement.
-	 * 
-	 * @param index the index of the New Arriving settlement.
-	 * @return settlement templateID.
-	 */
-	public int getNewArrivingSettlementTemplateID(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size()))
-			return getMapKey(templateMap, newArrivingSettlements.get(index).template);
-		else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the arrival time for a new arriving settlement from the start of the
-	 * simulation.
-	 * 
-	 * @param templateName the template name.
-	 * @return arrival time (Sols).
-	 */
-	public double getNewArrivingSettlementArrivalTime(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size()))
-			return newArrivingSettlements.get(index).arrivalTime;
-		else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the longitude of a new arriving settlement, or 'random' if the longitude
-	 * is to be randomly determined.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return longitude of the settlement as a string. Example: '0.0 W'
-	 */
-	public String getNewArrivingSettlementLongitude(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			if (settlement.randomLongitude)
-				return RANDOM;
-			else
-				return settlement.longitude;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the latitude of a new arriving settlement, or 'random' if the longitude
-	 * is to be randomly determined.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return latitude of the settlement as a string. Example: '0.0 N'
-	 */
-	public String getNewArrivingSettlementLatitude(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			if (settlement.randomLatitude)
-				return RANDOM;
-			else
-				return settlement.latitude;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the population number for a new arriving settlement.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return population number of the settlement.
-	 */
-	public int getNewArrivingSettlementPopulationNumber(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			return settlement.populationNumber;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the number of robots for a new arriving settlement.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return number of robots of the settlement.
-	 */
-	public int getNewArrivingSettlementNumOfRobots(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			return settlement.numOfRobots;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the Sponsor for a new arriving settlement.
-	 * 
-	 * @param index the index of the new arriving settlement.
-	 * @return Sponsor.
-	 */
-	public String getNewArrivingSettlementSponsor(int index) {
-		if ((index >= 0) && (index < newArrivingSettlements.size())) {
-			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
-			return settlement.sponsor;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -714,26 +468,5 @@ public class SettlementConfig implements Serializable {
 		settlementTemplates = null;
 		templateMap.clear();
 		templateMap = null;
-	}
-
-	/**
-	 * Private inner class for holding a new arriving settlement info.
-	 */
-	private static class NewArrivingSettlement implements Serializable {
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		private boolean randomName = false;
-		private boolean randomLongitude = false;
-		private boolean randomLatitude = false;
-
-		private String name;
-		private String sponsor;
-		private String template;
-		private int populationNumber;
-		private int numOfRobots;
-		private String latitude;
-		private String longitude;
-		
-		private double arrivalTime;
 	}
 }

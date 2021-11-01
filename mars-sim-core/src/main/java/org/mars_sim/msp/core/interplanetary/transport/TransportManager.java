@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
-import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlementUtil;
+import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -32,31 +33,60 @@ public class TransportManager implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** Average transit time for arriving settlements from Earth to Mars (sols). */
+	private static int AVG_TRANSIT_TIME = 250;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TransportManager.class.getName());
 
 	private Collection<Transportable> transportItems;
 
-	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+	private HistoricalEventManager eventManager;
 
 	/**
 	 * Constructor.
-	 * @param settlementConfig 
+	 * @param scenario 
 	 * @param raFactory 
 	 */
-	public TransportManager(SettlementConfig settlementConfig, ReportingAuthorityFactory raFactory) {
+	public TransportManager(HistoricalEventManager eventManager) {
+		this.eventManager = eventManager;
+		
 		// initialize ResupplyUtil.
 		new ResupplyUtil();
 		// Initialize data
 		transportItems = new ArrayList<>();
-		// Create initial arriving settlements.
-		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements(
-							settlementConfig, raFactory));
+
 		// Create initial resupply missions.
+		// TODO Need to revisit
 		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions());
 	}
-
+	
+	/**
+	 * Add any arriving Settlements that are defined in a Scenario
+	 * @param scenario
+	 * @param settlementConfig 
+	 * @param raFactory 
+	 */
+	public void loadArrivingSettments(Scenario scenario, SettlementConfig settlementConfig,
+									  ReportingAuthorityFactory raFactory) {
+		MarsClock now = Simulation.instance().getMasterClock().getMarsClock();
+		// Create initial arriving settlements.
+		for (ArrivingSettlement a : scenario.getArrivals()) {
+			// Check the defines values are correct; these throw exception
+			settlementConfig.getSettlementTemplate(a.getTemplate());
+			
+			if (raFactory.getItem(a.getSponsorCode()) == null) {
+				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.getSponsorCode());
+			}
+			
+			a.scheduleLaunch(now, AVG_TRANSIT_TIME);
+			logger.info("New settlement called " + a.getName() + " arriving in sols "
+						+ a.getArrivalDate().getTrucatedDateTimeStamp());
+			transportItems.add(a);
+		}
+	}
+	
 	/**
 	 * Adds a new transport item.
 	 * 
@@ -67,7 +97,7 @@ public class TransportManager implements Serializable, Temporal {
 		HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
 				"Mission Control", transportItem.getSettlementName());
 		eventManager.registerNewEvent(newEvent);
-		logger.info("A new transport item was created ");// + transportItem.toString());
+		logger.info("A new transport item was created ");
 	}
 
 	/**
@@ -158,26 +188,5 @@ public class TransportManager implements Serializable, Temporal {
 		}
 		
 		return true;
-	}
-
-	/**
-	 * initializes instances after loading from a saved sim
-	 * 
-	 * @param {@link HistoricalEventManager}
-	 */
-	public static void initializeInstances(HistoricalEventManager h) {
-		eventManager = h;
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-//	@Override
-	public void destroy() {
-		Iterator<Transportable> i = transportItems.iterator();
-		while (i.hasNext())
-			i.next().destroy();
-		transportItems.clear();
-		transportItems = null;
 	}
 }

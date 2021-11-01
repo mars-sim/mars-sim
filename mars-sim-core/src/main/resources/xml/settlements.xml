@@ -1,7 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
-	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list,
-	new-arriving-settlement-list)>
+	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list)>
 	
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -73,11 +72,6 @@
 	<!ATTLIST resupply-mission name CDATA #REQUIRED>
 	<!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>	
 	
-	<!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
-	<!ELEMENT arriving-settlement (location, population, number-of-robots, sponsor)>
-	<!ATTLIST arriving-settlement name CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement template CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement arrival-time CDATA #REQUIRED>
 	<!ELEMENT location EMPTY>
 	<!ATTLIST location longitude CDATA #REQUIRED>
 	<!ATTLIST location latitude CDATA #REQUIRED>
@@ -4924,17 +4918,4 @@
 		</template>
 
 	</settlement-template-list>
-
-	<!--  List of settlements that will arrive on Mars at a later time -->
-	<new-arriving-settlement-list>
-		<!-- Example of new arriving settlement.
-		<arriving-settlement name="Red Hill" template="Phase 1" arrival-time="1.0" >
-			<location longitude="10.3 W" latitude="4.6 S" />
-			<population number="4" />
-			<number-of-robots number="2" />
-			<sponsor name="Mars Society (MS)"/>
-		</arriving-settlement>
-		-->
-	</new-arriving-settlement-list>
-
 </settlement-configuration>

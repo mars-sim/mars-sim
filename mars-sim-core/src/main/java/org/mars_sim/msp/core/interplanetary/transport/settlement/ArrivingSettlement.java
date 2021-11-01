@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A new arriving settlement from Earth.
@@ -38,12 +39,14 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private String name;
 	private String template;
 	
-	private TransitState transitState;
+	private TransitState transitState = TransitState.PLANNED;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
 
 	private String sponsorCode;
+
+	private int arrivalSols;
 	
 	/**
 	 * Constructor.
@@ -51,19 +54,19 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 * @param name            the name of the arriving settlement.
 	 * @param template        the design template for the settlement.
 	 * @param sponsor 
-	 * @param arrivalDate     the arrival date.
+	 * @param arrivalSols     the arrival in terms of Sols in the future.
 	 * @param landingLocation the landing location.
 	 * @param populationNum   the population of new immigrants arriving with the
 	 *                        settlement.
 	 * @param numOfRobots     the number of new robots.
 	 */
 	public ArrivingSettlement(String name, String template, String sponsorCode,
-			MarsClock arrivalDate, Coordinates landingLocation,
+			int arrivalSols, Coordinates landingLocation,
 			int populationNum, int numOfRobots) {
 		this.name = name;
 		this.template = template;
 		this.sponsorCode = sponsorCode;
-		this.arrivalDate = arrivalDate;
+		this.arrivalSols = arrivalSols;
 		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
 		this.numOfRobots = numOfRobots;
@@ -176,6 +179,14 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.launchDate = launchDate;
 	}
 
+	/**
+	 * The original arrival delay
+	 * @return
+	 */
+	public int getArrivalSols() {
+		return arrivalSols;
+	}
+	
 	/**
 	 * Gets the arrival date of the settlement.
 	 * 
@@ -304,6 +315,30 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		unitManager.activateSettlement(newSettlement);
 	}
 
+	/**
+	 * Schedule the launch for a future date.
+	 */
+	public void scheduleLaunch(MarsClock currentTime, int transitSols) {
+		// Determine the arrival date
+		arrivalDate = (MarsClock) currentTime.clone();
+		arrivalDate.addTime((arrivalSols * 1000D)
+						+ RandomUtil.getRandomDouble(999D));
+		
+		// Determine launch date.
+		launchDate = (MarsClock) arrivalDate.clone();
+		launchDate.addTime(-1D * transitSols * 1000D);
+		
+		if (landingLocation == null) {
+			// Create a new random location
+			double lat = Coordinates.getRandomLatitude();
+			double lon = Coordinates.getRandomLongitude();
+			landingLocation = new Coordinates(lat, lon);
+		}
+		if (arrivalSols < transitSols) {
+			transitState = TransitState.IN_TRANSIT;
+		}
+	}
+	
 	@Override
 	public void destroy() {
 		name = null;
