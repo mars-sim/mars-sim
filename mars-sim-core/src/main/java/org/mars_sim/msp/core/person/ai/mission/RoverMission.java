@@ -16,6 +16,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -556,27 +557,23 @@ public abstract class RoverMission extends VehicleMission {
 		if (!roverUnloaded) {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things 
-			for (Person p : rover.getCrew()) {
-				if (p.isFit()) {
+			for (MissionMember mm : getMembers()) {
+				if (((Person)mm).isFit()) {
 					if (RandomUtil.lessThanRandPercent(50)) {
-						unloadCargo(p, rover);
+						unloadCargo(((Person)mm), rover);
 					}
-				}
-				else {
-			        // Assign a walk task
-			        walkBackHome(rover, p, disembarkSettlement);
 				}
 			}
 		}   
         
 		// Check to see if no one is in the rover, unload the resources and end phase.
 		if (roverUnloaded) {
-			for (Person p : rover.getCrew()) {
-				// Assign a walk task
-		        walkBackHome(rover, p, disembarkSettlement);
+			for (MissionMember mm  : getMembers()) {
+				// Walk back to the airlock
+				if (((Person)mm).isInVehicle() || ((Person)mm).isOutside())
+					walkToAirlock(rover, ((Person)mm), disembarkSettlement);
 			}
-			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(v);				
+		
 			// Leave the vehicle.
 			leaveVehicle();
 			// Reset the vehicle reservation
@@ -629,9 +626,9 @@ public abstract class RoverMission extends VehicleMission {
 				logger.warning(p, "Could not find a working EVA suit in " + rover + " and needed to wait.");
 			
 				// If the person does not have an EVA suit	
-				int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
+				int availableSuitNum = disembarkSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 			
-				if (availableSuitNum > 0) {
+				if (availableSuitNum > 1 && !hasBaselineNumEVASuit(rover)) {
 					// Deliver an EVA suit from the settlement to the rover
 					// Note: Need to generate a task for a person to hand deliver an extra suit
 					suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
@@ -648,13 +645,13 @@ public abstract class RoverMission extends VehicleMission {
 	}
 	
 	/**
-	 * Checks on a person's status to see if he can walk home or else be rescued
+	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued
 	 * 
 	 * @param rover
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	private void walkBackHome(Rover rover, Person p, Settlement disembarkSettlement) {
+	private void walkToAirlock(Rover rover, Person p, Settlement disembarkSettlement) {
 		
 		if (p.isInVehicle() || p.isOutside()) {
 			// Get random inhabitable building at emergency settlement.

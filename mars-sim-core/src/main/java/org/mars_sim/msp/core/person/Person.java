@@ -1778,7 +1778,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {	
 			e.setCoordinates(getCoordinates());
-//			e.setContainerUnit(this);
+			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

@@ -1112,7 +1112,7 @@ public class Walk extends Task implements Serializable {
 //					+ " in " + garageBuilding + ".");
 			
 			// Exit the rover parked inside a garage onto the settlement
-//			if (person.isInVehicleInGarage()) {
+			if (person.isInVehicleInGarage()) {
 				
 				if (rover.removePerson(person)) {
 					rover.getSettlement().addPeopleWithin(person);
@@ -1128,7 +1128,7 @@ public class Walk extends Task implements Serializable {
 //						"Failed to exit rover " + rover.getName() 
 //						+ " inside " + garageBuilding + ".");
 //				}
-//			}
+			}
 		}
 		
 		else if (robot != null) {
@@ -1138,7 +1138,7 @@ public class Walk extends Task implements Serializable {
 //					+ " in " + garageBuilding + ".");			
 
 			// Exit the rover parked inside a garage onto the settlement
-//			if (robot.isInVehicleInGarage()) {
+			if (robot.isInVehicleInGarage()) {
 				
 				if (rover.removeRobot(robot)) {
 					rover.getSettlement().addRobot(robot);
@@ -1154,7 +1154,7 @@ public class Walk extends Task implements Serializable {
 //						"Failed to exit rover " + rover.getName() 
 //						+ " inside " + garageBuilding + ".");
 //				}
-//			}
+			}
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
