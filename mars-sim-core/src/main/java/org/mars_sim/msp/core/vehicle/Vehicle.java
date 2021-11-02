@@ -1100,7 +1100,7 @@ public abstract class Vehicle extends Unit
 	 * @return the direction the vehicle is traveling (in radians)
 	 */
 	public Direction getDirection() {
-		return (Direction) direction.clone();
+		return direction;
 	}
 
 	/**
@@ -1109,7 +1109,7 @@ public abstract class Vehicle extends Unit
 	 * @param direction the direction the vehicle is traveling (in radians)
 	 */
 	public void setDirection(Direction direction) {
-		this.direction.setDirection(direction.getDirection());
+		this.direction = direction;
 	}
 
 	/**

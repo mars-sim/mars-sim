@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Direction. Represents an angular direction. It provides some useful static
  * methods involving directions.
  */
-public class Direction implements Cloneable, Serializable {
+public class Direction implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,14 +32,7 @@ public class Direction implements Cloneable, Serializable {
 	public Direction(double direction) {
 		this.direction = cleanDirection(direction);
 	}
-
-	/**
-	 * Clones this Direction object.
-	 */
-	public Object clone() {
-		return new Direction(direction);
-	}
-
+	
 	/**
 	 * Returns true if object is an equal direction.
 	 * 
@@ -81,15 +74,6 @@ public class Direction implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Sets the direction. 0 = North, clockwise
-	 * 
-	 * @param direction new direction
-	 */
-	public void setDirection(double direction) {
-		this.direction = cleanDirection(direction);
-	}
-
-	/**
 	 * Returns the sine of the direction.
 	 * 
 	 * @return the sine of the direction
@@ -113,7 +97,7 @@ public class Direction implements Cloneable, Serializable {
 	 * @param raw direction
 	 * @return cleaned direction
 	 */
-	private double cleanDirection(double direction) {
+	private static double cleanDirection(double direction) {
 
 		while (direction < 0D) {
 			direction += TWO_PI;

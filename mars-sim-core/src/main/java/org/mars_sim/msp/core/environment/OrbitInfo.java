@@ -335,13 +335,11 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		while (sunTheta < 0D)
 			sunTheta += TWO_PIs;
-		sunDirection.setTheta(sunTheta);
 
 		// Determine Sun phi
 		double sunPhi = HALF_PI + (Math.sin(theta + HALF_PI) * TILT);
 
-		sunDirection.setPhi(sunPhi);
-
+		sunDirection = new Coordinates(sunPhi, sunTheta);
 		computeSineSolarDeclinationAngle();
 
 		return true;

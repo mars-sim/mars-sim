@@ -153,54 +153,58 @@ implements MouseListener {
 
 		// Use Image Map Technique to Determine Which Button was Selected
 		int spot = findHotSpot(event.getX(), event.getY());
-
+		boolean reCenter = true;
+		double newPhi = centerCoords.getPhi();
+		double newTheta = centerCoords.getTheta();
+		
 		// Results Based on Button Selected
 		switch (spot) {
 		case 0: // Zoom Button
 			parentNavigator.updateCoords(centerCoords);
+			reCenter = false;
 			break;
 		case 1: // Inner Top Arrow
-			centerCoords.setPhi(centerCoords.getPhi() - (5D * RAD_PER_DEGREE));
-			if (centerCoords.getPhi() < 0D)
-				centerCoords.setPhi(0D);
+			newPhi = newPhi - (5D * RAD_PER_DEGREE);
 			break;
 		case 2: // Inner Bottom Arrow
-			centerCoords.setPhi(centerCoords.getPhi() + (5D * RAD_PER_DEGREE));
-			if (centerCoords.getPhi() > Math.PI)
-				centerCoords.setPhi(Math.PI);
+			newPhi = newPhi + (5D * RAD_PER_DEGREE);
 			break;
 		case 3: // Inner Right Arrow
-			centerCoords.setTheta(centerCoords.getTheta() + (5D * RAD_PER_DEGREE));
-			if (centerCoords.getTheta() > (2D * Math.PI))
-				centerCoords.setTheta(centerCoords.getTheta() - (2D * Math.PI));
+			newTheta = newTheta  + (5D * RAD_PER_DEGREE);
 			break;
 		case 4: // Inner Left Arrow
-			centerCoords.setTheta(centerCoords.getTheta() - (5D * RAD_PER_DEGREE));
-			if (centerCoords.getTheta() < 0D)
-				centerCoords.setTheta(centerCoords.getTheta() + (2D * Math.PI));
+			newTheta = newTheta  - (5D * RAD_PER_DEGREE);
 			break;
 		case 5: // Outer Top Arrow
-			centerCoords.setPhi(centerCoords.getPhi() - (30D * RAD_PER_DEGREE));
-			if (centerCoords.getPhi() < 0D)
-				centerCoords.setPhi(0D);
+			newPhi = newPhi - (30D * RAD_PER_DEGREE);
 			break;
 		case 6: // Outer Bottom Arrow
-			centerCoords.setPhi(centerCoords.getPhi() + (30D * RAD_PER_DEGREE));
-			if (centerCoords.getPhi() > Math.PI)
-				centerCoords.setPhi(Math.PI);
+			newPhi = newPhi + (30D * RAD_PER_DEGREE);
 			break;
 		case 7: // Outer Right Arrow
-			centerCoords.setTheta(centerCoords.getTheta() + (30D * RAD_PER_DEGREE));
-			if (centerCoords.getTheta() >= (2D * Math.PI))
-				centerCoords.setTheta(centerCoords.getTheta() - (2D * Math.PI));
+			newTheta = newTheta  + (30D * RAD_PER_DEGREE);
 			break;
 		case 8: // Outer Left Arrow
-			centerCoords.setTheta(centerCoords.getTheta() - (30D * RAD_PER_DEGREE));
-			if (centerCoords.getTheta() < 0D)
-				centerCoords.setTheta(centerCoords.getTheta() + (2D * Math.PI));
+			newTheta = newTheta  - (30D * RAD_PER_DEGREE);
 			break;
 		}
 
+		// Recenter
+		if (reCenter) {
+			if (newPhi < 0D)
+				newPhi = 0D;
+			else if (newPhi > Math.PI)
+				newPhi = Math.PI;
+			
+			if (newTheta < 0D)
+				newTheta = newTheta + (2D * Math.PI);
+			else if (newTheta >= (2D * Math.PI))
+				newTheta = newTheta  - (2D * Math.PI);
+			
+			centerCoords = new Coordinates(newPhi, newTheta);
+			logger.info("Recnetered to " + centerCoords);
+		}
+		
 		// Reposition Globe If Non-Zoom Button is Selected
 		if (spot > 0)
 			parentNavigator.updateGlobeOnly(centerCoords);

@@ -28,24 +28,29 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
-		
+		var message = new StringBuilder();
 		if (source.isOutside()) {
-			context.println("On the surface @ " + source.getCoordinates().getFormattedString());
+			message.append("On the surface @ ")
+				   .append(source.getCoordinates().getFormattedString());
 		}
 		else if (source.isInVehicle()) {
-			context.println("In " + source.getVehicle().getName());
+			message.append("In ").append(source.getVehicle().getName());
+			if (source.isInSettlement()) {
+				message.append(", warning also isIsSettlement=true");
+			}
 		}
 		else {
 			Settlement base = source.getSettlement();
 			Building building = source.getBuildingLocation();
+			message.append("In ");
 			if (building != null) {
-				context.println("In " + building.getNickName() + " @ " + base.getName());
+				message.append(building.getNickName()).append(" @ ");
 			}
-			else {
-				context.println("In " + base.getName());				
-			}
+
+			message.append(base.getName());				
 		}
 
+		context.println(message.toString());
 		return true;
 	}
 

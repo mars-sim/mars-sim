@@ -162,6 +162,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			 				   UserConfigurableConfig<Crew> crewFactory)
 			 	throws IOException {
 		List<String> manifest = new ArrayList<>();
+		String targetDirectory = SimulationFiles.getUserConfigDir();
 		
 	    ZipInputStream zis = new ZipInputStream(contents);
 	    ZipEntry zipEntry = zis.getNextEntry();
@@ -169,9 +170,15 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	    // Get each entry off the ZIP
 	    while (zipEntry != null) {
 	    	// All contents go into the User Configuration folder
-	        File destFile = new File(SimulationFiles.getUserConfigDir(), zipEntry.getName());
+	        File destFile = new File(targetDirectory, zipEntry.getName());
 			manifest.add(getEstimateName(zipEntry.getName()));
-
+			
+			// Check for Zip slip
+			String canonicalDestinationPath = destFile.getCanonicalPath();
+			if (!canonicalDestinationPath.startsWith(targetDirectory)) {
+				throw new IOException("Entry is outside of the target directory");
+		    }
+			
 	        // Need to check if the file is already there
 	        // write file content and add a comment
 	        FileOutputStream fos = new FileOutputStream(destFile);	        

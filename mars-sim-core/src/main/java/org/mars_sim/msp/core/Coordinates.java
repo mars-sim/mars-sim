@@ -46,20 +46,19 @@ public class Coordinates implements Serializable {
 	private double phi;
 	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
 	private double theta;
-	/** Sine of phi (stored for efficiency). */
-	private double sinPhi;
-	/** Sine of theta (stored for efficiency). */
-	private double sinTheta;
-	/** Cosine of phi (stored for efficiency). */
-	private double cosPhi;
-	/** Cosine of theta (stored for efficiency). */
-	private double cosTheta;
+//	/** Sine of phi (stored for efficiency). */
+//	private double sinPhi;
+//	/** Sine of theta (stored for efficiency). */
+//	private double sinTheta;
+//	/** Cosine of phi (stored for efficiency). */
+//	private double cosPhi;
+//	/** Cosine of theta (stored for efficiency). */
+//	private double cosTheta;
 	/** Formatted string of the latitude. */
 	private String latCache;
 	/** Formatted string of the longitude. */
 	private String lonCache;
-	/** Track if the coordinate of an unit has been changed */
-	private boolean changed;
+
 
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 	
@@ -72,11 +71,25 @@ public class Coordinates implements Serializable {
 	public Coordinates(double phi, double theta) {
 
 		// Set Coordinates
-		this.setPhi(phi);
-		this.setTheta(theta);
+		// Make sure phi is between 0 and PI.
+		this.phi = phi;
+		while (this.phi > Math.PI)
+			this.phi -= Math.PI;
+		while (this.phi < 0)
+			this.phi += Math.PI;
+		
+		// Make sure theta is between 0 and 2 PI.
+		this.theta = theta;
+		while (this.theta < 0D)
+			this.theta += TWO_PI; 
+		while (this.theta > TWO_PI)
+			this.theta -= TWO_PI;
 
 		// Set trigonometric functions
-		setTrigFunctions();
+//		sinPhi = Math.sin(this.phi);
+//		sinTheta = Math.sin(this.theta);
+//		cosPhi = Math.cos(this.phi);
+//		cosTheta = Math.cos(this.theta);
 	}
 
 	/**
@@ -100,14 +113,6 @@ public class Coordinates implements Serializable {
 		this(parseLatitude2Phi(latitude), parseLongitude2Theta(longitude));
 	}
 
-	/** Sets commonly-used trigonometric functions of coordinates */
-	private void setTrigFunctions() {
-		sinPhi = Math.sin(phi);
-		sinTheta = Math.sin(theta);
-		cosPhi = Math.cos(phi);
-		cosTheta = Math.cos(theta);
-	}
-
 	/**
 	 * Generate a string representation of this object. It will be the same format
 	 * as the formattedString method.
@@ -129,100 +134,12 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * phi mutator (related to latitude)
-	 * 
-	 * @param newPhi the new phi angle value for the coordinate
-	 */
-	public void setPhi(double newPhi) {
-	
-		// Make sure phi is between 0 and PI.
-		while (newPhi > Math.PI)
-			newPhi -= Math.PI;
-		while (newPhi < 0)
-			newPhi += Math.PI;
-		phi = newPhi;
-		
-		setTrigFunctions();
-	}
-
-	/**
 	 * theta accessor (related to longitude)
 	 * 
 	 * @return the theta angle value of the coordinate
 	 */
 	public double getTheta() {
 		return theta;
-	}
-
-	/**
-	 * theta mutator (related to longitude)
-	 * 
-	 * @param newTheta the new theta angle value for the coordinate
-	 */
-	public void setTheta(double newTheta) {
-		// Make sure theta is between 0 and 2 PI.
-		while (newTheta < 0D)
-			newTheta += TWO_PI; 
-		while (newTheta > TWO_PI)
-			newTheta -= TWO_PI;
-		theta = newTheta;
-		
-		setTrigFunctions();
-	}
-
-	/**
-	 * sine of phi.
-	 * 
-	 * @return the sine of the phi angle value of the coordinate
-	 */
-	public double getSinPhi() {
-		// <tip> would it be help to use lazy evaluation of sinPhi here? </tip>
-		return sinPhi;
-	}
-
-	/**
-	 * sine of theta
-	 * 
-	 * @return the sine of the theta angle value of the coordinate
-	 */
-	public double getSinTheta() {
-		return sinTheta;
-	}
-
-	/**
-	 * cosine of phi
-	 * 
-	 * @return the cosine of the phi angle value of the coordinate
-	 */
-	public double getCosPhi() {
-		return cosPhi;
-	}
-
-	/**
-	 * cosine of theta
-	 * 
-	 * @return the cosine of the theta angle value of the coordinate
-	 */
-	public double getCosTheta() {
-		return cosTheta;
-	}
-
-	/**
-	 * Set coordinates
-	 * 
-	 * @param newCoordinates Coordinates object who's location should be matched by
-	 *                       this Coordinates object
-	 */
-	public void setCoords(Coordinates newCoordinates) {
-		changed = true;
-		// Update coordinates
-		if (newCoordinates != null) {
-			setPhi(newCoordinates.phi);
-			setTheta(newCoordinates.theta);
-	
-			// Update trigonometric functions
-			setTrigFunctions();
-		}
 	}
 
 	/**
@@ -270,26 +187,26 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians)
 	 */
-	public double getAngleSLC(Coordinates otherCoords) {
-
-		double phi1 = -1D * (phi - PI_HALF);
-		double phi2 = -1D * (otherCoords.phi - PI_HALF);
-		double diffTheta = Math.abs(theta - otherCoords.theta);
-
-		double temp1 = Math.cos(phi1) * Math.cos(phi2);
-		double temp2 = Math.sin(phi1) * Math.sin(phi2);
-		double temp3 = Math.cos(diffTheta);
-		double temp4 = temp2 + (temp1 * temp3);
-
-		// Make sure temp4 is in valid -1 to 1 range.
-		if (temp4 > 1D)
-			temp4 = 1D;
-		else if (temp4 < -1D)
-			temp4 = -1D;
-
-		double result = Math.acos(temp4);
-		return result;
-	}
+//	public double getAngleSLC(Coordinates otherCoords) {
+//
+//		double phi1 = -1D * (phi - PI_HALF);
+//		double phi2 = -1D * (otherCoords.phi - PI_HALF);
+//		double diffTheta = Math.abs(theta - otherCoords.theta);
+//
+//		double temp1 = Math.cos(phi1) * Math.cos(phi2);
+//		double temp2 = Math.sin(phi1) * Math.sin(phi2);
+//		double temp3 = Math.cos(diffTheta);
+//		double temp4 = temp2 + (temp1 * temp3);
+//
+//		// Make sure temp4 is in valid -1 to 1 range.
+//		if (temp4 > 1D)
+//			temp4 = 1D;
+//		else if (temp4 < -1D)
+//			temp4 = -1D;
+//
+//		double result = Math.acos(temp4);
+//		return result;
+//	}
 
 	/**
 	 * Calculates the arc angle between this location and a given location using the
@@ -298,7 +215,7 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
-	public double getAngleHaversine(Coordinates otherCoords) {
+	private double getAngleHaversine(Coordinates otherCoords) {
 
 		double phi1 = -1D * (phi - PI_HALF);
 		double phi2 = -1D * (otherCoords.phi - PI_HALF);
@@ -319,25 +236,25 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
-	public double getAngleVincenty(Coordinates otherCoords) {
-
-		double phi1 = -1D * (phi - PI_HALF);
-		double phi2 = -1D * (otherCoords.phi - PI_HALF);
-		double diffTheta = Math.abs(theta - otherCoords.theta);
-
-		double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
-		double temp2 = Math.cos(phi1) * Math.sin(phi2);
-		double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
-		double temp4 = Math.pow(temp2 - temp3, 2D);
-		double temp5 = Math.sqrt(temp1 + temp4);
-
-		double temp6 = Math.sin(phi1) * Math.sin(phi2);
-		double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
-		double temp8 = temp6 + temp7;
-
-		double result = Math.atan2(temp5, temp8);
-		return result;
-	}
+//	public double getAngleVincenty(Coordinates otherCoords) {
+//
+//		double phi1 = -1D * (phi - PI_HALF);
+//		double phi2 = -1D * (otherCoords.phi - PI_HALF);
+//		double diffTheta = Math.abs(theta - otherCoords.theta);
+//
+//		double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
+//		double temp2 = Math.cos(phi1) * Math.sin(phi2);
+//		double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+//		double temp4 = Math.pow(temp2 - temp3, 2D);
+//		double temp5 = Math.sqrt(temp1 + temp4);
+//
+//		double temp6 = Math.sin(phi1) * Math.sin(phi2);
+//		double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+//		double temp8 = temp6 + temp7;
+//
+//		double result = Math.atan2(temp5, temp8);
+//		return result;
+//	}
 
 	/**
 	 * Returns the distance in kilometers between this location and the given
@@ -369,18 +286,10 @@ public class Coordinates implements Serializable {
 	 * @return distance (in km)
 	 */
 	public static double computeDistance(Coordinates c0, Coordinates c1) {
-		if (c0 == null || c1 == null) {
+		if (c0 == null) {
 			return 0;
 		}
-		
-		if (c0.equals(c1)) {
-			return 0;
-		}
-				
-		double rho = Environment.MARS_RADIUS_KM;
-		double angle = c0.getAngle(c1);
-		double result = rho * angle;
-		return result;
+		return c0.getDistance(c1);
 	}
 	
 	/**
@@ -422,8 +331,7 @@ public class Coordinates implements Serializable {
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public String getFormattedLongitudeString() {
-		if (lonCache == null || changed) {
-			changed = false;
+		if (lonCache == null) {
 			lonCache = getFormattedLongitudeString(theta);
 		}
 		return lonCache;
@@ -454,7 +362,7 @@ public class Coordinates implements Serializable {
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
 	 */
-	public static String getFormattedLongitudeString(double theta) {
+	private static String getFormattedLongitudeString(double theta) {
 		double degrees = 0;
 		String direction = "";
 
@@ -477,8 +385,7 @@ public class Coordinates implements Serializable {
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public String getFormattedLatitudeString() {
-		if (latCache == null || changed) {
-			changed = false;
+		if (latCache == null) {
 			latCache = getFormattedLatitudeString(phi);
 		}
 		return latCache;
@@ -511,7 +418,7 @@ public class Coordinates implements Serializable {
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
 	 */
-	public static String getFormattedLatitudeString(double phi) {
+	private static String getFormattedLatitudeString(double phi) {
 		double degrees = 0;
 		String direction = "";
 
@@ -583,6 +490,9 @@ public class Coordinates implements Serializable {
 	 */
 	public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
 
+		double sinPhi = Math.sin(this.phi);
+		double cosPhi = Math.cos(this.phi);
+
 		double temp_col = newTheta + (-PI_HALF - theta);
 		double temp_buff_x = rho * Math.sin(newPhi);
 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
@@ -603,18 +513,6 @@ public class Coordinates implements Serializable {
 		return convertRectToSpherical(x, y, Environment.MARS_RADIUS_KM);
 	}
 
-	/**
-	 * Converts linear rectangular XY position change to spherical coordinates with
-	 * rho value for map.
-	 * 
-	 * @param x   change in x value (in km)
-	 * @param y   change in y value (in km)
-	 * @param rho rho value of map used (in km)
-	 * @return new spherical location
-	 */
-	public Coordinates convertRectToSpherical(double x, double y, double rho) {
-		return convertRectToSpherical(x, y, rho, new Coordinates(0D, 0D));
-	}
 
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates with
@@ -623,10 +521,14 @@ public class Coordinates implements Serializable {
 	 * @param x              change in x value (in km)
 	 * @param y              change in y value (in km)
 	 * @param rho            rho value of map used (in km)
-	 * @param newCoordinates Coordinates object to put the result in
 	 */
-	public Coordinates convertRectToSpherical(double x, double y, double rho, Coordinates newCoordinates) {
+	public Coordinates convertRectToSpherical(double x, double y, double rho) {
 
+		double sinPhi = Math.sin(this.phi);
+		double sinTheta = Math.sin(this.theta);
+		double cosPhi = Math.cos(this.phi);
+		double cosTheta = Math.cos(this.theta);
+		
 		double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
 		double x2 = x;
@@ -649,11 +551,8 @@ public class Coordinates implements Serializable {
 			else
 				theta_new = TWO_PI + theta_new;
 		}
-
-		newCoordinates.setPhi(phi_new);
-		newCoordinates.setTheta(theta_new);
 		
-		return newCoordinates;
+		return new Coordinates(phi_new, theta_new);
 	}
 
 	/**
