@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -571,22 +572,23 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return collection of robots in robot's location.
 	 */
 	public Collection<Robot> getLocalRobotGroup() {
-		Collection<Robot> localRobotGroup = new ConcurrentLinkedQueue<Robot>();
+		Collection<Robot> localRobotGroup = null;
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					RoboticStation roboticStation = building.getRoboticStation();
-					localRobotGroup = new ConcurrentLinkedQueue<Robot>(roboticStation.getRobotOccupants());
+					localRobotGroup = new ConcurrentLinkedQueue<Robot>(building.getRoboticStation().getRobotOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
-			Crewable robotCrewableVehicle = (Crewable) getVehicle();
-			localRobotGroup = new ConcurrentLinkedQueue<Robot>(robotCrewableVehicle.getRobotCrew());
+			localRobotGroup = new ConcurrentLinkedQueue<Robot>(((Crewable) getVehicle()).getRobotCrew());
 		}
-
-		if (localRobotGroup.contains(this)) {
+		
+		if (localRobotGroup == null) {
+			localRobotGroup = Collections.emptyList();
+		}
+		else if (localRobotGroup.contains(this)) {
 			localRobotGroup.remove(this);
 		}
 		return localRobotGroup;
@@ -1516,10 +1518,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return true;
 		
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
-			// if the vehicle is parked in a garage
-			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
-				return true;
-			}
+			return false;
+//			// if the vehicle is parked in a garage
+//			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
+//				return true;
+//			}
 		}
 
 		// Note: may consider the scenario of this unit

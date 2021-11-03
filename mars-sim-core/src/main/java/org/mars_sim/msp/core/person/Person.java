@@ -1133,13 +1133,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					LifeSupport lifeSupport = building.getLifeSupport();
-					localGroup = new ConcurrentLinkedQueue<>(lifeSupport.getOccupants());
+					localGroup = new ConcurrentLinkedQueue<>(building.getLifeSupport().getOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
-			Crewable crewableVehicle = (Crewable) getVehicle();
-			localGroup = new ConcurrentLinkedQueue<>(crewableVehicle.getCrew());
+			localGroup = new ConcurrentLinkedQueue<>(((Crewable) getVehicle()).getCrew());
 		}
 
 		if (localGroup == null) {
@@ -2076,6 +2074,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return true;
 		
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
+//			return false;
 			// if the vehicle is parked in a garage
 			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
 				return true;

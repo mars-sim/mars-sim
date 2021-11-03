@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -109,7 +108,7 @@ public class SleepMeta extends MetaTask {
             boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
 
             // Dark outside modifier.
-            boolean isDark = (Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) < 5);
+            boolean isDark = (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 5);
             
             if (isDark && !isAstronomer) {
                 // Non-astronomers more likely to sleep when it's dark out.

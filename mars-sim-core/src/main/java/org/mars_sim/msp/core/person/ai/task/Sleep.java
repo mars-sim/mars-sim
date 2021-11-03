@@ -160,7 +160,7 @@ public class Sleep extends Task implements Serializable {
 		
 		if (person != null) {
 			
-			if (!person.isOutside()) {
+			if (person.isInSettlement()) {
 				// Walk to a location
 				walkToDestination();
 			}
@@ -304,13 +304,11 @@ public class Sleep extends Task implements Serializable {
 	 */
 	private void walkToDestination() {
 		if (!arrived) {
+
 			// If person is in rover, walk to passenger activity spot.
-			if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
-				
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-			
+			if (person.getVehicle() instanceof Rover) {	
+//				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);		
 				previousTime = marsClock.getMillisol();
-	
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
 	
@@ -320,8 +318,8 @@ public class Sleep extends Task implements Serializable {
 //				walkBackInside();
 //			}
 					
-				// If person is in a settlement, try to find a living accommodations building.
-			else if (person.isInSettlement()) {
+			// If person is in a settlement, try to find a living accommodations building.
+			if (person.isInSettlement()) {
 				// Double the sleep duration
 				setDuration(getDuration() * 2);
 		    	
@@ -715,28 +713,6 @@ public class Sleep extends Task implements Serializable {
 		  	  		}
            		}
 		    }
-
-//           	else {
-//           		int future = now;
-//                // Check if person's work shift will begin within the next 50 millisols.
-//           		future += 50;
-//	            if (future > 1000)
-//	            	future = future - 1000;
-//
-//	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
-//	            if (willBeShiftHour) {
-//	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
-//	                result = result / 10D;
-//	            }
-//	            //else
-//	            	//result = result * 2D;
-//           	}
 	    }
-        
-//        else {
-//        	// if he's on-call
-//        	result = result * 1.1D;
-//        }
-
     }
 }
