@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -57,6 +58,7 @@ public abstract class MetaTask {
 	
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	protected static SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 	
 	private String name;
 	private WorkerType workerType;

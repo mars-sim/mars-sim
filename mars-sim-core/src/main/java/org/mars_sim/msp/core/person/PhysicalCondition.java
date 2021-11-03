@@ -350,8 +350,10 @@ public class PhysicalCondition implements Serializable {
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 
 		// Update the personal max energy and appetite based on one's age and weight
-		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
+		personalMaxEnergy = personalMaxEnergy + 50 * (d1 + d2 + preference);
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+//		System.out.println(person + "  d1: " + d1 + "  d2: " + d2 + "  pref: " + preference
+//				+ "  personalMaxEnergy: " + personalMaxEnergy + "  appetite: " + appetite);
 	}
 
 	public void recoverFromSoreness(double value) {
@@ -623,22 +625,22 @@ public class PhysicalCondition implements Serializable {
 		// kJoules) / ENERGY_FACTOR;
 
 		if (kJoules > 10_000D) {
-			kJoules += xdelta * .65;
+			kJoules += xdelta * .1;
 		} else if (kJoules > 9_000D) {
-			kJoules += xdelta * .6;
+			kJoules += xdelta * .15;
 		} else if (kJoules > 8_000D) {
-			kJoules += xdelta * .75;
+			kJoules += xdelta * .2;
 		} else if (kJoules > 7_000D) {
-			kJoules += xdelta * .8;
+			kJoules += xdelta * .25;
 		} else if (kJoules > 6_000D) {
-			kJoules += xdelta * .85;
+			kJoules += xdelta * .3;
 		} else
-			kJoules += xdelta * .9;
+			kJoules += xdelta * .35;
 
 		circadian.eatFood(kJoules / 50D);
 
-		if (kJoules > personalMaxEnergy * 2) {
-			kJoules = personalMaxEnergy * 2;
+		if (kJoules > personalMaxEnergy * 1.5) {
+			kJoules = personalMaxEnergy * 1.5;
 		}
 
 	}
