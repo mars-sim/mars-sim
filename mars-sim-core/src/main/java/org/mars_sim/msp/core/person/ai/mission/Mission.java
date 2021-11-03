@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -20,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -81,6 +80,9 @@ public abstract class Mission implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mission.class.getName());
+
+	public static final MissionPhase COMPLETED = new MissionPhase("Mission.phase.completed");
+	private static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
 
 	public static final String MISSION_SUFFIX = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
@@ -183,7 +185,6 @@ public abstract class Mission implements Serializable, Temporal {
 	protected static UnitManager unitManager;
 	protected static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
-	protected static ScientificStudyManager scientificManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
@@ -220,12 +221,12 @@ public abstract class Mission implements Serializable, Temporal {
 		createDateFiled();
 
 		membersMap = new HashMap<>();
-		missionStatus = new CopyOnWriteArrayList<>();
+		missionStatus = new ArrayList<>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
 		phaseDescription = "";
-		phases = new CopyOnWriteArrayList<MissionPhase>();
+		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
 		missionCapacity = MAX_CAP;
@@ -573,13 +574,6 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Set mission as done.
-	 */
-	public void setDone(boolean value) {
-		done = value;
-	}
-
-	/**
 	 * Gets the name of the mission.
 	 * 
 	 * @return name of mission
@@ -647,37 +641,48 @@ public abstract class Mission implements Serializable, Temporal {
 	public final MissionPhase getPhase() {
 		return phase;
 	}
-
+	
 	/**
-	 * Sets the mission phase.
+	 * Sets the mission phase and the current description
 	 * 
 	 * @param newPhase the new mission phase.
+	 * @param subjectOfPhase This is the subject of the phase
 	 * @throws MissionException if newPhase is not in the mission's collection of
 	 *                          phases.
 	 */
-	public final void setPhase(MissionPhase newPhase) {
+	protected final void setPhase(MissionPhase newPhase, String subjectOfPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
-		} else if (phases.contains(newPhase)) {
+		}
+		else if (phases.contains(newPhase)) {
 			phase = newPhase;
 			setPhaseEnded(false);
-			phaseDescription = "";
 			fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
-		} else {
+		}
+		else {
 			throw new IllegalStateException(
 					phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
 		}
+		
+		String template = newPhase.getDescriptionTemplate();
+		if (template != null) {
+			phaseDescription = MessageFormat.format(template, subjectOfPhase);
+		}
+		else {
+			phaseDescription = "";
+		}
 	}
+
 
 	/**
 	 * Adds a phase to the mission's collection of phases.
 	 * 
 	 * @param newPhase the new phase to add.
 	 */
-	public final void addPhase(MissionPhase newPhase) {
+	protected final void addPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
-		} else if (phases.isEmpty() || !phases.contains(newPhase)) {
+		} else if (!phases.contains(newPhase)) {
 			phases.add(newPhase);
 		}
 	}
@@ -715,7 +720,10 @@ public abstract class Mission implements Serializable, Temporal {
 
 		// If current phase is over, decide what to do next.
 		if (phaseEnded) {
-			determineNewPhase();
+			if (!determineNewPhase()) {
+				logger.warning(member, "New phase for " + getName()
+								+ " cannot be determined for " + phase.getName());
+			}
 		}
 
 		// Perform phase.
@@ -727,9 +735,10 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
 	 * 
+	 * @return Has the new phase been identified
 	 * @throws MissionException if problem setting a new phase.
 	 */
-	protected abstract void determineNewPhase();
+	protected abstract boolean determineNewPhase();
 
 	/**
 	 * The member performs the current phase of the mission.
@@ -773,7 +782,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Have the mission return home and end collection phase if necessary.
 	 */
-	protected void returnHome() {
+	public void returnHome() {
 		if (this instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) this;
 			int offset = 2;
@@ -846,8 +855,11 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param reason
 	 */
 	public void endMission() {
-		
-		logger.log(startingMember, Level.INFO, 0, "Ended " + getTypeID() + ".");
+		if (done) {
+			logger.warning(startingMember, "Mission " + getTypeID() + " is already ended.");
+			return;
+		}
+		logger.info(startingMember, "Ended " + getTypeID() + ".");
 
 		// Add mission experience score
 		addMissionScore();
@@ -867,12 +879,12 @@ public abstract class Mission implements Serializable, Temporal {
 			for (int i=0; i< missionStatus.size(); i++) {
 				status.append(" (").append(i+1).append(") ").append(missionStatus.get(i).getName());
 			}
-			logger.log(startingMember, Level.INFO, 500, status.toString());
+			logger.info(startingMember, status.toString());
 		}
 		
 		// The members are leaving the mission
 		if (members != null && !members.isEmpty()) { 
-			logger.log(startingMember, Level.INFO, 500, "Disbanded mission member(s) : " + members);
+			logger.info(startingMember, "Disbanded mission member(s) : " + members);
 			Iterator<MissionMember> i = members.iterator();
 			while (i.hasNext()) {
 				removeMember(i.next());
@@ -880,11 +892,8 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			if (this instanceof VehicleMission) {
-				setPhase(VehicleMission.COMPLETED);
-			}
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
+			addPhase(COMPLETED);
+			setPhase(COMPLETED, null);
 		}
 		
 		else {
@@ -892,9 +901,8 @@ public abstract class Mission implements Serializable, Temporal {
 			for (MissionStatus ms : missionStatus) {
 				s += ms.getName();
 			}
-			
-			setPhaseDescription(
-					Msg.getString("Mission.phase.aborted.description", s)); // $NON-NLS-1$
+			addPhase(ABORTED);
+			setPhase(ABORTED, s);
 		}
 		
 		// Proactively call removeMission to update the list in MissionManager right away
@@ -1555,18 +1563,16 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param c {@link MarsClock}
 	 * @param e {@link HistoricalEventManager}
 	 * @param u {@link UnitManager}
-	 * @param s {@link ScientificStudyManager}
 	 * @param sf {@link SurfaceFeatures}
 	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e, 
-			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, TerrainElevation te,
+			UnitManager u, SurfaceFeatures sf, TerrainElevation te,
 			MissionManager m, RelationshipManager r, PersonConfig pc, CreditManager cm) {
 		sim = si;
 		marsClock = c;		
 		eventManager = e;
 		unitManager = u;
-		scientificManager = s;
 		surfaceFeatures = sf;
 		terrainElevation = te;
 		missionManager = m;

@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -1596,7 +1595,7 @@ public abstract class Vehicle extends Unit
 					}
 					
 					if (mission.getMissionType() == MissionType.DELIVERY) {
-						if (((Delivery) mission).getVehicle() == this) {
+						if (((VehicleMission) mission).getVehicle() == this) {
 								return true;
 						}
 					}

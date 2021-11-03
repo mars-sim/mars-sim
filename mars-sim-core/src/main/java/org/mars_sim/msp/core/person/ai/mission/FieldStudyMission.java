@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -46,8 +45,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	private static SimLogger logger = SimLogger.getLogger(FieldStudyMission.class.getName());
 	
 	/** Mission phase. */
-	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
-			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
+	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 
 	// Data members
 	/** The start time at the field site. */
@@ -125,9 +123,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 			addPhase(RESEARCH_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
-
+			setPhase(REVIEWING, null);
 		}
 	}
 
@@ -183,8 +179,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		addPhase(RESEARCH_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, getStartingSettlement().getName());
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -221,7 +216,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	public static ScientificStudy determineStudy(ScienceType science, Person researcher) {
 		ScientificStudy result = null;
 
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = researcher.getStudy();
@@ -348,49 +343,27 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(RESEARCH_SITE);
-				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description",
-						getCurrentNavpoint().getDescription())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+				else {
+					setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+				}
+			} 
+			
+			else if (RESEARCH_SITE.equals(getPhase())) {
+				startTravellingPhase();
+			} 
+	
+			else {
+				handled = false;
 			}
-		} 
-		
-		else if (RESEARCH_SITE.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
 		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override

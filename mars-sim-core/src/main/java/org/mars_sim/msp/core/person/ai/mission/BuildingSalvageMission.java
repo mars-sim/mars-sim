@@ -63,10 +63,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
 	
 	/** Mission phases. */
-	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.prepareSalvageSite")); //$NON-NLS-1$
-	final public static MissionPhase SALVAGE_PHASE = new MissionPhase(Msg.getString("Mission.phase.salvage")); //$NON-NLS-1$
-
+	private final static MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareSalvageSite");
+	private final static MissionPhase SALVAGE_PHASE = new MissionPhase("Mission.phase.salvage");
+	
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
@@ -196,9 +195,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		addPhase(SALVAGE_PHASE);
 
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
-				, settlement.getName()));
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
 	
 	/**
@@ -311,9 +308,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		addPhase(SALVAGE_PHASE);
 
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description", //$NON-NLS-1$
-				settlement.getName()));
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
 
 	/**
@@ -373,15 +368,20 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	}
 
 	@Override
-	protected void determineNewPhase() {
+	protected boolean determineNewPhase() {
+		boolean handled = true;
 		if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			setPhase(SALVAGE_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.salvage.description", //$NON-NLS-1$
-					constructionStage.getInfo().getName()));
-		} else if (SALVAGE_PHASE.equals(getPhase()))
+			setPhase(SALVAGE_PHASE, constructionStage.getInfo().getName());
+		}
+		else if (SALVAGE_PHASE.equals(getPhase())) {
 			addMissionStatus(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
 			endMission();
-//			endMission(Msg.getString("BuildingSalvageMission.log.success")); //$NON-NLS-1$
+		}
+		else {
+			handled = false;
+		}
+		
+		return handled;
 	}
 
 	@Override
@@ -393,14 +393,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			salvagePhase(member);
 		}
 	}
-//	@Override
-//	protected void performPhase(Robot robot) {
-//		super.performPhase(robot);
-//		if (PREPARE_SITE_PHASE.equals(getPhase()))
-//			prepareSitePhase(robot);
-//		else if (SALVAGE_PHASE.equals(getPhase()))
-//			salvagePhase(robot);
-//	}
 
 	@Override
 	public Settlement getAssociatedSettlement() {
@@ -428,10 +420,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private void prepareSitePhase(MissionMember member) {
 		prepareSitePhase();
 	}
-
-//	private void prepareSitePhase(Robot robot) {
-//		prepareSitePhase();
-//	}
 
 	private void prepareSitePhase() {
 		if (finishingExistingStage) {

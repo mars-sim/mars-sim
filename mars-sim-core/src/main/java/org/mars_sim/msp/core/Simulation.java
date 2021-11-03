@@ -411,7 +411,7 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 							
 		// Set instances for classes that extend Unit and Task and Mission
-		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
+		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
@@ -705,7 +705,7 @@ public class Simulation implements ClockListener, Serializable {
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 	
 		// Re-initialize Mission related class
-		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
+		Mission.initializeInstances(this, marsClock, eventManager, unitManager, 
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		MissionPlanning.initializeInstances(marsClock);
 

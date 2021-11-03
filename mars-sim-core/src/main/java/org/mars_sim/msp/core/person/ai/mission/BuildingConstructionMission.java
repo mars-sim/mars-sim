@@ -72,43 +72,40 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;
 	
 	/** Mission phases. */
-	final public static MissionPhase SELECT_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.selectConstructionSite")); //$NON-NLS-1$
-	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.prepareConstructionSite")); //$NON-NLS-1$
-	final public static MissionPhase CONSTRUCTION_PHASE = new MissionPhase(Msg.getString("Mission.phase.construction")); //$NON-NLS-1$
+	private final static MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
+	private final static MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareConstructionSite");
+	private final static MissionPhase CONSTRUCTION_PHASE = new MissionPhase("Mission.phase.construction");
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
-	public static final int MAX_PEOPLE = 10;
+	private static final int MAX_PEOPLE = 10;
 
 	public static int FIRST_AVAILABLE_SOL = 1000;
 
-	public static final double SMALL_AMOUNT = 0.001D;
+	private static final double SMALL_AMOUNT = 0.001D;
+	
 	/** Time (millisols) required to prepare construction site for stage. */
-	public static final double SITE_PREPARE_TIME = 100D;
+	private static final double SITE_PREPARE_TIME = 100D;
 
 	// Default distance between buildings for construction.
-	public static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
+	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
 
-	public static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
+	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 
-	public static final double DEFAULT_HAB_BUILDING_DISTANCE = 5D;
 
-	public static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
+	private static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
 
-	public static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
+	private static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
 
-	public static final double DEFAULT_RECT_DISTANCE = 5D;
 
 	// Default width and length for variable size buildings if not otherwise
 	// determined.
-	public static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
 
-	public static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 
 	/** Minimum length of a building connector (meters). */
-	public static final double MINIMUM_CONNECTOR_LENGTH = 1D;
+	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
 	// Data members
 	private Settlement settlement;
@@ -174,10 +171,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				addPhase(PREPARE_SITE_PHASE);
 				addPhase(CONSTRUCTION_PHASE);
 
-				setPhase(SELECT_SITE_PHASE);
-				setPhaseDescription(Msg.getString("Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
-						, settlement.getName()));
-			} else {
+				setPhase(SELECT_SITE_PHASE, settlement.getName());
+			}
+			else {
 
 				// Reserve construction vehicles.
 				reserveConstructionVehicles();
@@ -187,9 +183,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				addPhase(PREPARE_SITE_PHASE);
 				addPhase(CONSTRUCTION_PHASE);
 
-				setPhase(PREPARE_SITE_PHASE);
-				setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-						, settlement.getName()));
+				setPhase(PREPARE_SITE_PHASE, settlement.getName());
 			}
 		}
 
@@ -553,9 +547,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		addPhase(CONSTRUCTION_PHASE);
 
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-				, settlement.getName()));
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 
 	}
 
@@ -671,20 +663,22 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		// System.out.println("starting determineNewPhase()");
+	protected boolean determineNewPhase() {
+		boolean handled = true;
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
-			setPhase(PREPARE_SITE_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-					, stage.getInfo().getName()));
-		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			setPhase(CONSTRUCTION_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.construction.description" //$NON-NLS-1$
-					, stage.getInfo().getName()));
-		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+			setPhase(PREPARE_SITE_PHASE, stage.getInfo().getName());
+		}
+		else if (PREPARE_SITE_PHASE.equals(getPhase())) {
+			setPhase(CONSTRUCTION_PHASE, stage.getInfo().getName());
+		}
+		else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			addMissionStatus(MissionStatus.CONSTRUCTION_ENDED);
 			endMission();
 		}
+		else {
+			handled = false;
+		}
+		return handled;
 	}
 
 	@Override
@@ -726,10 +720,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	private void prepareSitePhase(MissionMember member) {
 		prepareSitePhase();
 	}
-
-//    private void prepareSitePhase(Robot robot) {
-//    	prepareSitePhase();
-//    }
 
 	private void prepareSitePhase() {
 		// System.out.println("starting prepareSitePhase()");

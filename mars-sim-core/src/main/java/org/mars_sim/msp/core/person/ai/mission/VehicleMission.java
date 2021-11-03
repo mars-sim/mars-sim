@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,11 +16,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -58,12 +57,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMission.class.getName());
 
 	/** Mission phases. */
-	public static final MissionPhase REVIEWING = new MissionPhase(Msg.getString("Mission.phase.reviewing")); //$NON-NLS-1$
-	public static final MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
-	public static final MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
-	public static final MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
-	public static final MissionPhase COMPLETED = new MissionPhase(Msg.getString("Mission.phase.completed")); //$NON-NLS-1$
-	public static final MissionPhase INCOMPLETED = new MissionPhase(Msg.getString("Mission.phase.incompleted")); //$NON-NLS-1$
+	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
+	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
+	public static final MissionPhase TRAVELLING = new MissionPhase("Mission.phase.travelling"); 
+	public static final MissionPhase DISEMBARKING = new MissionPhase("Mission.phase.disembarking"); 
+	public static final MissionPhase INCOMPLETED = new MissionPhase("Mission.phase.incompleted");
 	
 	// Static members
 	private static final String ROVER_WHEEL = "rover wheel";
@@ -81,7 +79,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final String FIBERGLASS = "fiberglass"; 
 	private static final String SHEET = "sheet"; 
 	private static final String PRISM = "prism";
-	private static final String TRAVEL = "Mission.phase.travelling.description";
 	
 	/** The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
@@ -471,8 +468,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				if (vehicleCache instanceof Drone) {
 					if (vehicleCache.getStoredMass() != 0D) {
-						addPhase(VehicleMission.DISEMBARKING);
-						setPhase(VehicleMission.DISEMBARKING);
+						addPhase(DISEMBARKING);
+						startDisembarkingPhase();
 					}
 					else {
 						leaveVehicle();
@@ -483,8 +480,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
 					if (((Rover)vehicleCache).getCrewNum() != 0
 							|| (vehicleCache.getStoredMass() != 0D)) {
-						addPhase(VehicleMission.DISEMBARKING);
-						setPhase(VehicleMission.DISEMBARKING);
+						addPhase(DISEMBARKING);
+						startDisembarkingPhase();
 					}
 					else {
 						leaveVehicle();
@@ -582,7 +579,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseEnded(true);
 				
 				if (vehicle.getStoredMass() != 0D)
-					setPhase(VehicleMission.DISEMBARKING);
+					startDisembarkingPhase();
 				
 				leaveVehicle();
 				super.endMission();
@@ -682,41 +679,33 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
+	 * Subclass are expected to determine the  next Phase for TRAVELLING
 	 * 
 	 * @throws MissionException if problem setting a new phase.
 	 */
-	protected void determineNewPhase() {
+	protected boolean determineNewPhase() {
+		boolean handled = true;
 		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+			setPhase(EMBARKING, getCurrentNavpoint().getDescription());
 		}
 
 		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString(TRAVEL, getNextNavpoint().getDescription())); // $NON-NLS-1$
+			startTravellingPhase();
 		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(
-						Msg.getString("Mission.phase.disembarking.description", getCurrentNavpoint().getDescription())); // $NON-NLS-1$
-			}
-		} 
-		
+
 		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
+			setPhase(COMPLETED, null);
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
 			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
 			endMission();
 		}
+		else {
+			handled = false;
+		}
+		
+		return handled;
 	}
 	
 	public void flag4Submission() {
@@ -787,9 +776,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			destination.getLocation() != null &&
 			operateVehicleTask.getDestination() != null &&
 			!operateVehicleTask.getDestination().equals(destination.getLocation())) {
-				operateVehicleTask.setDestination(destination.getLocation());
-				setPhaseDescription(Msg.getString(TRAVEL,
-						getNextNavpoint().getDescription())); // $NON-NLS-1$
+				updateTravelDestination();
 		}
 		
 		// Choose a driver
@@ -1435,10 +1422,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Update mission to the next navpoint destination.
 	 */
 	public void updateTravelDestination() {
+		NavPoint nextPoint = getNextNavpoint();
+		
 		if (operateVehicleTask != null) {
-			operateVehicleTask.setDestination(getNextNavpoint().getLocation());
+			operateVehicleTask.setDestination(nextPoint.getLocation());
 		}
-		setPhaseDescription(Msg.getString(TRAVEL, getNextNavpoint().getDescription())); // $NON-NLS-1$
+		setPhaseDescription(MessageFormat.format(TRAVELLING.getDescriptionTemplate(),
+										  getNextNavpoint().getDescription())); // $NON-NLS-1$
 	}
 
 	/**
@@ -1779,5 +1769,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public boolean isVehicleLoadableHere(Settlement settlement) {
 		return EMBARKING.equals(getPhase())
 					&& getAssociatedSettlement().equals(settlement);
+	}
+
+	/**
+	 * Start the TRAVELLING phase of the mission. This will advanced to the
+	 * next navigation point.
+	 */
+	protected void startTravellingPhase() {
+		startTravelToNextNode();
+		setPhase(TRAVELLING, getNextNavpoint().getDescription());
+	}
+
+	/**
+	 * Start the disembarking phase
+	 */
+	protected void startDisembarkingPhase() {
+		setPhase(DISEMBARKING,
+				getCurrentNavpoint().getDescription());
 	}
 }

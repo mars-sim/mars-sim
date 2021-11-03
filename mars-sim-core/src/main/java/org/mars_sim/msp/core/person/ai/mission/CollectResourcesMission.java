@@ -18,10 +18,8 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.ResourceHolder;
-import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -49,16 +47,15 @@ public abstract class CollectResourcesMission extends RoverMission
 	private static SimLogger logger = SimLogger.getLogger(CollectResourcesMission.class.getName());
 	
 	/** Mission phase. */
-	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase(
-			Msg.getString("Mission.phase.collectResources")); //$NON-NLS-1$
+	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase("Mission.phase.collectResources");
 
 	/** Estimated collection time multiplier for EVA. */
-	public static final double EVA_COLLECTION_OVERHEAD = 20D;
+	private static final double EVA_COLLECTION_OVERHEAD = 20D;
 
 	/** THe maximum number of sites under consideration. */
-	public static final int MAX_NUM_PRIMARY_SITES = 30;
+	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
-	public static final int MAX_NUM_SECONDARY_SITES = 5;
+	private static final int MAX_NUM_SECONDARY_SITES = 5;
 	
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
@@ -203,8 +200,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			addPhase(COLLECT_RESOURCES);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
+			setPhase(REVIEWING, null);
 		}
 	}
 
@@ -275,8 +271,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		addPhase(COLLECT_RESOURCES);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, getStartingSettlement().getName());
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -313,58 +308,34 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * 
 	 * @throws MissionException if problem setting a new phase.
 	 */
-	protected void determineNewPhase() {
-
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName()));//getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		}
-
-		else if (TRAVELLING.equals(getPhase())) {
-
-			if (getCurrentNavpoint() == null)
-				// go back home
-				returnHome();
-			else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+	
+				if (getCurrentNavpoint() == null)
+					// go back home
+					returnHome();
+				else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+	
+				else {
+					setPhase(COLLECT_RESOURCES,
+							getCurrentNavpoint().getDescription());
+					collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+				}
+	
 			}
-
+	
+			else if (COLLECT_RESOURCES.equals(getPhase())) {
+				startTravellingPhase();
+			}
 			else {
-				setPhase(COLLECT_RESOURCES);
-				setPhaseDescription(Msg.getString("Mission.phase.collectResources.description",
-						getCurrentNavpoint().getDescription())); // $NON-NLS-1$
-				collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+				handled  = false;
 			}
-
 		}
-
-		else if (COLLECT_RESOURCES.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		}
-
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
-		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override

@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -76,13 +75,10 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	public static final double BASE_STARTING_PROBABILITY = 20D;
 
 	/** Mission phases. */
-	public static final MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(
-			Msg.getString("Mission.phase.supplyDeliveryDisembarking")); //$NON-NLS-1$
-	public static final MissionPhase SUPPLY_DELIVERY = new MissionPhase(Msg.getString("Mission.phase.supplyDelivery")); //$NON-NLS-1$
-	public static final MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase(
-			Msg.getString("Mission.phase.loadReturnTripSupplies")); //$NON-NLS-1$
-	public static final MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase(
-			Msg.getString("Mission.phase.returnTripEmbarking")); //$NON-NLS-1$
+	private static final MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase("Mission.phase.supplyDeliveryDisembarking");
+	private static final MissionPhase SUPPLY_DELIVERY = new MissionPhase("Mission.phase.supplyDelivery");
+	private static final MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase("Mission.phase.loadReturnTripSupplies");
+	private static final MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase("Mission.phase.returnTripEmbarking");
 
 	// Data members.
 	private boolean outbound;
@@ -160,8 +156,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			addPhase(RETURN_TRIP_EMBARKING);
 
 			// Set initial phase
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(REVIEWING, null);
 			if (startingPerson != null && getRover() != null) {
 				logger.info(s, startingPerson
 						+ "Reviewing an emergency supply mission to help out " 
@@ -250,8 +245,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		addPhase(RETURN_TRIP_EMBARKING);
 
 		// Set initial phase
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, getStartingSettlement().getName()); 
 		Person startingPerson = (Person) members.toArray()[0];
 		if (startingPerson != null && getRover() != null) {
 			logger.info(getStartingSettlement(), startingPerson
@@ -262,69 +256,40 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-				
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				if (outbound) {
-					setPhase(SUPPLY_DELIVERY_DISEMBARKING);
-					setPhaseDescription(Msg.getString("Mission.phase.supplyDeliveryDisembarking.description",
-							emergencySettlement.getName())); // $NON-NLS-1$
-				} else {
-					setPhase(VehicleMission.DISEMBARKING);
-					setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-							getCurrentNavpoint().getDescription())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					if (outbound) {
+						setPhase(SUPPLY_DELIVERY_DISEMBARKING, emergencySettlement.getName());
+					} else {
+						startDisembarkingPhase();
+					}
 				}
+			} 
+			
+			else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
+				setPhase(SUPPLY_DELIVERY, emergencySettlement.getName());
+			} 
+			
+			else if (SUPPLY_DELIVERY.equals(getPhase())) {
+				setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
+			} 
+			
+			else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
+				setPhase(RETURN_TRIP_EMBARKING, emergencySettlement.getName());
+			} 
+			
+			else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
+				startTravellingPhase();
+			} 
+	
+			else {
+				handled = false;
 			}
-		} 
-		
-		else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
-			setPhase(SUPPLY_DELIVERY);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.supplyDelivery.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} 
-		
-		else if (SUPPLY_DELIVERY.equals(getPhase())) {
-			setPhase(LOAD_RETURN_TRIP_SUPPLIES);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.loadReturnTripSupplies.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} 
-		
-		else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
-			setPhase(RETURN_TRIP_EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.returnTripEmbarking.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} 
-		
-		else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
 		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override

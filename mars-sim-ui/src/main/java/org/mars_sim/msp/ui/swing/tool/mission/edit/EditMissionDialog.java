@@ -19,8 +19,6 @@ import javax.swing.JComponent;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
@@ -155,16 +153,8 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 * Have the mission return home and end collection phase if necessary.
 	 */
 	private void returnHome() {
-		if (mission instanceof TravelMission) {
-			TravelMission travelMission = (TravelMission) mission;
-//			try {
-				int offset = 2;
-				if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
-				travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
-				travelMission.updateTravelDestination();
-				endCollectionPhase();
-//			}
-//			catch (MissionException e) {}
+		if (mission != null) {
+			mission.returnHome();
 		}
 	}
 	

@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Msg;
+
 /**
  * A phase of a mission.
  */
@@ -18,6 +20,8 @@ public final class MissionPhase implements Serializable {
 
 	// The phase name.
 	private String name;
+	
+	private String descriptionTemplate = null;
 
 	/**
 	 * Constructor
@@ -25,7 +29,15 @@ public final class MissionPhase implements Serializable {
 	 * @param the phase name.
 	 */
 	public MissionPhase(String name) {
-		this.name = name;
+		// Hack for the transition phase
+		if (name.startsWith("Mission.")) {
+			// Assume it a key
+			this.name = Msg.getString(name);
+			this.descriptionTemplate = Msg.getString(name + ".description");
+		}
+		else {
+			this.name = name;
+		}
 	}
 
 	/**
@@ -37,6 +49,14 @@ public final class MissionPhase implements Serializable {
 		return name;
 	}
 
+	/**
+	 * Get the template for any description
+	 * @return
+	 */
+	public String getDescriptionTemplate() {
+		return descriptionTemplate;
+	}
+	
 	@Override
 	public String toString() {
 		return getName();
@@ -53,4 +73,5 @@ public final class MissionPhase implements Serializable {
 	public int hashCode() {
 		return name.hashCode() % 32;
 	}
+
 }

@@ -61,10 +61,10 @@ public class Exploration extends RoverMission
 	public static final MissionType MISSION_TYPE = MissionType.EXPLORATION;
 	
 	/** Mission phase. */
-	public static final MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
+	private static final MissionPhase EXPLORE_SITE = new MissionPhase("Mission.phase.exploreSite");
 
 	/** Exploration Site */
-	public static final String EXPLORATION_SITE = "Exploration Site ";
+	private static final String EXPLORATION_SITE = "Exploration Site ";
 	
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
@@ -162,8 +162,7 @@ public class Exploration extends RoverMission
 			addPhase(EXPLORE_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(REVIEWING, null);
 		}
 		
 		logger.fine(getStartingPerson(), "Just finished creating an Exploration mission.");
@@ -241,8 +240,7 @@ public class Exploration extends RoverMission
 		addPhase(EXPLORE_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", startingSettlement.getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, startingSettlement.getName());
 
 	}
 
@@ -313,49 +311,26 @@ public class Exploration extends RoverMission
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(EXPLORE_SITE);
-				setPhaseDescription(
-						Msg.getString("Mission.phase.exploreSite.description", getCurrentNavpoint().getDescription())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+				else {
+					setPhase(EXPLORE_SITE, getCurrentNavpoint().getDescription());
+				}
+			} 
+			
+			else if (EXPLORE_SITE.equals(getPhase())) {
+				startTravellingPhase();
+			} 
+			else {
+				handled = false;
 			}
-		} 
-		
-		else if (EXPLORE_SITE.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
 		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override

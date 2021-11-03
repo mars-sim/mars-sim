@@ -605,8 +605,6 @@ public class MissionManager implements Serializable, Temporal {
 				+ " (" + missionPlan.getPercentComplete() + "% review completed)");
 				
 		missionPlan.setReviewedBy(reviewer.getName());
-		missionPlan.getMission().setPhaseDescription(missionPlan.getMission().getPhaseDescription());
-//					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());
 
 	}
 

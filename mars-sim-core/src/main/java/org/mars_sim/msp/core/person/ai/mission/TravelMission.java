@@ -33,7 +33,7 @@ public abstract class TravelMission extends Mission {
 
 	// Data members
 	/** List of navpoints for the mission. */
-	private List<NavPoint> navPoints = new ArrayList<NavPoint>();
+	private List<NavPoint> navPoints = new ArrayList<>();
 	/** The current navpoint index. */
 	private int navIndex = 0;
 	
@@ -540,11 +540,6 @@ public abstract class TravelMission extends Mission {
 	 * Update mission to the next navpoint destination.
 	 */
 	public abstract void updateTravelDestination();
-
-	@Override
-	public void endMission() {
-		super.endMission();
-	}
 
 	@Override
 	public void destroy() {
