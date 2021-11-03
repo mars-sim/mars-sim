@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -70,7 +69,6 @@ public class Delivery extends DroneMission implements Serializable {
 	private boolean doNegotiation;
 
 	private Settlement tradingSettlement;
-	private MarsClock startNegotiationTime;
 	private NegotiateDelivery negotiationTask;
 
 	private Map<Good, Integer> sellLoad;
@@ -353,12 +351,6 @@ public class Delivery extends DroneMission implements Serializable {
 				} 
 				
 				else {
-					MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-					
-					if (startNegotiationTime == null) {
-						startNegotiationTime = currentTime;
-					}
-					
 					Person settlementTrader = getSettlementTrader();
 					
 					if (settlementTrader != null) {
@@ -377,16 +369,12 @@ public class Delivery extends DroneMission implements Serializable {
 								break;	
 						}
 						
-					} else {
-
-						double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
-						
-						if (timeDiff > 1000D) {
-							buyLoad = new HashMap<Good, Integer>(0);
-							profit = 0D;
-							fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-							setPhaseEnded(true);
-						}
+					}
+					else if (getPhaseDuration() > 1000D) {
+						buyLoad = new HashMap<>();
+						profit = 0D;
+						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+						setPhaseEnded(true);
 					}
 				}
 		} else {
@@ -735,7 +723,6 @@ public class Delivery extends DroneMission implements Serializable {
 		if (desiredBuyLoad != null)
 			desiredBuyLoad.clear();
 		desiredBuyLoad = null;
-		startNegotiationTime = null;
 		negotiationTask = null;
 	}
 

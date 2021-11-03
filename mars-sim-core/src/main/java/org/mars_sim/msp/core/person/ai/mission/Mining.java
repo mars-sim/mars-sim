@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -81,7 +80,6 @@ public class Mining extends RoverMission
 	private boolean endMiningSite;
 	
 	private ExploredLocation miningSite;
-	private MarsClock miningSiteStartTime;
 	private LightUtilityVehicle luv;
 
 	private Person startingPerson;
@@ -424,13 +422,6 @@ public class Mining extends RoverMission
 	 */
 	private void miningPhase(MissionMember member) {
 
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		
-		// Set the mining site start time if necessary.
-		if (miningSiteStartTime == null) {
-			miningSiteStartTime = currentTime;
-		}
-
 		// Detach towed light utility vehicle if necessary.
 		if (getRover().getTowedVehicle() != null) {
 			getRover().setTowedVehicle(null);
@@ -438,7 +429,7 @@ public class Mining extends RoverMission
 		}
 
 		// Check if crew has been at site for more than three sols.
-		boolean timeExpired = MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME;
+		boolean timeExpired = getPhaseDuration() >= MINING_SITE_TIME;
 
         if (isEveryoneInRover()) {
 
@@ -891,17 +882,13 @@ public class Mining extends RoverMission
 
 		// Use estimated remaining mining time at site if still there.
 		if (MINING_SITE.equals(getPhase())) {
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtMiningSite = MarsClock.getTimeDiff(marsClock, miningSiteStartTime);
-			double remainingTime = MINING_SITE_TIME - timeSpentAtMiningSite;
+			double remainingTime = MINING_SITE_TIME - getPhaseDuration();
 			if (remainingTime > 0D) {
 				result = remainingTime;
 			}
 		} else {
 			// If mission hasn't reached mining site yet, use estimated mining site time.
-			if (miningSiteStartTime == null) {
-				result = MINING_SITE_TIME;
-			}
+			result = MINING_SITE_TIME;
 		}
 
 		return result;
@@ -1080,7 +1067,6 @@ public class Mining extends RoverMission
 		super.destroy();
 
 		miningSite = null;
-		miningSiteStartTime = null;
 		if (excavatedMinerals != null) {
 			excavatedMinerals.clear();
 		}

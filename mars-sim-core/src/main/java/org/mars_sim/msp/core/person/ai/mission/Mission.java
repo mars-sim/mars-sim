@@ -151,8 +151,6 @@ public abstract class Mission implements Serializable, Temporal {
 	private String missionName;
 	/** The description of this mission. */
 	private String description;
-	/** The description of the current phase of operation. */
-	private String phaseDescription;
 	/** The full mission designation. */
 	private String fullMissionDesignation = "";
 	
@@ -165,6 +163,10 @@ public abstract class Mission implements Serializable, Temporal {
 	private List<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
 	private MissionPhase phase;
+	/** The description of the current phase of operation. */
+	private String phaseDescription;
+	/** Time the phase started */
+	private MarsClock phaseStartTime;
 	/** The name of the starting member */
 	private MissionMember startingMember;
 	/** The mission plan. */
@@ -654,16 +656,16 @@ public abstract class Mission implements Serializable, Temporal {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		}
-		else if (phases.contains(newPhase)) {
-			phase = newPhase;
-			setPhaseEnded(false);
-			fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
-		}
-		else {
+		else if (!phases.contains(newPhase)) {
 			throw new IllegalStateException(
 					phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
 		}
 		
+		// Move phase on
+		phase = newPhase;
+		setPhaseEnded(false);		
+		phaseStartTime = (MarsClock) marsClock.clone();
+
 		String template = newPhase.getDescriptionTemplate();
 		if (template != null) {
 			phaseDescription = MessageFormat.format(template, subjectOfPhase);
@@ -671,9 +673,24 @@ public abstract class Mission implements Serializable, Temporal {
 		else {
 			phaseDescription = "";
 		}
+		
+		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);		
 	}
 
-
+	/**
+	 * Time that the current phases started
+	 */
+	public MarsClock getPhaseStartTime() {
+		return phaseStartTime;
+	}
+	
+	/**
+	 * Gte duratino of current Phase.
+	 */
+	protected double getPhaseDuration() {
+		return MarsClock.getTimeDiff(marsClock, phaseStartTime);
+	}
+	
 	/**
 	 * Adds a phase to the mission's collection of phases.
 	 * 

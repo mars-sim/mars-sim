@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -49,9 +48,6 @@ public abstract class TravelMission extends Mission {
 	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
-	/** The time the last leg of the mission started at. */
-	private MarsClock legStartingTime;
-
 	
 	/**
 	 * Constructor 1
@@ -313,7 +309,6 @@ public abstract class TravelMission extends Mission {
 	protected final void startTravelToNextNode() {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
-		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
 
 	/**
@@ -340,12 +335,7 @@ public abstract class TravelMission extends Mission {
 	 * @return starting time
 	 */
 	protected final MarsClock getCurrentLegStartingTime() {
-		if (legStartingTime != null) {
-			return (MarsClock) legStartingTime.clone();
-		} else {
-			logger.severe(getTypeID() + " legStartingTime is null.");
-			return null;
-		}
+		return getPhaseStartTime();
 	}
 
 	/**
@@ -550,6 +540,5 @@ public abstract class TravelMission extends Mission {
 		navPoints = null;
 		travelStatus = null;
 		lastStopNavpoint = null;
-		legStartingTime = null;
 	}
 }

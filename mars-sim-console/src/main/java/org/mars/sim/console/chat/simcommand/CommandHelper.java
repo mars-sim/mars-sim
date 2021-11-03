@@ -253,6 +253,8 @@ public class CommandHelper {
 			response.appendLabeledString("Travelled", String.format(KM_FORMAT, trav));
 		}
 		response.appendLabeledString("Phase", mission.getPhaseDescription());
+		response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTrucatedDateTimeStamp());
+
 		MissionPlanning mp = mission.getPlan();
 		if ((mp != null) && (mp.getStatus() == PlanType.PENDING)) {
 			StringBuilder planMsg = new StringBuilder();

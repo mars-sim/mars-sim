@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -37,7 +36,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -84,7 +82,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private Settlement settlement;
 	private ConstructionSite constructionSite;
 	private ConstructionStage constructionStage;
-	private MarsClock sitePreparationStartTime;
 	
 	private List<GroundVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
@@ -426,14 +423,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			// If finishing uncompleted existing construction stage, skip resource loading.
 			setPhaseEnded(true);
 		}
-
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		
 		// Check if site preparation time has expired.
-		if (sitePreparationStartTime == null) {
-			sitePreparationStartTime = currentTime;
-		}
-		if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
+		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);
 		}
 	}
@@ -765,7 +757,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		if (constructionVehicles != null)
 			constructionVehicles.clear();
 		constructionVehicles = null;
-		sitePreparationStartTime = null;
 		if (luvAttachmentParts != null)
 			luvAttachmentParts.clear();
 		luvAttachmentParts = null;

@@ -108,8 +108,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
 	private Worker lastOperator;
-	/** The mission lead of this mission. */
-	private MissionMember startingMember;
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
 	/** Details of the loading operation */
@@ -132,8 +130,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
-	
-		this.startingMember = startingMember;
 		
 		if (reserveVehicle()) {
 			// Add mission phases.
@@ -157,8 +153,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
 	
-		this.startingMember = startingMember;
-
 		// Add mission phases.
 		addPhase(REVIEWING);
 		addPhase(EMBARKING);
@@ -176,6 +170,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return
 	 */
 	protected boolean reserveVehicle() {
+		MissionMember startingMember = getStartingPerson();
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
@@ -192,9 +187,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return
 	 */
 	private boolean checkVehicleMaintenance() {
-		if (getVehicle().haveStatusType(StatusType.MAINTENANCE)) {
+		if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
 			addMissionStatus(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
-			logger.warning(startingMember, getVehicle() + " under maintenance and not ready for " + getTypeID() + ".");
+			logger.warning(vehicle, "Under maintenance and not ready for " + getTypeID() + ".");
 			endMission();
 			return false;
 		}
@@ -319,7 +314,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
-			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
+			logger.log(vehicle, Level.FINER, 1000, "Was checked on the status: (available : "
 						+ usable + ") for " + getTypeID() + ".");
 			return usable;
 			
@@ -512,7 +507,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	public void getHelp() {
-		logger.info(startingMember, 20_000, "Asked for help.");
+		logger.info(vehicle, 20_000, "Needs help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		// Note: need to find out if there are other matching reasons for setting
@@ -520,23 +515,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle.getSettlement() == null) {
 			// if the vehicle somewhere on Mars 
 			if (!vehicle.isBeaconOn()) {
-				var message = new StringBuilder();
-				
-				// if the emergency beacon is off
-				// Question: could the emergency beacon itself be broken ?
-				message.append("Turned on ").append(vehicle.getName())
-					.append("'s emergency beacon. Request for towing with status flag(s) :");
-				
-				for (int i=0; i< getMissionStatus().size(); i++) {
-					message.append(" (")
-							.append((i+1))
-							.append(") ")
-							.append(getMissionStatus().get(i).getName());
-				}
-				
-				logger.info(startingMember, 20_000, message.toString());
-				
-				vehicle.setEmergencyBeacon(true);
+				triggerEmergencyBeacon();
 
 				if (VehicleType.isRover(vehicle.getVehicleType()) && vehicle.isBeingTowed()) {
 					// Note: the vehicle is being towed, wait till the journey is over
@@ -555,19 +534,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		else { // Vehicle is still in the settlement vicinity or has arrived in a settlement
 			
 			if (!vehicle.isBeaconOn()) {
-				// if the emergency beacon is off
-				// Question: could the emergency beacon itself be broken ?
-				var message = new StringBuilder();
-				message.append("Turned on ")
-					.append(vehicle.getName())
-					.append("'s emergency beacon. Request for towing with status flag(s) :");
-				
-				for (int i=0; i< getMissionStatus().size(); i++) {
-					message.append(" (").append((i+1)).append(")->")
-					       .append(getMissionStatus().get(i).getName());
-				}
-				logger.info(startingMember, 20_000, message.toString());
-				vehicle.setEmergencyBeacon(true);
+				triggerEmergencyBeacon();
 			}
 			
 			// if the vehicle is still somewhere inside the settlement when it got broken
@@ -585,6 +552,28 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				super.endMission();
 			}		
 		}
+	}
+
+	/**
+	 * Trigger the emergency beacon on the Mission vehicle
+	 */
+	private void triggerEmergencyBeacon() {
+		var message = new StringBuilder();
+		
+		// if the emergency beacon is off
+		// Question: could the emergency beacon itself be broken ?
+		message.append("Turned on emergency beacon. Request for towing with status flag(s) :");
+		
+		for (int i=0; i< getMissionStatus().size(); i++) {
+			message.append(" (")
+					.append((i+1))
+					.append(") ")
+					.append(getMissionStatus().get(i).getName());
+		}
+		
+		logger.info(vehicle, 20_000, message.toString());
+		
+		vehicle.setEmergencyBeacon(true);
 	}
 	
 	/**
@@ -631,7 +620,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if (!settlementSupplies) {
 			logger.warning(settlement, "Not enough supplies for "
-							+ startingMember.getName() + "'s proposed excursion.");
+							+ vehicle.getName() + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);		
 		}
@@ -941,7 +930,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public double getEstimatedRemainingMissionTime(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(startingMember, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			logger.info(vehicle, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
 			return getEstimatedTripTime(useMargin, distance);
 		}
 		
@@ -997,7 +986,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance(); 
 		if (distance > 0) {
-			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " 
+			logger.info(vehicle, 20_000, "1. " + this + " has an estimated remaining distance of " 
 					+ Math.round(distance * 10.0)/10.0 + " km.");
 			return getResourcesNeededForTrip(useMargin, distance);
 		}
@@ -1705,15 +1694,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		return result;
 	}
-	
-	/**
-	 * Gets the mission lead of this mission.
-	 * @return the member
-	 */
-	public MissionMember getStartingMember() {;
-		return startingMember;
-	}
-	
+
 	/**
 	 * Gets the settlement associated with the vehicle.
 	 * 

@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -45,7 +44,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -111,7 +109,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	private Settlement settlement;
 	private ConstructionSite site;
 	private ConstructionStage stage;
-	private MarsClock sitePreparationStartTime;
 
 	private List<GroundVehicle> constructionVehicles;
 	private Collection<MissionMember> members;// = constructionSite.getMembers();
@@ -728,13 +725,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			loadAvailableConstructionMaterials();
 
 		// Check if site preparation time has expired.
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-				
-		if (sitePreparationStartTime == null) {
-			sitePreparationStartTime = currentTime;
-		}
-
-		if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
+		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);
 		}
 	}
@@ -1568,7 +1559,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			constructionVehicles.clear();
 		}
 		constructionVehicles = null;
-		sitePreparationStartTime = null;
 		if (luvAttachmentParts != null) {
 			luvAttachmentParts.clear();
 		}

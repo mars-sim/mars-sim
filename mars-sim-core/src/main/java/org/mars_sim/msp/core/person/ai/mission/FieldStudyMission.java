@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -48,8 +47,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 
 	// Data members
-	/** The start time at the field site. */
-	private MarsClock fieldSiteStartTime;
 	/** External flag for ending research at the field site. */
 	private boolean endFieldSite;
 	/** The field site location. */
@@ -401,15 +398,8 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 */
 	private void researchFieldSitePhase(MissionMember member) {
 
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		
-		// Check if field site research has just started.
-		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = currentTime;
-		}
-
 		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= fieldSiteTime;
+		boolean timeExpired = getPhaseDuration() >= fieldSiteTime;
 
 		if (isEveryoneInRover()) {
 
@@ -516,16 +506,10 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		// Add estimated remaining field work time at field site if still there.
 		if (RESEARCH_SITE.equals(getPhase())) {
 
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, fieldSiteStartTime);
-			double remainingTime = fieldSiteTime - timeSpentAtExplorationSite;
+			double remainingTime = fieldSiteTime - getPhaseDuration();
 			if (remainingTime > 0D) {
 				result += remainingTime;
 			}
-		}
-
-		// If field site hasn't been visited yet, add full field work time.
-		if (fieldSiteStartTime == null) {
-			result += fieldSiteTime;
 		}
 
 		return result;
@@ -555,7 +539,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	@Override
 	public void destroy() {
 		super.destroy();
-		fieldSiteStartTime = null;
 		fieldSite = null;
 		study = null;
 		leadResearcher = null;

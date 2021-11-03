@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -84,8 +83,6 @@ public class Exploration extends RoverMission
 	// Data members
 	/** Map of exploration sites and their completion. */
 	private Map<String, Double> explorationSiteCompletion;
-	/** The start time at the current exploration site. */
-	private MarsClock explorationSiteStartTime;
 	/** The current exploration site. */
 	private ExploredLocation currentSite;
 	/** List of sites explored by this mission. */
@@ -165,7 +162,7 @@ public class Exploration extends RoverMission
 			setPhase(REVIEWING, null);
 		}
 		
-		logger.fine(getStartingPerson(), "Just finished creating an Exploration mission.");
+		logger.fine(startingPerson, "Just finished creating an Exploration mission.");
 	}
 
 	/**
@@ -385,21 +382,15 @@ public class Exploration extends RoverMission
 	 * @throws MissionException if problem performing phase.
 	 */
 	private void exploringPhase(MissionMember member) {
-
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		
 		// Add new explored site if just starting exploring.
-		if (currentSite == null) {// currentSite vs. explorationSiteStartTime
-			explorationSiteStartTime = currentTime;
+		if (currentSite == null) {
 			currentSite = retrieveCurrentSite();
 		}
 
 		// Check if crew has been at site for more than one sol.
-		boolean timeExpired = false;
-		double timeDiff = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
-		if (timeDiff >= EXPLORING_SITE_TIME) {
-			timeExpired = true;
-		}
+		double timeDiff = getPhaseDuration();
+		boolean timeExpired = (timeDiff >= EXPLORING_SITE_TIME);
 
 		// Update exploration site completion.
 		double completion = timeDiff / EXPLORING_SITE_TIME;
@@ -540,8 +531,7 @@ public class Exploration extends RoverMission
 
 		// Add estimated remaining exploration time at current site if still there.
 		if (EXPLORE_SITE.equals(getPhase())) {
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(Simulation.instance().getMasterClock().getMarsClock(), explorationSiteStartTime);
-			double remainingTime = EXPLORING_SITE_TIME - timeSpentAtExplorationSite;
+			double remainingTime = EXPLORING_SITE_TIME - getPhaseDuration();
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}
@@ -945,7 +935,6 @@ public class Exploration extends RoverMission
 		if (explorationSiteCompletion != null)
 			explorationSiteCompletion.clear();
 		explorationSiteCompletion = null;
-		explorationSiteStartTime = null;
 		currentSite = null;
 		if (exploredSites != null)
 			exploredSites.clear();

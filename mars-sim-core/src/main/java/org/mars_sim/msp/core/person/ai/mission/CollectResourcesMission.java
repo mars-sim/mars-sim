@@ -18,7 +18,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -74,13 +73,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
-	
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
-	/** The start time at the current collection site. */
-	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
-	private Integer resourceID;
+	private int resourceID;
 
 	/**
 	 * Constructor
@@ -323,9 +319,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				else {
 					setPhase(COLLECT_RESOURCES,
 							getCurrentNavpoint().getDescription());
-					collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-				}
-	
+				}	
 			}
 	
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
@@ -672,9 +666,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		// Add estimated remaining collection time at current site if still there.
 		if (COLLECT_RESOURCES.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtCollectionSite = MarsClock.getTimeDiff(currentTime, collectionSiteStartTime);
-			double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - timeSpentAtCollectionSite;
+			double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - getPhaseDuration();
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}
@@ -785,14 +777,4 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return description
 	 */
 	protected abstract String getCollectionSiteDescription(int siteNum);
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		personConfig = null;
-		resourceID = null;
-		containerID = null;
-		collectionSiteStartTime = null;
-	}
 }
