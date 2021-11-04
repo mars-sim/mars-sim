@@ -1131,17 +1131,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (remainder == 10) {
 				regolithProbabilityValue = computeRegolithProbability();
 			}
-
-			// Note: will need to reenable calling 
-			// computeOxygenProbability and computeMethaneProbability
-			
-			// if (remainder == 15) {
-			// oxygenProbabilityValue = computeOxygenProbability();
-			// }
-
-			// if (remainder == 20) {
-			// methaneProbabilityValue = computeMethaneProbability();
-			// }
 		}
 
 		compositionOfAir.timePassing(pulse);
@@ -1163,7 +1152,25 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		
 		// Update owned Units
 		timePassing(pulse, ownedVehicles);
-		timePassing(pulse, citizens);
+		
+		// Persons can die and leave the Settlement
+		Set<Person> died = new HashSet<>();
+		for (Person p : citizens) {
+			try {
+				p.timePassing(pulse);
+				if (p.isDeclaredDead()) {
+					logger.info(p, "Dead so removing from citizens");
+					died.add(p);
+				}
+			}
+			catch (RuntimeException rte) {
+				logger.severe(this, "Problem applying pulse : " + rte.getMessage(),
+						      rte);
+			}
+		}
+		if (!died.isEmpty()) {
+			citizens.removeAll(died);
+		}
 		timePassing(pulse, ownedRobots);
 
 		return true;
