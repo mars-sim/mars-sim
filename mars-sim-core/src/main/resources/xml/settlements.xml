@@ -4481,21 +4481,22 @@
 			<building type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" x-location="35.0" y-location="0.0" facing="90.0" />
-			<building type="Regolith Storage Bin" x-location="35.0" y-location="2.5" facing="90.0" />
 			<building type="Sand Storage Bin" x-location="35.0" y-location="5.0" facing="90.0" />
-			<building type="Sand Storage Bin" x-location="35.0" y-location="7.5" facing="90.0" />
 			<building type="Concrete Storage Bin" x-location="35.0" y-location="10.0" facing="90.0" />
-			<building type="Concrete Storage Bin" x-location="35.0" y-location="12.5" facing="90.0" />
 			<building type="Cement Storage Bin" x-location="35.0" y-location="15.0" facing="90.0" />
-			<building type="Cement Storage Bin" x-location="35.0" y-location="17.5" facing="90.0" />
 			<building type="Mortar Storage Bin" x-location="35.0" y-location="20.0" facing="90.0" />
-			<building type="Mortar Storage Bin" x-location="35.0" y-location="22.5" facing="90.0" />
 			<building type="Lime Storage Bin" x-location="35.0" y-location="25.0" facing="90.0" />
-			<building type="Lime Storage Bin" x-location="35.0" y-location="27.5" facing="90.0" />
-			<building type="Ice Storage Bin" x-location="35.0" y-location="-2.5" facing="90.0" />
 			<building type="Ice Storage Bin" x-location="35.0" y-location="-5.0" facing="90.0" />
-			<building type="Carbon Storage Bin" x-location="35.0" y-location="-7.5" facing="90.0" />
 			<building type="Carbon Storage Bin" x-location="35.0" y-location="-10.0" facing="90.0" />
+
+			<building type="Regolith Storage Bin" x-location="55.0" y-location="0.0" facing="90.0" />
+			<building type="Sand Storage Bin" x-location="55.0" y-location="5.0" facing="90.0" />
+			<building type="Concrete Storage Bin" x-location="55.0" y-location="10.0" facing="90.0" />
+			<building type="Cement Storage Bin" x-location="55.0" y-location="15.0" facing="90.0" />
+			<building type="Mortar Storage Bin" x-location="55.0" y-location="20.0" facing="90.0" />
+			<building type="Lime Storage Bin" x-location="55.0" y-location="25.0" facing="90.0" />
+			<building type="Ice Storage Bin" x-location="55.0" y-location="-5.0" facing="90.0" />
+			<building type="Carbon Storage Bin" x-location="55.0" y-location="-10.0" facing="90.0" />
 
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
