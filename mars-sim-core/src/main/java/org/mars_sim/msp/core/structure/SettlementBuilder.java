@@ -253,8 +253,7 @@ public final class SettlementBuilder {
 		for (String type : equipmentMap.keySet()) {
 			int number = equipmentMap.get(type);
 			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(type, settlement,
-						false);
+				Equipment equipment = EquipmentFactory.createEquipment(type, settlement);
 				unitManager.addUnit(equipment);
 				settlement.addEquipment(equipment);
 				// Set the container unit

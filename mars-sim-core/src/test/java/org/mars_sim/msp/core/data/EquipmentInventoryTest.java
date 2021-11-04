@@ -61,7 +61,7 @@ extends TestCase {
 		// Store some CO2 directly and then a Bag containing rocks
 		inv.storeAmountResource(co2, co2Mass);
 		
-		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		assertEquals("Bag can not store CO2", 0D, ((Container)bag).storeAmountResource(rock, rockMass));
 
 		inv.addEquipment(bag);

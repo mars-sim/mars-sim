@@ -11,14 +11,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -930,27 +928,12 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
 		Map<Integer, Number> map = new HashMap<>();
-		
-		// Get an EVA suit from the staring settlement as an example of an EVA Suit
-		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, getStartingPerson().getAssociatedSettlement(), true);
 
-		if (suit != null) {
-			// Determine needed repair parts for EVA suits.
-			Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-			Iterator<Integer> i = parts.keySet().iterator();
-			while (i.hasNext()) {
-				Integer id = i.next();
-				String name = ItemResourceUtil.findItemResourceName(id);
-				for (String n : ItemResourceUtil.EVASUIT_PARTS) {
-					if (n.equalsIgnoreCase(name)) {
-						int number = (int) Math.round(parts.get(id) * numberMalfunctions);
-						if (number > 0) {
-							if (map.containsKey(id))
-								number += map.get(id).intValue();
-							map.put(id, number);
-						}
-					}
-				}
+		// Determine needed repair parts for EVA suits.
+		for(Entry<Integer, Double> part : EVASuit.getNormalRepairPart().entrySet()) {
+			int number = (int) Math.round(part.getValue() * numberMalfunctions);
+			if (number > 0) {
+				map.put(part.getKey(), number);
 			}
 		}
 

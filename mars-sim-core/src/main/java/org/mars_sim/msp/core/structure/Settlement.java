@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -316,8 +315,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Map<MissionType, Integer> missionModifiers;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
-	/** The equipment map cache. */
-	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The total amount resource collected/studied. */
@@ -3709,16 +3706,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean isFirstSol() {
         return solCache == 0 || solCache == 1;
     }
-	
-	/**
-	 * Gets the equipment type cache
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Equipment> getEquipmentTypeCache() {
-		return equipmentTypeCache;
-	}
-	
+
 	@Override
 	public Settlement getSettlement() {
 		return null;

@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.util.Map;
-
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -32,12 +30,9 @@ public final class EquipmentFactory {
 	 * @param temp
 	 * @return
 	 */
-	public static synchronized Equipment createEquipment(EquipmentType type, Settlement settlement, boolean temp) {
+	public static synchronized Equipment createEquipment(EquipmentType type, Settlement settlement) {
 		// Create the name upfront
 		String newName = Equipment.generateName(type.getName());
-		if (temp) {
-			newName = "Temp " + newName;
-		}
 
 		Equipment newEqm = null;
 		switch (type) {
@@ -74,30 +69,13 @@ public final class EquipmentFactory {
 	 * 
 	 * @param type     the equipment type string.
 	 * @param location the location of the equipment.
-	 * @param temp     is this equipment only temporary?
 	 * @return {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment createEquipment(String type, Settlement settlement, boolean temp) {
+	public static Equipment createEquipment(String type, Settlement settlement) {
 		
-		int id = EquipmentType.convertName2ID(type);
-		
-		Map<Integer, Equipment> e = settlement.getEquipmentTypeCache();
-		
-		if (temp && e.containsKey(id)) {
-			Equipment eq = e.get(id);
-			eq.clean();
-			// since it's temporary, it doesn't matter if the location has been defined
-			return eq;
-		}
-	
 		// Create a new instance of the equipment		
-		Equipment newEqm = createEquipment(EquipmentType.convertName2Enum(type), settlement, temp);
-		if (temp) {
-			e.put(id, newEqm);
-		}
-
-		return newEqm;
+		return createEquipment(EquipmentType.convertName2Enum(type), settlement);
 	}
 
 	/**

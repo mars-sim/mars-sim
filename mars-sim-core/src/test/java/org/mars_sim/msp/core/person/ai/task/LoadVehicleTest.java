@@ -312,7 +312,7 @@ extends TestCase {
 		for(Entry<Integer, Integer> item : manifest.entrySet()) {
 			EquipmentType type = EquipmentType.convertID2Type(item.getKey());
 			for(int i = 0; i < item.getValue(); i++) {
-				EquipmentFactory.createEquipment(type, settlement, false);
+				EquipmentFactory.createEquipment(type, settlement);
 			}
 		}
 	}

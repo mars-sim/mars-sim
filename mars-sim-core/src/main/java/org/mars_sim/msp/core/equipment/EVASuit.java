@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -16,6 +18,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -492,6 +495,14 @@ public class EVASuit extends Equipment
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;
+	}
+
+	/**
+	 * Return the parts that mau normally fail on a EVA Suit
+	 * @return
+	 */
+	public static Map<Integer, Double> getNormalRepairPart() {
+		return MalfunctionFactory.getRepairPartProbabilities(Set.of(TYPE));
 	}
 }
 

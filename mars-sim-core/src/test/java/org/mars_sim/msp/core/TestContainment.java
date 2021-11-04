@@ -228,7 +228,7 @@ extends TestCase {
 	 */
 	public void testBagOnSurface() throws Exception {
 
-		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
 		assertInsideSettllement("Initial equipment", bag, settlement);
 		
@@ -245,7 +245,7 @@ extends TestCase {
 	 */
 	public void testBagOnVehicle() throws Exception {
 
-		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement, false);
+		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
 		assertInsideSettllement("Initial equipment", bag, settlement);
 		
