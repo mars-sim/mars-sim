@@ -500,6 +500,7 @@
  		return minutes + "min " + seconds + "s " + millisecs + "ms";
  	}
  	
+ 	
  	public void destroy() {
  		pixels = null;
  		logger = null;

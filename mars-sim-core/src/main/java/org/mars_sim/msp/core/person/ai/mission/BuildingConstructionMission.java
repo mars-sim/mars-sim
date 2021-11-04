@@ -70,15 +70,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;
 	
 	/** Mission phases. */
-	private final static MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
-	private final static MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareConstructionSite");
-	private final static MissionPhase CONSTRUCTION_PHASE = new MissionPhase("Mission.phase.construction");
+	private static final MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
+	private static final MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareConstructionSite");
+	private static final MissionPhase CONSTRUCTION_PHASE = new MissionPhase("Mission.phase.construction");
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
 
-	public static int FIRST_AVAILABLE_SOL = 1000;
+	public final static int FIRST_AVAILABLE_SOL = 1000;
 
 	private static final double SMALL_AMOUNT = 0.001D;
 	
@@ -89,7 +89,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
 
 	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
-
 
 	private static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
 
@@ -163,11 +162,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		if (!isDone()) {
 			// Set initial mission phase.
 			if (sim.getUseGUI()) {
-				// Add phases.
-				addPhase(SELECT_SITE_PHASE);
-				addPhase(PREPARE_SITE_PHASE);
-				addPhase(CONSTRUCTION_PHASE);
-
 				setPhase(SELECT_SITE_PHASE, settlement.getName());
 			}
 			else {
@@ -176,10 +170,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				reserveConstructionVehicles();
 				// Retrieve construction LUV attachment parts.
 				retrieveConstructionLUVParts();
-
-				addPhase(PREPARE_SITE_PHASE);
-				addPhase(CONSTRUCTION_PHASE);
-
 				setPhase(PREPARE_SITE_PHASE, settlement.getName());
 			}
 		}
@@ -315,10 +305,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		reserveConstructionVehicles();
 		// Retrieve construction LUV attachment parts.
 		retrieveConstructionLUVParts();
-
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(CONSTRUCTION_PHASE);
-
 	}
 
 	/**
@@ -538,14 +524,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		}
 	}
 
-	public void startPhase() {
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(CONSTRUCTION_PHASE);
-
+	private void startPhase() {
 		// Set initial mission phase.
 		setPhase(PREPARE_SITE_PHASE, settlement.getName());
-
 	}
 
 	/**

@@ -81,8 +81,6 @@ public class Mining extends RoverMission
 	
 	private ExploredLocation miningSite;
 	private LightUtilityVehicle luv;
-
-	private Person startingPerson;
 	
 	private Map<AmountResource, Double> excavatedMinerals;
 	private Map<AmountResource, Double> totalExcavatedMinerals;
@@ -97,8 +95,6 @@ public class Mining extends RoverMission
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, RoverMission.MIN_GOING_MEMBERS);
-
-		this.startingPerson = startingPerson;
 		
 		if (!isDone()) {
 			// Set mission capacity.
@@ -152,9 +148,6 @@ public class Mining extends RoverMission
 			}
 		}
 
-		// Add mining site phase.
-		addPhase(MINING_SITE);
-
 		// Set initial mission phase.
 		setPhase(REVIEWING, null);
 	}
@@ -174,15 +167,13 @@ public class Mining extends RoverMission
 
 		// Use RoverMission constructor.
 		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
-
-		this.startingPerson = this.getStartingPerson();
 		
 		// Initialize data members.
 		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
-		excavatedMinerals = new HashMap<AmountResource, Double>(1);
-		totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
+		excavatedMinerals = new HashMap<>(1);
+		totalExcavatedMinerals = new HashMap<>(1);
 
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
@@ -230,9 +221,6 @@ public class Mining extends RoverMission
 		} else {
 			luv.setReservedForMission(true);
 		}
-
-		// Add mining site phase.
-		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
 		setPhase(EMBARKING, startingSettlement.getName());
@@ -353,8 +341,8 @@ public class Mining extends RoverMission
 
 			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
 					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
-				logger.warning(startingPerson.getSettlement(), startingPerson, 
-						" could not load LUV and/or its attachment parts from " + getRover().getNickName());
+				logger.warning(luv, 
+						"Could not load LUV and/or its attachment parts for mission " + getName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 				return;
@@ -368,9 +356,8 @@ public class Mining extends RoverMission
 				settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
 				luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
-//				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
-				logger.severe(startingPerson.getSettlement(), startingPerson, 
-						" could not find the LUV attachment parts from " + getRover().getNickName());
+				logger.severe(luv, 
+						"Problem loading attachments", e);
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 			}

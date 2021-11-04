@@ -154,9 +154,6 @@ public class Exploration extends RoverMission
 				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 				endMission();
 			}
-			
-			// Add exploring site phase.
-			addPhase(EXPLORE_SITE);
 
 			// Set initial mission phase.
 			setPhase(REVIEWING, null);
@@ -233,12 +230,8 @@ public class Exploration extends RoverMission
 			}
 		}
 
-		// Add exploring site phase.
-		addPhase(EXPLORE_SITE);
-
 		// Set initial mission phase.
 		setPhase(EMBARKING, startingSettlement.getName());
-
 	}
 
 	/**

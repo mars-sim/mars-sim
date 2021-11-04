@@ -142,10 +142,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 						endMission();
 					}
-
-					// Add rendezvous phase.
-					addPhase(RENDEZVOUS);
-
+					
 					// Set initial phase
 					setPhase(VehicleMission.REVIEWING, null);
 					
@@ -201,9 +198,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			} else if (member instanceof Robot) {
 			}
 		}
-
-		// Add rendezvous phase.
-		addPhase(RENDEZVOUS);
 
 		// Set initial phase
 		setPhase(EMBARKING, startingSettlement.getName());

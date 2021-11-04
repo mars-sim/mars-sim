@@ -66,7 +66,7 @@ public class MissionManager implements Serializable, Temporal {
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolListDataLogger<>(5);
 		settlementID = new ConcurrentHashMap<>();
-		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
+		listeners = null;
 	}
 
 	/**
@@ -103,11 +103,13 @@ public class MissionManager implements Serializable, Temporal {
 	public void addListener(MissionManagerListener newListener) {
 
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();
 		}
 
-		if (!listeners.contains(newListener)) {
-			listeners.add(newListener);
+		synchronized (listeners) {
+			if (!listeners.contains(newListener)) {
+				listeners.add(newListener);
+			}		
 		}
 	}
 
@@ -117,13 +119,12 @@ public class MissionManager implements Serializable, Temporal {
 	 * @param oldListener the listener to remove.
 	 */
 	public void removeListener(MissionManagerListener oldListener) {
-
-		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
-		}
-
-		if (listeners.contains(oldListener)) {
-			listeners.remove(oldListener);
+		if (listeners != null) {
+			synchronized (listeners) {
+				if (listeners.contains(oldListener)) {
+					listeners.remove(oldListener);
+				}
+			}
 		}
 	}
 
@@ -199,21 +200,14 @@ public class MissionManager implements Serializable, Temporal {
 			if (!onGoingMissions.contains(newMission)) {
 				onGoingMissions.add(newMission);
 				
-				// Iterate mission identifer
-				//newMission.iterateIdentifer();
-				
 				// Update listeners.
-				if (listeners == null) {
-					listeners = new CopyOnWriteArrayList<>();
-				}
-	
-				synchronized (listeners) {
-					Iterator<MissionManagerListener> i = listeners.iterator();
-					while (i.hasNext()) {
-						i.next().addMission(newMission);
+				if (listeners != null) {
+					synchronized (listeners) {
+						for(MissionManagerListener l : listeners) {
+							l.addMission(newMission);
+						}						
 					}
 				}
-	
 				logger.config("Added '" + newMission.getTypeID() + "' mission.");
 			}
 		}
@@ -233,12 +227,10 @@ public class MissionManager implements Serializable, Temporal {
 					
 			// Update listeners.
 			if (listeners != null) {
-//				listeners = new CopyOnWriteCopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 				synchronized (listeners) {
-					Iterator<MissionManagerListener> i = listeners.iterator();
-					while (i.hasNext()) {
-						i.next().removeMission(oldMission);
-					}
+					for(MissionManagerListener l : listeners) {
+						l.removeMission(oldMission);
+					}						
 				}
 			}
 
@@ -336,37 +328,13 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> result = new CopyOnWriteArrayList<Mission>();		
-		Iterator<Mission> i = getMissions().iterator();
-		while (i.hasNext()) {
-			Mission m = i.next();
-			if (m instanceof VehicleMission
+		List<Mission> result = new ArrayList<>();		
+		for(Mission m : getMissions()) {
+			if (!m.isDone() && settlement.equals(m.getAssociatedSettlement())
 					&& !result.contains(m)) {
-				VehicleMission v = (VehicleMission)m;
-				if (!v.isDone() 
-						&& settlement == v.getAssociatedSettlement()) {
-					result.add(v);
-				}
-			}
-			else if (m instanceof BuildingConstructionMission
-					&& !result.contains(m)) {
-				BuildingConstructionMission b = (BuildingConstructionMission)m;
-				if (!b.isDone() 
-						&& settlement == b.getAssociatedSettlement()) {
-					result.add(b);
-				}
-			}
-			else if (m instanceof BuildingSalvageMission
-					&& !result.contains(m)) {
-				BuildingSalvageMission b = (BuildingSalvageMission)m;
-				if (!b.isDone() 
-						&& settlement == b.getAssociatedSettlement()) {
-					result.add(b);
-				}
+				result.add(m);
 			}
 		}
-
-//		System.out.println("Type of Missions : " + result);
 			
 		return result;
 	}
@@ -384,7 +352,7 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("settlement is null");
 		}
 		
-		List<Mission> m0 = new ArrayList<Mission>();
+		List<Mission> m0 = new ArrayList<>();
 		List<Mission> m1 = onGoingMissions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();

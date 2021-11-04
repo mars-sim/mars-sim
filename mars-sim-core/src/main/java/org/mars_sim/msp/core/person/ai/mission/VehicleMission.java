@@ -130,15 +130,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
-		
-		if (reserveVehicle()) {
-			// Add mission phases.
-			addPhase(REVIEWING);
-			addPhase(EMBARKING);
-			addPhase(TRAVELLING);
-			addPhase(DISEMBARKING);
-			addPhase(COMPLETED);
-		}
 	}
 
 	/**
@@ -152,13 +143,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Vehicle vehicle) {
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
-	
-		// Add mission phases.
-		addPhase(REVIEWING);
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-		addPhase(COMPLETED);
 		
 		// Set the vehicle.
 		setVehicle(vehicle);
@@ -463,7 +447,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				if (vehicleCache instanceof Drone) {
 					if (vehicleCache.getStoredMass() != 0D) {
-						addPhase(DISEMBARKING);
 						startDisembarkingPhase();
 					}
 					else {
@@ -475,7 +458,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
 					if (((Rover)vehicleCache).getCrewNum() != 0
 							|| (vehicleCache.getStoredMass() != 0D)) {
-						addPhase(DISEMBARKING);
 						startDisembarkingPhase();
 					}
 					else {

@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -187,10 +188,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			retrieveConstructionLUVParts();
 		}
 
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(SALVAGE_PHASE);
-
 		// Set initial mission phase.
 		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
@@ -260,11 +257,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		if (constructionStage != null)
 			constructionSite.setUndergoingSalvage(true);
 
-		// Add mission members.
-		// Iterator<Person> i = members.iterator();
-		// while (i.hasNext())
-		// i.next().getMind().setMission(this);
-
 		Iterator<MissionMember> i = members.iterator();
 
 		while (i.hasNext()) {
@@ -299,10 +291,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 		// Retrieve construction LUV attachment parts.
 		retrieveConstructionLUVParts();
-
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(SALVAGE_PHASE);
 
 		// Set initial mission phase.
 		setPhase(PREPARE_SITE_PHASE, settlement.getName());
@@ -347,7 +335,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		Building result = null;
 
 		SalvageValues values = settlement.getConstructionManager().getSalvageValues();
-		Map<Building, Double> salvageBuildings = new HashMap<Building, Double>();
+		Map<Building, Double> salvageBuildings = new HashMap<>();
 		Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
@@ -405,8 +393,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Number> resources = new HashMap<Integer, Number>(0);
-		return resources;
+		return new HashMap<>(0);
 	}
 
 	/**
@@ -529,7 +516,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	private void reserveConstructionVehicles() {
 		if (constructionStage != null) {
-			constructionVehicles = new ArrayList<GroundVehicle>();
+			constructionVehicles = new ArrayList<>();
 			Iterator<ConstructionVehicleType> j = constructionStage.getInfo().getVehicles().iterator();
 			while (j.hasNext()) {
 				ConstructionVehicleType vehicleType = j.next();
@@ -653,7 +640,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 * @return list of construction vehicles.
 	 */
 	public List<GroundVehicle> getConstructionVehicles() {
-		return new ArrayList<GroundVehicle>(constructionVehicles);
+		return Collections.unmodifiableList(constructionVehicles);
 	}
 
 	/**

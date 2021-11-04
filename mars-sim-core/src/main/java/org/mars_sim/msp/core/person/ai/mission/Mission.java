@@ -174,8 +174,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 	/** Mission members. */
 	private Collection<MissionMember> members;
-	/** A collection of the mission's phases. */
-	private Collection<MissionPhase> phases;
 
 	// transient members
 	/** Mission listeners. */
@@ -224,30 +222,20 @@ public abstract class Mission implements Serializable, Temporal {
 
 		membersMap = new HashMap<>();
 		missionStatus = new ArrayList<>();
-		members = new ConcurrentLinkedQueue<MissionMember>();
+		members = new ConcurrentLinkedQueue<>();
 		done = false;
 		phase = null;
 		phaseDescription = "";
-		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
 		missionCapacity = MAX_CAP;
-				
-		listeners = new CopyOnWriteArrayList<>();
 		
 		Person person = (Person) startingMember;
-		String loc0 = null;
-		String loc1 = null;
 
 		if (person.isInSettlement()) {
-			loc0 = person.getBuildingLocation().getNickName();
-			loc1 = person.getSettlement().getName();
 
 			// Created mission starting event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_START, this,
-					"Mission Starting", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
-			
-			eventManager.registerNewEvent(newEvent);
+			registerHistoricalEvent(person, EventType.MISSION_START, "Mission Starting");
 
 			// Log mission starting.
 			int n = members.size();
@@ -357,10 +345,12 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public final void addMissionListener(MissionListener newListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionListener>());
+			listeners = new CopyOnWriteArrayList<>();
 		}
-		if (!listeners.contains(newListener)) {
-			listeners.add(newListener);
+		synchronized (listeners) {
+			if (!listeners.contains(newListener)) {
+				listeners.add(newListener);
+			}		
 		}
 	}
 
@@ -370,11 +360,10 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeMissionListener(MissionListener oldListener) {
-		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionListener>());
-		}
-		if (listeners.contains(oldListener)) {
-			listeners.remove(oldListener);
+		if ((listeners != null) && listeners.contains(oldListener)) {
+			synchronized (listeners) {
+				listeners.remove(oldListener);
+			}
 		}
 	}
 
@@ -394,11 +383,13 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param target         the event target or null if none.
 	 */
 	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
-		if (listeners == null)
-			listeners = new CopyOnWriteArrayList<>();
-			Iterator<MissionListener> i = listeners.iterator();
-			while (i.hasNext())
-				i.next().missionUpdate(new MissionEvent(this, addMemberEvent, target));
+		if (listeners != null) {
+			synchronized (listeners) {
+				for (MissionListener l : listeners) {
+					l.missionUpdate(new MissionEvent(this, addMemberEvent, target));
+				}				
+			}
+		}
 	}
 
 	/**
@@ -421,33 +412,37 @@ public abstract class Mission implements Serializable, Temporal {
 					
 			membersMap.put(person.getName(), role);
 			
-			String loc0 = null;
-			String loc1 = null;
-			if (person.isInSettlement()) {
-				loc0 = person.getBuildingLocation().getNickName();
-				loc1 = person.getSettlement().getName();
-			} else if (person.isInVehicle()) {
-				loc0 = person.getVehicle().getName();
-
-				if (person.getVehicle().getBuildingLocation() != null)
-					loc1 = person.getVehicle().getSettlement().getName();
-				else
-					loc1 = person.getCoordinates().toString();
-			} else {
-				loc0 = OUTSIDE;
-				loc1 = person.getCoordinates().toString();
-			}
-
-			// Creating mission joining event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
-					"Adding a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
-
-			eventManager.registerNewEvent(newEvent);
+			registerHistoricalEvent(person,EventType.MISSION_JOINING,
+								    "Adding a member");
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
 			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + " #" + identifier + ".");
 		}
+	}
+
+	private void registerHistoricalEvent(Person person, EventType type, String message) {
+		String loc0 = null;
+		String loc1 = null;
+		if (person.isInSettlement()) {
+			loc0 = person.getBuildingLocation().getNickName();
+			loc1 = person.getSettlement().getName();
+		} else if (person.isInVehicle()) {
+			loc0 = person.getVehicle().getName();
+
+			if (person.getVehicle().getBuildingLocation() != null)
+				loc1 = person.getVehicle().getSettlement().getName();
+			else
+				loc1 = person.getCoordinates().toString();
+		} else {
+			loc0 = OUTSIDE;
+			loc1 = person.getCoordinates().toString();
+		}
+
+		// Creating mission joining event.
+		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
+				"Adding a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
+		eventManager.registerNewEvent(newEvent);
 	}
 
 	/**
@@ -475,24 +470,7 @@ public abstract class Mission implements Serializable, Temporal {
 						person.setShiftType(shift);
 					}
 
-				String loc0 = null;
-				String loc1 = null;
-				if (person.isInSettlement()) {
-					loc0 = person.getBuildingLocation().getNickName();
-					loc1 = person.getSettlement().getName();
-				} else if (person.isInVehicle()) {
-					loc0 = person.getVehicle().getName();
-					if (person.getVehicle().getBuildingLocation() != null)
-						loc1 = person.getVehicle().getSettlement().getName();
-					else
-						loc1 = person.getCoordinates().toString();
-				} else {
-					loc0 = OUTSIDE;
-					loc1 = person.getCoordinates().toString();
-				}
-
-				eventManager.registerNewEvent(new MissionHistoricalEvent(EventType.MISSION_FINISH, this,
-								"Removing a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName()));
+				registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 				if (getPeopleNumber() == 0 && !done) {
@@ -558,7 +536,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return collection of members
 	 */
 	public final Collection<MissionMember> getMembers() {
-		return new ConcurrentLinkedQueue<MissionMember>(members);
+		return new ArrayList<>(members);
 	}
 
 	public void setMembers(MissionMember member) {
@@ -656,10 +634,6 @@ public abstract class Mission implements Serializable, Temporal {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		}
-		else if (!phases.contains(newPhase)) {
-			throw new IllegalStateException(
-					phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
-		}
 		
 		// Move phase on
 		phase = newPhase;
@@ -689,19 +663,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected double getPhaseDuration() {
 		return MarsClock.getTimeDiff(marsClock, phaseStartTime);
-	}
-	
-	/**
-	 * Adds a phase to the mission's collection of phases.
-	 * 
-	 * @param newPhase the new phase to add.
-	 */
-	protected final void addPhase(MissionPhase newPhase) {
-		if (newPhase == null) {
-			throw new IllegalArgumentException("newPhase is null");
-		} else if (!phases.contains(newPhase)) {
-			phases.add(newPhase);
-		}
 	}
 
 	/**
@@ -909,7 +870,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			addPhase(COMPLETED);
 			setPhase(COMPLETED, null);
 		}
 		
@@ -918,7 +878,6 @@ public abstract class Mission implements Serializable, Temporal {
 			for (MissionStatus ms : missionStatus) {
 				s += ms.getName();
 			}
-			addPhase(ABORTED);
 			setPhase(ABORTED, s);
 		}
 		
@@ -1146,7 +1105,7 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 
 			// Get the recruitee's average opinion of all the current mission members.
-			List<Person> people = new CopyOnWriteArrayList<Person>();
+			List<Person> people = new ArrayList<>();
 			Iterator<MissionMember> i = members.iterator();
 			while (i.hasNext()) {
 				MissionMember member = i.next();
@@ -1607,10 +1566,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		members = null;
 		missionName = null;
-		if (phases != null) {
-			phases.clear();
-		}
-		phases = null;
 		phase = null;
 		phaseDescription = null;
 		if (listeners != null) {

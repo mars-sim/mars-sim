@@ -10,10 +10,10 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -192,9 +192,6 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 
 		if (!isDone()) {
-			// Add collecting phase.
-			addPhase(COLLECT_RESOURCES);
-
 			// Set initial mission phase.
 			setPhase(REVIEWING, null);
 		}
@@ -262,9 +259,6 @@ public abstract class CollectResourcesMission extends RoverMission
 				person.getMind().setMission(this);
 			}
 		}
-
-		// Add collecting phase.
-		addPhase(COLLECT_RESOURCES);
 
 		// Set initial mission phase.
 		setPhase(EMBARKING, getStartingSettlement().getName());
@@ -535,7 +529,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		double range, int numSites) {
 		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
 		
-		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
+		List<Coordinates> unorderedSites = new ArrayList<>();
 
 		double limit = 0;
 		Direction direction = null;
@@ -751,7 +745,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		if (equipmentNeededCache != null) {
 			return equipmentNeededCache;
 		} else {
-			Map<Integer, Integer> result = new ConcurrentHashMap<>();
+			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of containers.
 			result.put(EquipmentType.getResourceID(containerID), containerNum);

@@ -159,13 +159,6 @@ public class Trade extends RoverMission implements Serializable {
 			}
 		}
 
-		// Add trade mission phases.
-		addPhase(TRADE_DISEMBARKING);
-		addPhase(TRADE_NEGOTIATING);
-		addPhase(UNLOAD_GOODS);
-		addPhase(LOAD_GOODS);
-		addPhase(TRADE_EMBARKING);
-
 		// Set initial phase
 		setPhase(VehicleMission.REVIEWING, null);
 		if (logger.isLoggable(Level.INFO)) {
@@ -191,9 +184,6 @@ public class Trade extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
-		Person person = null;
-//		Robot robot = null;
-
 		outbound = true;
 		doNegotiation = false;
 
@@ -217,7 +207,7 @@ public class Trade extends RoverMission implements Serializable {
 			MissionMember member = i.next();
 			// TODO Refactor.
 			if (member instanceof Person) {
-				person = (Person) member;
+				Person person = (Person) member;
 				person.getMind().setMission(this);
 			} else if (member instanceof Robot) {
 //				robot = (Robot) member;
@@ -228,21 +218,14 @@ public class Trade extends RoverMission implements Serializable {
 		// Set trade goods.
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
-		desiredBuyLoad = new HashMap<Good, Integer>(buyGoods);
+		desiredBuyLoad = new HashMap<>(buyGoods);
 		profit = estimateTradeProfit(buyLoad);
 		desiredProfit = profit;
-
-		// Add trade mission phases.
-		addPhase(TRADE_DISEMBARKING);
-		addPhase(TRADE_NEGOTIATING);
-		addPhase(UNLOAD_GOODS);
-		addPhase(LOAD_GOODS);
-		addPhase(TRADE_EMBARKING);
 
 		// Set initial phase
 		setPhase(EMBARKING, startingSettlement.getName());
 		if (logger.isLoggable(Level.INFO)) {
-			MissionMember startingMember = (MissionMember) members.toArray()[0];
+			MissionMember startingMember = getStartingPerson();
 			if (startingMember != null && getRover() != null) {
 				logger.info(startingMember, "Starting Trade mission on " + getRover().getName() + ".");
 			}

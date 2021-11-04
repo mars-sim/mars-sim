@@ -53,8 +53,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	private Coordinates fieldSite;
 	/** Scientific study to research. */
 	private ScientificStudy study;
-	/** The person leading the areology research. */
-	private Person leadResearcher;
 
 	private double fieldSiteTime;
 	private ScienceType science;
@@ -79,8 +77,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 		if (!isDone() && s != null) {
 			// Set the lead researcher and study.
-			leadResearcher = startingPerson;
-			study = determineStudy(science, leadResearcher);
+			study = determineStudy(science, startingPerson);
 			if (study == null) {
 				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
 				endMission();
@@ -116,9 +113,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		}
 
 		if (s != null) {
-			// Add researching site phase.
-			addPhase(RESEARCH_SITE);
-
 			// Set initial mission phase.
 			setPhase(REVIEWING, null);
 		}
@@ -148,7 +142,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		setStartingSettlement(startingSettlement);
 		this.study = study;
 		this.science = study.getScience();
-		this.leadResearcher = leadResearcher;
 		this.fieldSite = fieldSite;
 		this.fieldSiteTime = fieldSiteTime;
 		addNavpoint(new NavPoint(fieldSite, "field research site"));
@@ -171,9 +164,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		// Add home settlement
 		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 				getStartingSettlement().getName()));
-
-		// Add researching site phase.
-		addPhase(RESEARCH_SITE);
 
 		// Set initial mission phase.
 		setPhase(EMBARKING, getStartingSettlement().getName());
@@ -200,7 +190,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 * @return the researcher.
 	 */
 	public Person getLeadResearcher() {
-		return leadResearcher;
+		return getStartingPerson();
 	}
 
 	/**
@@ -460,8 +450,9 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						assignTask(person, createFieldStudyTask(person, leadResearcher,
-								study, (Rover) getVehicle()));
+						assignTask(person, createFieldStudyTask(person,
+													getStartingPerson(),
+													study, (Rover) getVehicle()));
 					}
 				}
 			}
@@ -541,6 +532,5 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		super.destroy();
 		fieldSite = null;
 		study = null;
-		leadResearcher = null;
 	}
 }

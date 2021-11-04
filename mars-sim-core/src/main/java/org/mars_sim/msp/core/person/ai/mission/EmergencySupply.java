@@ -149,12 +149,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		}
 
 		if (s != null) {
-			// Add emergency supply mission phases.
-			addPhase(SUPPLY_DELIVERY_DISEMBARKING);
-			addPhase(SUPPLY_DELIVERY);
-			addPhase(LOAD_RETURN_TRIP_SUPPLIES);
-			addPhase(RETURN_TRIP_EMBARKING);
-
 			// Set initial phase
 			setPhase(REVIEWING, null);
 			if (startingPerson != null && getRover() != null) {
@@ -237,12 +231,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			if (mm instanceof Person)
 				((Person)mm).getMind().setMission(this);
 		}
-
-		// Add emergency supply mission phases.
-		addPhase(SUPPLY_DELIVERY_DISEMBARKING);
-		addPhase(SUPPLY_DELIVERY);
-		addPhase(LOAD_RETURN_TRIP_SUPPLIES);
-		addPhase(RETURN_TRIP_EMBARKING);
 
 		// Set initial phase
 		setPhase(EMBARKING, getStartingSettlement().getName()); 

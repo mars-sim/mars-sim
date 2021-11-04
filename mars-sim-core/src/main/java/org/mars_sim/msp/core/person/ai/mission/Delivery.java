@@ -151,13 +151,6 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 		}
 
-		// Add trade mission phases.
-		addPhase(TRADE_DISEMBARKING);
-		addPhase(TRADE_NEGOTIATING);
-		addPhase(UNLOAD_GOODS);
-		addPhase(LOAD_GOODS);
-		addPhase(TRADE_EMBARKING);
-
 		// Set initial phase
 		setPhase(VehicleMission.REVIEWING, null);
 		if (logger.isLoggable(Level.INFO)) {
@@ -216,13 +209,6 @@ public class Delivery extends DroneMission implements Serializable {
 		desiredBuyLoad = new HashMap<>(buyGoods);
 		profit = estimateDeliveryProfit(buyLoad);
 		desiredProfit = profit;
-
-		// Add trade mission phases.
-		addPhase(TRADE_DISEMBARKING);
-		addPhase(TRADE_NEGOTIATING);
-		addPhase(UNLOAD_GOODS);
-		addPhase(LOAD_GOODS);
-		addPhase(TRADE_EMBARKING);
 
 		// Set initial phase
 		setPhase(EMBARKING, startingSettlement.getName());
