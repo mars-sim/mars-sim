@@ -337,11 +337,13 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 					startDisembarkingPhase();
 				}
-				else {
+				else if (canStartEVA()) {
 					setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
 				}
-			} 
-			
+			}
+			else if (WAIT_SUNLIGHT.equals(getPhase())) {
+				setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+			}
 			else if (RESEARCH_SITE.equals(getPhase())) {
 				startTravellingPhase();
 			} 
@@ -416,9 +418,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 			// If no one can research the site and this is not due to it just being
 			// night time, end the field work phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyFieldWork && (sunlight < 12 || inDarkPolarRegion)) {
+			if (nobodyFieldWork || !isEnoughSunlightForEVA()) {
 				setPhaseEnded(true);
 			}
 

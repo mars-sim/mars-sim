@@ -15,16 +15,16 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Command to get the refuel a vehicle in expert mode
+ * Command to get the refill a vehicle in expert mode
  * This is a singleton.
  */
-public class VehicleRefuelCommand extends ChatCommand {
+public class VehicleRefillCommand extends ChatCommand {
 
-	public static final ChatCommand REFUEL = new VehicleRefuelCommand();
-	private static final double FUEL_BOOST = 100D;
+	public static final ChatCommand REFUEL = new VehicleRefillCommand();
+	private static final double BOOST = 100D;
 
-	private VehicleRefuelCommand() {
-		super(VehicleChat.VEHICLE_GROUP, "rf", "refuel", "Refuel a vehicle.");
+	private VehicleRefillCommand() {
+		super(VehicleChat.VEHICLE_GROUP, "rf", "refill", "Refill a vehicle with a resource.");
 		addRequiredRole(ConversationRole.ADMIN);
 	}
 
@@ -36,11 +36,21 @@ public class VehicleRefuelCommand extends ChatCommand {
 		VehicleChat parent = (VehicleChat) context.getCurrentCommand();
 		Vehicle source = parent.getVehicle();
 		
-		int fuel =  source.getFuelType();
-		source.storeAmountResource(fuel, FUEL_BOOST);
+
+		AmountResource resource = null;
+		if (input != null) {
+			resource = ResourceUtil.findAmountResource(input);
+			if (resource == null) {
+				context.println(input + " is an unknown resource.");
+				return false;
+			}
+		}
+		else {
+			resource = ResourceUtil.findAmountResource(source.getFuelType());
+		}
 		
-		AmountResource fuelType = ResourceUtil.findAmountResource(fuel);
-		context.println("Added " + FUEL_BOOST + " of " + fuelType.getName());
+		source.storeAmountResource(resource.getID(), BOOST);
+		context.println("Added " + BOOST + " kg of " + resource.getName());
 		return true;
 	}
 }

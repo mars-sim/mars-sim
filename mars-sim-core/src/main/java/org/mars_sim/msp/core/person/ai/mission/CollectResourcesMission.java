@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -84,8 +85,6 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param missionName            The name of the mission.
 	 * @param startingPerson         The person starting the mission.
 	 * @param resourceID           The type of resource.
-	 * @param siteResourceGoal       The goal amount of resources to collect at a
-	 *                               site (kg) (or 0 if none).
 	 * @param resourceCollectionRate The resource collection rate for a person
 	 *                               (kg/millisol).
 	 * @param containerID          The type of container needed for the mission or
@@ -96,7 +95,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID, double siteResourceGoal,
+	CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
 			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites, int minPeople) {
 
 		// Use RoverMission constructor
@@ -123,7 +122,6 @@ public abstract class CollectResourcesMission extends RoverMission
 			setStartingSettlement(s);
 
 			setResourceID(resourceID);
-			this.siteResourceGoal = siteResourceGoal;
 			this.resourceCollectionRate = resourceCollectionRate;
 			this.containerID = containerID;
 			this.containerNum = containerNum;
@@ -179,6 +177,10 @@ public abstract class CollectResourcesMission extends RoverMission
 				for(Coordinates next : orderSites) {
 					addNavpoint(new NavPoint(next, getCollectionSiteDescription(collectionSiteNum++)));
 				}
+				
+				double containerCap = ContainerUtil.getContainerCapacity(containerID);
+				this.siteResourceGoal = (containerCap * (containerNum - 2)) / orderSites.size();
+				logger.info(getVehicle(), "Target per site " + siteResourceGoal);
 			}
 
 			// Add home settlement for return
@@ -205,23 +207,20 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param members                collection of mission members.
 	 * @param startingSettlement     the starting settlement.
 	 * @param resourceID           The type of resource.
-	 * @param siteResourceGoal       The goal amount of resources to collect at a
-	 *                               site (kg) (or 0 if none).
 	 * @param resourceCollectionRate The resource collection rate for a person
 	 *                               (kg/millisol).
 	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
-	 * @param numSites               The number of collection sites.
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @param rover                  the rover to use.
-	 * @param iceCollectionSites     the sites to collect ice.
+	 * @param collectionSites     the sites to collect ice.
 	 * @throws MissionException if problem constructing mission.
 	 */
 	CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
-			Integer resourceID, double siteResourceGoal, double resourceCollectionRate, EquipmentType containerID,
-			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) {
+			Integer resourceID, double resourceCollectionRate, EquipmentType containerID,
+			int containerNum, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, (MissionMember) members.toArray()[0], minPeople, rover);
@@ -235,7 +234,9 @@ public abstract class CollectResourcesMission extends RoverMission
 			setMissionCapacity(availableSuitNum);
 
 		this.resourceID = resourceID;
-		this.siteResourceGoal = siteResourceGoal;
+		
+		double containerCap = ContainerUtil.getContainerCapacity(containerID);
+		this.siteResourceGoal = (containerCap * (containerNum - 2))/ collectionSites.size();
 		this.resourceCollectionRate = resourceCollectionRate;
 		this.containerID = containerID;
 		this.containerNum = containerNum;
@@ -310,12 +311,15 @@ public abstract class CollectResourcesMission extends RoverMission
 					startDisembarkingPhase();
 				}
 	
-				else {
+				else if (canStartEVA()) {
 					setPhase(COLLECT_RESOURCES,
 							getCurrentNavpoint().getDescription());
 				}	
 			}
-	
+			else if (WAIT_SUNLIGHT.equals(getPhase())) {
+				setPhase(COLLECT_RESOURCES,
+						getCurrentNavpoint().getDescription());	
+			}
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
 				startTravellingPhase();
 			}
@@ -438,14 +442,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				}
 			}
 
-			if (nobodyCollect) {
-				setPhaseEnded(true);
-			}
-			
-			// If it gets too dark (except in polar region), end the collecting phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (sunlight < 20D || inDarkPolarRegion) {
+			if (nobodyCollect || !isEnoughSunlightForEVA()) {
 				logger.info(member, "Too dark for " + getPhaseDescription() + " of " + getTypeID()
 									+ ", moving to next site");
 				setPhaseEnded(true);

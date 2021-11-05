@@ -32,12 +32,9 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.COLLECT_REGOLITH;
-	
-	/** Amount of regolith to be gathered at a given site (kg). */
-	private static final double SITE_GOAL = 2000D;
 
 	/** Number of large bags required for the mission. */
-	public static final int REQUIRED_LARGE_BAGS = 15;
+	public static final int REQUIRED_LARGE_BAGS = 10;
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
 	private static final double BASE_COLLECTION_RATE = 10D;
@@ -57,7 +54,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -75,8 +72,8 @@ public class CollectRegolith extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
-				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
+		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 

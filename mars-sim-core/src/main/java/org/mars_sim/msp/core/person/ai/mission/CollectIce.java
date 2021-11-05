@@ -33,15 +33,12 @@ public class CollectIce extends CollectResourcesMission {
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.COLLECT_ICE;
-	
-	/** Amount of ice to be gathered at a given site (kg). */
-	private static final double SITE_GOAL = 2000D;
 
 	/** Number of barrels required for the mission. */
-	public static final int REQUIRED_BARRELS = 15;
+	public static final int REQUIRED_BARRELS = 10;
 
 	/** Collection rate of ice during EVA (kg/millisol). */
-	protected static final double BASE_COLLECTION_RATE = 1;
+	private static final double BASE_COLLECTION_RATE = 5D;
 	
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 2;
@@ -59,7 +56,7 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, BASE_COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, BASE_COLLECTION_RATE,
 				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -77,9 +74,9 @@ public class CollectIce extends CollectResourcesMission {
 			List<Coordinates> iceCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, 
+		super(description, missionType, members, startingSettlement, ResourceUtil.iceID,
 				computeAverageCollectionRate(iceCollectionSites),
-				EquipmentType.BARREL, REQUIRED_BARRELS, iceCollectionSites.size(),
+				EquipmentType.BARREL, REQUIRED_BARRELS,
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 

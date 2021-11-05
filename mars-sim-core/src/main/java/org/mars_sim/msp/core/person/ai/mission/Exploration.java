@@ -308,11 +308,13 @@ public class Exploration extends RoverMission
 				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 					startDisembarkingPhase();
 				}
-				else {
+				else if (canStartEVA()) {
 					setPhase(EXPLORE_SITE, getCurrentNavpoint().getDescription());
 				}
 			} 
-			
+			else if (WAIT_SUNLIGHT.equals(getPhase())) {
+				setPhase(EXPLORE_SITE, getCurrentNavpoint().getDescription());
+			}
 			else if (EXPLORE_SITE.equals(getPhase())) {
 				startTravellingPhase();
 			} 
@@ -418,11 +420,10 @@ public class Exploration extends RoverMission
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyExplore && ((sunlight < 20) || inDarkPolarRegion))
+			if (nobodyExplore || !isEnoughSunlightForEVA()) {
 				setPhaseEnded(true);
-
+			}
+			
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
 			if (hasEmergency())

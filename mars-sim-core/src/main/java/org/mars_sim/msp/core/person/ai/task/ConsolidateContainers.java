@@ -7,12 +7,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
  * A task for consolidating the resources stored in local containers.
@@ -130,10 +128,6 @@ implements Serializable {
      */
     public static boolean needResourceConsolidation(Worker person) {
     	Unit container = person.getTopContainerUnit();
-        if (container instanceof Vehicle) {
-        	// Q: does it need to consolidate inside a Vehicle ?
-        	return false;
-        }
         return needsConsolidation(container);
     }
     
@@ -143,35 +137,34 @@ implements Serializable {
      * @param inv
      * @return
      */
-    private static boolean needsConsolidation(Unit container) {   	
-        boolean result = false;
+    private static boolean needsConsolidation(Unit container) {   	        
+        int partialContainers = 0;
         
-        Set<Integer> partialResources = new HashSet<Integer>();
+        boolean useTopInventory = container.getUnitType() == UnitType.SETTLEMENT;
         
+        // In Vehciles do not use main store; keep in Containers
         for (Container e: ((EquipmentOwner)container).findAllContainers()) {
             if (e.getStoredMass() > 0D) {
                 // Only check one type of amount resource for container.
                 int resource = e.getResource();
                 // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
-                if ((resource > 0) && ((EquipmentOwner)container).getAmountResourceRemainingCapacity(resource) > 0D) {
-                    result = true;
-                    break;
+                if (useTopInventory && (resource > 0) && ((EquipmentOwner)container).getAmountResourceRemainingCapacity(resource) > 0D) {
+                	return true;
                 }
 
                 // Check if container is only partially full of resource.
                 if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
                     // If another container is also partially full of resource, they can be consolidated.
-                    if (partialResources.contains(resource)) {
-                        result = true;
-                    }
-                    else {
-                        partialResources.add(resource);
+                	partialContainers++;
+                    if (partialContainers > 2) {
+                    	// Need at least 3 containers
+                        return true;
                     }
                 }
             }
         }
     	
-    	return result;
+    	return false;
     }
     
     @Override
@@ -194,6 +187,8 @@ implements Serializable {
      */
     private double consolidatingPhase(double time) {
     	EquipmentOwner eo = (EquipmentOwner)(worker.getContainerUnit());
+    	boolean useTopInventory = worker.isInSettlement();
+    	
         // Determine consolidation load rate.
     	int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);	
         
@@ -210,7 +205,7 @@ implements Serializable {
                 if (amount > 0D) {
 	                // Move resource in container to top inventory if possible.
 	                double topRemainingCapacity = eo.getAmountResourceRemainingCapacity(resourceID);
-	                if (topRemainingCapacity > 0D) {
+	                if (useTopInventory && (topRemainingCapacity > 0D)) {
 	                    double loadAmount = topRemainingCapacity;
 	                    if (loadAmount > amount) {
 	                        loadAmount = amount;
@@ -226,12 +221,12 @@ implements Serializable {
 	                    remainingAmountLoading -= loadAmount;
 	                    amount -= loadAmount;
 	                    if (remainingAmountLoading <= 0D) {
-	                    	break;
+	                    	return 0D;
 	                    }
 	                }
 	                
 	                // Check if container is empty.
-	                if (e.getAmountResourceStored(resourceID) > 0D) {
+	                if (amount > 0D) {
 	                    // Go through each other container in top inventory and try to consolidate resource.
 	                    Iterator<Container> k = eo.findAllContainers().iterator();
 	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
@@ -257,7 +252,7 @@ implements Serializable {
 	                                    remainingAmountLoading -= loadAmount;
 	                                    amount -= loadAmount;
 	            	                    if (remainingAmountLoading <= 0D) {
-	            	                    	break;
+	            	                    	return 0D;
 	            	                    }
 	                                }
 	                            }

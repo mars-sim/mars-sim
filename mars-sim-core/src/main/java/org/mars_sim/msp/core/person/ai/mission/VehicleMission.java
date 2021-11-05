@@ -130,6 +130,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
+		
+		reserveVehicle();
 	}
 
 	/**
@@ -1445,19 +1447,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return distanceTravelled;
 	}
 
-	/**
-	 * Gets the starting travelled distance.
-	 * 
-	 * @return distance (km)
-	 */
-	public final double getStartingTravelledDistance() {
-		if (vehicle != null) {
-			return startingTravelledDistance;
-		} else {
-			return 0D;
-		}
-	}
-	
 	/**
 	 * Time passing for mission.
 	 * 
