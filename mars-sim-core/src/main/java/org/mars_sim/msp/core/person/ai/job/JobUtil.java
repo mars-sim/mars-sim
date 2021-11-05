@@ -13,7 +13,6 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -82,10 +81,11 @@ public final class JobUtil {
 		jobs.add(new Technician());
 		jobs.add(new Trader());
 		
-		jobSpecs = new EnumMap<>(JobType.class);
+		Map<JobType, Job> newSpec = new EnumMap<>(JobType.class);
 		for (Job job : jobs) {
-			jobSpecs.put(job.getType(), job);
+			newSpec.put(job.getType(), job);
 		}
+		jobSpecs = Collections.unmodifiableMap(newSpec);
 	}
 
 	/**
@@ -93,14 +93,16 @@ public final class JobUtil {
 	 */
 	private static void loadRobotJobs() {
 		if (robotJobs == null) {
-			robotJobs = new CopyOnWriteArrayList<>();
-			robotJobs.add(new Chefbot());
-			robotJobs.add(new Constructionbot());
-			robotJobs.add(new Deliverybot());
-			robotJobs.add(new Gardenbot());
-			robotJobs.add(new Makerbot());
-			robotJobs.add(new Medicbot());
-			robotJobs.add(new Repairbot());
+			List<RobotJob> newJobs = new ArrayList<>();
+			newJobs.add(new Chefbot());
+			newJobs.add(new Constructionbot());
+			newJobs.add(new Deliverybot());
+			newJobs.add(new Gardenbot());
+			newJobs.add(new Makerbot());
+			newJobs.add(new Medicbot());
+			newJobs.add(new Repairbot());
+			
+			robotJobs = Collections.unmodifiableList(newJobs);
 		}
 	}
 
@@ -127,7 +129,7 @@ public final class JobUtil {
 	public static Collection<Job> getJobs() {
 		if (jobSpecs == null)
 			loadJobs();
-		return Collections.unmodifiableCollection(jobSpecs.values());
+		return jobSpecs.values();
 	}
 
 	public static RobotJob getRobotJob(String jobClassName) {

@@ -232,6 +232,7 @@ public class MarsClock implements Serializable {
 		this.millisol = millisol;
 		this.missionSol = missionSol;
 		this.totalMillisols = calculateTotalMillisols(orbit, month, sol, millisol);
+		this.msolInt = (int) millisol;
 	}
 
 	/**

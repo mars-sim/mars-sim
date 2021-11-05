@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -34,7 +34,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 	
-//	private static final Logger logger = Logger.getLogger(SurfaceFeatures.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
 	
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
@@ -75,25 +75,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> irradianceCache;
-
-	
-	// The sites map for ice and regolith collection mission
-//	private static Map<Coordinates, CollectionSite> sites;
-	
-	// static instances
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private MarsClock currentTime;
 	
 	private TerrainElevation terrainElevation;
 	private Weather weather;
 	private OrbitInfo orbitInfo;
-	
-	private Coordinates sunDirection;
-	
+		
 //	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
-	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
+	private static List<Landmark> landmarks = null;
+	private static MissionManager missionManager;	
 	
 	/**
 	 * Constructor
@@ -124,12 +115,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * 
 	 * @throws Exception if transient data could not be constructed.
 	 */
-	public void initializeTransientData() {
-
-		// Initialize surface terrain.
-		terrainElevation = new TerrainElevation();
-
-		sunDirection = orbitInfo.getSunDirection();
+	public static void initializeInstances(MissionManager mm, LandmarkConfig landmarkConfig) {
+		landmarks = landmarkConfig.getLandmarkList();
+		
+		missionManager = mm;
 	}
 
 	/**
@@ -532,11 +521,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		boolean result = false;
 
-//		if (mars == null)
-//			mars = sim.getMars();
-		
-		if (sunDirection == null)
-			sunDirection = orbitInfo.getSunDirection();
+		Coordinates sunDirection = orbitInfo.getSunDirection();
 
 		double sunPhi = sunDirection.getPhi();
 		double darkPhi = 0D;
@@ -556,6 +541,33 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return result;
 	}
 
+	/**
+	 * Estimate when the sunrise is for this location
+	 * @param location
+	 * @return
+	 */
+	public MarsClock getSunRise(Coordinates location) {
+		Coordinates sunDirection = orbitInfo.getSunDirection();
+
+		// Sun Theta decreases over time so the Sun theta will be greater
+		// Move the location 1/4 global closer to the sun so sunrise.
+		// Allow for twilight
+		double sunTheta = sunDirection.getTheta();
+		double gapTheta = sunTheta - (location.getTheta() + HALF_PI - 0.2);
+
+		if (gapTheta < 0) {
+			// Gone round the planet, 
+			gapTheta += (2 * Math.PI);
+		} 
+		
+		// Get the time as a ratio of the global times msols per day
+		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);	
+		
+		MarsClock sunRise = (MarsClock) currentTime.clone();
+		sunRise.addTime(timeToSunRise);
+		return sunRise;
+	}
+	
 	/**
 	 * Checks if location is within a polar region of Mars.
 	 * 
@@ -658,11 +670,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				// Check if site is reserved by a current mining mission.
 				// If not, mark as unreserved.
 				boolean goodMission = false;
-				
-				MissionManager missionManager = sim.getMissionManager();
-				Iterator<Mission> j = missionManager.getMissions().iterator();
-				while (j.hasNext()) {
-					Mission mission = j.next();
+
+				for(Mission mission : missionManager.getMissions()) {
 					if (mission instanceof Mining) {
 						if (site.equals(((Mining) mission).getMiningSite())) {
 							goodMission = true;
@@ -675,21 +684,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			}
 		}
 		
+//		if ((pulse.getId() % 10) == 0) {
+//			final Coordinates COORD = new Coordinates("10.0N", "10.0E");
+//			logger.log(Level.INFO, "Sun @ " + COORD.getFormattedString()
+//						+ " = " + getSolarIrradiance(COORD)
+//						+ ", sun direction " + orbitInfo.getSunDirection().getFormattedString()
+//						+ ", sunrise " + getSunRise(COORD).getTrucatedDateTimeStamp());
+//		}
 		return true;
 	}
-	
-	/**
-	 * Reloads instances
-	 * 
-	 * @param s {@link Simulation}
-	 */
-	public static void initializeInstances(Simulation s) {
-
-		sim = s;
-
-		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-	}
-	
 	
 	/**
 	 * Prepare object for garbage collection.
@@ -709,15 +712,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		exploredLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
-		
-		sim = null;
-		simulationConfig = null;
 
 		weather = null;
 		orbitInfo = null;
-		sunDirection = null;
-		terrainElevation.destroy();
-		terrainElevation = null;
 		
 		landmarks.clear();
 		landmarks = null;

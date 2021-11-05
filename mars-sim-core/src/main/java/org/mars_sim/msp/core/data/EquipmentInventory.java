@@ -255,7 +255,7 @@ public class EquipmentInventory
 		double result = 0;
 
 		for (Equipment e: equipmentSet) {
-			result += e.getCapacity(resource);
+			result += e.getAmountResourceCapacity(resource);
 		}
 
 		result += microInventory.getCapacity(resource);

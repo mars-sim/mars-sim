@@ -68,15 +68,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
-	public static final int MIN_GOING_MEMBERS = 2;
+	private static final int MIN_GOING_MEMBERS = 2;
 	private static final int MAX_GOING_MEMBERS = 3;
 
 	public static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
-	public static final double BASE_SALVAGE_MISSION_WEIGHT = 20D;
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 
 	// Mission phases
-	public static final MissionPhase RENDEZVOUS = new MissionPhase(Msg.getString("Mission.phase.rendezvous")); //$NON-NLS-1$
+	private static final MissionPhase RENDEZVOUS = new MissionPhase("Mission.phase.rendezvous");
 
 	private static final int MIN_MEMBER = 1;
 	
@@ -143,14 +142,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 						endMission();
 					}
-
-					// Add rendezvous phase.
-					addPhase(RENDEZVOUS);
-
+					
 					// Set initial phase
-					setPhase(VehicleMission.REVIEWING);
-					setPhaseDescription(
-							Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
+					setPhase(VehicleMission.REVIEWING, null);
 					
 					logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
 					
@@ -205,12 +199,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			}
 		}
 
-		// Add rendezvous phase.
-		addPhase(RENDEZVOUS);
-
 		// Set initial phase
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description")); // $NON-NLS-1$
+		setPhase(EMBARKING, startingSettlement.getName());
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -279,55 +269,31 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * 
 	 * @throws MissionException if problem setting a new phase.
 	 */
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getDescription())); // $NON-NLS-1$
-		}
-
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-			logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue/salvage " + vehicleTarget.getName());
-		}
-
-		else if (TRAVELLING.equals(getPhase())) {
-			if (null != getCurrentNavpoint() && getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(RENDEZVOUS);
-				if (rescue) {
-					setPhaseDescription(
-							Msg.getString("Mission.phase.rendezvous.descriptionRescue", vehicleTarget.getName())); // $NON-NLS-1$
-				} else {
-					setPhaseDescription(
-							Msg.getString("Mission.phase.rendezvous.descriptionSalvage", vehicleTarget.getName())); // $NON-NLS-1$
+	@Override
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+	
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (null != getCurrentNavpoint() && getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+				else {
+					String subject = (rescue ? vehicleTarget.getName() + " for Rescue"
+												:  vehicleTarget.getName() + " for Salvage");
+					setPhase(RENDEZVOUS, subject);
 				}
 			}
-		}
+	
+			else if (RENDEZVOUS.equals(getPhase())) {
+				startTravellingPhase();
+			}
 
-		else if (RENDEZVOUS.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
+			else {
+				handled = false;
+			}
 		}
-
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
-		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -45,7 +44,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -72,49 +70,44 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;
 	
 	/** Mission phases. */
-	final public static MissionPhase SELECT_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.selectConstructionSite")); //$NON-NLS-1$
-	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.prepareConstructionSite")); //$NON-NLS-1$
-	final public static MissionPhase CONSTRUCTION_PHASE = new MissionPhase(Msg.getString("Mission.phase.construction")); //$NON-NLS-1$
+	private static final MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
+	private static final MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareConstructionSite");
+	private static final MissionPhase CONSTRUCTION_PHASE = new MissionPhase("Mission.phase.construction");
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
-	public static final int MAX_PEOPLE = 10;
+	private static final int MAX_PEOPLE = 10;
 
-	public static int FIRST_AVAILABLE_SOL = 1000;
+	public final static int FIRST_AVAILABLE_SOL = 1000;
 
-	public static final double SMALL_AMOUNT = 0.001D;
+	private static final double SMALL_AMOUNT = 0.001D;
+	
 	/** Time (millisols) required to prepare construction site for stage. */
-	public static final double SITE_PREPARE_TIME = 100D;
+	private static final double SITE_PREPARE_TIME = 100D;
 
 	// Default distance between buildings for construction.
-	public static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
+	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
 
-	public static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
+	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 
-	public static final double DEFAULT_HAB_BUILDING_DISTANCE = 5D;
+	private static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
 
-	public static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
+	private static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
 
-	public static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
-
-	public static final double DEFAULT_RECT_DISTANCE = 5D;
 
 	// Default width and length for variable size buildings if not otherwise
 	// determined.
-	public static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
 
-	public static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 
 	/** Minimum length of a building connector (meters). */
-	public static final double MINIMUM_CONNECTOR_LENGTH = 1D;
+	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
 	// Data members
 	private Settlement settlement;
 	private ConstructionSite site;
 	private ConstructionStage stage;
-	private MarsClock sitePreparationStartTime;
 
 	private List<GroundVehicle> constructionVehicles;
 	private Collection<MissionMember> members;// = constructionSite.getMembers();
@@ -169,27 +162,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		if (!isDone()) {
 			// Set initial mission phase.
 			if (sim.getUseGUI()) {
-				// Add phases.
-				addPhase(SELECT_SITE_PHASE);
-				addPhase(PREPARE_SITE_PHASE);
-				addPhase(CONSTRUCTION_PHASE);
-
-				setPhase(SELECT_SITE_PHASE);
-				setPhaseDescription(Msg.getString("Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
-						, settlement.getName()));
-			} else {
+				setPhase(SELECT_SITE_PHASE, settlement.getName());
+			}
+			else {
 
 				// Reserve construction vehicles.
 				reserveConstructionVehicles();
 				// Retrieve construction LUV attachment parts.
 				retrieveConstructionLUVParts();
-
-				addPhase(PREPARE_SITE_PHASE);
-				addPhase(CONSTRUCTION_PHASE);
-
-				setPhase(PREPARE_SITE_PHASE);
-				setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-						, settlement.getName()));
+				setPhase(PREPARE_SITE_PHASE, settlement.getName());
 			}
 		}
 
@@ -324,10 +305,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		reserveConstructionVehicles();
 		// Retrieve construction LUV attachment parts.
 		retrieveConstructionLUVParts();
-
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(CONSTRUCTION_PHASE);
-
 	}
 
 	/**
@@ -547,16 +524,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		}
 	}
 
-	public void startPhase() {
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(CONSTRUCTION_PHASE);
-
+	private void startPhase() {
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-				, settlement.getName()));
-
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
 
 	/**
@@ -671,20 +641,22 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		// System.out.println("starting determineNewPhase()");
+	protected boolean determineNewPhase() {
+		boolean handled = true;
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
-			setPhase(PREPARE_SITE_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-					, stage.getInfo().getName()));
-		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			setPhase(CONSTRUCTION_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.construction.description" //$NON-NLS-1$
-					, stage.getInfo().getName()));
-		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+			setPhase(PREPARE_SITE_PHASE, stage.getInfo().getName());
+		}
+		else if (PREPARE_SITE_PHASE.equals(getPhase())) {
+			setPhase(CONSTRUCTION_PHASE, stage.getInfo().getName());
+		}
+		else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			addMissionStatus(MissionStatus.CONSTRUCTION_ENDED);
 			endMission();
 		}
+		else {
+			handled = false;
+		}
+		return handled;
 	}
 
 	@Override
@@ -727,10 +699,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		prepareSitePhase();
 	}
 
-//    private void prepareSitePhase(Robot robot) {
-//    	prepareSitePhase();
-//    }
-
 	private void prepareSitePhase() {
 		// System.out.println("starting prepareSitePhase()");
 		// Load all available materials needed for construction.
@@ -738,13 +706,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			loadAvailableConstructionMaterials();
 
 		// Check if site preparation time has expired.
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-				
-		if (sitePreparationStartTime == null) {
-			sitePreparationStartTime = currentTime;
-		}
-
-		if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
+		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);
 		}
 	}
@@ -1578,7 +1540,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			constructionVehicles.clear();
 		}
 		constructionVehicles = null;
-		sitePreparationStartTime = null;
 		if (luvAttachmentParts != null) {
 			luvAttachmentParts.clear();
 		}

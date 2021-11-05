@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -63,10 +62,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
 	
 	/** Mission phases. */
-	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
-			Msg.getString("Mission.phase.prepareSalvageSite")); //$NON-NLS-1$
-	final public static MissionPhase SALVAGE_PHASE = new MissionPhase(Msg.getString("Mission.phase.salvage")); //$NON-NLS-1$
-
+	private final static MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareSalvageSite");
+	private final static MissionPhase SALVAGE_PHASE = new MissionPhase("Mission.phase.salvage");
+	
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
@@ -85,7 +83,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private Settlement settlement;
 	private ConstructionSite constructionSite;
 	private ConstructionStage constructionStage;
-	private MarsClock sitePreparationStartTime;
 	
 	private List<GroundVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
@@ -191,14 +188,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			retrieveConstructionLUVParts();
 		}
 
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(SALVAGE_PHASE);
-
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
-				, settlement.getName()));
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
 	
 	/**
@@ -266,11 +257,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		if (constructionStage != null)
 			constructionSite.setUndergoingSalvage(true);
 
-		// Add mission members.
-		// Iterator<Person> i = members.iterator();
-		// while (i.hasNext())
-		// i.next().getMind().setMission(this);
-
 		Iterator<MissionMember> i = members.iterator();
 
 		while (i.hasNext()) {
@@ -306,14 +292,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		// Retrieve construction LUV attachment parts.
 		retrieveConstructionLUVParts();
 
-		// Add phases.
-		addPhase(PREPARE_SITE_PHASE);
-		addPhase(SALVAGE_PHASE);
-
 		// Set initial mission phase.
-		setPhase(PREPARE_SITE_PHASE);
-		setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description", //$NON-NLS-1$
-				settlement.getName()));
+		setPhase(PREPARE_SITE_PHASE, settlement.getName());
 	}
 
 	/**
@@ -355,7 +335,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		Building result = null;
 
 		SalvageValues values = settlement.getConstructionManager().getSalvageValues();
-		Map<Building, Double> salvageBuildings = new HashMap<Building, Double>();
+		Map<Building, Double> salvageBuildings = new HashMap<>();
 		Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
@@ -373,15 +353,20 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	}
 
 	@Override
-	protected void determineNewPhase() {
+	protected boolean determineNewPhase() {
+		boolean handled = true;
 		if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			setPhase(SALVAGE_PHASE);
-			setPhaseDescription(Msg.getString("Mission.phase.salvage.description", //$NON-NLS-1$
-					constructionStage.getInfo().getName()));
-		} else if (SALVAGE_PHASE.equals(getPhase()))
+			setPhase(SALVAGE_PHASE, constructionStage.getInfo().getName());
+		}
+		else if (SALVAGE_PHASE.equals(getPhase())) {
 			addMissionStatus(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
 			endMission();
-//			endMission(Msg.getString("BuildingSalvageMission.log.success")); //$NON-NLS-1$
+		}
+		else {
+			handled = false;
+		}
+		
+		return handled;
 	}
 
 	@Override
@@ -393,14 +378,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			salvagePhase(member);
 		}
 	}
-//	@Override
-//	protected void performPhase(Robot robot) {
-//		super.performPhase(robot);
-//		if (PREPARE_SITE_PHASE.equals(getPhase()))
-//			prepareSitePhase(robot);
-//		else if (SALVAGE_PHASE.equals(getPhase()))
-//			salvagePhase(robot);
-//	}
 
 	@Override
 	public Settlement getAssociatedSettlement() {
@@ -416,8 +393,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Number> resources = new HashMap<Integer, Number>(0);
-		return resources;
+		return new HashMap<>(0);
 	}
 
 	/**
@@ -429,23 +405,14 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		prepareSitePhase();
 	}
 
-//	private void prepareSitePhase(Robot robot) {
-//		prepareSitePhase();
-//	}
-
 	private void prepareSitePhase() {
 		if (finishingExistingStage) {
 			// If finishing uncompleted existing construction stage, skip resource loading.
 			setPhaseEnded(true);
 		}
-
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		
 		// Check if site preparation time has expired.
-		if (sitePreparationStartTime == null) {
-			sitePreparationStartTime = currentTime;
-		}
-		if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
+		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);
 		}
 	}
@@ -549,7 +516,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	private void reserveConstructionVehicles() {
 		if (constructionStage != null) {
-			constructionVehicles = new ArrayList<GroundVehicle>();
+			constructionVehicles = new ArrayList<>();
 			Iterator<ConstructionVehicleType> j = constructionStage.getInfo().getVehicles().iterator();
 			while (j.hasNext()) {
 				ConstructionVehicleType vehicleType = j.next();
@@ -673,7 +640,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 * @return list of construction vehicles.
 	 */
 	public List<GroundVehicle> getConstructionVehicles() {
-		return new ArrayList<GroundVehicle>(constructionVehicles);
+		return Collections.unmodifiableList(constructionVehicles);
 	}
 
 	/**
@@ -777,7 +744,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		if (constructionVehicles != null)
 			constructionVehicles.clear();
 		constructionVehicles = null;
-		sitePreparationStartTime = null;
 		if (luvAttachmentParts != null)
 			luvAttachmentParts.clear();
 		luvAttachmentParts = null;

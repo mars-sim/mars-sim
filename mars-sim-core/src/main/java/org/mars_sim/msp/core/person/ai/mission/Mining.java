@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -54,10 +53,10 @@ public class Mining extends RoverMission
 	private static SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
 	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining");
 	
 	/** Mission phases */
-	public static final MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
+	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
 
 	/** Number of large bags needed for mission. */
 	public static final int NUMBER_OF_LARGE_BAGS = 20;
@@ -81,10 +80,7 @@ public class Mining extends RoverMission
 	private boolean endMiningSite;
 	
 	private ExploredLocation miningSite;
-	private MarsClock miningSiteStartTime;
 	private LightUtilityVehicle luv;
-
-	private Person startingPerson;
 	
 	private Map<AmountResource, Double> excavatedMinerals;
 	private Map<AmountResource, Double> totalExcavatedMinerals;
@@ -99,8 +95,6 @@ public class Mining extends RoverMission
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, RoverMission.MIN_GOING_MEMBERS);
-
-		this.startingPerson = startingPerson;
 		
 		if (!isDone()) {
 			// Set mission capacity.
@@ -154,15 +148,8 @@ public class Mining extends RoverMission
 			}
 		}
 
-		// Add mining site phase.
-		addPhase(MINING_SITE);
-
 		// Set initial mission phase.
-		setPhase(VehicleMission.REVIEWING);
-		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
-
-//		logger.info("Done creating the Mining mission.");
-
+		setPhase(REVIEWING, null);
 	}
 
 	/**
@@ -180,15 +167,13 @@ public class Mining extends RoverMission
 
 		// Use RoverMission constructor.
 		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
-
-		this.startingPerson = this.getStartingPerson();
 		
 		// Initialize data members.
 		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
-		excavatedMinerals = new HashMap<AmountResource, Double>(1);
-		totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
+		excavatedMinerals = new HashMap<>(1);
+		totalExcavatedMinerals = new HashMap<>(1);
 
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
@@ -237,12 +222,8 @@ public class Mining extends RoverMission
 			luv.setReservedForMission(true);
 		}
 
-		// Add mining site phase.
-		addPhase(MINING_SITE);
-
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, startingSettlement.getName());
 	}
 
 	/**
@@ -299,54 +280,26 @@ public class Mining extends RoverMission
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		logger.info(getStartingPerson(), " had the phase of " + getPhase() + " in determineNewPhase().");
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(MINING_SITE);
-				setPhaseDescription(
-						Msg.getString("Mission.phase.miningSite.description", getCurrentNavpoint().getDescription())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+				else {
+					setPhase(MINING_SITE, getCurrentNavpoint().getDescription());
+				}
+			} 
+			
+			else if (MINING_SITE.equals(getPhase())) {
+				startTravellingPhase();
+			} 
+			else {
+				handled = false;
 			}
-		} 
-		
-		else if (MINING_SITE.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
 		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override
@@ -388,8 +341,8 @@ public class Mining extends RoverMission
 
 			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
 					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
-				logger.warning(startingPerson.getSettlement(), startingPerson, 
-						" could not load LUV and/or its attachment parts from " + getRover().getNickName());
+				logger.warning(luv, 
+						"Could not load LUV and/or its attachment parts for mission " + getName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 				return;
@@ -403,9 +356,8 @@ public class Mining extends RoverMission
 				settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
 				luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
-//				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
-				logger.severe(startingPerson.getSettlement(), startingPerson, 
-						" could not find the LUV attachment parts from " + getRover().getNickName());
+				logger.severe(luv, 
+						"Problem loading attachments", e);
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 			}
@@ -457,13 +409,6 @@ public class Mining extends RoverMission
 	 */
 	private void miningPhase(MissionMember member) {
 
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		
-		// Set the mining site start time if necessary.
-		if (miningSiteStartTime == null) {
-			miningSiteStartTime = currentTime;
-		}
-
 		// Detach towed light utility vehicle if necessary.
 		if (getRover().getTowedVehicle() != null) {
 			getRover().setTowedVehicle(null);
@@ -471,7 +416,7 @@ public class Mining extends RoverMission
 		}
 
 		// Check if crew has been at site for more than three sols.
-		boolean timeExpired = MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME;
+		boolean timeExpired = getPhaseDuration() >= MINING_SITE_TIME;
 
         if (isEveryoneInRover()) {
 
@@ -924,17 +869,13 @@ public class Mining extends RoverMission
 
 		// Use estimated remaining mining time at site if still there.
 		if (MINING_SITE.equals(getPhase())) {
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtMiningSite = MarsClock.getTimeDiff(marsClock, miningSiteStartTime);
-			double remainingTime = MINING_SITE_TIME - timeSpentAtMiningSite;
+			double remainingTime = MINING_SITE_TIME - getPhaseDuration();
 			if (remainingTime > 0D) {
 				result = remainingTime;
 			}
 		} else {
 			// If mission hasn't reached mining site yet, use estimated mining site time.
-			if (miningSiteStartTime == null) {
-				result = MINING_SITE_TIME;
-			}
+			result = MINING_SITE_TIME;
 		}
 
 		return result;
@@ -1113,7 +1054,6 @@ public class Mining extends RoverMission
 		super.destroy();
 
 		miningSite = null;
-		miningSiteStartTime = null;
 		if (excavatedMinerals != null) {
 			excavatedMinerals.clear();
 		}

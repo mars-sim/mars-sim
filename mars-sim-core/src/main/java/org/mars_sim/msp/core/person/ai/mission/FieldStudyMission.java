@@ -17,8 +17,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -46,20 +44,15 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	private static SimLogger logger = SimLogger.getLogger(FieldStudyMission.class.getName());
 	
 	/** Mission phase. */
-	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
-			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
+	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 
 	// Data members
-	/** The start time at the field site. */
-	private MarsClock fieldSiteStartTime;
 	/** External flag for ending research at the field site. */
 	private boolean endFieldSite;
 	/** The field site location. */
 	private Coordinates fieldSite;
 	/** Scientific study to research. */
 	private ScientificStudy study;
-	/** The person leading the areology research. */
-	private Person leadResearcher;
 
 	private double fieldSiteTime;
 	private ScienceType science;
@@ -84,8 +77,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 		if (!isDone() && s != null) {
 			// Set the lead researcher and study.
-			leadResearcher = startingPerson;
-			study = determineStudy(science, leadResearcher);
+			study = determineStudy(science, startingPerson);
 			if (study == null) {
 				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
 				endMission();
@@ -121,13 +113,8 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		}
 
 		if (s != null) {
-			// Add researching site phase.
-			addPhase(RESEARCH_SITE);
-
 			// Set initial mission phase.
-			setPhase(VehicleMission.REVIEWING);
-			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
-
+			setPhase(REVIEWING, null);
 		}
 	}
 
@@ -155,7 +142,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		setStartingSettlement(startingSettlement);
 		this.study = study;
 		this.science = study.getScience();
-		this.leadResearcher = leadResearcher;
 		this.fieldSite = fieldSite;
 		this.fieldSiteTime = fieldSiteTime;
 		addNavpoint(new NavPoint(fieldSite, "field research site"));
@@ -179,12 +165,8 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 				getStartingSettlement().getName()));
 
-		// Add researching site phase.
-		addPhase(RESEARCH_SITE);
-
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(EMBARKING, getStartingSettlement().getName());
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -208,7 +190,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 * @return the researcher.
 	 */
 	public Person getLeadResearcher() {
-		return leadResearcher;
+		return getStartingPerson();
 	}
 
 	/**
@@ -221,7 +203,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	public static ScientificStudy determineStudy(ScienceType science, Person researcher) {
 		ScientificStudy result = null;
 
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = researcher.getStudy();
@@ -348,49 +330,29 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	}
 
 	@Override
-	protected void determineNewPhase() {
-		if (REVIEWING.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
-		else if (EMBARKING.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
-						getCurrentNavpoint().getSettlement().getName())); // $NON-NLS-1$
-			} else {
-				setPhase(RESEARCH_SITE);
-				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description",
-						getCurrentNavpoint().getDescription())); // $NON-NLS-1$
+	protected boolean determineNewPhase() {
+		boolean handled = true;
+		if (!super.determineNewPhase()) {
+			if (TRAVELLING.equals(getPhase())) {
+				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+					startDisembarkingPhase();
+				}
+				else if (canStartEVA()) {
+					setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+				}
 			}
-		} 
-		
-		else if (RESEARCH_SITE.equals(getPhase())) {
-			startTravelToNextNode();
-			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} 
-		
-		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(VehicleMission.COMPLETED);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
+			else if (WAIT_SUNLIGHT.equals(getPhase())) {
+				setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+			}
+			else if (RESEARCH_SITE.equals(getPhase())) {
+				startTravellingPhase();
+			} 
+	
+			else {
+				handled = false;
+			}
 		}
-		
-		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
-		}
+		return handled;
 	}
 
 	@Override
@@ -428,15 +390,8 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 */
 	private void researchFieldSitePhase(MissionMember member) {
 
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		
-		// Check if field site research has just started.
-		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = currentTime;
-		}
-
 		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= fieldSiteTime;
+		boolean timeExpired = getPhaseDuration() >= fieldSiteTime;
 
 		if (isEveryoneInRover()) {
 
@@ -463,9 +418,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 			// If no one can research the site and this is not due to it just being
 			// night time, end the field work phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyFieldWork && (sunlight < 12 || inDarkPolarRegion)) {
+			if (nobodyFieldWork || !isEnoughSunlightForEVA()) {
 				setPhaseEnded(true);
 			}
 
@@ -497,8 +450,9 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						assignTask(person, createFieldStudyTask(person, leadResearcher,
-								study, (Rover) getVehicle()));
+						assignTask(person, createFieldStudyTask(person,
+													getStartingPerson(),
+													study, (Rover) getVehicle()));
 					}
 				}
 			}
@@ -543,16 +497,10 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		// Add estimated remaining field work time at field site if still there.
 		if (RESEARCH_SITE.equals(getPhase())) {
 
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, fieldSiteStartTime);
-			double remainingTime = fieldSiteTime - timeSpentAtExplorationSite;
+			double remainingTime = fieldSiteTime - getPhaseDuration();
 			if (remainingTime > 0D) {
 				result += remainingTime;
 			}
-		}
-
-		// If field site hasn't been visited yet, add full field work time.
-		if (fieldSiteStartTime == null) {
-			result += fieldSiteTime;
 		}
 
 		return result;
@@ -582,9 +530,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	@Override
 	public void destroy() {
 		super.destroy();
-		fieldSiteStartTime = null;
 		fieldSite = null;
 		study = null;
-		leadResearcher = null;
 	}
 }

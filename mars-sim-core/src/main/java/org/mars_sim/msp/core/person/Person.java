@@ -2074,25 +2074,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
-//			return false;
-			// if the vehicle is parked in a garage
-			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
-				return true;
-			}
-		}
-
-//		if (getContainerUnit().getUnitType() == UnitType.VEHICLE) {
-//			// if the vehicle is parked in a garage
-//			return ((Vehicle)getContainerUnit()).isInSettlement();
-//		}
-
-		// Note: may consider the scenario of this unit
-		// being carried in by another person or a robot
-//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-//			return getContainerUnit().isInSettlement();
-
+		
 		return false;
 	}
 

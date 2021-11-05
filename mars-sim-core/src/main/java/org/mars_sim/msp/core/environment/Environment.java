@@ -50,16 +50,6 @@ public class Environment implements Serializable, Temporal {
 		// Cyclic dependency !!!!
 		weather.initializeInstances(surfaceFeatures);
 	}
-	
-	/**
-	 * Initialize transient data in the simulation.
-	 * 
-	 * @throws Exception if transient data could not be constructed.
-	 */
-	public void initializeTransientData() {
-		// Initialize surface features transient data.
-		surfaceFeatures.initializeTransientData();
-	}
 
 	/**
 	 * Returns the orbital information
