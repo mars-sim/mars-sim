@@ -15,8 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -77,10 +75,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> irradianceCache;
-
-	// static instances
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private MarsClock currentTime;
 	
@@ -89,7 +83,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 		
 //	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
-	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
+	private static List<Landmark> landmarks = null;
+	private static MissionManager missionManager;	
 	
 	/**
 	 * Constructor
@@ -120,10 +115,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * 
 	 * @throws Exception if transient data could not be constructed.
 	 */
-	public void initializeTransientData() {
-
-		// Initialize surface terrain.
-		terrainElevation = new TerrainElevation();
+	public static void initializeInstances(MissionManager mm, LandmarkConfig landmarkConfig) {
+		landmarks = landmarkConfig.getLandmarkList();
+		
+		missionManager = mm;
 	}
 
 	/**
@@ -675,11 +670,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				// Check if site is reserved by a current mining mission.
 				// If not, mark as unreserved.
 				boolean goodMission = false;
-				
-				MissionManager missionManager = sim.getMissionManager();
-				Iterator<Mission> j = missionManager.getMissions().iterator();
-				while (j.hasNext()) {
-					Mission mission = j.next();
+
+				for(Mission mission : missionManager.getMissions()) {
 					if (mission instanceof Mining) {
 						if (site.equals(((Mining) mission).getMiningSite())) {
 							goodMission = true;
@@ -703,19 +695,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Reloads instances
-	 * 
-	 * @param s {@link Simulation}
-	 */
-	public static void initializeInstances(Simulation s) {
-
-		sim = s;
-
-		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-	}
-	
-	
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -733,9 +712,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		exploredLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
-		
-		sim = null;
-		simulationConfig = null;
 
 		weather = null;
 		orbitInfo = null;

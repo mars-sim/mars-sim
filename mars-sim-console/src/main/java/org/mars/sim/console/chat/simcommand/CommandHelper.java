@@ -272,8 +272,7 @@ public class CommandHelper {
 				|| phase.equals(VehicleMission.EMBARKING)) {
 			response.appendLabeledString("Date Filed", mission.getDateFiled());
 		}
-		else if (phase.equals(VehicleMission.COMPLETED)
-				|| phase.equals(VehicleMission.INCOMPLETED)) {
+		else if (phase.equals(VehicleMission.COMPLETED)) {
 			response.appendLabeledString("Date Returned", mission.getDateReturned());
 		}
 		else {

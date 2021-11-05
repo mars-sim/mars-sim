@@ -61,7 +61,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
 	public static final MissionPhase TRAVELLING = new MissionPhase("Mission.phase.travelling"); 
 	public static final MissionPhase DISEMBARKING = new MissionPhase("Mission.phase.disembarking"); 
-	public static final MissionPhase INCOMPLETED = new MissionPhase("Mission.phase.incompleted");
 	
 	// Static members
 	private static final String ROVER_WHEEL = "rover wheel";
@@ -709,8 +708,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		else if (DISEMBARKING.equals(getPhase())) {
 			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
 		}
-		else if (COMPLETED.equals(getPhase())
-				|| INCOMPLETED.equals(getPhase())) {
+		else if (COMPLETED.equals(getPhase())) {
 			createDateCompleted();
 			setPhaseEnded(true);
 		}
