@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -38,7 +38,7 @@ public class SettlementConfig implements Serializable {
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	private static int templateID = 0;
-	
+
 	// Element names
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
@@ -94,7 +94,7 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param settlementDoc     DOM document with settlement configuration.
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
@@ -108,7 +108,7 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Maps a number to an alphabet
-	 * 
+	 *
 	 * @param a number
 	 * @return a String
 	 */
@@ -120,11 +120,11 @@ public class SettlementConfig implements Serializable {
 	public double[] getRoverValues() {
 		return rover_values;
 	}
-	
+
 	/**
 	 * Load the rover range margin error from the mission control parameters of a
 	 * settlement from the XML document.
-	 * 
+	 *
 	 * @return range margin.
 	 * @throws Exception if error reading XML document.
 	 */
@@ -133,7 +133,7 @@ public class SettlementConfig implements Serializable {
 			// System.out.println("using saved rover_values");
 			return;
 		}
-		
+
 		Element root = settlementDoc.getRootElement();
 		Element missionControlElement = root.getChild(MISSION_CONTROL);
 		Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
@@ -152,17 +152,17 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Load the life support requirements from the XML document.
-	 * 
+	 *
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
 	public double[][] getLifeSupportRequirements() {
 		return life_support_values;
 	}
-	
+
 	/**
 	 * Load the life support requirements from the XML document.
-	 * 
+	 *
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
@@ -176,12 +176,12 @@ public class SettlementConfig implements Serializable {
 		Element req = (Element) root.getChild(LIFE_SUPPORT_REQUIREMENTS);
 
 		String[] types = new String[] {
-				TOTAL_PRESSURE, 
-				PARTIAL_PRESSURE_OF_O2, 
+				TOTAL_PRESSURE,
+				PARTIAL_PRESSURE_OF_O2,
 				PARTIAL_PRESSURE_OF_N2,
-				PARTIAL_PRESSURE_OF_CO2, 
-				TEMPERATURE, 
-				RELATIVE_HUMIDITY, 
+				PARTIAL_PRESSURE_OF_CO2,
+				TEMPERATURE,
+				RELATIVE_HUMIDITY,
 				VENTILATION};
 
 		for (int j = 0; j < 2; j++) {
@@ -218,7 +218,7 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Load the settlement templates from the XML document.
-	 * 
+	 *
 	 * @param settlementDoc     DOM document with settlement configuration.
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
@@ -227,9 +227,9 @@ public class SettlementConfig implements Serializable {
 
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
-		
+
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
-		
+
 		for (Element templateElement : templateNodes) {
 			String settlementTemplateName = templateElement.getAttributeValue(NAME);
 			String sponsor = templateElement.getAttributeValue(SPONSOR);
@@ -238,7 +238,7 @@ public class SettlementConfig implements Serializable {
 						+ settlementTemplateName + " is not unique.");
 			} else
 				templateMap.put(templateID, settlementTemplateName);
-			
+
 			// Obtains the default population
 			int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 			// Obtains the default numbers of robots
@@ -246,12 +246,12 @@ public class SettlementConfig implements Serializable {
 
 			// Add templateID
 			SettlementTemplate template = new SettlementTemplate(
-					templateID, 
-					settlementTemplateName, 
+					templateID,
+					settlementTemplateName,
 					sponsor,
 					defaultPopulation,
 					defaultNumOfRobots);
-			
+
 			settlementTemplates.add(template);
 
 			Set<Integer> existingIDs = new HashSet<>();//HashMap.newKeySet();
@@ -275,13 +275,18 @@ public class SettlementConfig implements Serializable {
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
-		
-				int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
+
+				int bid = -1;
+
+				if (buildingElement.getAttribute(ID) != null) {
+					bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
+				}
+
 				if (existingIDs.contains(bid)) {
 					throw new IllegalStateException(
 							"Error in SettlementConfig : building ID " + bid + " in settlement template "
 									+ settlementTemplateName + " is not unique.");
-				} else
+				} else if (bid != -1)
 					existingIDs.add(bid);
 
 				String buildingType = buildingElement.getAttributeValue(TYPE);
@@ -296,7 +301,7 @@ public class SettlementConfig implements Serializable {
 				// by appending the settlement id and building id to that building's type.
 				String templateString = getCharForNumber(templateID + 1);
 				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
-	
+
 				int buildingTypeID = buildingTypeIDMap.get(buildingType);
 
 				String buildingNickName = buildingType + " " + buildingTypeID;
@@ -426,7 +431,7 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Gets the settlement template that matches a template name.
-	 * 
+	 *
 	 * @param templateName the template name.
 	 * @return settlement template
 	 */
@@ -449,7 +454,7 @@ public class SettlementConfig implements Serializable {
 
 	/**
 	 * Gets a list of settlement templates.
-	 * 
+	 *
 	 * @return list of settlement templates.
 	 */
 	public List<SettlementTemplate> getSettlementTemplates() {

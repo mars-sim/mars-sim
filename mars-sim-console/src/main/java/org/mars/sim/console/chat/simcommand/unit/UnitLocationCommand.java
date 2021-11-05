@@ -11,6 +11,7 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Command to stop speaking with an entity.
@@ -34,7 +35,9 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 				   .append(source.getCoordinates().getFormattedString());
 		}
 		else if (source.isInVehicle()) {
-			message.append("In ").append(source.getVehicle().getName());
+			Vehicle v = source.getVehicle();
+			message.append("In ").append(v.getName());
+			message.append(" @ ").append(v.getCoordinates().getFormattedString());
 			if (source.isInSettlement()) {
 				message.append(", warning also isIsSettlement=true");
 			}

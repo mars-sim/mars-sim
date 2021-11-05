@@ -26,24 +26,24 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 /**
  * The represents an Inventory that can hold Equipment as well as Resources. It provides
  * basic capacity management.
- * Resources can be retrieved from held Equipment. But resources can not be stored 
+ * Resources can be retrieved from held Equipment. But resources can not be stored
  * in the underlying Equipment.
  */
-public class EquipmentInventory 
+public class EquipmentInventory
 		implements EquipmentOwner, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
 //	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
-	
+
 	private Unit owner;
-	
+
 	private double cargoCapacity;
-	
+
 	/** Locally held equipment set**/
 	private Set<Equipment> equipmentSet;
-	
+
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 
@@ -51,13 +51,13 @@ public class EquipmentInventory
 
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;
-		
+
 		// Create equipment set
 		equipmentSet = new UnitSet<>();
-		
-		// Create microInventory instance		
+
+		// Create microInventory instance
 		microInventory = new MicroInventory(owner);
-	
+
 	}
 
 	/**
@@ -72,20 +72,22 @@ public class EquipmentInventory
 		}
 		return result +  microInventory.getStoredMass();
 	}
-	
+
 	/**
 	 * Get the equipment set
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
+//		if (equipmentSet == null)
+//			equipmentSet = new UnitSet<>();
 		return Collections.unmodifiableSet(equipmentSet);
 	}
 
 	/**
 	 * Finds all of the containers (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
@@ -98,10 +100,10 @@ public class EquipmentInventory
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	public Collection<Container> findContainersOfType(EquipmentType type) {
@@ -113,10 +115,10 @@ public class EquipmentInventory
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Does this person possess an equipment of this equipment type
-	 * 
+	 *
 	 * @param typeID
 	 * @return
 	 */
@@ -129,10 +131,10 @@ public class EquipmentInventory
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds an equipment to this person
-	 * 
+	 *
 	 * @param equipment
 	 * @return true if this person can carry it
 	 */
@@ -143,22 +145,22 @@ public class EquipmentInventory
 			equipmentSet.add(equipment);
 			return true;
 		}
-		return contained;		
+		return contained;
 	}
-	
+
 	/**
-	 * Remove an equipment 
-	 * 
+	 * Remove an equipment
+	 *
 	 * @param equipment
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
 		return equipmentSet.remove(equipment);
 	}
-	
+
 	/**
 	 * Stores the item resource
-	 * 
+	 *
 	 * @param resource the item resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -168,13 +170,13 @@ public class EquipmentInventory
 		if (!microInventory.isResourceSupported(resource)) {
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
-		
+
 		return microInventory.storeItemResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the item resource 
-	 * 
+	 * Retrieves the item resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -183,17 +185,17 @@ public class EquipmentInventory
 	public int retrieveItemResource(int resource, int quantity) {
 		return microInventory.retrieveItemResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		double shortfall = quantity;			
+		double shortfall = quantity;
 		double stored = microInventory.getAmountResourceStored(resource);
 		if (stored > 0) {
 			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
@@ -209,31 +211,31 @@ public class EquipmentInventory
 				}
 			}
 		}
-		
+
 		// Return any missing quantity
 		return shortfall;
 	}
-	
+
 	/**
 	 * Stores the resource
-	 * 
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		// Note: this method is different from 
-		// Equipment's storeAmountResource 
+		// Note: this method is different from
+		// Equipment's storeAmountResource
 		if (!microInventory.isResourceSupported(resource)) {
 			microInventory.setCapacity(resource, cargoCapacity);
 		}
 		return microInventory.storeAmountResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the item resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -241,10 +243,10 @@ public class EquipmentInventory
 	public int getItemResourceStored(int resource) {
 		return microInventory.getItemResourceStored(resource);
 	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
@@ -255,15 +257,15 @@ public class EquipmentInventory
 		for (Equipment e: equipmentSet) {
 			result += e.getAmountResourceCapacity(resource);
 		}
-		
+
 		result += microInventory.getCapacity(resource);
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -272,39 +274,39 @@ public class EquipmentInventory
 		// Note: it does not include the general capacity (aka cargo capacity)
 		return getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
 	}
-	
+
 	/**
-	 * Obtains the remaining general storage space 
-	 * 
+	 * Obtains the remaining general storage space
+	 *
 	 * @return quantity
 	 */
 	@Override
 	public double getRemainingCargoCapacity() {
 		return cargoCapacity - getStoredMass();
 	}
-	
+
 	/**
      * Gets the total capacity that this person can hold.
-     * 
+     *
      * @return total capacity (kg).
      */
 	@Override
 	public double getTotalCapacity() {
-		// Question: Should the total capacity varies ? 
+		// Question: Should the total capacity varies ?
 		// based on one's instant carrying capacity ?
 		return cargoCapacity;
 	}
-	
+
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
 	public double getAmountResourceStored(int resource) {
 		double result = microInventory.getAmountResourceStored(resource);
-		
+
 		for(Equipment e: equipmentSet) {
 			if (e instanceof ResourceHolder) {
 				result += e.getAmountResourceStored(resource);
@@ -317,7 +319,7 @@ public class EquipmentInventory
 
 	/**
 	 * Finds the number of empty containers of a particular equipment
-	 * 
+	 *
 	 * @param containerType the equipment type.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
@@ -332,13 +334,13 @@ public class EquipmentInventory
 				result++;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Finds the number of containers of a particular type
-	 * 
+	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -351,13 +353,13 @@ public class EquipmentInventory
 				result++;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Finds a container in storage.
-	 * 
+	 *
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -383,7 +385,7 @@ public class EquipmentInventory
 
 	/**
 	 * Gets all stored item resources
-	 * 
+	 *
 	 * @return all stored item resources.
 	 */
 	@Override
@@ -392,31 +394,31 @@ public class EquipmentInventory
 		for (Equipment e: equipmentSet) {
 			set.addAll(e.getItemResourceIDs());
 		}
-		
+
 		return set;
 	}
-	
+
 	/**
-	 * Gets a set of resources in storage. 
-	 * @return  a set of resources 
+	 * Gets a set of resources in storage.
+	 * @return  a set of resources
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
-		Set<Integer> set = new HashSet<Integer>(); 
+		Set<Integer> set = new HashSet<Integer>();
 		set.addAll(microInventory.getResourcesStored());
 		for (Equipment e: equipmentSet) {
 			if (e instanceof ResourceHolder) {
 				set.addAll(((ResourceHolder) e).getAmountResourceIDs());
 			}
 		}
-	
+
 		return set;
 	}
-	
-	
+
+
 	/**
-	 * Is this unit empty ? 
-	 * 
+	 * Is this unit empty ?
+	 *
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
@@ -424,10 +426,10 @@ public class EquipmentInventory
 			return false;
 		return microInventory.isEmpty();
 	}
-	
+
 	/**
 	 * Add resource capacity
-	 * 
+	 *
 	 * @param resource
 	 * @param capacity
 	 */
@@ -436,10 +438,10 @@ public class EquipmentInventory
 			microInventory.addCapacity(resource, capacity);
 		}
 	}
-	
+
 	/**
 	 * Set the resource capacity
-	 * 
+	 *
 	 * @param resource
 	 * @param capacity
 	 */
@@ -448,10 +450,10 @@ public class EquipmentInventory
 			microInventory.setCapacity(resource, capacity);
 		}
 	}
-	
+
 	/**
 	 * Set the resource capacities.
-	 * 
+	 *
 	 * TODO should be keyed on resourceID not string.
 	 * @param capacities
 	 */
@@ -480,29 +482,29 @@ public class EquipmentInventory
 			}
 		}
 	}
-	
+
 	/**
 	 * Adds to the cargo capacity (aka the general capacity)
-	 * 
+	 *
 	 * @param value
 	 */
 	public void addCargoCapacity(double value) {
 		cargoCapacity += value;
 	}
-	
+
 	/**
 	 * Adds the capacity of a particular resource
-	 * 
+	 *
 	 * @param resource
 	 * @param capacity
 	 */
 	public void addCapacity(int resource, double capacity) {
 		microInventory.addCapacity(resource, capacity);
 	}
-	
+
 	/**
 	 * Removes the capacity of a particular resource
-	 * 
+	 *
 	 * @param resource
 	 * @param capacity
 	 */
@@ -512,17 +514,17 @@ public class EquipmentInventory
 
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
 	public Unit getHolder() {
 		return owner.getContainerUnit();
 	}
-	
+
 	/**
 	 * Does it have this item resource ?
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */

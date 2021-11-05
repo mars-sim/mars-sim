@@ -5,7 +5,7 @@
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building width CDATA #REQUIRED>
 	<!ATTLIST building length CDATA #REQUIRED>
-	<!ATTLIST building thickness CDATA #IMPLIED>	
+	<!ATTLIST building thickness CDATA #IMPLIED>
 	<!ATTLIST building base-level CDATA #REQUIRED>
 	<!ATTLIST building wear-lifetime CDATA #REQUIRED>
 	<!ATTLIST building maintenance-time CDATA #REQUIRED>
@@ -15,13 +15,13 @@
 	<!ELEMENT power-required EMPTY>
 	<!ATTLIST power-required base-power CDATA #REQUIRED>
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
-	
+
 	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	ground-vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
-	
+
 	<!ELEMENT administration (activity?)>
 	<!ATTLIST administration capacity CDATA #REQUIRED>
 	<!ATTLIST administration population-support CDATA #REQUIRED>
@@ -204,7 +204,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
 			</computation>
-			
+
 			<!-- The building has facilities for cooking/preparing meals. -->
 			<cooking capacity="2">
 				<activity>
@@ -234,8 +234,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<food-production tech-level="2" concurrent-processes="3">
 				<activity>
 					<activity-spot xloc="1.12" yloc="-3.28" />
-					<activity-spot xloc="0.36" yloc="-3.28" />					
-					<activity-spot xloc="0.76" yloc="-3.79" />					
+					<activity-spot xloc="0.36" yloc="-3.28" />
+					<activity-spot xloc="0.76" yloc="-3.79" />
 				</activity>
 			</food-production>
 
@@ -262,7 +262,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="3.4" yloc="0.53" />
 				</activity>
 			</management>
-						
+
 			<!-- The building has manufacturing capacity. -->
 			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
 			<!-- concurrent-processes: the number of concurrent manufacturing processes the building
@@ -270,7 +270,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc="-0.9" yloc="-3.13" />
-					<activity-spot xloc="-0.9" yloc="-3.72" />					
+					<activity-spot xloc="-0.9" yloc="-3.72" />
 				</activity>
 			</manufacture>
 
@@ -291,8 +291,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- A solar cell on top of the lander hab. -->
 				<!-- type: the type of power source. -->
 				<!-- power: the maximum power (kW) produced by the power source. -->
-				<power-source type="Solar Power Source" power="5.0" />				
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 
@@ -314,49 +314,49 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />	
-				<research-specialty name="COMPUTING" />			
-				<research-specialty name="ENGINEERING" />			
-				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="COMPUTING" />
+				<research-specialty name="ENGINEERING" />
+				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="MEDICINE" />
-				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="PSYCHOLOGY" />				
-			
+				<research-specialty name="PSYCHOLOGY" />
+
 				<activity>
 					<activity-spot xloc="-1.47" yloc="-2.0" />
 					<activity-spot xloc="-1.95" yloc="-2.33" />
-					<activity-spot xloc="-2.47"  yloc="-2.67" />			
+					<activity-spot xloc="-2.47"  yloc="-2.67" />
 				</activity>
 			</research>
 
 			<!-- The building is capable of processing resources. -->
-			<!-- power-down-level: the efficiency of the resource processes 
+			<!-- power-down-level: the efficiency of the resource processes
 								   when building is in 'power down' mode. -->
-	
+
 			<resource-processing power-down-level="0.0">
 
-			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS) 
+			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
 			consumes a time averaged 743 W-hr/hr in overall.
-		
-			NASA's Waste Processing Assembly (WPA) removes free gas 
-			and solid materials such as hair and lint, before the water 
-			goes through a series of multifiltration beds for further 
-			purification. It consumes about 320 W-hr/hr aboard ISS. 
-					
+
+			NASA's Waste Processing Assembly (WPA) removes free gas
+			and solid materials such as hair and lint, before the water
+			goes through a series of multifiltration beds for further
+			purification. It consumes about 320 W-hr/hr aboard ISS.
+
 			https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf	
-							
-			It uses the state-of-the-art forward osmosis secondary treatment 
+			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf
+
+			It uses the state-of-the-art forward osmosis secondary treatment
 			system (FOST) as well as Synthetic Biological Membrane (SBM)
-			developed at NASA Ames.  					
-			 					
+			developed at NASA Ames.
+
 			We assume a waste processor capable of daily processsing
-			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean 
-			water and 2 kg of solid waste. Note that .5 kg of water is lost 
+			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
+			water and 2 kg of solid waste. Note that .5 kg of water is lost
 			through evaporation.
-			-->			
-				<!-- Grey Water Recycling process for cleaning grey water. -->		
+			-->
+				<!-- Grey Water Recycling process for cleaning grey water. -->
 				<process name="Grey Water Processor" power-required=".32" default="on">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
@@ -364,13 +364,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<!-- rate: the rate (kg/sol) the resource is added -->
 					<!-- ambient: true if resource is freely available from outside -->
 					<!--          false if supplied from settlement's inventory. -->
-					
+
 					<input resource="grey water" rate="40.0" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment 
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water 
+					<!-- Residual requirement for using chlorine in water treatment
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
 					     requires 10 mg of Cl gas -->
 					<input resource="chlorine" rate=".00001" ambient="false" />
-					
+
 					<!-- Output : clean water, solid waste -->
 					<!-- resource: the resource resulting from the process. -->
 					<!-- See resources.xml -->
@@ -378,71 +378,71 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<!-- ambient: true if resource is vented outside -->
 					<!--          false if kept by settlement's inventory. -->
 					<output resource="water" rate="38" ambient="false" />
-					<output resource="solid waste" rate="2" ambient="false" />				
+					<output resource="solid waste" rate="2" ambient="false" />
 				</process>
-				
-				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure 
-				vacuum distillation process is used to recover water from 
+
+				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
+				vacuum distillation process is used to recover water from
 		 		urine. The entire process occurs within a rotating
 				distillation assembly that compensates for the absence
-				of gravity and therefore aids in the separation of liquids 
-				and gases in space. 
-				
-				UPA is designed to process a nominal load of 9 kg/day 
-				(19.8 lbs/day) of wastewater consisting of urine and flush. 
+				of gravity and therefore aids in the separation of liquids
+				and gases in space.
+
+				UPA is designed to process a nominal load of 9 kg/day
+				(19.8 lbs/day) of wastewater consisting of urine and flush.
 				It uses a time average of 315 W-hr/hr
-					
-				Product water from the Urine Processor is combined with 
-				all other wastewaters and delivered to the Water Processor 
-				for treatment. 
-													
+
+				Product water from the Urine Processor is combined with
+				all other wastewaters and delivered to the Water Processor
+				for treatment.
+
 				We assume a urine/fece processor capable of daily processsing
-				20 kg black water and generate 17 kg grey water and 
+				20 kg black water and generate 17 kg grey water and
 				2 kg of toxic waste. There is a lost of 1 kg of water.
--->				
+-->
 				<process name="Black Water Processor" power-required=".315" default="on">
 					<input resource="black water" rate="20" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment 
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water 
+					<!-- Residual requirement for using chlorine in water treatment
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
 					     requires 20 mg of Cl gas -->
-					<input resource="chlorine" rate=".00002" ambient="false" />					
+					<input resource="chlorine" rate=".00002" ambient="false" />
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
-								
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
+
 					<output resource="grey water" rate="17" ambient="false" />
 					<output resource="toxic waste" rate="1" ambient="false" />
 					<output resource="nitrogen" rate=".5" ambient="false" />
 					<output resource="nitrite" rate=".5" ambient="false" />
 					<output resource="nitrate" rate=".5" ambient="false" />
-					<output resource="phosphorus" rate=".5" ambient="false" />					
+					<output resource="phosphorus" rate=".5" ambient="false" />
 				</process>
 
-				<!-- 
+				<!--
 				TODO: chemist can isolate these bacteria and grow them in the lab
-			 
-			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. 
-			 
+
+			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira.
+
 				Nitrospira are nitrite-oxidizing bacteria that are important
 				for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
 				If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
-				
+
 				Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
-				 
+
 				All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
-			
+
 				The precursor technology is based on an experimental device
-				being researched in by NASA called Vortical Oxidative Reactor 
+				being researched in by NASA called Vortical Oxidative Reactor
 				Technology Experiment (VORTEX).
-				
-				Burning, or oxidizing, organic waste would produce four major 
+
+				Burning, or oxidizing, organic waste would produce four major
 				by-products: ash, carbon dioxide, water and heat. Ash can be
 				converted to fertilizer for farming.
-			 
+
 				Also, Solid Waste Management
-				 
+
 				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
-				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html 
-				
+				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
+
 				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
 				-->
 				<process name= "Solid Waste Management" power-required=".3" default="on">
@@ -452,9 +452,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="2" ambient="false" />
 					<output resource="water" rate="2" ambient="false" />
 					<output resource="carbon" rate="2" ambient="false" />
-				</process>				
-				
-				<!-- 
+				</process>
+
+				<!--
 				A. Sabatier process :
 
 				CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
@@ -462,110 +462,110 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				CO2 : 44 g/mol
 				4H2 : 8 g/mol
 				CH4 : 16 g/mol
-				2H2O : 36 g/mol			
-				
+				2H2O : 36 g/mol
+
 				B. The Reverse Water Gas Shift (RWGS) process is a
 				candidate technology for water and oxygen production
 				on Mars. RWGS uses carbon dioxide and hydrogen as
 				reactants to produce oxygen and carbon monoxide with a
-				copper on alumina catalyst, or in the precsence of an 
+				copper on alumina catalyst, or in the precsence of an
 				iron-chrome catalyst.
-				
+
 				CO2 + H2 = CO + H2O
 
-				Because the RWGS reaction is only mildly endothermic (at 400 deg C, 
-				9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis), 
-				it's better than just having the water electrolysis alone. 
-								
+				Because the RWGS reaction is only mildly endothermic (at 400 deg C,
+				9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis),
+				it's better than just having the water electrolysis alone.
+
 				Moreover, since the thermal power required by the RWGS is less than that
 				produced by the Sabatier reactor and their operating temperatures are comparable, a
 				Sabatier reactor can be used to provide the heat required to drive the RWGS
 				reactor.
 
-				C. Sabatier with Reverse Water Gas Shift (RWGS) :  
-					
+				C. Sabatier with Reverse Water Gas Shift (RWGS) :
+
 				3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
-				
+
 				3CO2 : 132 g/mol
 				6H2 : 12 g/mol
 				CH4 : 16 g/mol
 				2CO : 56 g/mol
 				4H2O : 72 g/mol
-				
-				The primary disadvantage of the Sabatier process is that twice 
-				as much hydrogen is consumed as can be recovered by the 
+
+				The primary disadvantage of the Sabatier process is that twice
+				as much hydrogen is consumed as can be recovered by the
 				electrolysis of the produced water.
-				
+
 				In one in-situ propellant prooduction system (ISPP), it uses
-				Sabatier and Reverse Water Gas Shift (RWGS) to convert H2 
+				Sabatier and Reverse Water Gas Shift (RWGS) to convert H2
 				and CO2 into OX and CH4 (with CO as waste).  It requires 470 W
 				to produce 1 kg of propellant per sol, per Zurin's paper on
 				"Integrated Mars In-Situ Propellant Production System.
-				
+
 				We assume a system that's 4 times more efficient in producing
 				CH4 below
-				
+
 				CO2 : 39.6 kg/sol
 				4H2 : 3.6 kg/sol
 				CH4 : 4.8 kg/sol
 				2CO : 16.8 g/mol
 				4H2O : 21.6 kg/sol
-				-->			
+				-->
 				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
-				<!-- 33.6g imported from outside. 6g from storage 
+				<!-- 33.6g imported from outside. 6g from storage
 					<input resource="carbon dioxide" rate="33.6" ambient="true" />
-					<input resource="carbon dioxide" rate="6" ambient="false" /-->	
-					<input resource="carbon dioxide" rate="39.6" ambient="true" />							
+					<input resource="carbon dioxide" rate="6" ambient="false" /-->
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
-				</process>	
-		
-				<!-- Oxygen Generation System can split water into H2 and O2. 
-	
+				</process>
+
+				<!-- Oxygen Generation System can split water into H2 and O2.
+
 				NASA's Oxygen Generation System is designed to generate
-				oxygen from 5 to 20 pounds (2.3 to 9 kg) of oxygen per day 
-				during continuous operation and a normal rate of 12 pounds 
+				oxygen from 5 to 20 pounds (2.3 to 9 kg) of oxygen per day
+				during continuous operation and a normal rate of 12 pounds
 				(5.4 kg) of oxygen per day during cyclic operation.
-				
+
 				The Oxygen Generation System will accommodate the testing
 				of an experimental Carbon Dioxide Reduction Assembly
 				(CReA). Once deployed, the reduction assembly will cause
 				hydrogen produced by the Oxygen Generation Assembly to
 				react with carbon dioxide removed from the cabin atmosphere
-				to produce water and methane. 
-				
+				to produce water and methane.
+
 				Oxygen Generator Assembly (OGA) uses 1312 W of power.
-				
+
 				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-				
+
 				See also https://www.quora.com/How-is-oxygen-generated-on-the-ISS
-						
-				Available water electrolysis units using solid polymer 
-				electrolytes are highly efficient (>90%) and extremely rugged, 
-				as they have been designed for nuclear submarine use with 
+
+				Available water electrolysis units using solid polymer
+				electrolytes are highly efficient (>90%) and extremely rugged,
+				as they have been designed for nuclear submarine use with
 				specifications that include resistance to depth charge attack,
 				per Zubrin, et al.
-								
-				During normal operations on the ISS, approximately 23 L water 
-				per day is used by the OGS with a constant current of 50 ampere 
+
+				During normal operations on the ISS, approximately 23 L water
+				per day is used by the OGS with a constant current of 50 ampere
 				to each electrolytic cell in the OGS system
-				
+
 				2H2O -> 2H2 + O2
-				
+
 				2H2O : 36 g/mol
 				2H2 : 4 g/mol
 				O2 : 32 g/mol
-				
+
 				50A * 120 = 6kW
-						
+
 				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
-				
+
 				We assume a power usage of 1kW system for splitting 18 kg water
 				into 2 kg H2 and 16 kg O2
 				-->
-				<process name="Oxygen Generation System" power-required="3.0" default="on">				
+				<process name="Oxygen Generation System" power-required="3.0" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
@@ -575,12 +575,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
-				
 
-				
+
+
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
-					<activity-spot xloc="-0.9" yloc="-2.49" />	
+					<activity-spot xloc="-0.9" yloc="-2.49" />
 				</activity>
 
 			</resource-processing>
@@ -595,12 +595,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<!-- This building is capable of storing the following resources. -->
-				<!-- stock-capacity: the building's default capacity (kg) for 
+				<!-- stock-capacity: the building's default capacity (kg) for
 				     all the resources. -->
 			<storage stock-capacity="10000">
 
 				<!-- The building's storage capacity for oxygen. -->
-				<!-- resource: the specific resources that the building may 
+				<!-- resource: the specific resources that the building may
 				     store on top of the aformentioned stock-capacity -->
 				<!-- capacity: the additional capacity (kg) for a resource. -->
 
@@ -633,16 +633,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- amount: the amount (kg) of the resource. -->
 
 				<!-- life support: 5000 kg  -->
-				<resource-initial resource="water" amount="5000.0" />
-				<resource-initial resource="oxygen" amount="5000.0" />
-				<resource-initial resource="food" amount="1000.0" />
+				<resource-initial resource="water" amount="500.0" />
+				<resource-initial resource="oxygen" amount="500.0" />
+				<resource-initial resource="food" amount="500.0" />
 
 				<!-- other gases: 200 kg  -->
 				<resource-initial resource="nitrogen" amount="130.0" />
 				<resource-initial resource="argon" amount="50.0" />
 				<resource-initial resource="chlorine" amount="20.0" />
 
-				<!-- kitchen supplies: 600 kg -->				
+				<!-- kitchen supplies: 600 kg -->
 				<resource-initial resource="toilet tissue" amount="50.0" />
 				<resource-initial resource="paper" amount="50.0" />
 				<resource-initial resource="napkin" amount="50.0" />
@@ -657,8 +657,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="sesame oil" amount="50.0" />
 				<resource-initial resource="garlic oil" amount="50.0" />
 				<resource-initial resource="peanut oil" amount="50.0" />
-											
-				<!-- chemicals: 210 kg  -->								
+
+				<!-- chemicals: 210 kg  -->
 				<resource-initial resource="bleaching chemical" amount="50.0" />
 				<resource-initial resource="baking powder" amount="50.0" />
 				<resource-initial resource="bisphenol-a" amount="50.0" />
@@ -666,7 +666,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="immune booster" amount="50.0" />
 				<resource-initial resource="lime" amount="10.0" />
 
-				<!-- organisms: 40 kg -->	
+				<!-- organisms: 40 kg -->
 				<resource-initial resource="acetic acid bacteria" amount="10.0" />
 				<resource-initial resource="nitrosomonas spp" amount="10.0" />
 				<resource-initial resource="nitrospira spp" amount="10.0" />
@@ -676,9 +676,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="fertilizer" amount="50.0" />
 				<resource-initial resource="soil" amount="50.0" />
 
-				<!-- Mars Direct Mission Plan : 
-				
-				(1). ERV - 
+				<!-- Mars Direct Mission Plan :
+
+				(1). ERV -
 			 	(a). Payload imported from Earth -
 				 	 Consumables : 3400 kg
 				 	 Hydrogen feedstock : 6300 kg
@@ -686,11 +686,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					 water : 18900 kg
 					 Oxygen : 16080 kg
 					 Methane : 8400 kg
-	
+
 				(2). Hab -
 				(a). Payload imported from Earth -
-				 	 Consumables : 7000 kg			
-				 
+				 	 Consumables : 7000 kg
+
 				 -->
 			</storage>
 
@@ -701,7 +701,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
@@ -725,7 +725,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="EVA Airlock" width="6.0" length="4.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="15">
-		<description> The EVA Airlock is a node to be attached to building for giving direct access 
+		<description> The EVA Airlock is a node to be attached to building for giving direct access
 			in performing EVA operations.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
@@ -735,10 +735,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--       xloc, yloc : the relative X/Y location inside the airlock. -->
 			<!--    interior-xloc : the relative X location inside the building. -->
 			<!--    interior-yloc : the relative Y location inside the building. -->
-			<!--    exterior-xloc : the relative X location outside the building. -->						
+			<!--    exterior-xloc : the relative X location outside the building. -->
 			<!--    exterior-yloc : the relative Y location outside the building. -->
-			<EVA capacity="4" 
-			    xloc="1.0" yloc="0.0" 
+			<EVA capacity="4"
+			    xloc="1.0" yloc="0.0"
 				interior-xloc="-1.3" interior-yloc="0.0"
 				exterior-xloc="3.2" exterior-yloc="0.0" >
 				<activity>
@@ -747,14 +747,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="1.35" />
 					<activity-spot xloc="0.0" yloc="-1.35" />
 				</activity>
-			</EVA>	
+			</EVA>
 			<life-support capacity="6" power-required="0.3" />
 			<living-accommodations capacity="2">
 				<activity>
 					<activity-spot xloc="-2.6" yloc="1.35" />
 					<activity-spot xloc="-2.6" yloc="-1.35" />
 				</activity>
-			</living-accommodations>			
+			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="2.5" />
 			</power-generation>
@@ -763,12 +763,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<activity>
 					<activity-spot xloc="-1.3" yloc="0.7" />
 				</activity>
-			</robotic-station>	
+			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>					
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 			</thermal-generation>
 
 		</functions>
@@ -834,44 +834,44 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage stock-capacity="5000">
-				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="water" capacity="5000.0" />
 
 				<!-- gases -->
 				<resource-storage resource="carbon dioxide" capacity="2500.0" />
 				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
 
-				<!-- soil related -->				
-				<!-- crop food -->				
+				<!-- soil related -->
+				<!-- crop food -->
 				<resource-storage resource="fertilizer" capacity="500.0" />
 				<resource-storage resource="nitrate" capacity="500.0" />
 				<resource-storage resource="nitrite" capacity="500.0" />
 				<resource-storage resource="grey water" capacity="500.0" />
 
-				<!-- soil related -->				
+				<!-- soil related -->
 				<resource-storage resource="soil" capacity="500.0" />
-				<resource-storage resource="compost" capacity="500.0" />				
+				<resource-storage resource="compost" capacity="500.0" />
 				<resource-storage resource="crop waste" capacity="500.0" />
 
-				<!-- Supplies -->				
+				<!-- Supplies -->
 				<resource-initial resource="carbon dioxide" amount="500.0" />
-				
+
 			</storage>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
-				 
+				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
+
 				 Assume thermal efficiency at 41%,
-				 364.9 kW needs 16 g/s 
-				 1 kW_t for 3.8926 g/millisol or 3.8926 kg/sol	 
-				 
+				 364.9 kW needs 16 g/s
+				 1 kW_t for 3.8926 g/millisol or 3.8926 kg/sol
+
 				 Assume thermal efficiency at 100%,
-				 1 kW_t for 1.5960 g/millisol or kg/sol				 
-				 -->			 
+				 1 kW_t for 1.5960 g/millisol or kg/sol
+				 -->
 				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
@@ -902,7 +902,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.6" yloc="-4.9" />
 				</activity>
 			</farming>
-			
+
 			<fishery volume="1000">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
@@ -954,26 +954,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="nitrogen" capacity="5000.0" />
 				<resource-storage resource="ammonia" capacity="1000.0" />
 
-				<!-- soil related -->				
-				<!-- crop food -->				
+				<!-- soil related -->
+				<!-- crop food -->
 				<resource-storage resource="fertilizer" capacity="1000.0" />
 				<resource-storage resource="nitrate" capacity="1000.0" />
 				<resource-storage resource="nitrite" capacity="1000.0" />
 				<resource-storage resource="grey water" capacity="1000.0" />
 
-				<!-- soil related -->				
+				<!-- soil related -->
 				<resource-storage resource="soil" capacity="1000.0" />
-				<resource-storage resource="compost" capacity="1000.0" />				
+				<resource-storage resource="compost" capacity="1000.0" />
 				<resource-storage resource="crop waste" capacity="1000.0" />
 
-				<!-- Supplies -->				
+				<!-- Supplies -->
 				<resource-initial resource="carbon dioxide" amount="1000.0" />
-				
+
 			</storage>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
@@ -1042,7 +1042,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0" base-mass="30">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
-			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a biology research lab with instruments. 
+			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a biology research lab with instruments.
 		</description>
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
@@ -1057,9 +1057,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</fishery>
 
 			<life-support capacity="4" power-required=".8" />
-			
+
 			<power-storage capacity="80.0" />
-			
+
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -1088,7 +1088,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
@@ -1100,10 +1100,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="30">
 		<description> The Starting ERV Base (SERVB) is sent ahead of the arrival
 			of the human crew. It supplies the settlement with H2 that can be
-			converted into CH4 and H2O via Sabatier with RWGS. It performs also 
+			converted into CH4 and H2O via Sabatier with RWGS. It performs also
 			water electrolysis to generate H2 and O2. Unlike ERV Base, SERVB is
-			NOT fully flight capable. It would require retrofitting to be 
-			flight ready.			
+			NOT fully flight capable. It would require retrofitting to be
+			flight ready.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -1112,7 +1112,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 			<resource-processing power-down-level="0.0">
 				<process name="Sabatier RWGS Reactor" power-required="1.88" default="on">
 					<input resource="carbon dioxide" rate="158.4" ambient="true" />
@@ -1121,23 +1121,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="67.2" ambient="false" />
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
-				<process name="Oxygen Generation System" power-required="2.5" default="on">				
+				<process name="Oxygen Generation System" power-required="2.5" default="on">
 					<input resource="water" rate="144" ambient="true" />
 					<output resource="hydrogen" rate="16" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
-				</process>	
+				</process>
 			</resource-processing>
-			<storage stock-capacity="80000">
+			<storage stock-capacity="81000">
 				<resource-storage resource="hydrogen" capacity="20000.0" />
 				<resource-storage resource="methane" capacity="20000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
 				<resource-storage resource="water" capacity="20000.0" />
+				<resource-storage resource="carbon dioxide" capacity="1000.0" />
 
-				<!-- Payload imported from Earth 
+				<!-- Payload imported from Earth
 				resource-initial resource="hydrogen" amount="6300.0" /-->
 
 				<!-- Extracted on Mars -->
-				<resource-initial resource="carbon dioxide" amount="2000.0" />
+				<resource-initial resource="carbon dioxide" amount="1000.0" />
 
 				<!-- Produced on Mars -->
 				<resource-initial resource="oxygen" amount="16080.0" />
@@ -1145,9 +1146,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="hydrogen" amount="2100.0" />
 				<resource-initial resource="water" amount="18900.0" />
 
-				<!-- Mars Direct Mission Plan : 
-				
-				(1). ERV - 
+				<!-- Mars Direct Mission Plan :
+
+				(1). ERV -
 			 	(a). Payload imported from Earth -
 				 	 Consumables : 3400 kg
 				 	 Hydrogen feedstock : 6300 kg
@@ -1155,11 +1156,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					 water : 18900 kg
 					 Oxygen : 16080 kg
 					 Methane : 8400 kg
-	
+
 				(2). Hab -
 				(a). Payload imported from Earth -
-				 	 Consumables : 7000 kg			
-				 
+				 	 Consumables : 7000 kg
+
 				 -->
 
 			</storage>
@@ -1169,9 +1170,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="20">
-		<description> The Earth Return Vehicle (ERV) Base is a flight-ready space 
-		vehicle and arrives on Mars with a Lander Hab. It provides regolith processing 
-		equipment package not found in Starting ERV Base. It may in principle be 
+		<description> The Earth Return Vehicle (ERV) Base is a flight-ready space
+		vehicle and arrives on Mars with a Lander Hab. It provides regolith processing
+		equipment package not found in Starting ERV Base. It may in principle be
 		reconfigured to provide for habitation space.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
@@ -1181,44 +1182,44 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
-			<resource-processing power-down-level="0.0">	
+			<power-storage capacity="20.0" />
+			<resource-processing power-down-level="0.0">
 				<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 				analogue regolith and analyzed by ion chromatography.
 				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
-				and NO2- has 6.9 -->	
-				<process name="Convert Regolith to Sand" power-required="2.0" default="on">				
+				and NO2- has 6.9 -->
+				<process name="Convert Regolith to Sand" power-required="2.0" default="on">
 					<input resource="regolith" rate="100.0" ambient="false" />
-										
+
 					<output resource="basaltic" rate="5.0" ambient="false" />
 					<output resource="gypsum" rate="5.0" ambient="false" />
 					<output resource="smectite" rate="2.0" ambient="false" />
 					<output resource="allophane" rate="2.0" ambient="false" />
 					<output resource="akaganeite" rate="2.0" ambient="false" />
 					<output resource="bassanite" rate="2.0" ambient="false" />
-					
+
 					<output resource="sand" rate="80.0" ambient="false" />
-					<output resource="oxygen" rate="2.0" ambient="false" />			
-				</process>	
-		
+					<output resource="oxygen" rate="2.0" ambient="false" />
+				</process>
+
 				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
-				<process name="Make Mortar from Regolith" power-required="2.0" default="on">				
+				<process name="Make Mortar from Regolith" power-required="2.0" default="on">
 					<input resource="regolith" rate="83.0" ambient="false" />
 					<input resource="cement" rate="17.0" ambient="false" />
-					
+
 					<output resource="mortar" rate="100.0" ambient="false" />
 				</process>
-				
-				<process name="Make Glass from Sand" power-required="2.0" default="on">				
+
+				<process name="Make Glass from Sand" power-required="2.0" default="on">
 					<input resource="sand" rate="100.0" ambient="false" />
 					<input resource="sodium carbonate" rate="100.0" ambient="false" />
-						
+
 					<output resource="aluminum oxide" rate="4.0" ambient="false" />
 					<output resource="aluminum" rate="16.0" ambient="false" />
 					<output resource="silicon dioxide" rate="26.0" ambient="false"/>
 					<output resource="silicon" rate="4.0" ambient="false"/>
 					<output resource="glass" rate="50.0" ambient="false" />
-				</process>				
+				</process>
 			</resource-processing>
 			<storage stock-capacity="60000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
@@ -1238,9 +1239,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="hydrogen" amount="2100.0" />
 				<resource-initial resource="water" amount="18900.0" /-->
 
-				<!-- Mars Direct Mission Plan : 
-				
-				(1). ERV - 
+				<!-- Mars Direct Mission Plan :
+
+				(1). ERV -
 			 	(a). Payload imported from Earth -
 				 	 Consumables : 3400 kg
 				 	 Hydrogen feedstock : 6300 kg
@@ -1248,11 +1249,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					 water : 18900 kg
 					 Oxygen : 16080 kg
 					 Methane : 8400 kg
-	
+
 				(2). Hab -
 				(a). Payload imported from Earth -
-				 	 Consumables : 7000 kg			
-				 
+				 	 Consumables : 7000 kg
+
 				 -->
 			</storage>
 		</functions>
@@ -1261,12 +1262,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="20">
-		<description>The MD1 is the first Mars-qualified Kilopower Nuclear System. 
-		It comprises an array of four separate 10 kWe modules, each having a reactor 
-		core using depleted uranium as fuel source. It uses Stirling converters for 
-		generating power via mechanical movement of pistons inside as passive sodium 
+		<description>The MD1 is the first Mars-qualified Kilopower Nuclear System.
+		It comprises an array of four separate 10 kWe modules, each having a reactor
+		core using depleted uranium as fuel source. It uses Stirling converters for
+		generating power via mechanical movement of pistons inside as passive sodium
 		heat pipes transport thermal energy between the core containment can (hot end)
-		and the vacuum chambers (cold end). A cicular radiator panel is mounted on 
+		and the vacuum chambers (cold end). A cicular radiator panel is mounted on
 		top for heat dissipation. </description>
 
 		<!--	Nuclear Systems Kilopower Project
@@ -1294,7 +1295,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description>
 			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 100kW
 			nuclear fission power plant. It contains components of a heat source,
-			power conversion, heat rejection, power conditioning and 
+			power conversion, heat rejection, power conditioning and
 			distribution system.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
@@ -1315,47 +1316,47 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="15">
 		<description> The Atmospheric Processor is an resource-processing
-		building providing black/water recyling, air processing and waste 
+		building providing black/water recyling, air processing and waste
 		incineration functions for the settlement.
 		</description>
-		
-		<!-- see water tank calculation on Mars 
+
+		<!-- see water tank calculation on Mars
 		    at https://www.physicsforums.com/threads/pressure-a-water-tank-on-mars.242305/ -->
-		
+
 		<power-required base-power=".5" base-power-down-power=".05"/>
 
 		<functions>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />		
+			<power-storage capacity="20.0" />
 			<resource-processing power-down-level="0.0">
-			    <!-- The grey water processor below is 3 times more powerful 
+			    <!-- The grey water processor below is 3 times more powerful
 			         than the one fund in Lander Hab or Outpost Hub  -->
-				<process name="Grey Water Processor" power-required="1" default="on">			
+				<process name="Grey Water Processor" power-required="1" default="on">
 					<input resource="grey water" rate="120.0" ambient="false" />
 					<input resource="chlorine" rate="1.5" ambient="false" />
-					
+
 					<output resource="water" rate="114" ambient="false" />
 					<output resource="solid waste" rate="6" ambient="false" />
 				</process>
-				<!-- The black water processor below is 3 times more powerful 
+				<!-- The black water processor below is 3 times more powerful
 				     than the one found in Lander Hab or Outpost Hub  -->
 				<process name="Black Water Processor" power-required="0.8" default="on">
 					<input resource="black water" rate="60" ambient="false" />
 					<input resource="chlorine" rate="0.3" ambient="false" />
 					<input resource="nitrospira spp" rate="0.06" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.06" ambient="false" />	
-							
+					<input resource="nitrosomonas spp" rate="0.06" ambient="false" />
+
 					<output resource="grey water" rate="51" ambient="false" />
 					<output resource="toxic waste" rate="3" ambient="false" />
 					<output resource="nitrogen" rate="1.5" ambient="false" />
 					<output resource="nitrite" rate="1.5" ambient="false" />
 					<output resource="nitrate" rate="1.5" ambient="false" />
-					<output resource="phosphorus" rate="1.5" ambient="false" />					
+					<output resource="phosphorus" rate="1.5" ambient="false" />
 				</process>
 
-				<!-- The Solid Waste Management below is 4 times more powerful 
+				<!-- The Solid Waste Management below is 4 times more powerful
 				     than the one found in Lander Hab or Outpost Hub  -->
 				<process name= "Solid Waste Management" power-required="1" default="on"
 						 toggle-duration="30" toggle-periodicity="500">
@@ -1366,23 +1367,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="8" ambient="false" />
 					<output resource="carbon" rate="8" ambient="false" />
 				</process>
-				
+
 			</resource-processing>
 
 			<storage stock-capacity="10000">
 				<resource-storage resource="methane" capacity="10000.0" />
 				<resource-storage resource="water" capacity="10000.0" />
 				<resource-storage resource="hydrogen" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />				
-				
+				<resource-storage resource="oxygen" capacity="10000.0" />
+
 				<resource-storage resource="solid waste" capacity="1000.0" />
 				<resource-storage resource="toxic waste" capacity="1000.0" />
 				<resource-storage resource="fertilizer" capacity="1000.0" />
 				<resource-storage resource="chlorine" capacity="1000.0" />
-				
+
 				<resource-storage resource="grey water" capacity="10000.0" />
 				<resource-storage resource="black water" capacity="10000.0" />
-				
+
 			</storage>
 		</functions>
 	</building>
@@ -1406,7 +1407,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.2" yloc="-.6" />
 					<activity-spot xloc="2.2" yloc="-2.0" />
 					<activity-spot xloc="2.2" yloc="-3.4" />
-					
+
 					<activity-spot xloc="-2.2" yloc="3.2" />
 					<activity-spot xloc="-2.2" yloc="1.8" />
 					<activity-spot xloc="-2.2" yloc=".4" />
@@ -1416,7 +1417,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="20.0" />
@@ -1437,7 +1438,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="solid waste" capacity="500.0" />
 				<resource-storage resource="food waste" capacity="500.0" />
 				<resource-storage resource="toxic waste" capacity="500.0" />
-				
+
 				<resource-storage resource="grey water" capacity="1000.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
@@ -1450,14 +1451,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="toilet tissue" amount="100.0" />
 				<resource-initial resource="paper" amount="100.0" />
 				<resource-initial resource="napkin" amount="100.0" />
-				
+
 			</storage>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1489,37 +1490,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.55" yloc="2.0" />
 					<activity-spot xloc="-2.00" yloc="2.0" />
 					<activity-spot xloc="-2.45" yloc="2.0" />
-					
+
 					<activity-spot xloc="-.32" yloc="1.59" />
 					<activity-spot xloc="-.65" yloc="1.23" />
 					<activity-spot xloc="-1.10" yloc="1.23" />
 					<activity-spot xloc="-1.55" yloc="1.23" />
 					<activity-spot xloc="-2.00" yloc="1.23" />
-					
+
 					<activity-spot xloc="-2.45" yloc="1.23" />
 					<activity-spot xloc="-.65" yloc=".99" />
 					<activity-spot xloc="-1.10" yloc=".99" />
 					<activity-spot xloc="-1.55" yloc=".99" />
 					<activity-spot xloc="-2.00" yloc=".99" />
-					
+
 					<activity-spot xloc="-2.45" yloc=".99" />
 					<activity-spot xloc="-.32" yloc=".62" />
 					<activity-spot xloc="-.65" yloc=".22" />
 					<activity-spot xloc="-1.10" yloc=".22" />
 					<activity-spot xloc="-1.55" yloc=".22" />
-					
+
 					<activity-spot xloc="-2.00" yloc=".22" />
 					<activity-spot xloc="-2.45" yloc=".22" />
 					<activity-spot xloc="-.65" yloc="-.02" />
 					<activity-spot xloc="-1.10" yloc="-.02" />
 					<activity-spot xloc="-1.55" yloc="-.02" />
-					
+
 					<activity-spot xloc="-2.00" yloc="-.02" />
 					<activity-spot xloc="-2.45" yloc="-.02" />
 					<activity-spot xloc="-.32" yloc="-.39" />
 					<activity-spot xloc="-.65" yloc="-.79" />
 					<activity-spot xloc="-1.10" yloc="-.79" />
-					
+
 					<activity-spot xloc="-1.55" yloc="-.79" />
 					<activity-spot xloc="-2.00" yloc="-.79" />
 					<activity-spot xloc="-2.45" yloc="-.79" />
@@ -1549,15 +1550,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</food-production>
 
 			<life-support capacity="36" power-required="1.8" />
-			
+
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			
+
 			<power-storage capacity="20.0" />
-			
+
 			<recreation capacity="25">
 				<activity>
 					<activity-spot xloc="1.6" yloc="1.0" />
@@ -1655,7 +1656,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="morel mushroom" capacity="100.0" />
 				<resource-storage resource="radish" capacity="100.0" />
 				<resource-storage resource="swiss chard" capacity="100.0" />
-											
+
 				<resource-storage resource="Mustard" capacity="100.0" />
 				<resource-storage resource="Mustard Seed" capacity="100.0" />
 				<resource-storage resource="White Mustard" capacity="100.0" />
@@ -1663,18 +1664,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<resource-storage resource="Sesame Seed" capacity="100.0" />
 				<resource-storage resource="Sesame Oil" capacity="100.0" />
-				
+
 				<resource-initial resource="toilet tissue" amount="100.0" />
 				<resource-initial resource="paper" amount="100.0" />
 				<resource-initial resource="napkin" amount="100.0" />
-									
+
 			</storage>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1705,8 +1706,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</medical-care>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
@@ -1729,7 +1730,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1753,17 +1754,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.62" yloc="3.33" />
 					<activity-spot xloc="-1.62" yloc="2.85" />
 					<activity-spot xloc="1.56" yloc="-2.91" />
-					
+
 					<activity-spot xloc="1.56" yloc="-3.37" />
 					<activity-spot xloc="-1.62" yloc="-2.91" />
 					<activity-spot xloc="-1.62" yloc="-3.37" />
 					<activity-spot xloc="-1.88" yloc="1.21" />
 					<activity-spot xloc="-1.88" yloc=".4" />
-					
+
 					<activity-spot xloc="-1.88" yloc="-.45" />
 					<activity-spot xloc="-1.88" yloc="-1.34" />
 				</activity>
-			</administration>		
+			</administration>
 			<communication>
 				<activity>
 					<activity-spot xloc="1.75" yloc="1.4" />
@@ -1778,12 +1779,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.32" yloc="0.28" />
 					<activity-spot xloc="1.32" yloc="-0.4" />
 					<activity-spot xloc="1.32" yloc="-1.08" />
-					
+
 					<activity-spot xloc="-1.42" yloc="0.86" />
 					<activity-spot xloc="-1.42" yloc="0.26" />
 					<activity-spot xloc="-1.42" yloc="-0.4" />
 					<activity-spot xloc="-1.42" yloc="-1.08" />
-					
+
 					<activity-spot xloc="0.42" yloc="1.92" />
 					<activity-spot xloc="-0.53" yloc="1.92" />
 					<activity-spot xloc="0.42" yloc="-2.1" />
@@ -1792,8 +1793,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</management>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="40.0" />
 			<robotic-station capacity="4">
@@ -1808,7 +1809,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1827,33 +1828,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="3" capacity="16">
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="CHEMISTRY" />		
-				<research-specialty name="COMPUTING" />	
-				<research-specialty name="MATHEMATICS" />				
-				<research-specialty name="METEOROLOGY" />				
-				<research-specialty name="PHYSICS" />				
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="COMPUTING" />
+				<research-specialty name="MATHEMATICS" />
+				<research-specialty name="METEOROLOGY" />
+				<research-specialty name="PHYSICS" />
 				<activity>
 					<activity-spot xloc="1.55" yloc="2.87" />
 					<activity-spot xloc="1.55" yloc="1.38" />
 					<activity-spot xloc=".3" yloc="2.42" />
 					<activity-spot xloc=".3" yloc="1.11" />
-					
+
 					<activity-spot xloc="-1.01" yloc="3.28" />
 					<activity-spot xloc="-.51" yloc="1.55" />
 					<activity-spot xloc="-1.71" yloc="2.63" />
 					<activity-spot xloc="-1.72" yloc="1.1" />
-					
+
 					<activity-spot xloc="1.49" yloc="-.62" />
 					<activity-spot xloc="1.48" yloc="-2.02" />
 					<activity-spot xloc=".29" yloc="-.9" />
 					<activity-spot xloc=".28" yloc="-2.72" />
-					
+
 					<activity-spot xloc="-.51" yloc="-.75" />
 					<activity-spot xloc="-.51" yloc="-2.31" />
 					<activity-spot xloc="-1.62" yloc="-1.12" />
@@ -1868,12 +1869,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.9" yloc="3.7" />
 				</activity>
 			</robotic-station>
-			<storage stock-capacity="5000" />		
+			<storage stock-capacity="5000" />
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1906,8 +1907,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="40.0" />
 			<robotic-station capacity="4">
@@ -1923,13 +1924,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
-<!-- end for garage-->	
+<!-- end for garage-->
 
 	<building type="Workshop" width="7.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5"  base-mass="40">
@@ -1954,9 +1955,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />				
-			</power-generation>			
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
+			</power-generation>
 			<power-storage capacity="40.0" />
 			<robotic-station capacity="8">
 				<activity>
@@ -1993,7 +1994,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2011,30 +2012,30 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ  
+				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
 
 				 Assume electric efficiency at 40%,
-				 356kW needs 16 g/s 
+				 356kW needs 16 g/s
 				 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
 				 1 kW_e for 3.9899 g/millisol
-	 
+
 	 			 Assume electric efficiency at 100%,
 				 1 kW_e for 9.5758 g/millisol
 				 -->
-				 
-				<power-source type="Fuel Power Source" toggle="true" power="60.0" 
+
+				<power-source type="Fuel Power Source" toggle="true" power="60.0"
 				fuel-type="methane"	consumption-rate="95.758" />
-				
+
 			</power-generation>
-			<power-storage capacity="40.0" />			
+			<power-storage capacity="40.0" />
 		</functions>
 	</building>
 
 
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="20">
-		<description> This Wind Farm consists of a total of 9 Vertical Axis Wind Turbine (VAWT) 
-		constructed with strong, lightweight material suited for Mars' low gravity and low 
+		<description> This Wind Farm consists of a total of 9 Vertical Axis Wind Turbine (VAWT)
+		constructed with strong, lightweight material suited for Mars' low gravity and low
 		density wind load. Each VAWT provides up to 2 kW of power at the wind speed of 14 m/s
 		</description>
 		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
@@ -2061,7 +2062,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="15.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 		</functions>
 	</building>
 
@@ -2094,7 +2095,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="30.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 		</functions>
 	</building>
 
@@ -2110,7 +2111,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="100.0" />
 			</power-generation>
-			<power-storage capacity="40.0" />			
+			<power-storage capacity="40.0" />
 		</functions>
 	</building>
 
@@ -2265,7 +2266,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2273,9 +2274,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Large Sabatier Processor" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="15">
-		<description> This building houses a number of high capacity sabatier 
-			methanation modules for processing hydrogen and carbon dioxide at 
-			elevated temperatures and pressures in the presence of a  
+		<description> This building houses a number of high capacity sabatier
+			methanation modules for processing hydrogen and carbon dioxide at
+			elevated temperatures and pressures in the presence of a
 			catalyst to produce methane and water.
 		</description>
 		<power-required base-power=".5" base-power-down-power=".05" />
@@ -2288,14 +2289,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methane" rate="32" ambient="false" />
 					<output resource="carbon monoxide" rate="112" ambient="false" />
 					<output resource="water" rate="144" ambient="false" />
-				</process>			
+				</process>
 			</resource-processing>
 			<storage stock-capacity="20000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
 				<resource-storage resource="hydrogen" capacity="5000" />
 				<resource-storage resource="methane" capacity="5000" />
 				<resource-storage resource="water" capacity="5000" />
-			</storage>			
+			</storage>
 		</functions>
 	</building>
 <!-- Small Sabatier Processor -->
@@ -2344,14 +2345,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2" yloc="-2" />
 				</activity>
 			</living-accommodations>
-			
+
 			<power-storage capacity="40.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="COMPUTING" />
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
-				
+
 				<activity>
 					<activity-spot xloc="1.45" yloc="1.35" />
 					<activity-spot xloc="-1.45" yloc="1.4" />
@@ -2370,7 +2371,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2388,14 +2389,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<!-- EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0"/ -->
-			
+
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="2.6" yloc="2.5" />
@@ -2413,7 +2414,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2433,7 +2434,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="20.0" />
@@ -2442,22 +2443,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
-				<research-specialty name="COMPUTING" />								
-				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="COMPUTING" />
+				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="MEDICINE" />
-				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="PSYCHOLOGY" />			
+				<research-specialty name="PSYCHOLOGY" />
 				<activity>
 					<activity-spot xloc=".4" yloc="3.05" />
 					<activity-spot xloc="-2.73" yloc="-.15" />
 					<activity-spot xloc="2.67" yloc="-1.18" />
 					<activity-spot xloc="-.77" yloc="-3.0" />
-					
+
 					<activity-spot xloc="-0.75" yloc="-2.5" />
 					<activity-spot xloc="-2.5" yloc="1.3" />
 					<activity-spot xloc="-1.45" yloc="3.0" />
-					<activity-spot xloc="1.58" yloc="2.7" />					
+					<activity-spot xloc="1.58" yloc="2.7" />
 				</activity>
 			</research>
 			<robotic-station capacity="2">
@@ -2471,7 +2472,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 			</thermal-generation>
 	</functions>
 	</building>
@@ -2500,10 +2501,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
-				fuel-type="methane"	consumption-rate="95.758" />	
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="0.0" yloc="1.0" />
@@ -2515,7 +2516,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2538,36 +2539,36 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.0" yloc="1.5" />
 					<activity-spot xloc="-3.3" yloc="0.0" />
 					<activity-spot xloc="-3.0" yloc="-1.2" />
-					<activity-spot xloc="-2.3" yloc="-1.7" />					
+					<activity-spot xloc="-2.3" yloc="-1.7" />
 				</activity>
-			</exercise>	
+			</exercise>
 			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="4" capacity="4">
 				<activity>
 					<activity-spot xloc="3.04" yloc="-1.3" />
-					<activity-spot xloc="1.75" yloc="2.33" />					
+					<activity-spot xloc="1.75" yloc="2.33" />
 				</activity>
 			</medical-care>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 			<research tech-level="3" capacity="8">
-				<research-specialty name="BIOLOGY" />	
-				<research-specialty name="CHEMISTRY" />							
-				<research-specialty name="MEDICINE" />	
-				<research-specialty name="PSYCHOLOGY" />					
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="MEDICINE" />
+				<research-specialty name="PSYCHOLOGY" />
 				<activity>
 					<activity-spot xloc=".77" yloc="-2.52" />
 					<activity-spot xloc="-2.09" yloc="2.06" />
 					<activity-spot xloc="1.4" yloc="-2.7" />
 					<activity-spot xloc=".8" yloc="-3.0" />
-					
+
 					<activity-spot xloc="-0.8" yloc="-2.5" />
 					<activity-spot xloc="0.7" yloc="2.8" />
-					<activity-spot xloc="-1.4" yloc="2.85" />																														
+					<activity-spot xloc="-1.4" yloc="2.85" />
 					<activity-spot xloc="-.5" yloc="-3.0" />
 				</activity>
 			</research>
@@ -2582,7 +2583,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2606,7 +2607,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.8" yloc="3.0" />
 					<activity-spot xloc="-2.7" yloc="1.0" />
 					<activity-spot xloc="-3.0" yloc="-1.0" />
-					
+
 					<activity-spot xloc="-1.3" yloc="-2.1" />
 					<activity-spot xloc=".85" yloc="-2.0" />
 					<activity-spot xloc="2.1" yloc="0.0" />
@@ -2615,10 +2616,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
-			</power-generation>	
-			<power-storage capacity="40.0" />			
+			</power-generation>
+			<power-storage capacity="40.0" />
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2646,8 +2647,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
-				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2681,7 +2682,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-<!-- The buildings below are underground and are used primarily for 
+<!-- The buildings below are underground and are used primarily for
      Trading and Mining settlements -->
 
 
@@ -2743,7 +2744,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="3.4" yloc="0.53" />
 				</activity>
 			</management>
-			
+
 			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
 					<activity-spot xloc="-1.43" yloc="-1.87" />
@@ -2755,15 +2756,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="3.7" yloc="4.2" />
 				</activity>
 			</medical-care>
-			
+
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 
 			<power-storage capacity="40.0" />
-						
+
 			<recreation capacity="4">
 				<activity>
 					<activity-spot xloc="-2.15" yloc="1.35" />
@@ -2784,26 +2785,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
-				<research-specialty name="COMPUTING" />				
-				<research-specialty name="ENGINEERING" />						
-				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="COMPUTING" />
+				<research-specialty name="ENGINEERING" />
+				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="MEDICINE" />
-				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="PSYCHOLOGY" />				
-			
+				<research-specialty name="PSYCHOLOGY" />
+
 				<activity>
 					<activity-spot xloc="-1.0" yloc="-3.0" />
 					<activity-spot xloc="-0.4" yloc="-3.1" />
-					<activity-spot xloc="1.8"  yloc="-2.6" />			
+					<activity-spot xloc="1.8"  yloc="-2.6" />
 				</activity>
 			</research>
-			
+
 			<resource-processing power-down-level="0.0">
-				<process name="Grey Water Processor" power-required=".32" default="on">			
+				<process name="Grey Water Processor" power-required=".32" default="on">
 					<input resource="grey water" rate="40.0" ambient="false" />
 					<input resource="chlorine" rate="0.5" ambient="false" />
-					
+
 					<output resource="water" rate="38" ambient="false" />
 					<output resource="solid waste" rate="2" ambient="false" />
 				</process>
@@ -2811,8 +2812,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="black water" rate="20" ambient="false" />
 					<input resource="chlorine" rate="0.1" ambient="false" />
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
-								
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
+
 					<output resource="grey water" rate="17" ambient="false" />
 					<output resource="toxic waste" rate="1" ambient="false" />
 					<output resource="nitrogen" rate=".5" ambient="false" />
@@ -2838,14 +2839,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methane" rate="4.8" ambient="false" />
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
-				</process>	
-				
-				<process name="Oxygen Generation System" power-required="3.0" default="on">				
+				</process>
+
+				<process name="Oxygen Generation System" power-required="3.0" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
-				
+
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>
@@ -2857,8 +2858,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.5" yloc="-0.5" />
 				</activity>
 			</robotic-station>
-						
-			<storage stock-capacity="5000">
+
+			<storage stock-capacity="50000">
 				<!-- The building's storage capacity for a variety of resource. -->
 				<resource-storage resource="toxic waste" capacity="500.0" />
 				<resource-storage resource="solid waste" capacity="500.0" />
@@ -2886,16 +2887,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 				<!-- life support: 5000 kg  -->
-				<resource-initial resource="water" amount="2000.0" />
-				<resource-initial resource="oxygen" amount="2000.0" />
-				<resource-initial resource="food" amount="1000.0" />
+				<resource-initial resource="water" amount="500.0" />
+				<resource-initial resource="oxygen" amount="500.0" />
+				<resource-initial resource="food" amount="500.0" />
 
 				<!-- other gases: 200 kg  -->
 				<resource-initial resource="nitrogen" amount="130.0" />
 				<resource-initial resource="argon" amount="50.0" />
 				<resource-initial resource="chlorine" amount="20.0" />
 
-				<!-- kitchen supplies: 600 kg -->				
+				<!-- kitchen supplies: 600 kg -->
 				<resource-initial resource="toilet tissue" amount="50.0" />
 				<resource-initial resource="paper" amount="50.0" />
 				<resource-initial resource="napkin" amount="50.0" />
@@ -2910,8 +2911,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="sesame oil" amount="50.0" />
 				<resource-initial resource="garlic oil" amount="50.0" />
 				<resource-initial resource="peanut oil" amount="50.0" />
-											
-				<!-- chemicals: 210 kg  -->								
+
+				<!-- chemicals: 210 kg  -->
 				<resource-initial resource="bleaching chemical" amount="50.0" />
 				<resource-initial resource="baking powder" amount="50.0" />
 				<resource-initial resource="bisphenol-a" amount="50.0" />
@@ -2919,7 +2920,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="immune booster" amount="50.0" />
 				<resource-initial resource="lime" amount="10.0" />
 
-				<!-- organisms: 40 kg -->	
+				<!-- organisms: 40 kg -->
 				<resource-initial resource="acetic acid bacteria" amount="10.0" />
 				<resource-initial resource="nitrosomonas spp" amount="10.0" />
 				<resource-initial resource="nitrospira spp" amount="10.0" />
@@ -2933,7 +2934,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
@@ -2958,10 +2959,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="20.0" />
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="1.6" yloc="-1.6" />
@@ -2973,7 +2974,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3035,10 +3036,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
-			<power-storage capacity="40.0" />			
+			<power-storage capacity="40.0" />
 			<robotic-station capacity="4">
 				<activity>
 					<activity-spot xloc="-2.25" yloc="3.75" />
@@ -3052,8 +3053,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
-					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />				
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="60.0" />
 			</thermal-generation>
 		</functions>
@@ -3071,16 +3072,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0" 
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="95.758" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="CHEMISTRY" />				
-				<research-specialty name="ENGINEERING" />				
+				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="ENGINEERING" />
 				<research-specialty name="MATHEMATICS" />
-				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
 				<activity>
 					<activity-spot xloc="1.58" yloc=".82" />
@@ -3161,27 +3162,27 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
 
-				<!-- soil related -->				
-				<!-- crop food -->				
+				<!-- soil related -->
+				<!-- crop food -->
 				<resource-storage resource="fertilizer" capacity="500.0" />
 				<resource-storage resource="nitrate" capacity="500.0" />
 				<resource-storage resource="nitrite" capacity="500.0" />
 				<resource-storage resource="grey water" capacity="500.0" />
 
-				<!-- soil related -->				
+				<!-- soil related -->
 				<resource-storage resource="soil" capacity="500.0" />
-				<resource-storage resource="compost" capacity="500.0" />				
+				<resource-storage resource="compost" capacity="500.0" />
 				<resource-storage resource="crop waste" capacity="500.0" />
 
-				<!-- Supplies -->				
+				<!-- Supplies -->
 				<resource-initial resource="carbon dioxide" amount="500.0" />
-				
+
 			</storage>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
-				<heat-source type="Fuel Heating" toggle="true" 
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>				
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
 				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>

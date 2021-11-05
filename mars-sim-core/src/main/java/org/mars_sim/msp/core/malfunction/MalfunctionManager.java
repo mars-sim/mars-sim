@@ -943,7 +943,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getRepairPartProbabilities() {
-		return factory.getRepairPartProbabilities(scopes);
+		return MalfunctionFactory.getRepairPartProbabilities(scopes);
 	}
 
 	/**
@@ -953,7 +953,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getMaintenancePartProbabilities() {
-		return factory.getMaintenancePartProbabilities(scopes);
+		return MalfunctionFactory.getMaintenancePartProbabilities(scopes);
 	}
 		
 

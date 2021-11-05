@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -41,10 +42,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
+	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	public static final int WATER_ID = ResourceUtil.waterID;
+	public static final int CO2_ID = ResourceUtil.co2ID;
+
 	// Data members.
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
-	
+
 	/** Unique identifier for the settlement that owns this equipment. */
 	private int associatedSettlementID;
 	/** The identifier for the last owner of this equipment. */
@@ -52,14 +57,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
-	/** The SalvageInfo instance. */	
+	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The MicroInventory instance. */
 	protected MicroInventory microInventory;
 
 	/**
 	 * Constructs an Equipment object
-	 * 
+	 *
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
 	 * @param settlement the unit's owner
@@ -70,47 +75,47 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Constructs an Equipment object
-	 * 
+	 *
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
 	 * @param settlement the unit's owner
 	 */
 	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
 		super(name, settlement.getCoordinates());
-		
+
 		// Initialize data members.
 		this.equipmentType = eType;
 		isSalvaged = false;
 		salvageInfo = null;
-		
+
 		lastOwner = -1;
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
-		
+
 		microInventory = new MicroInventory(this);
-		
+
 		settlement.addEquipment(this);
 	}
 
 	/**
 	 * Gets a list of supported resources
-	 * 
+	 *
 	 * @return a list of resource ids
 	 */
 	public Set<Integer> getAmountResourceIDs() {
 		return microInventory.getResourcesStored();
 	}
-	
+
 	/**
-	 * Gets all stored item resources 
-	 * 
+	 * Gets all stored item resources
+	 *
 	 * @return
 	 */
 	public Set<Integer> getItemResourceIDs() {
 		return microInventory.getItemResourceIDs();
 	}
-	
+
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
@@ -119,25 +124,25 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// Note stored mass may be have a different implementation in subclasses
 		return getStoredMass() + getBaseMass();
 	}
-	
+
 	/**
 	 * Gets the total weight of the stored resources
-	 * 
+	 *
 	 * @return
 	 */
 	public double getStoredMass() {
 		return microInventory.getStoredMass();
 	}
-	
+
 	/**
      * Gets the total capacity of resource that this container can hold.
-     * 
+     *
      * @return total capacity (kg).
      */
 	public double getTotalCapacity() {
 		return ContainerUtil.getContainerCapacity(equipmentType);
 	}
-	
+
 	/**
      * Gets the capacity of this resource that this container can hold.
      * @return capacity (kg).
@@ -145,30 +150,30 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
     public double getCapacity(int resource) {
         return microInventory.getCapacity(resource);
     }
-	
+
 	/**
 	 * Sets the capacity of a particular resource
-	 * 
+	 *
 	 * @param resource
 	 * @param capacity
 	 */
 	public void setCapacity(int resource, double capacity) {
 		microInventory.setCapacity(resource, capacity);
 	}
-	
+
 	/**
 	 * Is this resource supported ?
-	 * 
+	 *
 	 * @param resource
 	 * @return true if this resource is supported
 	 */
 	public boolean isResourceSupported(int resource) {
 		return microInventory.isResourceSupported(resource);
 	}
-	
+
 	/**
 	 * Stores the resource
-	 * 
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -180,13 +185,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			// Allocate the capacity to this new resource
 			microInventory.setCapacity(resource, getTotalCapacity());
 		}
-		
+
 		return microInventory.storeAmountResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -195,75 +200,75 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (isResourceSupported(resource)) {
 			return microInventory.retrieveAmountResource(resource, quantity);
 		}
-		
+
 //		else {
 //			String name = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(this, "No such resource. Cannot retrieve " 
+//			logger.warning(this, "No such resource. Cannot retrieve "
 //					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
 //			return quantity;
 //		}
 		return quantity;
 	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
 	public double getAmountResourceCapacity(int resource) {
-		// Note: this method is different from 
-		// EVASuit's getAmountResourceRemainingCapacity 
+		// Note: this method is different from
+		// EVASuit's getAmountResourceRemainingCapacity
 		if (isResourceSupported(resource)) {
 			return getTotalCapacity();
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
 		return microInventory.getAmountResourceRemainingCapacity(resource);
 	}
-	
-	
+
+
 	/**
 	 * Obtains the remaining storage quantity of a particular item resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	public int getItemResourceRemainingCapacity(int resource) {
 		return microInventory.getItemResourceRemainingCapacity(resource);
 	}
-	
+
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
 		return microInventory.getAmountResourceStored(resource);
 	}
-    
+
 	/**
 	 * Gets the item resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	public double getItemResourceStored(int resource) {
 		return microInventory.getItemResourceStored(resource);
 	}
-			
+
 	/**
-	 * Is this equipment empty ? 
-	 * 
+	 * Is this equipment empty ?
+	 *
 	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
@@ -273,12 +278,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		return microInventory.isEmpty();
-	}	
+	}
 
-	
+
 	/**
 	 * Does this unit have this resource ?
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */
@@ -289,10 +294,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets a collection of people affected by this entity.
-	 * 
+	 *
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
@@ -328,7 +333,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Checks if the item is salvaged.
-	 * 
+	 *
 	 * @return true if salvaged.
 	 */
 	public boolean isSalvaged() {
@@ -337,7 +342,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Indicate the start of a salvage process on the item.
-	 * 
+	 *
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
@@ -348,7 +353,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Gets the salvage info.
-	 * 
+	 *
 	 * @return salvage info or null if item not salvaged.
 	 */
 	public SalvageInfo getSalvageInfo() {
@@ -369,36 +374,36 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			return (Vehicle) container;
 		if (container.getContainerUnit().getUnitType() == UnitType.VEHICLE)
 			return (Vehicle) (container.getContainerUnit());
-		
+
 		return null;
 	}
 
 	/**
 	 * Is the equipment's outside of a settlement but within its vicinity
-	 * 
+	 *
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
         return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
     }
-	
+
 	/**
 	 * Sets the last owner of this equipment
-	 * 
+	 *
 	 * @param unit
 	 */
 	public void setLastOwner(Unit unit) {
 		if (unit != null) {
 			 if (unit.getIdentifier() != lastOwner)
 				 lastOwner = unit.getIdentifier();
-		}	
+		}
 		else
 			lastOwner = Unit.UNKNOWN_UNIT_ID;
 	}
 
 	/**
 	 * Gets the last owner of this equipment
-	 * 
+	 *
 	 * @return
 	 */
 	public Person getLastOwner() {
@@ -414,8 +419,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}
-	
-	
+
+
 	/**
 	 * Get the equipment's settlement, null if equipment is not at a settlement
 	 *
@@ -426,7 +431,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 		if (getContainerID() == 0)
 			return null;
-		
+
 		Unit c = getContainerUnit();
 
 		if (c.getUnitType() == UnitType.SETTLEMENT) {
@@ -440,7 +445,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (isInVehicleInGarage()) {
 			return ((Vehicle)c).getSettlement();
 		}
-		
+
 		return null;
 	}
 
@@ -453,7 +458,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public Settlement getAssociatedSettlement() {
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
-	
+
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.EQUIPMENT;
@@ -463,11 +468,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (baseName == null) {
 			throw new IllegalArgumentException("Must specify a baseName");
 		}
-		
+
 		int number = unitManager.incrementTypeCount(baseName);
 		return String.format("%s %03d", baseName, number);
 	}
-	
+
 	/**
 	 * Clean this container for future use
 	 */
@@ -477,7 +482,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Sets the unit's container unit.
-	 * 
+	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
 	@Override
@@ -497,10 +502,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 	}
-	
+
 	/**
 	 * Updates the location state type of an equipment
-	 * 
+	 *
 	 * @param newContainer
 	 */
 	public void updateEquipmentState(Unit newContainer) {
@@ -508,58 +513,58 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			currentStateType = LocationStateType.UNKNOWN;
 			return;
 		}
-		
+
 		currentStateType = getNewLocationState(newContainer);
 	}
-	
+
 	/**
 	 * Gets the location state type based on the type of the new container unit
-	 * 
+	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
 	@Override
 	public LocationStateType getNewLocationState(Unit newContainer) {
-		
+
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
 			return LocationStateType.INSIDE_SETTLEMENT;
-		
+
 		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
-		
+			return LocationStateType.INSIDE_SETTLEMENT;
+
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
-		
+
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
 			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
-			
+
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
 		if (newContainer.getUnitType() == UnitType.PLANET)
 			return LocationStateType.MARS_SURFACE;
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override
 	public boolean isInSettlement() {
-		
+
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
-		
+
 		// if the unit is in a settlement
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-		
+
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInSettlement();
-		
+
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
 			// if the vehicle is parked in a garage
 			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
@@ -571,30 +576,30 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			// if the unit is on a person
 			return ((Person)getContainerUnit()).isInSettlement();
 		}
-		
+
 		if (getContainerUnit().getUnitType() == UnitType.ROBOT) {
 			// if the unit is on a robot
 			return ((Robot)getContainerUnit()).isInSettlement();
 		}
-		
+
 		// Note: may consider the scenario of this unit
 		// being carried in by another person or a robot
 //		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 //			return getContainerUnit().isInSettlement();
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Transfer the unit from one owner to another owner
-	 * 
+	 *
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
-		
+
 		if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			transferred = ((Settlement)cu).removeEquipment(this);
 		}
@@ -605,9 +610,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		else {
 			transferred = ((EquipmentOwner)cu).removeEquipment(this);
 		}
-		
+
 		if (transferred) {
-			
+
 			if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addEquipment(this);
 			}
@@ -618,10 +623,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			else {
 				transferred = ((EquipmentOwner)destination).addEquipment(this);
 			}
-			
+
 			if (!transferred) {
 				logger.warning(this + " could not be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action 
+				// NOTE: need to revert back the storage action
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
@@ -634,15 +639,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 		else {
 			logger.warning(this + " could not be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action 
+			// NOTE: need to revert back the retrieval action
 		}
-		
+
 		return transferred;
 	}
-	
+
 	/**
-	 * Compares if an object is the same as this equipment 
-	 * 
+	 * Compares if an object is the same as this equipment
+	 *
 	 * @param obj
 	 */
 	@Override
@@ -653,10 +658,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		Equipment e = (Equipment) obj;
 		return this.getIdentifier() == e.getIdentifier();
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	@Override
@@ -666,7 +671,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		hashCode *= getIdentifier();
 		return hashCode;
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

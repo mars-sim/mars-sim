@@ -479,8 +479,7 @@ public class Resupply implements Serializable, Transportable {
 			String equipmentType = equipmentI.next();
 			int number = getNewEquipment().get(equipmentType);
 			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement,
-						false);
+				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement);
 				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
 				settlement.addEquipment(equipment);

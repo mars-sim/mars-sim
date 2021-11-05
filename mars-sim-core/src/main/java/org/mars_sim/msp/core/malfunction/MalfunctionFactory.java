@@ -242,7 +242,7 @@ public final class MalfunctionFactory implements Serializable {
 	 *         malfunction.
 	 * @throws Exception if error finding repair part probabilities.
 	 */
-	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
+	public static Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
 		Map<Integer, Double> repairPartProbabilities = new HashMap<>();
 
 		for (MalfunctionMeta m : mc.getMalfunctionList()) {
@@ -273,7 +273,7 @@ public final class MalfunctionFactory implements Serializable {
 	 *         maintenance.
 	 * @throws Exception if error finding maintenance part probabilities.
 	 */
-	Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
+	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
 		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {

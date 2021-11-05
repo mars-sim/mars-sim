@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -16,6 +18,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -34,37 +37,37 @@ import org.mars_sim.msp.core.time.Temporal;
 /**
  * The EVASuit class represents an EVA suit which provides life support for a
  * person during a EVA operation.
- * 
- * According to https://en.wikipedia.org/wiki/Space_suit, 
- * 
- * Generally speaking, in order to supply enough oxygen for respiration, a space suit 
- * using pure oxygen should have a pressure of about 
- * 
- * (A) 32.4 kPa (240 Torr; 4.7 psi), 
- * 
- *     which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen 
- *     in the Earth's atmosphere at sea level, 
- * 
- * (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor 
- *     pressure, 
- *     
- * both of which must be subtracted from the alveolar pressure to get alveolar oxygen 
+ *
+ * According to https://en.wikipedia.org/wiki/Space_suit,
+ *
+ * Generally speaking, in order to supply enough oxygen for respiration, a space suit
+ * using pure oxygen should have a pressure of about
+ *
+ * (A) 32.4 kPa (240 Torr; 4.7 psi),
+ *
+ *     which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen
+ *     in the Earth's atmosphere at sea level,
+ *
+ * (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor
+ *     pressure,
+ *
+ * both of which must be subtracted from the alveolar pressure to get alveolar oxygen
  * partial pressure in 100% oxygen atmospheres, by the alveolar gas equation.
- *  
+ *
  * According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
- * absolute minimum safe O2 requirement is a partial pressure of 11.94 kPa (1.732 psi) 
- * 	 
- * In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia). 
- * On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen, 
+ * absolute minimum safe O2 requirement is a partial pressure of 11.94 kPa (1.732 psi)
+ *
+ * In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia).
+ * On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen,
  * with traces of CO2 and water vapor.
- * 
- * The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in 
- * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out 
+ *
+ * The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in
+ * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out
  * nitrogen from crew members’ blood and tissues (Barer and Filipenkov, 1994)
- * 
- * See https://msis.jsc.nasa.gov/sections/section14.htm for more design and 
+ *
+ * See https://msis.jsc.nasa.gov/sections/section14.htm for more design and
  * operational considerations.
- * 
+ *
  */
 public class EVASuit extends Equipment
 	implements LifeSupportInterface, ResourceHolder, Serializable, Malfunctionable,
@@ -80,11 +83,7 @@ public class EVASuit extends Equipment
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
 	public static String GOODTYPE = "EVA Gear";
-	
-	public static final int OXYGEN_ID = ResourceUtil.oxygenID; 
-	public static final int WATER_ID = ResourceUtil.waterID;
-	public static final int CO2_ID = ResourceUtil.co2ID;
-	
+
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
@@ -103,7 +102,7 @@ public class EVASuit extends Equipment
 	private static final double WEAR_LIFETIME = 334_000;
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
-	
+
 	private static double min_o2_pressure;
 	/** The full O2 partial pressure if at full tank. */
 	private static double fullO2PartialPressure;
@@ -113,46 +112,46 @@ public class EVASuit extends Equipment
 	private static double massO2MinimumLimit;
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
-	
+
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
 	static {
-		 
+
 		 for (String p: ItemResourceUtil.EVASUIT_PARTS) {
 			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
 		 }
-		 
+
 		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
-		 
-		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY 
+
+		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
 				 / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
 
 		 massO2MinimumLimit = min_o2_pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
-		 
+
 		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
-		 
+
 		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
-		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L"); 
+		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
 		 logger.config("               Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 + " kPa -> "
 				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
 		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
 				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - Suit target pressure");
 		 logger.config("                 Minimum O2 : " + Math.round(min_o2_pressure*100.0)/100.0 + " kPa -> "
 				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - Safety limit");
-		 
+
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
-			// 20.7  kPa -> 0.3107 kg 
+			// 20.7  kPa -> 0.3107 kg
 			// 17    kPa -> 0.2552 kg (target O2 pressure)
 			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 	}
-	
+
 	/**
 	 * Constructor.
-	 * @param name 
-	 * 
+	 * @param name
+	 *
 	 * @param settlement the location of the EVA suit.
 	 * @throws Exception if error creating EVASuit.
 	 */
@@ -160,7 +159,7 @@ public class EVASuit extends Equipment
 
 		// Use Equipment constructor.
 		super(name, TYPE, settlement);
-	
+
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
@@ -185,43 +184,43 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Stores the resource
-	 * 
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		// Note: this method is different from 
-		// Equipment's storeAmountResource 
+		// Note: this method is different from
+		// Equipment's storeAmountResource
 		if (isResourceSupported(resource)) {
 			return microInventory.storeAmountResource(resource, quantity);
 		}
 		else {
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, name + "Not allowed to be stored in " 
+			logger.warning(this, name + "Not allowed to be stored in "
 					+ this + ".");
 			return quantity;
-		}	
+		}
 	}
-	
+
 
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		// Note: this method is different from 
-		// Equipment's getAmountResourceCapacity 
+		// Note: this method is different from
+		// Equipment's getAmountResourceCapacity
 		return microInventory.getCapacity(resource);
 	}
-	
+
 	/**
 	 * Gets the unit's malfunction manager.
-	 * 
+	 *
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
@@ -231,27 +230,27 @@ public class EVASuit extends Equipment
 	/**
 	 * Returns true if life support is working properly and is not out of oxygen or
 	 * water.
-	 * 
+	 *
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
 		// boolean result = true;
 		try {
-			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
+			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 //			String name = getOwner().getName();
-			if (getAmountResourceStored(OXYGEN_ID) <= massO2MinimumLimit) {				
+			if (getAmountResourceStored(OXYGEN_ID) <= massO2MinimumLimit) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
-			
-			if (getAmountResourceStored(WATER_ID) <= 0D) {				
-				logger.log(getOwner(), Level.WARNING, 30_000, 
+
+			if (getAmountResourceStored(WATER_ID) <= 0D) {
+				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Ran out of water.");
 //				return false;
 			}
-			
+
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Oxygen flow sensor malfunction.", null);
@@ -259,7 +258,7 @@ public class EVASuit extends Equipment
 			}
 //			if (malfunctionManager.getWaterFlowModifier() < 100D) {
 //				LogConsolidated.log(Level.INFO, 5000, sourceName,
-//						"[" + this.getLocationTag().getLocale() + "] " 
+//						"[" + this.getLocationTag().getLocale() + "] "
 //								+ person.getName() + "'s " + this.getName() + "'s water flow sensor detected malfunction.", null);
 //				return false;
 //			}
@@ -285,7 +284,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Gets the number of people the life support can provide for.
-	 * 
+	 *
 	 * @return the capacity of the life support system.
 	 */
 	public int getLifeSupportCapacity() {
@@ -294,7 +293,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Gets oxygen from system.
-	 * 
+	 *
 	 * @param amountRequested the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
@@ -314,36 +313,36 @@ public class EVASuit extends Equipment
 	//				person.getMind().getTaskManager().clearTask();//
 	//				person.getMind().getTaskManager().addTask(new Relax(person));
 	//			}
-				
+
 				if (oxygenTaken > oxygenLeft)
 					oxygenTaken = oxygenLeft;
 
 				if (oxygenTaken > 0)
 					retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-							
+
 				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
 				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
 				// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g ( 2g/L x .04 x
 				// .5l).
-	
+
 				double carbonDioxideProvided = .04 * .04 * oxygenTaken;
 				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
 				if (carbonDioxideProvided > carbonDioxideCapacity)
 					carbonDioxideProvided = carbonDioxideCapacity;
-	
+
 				storeAmountResource(CO2_ID, carbonDioxideProvided);
-	
+
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
 			}
 		}
-		
+
 		return oxygenTaken;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
 	/**
 	 * Gets water from the system.
-	 * 
+	 *
 	 * @param waterTaken the amount of water requested from system (kg)
 	 * @return the amount of water actually received from system (kg)
 	 * @throws Exception if error providing water.
@@ -362,39 +361,39 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Gets the air pressure of the life support system.
-	 * 
+	 *
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		// Based on some pre-calculation, 
-		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure 	
-		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2	
-		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 	
+		// Based on some pre-calculation,
+		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure
+		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
+		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
-		
+
 		// 66.61 kPa -> 1      kg (full tank O2 pressure)
-		// 20.7  kPa -> 0.3107 kg 
+		// 20.7  kPa -> 0.3107 kg
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
-		
+
 		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
-		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
+		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
-			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS 
+			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			logger.log(this, getOwner(), Level.WARNING, 30_000, 
+			logger.log(this, getOwner(), Level.WARNING, 30_000,
 					" got " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
 			return pp;
 		}
 //		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
-		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);	
+		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
 	}
 
 	/**
 	 * Gets the temperature of the life support system.
-	 * 
+	 *
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
@@ -426,11 +425,11 @@ public class EVASuit extends Equipment
 		Unit container = getContainerUnit();
 		if (container.getUnitType() == UnitType.PERSON
 			&&!((Person) container).getPhysicalCondition().isDead()) {
-				malfunctionManager.activeTimePassing(pulse.getElapsed());	
+				malfunctionManager.activeTimePassing(pulse.getElapsed());
 		}
 
 		malfunctionManager.timePassing(pulse);
-		
+
 		return true;
 	}
 
@@ -469,19 +468,19 @@ public class EVASuit extends Equipment
 		if (s == null) s = super.getAssociatedSettlement();
 		return s;
 	}
-	
+
 	/**
 	 * Gets the owner of this suit
-	 * 
+	 *
 	 * @return owner
 	 */
 	private Person getOwner() {
 		return (Person)getLastOwner();
 	}
-	
+
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
@@ -492,6 +491,14 @@ public class EVASuit extends Equipment
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;
+	}
+
+	/**
+	 * Return the parts that mau normally fail on a EVA Suit
+	 * @return
+	 */
+	public static Map<Integer, Double> getNormalRepairPart() {
+		return MalfunctionFactory.getRepairPartProbabilities(Set.of(TYPE));
 	}
 }
 
