@@ -101,7 +101,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Enable the detailed diagnostics
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 */
 	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
@@ -119,7 +119,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Log the creation of a new Unit
-	 * 
+	 *
 	 * @param entry
 	 */
 	private static void logCreation(Unit entry) {
@@ -139,7 +139,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name     {@link String} the name of the unit
 	 * @param location {@link Coordinates} the unit's location
 	 */
@@ -207,14 +207,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 
-
 		if (location != null) {
 			// Set the unit's location coordinates
 			setCoordinates(location);
 		}
 		else
 			this.location = new Coordinates(0D, 0D);
-		
+
 		if (diagnosticFile != null) {
 			logCreation(this);
 		}
@@ -224,7 +223,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * What logical UnitType of this object in terms of the management. This is NOT
 	 * a direct mapping to the concreate subclass of Unit since some logical
 	 * UnitTypes can have multiple implementation, e.g. Equipment.
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract UnitType getUnitType();
@@ -232,7 +231,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/**
 	 * Is this time pulse valid for the Unit. Has it been already applied? The logic
 	 * on this method can be commented out later on
-	 * 
+	 *
 	 * @param pulse Pulse to apply
 	 * @return Valid to accept
 	 */
@@ -255,7 +254,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Change the unit's name
-	 * 
+	 *
 	 * @param newName new name
 	 */
 	public final void changeName(String newName) {
@@ -267,7 +266,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's name
-	 * 
+	 *
 	 * @return the unit's name
 	 */
 	public String getName() {
@@ -276,7 +275,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's nickname
-	 * 
+	 *
 	 * @return the unit's nickname
 	 */
 	public String getNickName() {
@@ -285,7 +284,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's shortened name
-	 * 
+	 *
 	 * @return the unit's shortened name
 	 */
 	public String getShortenedName() {
@@ -323,7 +322,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets the unit's name
-	 * 
+	 *
 	 * @param name new name
 	 */
 	public void setName(String name) {
@@ -333,7 +332,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's description
-	 * 
+	 *
 	 * @return description
 	 */
 	public String getDescription() {
@@ -342,7 +341,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets the unit's description.
-	 * 
+	 *
 	 * @param description new description.
 	 */
 	protected void setDescription(String description) {
@@ -352,7 +351,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the commander's notes on this unit.
-	 * 
+	 *
 	 * @return notes
 	 */
 	public String getNotes() {
@@ -361,7 +360,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets the commander's notes on this unit.
-	 * 
+	 *
 	 * @param notes.
 	 */
 	public void setNotes(String notes) {
@@ -371,7 +370,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's location
-	 * 
+	 *
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
@@ -380,7 +379,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets unit's location coordinates
-	 * 
+	 *
 	 * @param newLocation the new location of the unit
 	 */
 	public void setCoordinates(Coordinates newLocation) {
@@ -391,7 +390,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 * 
+	 *
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
@@ -412,7 +411,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
 	 * Person or Robot) If it's on the surface of Mars, then the topmost container
 	 * is MarsSurface.
-	 * 
+	 *
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {
@@ -431,7 +430,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle,
 	 * Person or Robot) If it's on the surface of Mars, then the topmost container
 	 * is MarsSurface.
-	 * 
+	 *
 	 * @return the unit's topmost container unit
 	 */
 	public int getTopContainerID() {
@@ -448,7 +447,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets the unit's container unit.
-	 * 
+	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
@@ -489,7 +488,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the location state type based on the type of the new container unit
-	 * 
+	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
@@ -523,7 +522,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the unit's mass including inventory mass.
-	 * 
+	 *
 	 * @return mass of unit and inventory
 	 * @throws Exception if error getting the mass.
 	 */
@@ -533,7 +532,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Sets the unit's base mass.
-	 * 
+	 *
 	 * @param baseMass mass (kg)
 	 */
 	protected final void setBaseMass(double baseMass) {
@@ -543,7 +542,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the base mass of the unit.
-	 * 
+	 *
 	 * @return base mass (kg).
 	 */
 	public double getBaseMass() {
@@ -558,7 +557,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Adds a unit listener
-	 * 
+	 *
 	 * @param newListener the listener to add.
 	 */
 	public synchronized final void addUnitListener(UnitListener newListener) {
@@ -574,7 +573,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Removes a unit listener
-	 * 
+	 *
 	 * @param oldListener the listener to remove.
 	 */
 	public synchronized final void removeUnitListener(UnitListener oldListener) {
@@ -588,7 +587,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Fire a unit update event.
-	 * 
+	 *
 	 * @param updateType the update type.
 	 */
 	public final void fireUnitUpdate(UnitEventType updateType) {
@@ -597,7 +596,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Fire a unit update event.
-	 * 
+	 *
 	 * @param updateType the update type.
 	 * @param target     the event target object or null if none.
 	 */
@@ -628,7 +627,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the building this unit is at
-	 * 
+	 *
 	 * @return the building
 	 */
 	public Building getBuildingLocation() {
@@ -637,7 +636,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the associated settlement this unit is with
-	 * 
+	 *
 	 * @return the associated settlement
 	 */
 	public Settlement getAssociatedSettlement() {
@@ -656,7 +655,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/**
 	 * Is this unit inside an environmentally enclosed breathable living space such
 	 * as inside a settlement or a vehicle (NOT including in an EVA Suit)
-	 * 
+	 *
 	 * @return true if the unit is inside a breathable environment
 	 */
 	public boolean isInside() {
@@ -673,7 +672,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/**
 	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
 	 * and being outside the settlement/building/vehicle
-	 * 
+	 *
 	 * @return true if the unit is outside
 	 */
 	public boolean isOutside() {
@@ -689,7 +688,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit inside a vehicle
-	 * 
+	 *
 	 * @return true if the unit is inside a vehicle
 	 */
 	public boolean isInVehicle() {
@@ -707,14 +706,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	public abstract boolean isInSettlement();
 
 	/**
 	 * Is this unit in the vicinity of a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	public boolean isInSettlementVicinity() {
@@ -723,7 +722,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit inside a vehicle in a garage ?
-	 * 
+	 *
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
@@ -737,7 +736,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the total capacity of this unit
-	 * 
+	 *
 	 * @return
 	 */
 	public double getTotalCapacity() {
@@ -751,7 +750,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Loads instances
-	 * 
+	 *
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
 	 * @param e  {@link EarthClock}
@@ -779,7 +778,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Compares this object with the specified object for order.
-	 * 
+	 *
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
@@ -791,7 +790,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * String representation of this Unit.
-	 * 
+	 *
 	 * @return The units name.
 	 */
 	@Override
@@ -811,7 +810,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {

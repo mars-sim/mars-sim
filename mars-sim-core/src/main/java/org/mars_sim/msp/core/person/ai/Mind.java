@@ -41,7 +41,7 @@ public class Mind implements Serializable, Temporal {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Mind.class.getName());
-	
+
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 10; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 10;
@@ -52,10 +52,10 @@ public class Mind implements Serializable, Temporal {
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
-	
+
 	/** The person owning this mind. */
 	private Person person = null;
-	
+
 	/** The person's task manager. */
 	private PersonTaskManager taskManager;
 	/** The person's current mission (if any). */
@@ -64,7 +64,7 @@ public class Mind implements Serializable, Temporal {
 	private JobType job;
 	/** The person's personality. */
 	private MBTIPersonality mbti;
-	/** The person's emotional states. */	
+	/** The person's emotional states. */
 	private EmotionManager emotion;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
@@ -82,10 +82,10 @@ public class Mind implements Serializable, Temporal {
 		// Load SurfaceFeatures
 		surfaceFeatures = sim.getMars().getSurfaceFeatures();
 	}
-	
+
 	/**
 	 * Constructor 1.
-	 * 
+	 *
 	 * @param person the person owning this mind
 	 * @throws Exception if mind could not be created.
 	 */
@@ -105,10 +105,10 @@ public class Mind implements Serializable, Temporal {
 		// Construct the task manager
 		taskManager = new PersonTaskManager(this);
 	}
-	
+
 	/**
 	 * Time passing.
-	 * 
+	 *
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
@@ -116,11 +116,11 @@ public class Mind implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
 			taskManager.timePassing(pulse);
-			
+
 			// Take action as necessary.
 			takeAction(pulse.getElapsed());
 		}
-		
+
 		int msol = pulse.getMarsTime().getMillisolInt();
 		if (msol % STRESS_UPDATE_CYCLE == 0) {
 
@@ -129,7 +129,7 @@ public class Mind implements Serializable, Temporal {
 
 			// Update emotion
 			updateEmotion();
-			
+
 			// Update relationships.
 			relationshipManager.timePassing(person, pulse.getElapsed());
 		}
@@ -149,7 +149,7 @@ public class Mind implements Serializable, Temporal {
 			} else
 				checkJob();
 		}
-		
+
 		return true;
 	}
 
@@ -172,7 +172,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Assigns the first job at the start of the sim
-	 * 
+	 *
 	 * @param assignedBy the authority that assigns the job
 	 */
 	public void getInitialJob(String assignedBy) {
@@ -183,7 +183,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Take appropriate action for a given amount of time.
-	 * 
+	 *
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
 	 */
@@ -192,44 +192,39 @@ public class Mind implements Serializable, Temporal {
 		int zeroCount = 0;    // Count the number of conseq. zero executions
 		int callCount = 0;
 		// Loop around using up time; recursion can blow stack memory
-		do {			
+		do {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
 
-				// A task is return a bad remaining time. 
+				// A task is return a bad remaining time.
 				// Cause of Issue#290
 				if (!Double.isFinite(newRemain) || (newRemain < 0)) {
 					// Likely to be a defect in a Task
-					logger.warning(person, "Doing '" 
-							+ taskManager.getTaskName() + "' returned an invalid time " + newRemain);
+					logger.warning(person, "Calling '"
+							+ taskManager.getTaskName() + "' and return an invalid time " + newRemain);
 					return;
 				}
 				// Can not return more time than originally available
 				else if (newRemain > remainingTime) {
 					// Likely to be a defect in a Task or rounding problem
-					logger.warning(person, "'" 
-							+ taskManager.getTaskName() + "' returned a remaining time " + newRemain
+					logger.warning(person, "'"
+							+ taskManager.getTaskName() + "' and return a remaining time " + newRemain
 							+ " larger than the original " + remainingTime);
 					return;
 				}
-				
+
 				// Safety check to track a repeating Task loop
 				if (callCount++ >= MAX_EXECUTE) {
-					logger.warning(person, "Doing '" 
-							+ taskManager.getTaskName() + "' done for "
+					logger.warning(person, "Calling '"
+							+ taskManager.getTaskName() + "' for "
 							+ callCount + " iterations.");
 					return;
 				}
-				
+
 				// Consumed time then reset the idle counter
 				if (remainingTime == newRemain) {
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
-//						logger.warning(person, "Doing '" 
-//								+ taskManager.getTaskName() + "/"
-//								+ taskManager.getPhase().getName()
-//								+ "' consumed no time for "
-//								+ zeroCount + " consecutive iterations.");
 						return;
 					}
 				}
@@ -265,7 +260,7 @@ public class Mind implements Serializable, Temporal {
 				hasActiveMission = true;
 			}
 		}
-		
+
 		if (hasActiveMission) {
 			if (mission instanceof Delivery) {
 				// In case of a delivery mission, the bot doesn't need to be onboard
@@ -273,9 +268,9 @@ public class Mind implements Serializable, Temporal {
 					resumeMission(0);
 				}
 			}
-			
+
 			else {
-				// If the mission vehicle has embarked but the person is not on board, 
+				// If the mission vehicle has embarked but the person is not on board,
 				// then release the person from the mission
 				// TODO this logic fails because a Units coordinate can only be trusted when on the Surface.
 				// Maybe this should use TopContainer but would be better to identify
@@ -285,26 +280,26 @@ public class Mind implements Serializable, Temporal {
 //					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
 //					mission = null;
 //				}
-//				
+//
 //				else
 				if (mission.getPhase() != null) {
-					// Checks if a person is tired, too stressful or hungry and need 
+					// Checks if a person is tired, too stressful or hungry and need
 					// to take break, eat and/or sleep
 			        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 					double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
 					int mod = 2;
-					
+
 					if (!inDarkPolarRegion) {
 						if (sun < .05)
 							mod = 0;
 						else if (sun < .2)
-							mod = 1;	
+							mod = 1;
 					}
-					
+
 					if (!person.getPhysicalCondition().isFit()
 			        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
 			        	// Cannot perform the mission if a person is not well
-			        	// Note: If everyone has dangerous medical condition during a mission, 
+			        	// Note: If everyone has dangerous medical condition during a mission,
 			        	// then it won't matter and someone needs to drive the rover home.
 						// Add penalty in resuming the mission
 						resumeMission(mod - 1);
@@ -315,16 +310,16 @@ public class Mind implements Serializable, Temporal {
 				}
 			}
 		}
-		
-		if (!taskManager.hasActiveTask()) { 
+
+		if (!taskManager.hasActiveTask()) {
 			// don't have an active mission
 			taskManager.startNewTask();
 		}
 	}
-	
+
 	/**
 	 * Resumes a mission
-	 * 
+	 *
 	 * @param modifier
 	 */
 	private void resumeMission(int modifier) {
@@ -334,23 +329,23 @@ public class Mind implements Serializable, Temporal {
 			int rand = RandomUtil.getRandomInt(5);
 			if (rand - (fitness)/1.5D <= priority + modifier) {
 //						// See if this person can ask for a mission
-//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
+//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
 				mission.performMission(person);
 //						logger.info(person + " was to perform the " + mission + " mission");
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks if a person can start a new mission
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean canStartNewMission() {
 		boolean hasAMission = hasAMission();
 //		if (hasAMission)
 //			logger.info(person + " had the " + mission + " mission");;
-		
+
 		boolean hasActiveMission = hasActiveMission();
 
 		boolean overrideMission = false;
@@ -358,17 +353,17 @@ public class Mind implements Serializable, Temporal {
 		// Check if mission creation at settlement (if any) is overridden.
 		overrideMission = person.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
 
-		// Check if it's within the mission request window 
+		// Check if it's within the mission request window
 		// Within the mission window since the beginning of the work shift
 		boolean isInMissionWindow = person.getTaskSchedule().isPersonAtStartOfWorkShift();
 
 		// See if this person can ask for a mission
 		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
 	}
-	
+
 	/**
 	 * Reassign the person's job.
-	 * 
+	 *
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
 	 */
@@ -379,7 +374,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Assigns a person a new job.
-	 * 
+	 *
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
 	 * @param assignedBy
@@ -406,21 +401,21 @@ public class Mind implements Serializable, Temporal {
 						// approved by a Senior Official");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
-				
+
 				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName()
 								+ ", approved by " + approvedBy + ".");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-				
+
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;
 			}
 		}
 	}
-		
+
 	/**
 	 * Returns true if person has an active mission.
-	 * 
+	 *
 	 * @return true for active mission
 	 */
 	public boolean hasActiveMission() {
@@ -429,7 +424,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Returns true if person has a mission.
-	 * 
+	 *
 	 * @return true for active mission
 	 */
 	public boolean hasAMission() {
@@ -439,7 +434,7 @@ public class Mind implements Serializable, Temporal {
         //					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
         return mission != null;
     }
-	
+
 	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
 	 * not just close it. This abort action would then allow the Mission to be also
@@ -455,7 +450,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Sets the person's current mission.
-	 * 
+	 *
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission) {
@@ -475,7 +470,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Stops the person's current mission.
-	 * 
+	 *
 	 */
 	public void stopMission() {
 		mission = null;
@@ -497,17 +492,17 @@ public class Mind implements Serializable, Temporal {
 		}
 	}
 
-	
+
 	/**
 	 * Calls the psi function
-	 * 
+	 *
 	 * @param av
 	 * @param pv
 	 * @return
 	 */
 	private static double[] callPsi(double[] av, double[] pv) {
 		double[] v = new double[2];
-		
+
 		for (int i=0; i<pv.length; i++) {
 			if (i == 0) { // Openness
 				if (pv[0] > .5) {
@@ -573,19 +568,19 @@ public class Mind implements Serializable, Temporal {
 				v[1] = 0;
 
 		}
-		
+
 		return v;
 	}
-	
+
 	/**
 	 * Updates the emotion states
 	 */
 	public void updateEmotion() {
 		// Check for stimulus
 		emotion.checkStimulus();
-		
+
 //		int dim = emotion.getDimension();
-		
+
 		List<double[]> wVector = emotion.getOmegaVector(); // prior history
 		double[] pVector = trait.getPersonalityVector(); // personality
 		double[] aVector = emotion.getEmotionInfoVector(); // new stimulus
@@ -593,26 +588,26 @@ public class Mind implements Serializable, Temporal {
 
 		// Call Psi Function - with desire changes aVector
 		double[] psi = callPsi(aVector, pVector);//new double[dim];
-		
+
 		// Call Omega Function - internal changes such as decay of emotional states
 		// for normalize vectors
 		double[] omega = MathUtils.normalize(wVector.get(wVector.size()-1)); //new double[dim];
-		
+
 		double[] newE = new double[2];
-		
+
 		for (int i=0; i<2; i++) {
-			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2.05;			
+			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2.05;
 		}
-		
+
 		// Find the new emotion vector
 		// java.lang.OutOfMemoryError: Java heap space
 //		double[] e_tt = DoubleStream.concat(Arrays.stream(eVector),
 //				Arrays.stream(psi)).toArray();
 //		double[] e_tt2 = DoubleStream.concat(Arrays.stream(e_tt),
-//				Arrays.stream(omega)).toArray();		
+//				Arrays.stream(omega)).toArray();
 		// java.lang.OutOfMemoryError: Java heap space
 //		double[] e_tt = MathUtils.concatAll(eVector, psi, omega);
-		
+
 		if (newE[0] > .8)
 			newE[0] = .8;
 		else if (newE[0] < 0)
@@ -625,16 +620,16 @@ public class Mind implements Serializable, Temporal {
 
 		// Update the emotional states
 		emotion.updateEmotion(newE);
-		
+
 	}
-	
+
 	public EmotionManager getEmotion() {
 		return emotion;
 	}
-	
+
 	/**
 	 * Gets the person's MBTI (personality type).
-	 * 
+	 *
 	 * @return personality type.
 	 */
 	public MBTIPersonality getMBTI() {
@@ -643,7 +638,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Returns the person owning this mind.
-	 * 
+	 *
 	 * @return person
 	 */
 	public Person getPerson() {
@@ -652,7 +647,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Returns the person's task manager
-	 * 
+	 *
 	 * @return task manager
 	 */
 	public PersonTaskManager getTaskManager() {
@@ -662,7 +657,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Returns the person's current mission. Returns null if there is no current
 	 * mission.
-	 * 
+	 *
 	 * @return current mission
 	 */
 	public Mission getMission() {
@@ -671,7 +666,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Gets the person's job
-	 * 
+	 *
 	 * @return job or null if none.
 	 */
 	public JobType getJob() {
@@ -680,7 +675,7 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Checks if the person's job is locked and can't be changed.
-	 * 
+	 *
 	 * @return true if job lock.
 	 */
 	public boolean getJobLock() {
@@ -701,18 +696,18 @@ public class Mind implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param clock
 	 */
 	public static void initializeInstances(MissionManager m, RelationshipManager r) {
 		relationshipManager = r;
 		missionManager = m;
 	}
-	
+
 	public void reinit() {
 		taskManager.reinit();
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

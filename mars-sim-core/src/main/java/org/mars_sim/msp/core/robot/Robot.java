@@ -10,12 +10,14 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -50,7 +52,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -82,21 +83,21 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private static final double MAINTENANCE_TIME = 100D;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
-	
+
 	/** The string type of this equipment. */
 	public static final String TYPE = "Robot";
-	/** The string tag of operable. */	
+	/** The string tag of operable. */
 	private static final String OPERABLE = "Operable";
 	/** The string tag of inoperable. */
 	private static final String INOPERABLE = "Inoperable";
-	
-	
+
+
 	// Data members
 	/** Is the robot is inoperable. */
 	private boolean isInoperable;
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
-	
+
 	/** The building the robot is at. */
 	private int currentBuildingInt;
 	/** The year of birth of this robot. */
@@ -113,7 +114,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private int height;
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
-	
+
 	/** Settlement X location (meters) from settlement center. */
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
@@ -129,10 +130,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private String country;
 	/** The sponsor of the robot. */
 	private String sponsor;
-	
+
 	/** The Robot Type. */
 	private RobotType robotType;
-	
+
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
@@ -147,19 +148,19 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	protected MalfunctionManager malfunctionManager;
 	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-	
-	
+
+
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
-		
+
 		// Initialize data members.
 		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 		this.robotType = robotType;
-		
+
 		xLoc = 0D;
 		yLoc = 0D;
-		
+
 		isSalvaged = false;
 		salvageInfo = null;
 		isInoperable = false;
@@ -180,23 +181,23 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	public void initialize() {
-		
+
 		unitManager = sim.getUnitManager();
-		
+
 		// Add this robot to be owned by the settlement
 		unitManager.getSettlementByID(associatedSettlementID).addOwnedRobot(this);
 		// Set the container unit
 //		setContainerUnit(settlement);
 		// Put robot in proper building.
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-		
+
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
 		// Set up the time stamp for the robot
 		birthTimeStamp = createBirthTimeStamp();
-		
+
 		// Construct the BotMind instance.
 		botMind = new BotMind(this);
 		// Construct the SystemCondition instance.
@@ -208,7 +209,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set carry capacity
-		carryingCapacity = (int) (BASE_CAPACITY + strength);	
+		carryingCapacity = (int) (BASE_CAPACITY + strength);
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
@@ -272,10 +273,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		return s.toString();
 	}
-	
+
 //	/**
 //	 * Is the robot in a vehicle inside a garage
-//	 * 
+//	 *
 //	 * @return true if the robot is in a vehicle inside a garage
 //	 */
 //	public boolean isInVehicleInGarage() {
@@ -290,7 +291,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Is the robot outside of a settlement but within its vicinity
-	 * 
+	 *
 	 * @return true if the robot is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
@@ -299,7 +300,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the robot's X location at a settlement.
-	 * 
+	 *
 	 * @return X distance (meters) from the settlement's center.
 	 */
 	public double getXLocation() {
@@ -308,7 +309,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Sets the robot's X location at a settlement.
-	 * 
+	 *
 	 * @param xLocation the X distance (meters) from the settlement's center.
 	 */
 	public void setXLocation(double xLocation) {
@@ -317,7 +318,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the robot's Y location at a settlement.
-	 * 
+	 *
 	 * @return Y distance (meters) from the settlement's center.
 	 */
 	public double getYLocation() {
@@ -326,7 +327,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Sets the robot's Y location at a settlement.
-	 * 
+	 *
 	 * @param yLocation
 	 */
 	public void setYLocation(double yLocation) {
@@ -338,10 +339,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return the robot's settlement
 	 */
-	public Settlement getNearbySettlement() {	
+	public Settlement getNearbySettlement() {
 		return CollectionUtils.findSettlement(getCoordinates());
 	}
-	
+
 	/**
 	/**
 	 * Get the settlement the robot is at.
@@ -351,10 +352,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	@Override
 	public Settlement getSettlement() {
-		
+
 		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
-		
+
 		Unit c = getContainerUnit();
 
 		if (c.getUnitType() == UnitType.SETTLEMENT) {
@@ -364,7 +365,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		if (isInVehicleInGarage()) {
 			return ((Vehicle)c).getSettlement();
 		}
-		
+
 		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
 			return c.getSettlement();
 		}
@@ -387,7 +388,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
 		((Settlement)getContainerUnit()).removeOwnedRobot(this);
-		
+
 		isInoperable = true;
 		// Set home town
 		setAssociatedSettlement(-1);
@@ -396,16 +397,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	// TODO: allow robot parts to be stowed in storage
 	void setInoperable() {
 		// set description for this robot
-		super.setDescription(INOPERABLE);  
-		
+		super.setDescription(INOPERABLE);
+
 		botMind.setInactive();
-		
+
 		toBeSalvaged();
 	}
 
 	/**
 	 * robot can take action with time passing
-	 * 
+	 *
 	 * @param pulse Current simulation time
 	 */
 	@Override
@@ -413,7 +414,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		if (!isValid(pulse)) {
 			return false;
 		}
-		
+
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
 			if (health.timePassing(pulse.getElapsed())) {
@@ -426,7 +427,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				setInoperable();
 			}
 		}
-		
+
 		malfunctionManager.timePassing(pulse);
 
 		if (pulse.isNewSol()) {
@@ -442,7 +443,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Returns a reference to the robot's attribute manager
-	 * 
+	 *
 	 * @return the robot's natural attribute manager
 	 */
 	@Override
@@ -452,7 +453,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Get the performance factor that effect robot with the complaint.
-	 * 
+	 *
 	 * @return The value is between 0 -> 1.
 	 */
 	public double getPerformanceRating() {
@@ -461,7 +462,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Returns a reference to the robot's system condition
-	 * 
+	 *
 	 * @return the robot's batteryCondition
 	 */
 	public SystemCondition getSystemCondition() {
@@ -474,7 +475,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Returns the robot's mind
-	 * 
+	 *
 	 * @return the robot's mind
 	 */
 	public BotMind getBotMind() {
@@ -485,10 +486,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public TaskManager getTaskManager() {
 		return botMind.getBotTaskManager();
 	}
-	
+
 	/**
 	 * Updates and returns the robot's age
-	 * 
+	 *
 	 * @return the robot's age
 	 */
 	public int updateAge(EarthClock earthTime) {
@@ -502,7 +503,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Returns the robot's height in cm
-	 * 
+	 *
 	 * @return the robot's height
 	 */
 	public int getHeight() {
@@ -511,7 +512,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Returns the robot's birth date
-	 * 
+	 *
 	 * @return the robot's birth date
 	 */
 	public String getBirthDate() {
@@ -544,7 +545,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the type of the robot.
-	 * 
+	 *
 	 * @return RobotType
 	 */
 	public RobotType getRobotType() {
@@ -557,7 +558,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the birthplace of the robot
-	 * 
+	 *
 	 * @return the birthplace
 	 * @deprecated TODO internationalize the place of birth for display in user
 	 *             interface.
@@ -568,7 +569,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the robot's local group (in building or rover)
-	 * 
+	 *
 	 * @return collection of robots in robot's location.
 	 */
 	public Collection<Robot> getLocalRobotGroup() {
@@ -584,7 +585,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		} else if (isInVehicle()) {
 			localRobotGroup = new ConcurrentLinkedQueue<Robot>(((Crewable) getVehicle()).getRobotCrew());
 		}
-		
+
 		if (localRobotGroup == null) {
 			localRobotGroup = Collections.emptyList();
 		}
@@ -596,7 +597,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the name of the vehicle operator
-	 * 
+	 *
 	 * @return vehicle operator name.
 	 */
 	public String getOperatorName() {
@@ -605,7 +606,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the settlement the robot is currently associated with.
-	 * 
+	 *
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
@@ -614,12 +615,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Sets the associated settlement for a robot.
-	 * 
+	 *
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
 	public void setAssociatedSettlement(int newSettlement) {
 		if (associatedSettlementID != newSettlement) {
-			
+
 			int oldSettlement = associatedSettlementID;
 			associatedSettlementID = newSettlement;
 
@@ -642,7 +643,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets a collection of people affected by this malfunction bots
-	 * 
+	 *
 	 * @return person collection
 	 */
 	// TODO: associate each bot with its owner
@@ -677,7 +678,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Checks if the item is salvaged.
-	 * 
+	 *
 	 * @return true if salvaged.
 	 */
 	public boolean isSalvaged() {
@@ -690,7 +691,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Indicate the start of a salvage process on the item.
-	 * 
+	 *
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
@@ -701,7 +702,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the salvage info.
-	 * 
+	 *
 	 * @return salvage info or null if item not salvaged.
 	 */
 	public SalvageInfo getSalvageInfo() {
@@ -710,7 +711,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the unit's malfunction manager.
-	 * 
+	 *
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
@@ -720,7 +721,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Gets the building the robot is located at Returns null if outside of a
 	 * settlement
-	 * 
+	 *
 	 * @return building
 	 */
 	@Override
@@ -731,7 +732,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Computes the building the robot is currently located at Returns null if
 	 * outside of a settlement
-	 * 
+	 *
 	 * @return building
 	 */
 	public Building computeCurrentBuilding() {
@@ -742,7 +743,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 //			currentBuilding = null;
 //
 //		return currentBuilding;
-		
+
 		if (currentBuildingInt == -1)
 			return null;
 		return unitManager.getBuildingByID(currentBuildingInt);
@@ -751,7 +752,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Computes the building the robot is currently located at Returns null if
 	 * outside of a settlement
-	 * 
+	 *
 	 * @return building
 	 */
 	public void setCurrentBuilding(Building building) {
@@ -771,7 +772,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public Mission getMission() {
 		return getBotMind().getMission();
 	}
-	
+
 	@Override
 	public void setMission(Mission newMission) {
 		getBotMind().setMission(newMission);
@@ -824,41 +825,41 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Obtains the modified immediate location 
-	 * 
+	 * Obtains the modified immediate location
+	 *
 	 * @return the name string of the location the unit is at
 	 */
 	public String getModifiedLoc() {
 		return getLocationTag().getModifiedLoc();
 	}
-	
+
 	@Override
 	public String getLocale() {
 		return getLocationTag().getLocale();
 	}
-	
+
 	public String getExtendedLocations() {
 		return getLocationTag().getExtendedLocation();
 	}
-	
+
 	public Settlement findSettlementVicinity() {
 		return getLocationTag().findSettlementVicinity();
 	}
 
 	/**
 	 * Returns a reference to the robot's skill manager
-	 * 
+	 *
 	 * @return the robot's skill manager
 	 */
 	@Override
 	public SkillManager getSkillManager() {
 		return skillManager;
 	}
-	
+
 	/**
 	 * Returns the effective integer skill level from a named skill based on
 	 * additional modifiers such as fatigue.
-	 * 
+	 *
 	 * @param skillType the skill's type
 	 * @return the skill's effective level
 	 */
@@ -866,10 +867,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Modify for fatigue, minus 1 skill level for every 1000 points of fatigue.
 		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
-	
+
 	/**
 	 * Calculate the modifier for walking speed based on how much this unit is carrying
-	 * 
+	 *
 	 * @return modifier
 	 */
 	public double calculateWalkSpeed() {
@@ -878,7 +879,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Make sure is doesn't go -ve and there is always some movement
 		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
 	}
-	
+
 	public int getAge() {
 		return age;
 	}
@@ -886,7 +887,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean isFit() {
 		return !health.isInoperable();
 	}
-	
+
 
 	/**
 	 * Generate a unique name for the Robot. Generated based on
@@ -898,16 +899,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		int number = unitManager.incrementTypeCount(robotType.name());
 		return String.format("%s %03d", robotType.getName(), number);
 	}
-	
+
 
 	/**
 	 * Obtains a robot type for the specfied Settlement
-	 * 
+	 *
 	 * @param s The Settlement in question
 	 * @return
 	 */
 	public static RobotType selectNewRobotType(Settlement s) {
-	
+
 		// Ordinal numder
 		// 0 CHEFBOT
 		// 1 CONSTRUCTIONBOT
@@ -916,13 +917,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// 4 MAKERBOT
 		// 5 MEDICBOT
 		// 6 REPAIRBOT
-		
+
 		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
 		RobotType robotType = null;
 		int max = s.getProjectedNumOfRobots();
 
-		// find out how many in each robot type 
+		// find out how many in each robot type
 		// if robots already exists in this settlement
 		Iterator<Robot> i = s.getRobots().iterator();
 		while (i.hasNext()) {
@@ -930,7 +931,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				RobotType type = robot.getRobotType();
 				int ordinalNum = type.ordinal();
 				numBots[ordinalNum]++;
-//				
+//
 //			if (robot.getRobotType() == RobotType.MAKERBOT)
 //				numBots[0]++;
 //			else if (robot.getRobotType() == RobotType.GARDENBOT)
@@ -1139,7 +1140,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the remaining carrying capacity available.
-	 * 
+	 *
 	 * @return capacity (kg).
 	 */
 	public double getRemainingCarryingCapacity() {
@@ -1148,26 +1149,26 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			return 0;
 		return result;
 	}
-	
+
 	/**
 	 * Get the capacity the robot can carry
-	 * 
+	 *
 	 * @return capacity (kg)
 	 */
 	public double getCarryingCapacity() {
 		return carryingCapacity;
 	}
-	
+
 	/**
-	 * Obtains the remaining general storage space 
-	 * 
+	 * Obtains the remaining general storage space
+	 *
 	 * @return quantity
 	 */
 	@Override
 	public double getRemainingCargoCapacity() {
 		return eqmInventory.getRemainingCargoCapacity();
 	}
-	
+
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
 	 */
@@ -1178,16 +1179,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
 
 	}
-	
+
 	/**
-	 * Is this unit empty ? 
-	 * 
+	 * Is this unit empty ?
+	 *
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
 		return (eqmInventory.getStoredMass() == 0D);
-	}	
-	
+	}
+
 
 	/**
 	 * Gets the stored mass
@@ -1196,20 +1197,22 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double getStoredMass() {
 		return eqmInventory.getStoredMass();
 	}
-	
+
 	/**
 	 * Get the equipment list
-	 * 
+	 *
 	 * @return the equipment list
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
+		if (eqmInventory == null)
+			return new HashSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
-	
+
 	/**
 	 * Does this person possess an equipment of this equipment type
-	 * 
+	 *
 	 * @param typeID
 	 * @return true if this person possess this equipment type
 	 */
@@ -1217,37 +1220,37 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean containsEquipment(EquipmentType type) {
 		return eqmInventory.containsEquipment(type);
 	}
-	
+
 	/**
 	 * Adds an equipment to this person
-	 * 
+	 *
 	 * @param equipment
 	 * @return true if this person can carry it
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {	
+		if (eqmInventory.addEquipment(e)) {
 			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/**
-	 * Remove an equipment 
-	 * 
+	 * Remove an equipment
+	 *
 	 * @param equipment
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
 		return eqmInventory.removeEquipment(equipment);
 	}
-	
+
 	/**
 	 * Stores the item resource
-	 * 
+	 *
 	 * @param resource the item resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -1256,10 +1259,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public int storeItemResource(int resource, int quantity) {
 		return eqmInventory.storeItemResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the item resource 
-	 * 
+	 * Retrieves the item resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -1268,10 +1271,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public int retrieveItemResource(int resource, int quantity) {
 		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the item resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -1279,10 +1282,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public int getItemResourceStored(int resource) {
 		return eqmInventory.getItemResourceStored(resource);
 	}
-	
+
 	/**
 	 * Stores the amount resource
-	 * 
+	 *
 	 * @param resource the amount resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -1291,10 +1294,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double storeAmountResource(int resource, double quantity) {
 		return eqmInventory.storeAmountResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -1303,10 +1306,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double retrieveAmountResource(int resource, double quantity) {
 		return eqmInventory.retrieveAmountResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
@@ -1314,10 +1317,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double getAmountResourceCapacity(int resource) {
 		return eqmInventory.getAmountResourceCapacity(resource);
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -1325,20 +1328,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double getAmountResourceRemainingCapacity(int resource) {
 		return eqmInventory.getAmountResourceCapacity(resource);
 	}
-	
+
 	/**
      * Gets the total capacity that this robot can hold.
-     * 
+     *
      * @return total capacity (kg).
      */
 	@Override
 	public double getTotalCapacity() {
 		return eqmInventory.getTotalCapacity();
 	}
-	
+
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -1346,32 +1349,32 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
-    
+
 	/**
 	 * Gets all stored amount resources
-	 * 
+	 *
 	 * @return all stored amount resources.
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
 	}
-	
+
 	/**
 	 * Gets all stored item resources
-	 * 
+	 *
 	 * @return all stored item resources.
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
 		return eqmInventory.getItemResourceIDs();
 	}
-	
+
 
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
-	 * 
+	 *
 	 * @param containerClass  the unit class.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
@@ -1380,10 +1383,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
-	
+
 	/**
 	 * Finds the number of containers of a particular type
-	 * 
+	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -1391,10 +1394,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public int findNumContainersOfType(EquipmentType containerType) {
 		return eqmInventory.findNumContainersOfType(containerType);
 	}
-	
+
 	/**
 	 * Finds a container in storage.
-	 * 
+	 *
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -1404,30 +1407,30 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
-	
+
 	/**
 	 * Finds all of the containers (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
 	public Collection<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
 	}
-	
+
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
 	public Collection<Container> findContainersOfType(EquipmentType type){
 		return eqmInventory.findContainersOfType(type);
 	}
-	
+
 	/**
 	 * Does it have this item resource ?
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */
@@ -1435,10 +1438,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
 	}
-	
+
 	/**
 	 * Sets the unit's container unit.
-	 * 
+	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
 	@Override
@@ -1458,65 +1461,65 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 	}
-	
+
 	/**
 	 * Updates the location state type of a  robot
-	 * 
+	 *
 	 * @param newContainer
 	 */
 	public void updateRobotState(Unit newContainer) {
 		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN; 
+			currentStateType = LocationStateType.UNKNOWN;
 			return;
 		}
-		
+
 		currentStateType = getNewLocationState(newContainer);
 	}
-	
+
 	/**
 	 * Gets the location state type based on the type of the new container unit
-	 * 
+	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
 	@Override
 	public LocationStateType getNewLocationState(Unit newContainer) {
-		
+
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
 			return LocationStateType.INSIDE_SETTLEMENT;
-		
+
 		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;	
-		
+			return LocationStateType.INSIDE_SETTLEMENT;
+
 		if (newContainer.getUnitType() == UnitType.VEHICLE)
 			return LocationStateType.INSIDE_VEHICLE;
-		
+
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
 			return LocationStateType.MARS_SURFACE;
-			
+
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
 		if (newContainer.getUnitType() == UnitType.PLANET)
 			return LocationStateType.MARS_SURFACE;
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override
 	public boolean isInSettlement() {
-		
+
 		if (containerID == MARS_SURFACE_UNIT_ID)
 			return false;
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-		
+
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
 			return false;
 //			// if the vehicle is parked in a garage
@@ -1529,13 +1532,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// being carried in by another person or a robot
 //		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 //			return getContainerUnit().isInSettlement();
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Transfer the unit from one owner to another owner
-	 * 
+	 *
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
@@ -1566,8 +1569,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			// especially if it is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removeRobot(this);
 			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
-		}	
-		
+		}
+
 		if (transferred) {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
@@ -1587,10 +1590,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			else {
 				transferred = ((Settlement)destination).addRobot(this);
 			}
-			
+
 			if (!transferred) {
 				logger.warning(this + " cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action 
+				// NOTE: need to revert back the storage action
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
@@ -1603,15 +1606,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 		else {
 			logger.warning(this + " cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action 
+			// NOTE: need to revert back the retrieval action
 		}
-		
+
 		return transferred;
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {
@@ -1627,12 +1630,27 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
 	public Unit getHolder() {
 		return this;
+	}
+
+	/**
+	 * Sets unit's location coordinates
+	 *
+	 * @param newLocation the new location of the unit
+	 */
+	public void setCoordinates(Coordinates newLocation) {
+		super.setCoordinates(newLocation);
+
+		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+			for (Equipment e: getEquipmentSet()) {
+				e.setCoordinates(newLocation);
+			}
+		}
 	}
 
 	public boolean equals(Object obj) {

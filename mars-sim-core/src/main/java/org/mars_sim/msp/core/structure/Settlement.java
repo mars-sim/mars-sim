@@ -104,7 +104,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	
+
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
@@ -121,7 +121,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public static final int ICE_MAX = 4000;
 	public static final int WATER_MAX = 8_000;
 	public static final int MIN_ICE_RESERVE = 200; // per person
+
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -130,6 +132,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final int SAND_ID = ResourceUtil.sandID;
 	private static final int ICE_ID = ResourceUtil.iceID;
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
+	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
+	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
 	// Threshold to adjust filtering rate
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
@@ -145,14 +149,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
-	
+
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
 	/** The settlement minimum air pressure requirement. */
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-	
+
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
@@ -166,23 +170,23 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The definition of static arrays */
 	static {
 		samplingResources = new int[] {
-				ResourceUtil.oxygenID,
-				ResourceUtil.hydrogenID,
-				ResourceUtil.co2ID,
+				OXYGEN_ID,
+				HYDROGEN_ID,
+				CO2_ID,
 				METHANE_ID,
 				WATER_ID,
 				GREY_WATER_ID,
-				ResourceUtil.blackWaterID,
-				ResourceUtil.rockSamplesID,
+				BLACK_WATER_ID,
+				ROCK_SAMPLES_ID,
 				ICE_ID,
 				REGOLITH_ID };
 	}
-	
+
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	/** The base mission probability of the settlement. */
 	private boolean missionProbability = false;
-	
+
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -265,7 +269,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
-	
+
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
 
@@ -296,17 +300,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private DustStorm storm;
 	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-	
+
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
-	
+
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private SolMetricDataLogger<WaterUseType> waterConsumption;
 	/** The settlement's daily output (resources produced). */
 	private SolMetricDataLogger<Integer> dailyResourceOutput;
 	/** The settlement's daily labor hours output. */
 	private SolMetricDataLogger<Integer> dailyLaborTime;
-	
+
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
@@ -321,15 +325,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
-	
+
 	/** The last 20 mission scores */
 	private List<Double> missionScores;
 
-	/** The set of processes being overridden. */	
+	/** The set of processes being overridden. */
 	private Set<OverrideType> processOverrides = new HashSet<>();
 	/** The set of disabled missions. */
 	private Set<MissionType> disabledMissions = new HashSet<>();
-	/** The set of available airlocks. */	
+	/** The set of available airlocks. */
 	private Set<Integer> availableAirlocks = new HashSet<>();
 
 	/** The settlement's list of citizens. */
@@ -344,27 +348,27 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Set<Person> peopleWithin;// = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;// = new ConcurrentLinkedQueue<Robot>();
-	
+
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-		
-	
+
+
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
 		life_support_value = settlementConfig.getLifeSupportRequirements();
 	}
-	
+
 	/**
 	 * Constructor 1 called by ConstructionStageTest suite for maven testing.
 	 */
 	private Settlement() {
 		super(null, null);
-	
+
 		unitManager = sim.getUnitManager();
 
 		// set location
-		location = getCoordinates();		
+		location = getCoordinates();
 	}
 
 	/**
@@ -377,7 +381,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Constructor 2 called by MockSettlement for maven testing.
-	 * 
+	 *
 	 * @param name
 	 * @param id
 	 * @param location
@@ -385,7 +389,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public Settlement(String name, int id, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
-		
+
 		if (unitManager == null) {// for passing maven test
 			unitManager = sim.getUnitManager();
 		}
@@ -399,13 +403,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		parkedVehicles = new UnitSet<>();
 		peopleWithin = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-		
+
 		if (missionManager == null) {// for passing maven test
 			missionManager = sim.getMissionManager();
 		}
-		
+
 		final double GEN_MAX = 1_000_000;
-		// Create EquipmentInventory instance		
+		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 	}
 
@@ -413,7 +417,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Constructor 3 for creating settlements. Called by UnitManager to create the
 	 * initial settlement Called by ArrivingSettlement to create a brand new
 	 * settlement
-	 * 
+	 *
 	 * @param name
 	 * @param id
 	 * @param template
@@ -426,7 +430,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			int projectedNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
-		
+
 		this.template = template;
 		this.location = location;
 		this.templateID = id;
@@ -442,18 +446,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		parkedVehicles = new UnitSet<>();
 		peopleWithin = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-		
+
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
 
-		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>(); 		
+		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>();
 	}
 
-	
+
 	/**
 	 * The static factory method called by UnitManager and ArrivingSettlement to
 	 * create a brand new settlement
-	 * 
+	 *
 	 * @param name
 	 * @param id
 	 * @param template
@@ -475,70 +479,70 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public void initialize() {
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
-		
+
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
-				
+
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
-//		Note: to check gradient, do this ->double gradient = terrainProfile[1];		
-		
+//		Note: to check gradient, do this ->double gradient = terrainProfile[1];
+
 		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
-	
+
 		final double GEN_MAX = 1_000_000;
-		// Create EquipmentInventory instance		
+		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		
+
 		// Initialize the general storage capacity for this settlement
 		//getInventory().addGeneralCapacity(GEN_MAX);
-		
+
 		// initialize the oxygen type capacity
 //		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
-		
+
 //		final double PHASE_MAX = 10_000;
 		// initialize the phase type capacity
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
-		
-		
+
+
 		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
-		
-//		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);	
-		
+
+//		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+
 //		final double INITIAL_FREE_CAP = 1_000;
 		// Initialize a limited storage capacity for each resource
 //		for (AmountResource ar : ResourceUtil.getAmountResources()) {
 //			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
 //		}
-		
+
 		// Initialize building manager
-		buildingManager = new BuildingManager(this);	
+		buildingManager = new BuildingManager(this);
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
-		
+
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
-	
+
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
-		
+
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-		
+
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
-	
+
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
-		
+
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
-	
+
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
@@ -557,7 +561,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-		
+
 		// Set default mission radius
 		missionRange.put(MissionType.AREOLOGY, 500);
 		missionRange.put(MissionType.BIOLOGY,500);
@@ -578,18 +582,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	private void determineMissionAgenda() {
 		missionModifiers = new EnumMap<>(MissionType.class);
-		
+
 		// Default all modifiers to zero to start with
 		for (MissionType mt : MissionType.values()) {
 			missionModifiers.put(mt, 0);
 		}
-		
-		Map<MissionType, Integer> agendaModifers = 
+
+		Map<MissionType, Integer> agendaModifers =
 				ra.getMissionAgenda().getAgendas().stream()
 				  .flatMap(e -> e.getModifiers().entrySet().stream())
 				  .collect(Collectors.groupingBy(Map.Entry::getKey,
 						  Collectors.summingInt(Map.Entry::getValue)));
-		
+
 		missionModifiers.putAll(agendaModifers);
 	}
 
@@ -603,7 +607,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Create a map of buildings with their lists of building connectors attached to
 	 * it
-	 * 
+	 *
 	 * @return a map
 	 */
 	private Map<Building, List<Building>> createAdjacentBuildingMap() {
@@ -619,7 +623,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets a list of building connectors attached to this building
-	 * 
+	 *
 	 * @param building
 	 * @return
 	 */
@@ -632,7 +636,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Creates a list of adjacent buildings attached to this building
-	 * 
+	 *
 	 * @param building
 	 * @return a list of adjacent buildings
 	 */
@@ -655,7 +659,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the settlement's meals replenishment rate.
-	 * 
+	 *
 	 * @return mealsReplenishmentRate
 	 */
 	public double getMealsReplenishmentRate() {
@@ -664,7 +668,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Sets the settlement's meals replenishment rate.
-	 * 
+	 *
 	 * @param rate
 	 */
 	public void setMealsReplenishmentRate(double rate) {
@@ -673,7 +677,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the settlement's desserts replenishment rate.
-	 * 
+	 *
 	 * @return DessertsReplenishmentRate
 	 */
 	public double getDessertsReplenishmentRate() {
@@ -682,7 +686,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Sets the settlement's desserts replenishment rate.
-	 * 
+	 *
 	 * @param rate
 	 */
 	public void setDessertsReplenishmentRate(double rate) {
@@ -691,7 +695,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the settlement template's unique ID.
-	 * 
+	 *
 	 * @return ID number.
 	 */
 	public int getID() {
@@ -700,7 +704,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the population capacity of the settlement
-	 * 
+	 *
 	 * @return the population capacity
 	 */
 	public int getPopulationCapacity() {
@@ -715,18 +719,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the current number of people who are inside the settlement
-	 * 
+	 *
 	 * @return the number indoor
 	 */
 	public int getIndoorPeopleCount() {
-		return peopleWithin.size();	
+		return peopleWithin.size();
 	}
 
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
 			logger.log(this, p, Level.INFO, 4_000,
 						"Had to end the current indoor tasks at ("
-						+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
+						+ Math.round(p.getXLocation()*10.0)/10.0 + ", "
 						+ Math.round(p.getYLocation()*10.0)/10.0, null);
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
@@ -734,7 +738,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets a collection of the people who are currently inside the settlement.
-	 * 
+	 *
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
@@ -743,7 +747,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets a collection of people who are doing EVA outside the settlement.
-	 * 
+	 *
 	 * @return Collection of people
 	 */
 	public Collection<Person> getOutsideEVAPeople() {
@@ -757,7 +761,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets a collection of people who are doing EVA outside the settlement.
-	 * 
+	 *
 	 * @return Collection of people
 	 */
 	public Collection<Person> getOnMissionPeople() {
@@ -771,7 +775,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the robot capacity of the settlement
-	 * 
+	 *
 	 * @return the robot capacity
 	 */
 	public int getRobotCapacity() {
@@ -789,7 +793,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the current number of robots in the settlement
-	 * 
+	 *
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
@@ -819,18 +823,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.filter(r -> r.getRobotType() == type)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Returns true if life support is working properly and is not out of oxygen or
 	 * water.
-	 * 
+	 *
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
 
 		try {
-			double amount = getAmountResourceStored(ResourceUtil.oxygenID); 
+			double amount = getAmountResourceStored(ResourceUtil.oxygenID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more oxygen.");
 				return false;
@@ -860,13 +864,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		} catch (Exception e) {
 			logger.severe("Problems in lifeSupportCheck(): " + e.getMessage());
 		}
-		
+
 		return true;
 	}
 
 	/**
 	 * Gets the number of people the life support can provide for.
-	 * 
+	 *
 	 * @return the capacity of the life support system
 	 */
 	@Override
@@ -876,7 +880,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets oxygen from the inventory.
-	 * 
+	 *
 	 * @param amountRequested the amount of oxygen requested [kg]
 	 * @return the amount of oxygen actually received [kg]
 	 * @throws Exception if error providing oxygen.
@@ -934,7 +938,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Computes the average air pressure & temperature of the life support system.
-	 * 
+	 *
 	 */
 	private void computeEnvironmentalAverages() {
 
@@ -952,7 +956,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (totalArea == 0) {
 			totalArea = 0.1;
 		}
-		
+
 		// convert from atm to kPascal
 		currentPressure =  totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
 		currentTemperature = totalTArea / totalArea;
@@ -976,10 +980,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// convert from atm to kPascal
 		return p * CompositionOfAir.KPA_PER_ATM;
 	}
-	
+
 	/**
 	 * Gets the air pressure of the life support system.
-	 * 
+	 *
 	 * @return air pressure [in kPa] (not Pa)
 	 */
 	public double getAirPressure() {
@@ -992,7 +996,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param clock
 	 * @param w
 	 */
@@ -1011,7 +1015,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (!isValid(pulse)) {
 			return false;
 		}
-		
+
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// should the number of robots be accounted for here?
 
@@ -1026,11 +1030,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 
 		doCropsNeedTending(pulse);
-		
+
 		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off ?
-		
+
 		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 			powerGrid.setPowerMode(PowerMode.POWER_UP);
 		// check if POWER_UP is necessary
@@ -1045,7 +1049,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (pulse.isNewSol()) {
 			performEndOfDayTasks(pulse.getMarsTime());
 		}
-		
+
 		// Sample a data point every SAMPLE_FREQ (in msols)
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -1053,21 +1057,21 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// due to high cpu util during the change of day
 		if (msolCache != msol && msol >= 10 && msol != 1000) {
 			msolCache = msol;
-			
+
 			// Initialize tasks at the start of the sim only
 			if (justLoaded) {
 				justLoaded = false;
-				
+
 				for (Person p : citizens) {
-					// Register each settler a quarter/bed			
+					// Register each settler a quarter/bed
 					Building b = getBestAvailableQuarters(p, true);
 					if (b != null)
 						b.getLivingAccommodations().registerSleeper(p, false);
 				}
-				
+
 				// Initialize the goods manager
 				goodsManager.timePassing(pulse);
-				
+
 				// Initialize the good values
 				Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 				while (i.hasNext()) {
@@ -1075,10 +1079,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					goodsManager.determineGoodValue(g, 0, false);
 				}
 			}
-			
-			// Check for available airlocks	
-			checkAvailableAirlocks();		
-			
+
+			// Check for available airlocks
+			checkAvailableAirlocks();
+
 			// May update the goods manager updateGoodsManager(pulse);
 
 			int cycles = settlementConfig.getTemplateID();
@@ -1091,10 +1095,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 						Good g = i.next();
 						g.adjustGoodValue();
 						goodsManager.determineGoodValue(g, 1, false);
-					}	
+					}
 				}
 			}
-			
+
 			remainder = msol % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
@@ -1149,10 +1153,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		} else {
 			createAdjacentBuildingMap();
 		}
-		
+
 		// Update owned Units
 		timePassing(pulse, ownedVehicles);
-		
+
 		// Persons can die and leave the Settlement
 		Set<Person> died = new HashSet<>();
 		for (Person p : citizens) {
@@ -1175,7 +1179,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return true;
 	}
-	
+
 	/**
 	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
 	 * to avoid the impact spreading to other units.
@@ -1191,14 +1195,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				logger.severe(this, "Problem applying pulse : " + rte.getMessage(),
 						      rte);
 			}
-		}	
+		}
 	}
 
 	/**
 	 * Gets the best available living accommodations building that the person can
 	 * use. Returns null if no living accommodations building is currently
 	 * available.
-	 * 
+	 *
 	 * @param person   the person
 	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
 	 *                 not.
@@ -1219,7 +1223,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (b.size() > 0) {
 				b = BuildingManager.getLeastCrowdedBuildings(b);
 			}
-			
+
 			if (b.size() > 1) {
 				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
 						b);
@@ -1236,7 +1240,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Gets living accommodations with empty beds from a list of buildings with the
 	 * living accommodations function.
-	 * 
+	 *
 	 * @param buildingList list of buildings with the living accommodations
 	 *                     function.
 	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
@@ -1259,10 +1263,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return result;
 	}
-	
+
 	/**
 	 * Samples all the critical resources for stats
-	 *  
+	 *
 	 * @param resourceType
 	 */
 	private void sampleAllResources() {
@@ -1275,22 +1279,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Samples a critical resources for stats. 
-	 * Creates a map for sampling how many or 
+	 * Samples a critical resources for stats.
+	 * Creates a map for sampling how many or
 	 * how much a resource has in a settlement
-	 *  
+	 *
 	 * @param resourceType
 	 */
 	private void sampleOneResource(int resourceType, int sol) {
 		int msol = marsClock.getMillisolInt();
-		
+
 		if (resourceStat == null)
 			resourceStat = new ConcurrentHashMap<>();
-		
+
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
 		double newAmount = getAmountResourceStored(resourceType);
-		
+
 		if (resourceStat.containsKey(sol)) {
 			todayMap = resourceStat.get(sol);
 			if (todayMap.containsKey(resourceType)) {
@@ -1304,22 +1308,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			msolMap = new ConcurrentHashMap<>();
 			todayMap = new ConcurrentHashMap<>();
 		}
-		
+
 		msolMap.put(msol, newAmount);
 		todayMap.put(resourceType, msolMap);
 		resourceStat.put(sol, todayMap);
 	}
 
-	
+
 	/**
 	 * Gathers yestersol's statistics for the critical resources
-	 * 
+	 *
 	 * @return
 	 */
 	public Map<Integer, Double> gatherResourceStat(int sol) {
 		Map<Integer, Double> map = new HashMap<>();
 		int size = samplingResources.length;
-		
+
 		for (int i=0; i<size; i++) {
 			int id = samplingResources[i];
 			double amount = calculateDailyAverageResource(sol, id);
@@ -1327,10 +1331,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return map;
 	}
-	
+
 	/**
 	 * Gets the average amount of a critical resource on a sol
-	 * 
+	 *
 	 * @param sol
 	 * @param resourceType
 	 * @return
@@ -1349,8 +1353,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					average += i.next();
 				}
 				average = Math.round(average / size * 10.0)/10.0;
-			} 
-		} 
+			}
+		}
 
 		return average;
 	}
@@ -1370,29 +1374,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		refreshSleepMap(solElapsed);
 
 		refreshSupplyDemandMap(solElapsed);
-				
+
 		// clear estimated orbit repair parts cache value
 		goodsManager.clearOrbitRepairParts();
-		
-		// Decrease the Mission score. 
+
+		// Decrease the Mission score.
 		minimumPassingScore *= 0.9D;
-		
+
 		// Check the Grey water situation
 		if (getAmountResourceStored(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
-			logger.log(this, Level.WARNING, 1_000,  
+			logger.log(this, Level.WARNING, 1_000,
 					"Low stores of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
 		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
-			logger.log(this, Level.WARNING, 10_000, 
+			logger.log(this, Level.WARNING, 10_000,
 					   "Low capacity for grey water increases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		
+
 		solCache = solElapsed;
 	}
 
@@ -1406,7 +1410,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/***
 	 * Refreshes the sleep map for each person in the settlement
-	 * 
+	 *
 	 * @param solElapsed
 	 */
 	private void refreshSleepMap(int solElapsed) {
@@ -1436,7 +1440,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 				assignWorkShift(p, pop);
 			}
-			
+
 			// Just for sanity check for those on a vehicle mission
 			// Note: shouldn't be needed this way but currently, when currently when
 			// starting a trade mission,
@@ -1454,12 +1458,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Assign this person a work shift, based on the need of the settlement
-	 * 
+	 *
 	 * @param p
 	 * @param pop
 	 */
 	public void assignWorkShift(Person p, int pop) {
-		
+
 		// Check if person is an astronomer.
 		boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
 
@@ -1482,8 +1486,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		else {
 			// Not an astronomer
-			
-			// Note: if a person's shift is over-filled or saturated, 
+
+			// Note: if a person's shift is over-filled or saturated,
 			// he will need to change shift
 
 			// Get an unfilled work shift
@@ -1561,10 +1565,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 		} // end of if (isAstronomer)
 	}
-	
+
 	/**
 	 * Refreshes and clears settlement's data on the supply/demand and weather
-	 * 
+	 *
 	 * @param solElapsed # of sols since the start of the sim
 	 */
 	private void refreshSupplyDemandMap(int solElapsed) {
@@ -1614,7 +1618,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Gets a collection of people who are available for social conversation in the
 	 * same/another building in the same/another settlement
-	 * 
+	 *
 	 * @param initiator      the initiator of this conversation
 	 * @param checkIdle      true if the invitee is idling/relaxing (false if the
 	 *                       invitee is in a chat)
@@ -1688,7 +1692,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
                 || task instanceof HaveConversation
                 || task instanceof EatDrink;
     }
-	
+
 	/**
 	 * Gets the settlement's building manager.
 	 *
@@ -1723,7 +1727,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return airlock or null if none available.
 	 */
 	public Airlock getClosestAvailableAirlock(Person person) {
-			
+
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
@@ -1733,7 +1737,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Building building = i.next();
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
-			
+
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
 				if (!chamberFull || (chamberFull && !reservationFull)) {
 					double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
@@ -1775,7 +1779,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets an airlock for an EVA egress
-	 * 
+	 *
 	 * @param robot
 	 * @param xLocation
 	 * @param yLocation
@@ -1794,11 +1798,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return getAirlock(currentBuilding, xLocation, yLocation);
 	}
 
-	
+
 	/**
-	 * Gets an airlock for an EVA egress, preferably an pressurized airlock. 
+	 * Gets an airlock for an EVA egress, preferably an pressurized airlock.
 	 * Consider if the chambers are full and if the reservation is full.
-	 * 
+	 *
 	 * @param currentBuilding
 	 * @param xLocation
 	 * @param yLocation
@@ -1814,14 +1818,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Building building = unitManager.getBuildingByID(id);
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
-			
-			// Select airlock that fulfill either conditions: 
-			// 1. Chambers are NOT full 
-			// 2. Chambers are full but the reservation is NOT full			
+
+			// Select airlock that fulfill either conditions:
+			// 1. Chambers are NOT full
+			// 2. Chambers are full but the reservation is NOT full
 			if ((!chamberFull || (chamberFull && !reservationFull))
 				&& buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
-				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
 						xLocation, yLocation);
 				if (distance < leastDistance) {
 
@@ -1830,19 +1834,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
-	
-	/** 
-	 * Check for available airlocks	
+
+	/**
+	 * Check for available airlocks
 	 */
 	public void checkAvailableAirlocks() {
 		List<Building> pressurizedBldgs = new ArrayList<>();
 		List<Building> depressurizedBldgs = new ArrayList<>();
 		List<Building> selectedPool = new ArrayList<>();
-		
+
 		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
 			if (airlock.isPressurized()	|| airlock.isPressurizing())
@@ -1850,30 +1854,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			else if (airlock.isDepressurized() || airlock.isDepressurizing())
 				depressurizedBldgs.add(airlockBdg);
 		}
-		
+
 		if (pressurizedBldgs.size() > 1) {
 			selectedPool = pressurizedBldgs;
 		}
-		
+
 		else if (pressurizedBldgs.size() == 1) {
 			selectedPool.addAll(pressurizedBldgs);
 		}
-		
+
 		else if (depressurizedBldgs.size() > 1) {
 			selectedPool = depressurizedBldgs;
 		}
-		
+
 		else if (depressurizedBldgs.size() == 1) {
 			selectedPool.addAll(depressurizedBldgs);
 		}
-		
+
 		for (Building building : selectedPool) {
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 			int id = building.getIdentifier();
-			// Select airlock that fulfill either conditions: 
-			// 1. Chambers are NOT full 
-			// 2. Chambers are full but the reservation is NOT full			
+			// Select airlock that fulfill either conditions:
+			// 1. Chambers are NOT full
+			// 2. Chambers are full but the reservation is NOT full
 			if (!chamberFull || (chamberFull && !reservationFull)) {
 				if (!availableAirlocks.contains(id)) {
 					availableAirlocks.add(id);
@@ -1907,10 +1911,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Building nextBuilding = i.next();
 			boolean chamberFull = nextBuilding.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = nextBuilding.getEVA().getAirlock().isReservationFull();
-			
-			// Select airlock that fulfill either conditions: 
-			// 1. Chambers are NOT full 
-			// 2. Chambers are full but the reservation is NOT full			
+
+			// Select airlock that fulfill either conditions:
+			// 1. Chambers are NOT full
+			// 2. Chambers are full but the reservation is NOT full
 			if ((!chamberFull || (chamberFull && !reservationFull))
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
@@ -1996,7 +2000,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Returns a collection of people buried outside this settlement
-	 * 
+	 *
 	 * @return {@link Collection<Person>}
 	 */
 	public Collection<Person> getBuriedPeople() {
@@ -2008,7 +2012,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Returns a collection of deceased people who may or may NOT have been buried
 	 * outside this settlement
-	 * 
+	 *
 	 * @return {@link Collection<Person>}
 	 */
 	public Collection<Person> getDeceasedPeople() {
@@ -2020,7 +2024,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the person by id
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -2028,10 +2032,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return peopleWithin.stream()
 				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
 	}
-	
+
 	/**
 	 * Gets the associated person by id
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -2039,23 +2043,23 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return citizens.stream()
 				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
 	}
-	
+
 
 	/**
 	 * Does it contains this person
-	 * 
+	 *
 	 * @param p the person
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
 		if (peopleWithin.contains(p))
-			return true;	
+			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Makes this person within this settlement
-	 * 
+	 *
 	 * @param p the person
 	 * @return true if added successfully
 	 */
@@ -2071,7 +2075,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Removes this person from being within this settlement
-	 * 
+	 *
 	 * @param p the person
 	 * @return true if removed successfully
 	 */
@@ -2079,13 +2083,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (!peopleWithin.contains(p))
 			return true;
 		if (peopleWithin.remove(p))
-			return true;	
+			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Makes this person a legal citizen of this settlement
-	 * 
+	 *
 	 * @param p the person
 	 * @return true if removed successfully
 	 */
@@ -2103,14 +2107,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes this person from being a legal citizen of this settlement
-	 * 
+	 *
 	 * @param p the person
 	 */
 	public boolean removeACitizen(Person p) {
-		if (!citizens.contains(p)) 
+		if (!citizens.contains(p))
 			return true;
 		if (citizens.remove(p)) {
 			// Update the numCtizens
@@ -2123,7 +2127,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Adds a robot to be owned by the settlement
-	 * 
+	 *
 	 * @param r
 	 */
 	public boolean addOwnedRobot(Robot r) {
@@ -2141,7 +2145,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Removes a robot from being owned by the settlement
-	 * 
+	 *
 	 * @param r
 	 */
 	public boolean removeOwnedRobot(Robot r) {
@@ -2157,7 +2161,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Adds a robot to be owned by the settlement
-	 * 
+	 *
 	 * @param r
 	 */
 	public boolean addRobot(Robot r) {
@@ -2171,7 +2175,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Removes a robot from being owned by the settlement
-	 * 
+	 *
 	 * @param r
 	 */
 	public boolean removeRobot(Robot r) {
@@ -2179,29 +2183,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return true;
 		if (robotsWithin.remove(r))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Adds a parked vehicle
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the parked vehicle can be added
 	 */
 	public boolean addParkedVehicle(Vehicle vehicle) {
 		if (parkedVehicles.contains(vehicle))
-			return true;			
+			return true;
 		if (parkedVehicles.add(vehicle)) {
 			vehicle.setContainerUnit(this);
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes a parked vehicle
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the parked vehicle can be removed
 	 */
@@ -2213,10 +2217,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Does it have this vehicle parked at the settlement ?
-	 *  
+	 *
 	 * @param vehicle
 	 * @return
 	 */
@@ -2226,10 +2230,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds a vehicle into ownership
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be added
 	 */
@@ -2245,10 +2249,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes a vehicle from ownership
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be removed
 	 */
@@ -2261,15 +2265,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds an equipment to be owned by the settlement
-	 * 
+	 *
 	 * @param e
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {	
+		if (eqmInventory.addEquipment(e)) {
 			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
@@ -2280,12 +2284,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Removes an equipment from being owned by the settlement
-	 * 
+	 *
 	 * @param e
 	 */
-	@Override	
+	@Override
 	public boolean removeEquipment(Equipment e) {
-		if (eqmInventory.removeEquipment(e)) {	
+		if (eqmInventory.removeEquipment(e)) {
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2294,28 +2298,28 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Finds all of the containers (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
 	public Collection<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
 	}
-	
+
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 * 
+	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
 	public Collection<Container> findContainersOfType(EquipmentType type){
 		return eqmInventory.findContainersOfType(type);
 	}
-	
+
 	/**
 	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
-	 * 
+	 *
 	 * @return collection of owned robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
@@ -2347,10 +2351,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *
 	 * @return collection of associated equipment.
 	 */
-	public Collection<Equipment> getAllAssociatedEquipment() {	
+	public Collection<Equipment> getAllAssociatedEquipment() {
 		return getEquipmentSet();
 	}
-	
+
 	/**
 	 * Gets all associated vehicles currently on mission
 	 *
@@ -2364,18 +2368,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) 
+				if ((vehicle != null)
 						&& !result.contains(vehicle)
 						&& this.equals(vehicle.getAssociatedSettlement()))
 					result.add(vehicle);
 			}
-			
+
 			else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
 
 			}
 		}
-	
+
 		return result;
 	}
 
@@ -2390,7 +2394,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.map(Drone.class::cast)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Gets a collection of drones parked or garaged at the settlement.
 	 *
@@ -2402,10 +2406,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.map(Unit.class::cast)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Finds the number of vehicles of a particular type
-	 * 
+	 *
 	 * @param vehicleType the vehicle type.
 	 * @return number of vehicles.
 	 */
@@ -2415,10 +2419,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					.filter(v -> v.getVehicleType() == vehicleType)
 					.collect(Collectors.counting()));
 	}
-	
+
 	/**
 	 * Finds the number of parked rovers
-	 * 
+	 *
 	 * @return number of parked rovers.
 	 */
 	public int findNumParkedRovers() {
@@ -2429,7 +2433,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					|| v.getVehicleType() == VehicleType.TRANSPORT_ROVER)
 					.collect(Collectors.counting()));
 	}
-	
+
 	/**
 	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
@@ -2441,7 +2445,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the number of vehicles parked or garaged at the settlement.
-	 * 
+	 *
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
@@ -2450,7 +2454,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the number of vehicles owned by the settlement.
-	 * 
+	 *
 	 * @return number of owned vehicles
 	 */
 	public int getOwnedVehicleNum() {
@@ -2536,7 +2540,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the initial population of the settlement.
-	 * 
+	 *
 	 * @return initial population number.
 	 */
 	public int getInitialPopulation() {
@@ -2545,7 +2549,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the initial number of robots the settlement.
-	 * 
+	 *
 	 * @return initial number of robots.
 	 */
 	public int getProjectedNumOfRobots() {
@@ -2554,7 +2558,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Returns the chain of command
-	 * 
+	 *
 	 * @return chainOfCommand
 	 */
 	public ChainOfCommand getChainOfCommand() {
@@ -2563,7 +2567,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Decrements a particular shift type
-	 * 
+	 *
 	 * @param shiftType
 	 */
 	private void decrementShiftType(ShiftType shiftType) {
@@ -2600,7 +2604,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Increments a particular shift type
-	 * 
+	 *
 	 * @param shiftType
 	 */
 	private void incrementShiftType(ShiftType shiftType) {
@@ -2636,7 +2640,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Checks if a particular work shift has been saturated
-	 * 
+	 *
 	 * @param st                The ShiftType
 	 * @param inclusiveChecking
 	 * @return true/false
@@ -2771,7 +2775,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Finds an empty work shift in a settlement
-	 * 
+	 *
 	 * @param pop If it wasn't known, use -1 to obtain the latest figure
 	 * @return The ShifType
 	 */
@@ -2792,7 +2796,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		int limZ = 0;
 
 		limX = quotient;
-		
+
 		if (remainder == 0)
 			limZ = limX + 1;
 		else
@@ -2907,7 +2911,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Sets the number of shift of a settlement
-	 * 
+	 *
 	 * @param numShift
 	 */
 	public void setNumShift(int numShift) {
@@ -2916,7 +2920,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the current number of work shifts in a settlement
-	 * 
+	 *
 	 * @return a number, either 2 or 3
 	 */
 	public int getNumShift() {
@@ -2996,10 +3000,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Solar energetic particles (SEPs) event
 		double chance2 = RadiationExposure.SEP_PERCENT * ratio * mag_variation2; // 0.122 %
 		// Baseline radiation event
-		double chance0 = 100 - chance1 - chance2; 
-		// Note that RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); 
+		double chance0 = 100 - chance1 - chance2;
+		// Note that RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2);
 		// average 3.53%
-		
+
 		if (chance0 < 0)
 			chance0 = 0;
 
@@ -3028,7 +3032,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Computes the water ration level at the settlement due to low water supplies.
-	 * 
+	 *
 	 * @return level of water ration.
 	 */
 	public int getWaterRation() {
@@ -3037,7 +3041,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Computes the water ration level at the settlement due to low water supplies.
-	 * 
+	 *
 	 * @return level of water ration.
 	 */
 	private void computeWaterRation() {
@@ -3054,7 +3058,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		else if (mod > 1000)
 			mod = 1000;
 		goodsManager.setWaterValue(mod);
-		
+
 		waterRationLevel = (int) (1.0 / ratio);
 
 		if (waterRationLevel < 1)
@@ -3065,7 +3069,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Sets the objective
-	 * 
+	 *
 	 * @param {@link ObjectiveType}
 	 * @param level
 	 */
@@ -3108,12 +3112,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the objective level
-	 * 
+	 *
 	 * @param {@link ObjectiveType}
 	 * @return the level
 	 */
 	public double getObjectiveLevel(ObjectiveType objectiveType) {
-		
+
 		if (objectiveType == ObjectiveType.CROP_FARM) {
 			return goodsManager.getCropFarmFactor();
 		}
@@ -3140,7 +3144,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return -1;
 	}
-	
+
 	/**
 	 * Gets the objective
 	 */
@@ -3150,7 +3154,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the building type related to the objective
-	 * 
+	 *
 	 * @return
 	 */
 	public String getObjectiveBuildingType() {
@@ -3179,13 +3183,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Gets the number of crops that currently need work this Sol.
-	 * 
+	 *
 	 * @return number of crops.
 	 */
 	public int getCropsNeedingTending() {
 		return cropsNeedingTendingCache;
 	}
-	
+
 	/**
 	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
 	 * @param now Current time
@@ -3193,7 +3197,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private void doCropsNeedTending(ClockPulse now) {
 
 		int m = now.getMarsTime().getMillisolInt();
-		
+
 		// Check for the day rolling over
 		if (now.isNewSol() || (millisolCache + 5) < m) {
 			millisolCache = m;
@@ -3216,7 +3220,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/***
 	 * Computes the probability of the presence of regolith
-	 * 
+	 *
 	 * @return probability of finding regolith
 	 */
 	private double computeRegolithProbability() {
@@ -3253,7 +3257,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		else {
 			result = 5 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
 		}
-			
+
 		if (result < 0)
 			result = 0;
 
@@ -3262,7 +3266,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/***
 	 * Computes the probability of the presence of ice
-	 * 
+	 *
 	 * @return probability of finding ice
 	 */
 	private double computeIceProbability() {
@@ -3292,8 +3296,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// local ice and its quantity
 		if (ice_available < MIN_ICE_RESERVE * pop + ice_value / 10D
 				&& water_available < MIN_WATER_RESERVE * pop + water_value / 10D) {
-			result = (MIN_ICE_RESERVE * pop - ice_available 
-					+ MIN_WATER_RESERVE * pop - water_available) 
+			result = (MIN_ICE_RESERVE * pop - ice_available
+					+ MIN_WATER_RESERVE * pop - water_available)
 					+ water_value + ice_value;
 		}
 
@@ -3301,28 +3305,28 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// dangerously low,
 		if (water_available > MIN_WATER_RESERVE * pop) {
 			// no change to missionProbability
-		} 
+		}
 		else {
 			result = .1 * (MIN_WATER_RESERVE * pop - water_available);
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Checks if the last 20 mission scores are above the threshold
-	 * 
+	 *
 	 * @param score
 	 * @return true/false
 	 */
 	public boolean passMissionScore(double score) {
-		
-		return (score > minimumPassingScore); 
+
+		return (score > minimumPassingScore);
 	}
 
 	/**
 	 * Calculates the current minimum passing score
-	 * 
+	 *
 	 * @return
 	 */
 	public double getMinimumPassingScore() {
@@ -3331,7 +3335,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Saves the mission score
-	 * 
+	 *
 	 * @param score
 	 */
 	public void saveMissionScore(double score) {
@@ -3345,7 +3349,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Simplify how minimum score is calculated. Use of trending scores
 		// seems to make it harder to get missions approved over time
 		minimumPassingScore = total / missionScores.size();
-		
+
 		// Cap any very large score to protect the average
 		double desiredMax = Math.min(MAX_MISSION_SCORE, minimumPassingScore * 1.5D);
 		missionScores.add(Math.min(score, desiredMax));
@@ -3389,14 +3393,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public void setMissionRadius(MissionType missionType, int newRange) {
 		missionRange.put(missionType, newRange);
 	}
-	
+
 	public boolean hasDesignatedCommander() {
 		return hasDesignatedCommander;
 	}
 
 	public Person setDesignatedCommander(Commander profile) {
 		hasDesignatedCommander = true;
-		
+
 		return chainOfCommand.applyCommander(profile);
 	}
 
@@ -3415,7 +3419,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Records the daily output.
-	 * 
+	 *
 	 * @param resource the resource id of the good
 	 * @param amount the amount or quantity produced
 	 * @param millisols the labor time
@@ -3429,7 +3433,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Records the amount of water being consumed.
-	 * 
+	 *
 	 * @param type
 	 * @param amount
 	 */
@@ -3440,7 +3444,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Gets the daily average water usage of the last x sols Not: most weight on
 	 * yesterday's usage. Least weight on usage from x sols ago
-	 * 
+	 *
 	 * @return
 	 */
 	public double getDailyWaterUsage(WaterUseType type) {
@@ -3488,11 +3492,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				bestTech.getMind().assignJob(JobType.TECHNICIAN, true,
 						JobUtil.SETTLEMENT,
 						JobAssignmentType.APPROVED,
-						JobUtil.SETTLEMENT);	
+						JobUtil.SETTLEMENT);
 			}
 		}
-		
-		
+
+
 		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
 			int numWeatherman = JobUtil.numJobs(JobType.METEOROLOGIST, this);
 			if (numWeatherman == 0) {
@@ -3509,24 +3513,24 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			disabledMissions.remove(mission);
 		}
 	}
-	
+
 	public boolean isMissionDisable(MissionType mission) {
 		return disabledMissions.contains(mission);
 	}
-	
+
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
 		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
 	}
-	
+
 	public void setTradeMissionFromAllSettlements(boolean allowed) {
 		for (Settlement s: unitManager.getSettlements()) {
 			allowTradeMissionSettlements.put(s.getIdentifier(), allowed);
 		}
 	}
-	
+
 	/**
 	 * Calculate the base mission probability used by all missions
-	 * 
+	 *
 	 * @param mission the type of the mission calling this method
 	 * @return probability value
 	 */
@@ -3541,18 +3545,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (!missionProbability) {
 			missionProbability = isMissionPossible();
 		}
-		
+
 		return missionProbability;
 	}
-	
-	
+
+
 	/**
 	 * Can this settlement start a mission ?
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isMissionPossible() {
-		
+
 		if (!missionProbability) {
 			// 1. Check if a mission-capable rover is available.
 			if (!RoverMission.areVehiclesAvailable(this, false)) {
@@ -3567,7 +3571,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// should avoid the risk of mission.
 			if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
 				return false;
-			}		
+			}
 			// 4. Check if minimum number of people are available at the settlement.
 			if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
 				return false;
@@ -3582,7 +3586,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (!hasEnoughBasicResources(true)) {
 				return false;
 			}
-	
+
 			// 7. Check if starting settlement has minimum amount of methane fuel.
 			if (getAmountResourceStored(METHANE_ID) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 				return false;
@@ -3595,7 +3599,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
 				return false;
 			}
-		
+
 			missionProbability = true;
 
 		}
@@ -3618,7 +3622,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Checks if there are enough basic mission resources at the settlement to start
 	 * mission.
-	 * 
+	 *
 	 * @param settlement the starting settlement.
 	 * @return true if enough resources.
 	 */
@@ -3651,18 +3655,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
     public double getIceCollectionRate() {
     	return iceCollectionRate;
     }
-    
+
     public double getRegolithCollectionRate() {
     	return regolithCollectionRate;
     }
-	
+
 	public int getMissionDirectiveModifier(MissionType mission) {
 		return missionModifiers.get(mission);
 	}
-	
+
 	/**
 	 * Remove the record of the deceased person from airlock
-	 * 
+	 *
 	 * @param person
 	 */
 	public void removeAirlockRecord(Person person) {
@@ -3672,19 +3676,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			lock.removeAirlockRecord(person);
 		}
 	}
-	
-	/** 
-	 * The total amount of rock samples collected. 
+
+	/**
+	 * The total amount of rock samples collected.
 	 * @param id resource id
 	 */
 	public double getResourceCollected(int id) {
 		return resourcesCollected.get(id);
 	}
 
-	/** 
+	/**
 	 * Adds the amount of resource collected.
 	 * @param id resource id
-	 * @param value collected 
+	 * @param value collected
 	 */
 	public void addResourceCollected(int id, double value) {
 		if (resourcesCollected.containsKey(id)) {
@@ -3697,19 +3701,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Gets the buy list 
-	 * 
+	 * Gets the buy list
+	 *
 	 * @return
 	 */
 	public List<Good> getBuyList() {
 		return GoodsManager.getBuyList();
 	}
-	
-	
+
+
 	public int getSolCache() {
 		return solCache;
 	}
-	
+
 	public boolean isFirstSol() {
         return solCache == 0 || solCache == 1;
     }
@@ -3718,20 +3722,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public Settlement getSettlement() {
 		return null;
 	}
-	
+
 	/**
 	 * Generate a unique name for the Settlement
 	 * @return
 	 */
 	public static String generateName(ReportingAuthority sponsor) {
 		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
-	
+
 		List<String> usedNames = unitManager.getSettlements().stream()
 							.map(s -> s.getName()).collect(Collectors.toList());
-	
+
 		remainingNames.removeAll(usedNames);
 		int idx = RandomUtil.getRandomInt(remainingNames.size());
-		
+
 		return remainingNames.get(idx);
 	}
 
@@ -3742,20 +3746,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double getStoredMass() {
 		return eqmInventory.getStoredMass();
 	}
-	
+
 	/**
 	 * Get the equipment list
-	 * 
+	 *
 	 * @return the equipment list
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
 		return eqmInventory.getEquipmentSet();
 	}
-	
+
 	/**
 	 * Get a list of the equipment with particular equipment type
-	 * 
+	 *
 	 * @return the equipment list
 	 */
 	public Set<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
@@ -3763,10 +3767,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.filter(e -> e.getEquipmentType() == equipmentType)
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Does it possess an equipment of this equipment type
-	 * 
+	 *
 	 * @param typeID
 	 * @return true if this person possess this equipment type
 	 */
@@ -3774,10 +3778,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean containsEquipment(EquipmentType type) {
 		return eqmInventory.containsEquipment(type);
 	}
-	
+
 	/**
 	 * Stores the item resource
-	 * 
+	 *
 	 * @param resource the item resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -3786,10 +3790,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public int storeItemResource(int resource, int quantity) {
 		return eqmInventory.storeItemResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the item resource 
-	 * 
+	 * Retrieves the item resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -3798,10 +3802,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public int retrieveItemResource(int resource, int quantity) {
 		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the item resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -3809,10 +3813,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public int getItemResourceStored(int resource) {
 		return eqmInventory.getItemResourceStored(resource);
 	}
-	
+
 	/**
 	 * Stores the amount resource
-	 * 
+	 *
 	 * @param resource the amount resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -3821,10 +3825,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double storeAmountResource(int resource, double quantity) {
 		return eqmInventory.storeAmountResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -3833,10 +3837,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double retrieveAmountResource(int resource, double quantity) {
 		return eqmInventory.retrieveAmountResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
@@ -3844,10 +3848,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double getAmountResourceCapacity(int resource) {
 		return eqmInventory.getAmountResourceCapacity(resource);
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -3855,30 +3859,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double getAmountResourceRemainingCapacity(int resource) {
 		return eqmInventory.getAmountResourceCapacity(resource);
 	}
-	
+
 	/**
-	 * Obtains the remaining general storage space 
-	 * 
+	 * Obtains the remaining general storage space
+	 *
 	 * @return quantity
 	 */
 	@Override
 	public double getRemainingCargoCapacity() {
 		return eqmInventory.getRemainingCargoCapacity();
 	}
-	
+
 	/**
      * Gets the total capacity that this robot can hold.
-     * 
+     *
      * @return total capacity (kg).
      */
 	@Override
 	public double getTotalCapacity() {
 		return eqmInventory.getTotalCapacity();
 	}
-	
+
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -3886,30 +3890,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
-    
+
 	/**
 	 * Gets all stored amount resources
-	 * 
+	 *
 	 * @return all stored amount resources.
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
 	}
-	
+
 	/**
 	 * Gets all stored item resources
-	 * 
+	 *
 	 * @return all stored item resources.
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
 		return eqmInventory.getItemResourceIDs();
 	}
-	
+
 	/**
 	 * Does it have this item resource ?
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */
@@ -3921,7 +3925,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
-	 * 
+	 *
 	 * @param containerClass  the unit class.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
@@ -3930,10 +3934,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
-	
+
 	/**
 	 * Finds the number of containers of a particular type
-	 * 
+	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -3941,10 +3945,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public int findNumContainersOfType(EquipmentType containerType) {
 		return eqmInventory.findNumContainersOfType(containerType);
 	}
-	
+
 	/**
 	 * Finds a container in storage.
-	 * 
+	 *
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -3954,7 +3958,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
-	
+
 	/**
 	 * Gets the EquipmentInventory instance.
 	 * @return
@@ -3962,10 +3966,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
 	}
-	
+
 	/**
 	 * Sets the unit's container unit.
-	 * 
+	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
 	@Override
@@ -3987,10 +3991,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			setContainerID(MARS_SURFACE_UNIT_ID);
 		}
 	}
-	
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 * 
+	 *
 	 * @return the unit's container unit
 	 */
 	@Override
@@ -4004,34 +4008,34 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public UnitType getUnitType() {
 		return UnitType.SETTLEMENT;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override
 	public boolean isInSettlement() {
 		return false;
 	}
-	
+
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
 	public Unit getHolder() {
 		return this;
 	}
-	
+
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
 	public void reinit() {
 		buildingManager.reinit();
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -4063,7 +4067,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		thermalSystem = null;
 
 		template = null;
-	
+
 		scientificAchievement = null;
 	}
 
