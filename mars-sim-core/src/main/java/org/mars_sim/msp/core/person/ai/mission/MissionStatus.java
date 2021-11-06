@@ -80,12 +80,11 @@ public enum MissionStatus {
 	}
 
 	public String getName() {
-		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 
+	@Override
 	public String toString() {
-		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 }

@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * This class is a mission to travel in a rover to several random locations
- * around a settlement and collect ice. TODO externalize strings
+ * around a settlement and collect ice.
  */
 public class CollectIce extends CollectResourcesMission {
 
@@ -44,7 +44,7 @@ public class CollectIce extends CollectResourcesMission {
 	private static final int NUM_SITES = 2;
 
 	/** Minimum number of people to do mission. */
-	private final static int MIN_PEOPLE = 2;
+	private static final int MIN_PEOPLE = 2;
 
 	private int searchCount = 0;
 

@@ -37,7 +37,7 @@ public abstract class DroneMission extends VehicleMission {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(DroneMission.class.getName());
 	
 	// Data members
 	private Settlement startingSettlement;
@@ -173,6 +173,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @return true if vehicle is usable.
 	 * @throws MissionException if problem determining if vehicle is usable.
 	 */
+	@Override
 	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Drone))
@@ -191,9 +192,8 @@ public abstract class DroneMission extends VehicleMission {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
 			Person person = (Person) member;
-			Drone d = (Drone) getDrone();
+			Drone d = getDrone();
 			// Note : should it check for fatigue
-//			if (person.getFatigue() < 750) {
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new PilotDrone(person, getDrone(), getNextNavpoint().getLocation(),
@@ -207,7 +207,7 @@ public abstract class DroneMission extends VehicleMission {
 
 		else if (member instanceof Robot) {
 			Robot robot = (Robot) member;
-			Drone d = (Drone) getDrone();
+			Drone d = getDrone();
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),

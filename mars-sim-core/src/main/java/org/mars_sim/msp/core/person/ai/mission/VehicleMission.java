@@ -593,7 +593,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		double tripTime = getEstimatedRemainingMissionTime(true);
 		if (tripTime == 0) {
 			// Disapprove this mission
-			setApproval(false);	
 			logger.warning(settlement, "Has estimated zero trip time");
 			return false;
 		}
@@ -603,9 +602,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if (!settlementSupplies) {
 			logger.warning(settlement, "Not enough supplies for "
-							+ vehicle.getName() + "'s proposed excursion.");
-			// Disapprove this mission
-			setApproval(false);		
+							+ vehicle.getName() + "'s proposed excursion.");	
 		}
 		
 		return settlementSupplies;
@@ -1389,6 +1386,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	}
 
+	/**
+	 * Go to the nearest settlement and end collection phase if necessary.
+	 */
+	public void goToNearestSettlement() {
+		Settlement nearestSettlement = findClosestSettlement();
+		if (nearestSettlement != null) {
+			clearRemainingNavpoints();
+			addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
+					nearestSettlement.getName()));
+			// Note: Not sure if they should become citizens of another settlement
+			updateTravelDestination();
+			endCollectionPhase();
+		}
+	}
+	
 	/**
 	 * Update mission to the next navpoint destination.
 	 */

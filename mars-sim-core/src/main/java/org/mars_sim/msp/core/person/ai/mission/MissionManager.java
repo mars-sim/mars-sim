@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.data.SolListDataLogger;
@@ -53,7 +52,7 @@ public class MissionManager implements Serializable, Temporal {
 	/** A history of mission plans by sol. */
 	private SolListDataLogger<MissionPlanning> historicalMissions;
 	
-	private static Map<String, Integer> settlementID;
+	private Map<String, Integer> settlementID;
 
 	
 	/**
@@ -65,7 +64,7 @@ public class MissionManager implements Serializable, Temporal {
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolListDataLogger<>(5);
-		settlementID = new ConcurrentHashMap<>();
+		settlementID = new HashMap<>();
 		listeners = null;
 	}
 
@@ -79,15 +78,17 @@ public class MissionManager implements Serializable, Temporal {
 		return missionIdentifer++;
 	}
 	
-	private static int getSettlementID(String name) {
-		if (settlementID.containsKey(name)) {
-			return settlementID.get(name);			
-		}
-		else {
-			int size = settlementID.size();
-			settlementID.put(name, size);
-			
-			return size;
+	private int getSettlementID(String name) {
+		synchronized (settlementID) {
+			if (settlementID.containsKey(name)) {
+				return settlementID.get(name);			
+			}
+			else {
+				int size = settlementID.size();
+				settlementID.put(name, size);
+				
+				return size;
+			}
 		}
 	}
 	
@@ -485,8 +486,6 @@ public class MissionManager implements Serializable, Temporal {
 		
 		// Add this mission only after the mission plan has been submitted for review.
 		addMission(mission);
-		
-		
 	}
 
 	/**
@@ -510,23 +509,15 @@ public class MissionManager implements Serializable, Temporal {
 								   PlanType newStatus, double threshold) {
 
 		missionPlan.setApproved(person);
-//		missionPlan.setStatus(status);
 		if (missionPlan.getStatus() == PlanType.PENDING) {
 			missionPlan.setPassingScore(threshold);
 
 			if (newStatus == PlanType.APPROVED) {
 				missionPlan.setStatus(PlanType.APPROVED);
-				missionPlan.getMission().setApproval(true);
-//				mp.getMission().setPhase();
 			}
 			else if (newStatus == PlanType.NOT_APPROVED) {
-				missionPlan.setStatus(PlanType.NOT_APPROVED);
-				missionPlan.getMission().setApproval(false);
-//				missionPlan.getMission().setPhase();
-				// Do NOT remove this on-going mission from the current mission list
-//				removeMission(missionPlan.getMission());
+				missionPlan.setStatus(PlanType.NOT_APPROVED);;
 			}
-//			missionPlan.getMission().fireMissionUpdate(MissionEventType.PHASE_EVENT, missionPlan.getMission().getPhaseDescription());
 		}
 	}
 

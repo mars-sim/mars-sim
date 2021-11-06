@@ -212,21 +212,17 @@ public class Exploration extends RoverMission
 		addNavpoint(
 				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
-		Person person = null;
-//		Robot robot = null;
 
 		// Add mission members.
-		// TODO Refactor this.
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
-
 			MissionMember member = i.next();
 			if (member instanceof Person) {
-				person = (Person) member;
+				Person person = (Person) member;
 				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
+			}
+			else if (member instanceof Robot) {
+				throw new IllegalStateException("Robots cannot do Exploration mission");
 			}
 		}
 
@@ -254,9 +250,7 @@ public class Exploration extends RoverMission
 		MineralMap map = surfaceFeatures.getMineralMap();
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
 		
-		boolean result = (mineralLocation != null);
-
-		return result;
+		return (mineralLocation != null);
 	}
 
 	/**
@@ -445,7 +439,7 @@ public class Exploration extends RoverMission
 					if (tempMember instanceof Person) {
 						Person tempPerson = (Person) tempMember;
 						Task task = tempPerson.getMind().getTaskManager().getTask();
-						if ((task != null) && (task instanceof ExploreSite)) {
+						if (task instanceof ExploreSite) {
 							((ExploreSite) task).endEVA();
 						}
 					}
@@ -632,7 +626,7 @@ public class Exploration extends RoverMission
 	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
 		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
 		
-		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
+		List<Coordinates> unorderedSites = new ArrayList<>();
 
 		// Determining the actual traveling range.
 		double limit = 0;

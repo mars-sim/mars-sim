@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * This class is a mission to travel in a rover to several random locations
- * around a settlement and collect regolith-b, regolith-c, and/or regolith-d). TODO externalize strings
+ * around a settlement and collect regolith-b, regolith-c, and/or regolith-d).
  */
 public class CollectRegolith extends CollectResourcesMission {
 
@@ -43,7 +43,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	private static final int NUM_SITES = 1;
 
 	/** Minimum number of people to do mission. */
-	public final static int MIN_PEOPLE = 2;
+	public static final int MIN_PEOPLE = 2;
 
 
 	/**

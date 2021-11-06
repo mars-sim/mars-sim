@@ -59,7 +59,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
-	protected double totalSiteScore;
+	private double totalSiteScore;
 	/** The amount of resources (kg) collected at a collection site. */
 	private double siteCollectedResources;
 	/** The starting amount of resources in a rover at a collection site. */
@@ -95,7 +95,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
+	protected CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
 			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites, int minPeople) {
 
 		// Use RoverMission constructor
@@ -218,7 +218,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param collectionSites     the sites to collect ice.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
+	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
 			Integer resourceID, double resourceCollectionRate, EquipmentType containerID,
 			int containerNum, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
@@ -273,7 +273,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * By default score is always accepted
-	 * @param score
+	 * @param score This score may be use for further computation in overriding classes
 	 * @return
 	 */
 	protected boolean isValidScore(double score) {
@@ -299,6 +299,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * 
 	 * @throws MissionException if problem setting a new phase.
 	 */
+	@Override
 	protected boolean determineNewPhase() {
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
@@ -626,6 +627,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * 
 	 * @return settlement or null if none.
 	 */
+	@Override
 	public Settlement getAssociatedSettlement() {
 		return getStartingSettlement();
 	}
@@ -637,6 +639,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
+	@Override
 	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 
@@ -688,7 +691,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	@Override
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance); // new HashMap<>();
+		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingCollectionSiteTime(false);

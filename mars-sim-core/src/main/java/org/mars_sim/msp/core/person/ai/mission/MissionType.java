@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 
@@ -46,20 +44,6 @@ public enum MissionType {
 		return this.name;
 	}
 
-//	public static MissionType valueOfIgnoreCase(String name) {
-//		return MissionType.valueOf(name);
-//	}
-	
-
-    public static MissionType lookup(int ordinal) {
-        if (lookup == null) {
-            // Late construction - not thread-safe.
-            lookup = Arrays.stream(MissionType.values())
-                    .collect(Collectors.toMap(s -> s.ordinal(), s -> s));
-        }
-        return lookup.get(ordinal);
-    }
-    
     public static MissionType lookup(String name) {
     	for (MissionType t : MissionType.values()) {
     		if (t.getName().equalsIgnoreCase(name))

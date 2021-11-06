@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
@@ -162,22 +163,9 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 * Go to the nearest settlement and end collection phase if necessary.
 	 */
 	private void goToNearestSettlement() {
-		mission.goToNearestSettlement();
-//		if (mission instanceof VehicleMission) {
-//			VehicleMission vehicleMission = (VehicleMission) mission;
-//			try {
-//				Settlement nearestSettlement = vehicleMission.findClosestSettlement();
-//				if (nearestSettlement != null) {
-//					vehicleMission.clearRemainingNavpoints();
-//		    		vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement, 
-//		    				nearestSettlement.getName()));
-//		    		vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
-//		    		vehicleMission.updateTravelDestination();
-//		    		endCollectionPhase();
-//				}
-//			}
-//			catch (Exception e) {}
-//		}
+		if (mission instanceof VehicleMission) {
+			((VehicleMission)mission).goToNearestSettlement();
+		}
 	}
 	
 	/**

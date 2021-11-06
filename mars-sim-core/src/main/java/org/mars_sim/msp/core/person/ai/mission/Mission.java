@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -56,7 +58,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public abstract class Mission implements Serializable, Temporal {
 
 	// Plain POJO to help score potential mission members
-	private final static class MemberScore {
+	private static final class MemberScore {
 		Person candidate;
 		double score;
 		
@@ -84,16 +86,9 @@ public abstract class Mission implements Serializable, Temporal {
 	public static final MissionPhase COMPLETED = new MissionPhase("Mission.phase.completed");
 	private static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
 
-	public static final String MISSION_SUFFIX = " mission";
-	public static final String[] EXPRESSIONS = new String[] {
-			"Where is everybody when I need someone for ",
-			"So no one is available for ",
-			"How come no one is available for "
-	};	
-	public static final String OUTSIDE = "Outside";
-
+	private static final String OUTSIDE = "Outside";
 	
-	public static final int MAX_CAP = 8;
+	private static final int MAX_CAP = 8;
 
 	// Global mission identifier
 	private static int missionIdentifer = 1;
@@ -101,19 +96,19 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public final static double WATER_MARGIN = 1.5;
+	public static final double WATER_MARGIN = 1.5;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
-	public final static double OXYGEN_MARGIN = 1.5;
+	public static final double OXYGEN_MARGIN = 1.5;
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public final static double FOOD_MARGIN = 1.5;
+	public static final double FOOD_MARGIN = 1.5;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
-	public final static double DESSERT_MARGIN = 1.5;
+	public static final double DESSERT_MARGIN = 1.5;
 
 	
 	// Data members
@@ -123,8 +118,6 @@ public abstract class Mission implements Serializable, Temporal {
 	private int minMembers;
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
-	/** The recorded number of people participated in this mission. */
-	private int membersNum;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
 	
@@ -132,8 +125,6 @@ public abstract class Mission implements Serializable, Temporal {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
-	/** True if the mission has been approved. */
-	private boolean approved = false;
 	/** True if the mission has been requested. */
 	protected boolean requested = false;
 	
@@ -209,7 +200,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param startingMember
 	 * @param minMembers
 	 */
-	public Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
+	protected Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
@@ -405,7 +396,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 			Person person = (Person) member;
 			String role = "";
-			if (members.size() == 0)
+			if (members.isEmpty())
 				role = "Lead";
 			if (person.getMind().getJob() == JobType.PILOT)
 				role = JobType.PILOT.getName();			
@@ -440,8 +431,8 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
-				"Adding a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
+		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
+				message, missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
 		eventManager.registerNewEvent(newEvent);
 	}
 
@@ -464,11 +455,11 @@ public abstract class Mission implements Serializable, Temporal {
 				if (person.getSettlement() != null) {
 					shift = person.getSettlement().getAnEmptyWorkShift(-1);
 					person.setShiftType(shift);
-				} else if (person.getVehicle() != null)
-					if (person.getVehicle().getSettlement() != null) {
+				}
+				else if ((person.getVehicle() != null) && (person.getVehicle().getSettlement() != null)) {
 						shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
 						person.setShiftType(shift);
-					}
+				}
 
 				registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
@@ -497,9 +488,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return number of members.
 	 */
 	public final int getMembersNumber() {
-		if (members.size() > 0)
-			membersNum = members.size();
-		return membersNum;
+		return members.size();
 	}
 	
 	/**
@@ -659,7 +648,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gte duratino of current Phase.
+	 * Get duration of current Phase.
 	 */
 	protected double getPhaseDuration() {
 		return MarsClock.getTimeDiff(marsClock, phaseStartTime);
@@ -697,11 +686,9 @@ public abstract class Mission implements Serializable, Temporal {
 	public void performMission(MissionMember member) {
 
 		// If current phase is over, decide what to do next.
-		if (phaseEnded) {
-			if (!determineNewPhase()) {
-				logger.warning(member, "New phase for " + getName()
-								+ " cannot be determined for " + phase.getName());
-			}
+		if (phaseEnded && !determineNewPhase()) {
+			logger.warning(member, "New phase for " + getName()
+							+ " cannot be determined for " + phase.getName());
 		}
 
 		// Perform phase.
@@ -772,27 +759,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * Go to the nearest settlement and end collection phase if necessary.
-	 */
-	// Note : connect to determineEmergencyDestination() in VehicleMission
-	public void goToNearestSettlement() {
-		if (this instanceof VehicleMission) {
-			VehicleMission vehicleMission = (VehicleMission) this;
-			try {
-				Settlement nearestSettlement = vehicleMission.findClosestSettlement();
-				if (nearestSettlement != null) {
-					vehicleMission.clearRemainingNavpoints();
-					vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
-							nearestSettlement.getName()));
-					// Note: Not sure if they should become citizens of another settlement
-					vehicleMission.updateTravelDestination();
-					endCollectionPhase();
-				}
-			} catch (Exception e) {
-			}
-		}
-	}
 
 	/**
 	 * Computes the mission experience score
@@ -854,9 +820,8 @@ public abstract class Mission implements Serializable, Temporal {
 			StringBuilder status = new StringBuilder();
 			status.append("Ended the ").append(missionName).append(" with the following status flag(s) :");
 		
-			for (int i=0; i< missionStatus.size(); i++) {
-				status.append(" (").append(i+1).append(") ").append(missionStatus.get(i).getName());
-			}
+			status.append(missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+
 			logger.info(startingMember, status.toString());
 		}
 		
@@ -874,17 +839,14 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		else {
-			String s = "";
-			for (MissionStatus ms : missionStatus) {
-				s += ms.getName();
-			}
-			setPhase(ABORTED, s);
+			setPhase(ABORTED, 
+					missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 		}
 		
 		// Proactively call removeMission to update the list in MissionManager right away
 		// Note: Calling missionManager.removeMission(this) will crash the mission tab in monitor tool
 	}
-
+	
 	/**
 	 * Checks if a person has any issues in starting a new task 
 	 * 
@@ -1064,7 +1026,7 @@ public abstract class Mission implements Serializable, Temporal {
 		int rand = RandomUtil.getRandomInt(1);
 		if (rand == 1) {
 			if (max >= 5)
-			max--;
+				max--;
 		}
 		
 		// Max can not bigger than mission capacity
@@ -1210,8 +1172,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	protected Set<JobType> getPreferredPersonJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptySet();
 	}
 
 	/**
@@ -1287,44 +1248,9 @@ public abstract class Mission implements Serializable, Temporal {
 			else
 				return p.getCoordinates();
 			
-		} else {
-			StringBuilder s = new StringBuilder();
-			String missionName = this.toString();
-			if (missionName.toLowerCase().contains("mission")) {
-				if (phase != null) {
-					s.append("Error : no crew members on the ").append(phase).append(" phase in ")
-					.append(missionName).append(" (").append(fullMissionDesignation).append(").");
-				}
-				else {
-					s.append("Error : no crew members for ");
-
-					if (Conversion.isVowel(missionName))
-						s.append("an ");
-					else
-						s.append("a ");
-						
-					s.append(missionName).append(" (").append(fullMissionDesignation).append(").");
-				}
-			}
-			
-			else {
-				if (phase != null) {
-					s.append("Error : no crew members on the ").append(phase).append(" phase in ")
-						.append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
-				}
-				else {
-					s.append("Error : no crew members for ");
-					
-					if (Conversion.isVowel(missionName))
-						s.append("an ");
-					else
-						s.append("a ");
-				
-					s.append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
-				}
-			}
-			
-			logger.log(startingMember, Level.INFO, 0, s.toString());
+		}
+		else {
+			logger.severe(getName() + ":No starting member");
 		}
 
 		return result;
@@ -1365,7 +1291,7 @@ public abstract class Mission implements Serializable, Temporal {
 			 missionManager.requestMissionApproving(plan);
 		}
 		
-		else if (plan != null) {
+		else {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
 				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
 				endMission();
@@ -1386,15 +1312,6 @@ public abstract class Mission implements Serializable, Temporal {
 				setPhaseEnded(true);
 			}
 		}
-	}
-
-	/**
-	 * Sets the mission plan status
-	 * 
-	 * @param value
-	 */
-	public void setApproval(boolean value) {
-		approved = value;
 	}
 
 	/**
@@ -1438,8 +1355,8 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param person the mission lead 
 	 * @return
 	 */
-	public String createFullDesignation(Person person) {	
-		return Conversion.getInitials(getDescription().replaceAll("with", "").trim()) + " " 
+	private String createFullDesignation(Person person) {	
+		return Conversion.getInitials(getDescription().replace("with", "").trim()) + " " 
 				+ missionManager.getMissionDesignationString(person.getAssociatedSettlement().getName());
 	}
 	
@@ -1505,7 +1422,7 @@ public abstract class Mission implements Serializable, Temporal {
 	
 	/**
 	 * Be default a worker can always participate
-	 * @param worker
+	 * @param worker This maybe used by overridding methods
 	 * @return
 	 */
 	public boolean canParticipate(MissionMember worker) {
@@ -1527,7 +1444,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)(1 + identifier);
+		int hashCode = (1 + identifier);
 		hashCode *= missionType.hashCode();
 		return hashCode;
 	}
