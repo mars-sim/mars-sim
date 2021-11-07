@@ -18,19 +18,16 @@ import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A mission to do meteorology research at a remote field location for a scientific
- * study. TODO externalize strings
+ * study.
  */
 public class MeteorologyFieldStudy extends FieldStudyMission implements Serializable {
 
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
@@ -43,7 +40,6 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 
 	/** How many specimen boxes per mission member */
 	private static final int SPECIMEN_BOX_MEMBER = 3;
-
 
 	/**
 	 * Constructor.
@@ -60,19 +56,17 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param startingSettlement the settlement the mission starts at.
 	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 * @param description        the mission description.
-	 * @throws MissionException if error creating mission.
 	 */
-	public MeteorologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
+	public MeteorologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		super(description, MissionType.METEOROLOGY, leadResearcher, MIN_PEOPLE, rover,
-				  study, FIELD_SITE_TIME, members, startingSettlement, fieldSite);
+				  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 	
 	@Override

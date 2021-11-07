@@ -109,20 +109,13 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		}
 		
 		// Set the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
+		calculateMissionCapacity(MAX_MEMBERS);
 
 		outbound = true;
 
 		Settlement s = startingPerson.getSettlement();
 
 		if (s != null && !isDone()) {
-
-			// Initialize data members
-			setStartingSettlement(s);
 
 			// Determine emergency settlement.
 			emergencySettlement = findSettlementNeedingEmergencySupplies(s, getRover());
@@ -164,27 +157,19 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 * Constructor with explicit parameters.
 	 * 
 	 * @param members             collection of mission members.
-	 * @param startingSettlement  the starting settlement.
-	 * @param emergencySettlement the settlement to deliver emergency supplies to.
+	 * @param emergencySettlement the starting settlement.
 	 * @param rover               the rover used on the mission.
 	 * @param description         the mission's description.
 	 */
-	public EmergencySupply(Collection<MissionMember> members, Settlement startingSettlement,
-			Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, Rover rover, String description) {
+	public EmergencySupply(Collection<MissionMember> members, Settlement emergencySettlement,
+			Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE, (Person) members.toArray()[0], MIN_MEMBERS, rover);
 
 		outbound = true;
 
-		// Initialize data members
-		setStartingSettlement(startingSettlement);
-
 		// Sets the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
+		calculateMissionCapacity(MAX_MEMBERS);
 
 		// Set emergency settlement.
 		this.emergencySettlement = emergencySettlement;
@@ -211,7 +196,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				emergencyEquipment.put(good.getID(), amount);
 			} else if (GoodCategory.VEHICLE.equals(good.getCategory())) {
 				String vehicleType = good.getName();
-				Iterator<Vehicle> h = startingSettlement.getParkedVehicles().iterator();
+				Iterator<Vehicle> h = getStartingSettlement().getParkedVehicles().iterator();
 				while (h.hasNext()) {
 					Vehicle vehicle = h.next();
 					if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
@@ -225,19 +210,14 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		}
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember mm = i.next();
-			if (mm instanceof Person)
-				((Person)mm).getMind().setMission(this);
-		}
+		addMembers(members, false);
 
 		// Set initial phase
 		setPhase(EMBARKING, getStartingSettlement().getName()); 
-		Person startingPerson = (Person) members.toArray()[0];
+		Person startingPerson = getStartingPerson();
 		if (startingPerson != null && getRover() != null) {
-			logger.info(getStartingSettlement(), startingPerson
-					+ "Reviewing an emergency supply mission to help out " 
+			logger.info(startingPerson,
+					"Reviewing an emergency supply mission to help out " 
 					+ getEmergencySettlement() + " using "
 					+ getRover().getName());
 		}

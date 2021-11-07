@@ -91,20 +91,12 @@ public class Delivery extends DroneMission implements Serializable {
 		
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
+		calculateMissionCapacity(MAX_MEMBERS);
 
 		outbound = true;
 		doNegotiation = true;
 
 		if (!isDone() && s != null) {
-
-			// Initialize data members
-			setStartingSettlement(s);
-
 			// Get trading settlement
 			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
@@ -164,14 +156,13 @@ public class Delivery extends DroneMission implements Serializable {
 	 * Constructor 2. Started by MissionDataBean 
 	 * 
 	 * @param members
-	 * @param startingSettlement
 	 * @param tradingSettlement
 	 * @param drone
 	 * @param description
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
+	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
 		super(description, MissionType.DELIVERY, startingMember, 2, drone);
@@ -180,24 +171,10 @@ public class Delivery extends DroneMission implements Serializable {
 		doNegotiation = false;
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember mm = i.next();
-			if (mm instanceof Person)
-				((Person)mm).getMind().setMission(this);
-			else if (mm instanceof Robot)
-				((Robot)mm).getBotMind().setMission(this);
-		}
-		
-		// Initialize data members
-		setStartingSettlement(startingSettlement);
+		addMembers(members, true);
 
 		// Sets the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
+		calculateMissionCapacity(MAX_MEMBERS);
 
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
@@ -211,7 +188,7 @@ public class Delivery extends DroneMission implements Serializable {
 		desiredProfit = profit;
 
 		// Set initial phase
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, getStartingSettlement().getName());
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getDrone() != null) {
 				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");

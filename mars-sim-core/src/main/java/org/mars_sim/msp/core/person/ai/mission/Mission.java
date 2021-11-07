@@ -528,10 +528,35 @@ public abstract class Mission implements Serializable, Temporal {
 		return new ArrayList<>(members);
 	}
 
-	public void setMembers(MissionMember member) {
+	/**
+	 * Add a Robot directly
+	 * @param member
+	 */
+	protected void addRobot(Robot member) {
 		members.add(member);
 	}
 	
+	/**
+	 * Add these members to the mission.
+	 * @param newMembers Members to add
+	 * @param allowRobots Are Robots allowed
+	 */
+	protected void addMembers(Collection<MissionMember> newMembers, boolean allowRobots) {
+		for(MissionMember member : newMembers) {
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				person.getMind().setMission(this);
+			}
+			else if (member instanceof Robot) {
+				if (!allowRobots) {
+					throw new IllegalStateException("Mission doe snot supprot robots");
+				}
+				Robot robot = (Robot) member;
+				robot.getBotMind().setMission(this);
+			}
+		}
+	}
+
 
 	/**
 	 * Determines if mission is completed.
@@ -736,6 +761,21 @@ public abstract class Mission implements Serializable, Temporal {
 		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
 	}
 
+
+	/**
+	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits
+	 */
+	protected void calculateMissionCapacity(int desiredCap) {
+		if (!isDone()) {
+			// Set mission capacity.
+			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getSettlement());
+			if (availableSuitNum < desiredCap) {
+				desiredCap = availableSuitNum;
+			}
+			setMissionCapacity(desiredCap);
+		}
+	}
+	
 	/**
 	 * End the mission collection phase at the current site.
 	 */
@@ -1490,5 +1530,4 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		listeners = null;
 	}
-
 }

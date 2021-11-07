@@ -39,10 +39,6 @@ public abstract class DroneMission extends VehicleMission {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(DroneMission.class.getName());
 	
-	// Data members
-	private Settlement startingSettlement;
-
-
 	/**
 	 * Constructor.
 	 * 
@@ -74,25 +70,6 @@ public abstract class DroneMission extends VehicleMission {
 	 */
 	public final Drone getDrone() {
 		return (Drone) getVehicle();
-	}
-
-	/**
-	 * Sets the starting settlement.
-	 * 
-	 * @param startingSettlement the new starting settlement
-	 */
-	protected final void setStartingSettlement(Settlement startingSettlement) {
-		this.startingSettlement = startingSettlement;
-		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
-	}
-
-	/**
-	 * Gets the starting settlement.
-	 * 
-	 * @return starting settlement
-	 */
-	public final Settlement getStartingSettlement() {
-		return startingSettlement;
 	}
 
 	/**
@@ -456,23 +433,16 @@ public abstract class DroneMission extends VehicleMission {
 	@Override
 	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
 		// Get all people qualified for the mission.
-		Iterator<Robot> r = startingSettlement.getRobots().iterator();
+		Iterator<Robot> r = getStartingSettlement().getRobots().iterator();
 		while (r.hasNext()) {
 			Robot robot = r.next();
 			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				setMembers(robot);
+				addRobot(robot);
 			}
 		}
 		
 		super.recruitMembersForMission(startingMember, sameSettlement);
 
 		return true;
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		startingSettlement = null;
 	}
 }

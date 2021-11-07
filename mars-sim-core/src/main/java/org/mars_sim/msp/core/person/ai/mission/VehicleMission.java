@@ -118,6 +118,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private transient Map<Integer, Number> cachedParts = null;
 
 	private transient double cachedDistance = -1;
+
+	private Settlement startingSettlement;
 	
 	/**
 	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
@@ -130,6 +132,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
 		
+		setStartingSettlement(getStartingPerson().getSettlement());
 		reserveVehicle();
 	}
 
@@ -144,7 +147,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Vehicle vehicle) {
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
-		
+
+		setStartingSettlement(getStartingPerson().getSettlement());
+
 		// Set the vehicle.
 		setVehicle(vehicle);
 	}
@@ -1748,5 +1753,24 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected void startDisembarkingPhase() {
 		setPhase(DISEMBARKING,
 				getCurrentNavpoint().getDescription());
+	}
+
+	/**
+	 * Sets the starting settlement.
+	 * 
+	 * @param startingSettlement the new starting settlement
+	 */
+	private final void setStartingSettlement(Settlement startingSettlement) {
+		this.startingSettlement = startingSettlement;
+		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
+	}
+
+	/**
+	 * Gets the starting settlement.
+	 * 
+	 * @return starting settlement
+	 */
+	public final Settlement getStartingSettlement() {
+		return startingSettlement;
 	}
 }

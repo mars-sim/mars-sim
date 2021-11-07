@@ -105,11 +105,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			settlement = startingMember.getSettlement();
 
 			// Sets the mission capacity.
-			setMissionCapacity(MAX_PEOPLE);
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
-			if (availableSuitNum < getMissionCapacity()) {
-				setMissionCapacity(availableSuitNum);
-			}
+			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingMember, true);
@@ -257,19 +253,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		if (constructionStage != null)
 			constructionSite.setUndergoingSalvage(true);
 
-		Iterator<MissionMember> i = members.iterator();
-
-		while (i.hasNext()) {
-			// TODO Refactor.
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				Robot robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
-			}
-		}
+		addMembers(members, false);
 
 		// Reserve construction vehicles and retrieve from inventory.
 		constructionVehicles = vehicles;

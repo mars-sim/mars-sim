@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -52,7 +51,6 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param startingSettlement the settlement the mission starts at.
 	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
@@ -60,11 +58,11 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	 * @param description        the mission description.
 	 * @throws MissionException if error creating mission.
 	 */
-	public AreologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
+	public AreologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		super(description, MissionType.AREOLOGY, leadResearcher, MIN_PEOPLE, rover,
-			  study, FIELD_SITE_TIME, members, startingSettlement, fieldSite);
+			  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 
 	/**

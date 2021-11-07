@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -69,7 +68,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	private static final int MIN_GOING_MEMBERS = 2;
-	private static final int MAX_GOING_MEMBERS = 3;
 
 	public static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
@@ -94,31 +92,13 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, MIN_GOING_MEMBERS);
 
-		if (!isDone()) {
-			setStartingSettlement(startingPerson.getSettlement());
-			setMissionCapacity(MAX_GOING_MEMBERS);
-
-			// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
-			if (!reserveVehicle())
-				return;
-			
+		if (!isDone()) {			
 			if (hasVehicle()) {
 				
 				if (vehicleTarget == null)
 					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MISSION_TYPE));
 	
 				if (vehicleTarget != null) {
-					
-					int capacity = getRover().getCrewCapacity();
-					if (capacity < MAX_GOING_MEMBERS) {
-						setMissionCapacity(capacity);
-					}
-
-					int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-					if (availableSuitNum < getMissionCapacity()) {
-						setMissionCapacity(availableSuitNum);
-					}
-					
 //					if (getRescuePeopleNum(vehicleTarget) > 0) {
 						rescue = true;
 						setMinMembers(MIN_MEMBER);
@@ -160,21 +140,18 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * Constructor with explicit data.
 	 * 
 	 * @param members            collection of mission members.
-	 * @param startingSettlement the starting settlement.
 	 * @param vehicleTarget      the vehicle to rescue/salvage.
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public RescueSalvageVehicle(Collection<MissionMember> members, Settlement startingSettlement, Vehicle vehicleTarget,
+	public RescueSalvageVehicle(Collection<MissionMember> members, Vehicle vehicleTarget,
 			Rover rover, String description) {
 
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
-		setStartingSettlement(startingSettlement);
 		this.vehicleTarget = vehicleTarget;
-		setMissionCapacity(getRover().getCrewCapacity());
 
 		if (getRescuePeopleNum(vehicleTarget) > 0) {
 			rescue = true;
@@ -182,25 +159,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Add navpoints for target vehicle and back home again.
 		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
-		addNavpoint(
-				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
-
-		Person person = null;
-//		Robot robot = null;
+		Settlement s = getStartingSettlement();
+		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				person = (Person) member;
-				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-			}
-		}
+		addMembers(members, false);
 
 		// Set initial phase
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, s.getName());
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -208,7 +174,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			endMission();
 		}
 		
-		logger.info(startingSettlement, "Had started RescueSalvageVehicle");
+		logger.info(getStartingPerson(), "Had started RescueSalvageVehicle");
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -54,18 +53,16 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param startingSettlement the settlement the mission starts at.
 	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 * @param description        the mission description.
-	 * @throws MissionException if error creating mission.
 	 */
-	public BiologyFieldStudy(Collection<MissionMember> members, Settlement startingSettlement, Person leadResearcher,
+	public BiologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 		super(description, MissionType.BIOLOGY, leadResearcher, MIN_PEOPLE, rover,
-				  study, FIELD_SITE_TIME, members, startingSettlement, fieldSite);
+				  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 
 	@Override

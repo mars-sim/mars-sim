@@ -83,15 +83,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 				endMission();
 			}
 
-			setStartingSettlement(s);
-
-			// Set mission capacity.
-			if (hasVehicle())
-				setMissionCapacity(getRover().getCrewCapacity());
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
-			if (availableSuitNum < getMissionCapacity())
-				setMissionCapacity(availableSuitNum);
-
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson))
 				return;
@@ -122,51 +113,36 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param startingSettlement the settlement the mission starts at.
 	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 * @param description        the mission description.
-	 * @throws MissionException if error creating mission.
 	 */
 	protected FieldStudyMission(String description, MissionType missionType,
 			Person leadResearcher, int minPeople,
 			Rover rover, ScientificStudy study, double fieldSiteTime,
-			Collection<MissionMember> members, Settlement startingSettlement,
+			Collection<MissionMember> members,
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
 		super(description, missionType, leadResearcher, minPeople, rover);
 
-		setStartingSettlement(startingSettlement);
 		this.study = study;
 		this.science = study.getScience();
 		this.fieldSite = fieldSite;
 		this.fieldSiteTime = fieldSiteTime;
 		addNavpoint(new NavPoint(fieldSite, "field research site"));
 
-		// Set mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
-
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember mm = i.next();
-			if (mm instanceof Person)
-				((Person)mm).getMind().setMission(this);
-		}
+		addMembers(members, false);
 		
 		// Add home settlement
-		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-				getStartingSettlement().getName()));
+		Settlement s = getStartingSettlement();
+		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, getStartingSettlement().getName());
+		setPhase(EMBARKING, s.getName());
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {

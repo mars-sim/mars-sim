@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -97,17 +96,7 @@ public class Mining extends RoverMission
 		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 		
 		if (!isDone()) {
-			// Set mission capacity.
-			if (hasVehicle()) {
-				setMissionCapacity(getRover().getCrewCapacity());
-			}
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-			if (availableSuitNum < getMissionCapacity()) {
-				setMissionCapacity(availableSuitNum);
-			}
-
 			// Initialize data members.
-			setStartingSettlement(startingPerson.getSettlement());
 			excavatedMinerals = new HashMap<>(1);
 			totalExcavatedMinerals = new HashMap<>(1);
 
@@ -115,10 +104,12 @@ public class Mining extends RoverMission
 			if (!recruitMembersForMission(startingPerson))
 				return;
 
+			Settlement s = getStartingSettlement();
+			
 			// Determine mining site.
 			try {
 				if (hasVehicle()) {
-					miningSite = determineBestMiningSite(getRover(), getStartingSettlement());
+					miningSite = determineBestMiningSite(getRover(), s);
 					miningSite.setReserved(true);
 					addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
 				}
@@ -129,8 +120,7 @@ public class Mining extends RoverMission
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-					getStartingSettlement().getName()));
+			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -156,55 +146,30 @@ public class Mining extends RoverMission
 	 * Constructor with explicit data.
 	 * 
 	 * @param members            collection of mission members.
-	 * @param startingSettlement the starting settlement.
 	 * @param miningSite         the site to mine.
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
-	 * @throws MissionException if error constructing mission.
 	 */
-	public Mining(Collection<MissionMember> members, Settlement startingSettlement, ExploredLocation miningSite,
+	public Mining(Collection<MissionMember> members, ExploredLocation miningSite,
 			Rover rover, LightUtilityVehicle luv, String description) {
 
 		// Use RoverMission constructor.
 		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 		
 		// Initialize data members.
-		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
 		excavatedMinerals = new HashMap<>(1);
 		totalExcavatedMinerals = new HashMap<>(1);
 
-		// Set mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
-
-		Person person = null;
-//		Robot robot = null;
-
-		// Add mission members.
-		// TODO refactor this.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				person = (Person) member;
-				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
-			}
-		}
+		addMembers(members, false);
 
 		// Add mining site nav point.
 		addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
 
 		// Add home settlement
-		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-				getStartingSettlement().getName()));
+		Settlement s = getStartingSettlement();
+		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -223,7 +188,7 @@ public class Mining extends RoverMission
 		}
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, s.getName());
 	}
 
 	/**

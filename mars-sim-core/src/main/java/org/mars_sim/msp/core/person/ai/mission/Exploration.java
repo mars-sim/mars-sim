@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -101,24 +100,14 @@ public class Exploration extends RoverMission
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 		
-		Settlement s = startingPerson.getSettlement();
+		Settlement s = getStartingSettlement();
 
 		if (s != null && !isDone()) {
 
 			// Initialize data members.
-			setStartingSettlement(s);
 			exploredSites = new ArrayList<>(NUM_SITES);
 			explorationSiteCompletion = new HashMap<>(NUM_SITES);
 			
-			// Set mission capacity.
-			if (hasVehicle())
-				setMissionCapacity(getRover().getCrewCapacity());
-			
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
-			if (availableSuitNum < getMissionCapacity())
-				setMissionCapacity(availableSuitNum);
-
-
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson))
 				return;
@@ -147,7 +136,7 @@ public class Exploration extends RoverMission
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
+			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -166,13 +155,11 @@ public class Exploration extends RoverMission
 	 * Constructor with explicit data.
 	 * 
 	 * @param members            collection of mission members.
-	 * @param startingSettlement the starting settlement.
 	 * @param explorationSites   the sites to explore.
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
-	 * @throws MissionException if error constructing mission.
 	 */
-	public Exploration(Collection<MissionMember> members, Settlement startingSettlement,
+	public Exploration(Collection<MissionMember> members,
 			List<Coordinates> explorationSites, Rover rover, String description) {
 
 		// Use RoverMission constructor.
@@ -183,14 +170,6 @@ public class Exploration extends RoverMission
 			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
 			endMission();
 		}
-		
-		setStartingSettlement(startingSettlement);
-
-		// Set mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity())
-			setMissionCapacity(availableSuitNum);
 
 		// Initialize explored sites.
 		exploredSites = new ArrayList<>(NUM_SITES);
@@ -209,25 +188,15 @@ public class Exploration extends RoverMission
 		}
 
 		// Add home navpoint.
+		Settlement s = getStartingSettlement();
 		addNavpoint(
-				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
-
+				new NavPoint(s.getCoordinates(), s, s.getName()));
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				person.getMind().setMission(this);
-			}
-			else if (member instanceof Robot) {
-				throw new IllegalStateException("Robots cannot do Exploration mission");
-			}
-		}
+		addMembers(members, false);
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, s.getName());
 	}
 
 	/**

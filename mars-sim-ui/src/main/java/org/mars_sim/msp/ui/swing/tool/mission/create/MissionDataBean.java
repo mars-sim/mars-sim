@@ -105,17 +105,17 @@ class MissionDataBean {
     	
 	    Mission mission = null;
 	    if (MissionType.AREOLOGY == missionType) {
-	        mission = new AreologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
+	        mission = new AreologyFieldStudy(mixedMembers, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (MissionType.BIOLOGY == missionType) {
-	        mission = new BiologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
+	        mission = new BiologyFieldStudy(mixedMembers, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (MissionType.METEOROLOGY == missionType) {
-	        mission = new MeteorologyFieldStudy(mixedMembers, startingSettlement, leadResearcher, study,
+	        mission = new MeteorologyFieldStudy(mixedMembers, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
@@ -128,13 +128,13 @@ class MissionDataBean {
 	    else if (MissionType.COLLECT_ICE == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(iceCollectionSite);
-	        mission = new CollectIce(mixedMembers, startingSettlement, collectionSites, rover, description);
+	        mission = new CollectIce(mixedMembers, collectionSites, rover, description);
 	    }
 	    
 	    else if (MissionType.COLLECT_REGOLITH == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(regolithCollectionSite);
-	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
+	        mission = new CollectRegolith(mixedMembers, collectionSites, rover, description);
 	    }
 	    
 	    else if (MissionType.DELIVERY == missionType) {
@@ -144,27 +144,27 @@ class MissionDataBean {
 	    			startingMember = (Person)mm;
 	    	}
 		
-	        mission = new Delivery(startingMember, mixedMembers, startingSettlement, destinationSettlement, drone, description,
+	        mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone, description,
 	                sellGoods, buyGoods);
 	    }	 
 	        
 	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
-	        mission = new EmergencySupply(mixedMembers, startingSettlement, destinationSettlement,
+	        mission = new EmergencySupply(mixedMembers, destinationSettlement,
 	                emergencyGoods, rover, description);
 	    }
 	    
 	    else if (MissionType.EXPLORATION == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
+	        List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
 	        collectionSites.addAll(Arrays.asList(explorationSites));
-	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
+	        mission = new Exploration(mixedMembers, collectionSites, rover, description);
 	    }
 	    
 	    else if (MissionType.MINING == missionType) {
-	        mission = new Mining(mixedMembers, startingSettlement, miningSite, rover, luv, description);
+	        mission = new Mining(mixedMembers, miningSite, rover, luv, description);
 	    }
 	    
 	    else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-	        mission = new RescueSalvageVehicle(mixedMembers, startingSettlement, rescueRover, rover, description);
+	        mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover, description);
 	    }
 	    
 	    else if (MissionType.BUILDING_SALVAGE == missionType) {
@@ -173,12 +173,12 @@ class MissionDataBean {
 	    }
 	    
 	    else if (MissionType.TRADE == missionType) {
-	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
+	        mission = new Trade(mixedMembers, destinationSettlement, rover, description,
 	                sellGoods, buyGoods);
 	    }  
 	    
 	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
-	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover,
+	        mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover,
 	                description);
 	    }
 	    

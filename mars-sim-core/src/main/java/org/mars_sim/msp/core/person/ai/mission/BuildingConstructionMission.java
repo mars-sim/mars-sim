@@ -130,11 +130,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			settlement = startingMember.getSettlement();
 
 			// Sets the mission capacity.
-			setMissionCapacity(MAX_PEOPLE);
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
-			if (availableSuitNum < getMissionCapacity()) {
-				setMissionCapacity(availableSuitNum);
-			}
+			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingMember, true);
@@ -333,11 +329,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		int bestConstructionSkill = 0;
 
-		setMissionCapacity(MAX_PEOPLE);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
-		}
+		calculateMissionCapacity(MAX_PEOPLE);
 
 		Iterator<MissionMember> i = members.iterator();
 

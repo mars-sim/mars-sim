@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -64,17 +63,15 @@ public class CollectIce extends CollectResourcesMission {
 	 * Constructor with explicit data.
 	 * 
 	 * @param members            collection of mission members.
-	 * @param startingSettlement the starting settlement.
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
-	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectIce(Collection<MissionMember> members, Settlement startingSettlement,
+	public CollectIce(Collection<MissionMember> members,
 			List<Coordinates> iceCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, startingSettlement, ResourceUtil.iceID,
+		super(description, missionType, members, ResourceUtil.iceID,
 				computeAverageCollectionRate(iceCollectionSites),
 				EquipmentType.BARREL, REQUIRED_BARRELS,
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);

@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -62,17 +61,16 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * Constructor with explicit data.
 	 * 
 	 * @param members                 collection of mission members.
-	 * @param startingSettlement      the starting settlement.
 	 * @param regolithCollectionSites the sites to collect regolith.
 	 * @param rover                   the rover to use.
 	 * @param description             the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith(Collection<MissionMember> members, Settlement startingSettlement,
+	public CollectRegolith(Collection<MissionMember> members, 
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
+		super(description, missionType, members, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}

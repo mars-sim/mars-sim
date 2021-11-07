@@ -90,6 +90,7 @@ class VehiclePanel extends WizardPanel {
 
 		// Create the vehicle table.
 		vehicleTable = new ZebraJTable(vehicleTableModel);
+		
 		TableStyle.setTableStyle(vehicleTable);
 		// Added sorting
 		vehicleTable.setAutoCreateRowSorter(true);
@@ -204,22 +205,19 @@ class VehiclePanel extends WizardPanel {
 		private VehicleTableModel() {
 			// Use UnitTableModel constructor.
 			super();
+						
+			// Add columns.
+			columns.add("Name");
+			columns.add("Type");
+			columns.add("Crew Cap.");
+			columns.add("Range");
+			columns.add("Lab");
 			
-			if (wizard.getMissionBean().isTradeMission()) {
-			
-				// Add columns.
-				columns.add("Name");
-				columns.add("Type");
-				columns.add("Crew Cap.");
-				columns.add("Range");
-				columns.add("Lab");
-				
-				columns.add("Sick Bay");
-				columns.add("Cargo Cap.");
-				columns.add("Current Cargo");
-				columns.add("Status");
-				columns.add("Mission");
-			}
+			columns.add("Sick Bay");
+			columns.add("Cargo Cap.");
+			columns.add("Current Cargo");
+			columns.add("Status");
+			columns.add("Mission");
 		}
 
 		/**

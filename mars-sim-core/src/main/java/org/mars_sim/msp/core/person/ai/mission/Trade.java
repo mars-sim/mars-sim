@@ -98,20 +98,14 @@ public class Trade extends RoverMission implements Serializable {
 		
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
+		if (getMissionCapacity() > MAX_MEMBERS) {
+			setMissionCapacity(MAX_MEMBERS);
 		}
 
 		outbound = true;
 		doNegotiation = true;
 
 		if (!isDone() && s != null) {
-
-			// Initialize data members
-			setStartingSettlement(s);
-
 			// Get trading settlement
 			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
@@ -179,7 +173,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
+	public Trade(Collection<MissionMember> members, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
@@ -187,33 +181,16 @@ public class Trade extends RoverMission implements Serializable {
 		outbound = true;
 		doNegotiation = false;
 
-		// Initialize data members
-		setStartingSettlement(startingSettlement);
-
 		// Sets the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity()) {
-			setMissionCapacity(availableSuitNum);
+		if (getMissionCapacity() > MAX_MEMBERS) {
+			setMissionCapacity(MAX_MEMBERS);
 		}
-
+		
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
 		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
 
-		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			// TODO Refactor.
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				person.getMind().setMission(this);
-			} else if (member instanceof Robot) {
-//				robot = (Robot) member;
-//				robot.getBotMind().setMission(this);
-			}
-		}
+		addMembers(members, false);
 
 		// Set trade goods.
 		sellLoad = sellGoods;
@@ -223,7 +200,7 @@ public class Trade extends RoverMission implements Serializable {
 		desiredProfit = profit;
 
 		// Set initial phase
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, getStartingSettlement().getName());
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = getStartingPerson();
 			if (startingMember != null && getRover() != null) {

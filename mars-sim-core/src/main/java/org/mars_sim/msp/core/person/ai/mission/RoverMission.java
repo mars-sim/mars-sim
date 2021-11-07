@@ -81,8 +81,6 @@ public abstract class RoverMission extends VehicleMission {
 
 	private static final double MAX_WAITING = 200D;
 
-	// Data members
-	private Settlement startingSettlement;
 	
 	/**
 	 * Constructor 1.
@@ -93,6 +91,7 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
 		super(name, missionType, startingMember, MIN_GOING_MEMBERS);
+		calculateMissionCapacity(getRover().getCrewCapacity());
 	}
 
 	/**
@@ -105,6 +104,7 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
+		calculateMissionCapacity(getRover().getCrewCapacity());
 	}
 
 	/**
@@ -118,6 +118,7 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Rover rover) {
 		// Use VehicleMission constructor.
 		super(missionName, missionType, startingMember, minPeople, rover);
+		calculateMissionCapacity(getRover().getCrewCapacity());
 	}
 
 	/**
@@ -127,25 +128,6 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	public final Rover getRover() {
 		return (Rover) getVehicle();
-	}
-
-	/**
-	 * Sets the starting settlement.
-	 * 
-	 * @param startingSettlement the new starting settlement
-	 */
-	protected final void setStartingSettlement(Settlement startingSettlement) {
-		this.startingSettlement = startingSettlement;
-		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
-	}
-
-	/**
-	 * Gets the starting settlement.
-	 * 
-	 * @return starting settlement
-	 */
-	public final Settlement getStartingSettlement() {
-		return startingSettlement;
 	}
 
 	/**
@@ -1117,12 +1099,5 @@ public abstract class RoverMission extends VehicleMission {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		return null;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		startingSettlement = null;
 	}
 }

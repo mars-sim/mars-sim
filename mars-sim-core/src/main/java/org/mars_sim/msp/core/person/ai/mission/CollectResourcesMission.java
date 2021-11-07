@@ -107,20 +107,8 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 		
 		Settlement s = startingPerson.getSettlement();
-		
-		// Set mission capacity.
-		if (hasVehicle())
-			setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-		if (availableSuitNum < getMissionCapacity())
-			setMissionCapacity(availableSuitNum);
-
-		// Initialize data members.
-		s = startingPerson.getSettlement();
 
 		if (s != null) {
-			setStartingSettlement(s);
-
 			setResourceID(resourceID);
 			this.resourceCollectionRate = resourceCollectionRate;
 			this.containerID = containerID;
@@ -204,8 +192,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * Constructor with explicit data
 	 * 
 	 * @param missionName            The name of the mission.
-	 * @param members                collection of mission members.
-	 * @param startingSettlement     the starting settlement.
+	 * @param members                collection of mission members
 	 * @param resourceID           The type of resource.
 	 * @param resourceCollectionRate The resource collection rate for a person
 	 *                               (kg/millisol).
@@ -216,22 +203,13 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @param rover                  the rover to use.
 	 * @param collectionSites     the sites to collect ice.
-	 * @throws MissionException if problem constructing mission.
 	 */
-	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
+	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members,
 			Integer resourceID, double resourceCollectionRate, EquipmentType containerID,
 			int containerNum, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, (MissionMember) members.toArray()[0], minPeople, rover);
-
-		setStartingSettlement(startingSettlement);
-
-		// Set mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity())
-			setMissionCapacity(availableSuitNum);
 
 		this.resourceID = resourceID;
 		
@@ -246,23 +224,15 @@ public abstract class CollectResourcesMission extends RoverMission
 			addNavpoint(new NavPoint(collectionSites.get(x), getCollectionSiteDescription(x + 1)));
 
 		// Add home navpoint.
+		Settlement s = getStartingSettlement();
 		addNavpoint(
-				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
-
-		Person person = null;
+				new NavPoint(s.getCoordinates(), s, s.getName()));
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();			
-			if (member instanceof Person) {
-				person = (Person) member;
-				person.getMind().setMission(this);
-			}
-		}
+		addMembers(members, false);
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, getStartingSettlement().getName());
+		setPhase(EMBARKING, s.getName());
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {

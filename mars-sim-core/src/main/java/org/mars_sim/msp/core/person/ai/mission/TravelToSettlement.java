@@ -70,24 +70,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingMember);
 
-		Settlement s = startingMember.getSettlement();
+		Settlement s = getStartingSettlement();
 
 		if (!isDone() && s != null) {
 
-			// Initialize data members
-			setStartingSettlement(s);
-
-			// Set mission capacity.
-			if (hasVehicle()) {
-				setMissionCapacity(getRover().getCrewCapacity());
-			}
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getSettlement());
-			if (availableSuitNum < getMissionCapacity()) {
-				setMissionCapacity(availableSuitNum);
-			}
-
 			// Choose destination settlement.
-			setDestinationSettlement(getRandomDestinationSettlement(startingMember, getStartingSettlement()));
+			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
 			if (destinationSettlement != null) {
 				addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement,
 						destinationSettlement.getName()));
@@ -126,19 +114,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		}
 	}
 
-	public TravelToSettlement(Collection<MissionMember> members, Settlement startingSettlement,
+	public TravelToSettlement(Collection<MissionMember> members, 
 			Settlement destinationSettlement, Rover rover, String description) {
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
-
-		// Initialize data members
-		setStartingSettlement(startingSettlement);
-
-		// Sets the mission capacity.
-		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-		if (availableSuitNum < getMissionCapacity())
-			setMissionCapacity(availableSuitNum);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
@@ -146,18 +125,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				this.destinationSettlement.getName()));
 
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			// TODO Refactor.
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				person.getMind().setMission(this);
-			}
-		}
+		addMembers(members, false);
 
 		// Set initial phase
-		setPhase(EMBARKING, startingSettlement.getName());
+		setPhase(EMBARKING, getStartingPerson().getName());
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -241,7 +212,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	public static Map<Settlement, Double> getDestinationSettlements(MissionMember member, Settlement startingSettlement,
 			double range) {
-		Map<Settlement, Double> result = new HashMap<Settlement, Double>();
+		Map<Settlement, Double> result = new HashMap<>();
 
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 

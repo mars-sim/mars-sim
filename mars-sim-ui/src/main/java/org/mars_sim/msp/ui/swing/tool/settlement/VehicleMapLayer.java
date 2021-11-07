@@ -20,7 +20,6 @@ import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -207,11 +206,11 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			else if (RoverMission.DISEMBARKING.equals(missionPhase) || Trade.UNLOAD_GOODS.equals(missionPhase)) {
 				result = true;
 			}
-			else if ((DroneMission.EMBARKING.equals(missionPhase) || Delivery.LOAD_GOODS.equals(missionPhase)) && 
+			else if ((VehicleMission.EMBARKING.equals(missionPhase) || Delivery.LOAD_GOODS.equals(missionPhase)) && 
 					!mission.getPhaseEnded()) {
 				result = true;
 			}
-			else if (DroneMission.DISEMBARKING.equals(missionPhase) || Delivery.UNLOAD_GOODS.equals(missionPhase)) {
+			else if (VehicleMission.DISEMBARKING.equals(missionPhase) || Delivery.UNLOAD_GOODS.equals(missionPhase)) {
 				result = true;
 			}
 		}
