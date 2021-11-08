@@ -98,7 +98,7 @@ public class Exploration extends RoverMission
 	public Exploration(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
 		
 		Settlement s = getStartingSettlement();
 
@@ -109,25 +109,20 @@ public class Exploration extends RoverMission
 			explorationSiteCompletion = new HashMap<>(NUM_SITES);
 			
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson))
+			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
 				return;
 
 			// Determine exploration sites
-			try {
-				if (hasVehicle()) {
-					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-					determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
-							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
-							NUM_SITES, skill);
-					if (explorationSiteCompletion.size() == 0) {
-						addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
-						endMission();
-					}
+			if (hasVehicle()) {
+				int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+				if (!determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
+						getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
+						NUM_SITES, skill)) {
+					addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
+					endMission();
 				}
-			} catch (Exception e) {
-				addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
-				endMission();
 			}
+
 
 			// Create a list of sites to be explored during the stage of mission planning
 			// 1st one is the starting point
@@ -136,7 +131,7 @@ public class Exploration extends RoverMission
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+			addNavpoint(s);
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -163,13 +158,7 @@ public class Exploration extends RoverMission
 			List<Coordinates> explorationSites, Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
-
-		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
-		}
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
 
 		// Initialize explored sites.
 		exploredSites = new ArrayList<>(NUM_SITES);
@@ -181,16 +170,17 @@ public class Exploration extends RoverMission
 		}
 				
 		// Set exploration navpoints.
-		for (int x = 0; x < explorationSites.size(); x++) {
-			String siteName = EXPLORATION_SITE + (x + 1);
-			addNavpoint(new NavPoint(explorationSites.get(x), siteName));
-			explorationSiteCompletion.put(siteName, 0D);
-		}
+		addNavpoints(explorationSites, (i -> EXPLORATION_SITE + (1+1)));
 
 		// Add home navpoint.
 		Settlement s = getStartingSettlement();
-		addNavpoint(
-				new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(s);
+
+		// Check if vehicle can carry enough supplies for the mission. Must have NavPoints loaded
+		if (!isVehicleLoadable()) {
+			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission();
+		}
 
 		// Add mission members.
 		addMembers(members, false);
@@ -419,12 +409,10 @@ public class Exploration extends RoverMission
 		if (!getPhaseEnded()) {
 
 			if (!endExploringSite && !timeExpired) {
-				// TODO Refactor this.
 				if (member instanceof Person) {
 					Person person = (Person) member;
 					// If person can explore the site, start that task.
 					if (ExploreSite.canExploreSite(person, getRover())) {
-//						if (currentSite == null) System.out.println(person + "'s currentSite is null");
 						assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
 					}
 				}
@@ -471,7 +459,7 @@ public class Exploration extends RoverMission
 	}
 	
 	@Override
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
+	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 		result += getEstimatedRemainingExplorationSiteTime();
 		return result;
@@ -501,7 +489,7 @@ public class Exploration extends RoverMission
 	}
 
 	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
 		double explorationSitesTime = getEstimatedRemainingExplorationSiteTime();
@@ -569,18 +557,12 @@ public class Exploration extends RoverMission
 	}
 
 	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null)
-			return equipmentNeededCache;
-		else {
-			Map<Integer, Integer> result = new HashMap<>();
+	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		Map<Integer, Integer> result = new HashMap<>();
 
-			// Include required number of specimen containers.
-			result.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), REQUIRED_SPECIMEN_CONTAINERS);
-
-			equipmentNeededCache = result;
-			return result;
-		}
+		// Include required number of specimen containers.
+		result.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), REQUIRED_SPECIMEN_CONTAINERS);
+		return result;
 	}
 
 	/**
@@ -592,7 +574,7 @@ public class Exploration extends RoverMission
 	 *                      the mission.
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
-	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
+	private boolean determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
 		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
 		
 		List<Coordinates> unorderedSites = new ArrayList<>();
@@ -668,15 +650,8 @@ public class Exploration extends RoverMission
 			sites = unorderedSites;
 		}
 
-		int explorationSiteNum = 1;
-		Iterator<Coordinates> j = sites.iterator();
-		while (j.hasNext()) {
-			Coordinates site = j.next();
-			String siteName = "exploration site " + explorationSiteNum;
-			addNavpoint(new NavPoint(site, siteName));
-			explorationSiteCompletion.put(siteName, 0D);
-			explorationSiteNum++;
-		}
+		addNavpoints(sites, (i -> "exploration site #" + (i + 1)));
+		return (!sites.isEmpty());
 	}
 
 	/**

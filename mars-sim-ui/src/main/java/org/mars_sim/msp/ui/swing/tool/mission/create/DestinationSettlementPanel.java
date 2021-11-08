@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -253,10 +254,15 @@ class DestinationSettlementPanel extends WizardPanel {
     		
     		if (column == 1) {
     			try {
-    				Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
+    				MissionDataBean data = getWizard().getMissionData();
+    				Settlement startingSettlement = data.getStartingSettlement();
     				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-    				double roverRange = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType());
-    				if (roverRange < distance) result = true;
+    				Vehicle v = data.getRover();
+    				if (v == null) {
+    					v = data.getDrone();
+    				}
+    				double vRange = v.getRange(wizard.getMissionBean().getMissionType());
+    				if (vRange < distance) result = true;
     			}
     			catch (Exception e) {}
     		}

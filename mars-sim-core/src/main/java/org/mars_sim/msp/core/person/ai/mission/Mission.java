@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -114,8 +113,6 @@ public abstract class Mission implements Serializable, Temporal {
 	// Data members
 	/** Unique identifier */
 	private int identifier;
-	/** The minimum number of members for mission. */
-	private int minMembers;
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -148,8 +145,6 @@ public abstract class Mission implements Serializable, Temporal {
 	/** The mission type enum. */
 	private MissionType missionType;
 
-	/** A list of mission members' names. */
-	private Map<String, String> membersMap;
 	/** A list of mission status. */
 	private List<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
@@ -198,9 +193,8 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @param missionName
 	 * @param startingMember
-	 * @param minMembers
 	 */
-	protected Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
+	protected Mission(String missionName, MissionType missionType, MissionMember startingMember) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
@@ -211,14 +205,12 @@ public abstract class Mission implements Serializable, Temporal {
 		// Create the date filed timestamp
 		createDateFiled();
 
-		membersMap = new HashMap<>();
 		missionStatus = new ArrayList<>();
 		members = new ConcurrentLinkedQueue<>();
 		done = false;
 		phase = null;
 		phaseDescription = "";
 		phaseEnded = false;
-		this.minMembers = minMembers;
 		missionCapacity = MAX_CAP;
 		
 		Person person = (Person) startingMember;
@@ -303,7 +295,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Creates the date completed timestamp of the mission.
 	 */
-	public void createDateCompleted() {
+	protected void createDateCompleted() {
 		if (dateCompleted.equals("")) {
 			dateCompleted = marsClock.getTrucatedDateTimeStamp();
 			fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
@@ -313,7 +305,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Creates the date embarked timestamp of the mission.
 	 */
-	public void createDateEmbarked() {
+	protected void createDateEmbarked() {
 		if (dateEmbarked.equals("")) {
 			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
 			fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
@@ -394,18 +386,13 @@ public abstract class Mission implements Serializable, Temporal {
 		if (!members.contains(member)) {
 			members.add(member);
 
-			Person person = (Person) member;
-			String role = "";
-			if (members.isEmpty())
-				role = "Lead";
-			if (person.getMind().getJob() == JobType.PILOT)
-				role = JobType.PILOT.getName();			
-					
-			membersMap.put(person.getName(), role);
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				
+				registerHistoricalEvent(person,EventType.MISSION_JOINING,
+									    "Adding a member");
+			}
 			
-			registerHistoricalEvent(person,EventType.MISSION_JOINING,
-								    "Adding a member");
-
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
 			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + " #" + identifier + ".");
@@ -501,25 +488,6 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the minimum number of members required for mission.
-	 * 
-	 * @return minimum number of members
-	 */
-	public final int getMinMembers() {
-		return minMembers;
-	}
-
-	/**
-	 * Sets the minimum number of members required for a mission.
-	 * 
-	 * @param minMembers minimum number of members
-	 */
-	protected final void setMinMembers(int minMembers) {
-		this.minMembers = minMembers;
-		fireMissionUpdate(MissionEventType.MIN_MEMBERS_EVENT, minMembers);
-	}
-
-	/**
 	 * Gets a collection of the members in the mission.
 	 * 
 	 * @return collection of members
@@ -549,7 +517,7 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 			else if (member instanceof Robot) {
 				if (!allowRobots) {
-					throw new IllegalStateException("Mission doe snot supprot robots");
+					throw new IllegalStateException("Mission does not supprot robots");
 				}
 				Robot robot = (Robot) member;
 				robot.getBotMind().setMission(this);
@@ -768,7 +736,7 @@ public abstract class Mission implements Serializable, Temporal {
 	protected void calculateMissionCapacity(int desiredCap) {
 		if (!isDone()) {
 			// Set mission capacity.
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getSettlement());
+			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getAssociatedSettlement());
 			if (availableSuitNum < desiredCap) {
 				desiredCap = availableSuitNum;
 			}
@@ -1012,8 +980,9 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
+	 * @param minMembers Minimum number of members requried
 	 */
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement, int minMembers) {
 		
 		// Get all people qualified for the mission.
 		Collection<Person> possibles;
@@ -1247,7 +1216,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return map of amount and item resources and their Double amount or Integer
 	 *         number.
 	 */
-	public abstract Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer);
+	protected abstract Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer);
 
 	/**
 	 * Gets the number and types of equipment needed for the mission.
@@ -1255,7 +1224,9 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of equipment types and number.
 	 */
-	public abstract Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
+	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		return Collections.emptyMap();
+	}
 
 	/**
 	 * Time passing for mission.

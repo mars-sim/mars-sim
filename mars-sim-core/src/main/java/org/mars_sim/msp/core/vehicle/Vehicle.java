@@ -1561,7 +1561,7 @@ public abstract class Vehicle extends Unit
 	 * @return true if yes
 	 */
 	public double getMissionRange(MissionType missiontype) {
-		return getSettlement().getMissionRadius(missiontype);
+		return getAssociatedSettlement().getMissionRadius(missiontype);
 	}
 
 	/**

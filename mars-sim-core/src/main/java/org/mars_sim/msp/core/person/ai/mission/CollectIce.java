@@ -42,9 +42,6 @@ public class CollectIce extends CollectResourcesMission {
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 2;
 
-	/** Minimum number of people to do mission. */
-	private static final int MIN_PEOPLE = 2;
-
 	private int searchCount = 0;
 
 	/**
@@ -56,7 +53,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, BASE_COLLECTION_RATE,
-				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES);
 	}
 
 	/**
@@ -74,7 +71,7 @@ public class CollectIce extends CollectResourcesMission {
 		super(description, missionType, members, ResourceUtil.iceID,
 				computeAverageCollectionRate(iceCollectionSites),
 				EquipmentType.BARREL, REQUIRED_BARRELS,
-				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
+				rover, iceCollectionSites);
 	}
 
 	public static double computeAverageCollectionRate(Collection<Coordinates> locations) {
@@ -86,17 +83,6 @@ public class CollectIce extends CollectResourcesMission {
 		}
 	
 		return totalRate / size;
-	}
-	
-	
-	/**
-	 * Gets the description of a collection site.
-	 * 
-	 * @param siteNum the number of the site.
-	 * @return description
-	 */
-	protected String getCollectionSiteDescription(int siteNum) {
-		return "prospecting site " + siteNum;
 	}
 
 	@Override

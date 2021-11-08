@@ -109,9 +109,7 @@ public class Trade extends RoverMission implements Serializable {
 			// Get trading settlement
 			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-						tradingSettlement.getName()));
-//				setDescription(Msg.getString("Mission.description.trade.detail", tradingSettlement.getName())); // $NON-NLS-1$
+				addNavpoint(tradingSettlement);
 				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 				TRADE_PROFIT_CACHE.remove(tradingSettlement);
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
@@ -148,7 +146,7 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember))
+				if (!recruitMembersForMission(startingMember, MAX_MEMBERS))
 					return;
 			}
 		}
@@ -176,7 +174,7 @@ public class Trade extends RoverMission implements Serializable {
 	public Trade(Collection<MissionMember> members, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
 
 		outbound = true;
 		doNegotiation = false;
@@ -188,7 +186,7 @@ public class Trade extends RoverMission implements Serializable {
 		
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
-		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
+		addNavpoint(tradingSettlement);
 
 		addMembers(members, false);
 
@@ -299,7 +297,6 @@ public class Trade extends RoverMission implements Serializable {
 				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
-				// TODO Refactor.
 				if (member instanceof Person) {
 					Person person = (Person) member;
 					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
@@ -307,7 +304,6 @@ public class Trade extends RoverMission implements Serializable {
 								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
 							logger.severe(person, "Is unable to walk to building " + destinationBuilding);
-						// + " at " + tradingSettlement);
 					}
 				} else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
@@ -351,7 +347,6 @@ public class Trade extends RoverMission implements Serializable {
 					Person settlementTrader = getSettlementTrader();
 					
 					if (settlementTrader != null) {
-						// TODO Refactor.
 						if (member instanceof Person) {
 							Person person = (Person) member;
 							negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
@@ -373,7 +368,6 @@ public class Trade extends RoverMission implements Serializable {
 
 		if (getPhaseEnded()) {
 			outbound = false;
-			equipmentNeededCache = null;
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement.getCoordinates(), 
 							tradingSettlement,
@@ -656,7 +650,7 @@ public class Trade extends RoverMission implements Serializable {
 	}
 
 	@Override
-	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
+	protected Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
 		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
 
@@ -673,14 +667,12 @@ public class Trade extends RoverMission implements Serializable {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodCategory.EQUIPMENT)
 					|| good.getCategory() == GoodCategory.CONTAINER) {
-//				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
-				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);
+				int id = good.getID();
 				if (result.containsKey(id)) {
 					num += (Integer) result.get(id);
 				}
 				result.put(id, num);
-//                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
 			}
 		}
 
@@ -688,7 +680,7 @@ public class Trade extends RoverMission implements Serializable {
 	}
 
 	@Override
-	public Map<Integer, Number> getOptionalResourcesToLoad() {
+	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 
 		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
@@ -704,16 +696,14 @@ public class Trade extends RoverMission implements Serializable {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodCategory.AMOUNT_RESOURCE)) {
-//				AmountResource resource = (AmountResource) good.getObject();
-				int id = good.getID();//resource.getID();
+				int id = good.getID();
 				double amount = load.get(good).doubleValue();
 				if (result.containsKey(id)) {
 					amount += (Double) result.get(id);
 				}
 				result.put(id, amount);
 			} else if (good.getCategory().equals(GoodCategory.ITEM_RESOURCE)) {
-//				ItemResource resource = (ItemResource) good.getObject();
-				int id = good.getID();//resource.getID();
+				int id = good.getID();
 				int num = load.get(good);
 				if (result.containsKey(id)) {
 					num += (Integer) result.get(id);
@@ -938,17 +928,6 @@ public class Trade extends RoverMission implements Serializable {
 		}
 	}
 
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null)
-			return equipmentNeededCache;
-		else {
-			Map<Integer, Integer> result = new HashMap<>(0);
-			equipmentNeededCache = result;
-			return result;
-		}
-	}
-	
 	/**
 	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
 	 * then it can be unloaded.

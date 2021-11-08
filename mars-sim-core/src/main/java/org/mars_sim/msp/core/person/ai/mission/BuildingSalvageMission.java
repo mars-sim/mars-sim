@@ -95,7 +95,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	public BuildingSalvageMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
 
 		// Set wear condition to 100% by default.
 		wearCondition = 100D;
@@ -108,7 +108,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true);
+			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -201,7 +201,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
 
 		this.settlement = settlement;
 
@@ -214,7 +214,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			constructionSite = site;
 		} else {
 			logger.log(Level.WARNING, Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
-//			throw new IllegalStateException(PREPARE_SITE_PHASE + Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
 		}
 
 		// Prepare salvage construction site.
@@ -268,8 +267,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 						, vehicle.getName(), settlement.getName()));
 				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
 				endMission();
-//				endMission(Msg.getString("BuildingSalvageMission.log.constructionVehicle" //$NON-NLS-1$
-//						, vehicle.getName()));
 			}
 		}
 
@@ -672,10 +669,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				double capacity = settlement.getTotalCapacity();
 				if (mass <= capacity) {
 					settlement.storeItemResource(part, salvagedNumber);
-//					settlement.getInventory().addItemSupply(part, salvagedNumber);
 				}
-				// Recalculate settlement good value for salvaged part.
-//				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);
+
 			}
 		}
 	}

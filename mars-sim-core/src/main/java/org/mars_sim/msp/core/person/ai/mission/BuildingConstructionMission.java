@@ -121,9 +121,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 */
 	public BuildingConstructionMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember, MIN_PEOPLE);
-		// logger.info("BuildingConstructionMission's constructor is in " +
-		// Thread.currentThread().getName() + " Thread");
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+
 
 		if (!isDone()) {
 			// Sets the settlement.
@@ -133,7 +132,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true);
+			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -320,7 +319,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
 
 		// this.site = no_site;
 		this.members = members;

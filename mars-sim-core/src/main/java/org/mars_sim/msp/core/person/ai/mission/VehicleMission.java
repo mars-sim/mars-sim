@@ -79,8 +79,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final String SHEET = "sheet"; 
 	private static final String PRISM = "prism";
 	
-	/** The factor for determining how many more EVA suits are needed for a trip. */
-	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
+
 	/** The small insignificant amount of distance in km. */
 	private static final double SMALL_DISTANCE = .1; 
 	
@@ -113,7 +112,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private LoadingController loadingPlan;
 
 	/** Caches */
-	protected transient Map<Integer, Integer> equipmentNeededCache;
+	private transient Map<Integer, Integer> equipmentNeededCache;
 
 	private transient Map<Integer, Number> cachedParts = null;
 
@@ -128,11 +127,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param startingMember
 	 * @param minPeople
 	 */
-	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
+	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember) {
 		// Use TravelMission constructor.
-		super(missionName, missionType, startingMember, minPeople);
+		super(missionName, missionType, startingMember);
 		
-		setStartingSettlement(getStartingPerson().getSettlement());
+		setStartingSettlement(getStartingPerson().getAssociatedSettlement());
 		reserveVehicle();
 	}
 
@@ -144,11 +143,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param minPeople
 	 * @param vehicle
 	 */
-	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Vehicle vehicle) {
+	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
 		// Use TravelMission constructor.
-		super(missionName, missionType, startingMember, minPeople);
+		super(missionName, missionType, startingMember);
 
-		setStartingSettlement(getStartingPerson().getSettlement());
+		setStartingSettlement(getStartingPerson().getAssociatedSettlement());
 
 		// Set the vehicle.
 		setVehicle(vehicle);
@@ -590,7 +589,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return true if vehicle is loadable.
 	 * @throws Exception if error checking vehicle.
 	 */
-	public final boolean isVehicleLoadable() {
+	protected final boolean isVehicleLoadable() {
 
 		Map<Integer, Number> resources = getRequiredResourcesToLoad();
 		Map<Integer, Integer> equipment = getRequiredEquipmentToLoad();
@@ -911,7 +910,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
-	public double getEstimatedRemainingMissionTime(boolean useMargin) {
+	protected double getEstimatedRemainingMissionTime(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
 			logger.info(vehicle, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
@@ -967,7 +966,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return map of amount and item resources and their Double amount or Integer
 	 *         number.
 	 */
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance(); 
 		if (distance > 0) {
 			logger.info(vehicle, 20_000, "1. " + this + " has an estimated remaining distance of " 
@@ -1232,8 +1231,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			// Set the new destination as the travel mission's next and final navpoint.
 			clearRemainingNavpoints();
-			addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination,
-					"emergency destination: " + newDestination.getName()));
+			addNavpoint(newDestination);
 			// each member to switch the associated settlement to the new destination
 			// Note: need to consider if enough beds are available at the destination settlement
 			// Note: can they go back to the settlement of their origin ?
@@ -1398,8 +1396,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Settlement nearestSettlement = findClosestSettlement();
 		if (nearestSettlement != null) {
 			clearRemainingNavpoints();
-			addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
-					nearestSettlement.getName()));
+			addNavpoint(nearestSettlement);
 			// Note: Not sure if they should become citizens of another settlement
 			updateTravelDestination();
 			endCollectionPhase();
@@ -1499,7 +1496,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return resources and their number.
 	 */
-	public Map<Integer, Number> getRequiredResourcesToLoad() {
+	protected Map<Integer, Number> getRequiredResourcesToLoad() {
 		return getResourcesNeededForRemainingMission(true);
 	}
 
@@ -1508,7 +1505,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return resources and their number.
 	 */
-	public Map<Integer, Number> getOptionalResourcesToLoad() {
+	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 		// Also load EVA suit related parts
 		return getSparePartsForTrip(getEstimatedTotalRemainingDistance());
 	}
@@ -1519,27 +1516,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return type of equipment and their number.
 	 */
-	public Map<Integer, Integer> getRequiredEquipmentToLoad() {
-		return getEquipmentNeededForRemainingMission(true);
+	protected Map<Integer, Integer> getRequiredEquipmentToLoad() {
+		if (equipmentNeededCache == null) {
+			equipmentNeededCache = getEquipmentNeededForRemainingMission(true);
+		}
+		
+		return equipmentNeededCache;
 	}
-
-//	/**
-//	 * Gets the number and types of equipment needed for the mission.
-//	 * 
-//	 * @param useBuffer use time buffers in estimation if true.
-//	 * @return map of equipment types and number.
-//	 */
-//	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-//		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
-//	}
-//	
 
 	/**
 	 * Gets the optional containers needed for storing the optional resources when loading up the vehicle.
 	 * 
 	 * @return the containers needed.
 	 */
-	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
+	protected Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
 		Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
@@ -1567,11 +1557,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			// Note: containers are NOT designed to hold parts 
 			// Parts do not need a container. Any exceptions for that ? 
-	
-			// Gets a spare EVA suit for each 4 members in a mission
-			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
-			result.put(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), numEVA);
-
 		}
 
 		return result;

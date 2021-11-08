@@ -27,15 +27,12 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
-
 
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 1000D;
 
-	private static final int MIN_PEOPLE = RoverMission.MIN_GOING_MEMBERS;
 
 	/**
 	 * Constructor.
@@ -45,7 +42,7 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 */
 	public BiologyFieldStudy(Person startingPerson) {
 		super(DEFAULT_DESCRIPTION, MissionType.BIOLOGY, startingPerson,
-			  MIN_PEOPLE, ScienceType.BIOLOGY, FIELD_SITE_TIME);
+			  ScienceType.BIOLOGY, FIELD_SITE_TIME);
 
 	}
 
@@ -61,7 +58,7 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 */
 	public BiologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
-		super(description, MissionType.BIOLOGY, leadResearcher, MIN_PEOPLE, rover,
+		super(description, MissionType.BIOLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 

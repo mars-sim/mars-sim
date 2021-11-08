@@ -9,9 +9,11 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -56,9 +58,9 @@ public abstract class TravelMission extends Mission {
 	 * @param startingMember
 	 * @param minPeople
 	 */
-	protected TravelMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
+	protected TravelMission(String missionName, MissionType missionType, MissionMember startingMember) {
 		// Use Mission constructor.
-		super(missionName, missionType, startingMember, minPeople);
+		super(missionName, missionType, startingMember);
 
 		NavPoint startingNavPoint = null;
 		Coordinates c = getCurrentMissionLocation();
@@ -89,7 +91,7 @@ public abstract class TravelMission extends Mission {
 	 * @param currentNavPoint
 	 * @param destNavPoint
 	 */
-	public void resetToReturnTrip(NavPoint currentNavPoint, NavPoint destNavPoint) {
+	protected void resetToReturnTrip(NavPoint currentNavPoint, NavPoint destNavPoint) {
 		
 		setEstimatedTotalDistance(0);
 		
@@ -117,7 +119,7 @@ public abstract class TravelMission extends Mission {
 	 * @param navPoint the new nav point location to be added.
 	 * @throws IllegalArgumentException if location is null.
 	 */
-	public final void addNavpoint(NavPoint navPoint) {
+	protected final void addNavpoint(NavPoint navPoint) {
 		if (navPoint != null) {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
@@ -126,6 +128,38 @@ public abstract class TravelMission extends Mission {
 		}
 	}
 
+	/**
+	 * Add a Nav point for a Settlement
+	 * @param s
+	 */
+	protected void addNavpoint(Settlement s) {
+		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+	}
+	
+
+	/**
+	 * Add a Nav point for a Coordinate
+	 * @param c Coordinate to visit
+	 * @param n Name
+	 */
+	protected void addNavpoint(Coordinates c, String n) {
+		addNavpoint(new NavPoint(c, n));
+	}
+	
+	
+	/**
+	 * Add a list of Coordinates as NavPoints. Use the function to give
+	 * a description to each new NavPoint
+	 * @param points Coordinates to add
+	 * @param nameFunc Function takes the index of the Coordinate
+	 */
+	protected void addNavpoints(List<Coordinates> points, IntFunction<String> nameFunc) {
+		for (int x = 0; x < points.size(); x++)
+			navPoints.add(new NavPoint(points.get(x), nameFunc.apply(x)));
+	
+		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+	}
+	
 	/**
 	 * Sets a nav point for the mission.
 	 * 
@@ -514,7 +548,7 @@ public abstract class TravelMission extends Mission {
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
-	public abstract double getEstimatedRemainingMissionTime(boolean useBuffer);
+	protected abstract double getEstimatedRemainingMissionTime(boolean useBuffer);
 
 	/**
 	 * Gets the estimated time for a trip.

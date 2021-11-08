@@ -77,8 +77,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			// Choose destination settlement.
 			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
 			if (destinationSettlement != null) {
-				addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement,
-						destinationSettlement.getName()));
+				addNavpoint(destinationSettlement);
 				setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
 						destinationSettlement.getName())); // $NON-NLS-1$)
 			} else {
@@ -99,7 +98,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember))
+				if (!recruitMembersForMission(startingMember, 2))
 					return;
 			}
 
@@ -117,12 +116,11 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	public TravelToSettlement(Collection<MissionMember> members, 
 			Settlement destinationSettlement, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
-		addNavpoint(new NavPoint(this.destinationSettlement.getCoordinates(), this.destinationSettlement,
-				this.destinationSettlement.getName()));
+		addNavpoint(this.destinationSettlement);
 
 		// Add mission members.
 		addMembers(members, false);
@@ -392,23 +390,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return destinationSettlement;
-	}
-
-	/**
-	 * Gets the number and types of equipment needed for the mission.
-	 * 
-	 * @param useBuffer use time buffer in estimation if true.
-	 * @return map of equipment class and Integer number.
-	 * @throws MissionException if error determining needed equipment.
-	 */
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null)
-			return equipmentNeededCache;
-		else {
-			Map<Integer, Integer> result = new HashMap<>();
-			equipmentNeededCache = result;
-			return result;
-		}
 	}
 
 	/**

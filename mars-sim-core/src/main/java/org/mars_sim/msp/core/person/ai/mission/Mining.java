@@ -93,7 +93,7 @@ public class Mining extends RoverMission
 	public Mining(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson);
 		
 		if (!isDone()) {
 			// Initialize data members.
@@ -101,7 +101,7 @@ public class Mining extends RoverMission
 			totalExcavatedMinerals = new HashMap<>(1);
 
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson))
+			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
 				return;
 
 			Settlement s = getStartingSettlement();
@@ -111,7 +111,7 @@ public class Mining extends RoverMission
 				if (hasVehicle()) {
 					miningSite = determineBestMiningSite(getRover(), s);
 					miningSite.setReserved(true);
-					addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
+					addNavpoint(miningSite.getLocation(), "mining site");
 				}
 			} catch (Exception e) {
 				logger.warning("Mining site could not be determined.");
@@ -154,7 +154,7 @@ public class Mining extends RoverMission
 			Rover rover, LightUtilityVehicle luv, String description) {
 
 		// Use RoverMission constructor.
-		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], rover);
 		
 		// Initialize data members.
 		this.miningSite = miningSite;
@@ -165,11 +165,11 @@ public class Mining extends RoverMission
 		addMembers(members, false);
 
 		// Add mining site nav point.
-		addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
+		addNavpoint(miningSite.getLocation(), "mining site");
 
 		// Add home settlement
 		Settlement s = getStartingSettlement();
-		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(s);
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -275,26 +275,14 @@ public class Mining extends RoverMission
 		}
 	}
 
-//    @Override
-//    protected void performPhase(Robot robot) {
-//        super.performPhase(robot);
-//        if (MINING_SITE.equals(getPhase())) {
-//            miningPhase(robot);
-//        }
-//    }
+
 	@Override
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 		super.performEmbarkFromSettlementPhase(member);
 		performEmbarkFrom();
 	}
 
-//    @Override
-//    protected void performEmbarkFromSettlementPhase(Robot robot) {
-//        super.performEmbarkFromSettlementPhase(robot);
-//        performEmbarkFrom();
-//    }
-
-	protected void performEmbarkFrom() {
+	private void performEmbarkFrom() {
 		// Attach light utility vehicle for towing.
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
 
@@ -334,12 +322,6 @@ public class Mining extends RoverMission
 		performDisembarkTo();
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}
-
-//    @Override
-//    protected void performDisembarkToSettlementPhase(Robot robot, Settlement disembarkSettlement) {
-//    	performDisembarkTo();
-//        super.performDisembarkToSettlementPhase(robot, disembarkSettlement);
-//    }
 
 	protected void performDisembarkTo() {
 		// Unload towed light utility vehicle.
@@ -466,11 +448,6 @@ public class Mining extends RoverMission
 							assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
 						}
 					}
-//                    // Otherwise start the mining task if it can be done.
-//                    else if (MineSite.canMineSite(member, getRover())) {
-//                        assignTask(member, new MineSite(member, miningSite
-//                                .getLocation(), (Rover) getVehicle(), luv));
-//                    }
 				}
 			}
 		} else {
@@ -483,121 +460,7 @@ public class Mining extends RoverMission
 		}
 	}
 
-//    private void miningPhase(Robot robot) {
-//
-//        // Set the mining site start time if necessary.
-//        if (miningSiteStartTime == null) {
-//            miningSiteStartTime = (MarsClock) Simulation.instance()
-//                    .getMasterClock().getMarsClock().clone();
-//        }
-//
-//        // Detach towed light utility vehicle if necessary.
-//        if (getRover().getTowedVehicle() != null) {
-//            getRover().setTowedVehicle(null);
-//            luv.setTowingVehicle(null);
-//        }
-//
-//        // Check if crew has been at site for more than three sols.
-//        boolean timeExpired = false;
-//        MarsClock currentTime = (MarsClock) Simulation.instance()
-//                .getMasterClock().getMarsClock().clone();
-//        if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) {
-//            timeExpired = true;
-//        }
-//
-//        if (isEveryoneInRover()) {
-//
-//            // Check if end mining flag is set.
-//            if (endMiningSite) {
-//                endMiningSite = false;
-//                setPhaseEnded(true);
-//            }
-//
-//            // Check if crew has been at site for more than three sols, then end this phase.
-//            if (timeExpired) {
-//                setPhaseEnded(true);
-//            }
-//
-//            // Determine if no one can start the mine site or collect resources tasks.
-//            boolean nobodyMineOrCollect = true;
-//            Iterator<Robot> i = getRobots().iterator();
-//            while (i.hasNext()) {
-//                Robot robotTemp = i.next();
-//                if (MineSite.canMineSite(robotTemp, getRover())) {
-//                    nobodyMineOrCollect = false;
-//                }
-//                if (canCollectExcavatedMinerals(robotTemp)) {
-//                    nobodyMineOrCollect = false;
-//                }
-//            }
-//
-//            // If no one can mine or collect minerals at the site and this is not due to it just being
-//            // night time, end the mining phase.
-//            Mars mars = Simulation.instance().getMars();
-//            boolean inDarkPolarRegion = mars.getSurfaceFeatures()
-//                    .inDarkPolarRegion(getCurrentMissionLocation());
-//            double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(
-//                    getCurrentMissionLocation());
-//            if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
-//                setPhaseEnded(true);
-//            }
-//
-//            // Anyone in the crew or a single robot at the home settlement has a dangerous illness, end phase.
-//            if (hasEmergency()) {
-//                setPhaseEnded(true);
-//            }
-//
-//            // Check if enough resources for remaining trip.
-//            if (!hasEnoughResourcesForRemainingMission(false)) {
-//                // If not, determine an emergency destination.
-//                determineEmergencyDestination(robot);
-//                setPhaseEnded(true);
-//            }
-//        } else {
-//            // If mining time has expired for the site, have everyone end their
-//            // mining and collection tasks.
-//            if (timeExpired) {
-//                Iterator<Person> i = getPeople().iterator();
-//                while (i.hasNext()) {
-//                    Task task = i.next().getMind().getTaskManager().getTask();
-//                    if (task instanceof MineSite) {
-//                        ((MineSite) task).endEVA();
-//                    }
-//                    if (task instanceof CollectMinedMinerals) {
-//                        ((CollectMinedMinerals) task).endEVA();
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (!getPhaseEnded()) {
-//
-//            // 75% chance of assigning task, otherwise allow break.
-//            if (RandomUtil.lessThanRandPercent(75D)) {
-//                // If mining is still needed at site, assign tasks.
-//                if (!endMiningSite && !timeExpired) {
-//                    // If robot can collect minerals the site, start that task.
-//                    if (canCollectExcavatedMinerals(robot)) {
-//                        AmountResource mineralToCollect = getMineralToCollect(robot);
-//                        assignTask(robot, new CollectMinedMinerals(robot,
-//                                getRover(), mineralToCollect));
-//                    }
-//                    // Otherwise start the mining task if it can be done.
-//                    else if (MineSite.canMineSite(robot, getRover())) {
-//                        assignTask(robot, new MineSite(robot, miningSite
-//                                .getLocation(), (Rover) getVehicle(), luv));
-//                    }
-//                }
-//            }
-//        } else {
-//            // Mark site as mined.
-//            miningSite.setMined(true);
-//
-//            // Attach light utility vehicle for towing.
-//            getRover().setTowedVehicle(luv);
-//            luv.setTowingVehicle(getRover());
-//        }
-//    }
+
 	/**
 	 * Checks if a person can collect minerals from the excavation pile.
 	 * 
@@ -619,21 +482,6 @@ public class Mining extends RoverMission
 		return result;
 	}
 
-//    private boolean canCollectExcavatedMinerals(Robot robot) {
-//        boolean result = false;
-//
-//        Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
-//        while (i.hasNext()) {
-//            AmountResource resource = i.next();
-//            if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-//                    && CollectMinedMinerals.canCollectMinerals(robot,
-//                            getRover(), resource)) {
-//                result = true;
-//            }
-//        }
-//
-//        return result;
-//    }
 	/**
 	 * Gets the mineral resource to collect from the excavation pile.
 	 * 
@@ -660,26 +508,6 @@ public class Mining extends RoverMission
 		return result;
 	}
 
-//    private AmountResource getMineralToCollect(Robot robot) {
-//        AmountResource result = null;
-//        double largestAmount = 0D;
-//
-//        Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
-//        while (i.hasNext()) {
-//            AmountResource resource = i.next();
-//            if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-//                    && CollectMinedMinerals.canCollectMinerals(robot,
-//                            getRover(), resource)) {
-//                double amount = excavatedMinerals.get(resource);
-//                if (amount > largestAmount) {
-//                    result = resource;
-//                    largestAmount = amount;
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
 	/**
 	 * Ends mining at a site.
 	 */
@@ -703,18 +531,6 @@ public class Mining extends RoverMission
 				}
 			}
 		}
-
-//        // End each bot's mining site task.
-//        Iterator<Robot> j = getRobots().iterator();
-//        while (j.hasNext()) {
-//            Task task = j.next().getBotMind().getTaskManager().getTask();
-//            if (task instanceof MineSite) {
-//                ((MineSite) task).endEVA();
-//            }
-//            if (task instanceof CollectMinedMinerals) {
-//                ((CollectMinedMinerals) task).endEVA();
-//            }
-//        }
 	}
 
 	/**
@@ -784,32 +600,24 @@ public class Mining extends RoverMission
 		while (i.hasNext()) {
 			String mineralType = i.next();
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-//			Good mineralGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(mineralType));
 			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralResource);
 			double concentration = concentrations.get(mineralType);
 			double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
-
-//		logger.info(settlement + "'s Mining site value is " + result);
-				
+			
 		result = Math.min(100, result);
 		return result;
 	}
 
 	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null) {
-			return equipmentNeededCache;
-		} else {
-			Map<Integer, Integer> result = new HashMap<>();
+	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		Map<Integer, Integer> result = new HashMap<>();
 
-			// Include required number of bags.
-			result.put(EquipmentType.getResourceID(EquipmentType.LARGE_BAG), NUMBER_OF_LARGE_BAGS);
+		// Include required number of bags.
+		result.put(EquipmentType.getResourceID(EquipmentType.LARGE_BAG), NUMBER_OF_LARGE_BAGS);
 
-			equipmentNeededCache = result;
-			return result;
-		}
+		return result;
 	}
 
 	@Override
@@ -818,7 +626,7 @@ public class Mining extends RoverMission
 	}
 
 	@Override
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
+	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 		result += getEstimatedRemainingMiningSiteTime();
 		return result;
@@ -847,7 +655,7 @@ public class Mining extends RoverMission
 	}
 
 	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
 		double miningSiteTime = getEstimatedRemainingMiningSiteTime();

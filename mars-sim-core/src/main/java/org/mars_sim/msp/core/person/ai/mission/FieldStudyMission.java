@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,8 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 
+	private static final int MIN_MEMEBRS = 2;
+	
 	// Data members
 	/** External flag for ending research at the field site. */
 	private boolean endFieldSite;
@@ -64,11 +65,11 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected FieldStudyMission(String description, MissionType missionType,
-								Person startingPerson, int minPeople,
+								Person startingPerson,
 								ScienceType science, double fieldSiteTime) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, startingPerson, minPeople);
+		super(description, missionType, startingPerson);
 
 		this.science = science;
 		this.fieldSiteTime = fieldSiteTime;
@@ -84,7 +85,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 			}
 
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson))
+			if (!recruitMembersForMission(startingPerson, MIN_MEMEBRS))
 				return;
 
 			// Determine field site location.
@@ -94,7 +95,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+			addNavpoint(s);
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -120,26 +121,26 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	 * @param description        the mission description.
 	 */
 	protected FieldStudyMission(String description, MissionType missionType,
-			Person leadResearcher, int minPeople,
+			Person leadResearcher,
 			Rover rover, ScientificStudy study, double fieldSiteTime,
 			Collection<MissionMember> members,
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, leadResearcher, minPeople, rover);
+		super(description, missionType, leadResearcher, rover);
 
 		this.study = study;
 		this.science = study.getScience();
 		this.fieldSite = fieldSite;
 		this.fieldSiteTime = fieldSiteTime;
-		addNavpoint(new NavPoint(fieldSite, "field research site"));
+		addNavpoint(fieldSite, "field research site");
 
 		// Add mission members.
 		addMembers(members, false);
 		
 		// Add home settlement
 		Settlement s = getStartingSettlement();
-		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(s);
 
 		// Set initial mission phase.
 		setPhase(EMBARKING, s.getName());
@@ -239,7 +240,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		double limit = range / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(new NavPoint(fieldSite, "field research site"));
+		addNavpoint(fieldSite, "field research site");
 	}
 
 	/**
@@ -287,17 +288,6 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		}
 
 		return result;
-	}
-
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null) {
-			return equipmentNeededCache;
-		} else {
-			Map<Integer, Integer> result = new HashMap<>();
-			equipmentNeededCache = result;
-			return result;
-		}
 	}
 
 	@Override
@@ -455,7 +445,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	protected abstract boolean canResearchSite(MissionMember researcher);
 	
 	@Override
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
+	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 		result += getEstimatedRemainingFieldSiteTime();
 		return result;
@@ -483,7 +473,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	}
 
 	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 

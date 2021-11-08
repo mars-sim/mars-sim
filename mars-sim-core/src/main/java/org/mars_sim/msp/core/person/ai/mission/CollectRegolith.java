@@ -41,9 +41,6 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 1;
 
-	/** Minimum number of people to do mission. */
-	public static final int MIN_PEOPLE = 2;
-
 
 	/**
 	 * Constructor.
@@ -54,7 +51,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
-				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES);
 	}
 
 	/**
@@ -72,17 +69,7 @@ public class CollectRegolith extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(description, missionType, members, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
-				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
-	}
-
-	/**
-	 * Gets the description of a collection site.
-	 * 
-	 * @param siteNum the number of the site.
-	 * @return description
-	 */
-	protected String getCollectionSiteDescription(int siteNum) {
-		return "prospecting site " + siteNum;
+				rover, regolithCollectionSites);
 	}
 
 	@Override

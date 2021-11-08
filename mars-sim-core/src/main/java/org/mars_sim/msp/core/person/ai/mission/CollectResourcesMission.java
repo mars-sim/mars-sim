@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public abstract class CollectResourcesMission extends RoverMission
 	implements Serializable, SiteMission {
 
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -49,6 +50,8 @@ public abstract class CollectResourcesMission extends RoverMission
 	/** Mission phase. */
 	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase("Mission.phase.collectResources");
 
+	private static final String PROPSPECTING_SITE = "Propspecting Site #";
+
 	/** Estimated collection time multiplier for EVA. */
 	private static final double EVA_COLLECTION_OVERHEAD = 20D;
 
@@ -56,6 +59,9 @@ public abstract class CollectResourcesMission extends RoverMission
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
+	
+	/** Minimum number of people to do mission. */
+	private static final int MIN_PEOPLE = 2;
 	
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
@@ -96,10 +102,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
-			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites, int minPeople) {
+			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, startingPerson, minPeople);
+		super(missionName, missionType, startingPerson);
 		
 		// Problem starting mission
 		if (isDone()) {
@@ -115,7 +121,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			this.containerNum = containerNum;
 
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson))
+			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
 				return;
 
 			// Determine collection sites
@@ -161,18 +167,15 @@ public abstract class CollectResourcesMission extends RoverMission
 				
 				// Reorder sites for shortest distance and load
 				List<Coordinates> orderSites = Exploration.getMinimalPath(startingLocation, unorderedSites);
-				int collectionSiteNum = 1;	
-				for(Coordinates next : orderSites) {
-					addNavpoint(new NavPoint(next, getCollectionSiteDescription(collectionSiteNum++)));
-				}
-				
+				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
+
 				double containerCap = ContainerUtil.getContainerCapacity(containerID);
 				this.siteResourceGoal = (containerCap * (containerNum - 2)) / orderSites.size();
 				logger.info(getVehicle(), "Target per site " + siteResourceGoal);
 			}
 
 			// Add home settlement for return
-			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+			addNavpoint(s);
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -206,10 +209,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	 */
 	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members,
 			Integer resourceID, double resourceCollectionRate, EquipmentType containerID,
-			int containerNum, int minPeople, Rover rover, List<Coordinates> collectionSites) {
+			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, (MissionMember) members.toArray()[0], minPeople, rover);
+		super(missionName, missionType, (MissionMember) members.toArray()[0], rover);
 
 		this.resourceID = resourceID;
 		
@@ -220,13 +223,11 @@ public abstract class CollectResourcesMission extends RoverMission
 		this.containerNum = containerNum;
 
 		// Set collection navpoints.
-		for (int x = 0; x < collectionSites.size(); x++)
-			addNavpoint(new NavPoint(collectionSites.get(x), getCollectionSiteDescription(x + 1)));
+		addNavpoints(collectionSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 		// Add home navpoint.
 		Settlement s = getStartingSettlement();
-		addNavpoint(
-				new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(s);
 
 		// Add mission members.
 		addMembers(members, false);
@@ -610,7 +611,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @throws MissionException
 	 */
 	@Override
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
+	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
 
 		result += getEstimatedRemainingCollectionSiteTime(useBuffer);
@@ -643,7 +644,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	}
 
 	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 		// Note: currently, it has methane resource only
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
@@ -711,18 +712,12 @@ public abstract class CollectResourcesMission extends RoverMission
 	}
 
 	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null) {
-			return equipmentNeededCache;
-		} else {
-			Map<Integer, Integer> result = new HashMap<>();
+	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		Map<Integer, Integer> result = new HashMap<>();
 
-			// Include required number of containers.
-			result.put(EquipmentType.getResourceID(containerID), containerNum);
-
-			equipmentNeededCache = result;
-			return result;
-		}
+		// Include required number of containers.
+		result.put(EquipmentType.getResourceID(containerID), containerNum);
+		return result;
 	}
 
 	/**
@@ -733,12 +728,4 @@ public abstract class CollectResourcesMission extends RoverMission
 	public double getTotalSiteScore(Settlement reviewSettlement) {
 		return totalSiteScore;
 	}
-	
-	/**
-	 * Gets the description of a collection site.
-	 * 
-	 * @param siteNum the number of the site.
-	 * @return description
-	 */
-	protected abstract String getCollectionSiteDescription(int siteNum);
 }

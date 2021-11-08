@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -114,7 +112,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private WebLabel startingLabel;
 	private WebLabel phaseLabel;
 	private WebLabel settlementLabel;
-	private WebLabel memberNumLabel;
 	private WebLabel vehicleStatusLabel;
 	private WebLabel speedLabel;
 	private WebLabel distanceNextNavLabel;
@@ -424,11 +421,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		WebPanel memberPane = new WebPanel(new BorderLayout());
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		bottomBox.add(memberPane, BorderLayout.NORTH);
-		
-		// Create the member number label.
-		memberNumLabel = new WebLabel(Msg.getString("MainDetailPanel.missionMembersMinMax", "", "", "", WebLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(memberNumLabel);
 
 		// Create member bottom panel.
 		WebPanel memberBottomPane = new WebPanel(new BorderLayout(5, 5));
@@ -768,18 +760,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		String settlementText = mission.getSettlmentName();
 		settlementLabel.setText(settlementText);
-		
-		int memberNum = mission.getMembersNumber();
-		int minMembers = mission.getMinMembers();
-		String maxMembers = ""; //$NON-NLS-1$
 
-		if (mission instanceof VehicleMission) {
-			maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
-		} else {
-			maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
-		}
-
-		memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", memberNum, minMembers, maxMembers)); //$NON-NLS-1$
 		memberTableModel.setMission(mission);
 		centerMapButton.setEnabled(true);
 
@@ -887,7 +868,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			typeLabel.setText(" "); 
 			phaseLabel.setText(" "); 
 			settlementLabel.setText(" ");
-			memberNumLabel.setText(" ");
 			memberTableModel.setMission(null);
 			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
@@ -1029,16 +1009,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				phaseLabel.setText(phaseText); // $NON-NLS-1$
 			} else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT
 					|| type == MissionEventType.MIN_MEMBERS_EVENT || type == MissionEventType.CAPACITY_EVENT) {
-				int memberNum = mission.getMembersNumber();
-				int minMembers = mission.getMinMembers();
-				String maxMembers = ""; //$NON-NLS-1$
-				if (mission instanceof VehicleMission) {
-					maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
-				} else {
-					maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
-				}
-				memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", //$NON-NLS-1$
-						memberNum, minMembers, maxMembers));
 				memberTableModel.updateMembers();
 			} else if (type == MissionEventType.VEHICLE_EVENT) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
@@ -1096,31 +1066,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-		}
-	}
-
-	/**
-	 * A custom box container inner class.
-	 */
-	private static class CustomBox extends Box {
-
-		/**
-		 * Constructor
-		 */
-		private CustomBox() {
-			super(BoxLayout.Y_AXIS);
-			setBorder(new MarsPanelBorder());
-		}
-
-		/**
-		 * Gets the maximum size for the component.
-		 * 
-		 * @return dimension.
-		 */
-		public Dimension getMaximumSize() {
-			Dimension result = getPreferredSize();
-			result.width = Short.MAX_VALUE;
-			return result;
 		}
 	}
 
@@ -1335,7 +1280,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		startingLabel = null; 
 		phaseLabel = null; 
 		settlementLabel = null;
-		memberNumLabel = null; 
 		vehicleStatusLabel = null; 
 		speedLabel = null; 
 		distanceNextNavLabel = null; 

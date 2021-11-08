@@ -100,9 +100,7 @@ public class Delivery extends DroneMission implements Serializable {
 			// Get trading settlement
 			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-						tradingSettlement.getName()));
-//				setDescription(Msg.getString("Mission.description.delivery.detail", tradingSettlement.getName())); // $NON-NLS-1$
+				addNavpoint(tradingSettlement);
 				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 				TRADE_PROFIT_CACHE.remove(tradingSettlement);
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
@@ -138,7 +136,7 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 
 			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, true)) {
+			if (!isDone() && !recruitMembersForMission(startingMember, true, 2)) {
 				return;
 			}
 		}
@@ -165,7 +163,7 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, MissionType.DELIVERY, startingMember, 2, drone);
+		super(description, MissionType.DELIVERY, startingMember, drone);
 
 		outbound = true;
 		doNegotiation = false;
@@ -178,7 +176,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
-		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
+		addNavpoint(tradingSettlement);
 
 		// Set trade goods.
 		sellLoad = sellGoods;
@@ -346,7 +344,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if (getPhaseEnded()) {
 			outbound = false;
-			equipmentNeededCache = null;
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement.getCoordinates(), 
 							tradingSettlement,
@@ -438,7 +435,7 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	@Override
-	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
+	protected Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
 		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
 
@@ -700,17 +697,6 @@ public class Delivery extends DroneMission implements Serializable {
 		public DeliveryProfitInfo(double profit, MarsClock time) {
 			this.profit = profit;
 			this.time = time;
-		}
-	}
-
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null)
-			return equipmentNeededCache;
-		else {
-			Map<Integer, Integer> result = new HashMap<>(0);
-			equipmentNeededCache = result;
-			return result;
 		}
 	}
 
