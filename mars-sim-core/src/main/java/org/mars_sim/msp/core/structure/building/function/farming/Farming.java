@@ -50,7 +50,7 @@ public class Farming extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Farming.class.getName());
-	
+
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
 													  "HVAC System", "Waste Disposal System",
 													  "Containment System", "Any Traces of Contamination",
@@ -58,19 +58,19 @@ public class Farming extends Function implements Serializable {
 													  "Water and Irrigation System"};
 	private static final String [] CLEANING_LIST = {"Floor", "Curtains", "Canopy", "Equipment",
 													"Pipings", "Trays", "Valves"};
-	
+
 	private static final int MAX_NUM_SOLS = 14;
 	private static final int MAX_SAME_CROPTYPE = 3;
-	
+
 	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
 	private static final int SOIL_ID = ResourceUtil.soilID;
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
-	
+
 	public static final String TISSUE_CULTURE = " " + FoodType.TISSUE.getName();
-	
+
 	/** The average temperature tolerance of a crop [in C]. */
 	private static final double T_TOLERANCE = 3D;
-	
+
 	/** The amount of crop tissue culture needed for each square meter of growing area. */
 	private static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
@@ -82,7 +82,7 @@ public class Farming extends Function implements Serializable {
 	private int identifer;
 	/** The number of crops to plant. */
 	private int numCrops2Plant;
-	
+
 	private double powerGrowingCrop;
 	private double powerSustainingCrop;
 	private double maxGrowingArea;
@@ -99,14 +99,14 @@ public class Farming extends Function implements Serializable {
 	private Map<String, SolMetricDataLogger<Integer>> cropUsage;
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
-    
+
 	private Research lab;
 	private HouseKeeping houseKeeping;
 
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param building the building the function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
@@ -118,16 +118,16 @@ public class Farming extends Function implements Serializable {
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
 		identifer = 0;
-		
+
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
-		
+
 		cropListInQueue = new ArrayList<>();
 		crops = new ArrayList<>();
 		cropHistory = new HashMap<>();
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
 
-		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());	
+		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());
 
 		powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
 		powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
@@ -145,7 +145,7 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 				cropHistory.put(crop.getIdentifier(), cropType.getName());
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-				
+
 				alreadyPlanted.merge(cropType, 1, Integer::sum);
 			}
 		}
@@ -153,7 +153,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Picks a crop type
-	 * 
+	 *
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropSpec}
 	 */
@@ -176,7 +176,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Selects a crop currently having the highest value point (VP)
-	 * 
+	 *
 	 * @return CropType
 	 */
 	public CropSpec selectVPCrop() {
@@ -212,7 +212,7 @@ public class Farming extends Function implements Serializable {
 			// get the last two planted crops
 			last2CT = cropHistory.get(size - 2);
 			lastCT = cropHistory.get(size - 1);
-	
+
 			if (no_1_crop.getName().equalsIgnoreCase(last2CT) || no_1_crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
 
@@ -281,7 +281,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Checks if the greenhouse has too many crops of this type
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -301,7 +301,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Plants a new crop
-	 * 
+	 *
 	 * @param cropType
 	 * @param isStartup             - true if it's at the start of the sim
 	 * @param designatedGrowingArea
@@ -346,9 +346,9 @@ public class Farming extends Function implements Serializable {
 
 		}
 
-		Crop crop = new Crop(identifer++, cropType, cropArea, dailyMaxHarvest, 
+		Crop crop = new Crop(identifer++, cropType, cropArea, dailyMaxHarvest,
 				this, isStartup, percentAvailable);
-		
+
 		return crop;
 	}
 
@@ -384,7 +384,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Uses available tissue culture to shorten Germinating Phase when planting the
 	 * crop
-	 * 
+	 *
 	 * @parama cropType
 	 * @param cropArea
 	 * @return percentAvailable
@@ -421,7 +421,7 @@ public class Farming extends Function implements Serializable {
 				available = true;
 				percent = 100D;
 				logger.log(building, Level.INFO, 1000,
-						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " 
+						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg "
 				+ tissueName + " was fully available.");
 			}
 
@@ -440,7 +440,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets a collection of the CropType.
-	 * 
+	 *
 	 * @return Collection of CropType
 	 */
 	public List<String> getCropListInQueue() {
@@ -449,7 +449,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Adds a cropType to the crop queue.
-	 * 
+	 *
 	 * @param cropType
 	 */
 	public void addCropListInQueue(String n) {
@@ -460,7 +460,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Deletes a cropType to cropListInQueue.
-	 * 
+	 *
 	 * @param cropType
 	 */
 	public void deleteACropFromQueue(int index, String n) {
@@ -484,12 +484,11 @@ public class Farming extends Function implements Serializable {
 				i++;
 			}
 		}
-
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
-	 * 
+	 *
 	 * @param buildingName the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
@@ -520,19 +519,18 @@ public class Farming extends Function implements Serializable {
 		}
 
 		// Modify result by value (VP) of food at the settlement.
-//		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
 		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(ResourceUtil.foodID);
 
 		result = (demand / (supply + 1D)) * foodValue;
 
-		// TODO: investigating if other food group besides food should be added as well
+		// NOTE: investigating if other food group besides food should be added as well
 
 		return result;
 	}
 
 	/**
 	 * Checks if farm currently requires work.
-	 * 
+	 *
 	 * @return true if farm requires work
 	 */
 	public boolean requiresWork() {
@@ -546,7 +544,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Adds work time to the crops current phase.
-	 * 
+	 *
 	 * @param workTime - Work time to be added (millisols)
 	 * @param h        - an instance of TendGreenhouse
 	 * @param worker     - a person or bot
@@ -557,12 +555,12 @@ public class Farming extends Function implements Serializable {
 		double t = workTime;
 		Crop needyCropCache = null;
 		Crop needyCrop = getNeedyCrop(needyCropCache);
-		// TODO: redesign addWork() to check on each food crop
+		// NOTE: redesign addWork() to check on each food crop
 		while (needyCrop != null && t > MIN) {
 			// WARNING : ensure timeRemaining gets smaller
 			// or else creating an infinite loop
 			t = needyCrop.addWork(worker, t) * .9999;
-			
+
 			needyCropCache = needyCrop;
 			// Get a new needy crop
 			needyCrop = getNeedyCrop(needyCropCache);
@@ -579,7 +577,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets a crop that needs planting, tending, or harvesting.
-	 * 
+	 *
 	 * @param lastCrop
 	 * @param unit     a person or a bot
 	 * @return crop or null if none found.
@@ -587,7 +585,7 @@ public class Farming extends Function implements Serializable {
 	private Crop getNeedyCrop(Crop lastCrop) {
 		if (crops == null || crops.isEmpty())
 			return null;
-		
+
 		Crop result = null;
 
 		List<Crop> needyCrops = new ArrayList<>();
@@ -611,7 +609,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets the number of farmers currently working at the farm.
-	 * 
+	 *
 	 * @return number of farmers
 	 */
 	public int getFarmerNum() {
@@ -636,19 +634,19 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Time passing for the building.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {	
+		if (valid) {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
-			    
+
 				houseKeeping.resetCleaning();
-				
+
 				// Inspect every 2 days
 				if ((pulse.getMarsTime().getMissionSol() % 2) == 0)
 				{
@@ -660,14 +658,14 @@ public class Farming extends Function implements Serializable {
 					c.resetPAR();
 				// Note: will need to limit the size of the other usage maps
 			}
-	
+
 			// Determine the production level.
 			double productionLevel = 0D;
 			if (building.getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
 			else if (building.getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = .5D;
-	
+
 			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());
 			double greyFilterRate = building.getSettlement().getGreyWaterFilteringRate();
 
@@ -683,15 +681,15 @@ public class Farming extends Function implements Serializable {
 			// Call timePassing on each crop.
 			List<Crop> toRemove = new ArrayList<>();
 			for(Crop crop : crops) {
-				
+
 				try {
 					crop.timePassing(pulse, productionLevel, solarIrradiance,
 									 greyFilterRate, temperatureModifier);
-				
+
 				} catch (Exception e) {
 					logger.severe(building, crop.getCropName() + " ran into issues ", e);
 				}
-				
+
 				// Remove old crops.
 				if (crop.getPhaseType() == PhaseType.FINISHED) {
 					// Take back the growing area
@@ -700,7 +698,7 @@ public class Farming extends Function implements Serializable {
 					numCrops2Plant++;
 				}
 			}
-			
+
 			// Remove finished crops
 			crops.removeAll(toRemove);
 		}
@@ -708,7 +706,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public void transferSeedling(double time, Worker worker) {
-			
+
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
 			CropSpec ct;
@@ -728,18 +726,18 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 				cropHistory.put(crop.getIdentifier(), crop.getCropName());
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-				
+
 				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-				
+
 				numCrops2Plant--;
 				break;
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the amount of power required when function is at full power.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	@Override
@@ -766,7 +764,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets the total amount of lighting power in this greenhouse.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	public double getTotalLightingPower() {
@@ -775,7 +773,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets the amount of power required when function is at power down level.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	@Override
@@ -786,7 +784,7 @@ public class Farming extends Function implements Serializable {
 
 		// Add power required to sustain growing or harvest-ready crops.
 		for (Crop crop : crops) {
-			if (crop.needsPower()) 
+			if (crop.needsPower())
 				powerRequired += powerSustainingCrop;
 		}
 
@@ -795,7 +793,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets the total growing area for all crops.
-	 * 
+	 *
 	 * @return growing area in square meters
 	 */
 	public double getGrowingArea() {
@@ -818,7 +816,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Checks to see if a botany lab with an open research slot is available and
 	 * performs cell tissue extraction
-	 * 
+	 *
 	 * @param type
 	 * @return true if work has been done
 	 */
@@ -876,8 +874,8 @@ public class Farming extends Function implements Serializable {
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
 			return growCropTissue(lab, type, worker);// , false);
-		} 
-		
+		}
+
 		else {
 
 			// Check available research slot in another lab located in another greenhouse
@@ -901,7 +899,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Grows crop tissue cultures
-	 * 
+	 *
 	 * @param lab
 	 * @param croptype
 	 */
@@ -963,7 +961,7 @@ public class Farming extends Function implements Serializable {
 						store(amountExtracted, tissueID, "Farming::growCropTissue");
 						logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE_CULTURE 
+							+ cropName + TISSUE_CULTURE
 							+ " in Botany lab.");
 
 						isDone = true;
@@ -984,7 +982,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Gets the farm's current crops.
-	 * 
+	 *
 	 * @return collection of crops
 	 */
 	public List<Crop> getCrops() {
@@ -1009,7 +1007,7 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Records the average water usage on a particular crop
-	 * 
+	 *
 	 * @param cropName
 	 * @param usage    average water consumption in kg/sol
 	 */
@@ -1019,13 +1017,13 @@ public class Farming extends Function implements Serializable {
 			crop = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 			cropUsage.put(cropName, crop);
 		}
-		
+
 		crop.increaseDataPoint(type, usage);
 	}
 
 	/**
 	 * Computes the average water usage on a particular crop
-	 * 
+	 *
 	 * @return average water consumption in kg/sol
 	 */
 	public double computeUsage(int type, String cropName) {
@@ -1036,35 +1034,53 @@ public class Farming extends Function implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Computes the water usage on all crops
-	 * 
+	 * Computes the resource usage on all crops
+	 *
+	 * @type resource type (0 for water, 1 for o2, 2 for co2)
 	 * @return water consumption in kg/sol
 	 */
 	public double computeUsage(int type) {
 		// Note: the value is kg per square meter per sol
 		double sum = 0;
-		for (Crop c : crops) {
-			sum += computeUsage(type, c.getCropName());
-		}
-		
-		return Math.round(sum * 1000.0) / 1000.0;
+//		for (Crop c : crops) {
+//			sum += computeUsage(type, c.getCropName());
+//		}
+//		if (sum == 0) {
+			if (type == 0) {
+				for (Crop c : crops) {
+					sum += c.getCumWaterUsage();
+				}
+			}
+			else if (type == 1) {
+				for (Crop c : crops) {
+					sum += c.getCumOxygenUsage();
+				}
+			}
+			else if (type == 2) {
+				for (Crop c : crops) {
+					sum += c.getCumCO2Usage();
+				}
+			}
+//		}
+
+		return Math.round(sum * 10.0) / 10.0;
 	}
 
 	/**
 	 * Gets the daily average water usage of the last 5 sols
 	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
-	 * 
+	 *
 	 * @return
 	 */
 	public double getDailyAverageWaterUsage() {
 		return dailyWaterUsage.getDailyAverage();
 	}
-	
+
 	/**
 	 * Adds to the daily water usage
-	 * 
+	 *
 	 * @param waterUssed
 	 * @param solElapsed
 	 */
@@ -1076,7 +1092,7 @@ public class Farming extends Function implements Serializable {
 		return numCrops2Plant;
 	}
 
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

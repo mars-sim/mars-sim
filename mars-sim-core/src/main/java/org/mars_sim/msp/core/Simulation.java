@@ -108,13 +108,13 @@ public class Simulation implements ClockListener, Serializable {
 
 	public enum SaveType {
 		/** Do not save */
-		NONE, 
+		NONE,
 		/** Save as default.sim. */
-		SAVE_DEFAULT, 
+		SAVE_DEFAULT,
 		/** Save as other name. */
-		SAVE_AS, 
+		SAVE_AS,
 		/** Autosave as default.sim. */
-		AUTOSAVE_AS_DEFAULT, 
+		AUTOSAVE_AS_DEFAULT,
 		/** Autosave with build info and timestamp. */
 		AUTOSAVE;
 	};
@@ -129,9 +129,9 @@ public class Simulation implements ClockListener, Serializable {
 	public final static String BUILD = Msg.getString("Simulation.build").trim(); //$NON-NLS-1$
 	/** Java version string. */
 	private final static String JAVA_TAG = System.getProperty("java.version");
-	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";																			
+	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";
 	/** Java version string. */
-	public final static String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ? 
+	public final static String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ?
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
 	/** Vendor string. */
 	// public final static String VENDOR = System.getProperty("java.vendor");
@@ -145,7 +145,7 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 	/** 2 whitespaces. */
 	private final static String WHITESPACES = "  ";
-	
+
 	public final static String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 	// + " - " + VENDOR
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
@@ -153,7 +153,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/** The minimum size of heap space in bytes */
 	public final static int MIN_HEAP_SPACE = 64*1024*1024;
-	
+
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
@@ -164,9 +164,9 @@ public class Simulation implements ClockListener, Serializable {
 	private transient boolean justSaved = true;
 
 	private transient boolean autosaveDefault;
-	
+
 	private transient boolean clockOnPause = false;
-	
+
 	private boolean initialSimulationCreated = false;
 
 	private boolean changed = true;
@@ -175,8 +175,8 @@ public class Simulation implements ClockListener, Serializable {
 	public static int MISSION_SOL = 0;
 	/** msols at the time of starting this sim. */
 	public static int MSOL_CACHE = 0;
-	
-	/** The modified time stamp of the last saved sim */	
+
+	/** The modified time stamp of the last saved sim */
 	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
 	private String lastSaveTimeStamp = null;
@@ -184,7 +184,7 @@ public class Simulation implements ClockListener, Serializable {
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
 	private Environment environment;
-	/** Planet Mars. */	
+	/** Planet Mars. */
 	private OrbitInfo orbit;
 	/** All historical info. */
 	private HistoricalEventManager eventManager;
@@ -208,7 +208,7 @@ public class Simulation implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
 	private SimulationConfig simulationConfig;
-	
+
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
 	 * from other classes.
@@ -230,7 +230,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Gets a Bill Pugh Singleton instance of the simulation.
-	 * 
+	 *
 	 * @return Simulation instance
 	 */
 	public static Simulation instance() {
@@ -241,17 +241,17 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Prevents the singleton pattern from being destroyed at the time of
 	 * serialization
-	 * 
+	 *
 	 * @return Simulation instance
 	 */
 	protected Object readResolve() throws ObjectStreamException {
 		return instance();
 	}
-	
+
 	/**
 	 * Checks if the simulation is in a state of creating a new simulation or
 	 * loading a saved simulation.
-	 * 
+	 *
 	 * @return true is simulation is in updating state.
 	 */
 	public boolean isUpdating() {
@@ -263,16 +263,16 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void createNewSimulation(int timeRatio) {
 		isUpdating = true;
-		
+
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
-		
+
 		Simulation sim = instance();
 
 		// Destroy old simulation.
 		if (sim.initialSimulationCreated) {
 			sim.destroyOldSimulation();
 		}
-				
+
 		sim.initialSimulationCreated = true;
 
 		// Initialize intransient data members.
@@ -280,52 +280,51 @@ public class Simulation implements ClockListener, Serializable {
 
 		isUpdating = false;
 
-		// Preserve the build version tag for future build 
+		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
 		unitManager.originalBuild = Simulation.BUILD;
 	}
 
 
-	public void testRun() {		
+	public void testRun() {
 		Simulation sim = Simulation.instance();
 		ResourceUtil.getInstance();
-		
+
 		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
-		
+
 		environment = new Environment(marsClock);
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
-		
+
 		// Build plantary objects
 		MarsSurface marsSurface = new MarsSurface();
 		unitManager.addUnit(marsSurface);
-		
+
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = environment.getSurfaceFeatures();
-		
+
         RoleUtil.initialize();
 
 		medicalManager = new MedicalManager();
-		
+
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
+
 		simulationConfig = SimulationConfig.instance();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
 											   simulationConfig.getPartConfiguration());
-		
-		Unit.setUnitManager(unitManager);
-		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, environment, 
-				 environment.getWeather(), surfaceFeatures, new MissionManager());
 
+		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, environment,
+				 environment.getWeather(), surfaceFeatures, new MissionManager());
+		Unit.setUnitManager(unitManager);
 	}
-	
+
 	/**
 	 * Initialize intransient data in the simulation.
 	 */
@@ -339,7 +338,7 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		
+
 		// Clock is always first
 		masterClock = new MasterClock(timeRatio);
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -347,7 +346,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
+
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
 		environment = new Environment(marsClock);
@@ -357,29 +356,29 @@ public class Simulation implements ClockListener, Serializable {
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		scientificStudyManager = new ScientificStudyManager();
-	
+
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = environment.getSurfaceFeatures();
 		SurfaceFeatures.initializeInstances(missionManager, simulationConfig.getLandmarkConfiguration());
-		
+
 		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
 		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, environment, 
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, environment,
 				environment.getWeather(), surfaceFeatures, missionManager);
 		TaskManager.initializeInstances(marsClock);
-		
+
 		// Initialize UnitManager instance
-		unitManager = new UnitManager(); 
+		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
-		
+
 		// Initialize MarsSurface instance
 		MarsSurface marsSurface = new MarsSurface();
 		// Build objects
 		unitManager.addUnit(marsSurface);
-				
+
 		// Initialize the Airlock instance
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-	
+
 		// Gets the MarsSurface instance
 		Unit.setUnitManager(unitManager);
 
@@ -391,7 +390,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
-		
+
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		transportManager = new TransportManager(eventManager);
@@ -399,29 +398,29 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize ManufactureUtil
         new ManufactureUtil();
         RoleUtil.initialize();
-        
-		// Initialize instances prior to UnitManager initiatiation		
+
+		// Initialize instances prior to UnitManager initiatiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
 											   simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
 		RadiationExposure.initializeInstances(marsClock);
-		
+
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
-							
+
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
-		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
+		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-		
+
 		doneInitializing = true;
 	}
 
 	/**
 	 * Starts the simulation.
-	 * 
+	 *
 	 * @param autosaveDefault True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
@@ -429,35 +428,35 @@ public class Simulation implements ClockListener, Serializable {
 
 		this.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
-		
+
 		masterClock.start();
 	}
-	
+
 	/**
 	 * Loads a simulation instance from a save file.
-	 * 
+	 *
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
 		isUpdating = true;
 
 		File f = file;
-		
+
 		Simulation sim = instance();
-		if (f == null) {		
+		if (f == null) {
 			// Try the default file path if file is null.
 			f = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
-		} 
-		
+		}
+
 		logger.config("The file to be loaded is " + f);
-		
+
 		if (f.exists() && f.canRead()) {
 
 			try {
 				sim.readFromFile(f);
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "Problem loading file: ", e);	
+				logger.log(Level.SEVERE, "Problem loading file: ", e);
 			}
 		}
 
@@ -465,7 +464,7 @@ public class Simulation implements ClockListener, Serializable {
 			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read/found.");
 			System.exit(1);
 		}
-		
+
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
 	}
@@ -474,21 +473,21 @@ public class Simulation implements ClockListener, Serializable {
 //
 //		String name = mars.getClass().getSimpleName();
 //		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
-//			
+//
 //		if (file.exists() && file.canRead()) {
 //			// Use Jackson json to read json file data to String
 //			byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
 //			System.out.println(new String(jsonData));
-//			
+//
 ////	        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
 ////	        System.out.println(mars);
-//	        
+//
 //			// Use Jackson json to read
 ////			mars = objectMapper.readValue(file, Mars.class);
 ////			System.out.println(mars);
 //		}
 //	}
-	
+
     /**
      * Deserialize to Object from given file.
      */
@@ -512,14 +511,14 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = (HistoricalEventManager) ois.readObject();
 			creditManager = (CreditManager) ois.readObject();
 			transportManager = (TransportManager) ois.readObject();
-			relationshipManager = (RelationshipManager) ois.readObject();		
-			unitManager = (UnitManager) ois.readObject();		
-			masterClock = (MasterClock) ois.readObject();	
-			
+			relationshipManager = (RelationshipManager) ois.readObject();
+			unitManager = (UnitManager) ois.readObject();
+			masterClock = (MasterClock) ois.readObject();
+
 			UnitSet.reinit(unitManager);
 		}
 		finally {
-			
+
 			if (ois != null) {
 				ois.close();
 			}
@@ -529,10 +528,10 @@ public class Simulation implements ClockListener, Serializable {
 			}
 		}
     }
-    
+
     /**
      * Computes the size of the file
-     * 
+     *
      * @param file
      * @return the file size with unit in a string
      */
@@ -540,7 +539,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Convert from Bytes to KB
 		double fileSize = file.length() / 1000D;
 		String s = "";
-		
+
 		if (fileSize > 1000D) {
 			fileSize = fileSize / 1_000.0;
 			s = " MB";
@@ -551,27 +550,27 @@ public class Simulation implements ClockListener, Serializable {
 
 		return Math.round(fileSize * 100.0) / 100.0 + s;
     }
- 
+
 	/**
 	 * Reads a serialized simulation from a file.
-	 * 
+	 *
 	 * @param file the saved serialized simulation.
 	 * @throws ClassNotFoundException if error reading serialized classes.
 	 * @throws IOException            if error reading from file.
 	 */
 	private void readFromFile(File file) throws ClassNotFoundException, IOException {
 		logger.config("Loading and processing the saved sim. Please wait...");
-		
+
 		String filename = file.getName();
 		String path = file.getPath().replace(filename, "");
-		
+
 		// Deserialize the file
 		deserialize(file);
-		
+
 		String loadBuild = unitManager.originalBuild;
 		if (loadBuild == null)
 			loadBuild = "unknown";
-		
+
 		logger.config(" --------------------------------------------------------------------");
 		logger.config("                   Info on The Saved Simulation                      ");
 		logger.config(" --------------------------------------------------------------------");
@@ -580,31 +579,31 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("                       Size : " + computeFileSize(file));
 		logger.config("              Made in Build : " + loadBuild);
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
-		
+
 		logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-		logger.config(" --------------------------------------------------------------------");			
+		logger.config(" --------------------------------------------------------------------");
 		if (Simulation.BUILD.equals(loadBuild)) {
 			logger.config(" Note : The two builds are identical.");
 		} else {
 			logger.config(" Note : The two builds are NOT identical.");
 			logger.warning("Attempting to load a simulation made in build " + loadBuild
 				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
-		}		
-		
+		}
+
 		MISSION_SOL = masterClock.getMarsClock().getMissionSol();
 		MSOL_CACHE = masterClock.getMarsClock().getMillisolInt();
-		
+
 		logger.config("  - - - - - - - - - Sol " + MISSION_SOL
 				+ " (Cont') - - - - - - - - - - - ");
-		
+
 		instance().initialSimulationCreated = true;
-		
+
 		// Re-initialize instances
 		reinitializeInstances();
 		// Set this flag to false
 		isUpdating = false;
 	}
-	
+
 	/**
 	 *  Re-initialize instances after loading from a saved sim
 	 */
@@ -613,7 +612,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
-		
+
 		// Restart the autosave scheduler
 		AutosaveScheduler.defaultStart();
 		// Set save type to NONE
@@ -629,7 +628,7 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		
+
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance
@@ -650,32 +649,32 @@ public class Simulation implements ClockListener, Serializable {
 		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, environment, weather, surfaceFeatures, missionManager);	
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, environment, weather, surfaceFeatures, missionManager);
 		Unit.setUnitManager(unitManager);
 		EquipmentFactory.initialise(unitManager);
-		
+
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
-	
+
 		// Rediscover the MissionControls
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
-		
+
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											   medicalManager, eventManager,
 											   simulationConfig.getPartConfiguration());
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
-				
+
 		Resupply.initializeInstances(bc, unitManager);
-	
+
 		// Re-initialize Unit related class
 //		Vehicle.initializeInstances();
 		SalvageValues.initializeInstances(unitManager);
-			
+
 		// Re-initialize Person/Robot related class
-		Mind.initializeInstances(missionManager, relationshipManager);		
+		Mind.initializeInstances(missionManager, relationshipManager);
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(marsClock);
 		Role.initializeInstances(marsClock);
@@ -686,7 +685,7 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, relationshipManager, unitManager);
 		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
-			
+
 		// Miscs.
 		CompositionOfAir.initializeInstances(pc, unitManager);
 		Crop.initializeInstances(simulationConfig.getCropConfiguration());
@@ -696,83 +695,83 @@ public class Simulation implements ClockListener, Serializable {
 		Job.initializeInstances(unitManager, missionManager);
 		RobotJob.initializeInstances(unitManager, missionManager);
 //		CreditEvent.initializeInstances(unitManager, missionManager);
-			
-		// Re-initialize Task related class 
-		Walk.initializeInstances(unitManager);	
-		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
+
+		// Re-initialize Task related class
+		Walk.initializeInstances(unitManager);
+		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-	
+
 		// Re-initialize Mission related class
-		Mission.initializeInstances(this, marsClock, eventManager, unitManager, 
+		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
 		unitManager.reinit(marsClock);
-		
+
 		doneInitializing = true;
 
 	}
-	
+
 	public boolean isDoneInitializing() {
 		return doneInitializing;
 	}
-	
+
 	/**
 	 * Writes the JSON file
-	 * 
+	 *
 	 * @throws JsonGenerationException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-//	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
+//	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {
 		// Write to console, can write to any output stream such as file
 //		StringWriter stringEmp = new StringWriter();
-		
+
 //		Simulation sim = instance();
 //		SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
-//		String name = surface.getClass().getSimpleName();	
+//		String name = surface.getClass().getSimpleName();
 //		objectMapper.writeValue(stringEmp, surface);
-//		System.out.println(name + " JSON representation :\n" + stringEmp);	
+//		System.out.println(name + " JSON representation :\n" + stringEmp);
 //		// Write to the file
 //		objectMapper.writeValue(new File(name + "." + JSON_EXTENSION), surface);
-		
+
 //		String name = mars.getClass().getSimpleName();
 //		objectMapper.writeValue(stringEmp, mars);
 //		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
 //		// Write to the file
 //		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
-		
+
 //		Object o = mars;
 //		String name = o.getClass().getSimpleName();
-		
+
 //		objectMapper.writeValue(stringEmp, o);
 //		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
 //		// Write to the file
 //		objectMapper.writeValue(new File(SAVE_DIR, name + JSON_EXTENSION), o);
-//		
-//		String json = objectMapper.writeValueAsString(o) ; 
-//		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);	
+//
+//		String json = objectMapper.writeValueAsString(o) ;
+//		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
 //	}
-	
-	
+
+
 	/**
 	 * Saves a simulation instance to a save file.
-	 * 
+	 *
 	 * @param file the file to be saved to.
 	 */
 	public synchronized void saveSimulation(SaveType type, File file) throws IOException {
 
 		// Checks to see if the simulation is on pause
 		boolean isPause = masterClock.isPaused();
-		
+
 		Simulation sim = instance();
 		// Stops the master clock and removes the Simulation clock listener
 		sim.halt(isPause);
 
 		// Experiment with saving in JSON format
 //		writeJSON();
-		
+
 		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
 
@@ -825,7 +824,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		else if (type == SaveType.AUTOSAVE) {
 			int missionSol = masterClock.getMarsClock().getMissionSol();
-			
+
 			String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
 					+ SAVE_FILE_EXTENSION;
 			file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
@@ -837,22 +836,22 @@ public class Simulation implements ClockListener, Serializable {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
-		
+
 		// Get current size of heap in bytes
 		long heapSize = Runtime.getRuntime().totalMemory();
 		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
 		long heapMaxSize = Runtime.getRuntime().maxMemory();
 		 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
-		long heapFreeSize = Runtime.getRuntime().freeMemory(); 
-		
+		long heapFreeSize = Runtime.getRuntime().freeMemory();
+
 		logger.config(
-		"heapSize: " + formatSize(heapSize) 
+		"heapSize: " + formatSize(heapSize)
 		+ "    heapMaxSize: " + formatSize(heapMaxSize)
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
-		
+
 		if (heapFreeSize > MIN_HEAP_SPACE){
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
@@ -860,14 +859,14 @@ public class Simulation implements ClockListener, Serializable {
 		else {
 			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
 		}
-		
+
 		// Restarts the master clock and adds back the Simulation clock listener
 		sim.proceed(isPause);
 	}
 
 	/**
 	 * Delays for a period of time in millis
-	 * 
+	 *
 	 * @param millis
 	 */
     public static void delay(long millis) {
@@ -879,26 +878,26 @@ public class Simulation implements ClockListener, Serializable {
             Thread.currentThread().interrupt();
         }
     }
-    
+
     private static String formatSize(long v) {
         if (v < 1024) return v + " B";
         int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
         return String.format("%.2f %sB", (double)v / (1L << (z*10)), " KMGTPE".charAt(z));
     }
-    
+
     /**
      * Serialize the given object and save it to a given file.
      */
     private void serialize(SaveType type, File file, Path srcPath, Path destPath)
             throws IOException {
-		
+
 	    ObjectOutputStream oos = new ObjectOutputStream(
 	    			new GZIPOutputStream(new FileOutputStream(file)));
 		try {
-	
+
 			// Set a delay for 500 millis to avoid java.util.ConcurrentModificationException
 			delay(500L);
-			
+
 			// Store the in-transient objects.
 			oos.writeObject(malfunctionFactory);
 			oos.writeObject(environment);
@@ -911,7 +910,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(relationshipManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
-			
+
 			oos.flush();
 			oos.close();
 
@@ -922,22 +921,22 @@ public class Simulation implements ClockListener, Serializable {
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {
 			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());	
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());
 
 		} catch (OptionalDataException e) {
 			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when saving " + file + " : " + e.getMessage());
-		
+
 		} catch (InvalidObjectException e) {
 			// Thrown when a restored object cannot be made valid.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());	
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());
 
 		} catch (NotActiveException e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when saving " + file + " : " + e.getMessage());
 
 		} catch (StreamCorruptedException e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when saving " + file + " : " + e.getMessage());
-		
+
 		} catch (NotSerializableException e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
 
@@ -972,20 +971,20 @@ public class Simulation implements ClockListener, Serializable {
 
 			if (oos != null)
 				oos.close();
-			
+
 			justSaved = true;
 
 		}
     }
-    
+
 	/**
 	 * Prints the object and its size
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public StringBuilder printObjectSize(int type) {
       	StringBuilder sb = new StringBuilder();
-    	
-		List<Serializable> list = Arrays.asList( 
+
+		List<Serializable> list = Arrays.asList(
 				SimulationConfig.instance(),
 				ResourceUtil.getInstance(),
 				malfunctionFactory,
@@ -1000,25 +999,25 @@ public class Simulation implements ClockListener, Serializable {
 				unitManager,
 				masterClock
 		);
-			
-		list.sort((Serializable d1, Serializable d2) -> d1.getClass().getSimpleName().compareTo(d2.getClass().getSimpleName())); 
-		
+
+		list.sort((Serializable d1, Serializable d2) -> d1.getClass().getSimpleName().compareTo(d2.getClass().getSimpleName()));
+
 		sb.append("      Serializable object | Serialized Size");
 		sb.append("  | Object Size");
 		sb.append(System.lineSeparator());
 		sb.append(" ---------------------------------------------------------"
-				+ System.lineSeparator());		
+				+ System.lineSeparator());
 		int max0 = 25;
 		int max1 = 10;
-		
+
 		String SPACE = " ";
-		
+
 		double sumFileSize = 0;
-		
+
 		String unit = "";
 
 		masterClock.setPaused(true, false);
-		
+
 		for (Serializable o : list) {
 			String name = o.getClass().getSimpleName();
 			int size0 = max0 - name.length();
@@ -1030,7 +1029,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			// Get size
 			double fileSize = 0;
-  
+
 			if (type == 0) {
 				fileSize = CheckSerializedSize.getSerializedSize(o);
 
@@ -1038,9 +1037,9 @@ public class Simulation implements ClockListener, Serializable {
 			else if (type == 1) {
 				fileSize = CheckSerializedSize.getSerializedSizeByteArray(o);
 			}
-			
+
 			sumFileSize += fileSize;
-		
+
 			if (fileSize < 1_000) {
 				unit = SPACE + "B" + SPACE;
 			}
@@ -1052,7 +1051,7 @@ public class Simulation implements ClockListener, Serializable {
 				fileSize = fileSize/1_000_000D;
 				unit = SPACE + "MB";
 			}
-			
+
 			String sizeStr = String.format("%.2f", fileSize) + unit;
 			int size = max1 - sizeStr.length();
 			for (int i=0; i<size; i++) {
@@ -1063,7 +1062,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			sb.append(System.lineSeparator());
 		}
-		
+
 		// Get the total size
 		if (sumFileSize < 1_000D) {
 			unit = SPACE + "B" + SPACE;
@@ -1076,10 +1075,10 @@ public class Simulation implements ClockListener, Serializable {
 			sumFileSize = sumFileSize/1_000_000D;
 			unit = SPACE + "MB";
 		}
-					
+
 		sb.append(" ---------------------------------------------------------"
-				+ System.lineSeparator());	
-		
+				+ System.lineSeparator());
+
 		String name = "Total";
 		int size0 = max0 - name.length();
 		for (int i=0; i<size0; i++) {
@@ -1093,15 +1092,15 @@ public class Simulation implements ClockListener, Serializable {
 		for (int i=0; i<size2; i++) {
 			sb.append(SPACE);
 		}
-		
+
 		sb.append(sizeStr + System.lineSeparator());
-		
+
 		masterClock.setPaused(false, false);
-		
+
 		return sb;
 	}
-	
-	
+
+
 	/**
 	 * Ends the current simulation
 	 */
@@ -1134,8 +1133,8 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/*
-	 * Stops the master clock and removes the Simulation clock listener 
-	 * 
+	 * Stops the master clock and removes the Simulation clock listener
+	 *
 	 * @param isPause has it been on pause ?
 	 */
 	public void halt(boolean isPause) {
@@ -1144,14 +1143,14 @@ public class Simulation implements ClockListener, Serializable {
 			if (!isPause) masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
 		}
-		
+
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
 	}
 
 	/*
 	 * Restarts the master clock and adds back the Simulation clock listener
-	 * 
+	 *
 	 * @param isPause has it been on pause ?
 	 */
 	public void proceed(boolean isPause) {
@@ -1191,7 +1190,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the planet Mars.
-	 * 
+	 *
 	 * @return Mars
 	 */
 	public Environment getMars() {
@@ -1200,7 +1199,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the unit manager.
-	 * 
+	 *
 	 * @return unit manager
 	 */
 	public UnitManager getUnitManager() {
@@ -1209,7 +1208,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the mission manager.
-	 * 
+	 *
 	 * @return mission manager
 	 */
 	public MissionManager getMissionManager() {
@@ -1218,7 +1217,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the relationship manager.
-	 * 
+	 *
 	 * @return relationship manager.
 	 */
 	public RelationshipManager getRelationshipManager() {
@@ -1227,7 +1226,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Gets the credit manager.
-	 * 
+	 *
 	 * @return credit manager.
 	 */
 	public CreditManager getCreditManager() {
@@ -1236,7 +1235,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the malfunction factory.
-	 * 
+	 *
 	 * @return malfunction factory
 	 */
 	public MalfunctionFactory getMalfunctionFactory() {
@@ -1245,7 +1244,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the historical event manager.
-	 * 
+	 *
 	 * @return historical event manager
 	 */
 	public HistoricalEventManager getEventManager() {
@@ -1254,7 +1253,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the medical manager.
-	 * 
+	 *
 	 * @return medical manager
 	 */
 	public MedicalManager getMedicalManager() {
@@ -1263,7 +1262,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the scientific study manager.
-	 * 
+	 *
 	 * @return scientific study manager.
 	 */
 	public ScientificStudyManager getScientificStudyManager() {
@@ -1272,7 +1271,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the transport manager.
-	 * 
+	 *
 	 * @return transport manager.
 	 */
 	public TransportManager getTransportManager() {
@@ -1281,7 +1280,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Get the master clock.
-	 * 
+	 *
 	 * @return master clock
 	 */
 	public MasterClock getMasterClock() {
@@ -1290,7 +1289,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Sets if simulation was loaded with GUI.
-	 * 
+	 *
 	 * @param value is true if GUI is in use.
 	 */
 	public void setUseGUI(boolean value) {
@@ -1299,7 +1298,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Checks if simulation was loaded with GUI.
-	 * 
+	 *
 	 * @return true if GUI is in use.
 	 */
 	public boolean getUseGUI() {
@@ -1337,8 +1336,8 @@ public class Simulation implements ClockListener, Serializable {
 	public boolean getAutosaveDefault() {
 		return autosaveDefault;
 	}
-	
-	
+
+
 	@Override
 	public void uiPulse(double time) {
 	}
@@ -1363,7 +1362,7 @@ public class Simulation implements ClockListener, Serializable {
 			environment.destroy();
 			environment = null;
 		}
-		
+
 		logger.config("Done with mars");
 
 		if (missionManager != null) {
@@ -1382,7 +1381,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		logger.config("Done with medicalManager");
-		
+
 		if (masterClock != null) {
 			masterClock.destroy();
 			masterClock = null;

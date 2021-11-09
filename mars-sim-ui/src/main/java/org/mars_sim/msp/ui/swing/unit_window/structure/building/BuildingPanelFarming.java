@@ -71,10 +71,10 @@ import com.alee.managers.tooltip.TooltipWay;
 public class BuildingPanelFarming
 extends BuildingFunctionPanel
 implements MouseListener {
-	
+
 	// Data members
 	private WebTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
-	
+
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
@@ -90,7 +90,7 @@ implements MouseListener {
 	private double o2Cache;
 	/** The cache value for the average CO2 consumed per sol per square meters. */
 	private double co2Cache;
-	
+
 	private DefaultComboBoxModel<String> comboBoxModel;
 	private JComboBoxMW<String> comboBox;
 	private ListModel listModel;
@@ -103,15 +103,15 @@ implements MouseListener {
 	private String cropName;
 	private String deletingCropType;
 	private Coordinates location;
-	
+
 	private ArrayList<String> tooltipArray;
 	private List<String> cropCache;
 	private JList<String> list;
 
 	private CropConfig cropConfig;
-		
+
 	private static SurfaceFeatures surface;
-	
+
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
@@ -122,13 +122,13 @@ implements MouseListener {
 
 		// Use BuildingFunctionPanel constructor
 		super(farm.getBuilding(), desktop);
-		
+
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		
+
 		// Set panel layout
 		setLayout(new BorderLayout());
 
@@ -142,7 +142,7 @@ implements MouseListener {
 		// Create label panel
 		WebPanel springPanel = new WebPanel(new SpringLayout());
 		add(springPanel, BorderLayout.CENTER);
-		
+
 		// Prepare solar irradiance label
 		WebLabel radLabel = new WebLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache), WebLabel.RIGHT);
 		TooltipManager.setTooltip(radLabel, "Estimated sunlight on top of the greenhouse roof", TooltipWay.down);
@@ -152,12 +152,12 @@ implements MouseListener {
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		radTF = new WebTextField(radCache + "");
 		radTF.setEditable(false);
-		radTF.setColumns(7);
-		radTF.setPreferredSize(new Dimension(120, 25));
+		radTF.setColumns(8);
+//		radTF.setPreferredSize(new Dimension(120, 25));
 		wrapper1.add(radTF);
 		springPanel.add(wrapper1);
-		
-		
+
+
 		// Prepare farmers label
 		WebLabel farmersLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numFarmers.title"), WebLabel.RIGHT);
 	    //farmersPanel.add(farmersLabel);
@@ -172,7 +172,7 @@ implements MouseListener {
 		farmersTF.setPreferredSize(new Dimension(120, 25));
 		wrapper2.add(farmersTF);
 		springPanel.add(wrapper2);
-		
+
 		// Prepare crops label
 		WebLabel cropsLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numCrops.title"), WebLabel.RIGHT);
 		springPanel.add(cropsLabel);
@@ -185,46 +185,46 @@ implements MouseListener {
 		cropsTF.setPreferredSize(new Dimension(120, 25));
 		wrapper3.add(cropsTF);
 		springPanel.add(wrapper3);
-		
+
 		WebLabel waterUsageLabel = new WebLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), WebLabel.RIGHT);
 		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 		springPanel.add(waterUsageLabel);
-		
+
 		waterUsageCache = farm.computeUsage(0);
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		waterUsageTF = new WebTextField(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""));
 		waterUsageTF.setEditable(false);
-		waterUsageTF.setColumns(10);
-		waterUsageTF.setPreferredSize(new Dimension(120, 25));
+		waterUsageTF.setColumns(11);
+		waterUsageTF.setPreferredSize(new Dimension(160, 25));
 		wrapper4.add(waterUsageTF);
 		springPanel.add(wrapper4);
-		
+
 		WebLabel o2Label = new WebLabel(Msg.getString("BuildingPanelFarming.o2.title"), WebLabel.RIGHT);
 		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
 		springPanel.add(o2Label);
-		
+
 		o2Cache = farm.computeUsage(1);
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		o2TF = new WebTextField(Msg.getString("BuildingPanelFarming.o2", o2Cache + ""));
 		o2TF.setEditable(false);
-		o2TF.setColumns(10);
-		o2TF.setPreferredSize(new Dimension(120, 25));
+		o2TF.setColumns(11);
+		o2TF.setPreferredSize(new Dimension(160, 25));
 		wrapper5.add(o2TF);
 		springPanel.add(wrapper5);
 
 		WebLabel co2Label = new WebLabel(Msg.getString("BuildingPanelFarming.co2.title"), WebLabel.RIGHT);
 		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
 		springPanel.add(co2Label);
-		
+
 		co2Cache = farm.computeUsage(2);
 		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		co2TF = new WebTextField(Msg.getString("BuildingPanelFarming.co2", co2Cache + ""));
 		co2TF.setEditable(false);
-		co2TF.setColumns(10);
-		co2TF.setPreferredSize(new Dimension(120, 25));
+		co2TF.setColumns(11);
+		co2TF.setPreferredSize(new Dimension(160, 25));
 		wrapper6.add(co2TF);
 		springPanel.add(wrapper6);
-	
+
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                6, 2, //rows, cols
@@ -233,7 +233,7 @@ implements MouseListener {
 
 		WebPanel southPanel = new WebPanel(new BorderLayout());
 		add(southPanel, BorderLayout.SOUTH);
-		
+
 		// Create scroll panel for crop table
 		WebScrollPane tableScrollPanel = new WebScrollPane();
 		// Set the height and width of the table
@@ -292,7 +292,7 @@ implements MouseListener {
 
 		WebPanel queuePanel = new WebPanel(new BorderLayout());
 	    southPanel.add(queuePanel, BorderLayout.CENTER);
-	    
+
 	    WebPanel selectPanel = new WebPanel(new FlowLayout());
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
@@ -368,7 +368,7 @@ implements MouseListener {
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER);
-	    
+
 		// Create scroll panel for population list.
 		listScrollPanel = new WebScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
@@ -401,7 +401,7 @@ implements MouseListener {
 		double water, PAR;
 		double sols = 0;
 		double health = 0;
-		
+
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
@@ -415,11 +415,11 @@ implements MouseListener {
         	PAR = ct.getDailyPAR();
         	health =  Math.round(crop.getHealthCondition()*10.0 * 100.0)/10.0;
         	sols = Math.round(crop.getGrowingTimeCompleted()*10.0 /1_000.0)/10.0;
-        	
+
         	if (col == 0) {
 	        	result.append("Health: ").append(health).append(" %");
         	}
-        	
+
         	else if (col == 1) {
 	            result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
 	        	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
@@ -429,13 +429,13 @@ implements MouseListener {
 	        	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
 	        	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</html>");
         	}
-        	
+
         	else {
 	        	result.append("# of Sols since planted: ").append(sols);
         	}
-        	
+
         }
-        
+
         if (col == -1) {
         	cropName = Conversion.capitalize(n);
         	CropSpec cType = cropConfig.getCropTypeByName(n);
@@ -457,7 +457,7 @@ implements MouseListener {
 
     	return result;
 	}
-	
+
 	/**
 	 * Selects Crop
 	 * @param table
@@ -468,7 +468,7 @@ implements MouseListener {
 		if (n != null) {
 			deletingCropType = n;
 			deletingCropIndex = list.getSelectedIndex();
-		} 
+		}
 		else
 			listUpdate();
 	}
@@ -553,7 +553,7 @@ implements MouseListener {
 			co2Cache = new_co2;
 			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", co2Cache));
 		}
-		
+
 		// Update crop table.
 		cropTableModel.update();
 
@@ -583,7 +583,7 @@ implements MouseListener {
         	List<String> c = farm.getCropListInQueue();
 	        if (c != null)
 	        	list = new ArrayList<String>(c);
-	        else 
+	        else
 	        	list = null;
 	    }
 
@@ -651,7 +651,7 @@ implements MouseListener {
 			yellowHalfDot = ImageLoader.getIcon("dot_yellow_half");
 			greenDot = ImageLoader.getIcon("GreenDot");
 			greenHalfDot = ImageLoader.getIcon("dot_green_half");
-			
+
 
 		}
 

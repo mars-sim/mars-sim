@@ -504,7 +504,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
 
-
 		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
@@ -2064,8 +2063,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if added successfully
 	 */
 	public boolean addPeopleWithin(Person p) {
-		if (peopleWithin.contains(p))
+		if (peopleWithin.contains(p)) {
 			return true;
+		}
 		if (peopleWithin.add(p)) {
 			p.setContainerUnit(this);
 			return true;
@@ -2082,8 +2082,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean removePeopleWithin(Person p) {
 		if (!peopleWithin.contains(p))
 			return true;
-		if (peopleWithin.remove(p))
+		if (peopleWithin.remove(p)) {
 			return true;
+		}
 		return false;
 	}
 
@@ -2134,6 +2135,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.add(r)) {
+			addRobot(r);
 			r.setCoordinates(getCoordinates());
 			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
@@ -2165,8 +2167,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean addRobot(Robot r) {
-		if (robotsWithin.contains(r))
+		if (robotsWithin.contains(r)) {
 			return true;
+		}
 		if (robotsWithin.add(r)) {
 			return true;
 		}
@@ -2179,11 +2182,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean removeRobot(Robot r) {
-		if (!robotsWithin.contains(r))
+		if (!robotsWithin.contains(r)) {
 			return true;
-		if (robotsWithin.remove(r))
+		}
+		if (robotsWithin.remove(r)) {
 			return true;
-
+		}
 		return false;
 	}
 
@@ -2194,8 +2198,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be added
 	 */
 	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle))
+		if (parkedVehicles.contains(vehicle)) {
 			return true;
+		}
 		if (parkedVehicles.add(vehicle)) {
 			vehicle.setContainerUnit(this);
 			return true;
