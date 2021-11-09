@@ -234,7 +234,14 @@ public class Trade extends RoverMission implements Serializable {
 			} 
 			
 			else if (UNLOAD_GOODS.equals(getPhase())) {
-				setPhase(LOAD_GOODS, tradingSettlement.getName());
+				// Check if vehicle can hold enough supplies for mission.
+				if (!isVehicleLoadable()) {
+					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission();
+				}
+				else {
+					setPhase(LOAD_GOODS, tradingSettlement.getName());
+				}
 			} 
 			
 			else if (LOAD_GOODS.equals(getPhase())) {
@@ -410,13 +417,7 @@ public class Trade extends RoverMission implements Serializable {
 			loadTowedVehicle();
 		}
 
-		if (!isDone() && !isVehicleLoaded()) {
-			// Check if vehicle can hold enough supplies for mission.
-			if (!isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-			}
-		} else {
+		if (isDone() || isVehicleLoaded()) {
 			setPhaseEnded(true);
 		}
 	}

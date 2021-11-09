@@ -811,34 +811,23 @@ public abstract class Mission implements Serializable, Temporal {
 			logger.warning(startingMember, "Mission " + getTypeID() + " is already ended.");
 			return;
 		}
-		logger.info(startingMember, "Ended " + getTypeID() + ".");
 
 		// Add mission experience score
 		addMissionScore();
-		
-		// Note: !done is very important to keep !
-		if (!done) {
-			// Note: there can be custom reason such as "Equipment EVA Suit 12 cannot be
-			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
-	
-			done = true; // Note: done = true is very important to keep !
-		}
-		
-		else {
-			StringBuilder status = new StringBuilder();
-			status.append("Ended the ").append(missionName).append(" with the following status flag(s) :");
-		
-			status.append(missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 
-			logger.info(startingMember, status.toString());
-		}
+		done = true; // Note: done = true is very important to keep !
+
+		StringBuilder status = new StringBuilder();
+		status.append("Ended the ").append(getTypeID()).append(" with the status flag(s): ");
+		status.append(missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+		logger.info(startingMember, status.toString());
 		
 		// The members are leaving the mission
 		if (members != null && !members.isEmpty()) { 
 			logger.info(startingMember, "Disbanded mission member(s) : " + members);
-			Iterator<MissionMember> i = members.iterator();
-			while (i.hasNext()) {
-				removeMember(i.next());
+			List<MissionMember> origMembers = new ArrayList<>(members);
+			for(MissionMember m : origMembers) {
+				removeMember(m);
 			}
 		}
 		
@@ -1415,8 +1404,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			logger.log(startingMember, Level.INFO, 3_000, getTypeID() 
-					+ " tagged with '" + status.getName() + "'.");
 		}
 		else
 			logger.log(startingMember, Level.WARNING, 3_000, getTypeID()

@@ -244,7 +244,14 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			} 
 			
 			else if (SUPPLY_DELIVERY.equals(getPhase())) {
-				setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
+				// Check if vehicle can hold enough supplies for mission.
+				if (!isVehicleLoadable()) {
+					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission();
+				}
+				else {
+					setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
+				}
 			} 
 			
 			else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {

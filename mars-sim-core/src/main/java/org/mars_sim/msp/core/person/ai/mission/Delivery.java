@@ -221,8 +221,14 @@ public class Delivery extends DroneMission implements Serializable {
 			} 
 			
 			else if (UNLOAD_GOODS.equals(getPhase())) {
-				clearLoadingPlan(); // Clear the original loading plan
-				setPhase(LOAD_GOODS, tradingSettlement.getName());
+				if (isVehicleLoadable()) {
+					clearLoadingPlan(); // Clear the original loading plan
+					setPhase(LOAD_GOODS, tradingSettlement.getName());	
+				}
+				else {
+					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission();
+				}
 			} 
 			
 			else if (LOAD_GOODS.equals(getPhase())) {
@@ -376,14 +382,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDestinationLoadGoodsPhase() {
 
-		if (!isDone() && !isVehicleLoaded()) {
-
-			// Check if vehicle can hold enough supplies for mission.
-			if (!isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-			}
-		} else {
+		if (isDone() || isVehicleLoaded()) {
 			setPhaseEnded(true);
 		}
 	}

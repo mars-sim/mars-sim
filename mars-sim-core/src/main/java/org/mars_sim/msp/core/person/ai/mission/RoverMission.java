@@ -306,39 +306,29 @@ public abstract class RoverMission extends VehicleMission {
 		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
 		
 		// Load vehicle if not fully loaded.
-		if (!isVehicleLoaded()) {
-			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				if (member.isInSettlement()) {
-					// Note: randomly select this member to load resources for the rover
-					// This allows person to do other important things such as eating
-					if (RandomUtil.lessThanRandPercent(75)) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							
-							boolean hasAnotherMission = false; 
-							Mission m = person.getMission();
-							if (m != null && m != this)
-								hasAnotherMission = true; 
-							
-							if (!hasAnotherMission && isRoverInAGarage) {
+		if (!isVehicleLoaded()) {	
+			if (member.isInSettlement()) {
+				// Note: randomly select this member to load resources for the rover
+				// This allows person to do other important things such as eating
+				if (RandomUtil.lessThanRandPercent(75)) {
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						
+						boolean hasAnotherMission = false; 
+						Mission m = person.getMission();
+						if (m != null && m != this)
+							hasAnotherMission = true; 
+						
+						if (!hasAnotherMission && isRoverInAGarage) {
 
-								assignTask(person,
-											new LoadVehicleGarage(person, this));
-							} else if (!hasAnotherMission) {
-								// Note: Should check if it is day time to do EVA
-								assignTask(person, new LoadVehicleEVA(person, this));
-							}
+							assignTask(person,
+										new LoadVehicleGarage(person, this));
+						} else if (!hasAnotherMission) {
+							// Note: Should check if it is day time to do EVA
+							assignTask(person, new LoadVehicleEVA(person, this));
 						}
 					}
 				}
-			}
-			
-			else {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-				return;
 			}
 		}
 		

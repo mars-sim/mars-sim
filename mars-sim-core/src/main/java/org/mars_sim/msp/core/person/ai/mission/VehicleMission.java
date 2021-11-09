@@ -91,6 +91,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
 	/** Default speed if no operators have ever driven */
 	private static final double DEFAULT_SPEED = 10D;
+
+	// How often are remaning resources checked
+	private static final int RESOURCE_CHECK_DURATION = 40;
 	
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
@@ -119,6 +122,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private transient double cachedDistance = -1;
 
 	private Settlement startingSettlement;
+
+	// When was the last check on the remaining resources
+	private int lastResourceCheck = 0;
 	
 	/**
 	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
@@ -434,6 +440,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	@Override
 	public void endMission() {
+		
+		// Release the loading plan if it exists
+		loadingPlan = null;
+		equipmentNeededCache = null;
+		cachedParts = null;
+		
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -574,13 +586,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			throw new IllegalStateException(getPhase().getName() + ": vehicle is null.");
 		}
 
-		try {
-			return (loadingPlan != null) && loadingPlan.isCompleted();
-		} catch (Exception e) {
-			logger.severe(vehicle, "Cannot test if this vehicle is fully loaded: ", e);
+		if (loadingPlan != null) {
+			if (loadingPlan.isFailure()) {
+				logger.warning(vehicle, "Loading has failed");
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission();
+			}
+			return loadingPlan.isCompleted();
 		}
-		
-		return true;
+		return false;
 	}
 
 	/**
@@ -659,7 +673,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected boolean determineNewPhase() {
 		boolean handled = true;
 		if (REVIEWING.equals(getPhase())) {
-			setPhase(EMBARKING, getCurrentNavpoint().getDescription());
+			// Check the vehicle is loadable before starting the embarking
+			if (isVehicleLoadable()) {
+				setPhase(EMBARKING, getCurrentNavpoint().getDescription());
+			}
+			else {
+				logger.warning(vehicle, getName() + " cannot load Resources.");
+				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission();
+			}
 		}
 
 		else if (EMBARKING.equals(getPhase())) {
@@ -913,8 +935,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected double getEstimatedRemainingMissionTime(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(vehicle, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
-			return getEstimatedTripTime(useMargin, distance);
+			double time = getEstimatedTripTime(useMargin, distance);
+			logger.info(vehicle, 20_000, this + " has an estimated remaining trip time of " + time);			
+			return time;
 		}
 		
 		return 0;
@@ -1112,7 +1135,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return true if enough resources.
 	 */
 	protected final boolean hasEnoughResourcesForRemainingMission(boolean useMargin) {
-		return hasEnoughResources(getResourcesNeededForRemainingMission(useMargin));
+		int currentMSols = marsClock.getMillisolInt();
+		if ((currentMSols - lastResourceCheck ) > RESOURCE_CHECK_DURATION) {
+			lastResourceCheck = currentMSols;
+			return hasEnoughResources(getResourcesNeededForRemainingMission(useMargin));
+		}
+		
+		// Assume it is still fine
+		return true;
 	}
 
 	/**

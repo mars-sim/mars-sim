@@ -233,39 +233,29 @@ public abstract class DroneMission extends VehicleMission {
 
 		// Load vehicle if not fully loaded.
 		if (!isVehicleLoaded()) {
-			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				if (member.isInSettlement()) {
-					// Load drone
-					// Random chance of having person load (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							if (isDroneInAGarage) {
-								assignTask(person,
-											new LoadVehicleGarage(person, this));
-							} else {
-								assignTask(person, new LoadVehicleEVA(person, this));
-							}
+			if (member.isInSettlement()) {
+				// Load drone
+				// Random chance of having person load (this allows person to do other things
+				// sometimes)
+				if (RandomUtil.lessThanRandPercent(50)) {
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						if (isDroneInAGarage) {
+							assignTask(person,
+										new LoadVehicleGarage(person, this));
+						} else {
+							assignTask(person, new LoadVehicleEVA(person, this));
 						}
 					}
 				}
-				else {
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						assignTask(person, new LoadVehicleEVA(person, this));
-					}
+			}
+			else {
+				if (member instanceof Person) {
+					Person person = (Person) member;
+					assignTask(person, new LoadVehicleEVA(person, this));
 				}
-				
-			} else {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-				return;
 			}
 		}
-		
 		else {
 			// If drone is loaded and everyone is aboard, embark from settlement.
 			if (!isDone()) {

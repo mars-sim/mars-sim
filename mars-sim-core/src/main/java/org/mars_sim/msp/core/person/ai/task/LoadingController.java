@@ -53,6 +53,9 @@ public class LoadingController implements Serializable {
 	// Have to limit the precision of the amount loading to avoid
 	// problem with the double precision
 	private static final double AMOUNT_BASE = 1000000D;
+
+	// The number of times to attempt to get mandatory resources from a settlement
+	public static final int MAX_SETTLEMENT_ATTEMPTS = 5;
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LoadingController.class.getName());
@@ -62,7 +65,10 @@ public class LoadingController implements Serializable {
 	private Map<Integer, Integer> equipmentManifest;
 	private Map<Integer, Integer> optionalEquipmentManifest;
 	private Settlement settlement;
-	private Vehicle vehicle;	
+	private Vehicle vehicle;
+
+	// The number of times a settlement can not have the resources
+	private int retryAttempts = MAX_SETTLEMENT_ATTEMPTS;	
 
 	/**
 	 * Load a vehicle with a manifest from a Settlement
@@ -258,7 +264,6 @@ public class LoadingController implements Serializable {
 	private double loadAmountResource(String loader, double amountLoading, Integer resource,
 									  Map<Integer, Number> manifest, boolean mandatory) {
 
-//		Inventory sInv = vehicle.getSettlement().getInventory();
 		String resourceName = ResourceUtil.findAmountResourceName(resource);
 
 		// Determine amount to load. 
@@ -276,18 +281,17 @@ public class LoadingController implements Serializable {
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
 			double settlementStored = settlement.getAmountResourceStored(resource);
-			// add tracking demand
-//			sInv.addAmountDemandTotalRequest(resource, amountToLoad);
 		
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
+					retryAttempts--;
 					logger.warning(vehicle, "Not enough available for loading " 
 							+ resourceName
 							+ Math.round(amountToLoad * 100D) / 100D 
 							+ " kg. Settlement has "
 							+ Math.round(settlementStored * 100D) / 100D
-							+ " kg.");
+							+ " kg. will try " + retryAttempts + " more times.");
 					return amountLoading;
 				}
 				else {
@@ -356,7 +360,6 @@ public class LoadingController implements Serializable {
 	 */
 	private double loadItemResource(String loader, double amountLoading, Integer id, Map<Integer, Number> manifest, boolean mandatory) {
 
-//		Inventory sInv = vehicle.getSettlement().getInventory();
 		Part p = ItemResourceUtil.findItemResource(id);
 		boolean usedSupply = false;
 		
@@ -368,18 +371,16 @@ public class LoadingController implements Serializable {
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
 			int settlementStored = settlement.getItemResourceStored(id);
-			
-			// add tracking demand
-//			sInv.addItemDemand(id, amountToLoad);
 		
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
+					retryAttempts--;
 					logger.warning(vehicle, "Not enough available for loading " 
 							+ p.getName()
 							+ amountToLoad 
 							+ ". Settlement has "
-							+ settlementStored);
+							+ settlementStored + " will retry for another " + retryAttempts);
 				}
 				amountToLoad = settlementStored;
 				usedSupply = true;
@@ -444,8 +445,6 @@ public class LoadingController implements Serializable {
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 */
 	private double loadEquipment(double amountLoading, Map<Integer, Integer> manifest, boolean mandatory) {
-
-//		Inventory sInv = settlement.getInventory();
 
 		Set<Integer> eqmIds = new HashSet<>(manifest.keySet());
 		for(Integer equipmentType : eqmIds) {
@@ -525,6 +524,14 @@ public class LoadingController implements Serializable {
 				&& optionalResourcesManifest.isEmpty() && optionalEquipmentManifest.isEmpty();
 	}
 
+	/**
+	 * Has the load failed on the mandatory items?
+	 * @return
+	 */
+	public boolean isFailure() {
+		return retryAttempts <= 0;
+	}
+	
 	public Map<Integer, Number> getResourcesManifest() {
 		return Collections.unmodifiableMap(this.resourcesManifest);	
 	}
