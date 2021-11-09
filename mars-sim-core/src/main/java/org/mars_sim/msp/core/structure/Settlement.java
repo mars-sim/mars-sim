@@ -88,6 +88,10 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
@@ -311,6 +315,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement's daily labor hours output. */
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
+	private MutableGraph<Unit> graph;
+
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
@@ -488,6 +494,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
 
+		graph = GraphBuilder.directed().build();
+
+		graph.addNode(this);
+
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
@@ -503,7 +513,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
 //		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
-
 
 		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
@@ -2064,9 +2073,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return true if added successfully
 	 */
 	public boolean addPeopleWithin(Person p) {
-		if (peopleWithin.contains(p))
+		if (peopleWithin.contains(p)) {
+			putEdge(this, p);
 			return true;
+		}
 		if (peopleWithin.add(p)) {
+			putEdge(this, p);
 			p.setContainerUnit(this);
 			return true;
 		}
@@ -2082,8 +2094,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public boolean removePeopleWithin(Person p) {
 		if (!peopleWithin.contains(p))
 			return true;
-		if (peopleWithin.remove(p))
+		if (peopleWithin.remove(p)) {
+			removeEdge(this, p);
 			return true;
+		}
 		return false;
 	}
 
@@ -2134,6 +2148,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.add(r)) {
+			addRobot(r);
 			r.setCoordinates(getCoordinates());
 			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
@@ -2165,9 +2180,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean addRobot(Robot r) {
-		if (robotsWithin.contains(r))
+		if (robotsWithin.contains(r)) {
+			putEdge(this, r);
 			return true;
+		}
 		if (robotsWithin.add(r)) {
+			putEdge(this, r);
 			return true;
 		}
 		return false;
@@ -2179,11 +2197,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param r
 	 */
 	public boolean removeRobot(Robot r) {
-		if (!robotsWithin.contains(r))
+		if (!robotsWithin.contains(r)) {
 			return true;
-		if (robotsWithin.remove(r))
+		}
+		if (robotsWithin.remove(r)) {
+			removeEdge(this, r);
 			return true;
-
+		}
 		return false;
 	}
 
@@ -2194,9 +2214,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param true if the parked vehicle can be added
 	 */
 	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle))
+		if (parkedVehicles.contains(vehicle)) {
+			putEdge(this, vehicle);
 			return true;
+		}
 		if (parkedVehicles.add(vehicle)) {
+			putEdge(this, vehicle);
 			vehicle.setContainerUnit(this);
 			return true;
 		}
@@ -2213,6 +2236,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		if (!parkedVehicles.contains(vehicle))
 			return true;
 		if (parkedVehicles.remove(vehicle)) {
+			removeEdge(this, vehicle);
 			return true;
 		}
 		return false;
@@ -2274,6 +2298,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
+			putEdge(this, e);
 			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
@@ -2290,6 +2315,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	@Override
 	public boolean removeEquipment(Equipment e) {
 		if (eqmInventory.removeEquipment(e)) {
+			removeEdge(this, e);
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -4034,6 +4060,52 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public void reinit() {
 		buildingManager.reinit();
+	}
+
+	/**
+	 * Does this settlement contains this unit ?
+	 *
+	 * @param unit
+	 * @return
+	 */
+	public boolean containsNode(Unit unit) {
+		return graph.nodes().contains(unit);
+	}
+
+	public boolean addNode(Unit unit) {
+		return graph.addNode(unit);
+	}
+
+	public boolean removeNode(Unit unit) {
+		return graph.removeNode(unit);
+	}
+
+	public boolean hasEdgeConnecting(Unit parent, Unit child) {
+		return graph.hasEdgeConnecting(parent, child);
+	}
+
+	public boolean putEdge(Unit parent, Unit child) {
+		return graph.putEdge(parent, child);
+	}
+
+	public boolean removeEdge(Unit parent, Unit child) {
+		return graph.removeEdge(parent, child);
+	}
+
+	public Set<EndpointPair<Unit>> incidentEdges(Unit node) {
+		return incidentEdges(node);
+	}
+
+	public Set<EndpointPair<Unit>> edges() {
+		return edges();
+	}
+
+	public Set<Unit> nodes() {
+		return nodes();
+	}
+
+	public Set<Unit> adjacentNodes(Unit node) {
+		return adjacentNodes(node);
 	}
 
 	@Override
