@@ -1,5 +1,5 @@
 module mars-sim-core {
-	
+
 	requires java.util.Optional;
 	requires java;
 //	requires java.lang;
@@ -12,7 +12,6 @@ module mars-sim-core {
 //    requires java.text;
     requires junit;
     requires jdom;
-    requires guava;
     requires guice;
     requires log4j;
     requires commons-collections;
@@ -23,8 +22,8 @@ module mars-sim-core {
     requires jackson;
 	requires flogger;
     requires kotlin;
-    
+
     requires mars-sim-mapdata;
-    
+
 	exports mars-sim-core;
 }
