@@ -296,7 +296,8 @@ public class Mind implements Serializable, Temporal {
 							mod = 1;
 					}
 
-					if (!person.getPhysicalCondition().isFit()
+			        // Missions have to be done and are stressfull so allow high stress.
+					if ((person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
 			        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
 			        	// Cannot perform the mission if a person is not well
 			        	// Note: If everyone has dangerous medical condition during a mission,
@@ -323,15 +324,12 @@ public class Mind implements Serializable, Temporal {
 	 * @param modifier
 	 */
 	private void resumeMission(int modifier) {
-		if (mission.canParticipate(person) && person.isFit()) {
+		if (mission.canParticipate(person)) {
 			int fitness = person.getPhysicalCondition().computeFitnessLevel();
 			int priority = mission.getPriority();
 			int rand = RandomUtil.getRandomInt(5);
 			if (rand - (fitness)/1.5D <= priority + modifier) {
-//						// See if this person can ask for a mission
-//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
 				mission.performMission(person);
-//						logger.info(person + " was to perform the " + mission + " mission");
 			}
 		}
 	}
