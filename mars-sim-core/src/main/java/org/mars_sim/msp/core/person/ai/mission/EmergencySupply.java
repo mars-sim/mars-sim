@@ -99,10 +99,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
 
-		if (getRover() == null) {
-			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
-			logger.warning("No reservable vehicles found.");
-			endMission();
+		if (isDone()) {
 			return;
 		}
 		
@@ -132,21 +129,19 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						return;
 				}
 			} else {
-				addMissionStatus(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
+				endMission(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
 				logger.warning("No settlement could be found to deliver emergency supplies to.");
-				endMission();
 			}
 		}
 
 		if (s != null) {
 			// Set initial phase
 			setPhase(REVIEWING, null);
-			if (startingPerson != null && getRover() != null) {
-				logger.info(s, startingPerson
-						+ "Reviewing an emergency supply mission to help out " 
-						+ getEmergencySettlement() + " using "
-						+ getRover().getName());
-			}
+
+			logger.info(s, startingPerson
+					+ "Reviewing an emergency supply mission to help out " 
+					+ getEmergencySettlement() + " using "
+					+ getRover().getName());
 		}
 	}
 
@@ -246,8 +241,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			else if (SUPPLY_DELIVERY.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 				}
 				else {
 					setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
@@ -365,8 +359,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				}
 			} else {
 				logger.severe("No inhabitable buildings at " + emergencySettlement);
-				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
-				endMission();
+				endMission(MissionStatus.NO_INHABITABLE_BUILDING);
 			}
 		}
 
@@ -428,30 +421,23 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private void performLoadReturnTripSuppliesPhase(MissionMember member) {
 
 		if (!isDone() && !isVehicleLoaded()) {
-
-			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				// Random chance of having person load (this allows person to do other things
-				// sometimes)
-				if (RandomUtil.lessThanRandPercent(50)) {
-					// TODO Refactor to allow robots.
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						if (isInAGarage()) {
+			// Random chance of having person load (this allows person to do other things
+			// sometimes)
+			if (RandomUtil.lessThanRandPercent(50)) {
+				// TODO Refactor to allow robots.
+				if (member instanceof Person) {
+					Person person = (Person) member;
+					if (isInAGarage()) {
+						assignTask(person,
+								new LoadVehicleGarage(person, this));
+					} else {
+						// Check if it is day time.
+						if (EVAOperation.isGettingDark(person)) {
 							assignTask(person,
-									new LoadVehicleGarage(person, this));
-						} else {
-							// Check if it is day time.
-							if (EVAOperation.isGettingDark(person)) {
-								assignTask(person,
-										new LoadVehicleEVA(person, this));
-							}
+									new LoadVehicleEVA(person, this));
 						}
 					}
 				}
-			} else {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
 			}
 		} else {
 			setPhaseEnded(true);
@@ -489,8 +475,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 					} else {
 						logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-						addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-						endMission();
+						endMission(MissionStatus.CANNOT_ENTER_ROVER);
 					}
 				}
 			} 
@@ -502,8 +487,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 				} else {
 					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-					endMission();
+					endMission(MissionStatus.CANNOT_ENTER_ROVER);
 				}
 			}
 		}
@@ -1031,8 +1015,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	}
 
 	@Override
-	public void endMission() {
-		super.endMission();
+	protected void endMission(MissionStatus endStatus) {
+		super.endMission(endStatus);
 
 		// Unreserve any towed vehicles.
 		if (getRover() != null) {

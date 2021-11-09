@@ -115,8 +115,7 @@ public class Trade extends RoverMission implements Serializable {
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
 				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
 			} else {
-				addMissionStatus(MissionStatus.NO_TRADING_SETTLEMENT);
-				endMission();
+				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 			}
 
 			if (!isDone()) {
@@ -236,8 +235,7 @@ public class Trade extends RoverMission implements Serializable {
 			else if (UNLOAD_GOODS.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 				}
 				else {
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
@@ -322,8 +320,7 @@ public class Trade extends RoverMission implements Serializable {
 				}
 			} else {
 				logger.severe(tradingSettlement, "No inhabitable buildings");
-				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
-				endMission();
+				endMission(MissionStatus.NO_INHABITABLE_BUILDING);
 			}
 		}
 
@@ -451,8 +448,7 @@ public class Trade extends RoverMission implements Serializable {
 					tradingSettlement.removeParkedVehicle(buyVehicle);
 				} else {	
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
-					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
-					endMission();
+					endMission(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 				}
 			}
 		}
@@ -519,8 +515,7 @@ public class Trade extends RoverMission implements Serializable {
 							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 						} else {
 							logger.severe(person, "Unable to enter rover " + getVehicle().getName());
-							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-							endMission();
+							endMission(MissionStatus.CANNOT_ENTER_ROVER);
 						}
 					}
 				}
@@ -554,8 +549,7 @@ public class Trade extends RoverMission implements Serializable {
 					getStartingSettlement().removeParkedVehicle(sellVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
-					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
-					endMission();
+					endMission(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 				}
 			}
 		}
@@ -578,8 +572,8 @@ public class Trade extends RoverMission implements Serializable {
 	}
 
 	@Override
-	public void endMission() {
-		super.endMission();
+	protected void endMission(MissionStatus endStatus) {
+		super.endMission(endStatus);
 
 		// Unreserve any towed vehicles.
 		if (getRover() != null) {
@@ -891,8 +885,7 @@ public class Trade extends RoverMission implements Serializable {
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
 			logger.severe(getVehicle(), "Cannot estimate trade profit: ", e);
-			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-			endMission();
+			endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
 		}
 
 		return result;

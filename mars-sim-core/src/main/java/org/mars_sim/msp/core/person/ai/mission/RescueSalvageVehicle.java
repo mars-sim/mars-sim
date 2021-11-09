@@ -113,8 +113,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {			
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 				}
 				
 				// Set initial phase
@@ -123,8 +122,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
 				
 			} else {
-				addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
-				endMission();
+				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 			}
 		}
 	}
@@ -163,8 +161,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 		
 		logger.info(getStartingPerson(), "Had started RescueSalvageVehicle");

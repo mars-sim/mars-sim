@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ public abstract class Mission implements Serializable, Temporal {
 	private MissionType missionType;
 
 	/** A list of mission status. */
-	private List<MissionStatus> missionStatus;
+	private Set<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
 	private MissionPhase phase;
 	/** The description of the current phase of operation. */
@@ -205,7 +206,7 @@ public abstract class Mission implements Serializable, Temporal {
 		// Create the date filed timestamp
 		createDateFiled();
 
-		missionStatus = new ArrayList<>();
+		missionStatus = new HashSet<>();
 		members = new ConcurrentLinkedQueue<>();
 		done = false;
 		phase = null;
@@ -452,8 +453,7 @@ public abstract class Mission implements Serializable, Temporal {
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 				if (getPeopleNumber() == 0 && !done) {
-					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
-					endMission();
+					endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
 				}
 			}
 		}
@@ -705,8 +705,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected void performPhase(MissionMember member) {
 		if (phase == null) {
-			addMissionStatus(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
-			endMission();
+			endMission(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
 		}
 	}
 
@@ -799,19 +798,34 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 		}
 	}
-	
+
 	/**
 	 * Finalizes the mission. String reason Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
 	 * 
-	 * @param reason
 	 */
-	public void endMission() {
+	protected final void endMission() {
+		endMission(null);
+	}
+	
+	/**
+	 * Finalizes the mission. Reason for ending mission. Mission can
+	 * override this to perform necessary finalizing operations.
+	 * 
+	 * @param endStatus A status to add for the end of Mission
+	 * 
+	 */
+	protected void endMission(MissionStatus endStatus) {
 		if (done) {
 			logger.warning(startingMember, "Mission " + getTypeID() + " is already ended.");
 			return;
 		}
 
+		// Ended with a status
+		if (endStatus != null) {
+			missionStatus.add(endStatus);
+		}
+	
 		// Add mission experience score
 		addMissionScore();
 
@@ -831,7 +845,7 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 		}
 		
-		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
+		if ((endStatus == null) || endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
 			setPhase(COMPLETED, null);
 		}
 		
@@ -1040,8 +1054,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (getMembersNumber() < minMembers) {
-			addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
-			endMission();
+			endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
 			return false;
 		}
 		
@@ -1293,8 +1306,7 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		else {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
-				endMission();
+				endMission(MissionStatus.MISSION_NOT_APPROVED);
 			}
 			
 			else if (plan.getStatus() == PlanType.APPROVED) {
@@ -1368,7 +1380,7 @@ public abstract class Mission implements Serializable, Temporal {
 		return vehicleReserved;
 	}
 	
-	public List<MissionStatus> getMissionStatus() {
+	public Set<MissionStatus> getMissionStatus() {
 		return missionStatus;
 	}
 	
@@ -1401,13 +1413,8 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @param status
 	 */
-	public void addMissionStatus(MissionStatus status) {
-		if (!missionStatus.contains(status)) {
-			missionStatus.add(status);
-		}
-		else
-			logger.log(startingMember, Level.WARNING, 3_000, getTypeID()
-					+ " already been tagged with '" + status.getName() + "'.");
+	protected void addMissionStatus(MissionStatus status) {
+		missionStatus.add(status);
 	}
 	
 	public int getPriority() {

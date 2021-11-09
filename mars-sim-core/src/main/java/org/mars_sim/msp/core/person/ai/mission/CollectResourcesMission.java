@@ -137,8 +137,7 @@ public abstract class CollectResourcesMission extends RoverMission
 					range = timeRange;
 				if (range <= 0D) {
 					logger.warning(getVehicle(), "Has zero range for mission " + missionName);
-					addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-					endMission();
+					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 					return;
 				}
 				
@@ -179,8 +178,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 		}
 
@@ -237,8 +235,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 	}
 

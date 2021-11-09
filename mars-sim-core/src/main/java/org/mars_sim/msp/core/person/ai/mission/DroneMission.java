@@ -209,16 +209,14 @@ public abstract class DroneMission extends VehicleMission {
 		Vehicle v = getVehicle();
 		
 		if (v == null) {
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 			
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			logger.warning(Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 		
@@ -282,8 +280,7 @@ public abstract class DroneMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 				else {
-					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-					endMission();
+					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
 				}
 			}
 		}

@@ -82,8 +82,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 						destinationSettlement.getName())); // $NON-NLS-1$)
 			} else {
 				logger.warning(MissionStatus.DESTINATION_IS_NULL.getName());
-				addMissionStatus(MissionStatus.DESTINATION_IS_NULL);
-				endMission();
+				endMission(MissionStatus.DESTINATION_IS_NULL);
 			}
 
 			// Check mission available space
@@ -104,8 +103,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 
 			// Set initial phase
@@ -130,8 +128,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 	}
 

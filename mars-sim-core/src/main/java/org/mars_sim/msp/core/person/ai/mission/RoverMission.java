@@ -282,8 +282,7 @@ public abstract class RoverMission extends VehicleMission {
 		Vehicle v = getVehicle();
 		
 		if (v == null) {
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 			
@@ -291,8 +290,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (settlement == null) {
 			logger.warning(member, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 		
@@ -417,8 +415,7 @@ public abstract class RoverMission extends VehicleMission {
 					setPhaseEnded(true);						
 				}
 				else {
-					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-					endMission();
+					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
 				}
 			}
 		}
@@ -514,7 +511,7 @@ public abstract class RoverMission extends VehicleMission {
 			// thus allowing person to do other urgent things 
 			for (MissionMember mm : getMembers()) {
 				if (((Person)mm).isFit()) {
-					if (RandomUtil.lessThanRandPercent(50)) {
+					if (RandomUtil.lessThanRandPercent(70)) {
 						unloadCargo(((Person)mm), rover);
 					}
 				}
@@ -550,18 +547,16 @@ public abstract class RoverMission extends VehicleMission {
 		if (m != null && !m.equals(this))
 			return; 
 
-		if (RandomUtil.lessThanRandPercent(50)) {
-			if (isInAGarage()) {
-				assignTask(p, new UnloadVehicleGarage(p, rover));
-			} 
-			
-			else {
-				// Check if it is day time.
-				if (!EVAOperation.isGettingDark(p)) {
-					assignTask(p, new UnloadVehicleEVA(p, rover));
-				}
-			}			
-		}	
+		if (isInAGarage()) {
+			assignTask(p, new UnloadVehicleGarage(p, rover));
+		} 
+		
+		else {
+			// Check if it is day time.
+			if (!EVAOperation.isGettingDark(p)) {
+				assignTask(p, new UnloadVehicleEVA(p, rover));
+			}
+		}				
 	}
 	
 	/**
@@ -1013,12 +1008,10 @@ public abstract class RoverMission extends VehicleMission {
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getMembersNumber() < minMembers) {
-					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
-					endMission();
+					endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
 					return false;
 				} else if (getPeopleNumber() == 0) {
-					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
-					endMission();
+					endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
 					return false;
 				}
 			}

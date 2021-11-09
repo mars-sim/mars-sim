@@ -80,8 +80,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 			// Set the lead researcher and study.
 			study = determineStudy(science, startingPerson);
 			if (study == null) {
-				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
-				endMission();
+				endMission(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
 			}
 
 			// Recruit additional members to mission.
@@ -99,8 +98,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 		}
 
@@ -147,8 +145,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 	}
 

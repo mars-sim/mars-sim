@@ -118,8 +118,7 @@ public class Exploration extends RoverMission
 				if (!determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
 						getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
 						NUM_SITES, skill)) {
-					addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
-					endMission();
+					endMission(MissionStatus.NO_EXPLORATION_SITES);
 				}
 			}
 
@@ -135,8 +134,7 @@ public class Exploration extends RoverMission
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 
 			// Set initial mission phase.
@@ -178,8 +176,7 @@ public class Exploration extends RoverMission
 
 		// Check if vehicle can carry enough supplies for the mission. Must have NavPoints loaded
 		if (!isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 
 		// Add mission members.

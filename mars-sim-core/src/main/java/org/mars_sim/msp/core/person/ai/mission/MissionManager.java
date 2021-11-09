@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.data.SolListDataLogger;
@@ -422,7 +423,7 @@ public class MissionManager implements Serializable, Temporal {
 			// Check if onGoingMissions is null for passing maven test
 			while (index < onGoingMissions.size()) {
 				Mission m = onGoingMissions.get(index);
-				List<MissionStatus> mss = m.getMissionStatus();
+				Set<MissionStatus> mss = m.getMissionStatus();
 				if (mss != null && !mss.isEmpty()) {
 					for (MissionStatus ms: mss) {
 						// Note: m.isDone() // still want to keep a list of completed missions in Mission Tool

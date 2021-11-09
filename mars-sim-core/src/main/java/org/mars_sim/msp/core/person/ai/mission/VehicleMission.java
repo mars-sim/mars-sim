@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitEvent;
@@ -168,9 +169,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		MissionMember startingMember = getStartingPerson();
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
-			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
 			logger.warning(startingMember, "Could not reserve a vehicle for " + getTypeID() + ".");
-			endMission();
 			return false;
 		}
 		return true;
@@ -183,9 +183,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	private boolean checkVehicleMaintenance() {
 		if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
-			addMissionStatus(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
 			logger.warning(vehicle, "Under maintenance and not ready for " + getTypeID() + ".");
-			endMission();
+
+			endMission(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
 			return false;
 		}
 		return true;
@@ -439,79 +439,60 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param reason the reason of ending the mission.
 	 */
 	@Override
-	public void endMission() {
+	protected void endMission(MissionStatus endStatus) {
 		
 		// Release the loading plan if it exists
 		loadingPlan = null;
 		equipmentNeededCache = null;
 		cachedParts = null;
 		
+		boolean continueToEndMission = true;
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
 			// the vehicle has been disembarked.
 
-			if (needHelp()) {
-				getHelp();
-			}
-		
-			else {
-				
-				// What if a vehicle is still at a settlement and Mission is not approved ?
-				
-				// for ALL OTHER REASONS
-				setPhaseEnded(true);
-				
-				if (vehicleCache instanceof Drone) {
-					if (vehicleCache.getStoredMass() != 0D) {
-						startDisembarkingPhase();
-					}
-					else {
-						leaveVehicle();
-						super.endMission();
-					}
+			// What if a vehicle is still at a settlement and Mission is not approved ?
+			
+			// for ALL OTHER REASONS
+			setPhaseEnded(true);
+			
+			if (vehicleCache instanceof Drone) {
+				if (vehicleCache.getStoredMass() != 0D) {
+					continueToEndMission = false;
+					startDisembarkingPhase();
 				}
-				
-				else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
-					if (((Rover)vehicleCache).getCrewNum() != 0
-							|| (vehicleCache.getStoredMass() != 0D)) {
-						startDisembarkingPhase();
-					}
-					else {
-						leaveVehicle();
-						super.endMission();
-					}
+			}
+			
+			else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
+				if (((Rover)vehicleCache).getCrewNum() != 0
+						|| (vehicleCache.getStoredMass() != 0D)) {
+					continueToEndMission = false;
+					startDisembarkingPhase();
 				}
 			}
 		}
 		
-		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
+		if (continueToEndMission) {
 			setPhaseEnded(true);
 			leaveVehicle();
-			super.endMission();
-		}
-
-		else {
-			// if vehicles are NOT available
-			// Questions : what are the typical cases here ?
-
-			// if a vehicle is parked at a settlement and had an accident and was
-			// repaired,
-			// somehow this mission did not end and the Mission Tool shows the Regolith
-			// mission was still on-going
-			// and the occupants did not leave the vehicle.
-			setPhaseEnded(true);
-			super.endMission();
+			super.endMission(endStatus);
 		}
 	}
 
-	public void getHelp() {
+	/**
+	 * Get help for the mission. The reason becomes a Mission Status.
+	 * @param reason The reason why help is needed.
+	 */
+	public void getHelp(MissionStatus reason) {
 		logger.info(vehicle, 20_000, "Needs help.");
-		
+		addMissionStatus(reason);
+
 		// Set emergency beacon if vehicle is not at settlement.
 		// Note: need to find out if there are other matching reasons for setting
 		// emergency beacon.
 		if (vehicle.getSettlement() == null) {
+			
 			// if the vehicle somewhere on Mars 
 			if (!vehicle.isBeaconOn()) {
 				triggerEmergencyBeacon();
@@ -543,12 +524,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			else if (vehicle.getSettlement() != null) {
 				// if a vehicle is at a settlement			
 				setPhaseEnded(true);
-				
-				if (vehicle.getStoredMass() != 0D)
-					startDisembarkingPhase();
-				
-				leaveVehicle();
-				super.endMission();
+				endMission(reason);
 			}		
 		}
 	}
@@ -562,14 +538,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// if the emergency beacon is off
 		// Question: could the emergency beacon itself be broken ?
 		message.append("Turned on emergency beacon. Request for towing with status flag(s) :");
-		
-		for (int i=0; i< getMissionStatus().size(); i++) {
-			message.append(" (")
-					.append((i+1))
-					.append(") ")
-					.append(getMissionStatus().get(i).getName());
-		}
-		
+		message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+
 		logger.info(vehicle, 20_000, message.toString());
 		
 		vehicle.setEmergencyBeacon(true);
@@ -589,8 +559,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (loadingPlan != null) {
 			if (loadingPlan.isFailure()) {
 				logger.warning(vehicle, "Loading has failed");
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 			return loadingPlan.isCompleted();
 		}
@@ -679,8 +648,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 			else {
 				logger.warning(vehicle, getName() + " cannot load Resources.");
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 		}
 
@@ -693,8 +661,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
-			endMission();
+			endMission(MissionStatus.MISSION_ACCOMPLISHED);
 		}
 		else {
 			handled = false;
@@ -841,8 +808,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 			// If vehicle has unrepairable malfunction, end mission.
 			if (hasUnrepairableMalfunction()) {
-				addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
-				getHelp();
+				getHelp(MissionStatus.UNREPAIRABLE_MALFUNCTION);
 			}
 		}
 	}
@@ -1322,6 +1288,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		double oldDistance = Coordinates.computeDistance(getCurrentMissionLocation(), oldHome.getCoordinates());
 		
 		// Determine closest settlement.
+		boolean requestHelp = false;
 		Settlement newDestination = findClosestSettlement();
 		if (newDestination != null) {
 
@@ -1347,33 +1314,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					travel(reason, member, oldHome, newDestination, oldDistance, newDistance * 0.333);
 						
 				} else {
-					
-					endCollectionPhase();		
-					// Don't have enough resources and can't go anywhere, turn on beacon next
-					if (hasMedicalEmergency) {
-						addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
-						getHelp();
-					}
-					else {
-						addMissionStatus(MissionStatus.NOT_ENOUGH_RESOURCES);
-						getHelp();
-					}
+					requestHelp = true;
 				}
 			}
 
-		} else { 
-			// newDestination is null. Can't find a destination
-			
+		}
+		else {
+			requestHelp = true;
+		}
+		
+		// Need help
+		if (requestHelp) {			
 			endCollectionPhase();
-			
-			if (hasMedicalEmergency) {
-				addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
-				getHelp();
-			}
-			else {
-				addMissionStatus(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
-				getHelp();
-			}
+			getHelp(hasMedicalEmergency ? MissionStatus.MEDICAL_EMERGENCY :
+				MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 		}
 	}
 

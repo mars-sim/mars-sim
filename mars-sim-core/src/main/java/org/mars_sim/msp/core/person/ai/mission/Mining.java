@@ -114,9 +114,8 @@ public class Mining extends RoverMission
 					addNavpoint(miningSite.getLocation(), "mining site");
 				}
 			} catch (Exception e) {
-				logger.warning("Mining site could not be determined.");
-				addMissionStatus(MissionStatus.MINING_SITE_NOT_BE_DETERMINED);
-				endMission();
+				logger.severe(startingPerson, "Mining site could not be determined.", e);
+				endMission(MissionStatus.MINING_SITE_NOT_BE_DETERMINED);
 			}
 
 			// Add home settlement
@@ -124,16 +123,14 @@ public class Mining extends RoverMission
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
+				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 
 			if (!isDone()) {
 				// Reserve light utility vehicle.
 				luv = reserveLightUtilityVehicle();
 				if (luv == null) {
-					addMissionStatus(MissionStatus.LUV_NOT_AVAILABLE);
-					endMission();
+					endMission(MissionStatus.LUV_NOT_AVAILABLE);
 				}
 			}
 		}
@@ -173,16 +170,14 @@ public class Mining extends RoverMission
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 
 		// Reserve light utility vehicle.
 		this.luv = luv;
 		if (luv == null) {
 			logger.warning("Light utility vehicle not available.");
-			addMissionStatus(MissionStatus.LUV_NOT_AVAILABLE);
-			endMission();
+			endMission(MissionStatus.LUV_NOT_AVAILABLE);
 		} else {
 			luv.setReservedForMission(true);
 		}
@@ -296,8 +291,7 @@ public class Mining extends RoverMission
 					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
-				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
-				endMission();
+				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				return;
 			}
 				
@@ -311,8 +305,7 @@ public class Mining extends RoverMission
 			} catch (Exception e) {
 				logger.severe(luv, 
 						"Problem loading attachments", e);
-				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
-				endMission();
+				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 			}
 		}
 	}
@@ -342,8 +335,7 @@ public class Mining extends RoverMission
 				settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Error unloading light utility vehicle and attachment parts.");
-				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
-				endMission();
+				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 			}
 		}
 	}
@@ -692,8 +684,8 @@ public class Mining extends RoverMission
 	}
 
 	@Override
-	public void endMission() {
-		super.endMission();
+	protected void endMission(MissionStatus endStatus) {
+		super.endMission(endStatus);
 
 		if (miningSite != null) {
 			miningSite.setReserved(false);

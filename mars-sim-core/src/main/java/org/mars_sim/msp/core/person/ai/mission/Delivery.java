@@ -106,8 +106,7 @@ public class Delivery extends DroneMission implements Serializable {
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
 				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
 			} else {
-				addMissionStatus(MissionStatus.NO_TRADING_SETTLEMENT);
-				endMission();
+				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 			}
 
 			if (!isDone()) {
@@ -226,8 +225,7 @@ public class Delivery extends DroneMission implements Serializable {
 					setPhase(LOAD_GOODS, tradingSettlement.getName());	
 				}
 				else {
-					addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-					endMission();
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 				}
 			} 
 			
@@ -661,8 +659,7 @@ public class Delivery extends DroneMission implements Serializable {
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
           	logger.log(Level.SEVERE, "Cannot estimate delivery profit: "+ e.getMessage());
-			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-			endMission();
+          	endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
 		}
 
 		return result;

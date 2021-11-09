@@ -95,8 +95,7 @@ public class CollectIce extends CollectResourcesMission {
 	protected boolean isValidScore(double score) {
 		boolean accept = (score > 0);
 		if (!accept && (searchCount++ >= 10)) {
-			addMissionStatus(MissionStatus.NO_ICE_COLLECTION_SITES);
-			endMission();
+			endMission(MissionStatus.NO_ICE_COLLECTION_SITES);
 		}
 	
 		return accept;
