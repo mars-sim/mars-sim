@@ -31,7 +31,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
-	private static final double TUNING_FACTOR = 0.2;
+	private static final double TUNING_FACTOR = .18;
 
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	/**
@@ -648,7 +648,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	/**
 	 * Update the usage of all three major farming resources.
-	 * 
+	 *
 	 * @param currentSol
 	 */
 	private synchronized void updateUsage(int currentSol) {
@@ -884,20 +884,18 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/***
 	 * Computes the effect of water and fertilizer
 	 *
-	 * @param needFactor
+	 * @param compositeFactor
 	 * @param time
 	 * @param greyFilterRate
 	 */
-	private void computeWaterFertilizer(double needFactor, double time, double greyFilterRate) {
+	private void computeWaterFertilizer(double compositeFactor, double time, double greyFilterRate) {
 		// Calculate water usage kg per sol
-		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
+		double waterRequired =  TUNING_FACTOR * compositeFactor * averageWaterNeeded;
 		// Determine the amount of grey water available.
 		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
-
-
 		double waterModifier = 0;
 		double fertilizerModifier = 0;
 
@@ -911,7 +909,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			waterModifier = 1D;
 		}
 
-		else if (greyWaterAvailable < waterRequired) {
+		else {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
 			if (greyWaterUsed > MIN)
@@ -968,7 +966,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// Amount of water reclaimed through a Moisture Harvesting System inside the
 		// Greenhouse
-		// TODO: Modify harvest modifier according to the moisture level
+
+		// NOTE: Modify harvest modifier according to the moisture level
+
 		// double waterReclaimed = totalWaterUsed * growingArea * time / 1000D *
 		// MOISTURE_RECLAMATION_FRACTION;
 		// if (waterReclaimed > 0)
@@ -987,33 +987,19 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/***
 	 * Computes the effects of the concentration of O2 and CO2
 	 *
-	 * @param uPAR
-	 * @param needFactor
-	 * @param maxPeriodHarvest
-	 * @param time
+	 * @param watt
+	 * @param compositeFactor
 	 */
-	private void computeGases(double uPAR, double needFactor, double time) {
-		double watt = uPAR / time / conversion_factor * growingArea * 1000;
-
+	private void computeGases(double watt, double compositeFactor) {
 		// Note: uPAR includes both sunlight and artificial light
 		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0;
 		double co2Modifier = 0;
-		double fudge_factor = 0;
 
+		// A. During the night when light level is low
 		if (watt < 40) {
-//			if (uPAR == 0)
-				fudge_factor = 2.5;
-//			else if (uPAR == 40)
-//				fudge_factor = 2.5;
-//			else
-//				fudge_factor = 5 - 2.5 * uPAR / 40;
-//
-//			if (fudge_factor < 0)
-//				fudge_factor = 0;
 
-			double o2Required = (percentageGrowth * fudge_factor * needFactor / 100D)
-					* (averageOxygenNeeded * time / 1000) * growingArea;
+			double o2Required = compositeFactor * averageOxygenNeeded;
 			double o2Available = building.getSettlement().getAmountResourceStored(OXYGEN_ID);
 			double o2Used = o2Required;
 
@@ -1037,13 +1023,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 
 		else {
-			// during the day
-			fudge_factor = .0185 * watt + 1.76;
-			// TODO: gives a better modeling of how the amount of light available will
-			// trigger photosynthesis that converts co2 to o2
+			// B. During the day
+
 			// Determine harvest modifier by amount of carbon dioxide available.
-			double cO2Req = (percentageGrowth * fudge_factor * needFactor / 100D)
-					* (averageCarbonDioxideNeeded * time / 1000) * growingArea;
+			double cO2Req = compositeFactor * averageCarbonDioxideNeeded;
 			double cO2Available = building.getSettlement().getAmountResourceStored(CO2_ID);
 			double cO2Used = cO2Req;
 
@@ -1106,33 +1089,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 						double time, double solarIrradiance, double greyFilterRate,
 						double temperatureModifier) {
 
-		double harvestModifier = 1D;
-
-		// TODO: use theoretical model for crop growth, instead of empirical model
-		// below.
-		// TODO: the calculation should be uniquely tuned to each crop
-		// TODO: Modify harvest modifier according to the pollination by the number of
-		// bees in the greenhouse
-		// TODO: Modify harvest modifier by amount of artificial light available to the
-		// whole greenhouse
-
 		// Tune the growthFactor according to the stage of a crop
-		double growthFactor = 5;
-		// amount of grey water/water needed is also based on % of growth
-		if (phaseType == PhaseType.GERMINATION)
-			// if (phaseType == PhaseType.GERMINATION)
-			growthFactor = .2;
-		else if (percentageGrowth < 10D)
-			growthFactor = .3;
-		else if (percentageGrowth < 15D)
-			growthFactor = .4;
-		else if (percentageGrowth < 20D)
-			growthFactor = .5;
-		else if (phaseType == PhaseType.FINISHED)
-			growthFactor = .4;
-		else if ((phaseType != PhaseType.HARVESTING) && (phaseType != PhaseType.PLANTING))
-			growthFactor = percentageGrowth/100D;
-
+		double growthFactor = percentageGrowth/100.0;
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {
@@ -1145,18 +1103,32 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
 		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_FACTOR);
 
-		// STEP 3 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(growthFactor, time, greyFilterRate);
+		// STEP 3 : COMPUTE THE NEED FACTOR AND COMPOSITE FACTOR (BASED ON LIGHT AND GROWTH FACTOR)
+		double watt = effectivePAR / time / conversion_factor * growingArea * 1000;
+		// Note: effectivePAR already includes both sunlight and artificial light
 
-		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
+		// Note: needFactor aims to give a better modeling of the amount of water
+		// and O2 and CO2 produced/consumed based on the growthFactor and
+		// how much the amount of light available (which change the rate of photosynthesis)
+		double needFactor = 2.5 * growthFactor;
+		if (watt >= 40) {
+			needFactor = growthFactor * (.0185 * watt + 1.76);
+			// needFactor ranges from growthFactor * 2.5 to growthFactor * 11
+		}
+
+		double compositeFactor = needFactor * time / 1000.0 * growingArea;
+
+		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
+		computeWaterFertilizer(compositeFactor, time, greyFilterRate);
+
+		// STEP 5 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization
-		computeGases(effectivePAR, growthFactor, time);
+		computeGases(watt, compositeFactor);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
-		// TODO: add air pressure modifier in future
-
-		// Tune harvestModifier
-		// Note that light is the dorminant environmental factor
+		// STEP 6 : TUNE HARVEST MODIFIER
+		double harvestModifier = 1D;
+		// Note that light is the dominant environmental factor
 		if (phaseType == PhaseType.GERMINATION) {
 			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
 		}
@@ -1170,8 +1142,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 						+ .15 * harvestModifier * environmentalFactor[O2_FACTOR]
 						+ .15 * harvestModifier * environmentalFactor[CO2_FACTOR];
 
-		// TODO: research how the above 6 factors may affect crop growth for different
-		// crop categories
+		// NOTE 1: Use a better theoretical model for crop growth,
+		//         instead of an empirical model
+		// NOTE 2: Tune the calculation uniquely to each crop
+		// NOTE 3: Modify harvest modifier based on the pollination rate
+		//         by the number of bees in the greenhouse
+		// NOTE 4: Modify harvest modifier by amount of artificial light available
+		//         to the whole greenhouse
+		// NOTE 5: Research how the above 6 factors may affect crop growth for different
+		//         crop categories
+		// NOTE 6: Add air pressure modifier in future
 
 		return harvestModifier;
 	}
