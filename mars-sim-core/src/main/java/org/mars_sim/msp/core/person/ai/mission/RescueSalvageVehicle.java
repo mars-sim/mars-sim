@@ -74,8 +74,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	// Mission phases
 	private static final MissionPhase RENDEZVOUS = new MissionPhase("Mission.phase.rendezvous");
-
-	private static final int MIN_MEMBER = 1;
 	
 	// Data members
 	private boolean rescue = false;
@@ -90,48 +88,41 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	public RescueSalvageVehicle(Person startingPerson) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
 
 		if (!isDone()) {			
-			if (hasVehicle()) {
-				
-				if (vehicleTarget == null)
-					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MISSION_TYPE));
-	
-				if (vehicleTarget != null) {
+			if (vehicleTarget == null)
+				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MISSION_TYPE));
+
+			if (vehicleTarget != null) {
 //					if (getRescuePeopleNum(vehicleTarget) > 0) {
-						rescue = true;
-						setMinMembers(MIN_MEMBER);
-						setDescription(
-								Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
+					rescue = true;
+				setDescription(
+							Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
 //					} 
-							
-					// Add navpoints for target vehicle and back home again.
-					addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
-					addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-							getStartingSettlement().getName()));
+						
+				// Add navpoints for target vehicle and back home again.
+				addNavpoint(vehicleTarget.getCoordinates(), vehicleTarget.getName());
+				addNavpoint(getStartingSettlement());
 
-					// Recruit additional members to mission.
-					if (!isDone()) {
-						if (!recruitMembersForMission(startingPerson))
-							return;
-					}
-
-					// Check if vehicle can carry enough supplies for the mission.
-					if (hasVehicle() && !isVehicleLoadable()) {			
-						addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-						endMission();
-					}
-					
-					// Set initial phase
-					setPhase(VehicleMission.REVIEWING, null);
-					
-					logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
-					
-				} else {
-					addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
-					endMission();
+				// Recruit additional members to mission.
+				if (!isDone()) {
+					if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
+						return;
 				}
+
+				// Check if vehicle can carry enough supplies for the mission.
+				if (hasVehicle() && !isVehicleLoadable()) {			
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				}
+				
+				// Set initial phase
+				setPhase(VehicleMission.REVIEWING, null);
+				
+				logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
+				
+			} else {
+				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 			}
 		}
 	}
@@ -149,7 +140,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
 
 		this.vehicleTarget = vehicleTarget;
 
@@ -158,9 +149,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 
 		// Add navpoints for target vehicle and back home again.
-		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
+		addNavpoint(vehicleTarget.getCoordinates(), vehicleTarget.getName());
 		Settlement s = getStartingSettlement();
-		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(s);
 
 		// Add mission members.
 		addMembers(members, false);
@@ -170,8 +161,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-			endMission();
+			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 		
 		logger.info(getStartingPerson(), "Had started RescueSalvageVehicle");
@@ -591,7 +581,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return a map of resources
 	 */
 	@Override
-	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
@@ -622,23 +612,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets a map of equipment needed for the remaining mission.
-	 * 
-	 * @param useBuffer
-	 * @return a map of equipment
-	 */
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null) {
-			return equipmentNeededCache;
-		} else {
-			Map<Integer, Integer> result = new HashMap<>();
-			equipmentNeededCache = result;
-			return result;
-		}
 	}
 
 	/**

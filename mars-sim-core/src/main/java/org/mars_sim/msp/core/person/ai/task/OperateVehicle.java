@@ -309,10 +309,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	private void turnOnBeacon() {
 		vehicle.setSpeed(0D);
-//    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-    		vehicle.addStatus(StatusType.OUT_OF_FUEL);
-//    	if (vehicle.haveStatusType(StatusType.MOVING))
-    		vehicle.removeStatus(StatusType.MOVING);
+		vehicle.addStatus(StatusType.OUT_OF_FUEL);
+		vehicle.removeStatus(StatusType.MOVING);
     	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
@@ -321,8 +319,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		else 
     			((VehicleMission)m).setEmergencyBeacon(robot, vehicle, true, MissionStatus.NO_METHANE.getName());
     		
-    		m.addMissionStatus(MissionStatus.NO_METHANE);
-    		((VehicleMission)m).getHelp();
+    		((VehicleMission)m).getHelp(MissionStatus.NO_METHANE);
     	}
 	}
 	

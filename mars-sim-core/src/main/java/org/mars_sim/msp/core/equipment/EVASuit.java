@@ -87,11 +87,11 @@ public class EVASuit extends Equipment
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
-	private static final double OXYGEN_CAPACITY = 1D;
+	public static final double OXYGEN_CAPACITY = 1D;
 	/** CO2 capacity (kg.). */
 	private static final double CO2_CAPACITY = 1D;
 	/** Water capacity (kg.). */
-	private static final double WATER_CAPACITY = 4D;
+	public static final double WATER_CAPACITY = 4D;
 	/** capacity (kg). */
 	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */

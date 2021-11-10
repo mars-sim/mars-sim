@@ -29,10 +29,6 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.areologyFieldStudy"); //$NON-NLS-1$
-	
-
-	/** Minimum number of people to do mission. */
-	private static final int MIN_PEOPLE = 2;
 
 	/** Amount of time to field a site. */
 	private static final double FIELD_SITE_TIME = 1000D;
@@ -44,7 +40,7 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public AreologyFieldStudy(Person startingPerson) {
-		super(DEFAULT_DESCRIPTION, MissionType.AREOLOGY, startingPerson,  MIN_PEOPLE, ScienceType.AREOLOGY, FIELD_SITE_TIME);
+		super(DEFAULT_DESCRIPTION, MissionType.AREOLOGY, startingPerson, ScienceType.AREOLOGY, FIELD_SITE_TIME);
 	}
 
 	/**
@@ -61,7 +57,7 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	public AreologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
-		super(description, MissionType.AREOLOGY, leadResearcher, MIN_PEOPLE, rover,
+		super(description, MissionType.AREOLOGY, leadResearcher, rover,
 			  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 

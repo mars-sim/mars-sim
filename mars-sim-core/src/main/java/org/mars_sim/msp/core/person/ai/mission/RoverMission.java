@@ -81,6 +81,8 @@ public abstract class RoverMission extends VehicleMission {
 
 	private static final double MAX_WAITING = 200D;
 
+	/** The factor for determining how many more EVA suits are needed for a trip. */
+	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 	
 	/**
 	 * Constructor 1.
@@ -90,20 +92,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected RoverMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, missionType, startingMember, MIN_GOING_MEMBERS);
-		calculateMissionCapacity(getRover().getCrewCapacity());
-	}
-
-	/**
-	 * Constructor with min people.
-	 * 
-	 * @param missionName    the name of the mission.
-	 * @param startingMember the mission member starting the mission.
-	 * @param minPeople      the minimum number of members required for mission.
-	 */
-	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
-		// Use VehicleMission constructor.
-		super(missionName, missionType, startingMember, minPeople);
+		super(name, missionType, startingMember);
 		calculateMissionCapacity(getRover().getCrewCapacity());
 	}
 
@@ -115,9 +104,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param rover          the rover to use on the mission.
 	 */
-	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Rover rover) {
+	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, Rover rover) {
 		// Use VehicleMission constructor.
-		super(missionName, missionType, startingMember, minPeople, rover);
+		super(missionName, missionType, startingMember, rover);
 		calculateMissionCapacity(getRover().getCrewCapacity());
 	}
 
@@ -244,14 +233,6 @@ public abstract class RoverMission extends VehicleMission {
 	protected final boolean isNoOneInRover() {
         return getRover().getCrewNum() == 0
                 && getRover().getRobotCrewNum() == 0;
-
-//		Iterator<MissionMember> i = getMembers().iterator();
-//		while (i.hasNext()) {
-//			if (i.next().isInVehicle()) {
-//				return false;
-//			}
-//		}
-//		return true;
 	}
 
 	/**
@@ -301,8 +282,7 @@ public abstract class RoverMission extends VehicleMission {
 		Vehicle v = getVehicle();
 		
 		if (v == null) {
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 			
@@ -310,8 +290,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (settlement == null) {
 			logger.warning(member, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 		
@@ -325,39 +304,29 @@ public abstract class RoverMission extends VehicleMission {
 		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
 		
 		// Load vehicle if not fully loaded.
-		if (!isVehicleLoaded()) {
-			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				if (member.isInSettlement()) {
-					// Note: randomly select this member to load resources for the rover
-					// This allows person to do other important things such as eating
-					if (RandomUtil.lessThanRandPercent(75)) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							
-							boolean hasAnotherMission = false; 
-							Mission m = person.getMission();
-							if (m != null && m != this)
-								hasAnotherMission = true; 
-							
-							if (!hasAnotherMission && isRoverInAGarage) {
+		if (!isVehicleLoaded()) {	
+			if (member.isInSettlement()) {
+				// Note: randomly select this member to load resources for the rover
+				// This allows person to do other important things such as eating
+				if (RandomUtil.lessThanRandPercent(75)) {
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						
+						boolean hasAnotherMission = false; 
+						Mission m = person.getMission();
+						if (m != null && m != this)
+							hasAnotherMission = true; 
+						
+						if (!hasAnotherMission && isRoverInAGarage) {
 
-								assignTask(person,
-											new LoadVehicleGarage(person, this));
-							} else if (!hasAnotherMission) {
-								// Note: Should check if it is day time to do EVA
-								assignTask(person, new LoadVehicleEVA(person, this));
-							}
+							assignTask(person,
+										new LoadVehicleGarage(person, this));
+						} else if (!hasAnotherMission) {
+							// Note: Should check if it is day time to do EVA
+							assignTask(person, new LoadVehicleEVA(person, this));
 						}
 					}
 				}
-			}
-			
-			else {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-				return;
 			}
 		}
 		
@@ -446,8 +415,7 @@ public abstract class RoverMission extends VehicleMission {
 					setPhaseEnded(true);						
 				}
 				else {
-					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-					endMission();
+					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
 				}
 			}
 		}
@@ -499,7 +467,6 @@ public abstract class RoverMission extends VehicleMission {
 			else {
 				logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
 			}
-//			disembarkSettlement.addParkedVehicle(v);	
 		}
 		
 		// Test if this rover is towing another vehicle or is being towed
@@ -544,7 +511,7 @@ public abstract class RoverMission extends VehicleMission {
 			// thus allowing person to do other urgent things 
 			for (MissionMember mm : getMembers()) {
 				if (((Person)mm).isFit()) {
-					if (RandomUtil.lessThanRandPercent(50)) {
+					if (RandomUtil.lessThanRandPercent(70)) {
 						unloadCargo(((Person)mm), rover);
 					}
 				}
@@ -580,18 +547,16 @@ public abstract class RoverMission extends VehicleMission {
 		if (m != null && !m.equals(this))
 			return; 
 
-		if (RandomUtil.lessThanRandPercent(50)) {
-			if (isInAGarage()) {
-				assignTask(p, new UnloadVehicleGarage(p, rover));
-			} 
-			
-			else {
-				// Check if it is day time.
-				if (!EVAOperation.isGettingDark(p)) {
-					assignTask(p, new UnloadVehicleEVA(p, rover));
-				}
-			}			
-		}	
+		if (isInAGarage()) {
+			assignTask(p, new UnloadVehicleGarage(p, rover));
+		} 
+		
+		else {
+			// Check if it is day time.
+			if (!EVAOperation.isGettingDark(p)) {
+				assignTask(p, new UnloadVehicleEVA(p, rover));
+			}
+		}				
 	}
 	
 	/**
@@ -696,7 +661,6 @@ public abstract class RoverMission extends VehicleMission {
 	private void rescueOperation(Rover r, Person p, Settlement s) {
 		
 		if (p.isDeclaredDead()) {
-//			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
 			if (p.transfer(s)) {
 				logger.info(p, "Done emergency transfer of the body from " 
 						+ r + " to " + s + ".");
@@ -856,7 +820,22 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
-	
+	/**
+	 * Gets the optional containers for a Rover mission. Add a spare EVASuit
+	 * 
+	 * @return the containers needed.
+	 */
+	@Override
+	protected Map<Integer, Integer> getOptionalEquipmentToLoad() {
+		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
+		
+		// Gets a spare EVA suit for each 4 members in a mission
+		int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
+		result.put(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), numEVA);
+
+		return result;
+	}
+
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * 
@@ -874,7 +853,15 @@ public abstract class RoverMission extends VehicleMission {
 		double time = getEstimatedTripTime(useBuffer, distance);
 		double timeSols = time / 1000D;
 		
-		addLifeSupportResources(result, getPeopleNumber(), timeSols, useBuffer);
+		int people = getPeopleNumber();
+		addLifeSupportResources(result, people, timeSols, useBuffer);
+		
+		// Add resources to load EVA suit of each person
+		// Determine life support supplies needed for trip.
+		result.merge(OXYGEN_ID, (EVASuit.OXYGEN_CAPACITY * people),
+					 (a,b) -> (a.doubleValue() + b.doubleValue()));
+		result.merge(WATER_ID, (EVASuit.WATER_CAPACITY * people),
+					 (a,b) -> (a.doubleValue() + b.doubleValue()));
 		
 		return result;
 	}
@@ -996,13 +983,14 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param startingMember
 	 * @return
 	 */
-	protected boolean recruitMembersForMission(MissionMember startingMember) {
-		return recruitMembersForMission(startingMember, true);
+	protected boolean recruitMembersForMission(MissionMember startingMember, int minMembers) {
+		return recruitMembersForMission(startingMember, true, minMembers);
 	}
 	
 	@Override
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
-		super.recruitMembersForMission(startingMember, sameSettlement);
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement,
+										int minMembers) {
+		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 
 		// Make sure there is at least one person left at the starting
 		// settlement.
@@ -1019,13 +1007,11 @@ public abstract class RoverMission extends VehicleMission {
 
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
-				if (getMembersNumber() < getMinMembers()) {
-					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
-					endMission();
+				if (getMembersNumber() < minMembers) {
+					endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
 					return false;
 				} else if (getPeopleNumber() == 0) {
-					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
-					endMission();
+					endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
 					return false;
 				}
 			}
@@ -1094,10 +1080,5 @@ public abstract class RoverMission extends VehicleMission {
 		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 		double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
 		return (sunlight >= 20D && !inDarkPolarRegion);
-	}
-	
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		return null;
 	}
 }

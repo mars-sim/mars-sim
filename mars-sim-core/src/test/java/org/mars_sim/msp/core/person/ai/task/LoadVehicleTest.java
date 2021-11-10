@@ -214,6 +214,33 @@ extends TestCase {
 					   Collections.emptyMap(), Collections.emptyMap());
 	}
 	
+	
+	/*
+	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
+	 */
+	public void testLoadFailedAmountResources() throws Exception {
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ResourceUtil.foodID, 2000D);
+		
+		LoadingController controller = new LoadingController(settlement, vehicle,
+				requiredResourcesMap, Collections.emptyMap(),
+				Collections.emptyMap(), Collections.emptyMap());
+
+		// Run the loader but do not load an resources into the settlement
+		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
+			controller.load(person, 1D);
+			assertFalse("Load completed #" + i, controller.isCompleted());
+			assertFalse("Load failed #" + i, controller.isFailure());	
+		}
+		
+		// Do the last load and it should fail
+		controller.load(person, 1D);
+		
+		// Vehicle is not loaded and failed
+		assertFalse("Vehicle loaded", controller.isCompleted());
+		assertTrue("Vehicle load did not failed", controller.isFailure());
+	}
+	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */

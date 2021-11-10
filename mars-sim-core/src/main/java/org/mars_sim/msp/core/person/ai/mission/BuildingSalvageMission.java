@@ -95,7 +95,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	public BuildingSalvageMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
 
 		// Set wear condition to 100% by default.
 		wearCondition = 100D;
@@ -108,7 +108,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true);
+			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -162,8 +162,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 								, constructionStage.toString()));
 					} else {
 						logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
-						addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
-						endMission();
+						endMission(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
 					}
 				}
 
@@ -173,8 +172,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				}
 			} else {
 				logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
-				addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
-				endMission();
+				endMission(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 			}
 
 			// Reserve construction vehicles.
@@ -201,7 +199,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
 
 		this.settlement = settlement;
 
@@ -214,7 +212,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			constructionSite = site;
 		} else {
 			logger.log(Level.WARNING, Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
-//			throw new IllegalStateException(PREPARE_SITE_PHASE + Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
 		}
 
 		// Prepare salvage construction site.
@@ -235,8 +232,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 							, constructionStage.toString()));
 				} else {
 					logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$					
-					addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
-					endMission();
+					endMission(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
 				}
 			}
 
@@ -245,8 +241,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				constructionSite.setUndergoingSalvage(true);
 		} else {
 			logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
-			addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
-			endMission();
+			endMission(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
 		// Mark site as undergoing salvage.
@@ -266,10 +261,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			if (!settlement.removeParkedVehicle(vehicle)) {
 				logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 						, vehicle.getName(), settlement.getName()));
-				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
-				endMission();
-//				endMission(Msg.getString("BuildingSalvageMission.log.constructionVehicle" //$NON-NLS-1$
-//						, vehicle.getName()));
+				endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
 			}
 		}
 
@@ -343,8 +335,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			setPhase(SALVAGE_PHASE, constructionStage.getInfo().getName());
 		}
 		else if (SALVAGE_PHASE.equals(getPhase())) {
-			addMissionStatus(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
-			endMission();
+			endMission(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
 		}
 		else {
 			handled = false;
@@ -454,8 +445,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	}
 
 	@Override
-	public void endMission() {
-		super.endMission();
+	public void endMission(MissionStatus endStatus) {
+		super.endMission(endStatus);
 
 		// Mark site as not undergoing salvage.
 		if (constructionSite != null)
@@ -511,8 +502,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 						constructionVehicles.add(luv);
 					else {
 						logger.warning(Msg.getString("BuildingSalvageMission.log.noLUV")); //$NON-NLS-1$
-						addMissionStatus(MissionStatus.LUV_NOT_AVAILABLE);
-						endMission();
+						endMission(MissionStatus.LUV_NOT_AVAILABLE);
 					}				
 				}
 			}
@@ -546,8 +536,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 						Part p = ItemResourceUtil.findItemResource(part);
 						logger.log(Level.SEVERE, Msg.getString("BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
 								, p.getName()));
-						addMissionStatus(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
-						endMission();
+						endMission(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
 					}
 				}
 				vehicleIndex++;
@@ -584,8 +573,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 								, luvTemp.getName(), settlement.getName()));
-						addMissionStatus(MissionStatus.LUV_NOT_RETRIEVED);
-						endMission();
+						endMission(MissionStatus.LUV_NOT_RETRIEVED);
 					}
 				}
 			}
@@ -672,10 +660,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				double capacity = settlement.getTotalCapacity();
 				if (mass <= capacity) {
 					settlement.storeItemResource(part, salvagedNumber);
-//					settlement.getInventory().addItemSupply(part, salvagedNumber);
 				}
-				// Recalculate settlement good value for salvaged part.
-//				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);
+
 			}
 		}
 	}

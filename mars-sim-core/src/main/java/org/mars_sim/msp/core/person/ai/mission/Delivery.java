@@ -100,16 +100,13 @@ public class Delivery extends DroneMission implements Serializable {
 			// Get trading settlement
 			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-						tradingSettlement.getName()));
-//				setDescription(Msg.getString("Mission.description.delivery.detail", tradingSettlement.getName())); // $NON-NLS-1$
+				addNavpoint(tradingSettlement);
 				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 				TRADE_PROFIT_CACHE.remove(tradingSettlement);
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
 				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
 			} else {
-				addMissionStatus(MissionStatus.NO_TRADING_SETTLEMENT);
-				endMission();
+				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 			}
 
 			if (!isDone()) {
@@ -138,7 +135,7 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 
 			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, true)) {
+			if (!isDone() && !recruitMembersForMission(startingMember, true, 2)) {
 				return;
 			}
 		}
@@ -165,7 +162,7 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, MissionType.DELIVERY, startingMember, 2, drone);
+		super(description, MissionType.DELIVERY, startingMember, drone);
 
 		outbound = true;
 		doNegotiation = false;
@@ -178,7 +175,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
-		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
+		addNavpoint(tradingSettlement);
 
 		// Set trade goods.
 		sellLoad = sellGoods;
@@ -223,8 +220,13 @@ public class Delivery extends DroneMission implements Serializable {
 			} 
 			
 			else if (UNLOAD_GOODS.equals(getPhase())) {
-				clearLoadingPlan(); // Clear the original loading plan
-				setPhase(LOAD_GOODS, tradingSettlement.getName());
+				if (isVehicleLoadable()) {
+					clearLoadingPlan(); // Clear the original loading plan
+					setPhase(LOAD_GOODS, tradingSettlement.getName());	
+				}
+				else {
+					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				}
 			} 
 			
 			else if (LOAD_GOODS.equals(getPhase())) {
@@ -346,7 +348,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if (getPhaseEnded()) {
 			outbound = false;
-			equipmentNeededCache = null;
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement.getCoordinates(), 
 							tradingSettlement,
@@ -379,14 +380,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDestinationLoadGoodsPhase() {
 
-		if (!isDone() && !isVehicleLoaded()) {
-
-			// Check if vehicle can hold enough supplies for mission.
-			if (!isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-			}
-		} else {
+		if (isDone() || isVehicleLoaded()) {
 			setPhaseEnded(true);
 		}
 	}
@@ -438,7 +432,7 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	@Override
-	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
+	protected Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
 		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
 
@@ -665,8 +659,7 @@ public class Delivery extends DroneMission implements Serializable {
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
           	logger.log(Level.SEVERE, "Cannot estimate delivery profit: "+ e.getMessage());
-			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-			endMission();
+          	endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
 		}
 
 		return result;
@@ -700,17 +693,6 @@ public class Delivery extends DroneMission implements Serializable {
 		public DeliveryProfitInfo(double profit, MarsClock time) {
 			this.profit = profit;
 			this.time = time;
-		}
-	}
-
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		if (equipmentNeededCache != null)
-			return equipmentNeededCache;
-		else {
-			Map<Integer, Integer> result = new HashMap<>(0);
-			equipmentNeededCache = result;
-			return result;
 		}
 	}
 

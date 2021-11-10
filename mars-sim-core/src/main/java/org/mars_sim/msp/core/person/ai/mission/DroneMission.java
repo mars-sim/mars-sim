@@ -47,7 +47,7 @@ public abstract class DroneMission extends VehicleMission {
 	 */
 	protected DroneMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, missionType, startingMember, 2);
+		super(name, missionType, startingMember);
 	}
 	
 	/**
@@ -58,9 +58,9 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param drone          the drone to use on the mission.
 	 */
-	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Drone drone) {
+	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, Drone drone) {
 		// Use VehicleMission constructor.
-		super(missionName, missionType, startingMember, minPeople, drone);
+		super(missionName, missionType, startingMember, drone);
 	}
 	
 	/**
@@ -209,16 +209,14 @@ public abstract class DroneMission extends VehicleMission {
 		Vehicle v = getVehicle();
 		
 		if (v == null) {
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 			
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			logger.warning(Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
 		
@@ -233,53 +231,30 @@ public abstract class DroneMission extends VehicleMission {
 
 		// Load vehicle if not fully loaded.
 		if (!isVehicleLoaded()) {
-			// Check if vehicle can hold enough supplies for mission.
-			if (isVehicleLoadable()) {
-				
-				if (member.isInSettlement()) {
-					// Load drone
-					// Random chance of having person load (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							if (isDroneInAGarage) {
-								// TODO Refactor.
-								assignTask(person,
-											new LoadVehicleGarage(person, this));
-							} else {
-								// Check if it is day time.
-//										if (!EVAOperation.isGettingDark(person)) {
-									assignTask(person, new LoadVehicleEVA(person, this));
-//										}
-							}
+			if (member.isInSettlement()) {
+				// Load drone
+				// Random chance of having person load (this allows person to do other things
+				// sometimes)
+				if (RandomUtil.lessThanRandPercent(50)) {
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						if (isDroneInAGarage) {
+							assignTask(person,
+										new LoadVehicleGarage(person, this));
+						} else {
+							assignTask(person, new LoadVehicleEVA(person, this));
 						}
 					}
 				}
-				else {
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						// Check if it is day time.
-//								if (!EVAOperation.isGettingDark(person)) {
-							assignTask(person, new LoadVehicleEVA(person, this));
-//								}
-					}
+			}
+			else {
+				if (member instanceof Person) {
+					Person person = (Person) member;
+					assignTask(person, new LoadVehicleEVA(person, this));
 				}
-				
-			} else {
-				addMissionStatus(MissionStatus.CANNOT_LOAD_RESOURCES);
-				endMission();
-				return;
 			}
 		}
-		
 		else {
-
-			// Gets a random location within drone.
-//			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(v);
-//			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-//					vehicleLoc.getY(), v);
-
 			// If drone is loaded and everyone is aboard, embark from settlement.
 			if (!isDone()) {
 				
@@ -305,8 +280,7 @@ public abstract class DroneMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 				else {
-					addMissionStatus(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
-					endMission();
+					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
 				}
 			}
 		}
@@ -324,16 +298,6 @@ public abstract class DroneMission extends VehicleMission {
 		
 		Vehicle v0 = getVehicle();
 		disembark(member, v0, disembarkSettlement);
-		
-//		// If v0 is being towed by a vehicle, gets the towing vehicle
-//		Vehicle v1 = v0.getTowingVehicle();
-//		if (v1 != null)
-//			disembark(member, v1, disembarkSettlement);
-//		
-//		// If v0 is towing a vehicle, gets the towed vehicle
-//		Vehicle v2 = ((Drone)v0).getTowedVehicle();
-//		if (v2 != null)
-//			disembark(member, v2, disembarkSettlement);
 	}
 	
 	/**
@@ -354,7 +318,6 @@ public abstract class DroneMission extends VehicleMission {
 			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 				// If drone has not been parked at settlement, park it.
 				v.transfer(disembarkSettlement);
-//				disembarkSettlement.addParkedVehicle(v);	
 			}
 
 			// Add vehicle to a garage if available.
@@ -431,7 +394,7 @@ public abstract class DroneMission extends VehicleMission {
 	}
 	
 	@Override
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement) {
+	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement, int minMembers) {
 		// Get all people qualified for the mission.
 		Iterator<Robot> r = getStartingSettlement().getRobots().iterator();
 		while (r.hasNext()) {
@@ -441,7 +404,7 @@ public abstract class DroneMission extends VehicleMission {
 			}
 		}
 		
-		super.recruitMembersForMission(startingMember, sameSettlement);
+		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 
 		return true;
 	}

@@ -110,7 +110,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	private ConstructionStage stage;
 
 	private List<GroundVehicle> constructionVehicles;
-	private Collection<MissionMember> members;// = constructionSite.getMembers();
+	private Collection<MissionMember> members;
 	private List<Integer> luvAttachmentParts;
 
 
@@ -121,9 +121,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 */
 	public BuildingConstructionMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember, MIN_PEOPLE);
-		// logger.info("BuildingConstructionMission's constructor is in " +
-		// Thread.currentThread().getName() + " Thread");
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+
 
 		if (!isDone()) {
 			// Sets the settlement.
@@ -133,7 +132,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			calculateMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true);
+			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
 
 			// Determine construction site and stage.
 			// TODO Refactor.
@@ -145,13 +144,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 				person.getMind().setMission(this);
 			}
-//            else if (startingMember instanceof Robot) {
-//                Robot robot = (Robot) startingMember;
-//                //robot.setMission(this);
-//                constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-//                robot.getBotMind().setMission(this);
-//            }
-
 			initCase1Step1(constructionSkill);
 		}
 
@@ -238,13 +230,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 				} else {
 					logger.log(Level.WARNING, "New construction stage could not be determined.");
-					addMissionStatus(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
-					endMission();
+					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 				}
 
 				initCase1Step2(site, info, skill, values);
-				// init_case_1_step_3();
-
 			}
 
 		}
@@ -255,11 +244,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			ConstructionValues values) {
 		this.site = m_site;
 		logger.fine("Calling initCase1Step2()");
-
-		// System.out.println("constructionSite is " + constructionSite.getDescription()
-		//// + " x is " + constructionSite.getXLocation()
-		// + " y is " + constructionSite.getYLocation());
-		// System.out.println("stageInfo is " + stageInfo.toString());
 
 		if (site != null) {
 
@@ -279,8 +263,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					values.clearCache();
 					logger.log(Level.FINE, "Starting new construction stage: " + stage);
 				} else {
-					addMissionStatus(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
-					endMission();
+					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 				}
 			}
 
@@ -289,9 +272,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				site.setUndergoingConstruction(true);
 			}
 		} else {
-//			System.out.println("Construction site could not be found or created.");
-			addMissionStatus(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
-			endMission();
+			endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
 	}
@@ -320,7 +301,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
 
 		// this.site = no_site;
 		this.members = members;
@@ -356,11 +337,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				site.setStageInfo(stageInfo);
 				site.setManual(true);
 				manager.getSites().add(no_site);
-
-				// Note : Should NOT invoke construction wizard to allow user to pick the site
-				// again.
-				// settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT,
-				// this);
 
 				if (stageInfo != null) {
 					logger.fine("Case 2. stageInfo is " + stageInfo.getName());
@@ -433,8 +409,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				}
 
 				else {
-					addMissionStatus(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
-					endMission();
+					endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 				}
 
 				initialize(site, stageInfo);// , vehicles, members);
@@ -455,12 +430,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public void initialize(ConstructionSite modSite, ConstructionStageInfo info) {
 		this.site = modSite;
 		logger.fine("stageInfo is " + info.toString());
-		// ConstructionStageInfo stageInfo = info;
-		// System.out.println("x is " + constructionSite.getXLocation()
-		// + " y is " + constructionSite.getYLocation()
-		// + " w is " + constructionSite.getWidth()
-		// + " l is " + constructionSite.getLength()
-		// + " f is " + constructionSite.getFacing());
 
 		if (site.hasUnfinishedStage()) {
 			stage = site.getCurrentConstructionStage();
@@ -471,8 +440,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			try {
 				site.addNewStage(stage);
 			} catch (Exception e) {
-				addMissionStatus(MissionStatus.CONSTRUCTION_STAGE_NOT_CREATED);
-				endMission();
+				endMission(MissionStatus.CONSTRUCTION_STAGE_NOT_CREATED);
 			}
 		}
 
@@ -493,8 +461,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				logger.warning("Unable to retrieve " + vehicle.getName() 
 					+ " cannot be retrieved from "
 					+ settlement.getName() + " inventory.");
-				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
-				endMission();
+				endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
 			}
 		}
 	}
@@ -527,7 +494,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public void reserveConstructionVehicles() {
 		logger.fine("calling reserveConstructionVehicles()");
 		if (stage != null) {
-			constructionVehicles = new ArrayList<GroundVehicle>();
+			constructionVehicles = new ArrayList<>();
 			Iterator<ConstructionVehicleType> j = stage.getInfo().getVehicles().iterator();
 			while (j.hasNext()) {
 				ConstructionVehicleType vehicleType = j.next();
@@ -538,8 +505,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 						constructionVehicles.add(luv);
 					} else {
 						logger.warning("BuildingConstructionMission : LUV not available");
-						addMissionStatus(MissionStatus.LUV_NOT_AVAILABLE);
-						endMission();
+						endMission(MissionStatus.LUV_NOT_AVAILABLE);
 					}
 				}
 			}
@@ -573,8 +539,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					} catch (Exception e) {
 						Part p = ItemResourceUtil.findItemResource(part);
 						logger.log(Level.SEVERE, "Error retrieving attachment part " + p.getName());
-						addMissionStatus(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
-						endMission();
+						endMission(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
 					}
 				}
 				vehicleIndex++;
@@ -642,8 +607,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			setPhase(CONSTRUCTION_PHASE, stage.getInfo().getName());
 		}
 		else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-			addMissionStatus(MissionStatus.CONSTRUCTION_ENDED);
-			endMission();
+			endMission(MissionStatus.CONSTRUCTION_ENDED);
 		}
 		else {
 			handled = false;
@@ -823,7 +787,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	}
 
 	@Override
-	public void endMission() {
+	public void endMission(MissionStatus endStatus) {
 		// Mark site as not undergoing construction.
 		if (site != null)
 			site.setUndergoingConstruction(false);
@@ -831,7 +795,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		// Unreserve all LUV attachment parts for this mission.
 		unreserveLUVparts();
 
-		super.endMission();
+		super.endMission(endStatus);
 	}
 
 	/**
@@ -901,8 +865,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe("Unable to retrieve " + luvTemp.getName() + " cannot be retrieved from "
 								+ settlement.getName() + " inventory.");
-						addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
-						endMission();
+						endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
 					}
 				}
 			}

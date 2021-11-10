@@ -279,7 +279,6 @@ public class BotMind implements Serializable, Temporal {
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission) {
-//		System.out.println("botMind: setMission to " + newMission);
 		if (newMission != mission) {
 			if (mission != null) {
 				mission.removeMember(robot);

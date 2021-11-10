@@ -32,9 +32,6 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
-	/** Minimum number of people to do mission. */
-	private static final int MIN_PEOPLE = 2;
-
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 500D;
 
@@ -49,7 +46,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	 */
 	public MeteorologyFieldStudy(Person startingPerson) {
 		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson,
-				  MIN_PEOPLE, ScienceType.METEOROLOGY, FIELD_SITE_TIME);
+			  ScienceType.METEOROLOGY, FIELD_SITE_TIME);
 	}
 
 	/**
@@ -65,7 +62,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	public MeteorologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
-		super(description, MissionType.METEOROLOGY, leadResearcher, MIN_PEOPLE, rover,
+		super(description, MissionType.METEOROLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 	
