@@ -646,6 +646,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 	}
 
+	/**
+	 * Update the usage of all three major farming resources.
+	 * 
+	 * @param currentSol
+	 */
 	private synchronized void updateUsage(int currentSol) {
 		String name = cropSpec.getName();
 //		if (cumulative_water_usage > 0) {

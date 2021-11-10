@@ -1556,13 +1556,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-//		else if (ut == UnitType.BUILDING) {
-//			// Retrieve this person from the settlement
-//			transferred = ((Building)cu).getSettlement().removeRobot(this);
-//			BuildingManager.removeRobotFromBuilding(this, ((Building)cu));
-//		}
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
+		}
+		else if (ut == UnitType.BUILDING) {
+//			BuildingManager.removeRobotFromBuilding(this, (Building)cu);
+			transferred = true;
 		}
 		else {
 			// Question: should we remove this unit from settlement's robotWithin list
@@ -1587,7 +1586,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addRobot(this);
 			}
-			else {
+			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
+				transferred = ((Settlement)destination).addRobot(this);
+			}
+			else if (destination.getUnitType() == UnitType.BUILDING) {
+				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
 				transferred = ((Settlement)destination).addRobot(this);
 			}
 

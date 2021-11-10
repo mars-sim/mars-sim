@@ -109,8 +109,8 @@ public class BuildingManager implements Serializable {
 
 	private transient List<Building> farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
 	private transient List<Building> buildings;
-	private transient List<Building> garages; 
-	
+	private transient List<Building> garages;
+
 	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<String, Double>();
 	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<String, Double>();
 	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new HashMap<FunctionType, List<Building>>();
@@ -121,14 +121,14 @@ public class BuildingManager implements Serializable {
 	private transient Settlement settlement;
 	private Integer settlementID;
 	private int nextInhabitableID = 0;
-	
+
 	private double debrisMass;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
 	private List<Integer> buildingInts = new ArrayList<>();
 	private List<Integer> garageInts = new ArrayList<>();
-	
+
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -140,12 +140,12 @@ public class BuildingManager implements Serializable {
 	private static RelationshipManager relationshipManager;
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-	
+
 
 	/**
 	 * Constructor 1 : construct buildings from settlement config template. Called
 	 * by Settlement
-	 * 
+	 *
 	 * @param settlement the manager's settlement.
 	 * @throws Exception if buildings cannot be constructed.
 	 */
@@ -157,7 +157,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Constructor 2 : construct buildings from name list. Called by constructor 1
 	 * and by constructor 1
-	 * 
+	 *
 	 * @param settlement        the manager's settlement
 	 * @param buildingTemplates the settlement's building templates.
 	 * @throws Exception if buildings cannot be constructed.
@@ -172,7 +172,7 @@ public class BuildingManager implements Serializable {
 		eventManager = sim.getEventManager();
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
-		
+
 		// Construct all buildings in the settlement.
 		buildings = new CopyOnWriteArrayList<>();
 		if (buildingTemplates != null) {
@@ -188,7 +188,7 @@ public class BuildingManager implements Serializable {
 		for (Building b: garages) {
 			garageInts.add(b.getIdentifier());
 		}
-		
+
 		if (buildingTypeIDMap.isEmpty())
 			createBuildingTypeIDMap();
 
@@ -201,18 +201,18 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Constructor 3 : Called by MockSettlement for maven test
-	 * 
+	 *
 	 * @param settlement        the manager's settlement
 	 * @param buildingTemplates the settlement's building templates.
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, String name) {
-		this.settlement = settlement;	
+		this.settlement = settlement;
 		this.settlementID = (Integer) settlement.getIdentifier();
 
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
-		
+
 		// Construct all buildings in the settlement.
 		buildings = new CopyOnWriteArrayList<Building>();
 
@@ -220,11 +220,11 @@ public class BuildingManager implements Serializable {
 		for (Building b: garages) {
 			garageInts.add(b.getIdentifier());
 		}
-		
+
 //		setupBuildingFunctionsMap();
 	}
 
-	
+
 	/**
 	 * Sets up the map for the building functions
 	 */
@@ -246,7 +246,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Removes a building from the settlement.
-	 * 
+	 *
 	 * @param oldBuilding the building to remove.
 	 */
 	public void removeBuilding(Building oldBuilding) {
@@ -269,7 +269,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Removes all references of this building in all functions in
 	 * buildingFunctionsMap
-	 * 
+	 *
 	 * @param oldBuilding
 	 */
 	public void removeAllFunctionsfromBFMap(Building oldBuilding) {
@@ -282,7 +282,7 @@ public class BuildingManager implements Serializable {
 					if (list.contains(oldBuilding)) {
 						list.remove(oldBuilding);
 						buildingFunctionsMap.put(ft, list);
-					}			
+					}
 					// Remove this old building from the garage list if it has a garage
 					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
 						if (garages.contains(oldBuilding)) {
@@ -298,7 +298,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Removes the reference of this building for a functions in
 	 * buildingFunctionsMap
-	 * 
+	 *
 	 * @param a building
 	 * @param a function
 	 */
@@ -308,7 +308,7 @@ public class BuildingManager implements Serializable {
 			List<Building> list = buildingFunctionsMap.get(ft);
 			if (list.contains(b)) {
 				list.remove(b);
-				buildingFunctionsMap.put(ft, list);	
+				buildingFunctionsMap.put(ft, list);
 			}
 			// Remove this old building from the garage list if it has a garage
 			if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
@@ -322,7 +322,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Add references of this building in all functions in buildingFunctionsMap
-	 * 
+	 *
 	 * @param oldBuilding
 	 */
 	public void addNewBuildingtoBFMap(Building newBuilding) {
@@ -345,7 +345,7 @@ public class BuildingManager implements Serializable {
 						list.add(newBuilding);
 					}
 					buildingFunctionsMap.put(ft, list);
-					
+
 					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
 						if (garages != null && !garages.contains(newBuilding)) {
 							garages.add(newBuilding);
@@ -359,27 +359,27 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Adds a new building to the settlement.
-	 * 
+	 *
 	 * @param newBuilding               the building to add.
 	 * @param createBuildingConnections true if automatically create building
 	 *                                  connections.
 	 */
 	public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
-		if (!buildings.contains(newBuilding)) {	
+		if (!buildings.contains(newBuilding)) {
 			unitManager.addUnit(newBuilding);
-			
+
 			buildings.add(newBuilding);
 //			System.out.println(newBuilding.getIdentifier());
 			buildingInts.add(newBuilding.getIdentifier());
-			
+
 			int id = newBuilding.getInhabitableID();
-			
+
 			// Add tracking air composition
 			if (settlement.getCompositionOfAir() != null && id != -1)
 				settlement.getCompositionOfAir().addAirNew(newBuilding);
 			// Insert this new building into buildingFunctionsMap
 			addNewBuildingtoBFMap(newBuilding);
-			
+
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 			// Create new building connections if needed.
 			if (createBuildingConnections) {
@@ -390,7 +390,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Adds a new mock building to the settlement.
-	 * 
+	 *
 	 * @param newBuilding               the building to add.
 	 */
 	public void addMockBuilding(Building newBuilding) {
@@ -400,7 +400,7 @@ public class BuildingManager implements Serializable {
 //			addAllFunctionstoBFMap(newBuilding);
 		}
 	}
-	
+
 	/**
 	 * Removes all mock buildings and building functions in the settlement.
 	 */
@@ -408,10 +408,10 @@ public class BuildingManager implements Serializable {
 		buildings.clear();
 		buildingFunctionsMap.clear();
 	}
-	
+
 	/**
 	 * Adds a building with a template to the settlement.
-	 * 
+	 *
 	 * @param template                  the building template.
 	 * @param createBuildingConnections true if automatically create building
 	 *                                  connections.
@@ -422,7 +422,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Adds a building with a template to the settlement.
-	 * 
+	 *
 	 * @param template                  the building template.
 	 * @param createBuildingConnections true if automatically create building
 	 *                                  connections.
@@ -447,7 +447,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a copy of settlement's collection of buildings.
-	 * 
+	 *
 	 * @return collection of buildings
 	 */
 	public List<Building> getACopyOfBuildings() {
@@ -456,7 +456,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a collection of buildings.
-	 * 
+	 *
 	 * @return collection of buildings
 	 */
 	public List<Building> getBuildings() {
@@ -465,7 +465,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a collection of buildings.
-	 * 
+	 *
 	 * @return collection of buildings
 	 */
 	public List<Building> getSortedBuildings() {
@@ -474,7 +474,7 @@ public class BuildingManager implements Serializable {
 
 //	/**
 //	 * Gets the settlement's collection of buildings (in their nicknames)
-//	 * 
+//	 *
 //	 * @return collection of buildings (in their nicknames)
 //	 */
 //	public List<Building> getBuildingsNickNames() {
@@ -483,7 +483,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of settlement's buildings with Robotic Station function
-	 * 
+	 *
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsWithRoboticStation() {
@@ -501,7 +501,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of settlement's buildings with Life Supportfunction
-	 * 
+	 *
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsWithLifeSupport() {
@@ -510,7 +510,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of settlement's buildings with power generation function
-	 * 
+	 *
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsWithPowerGeneration() {
@@ -519,37 +519,37 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of settlement's buildings (not including  hallway or tunnel) having a particular function type
-	 * 
+	 *
 	 * @param functionType
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsNoHallwayTunnel(FunctionType functionType) {
 		// Filter off hallways and tunnels
-		return getBuildings(functionType).stream().filter(b -> 
+		return getBuildings(functionType).stream().filter(b ->
 				!b.getBuildingType().equalsIgnoreCase("hallway")
 				&& !b.getBuildingType().equalsIgnoreCase("tunnel")
 				).collect(Collectors.toList());
 	}
-	
+
 	/**
-	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory) 
+	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory)
 	 * having a particular function type
-	 * 
+	 *
 	 * @param functionType
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsNoHallwayTunnelObs(FunctionType functionType) {
 		// Filter off hallways and tunnels
-		return getBuildings(functionType).stream().filter(b -> 
+		return getBuildings(functionType).stream().filter(b ->
 				!b.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
 				&& !b.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
 				&& !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)
 				).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Gets a list of settlement's buildings with thermal function
-	 * 
+	 *
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsWithThermal() {
@@ -558,7 +558,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Checks if the settlement contains a given building.
-	 * 
+	 *
 	 * @param building the building.
 	 * @return true if settlement contains building.
 	 */
@@ -568,7 +568,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the building with the given template ID.
-	 * 
+	 *
 	 * @param id the template ID .
 	 * @return building or null if none found.
 	 */
@@ -601,7 +601,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the buildings in a settlement that has a given function.
-	 * 
+	 *
 	 * @param building function {@link FunctionType} the function of the building.
 	 * @return list of buildings.
 	 */
@@ -610,7 +610,7 @@ public class BuildingManager implements Serializable {
 			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
 			setupBuildingFunctionsMap();
 		}
-		
+
 		if (buildingFunctionsMap.containsKey(bf)) {
 			return buildingFunctionsMap.get(bf);
 		}
@@ -625,40 +625,40 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the buildings in a settlement that has a given function.
-	 * 
+	 *
 	 * @param building function {@link FunctionType} the function of the building.
 	 * @return list of buildings.
 	 */
 	public List<Building> getBuildingsWithoutFunctionType(FunctionType bf) {
 		return buildings.stream().filter(b -> !b.hasFunction(bf)).collect(Collectors.toList());
 	}
-	
+
 	public List<Building>getBuildingsWithScienceType(ScienceType type) {
 		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Gets an available building that the person can use.
-	 * 
+	 *
 	 * @param person the person
 	 * @return available building or null if none.
 	 */
 	public static Building getAvailableBuilding(ScientificStudy study, Person person) {
 		Building b = person.getBuildingLocation();
-		
+
 		// If this person is located in the observatory
 		if ((b != null) && b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 			return b;
-		
+
 		if (person.isInSettlement()) {
 			List<Building> buildings = null;
 
 			if (study != null) {
 				ScienceType science = study.getScience();
-				
-				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);				
+
+				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);
 			}
-			
+
 			if (buildings == null || buildings.size() == 0) {
 				buildings = getBuildings(person, FunctionType.RESEARCH);
 			}
@@ -671,7 +671,7 @@ public class BuildingManager implements Serializable {
 			if (buildings == null || buildings.size() == 0) {
 				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
 			}
-			
+
 			if (buildings != null && buildings.size() > 0) {
 				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
 						buildings);
@@ -687,11 +687,11 @@ public class BuildingManager implements Serializable {
 		buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
 		return BuildingManager.getLeastCrowdedBuildings(buildings);
 	}
-	
+
 	/**
 	 * Gets the buildings in a settlement have have all of a given array of
 	 * functions.
-	 * 
+	 *
 	 * @param functions the array of required functions {@link BuildingFunctions}.
 	 * @return list of buildings.
 	 */
@@ -701,7 +701,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the buildings in the settlement with a given building type.
-	 * 
+	 *
 	 * @param buildingType the building type.
 	 * @return list of buildings.
 	 */
@@ -714,7 +714,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a random building in a settlement that has a given function.
-	 * 
+	 *
 	 * @param bf {@link FunctionType} the function of the building.
 	 * @return a building.
 	 */
@@ -723,7 +723,7 @@ public class BuildingManager implements Serializable {
 			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
 			setupBuildingFunctionsMap();
 		}
-		
+
 		if (buildingFunctionsMap.containsKey(bf)) {
 			List<Building> list = buildingFunctionsMap.get(bf);
 			Building b = list.get(RandomUtil.getRandomInt(list.size()-1));
@@ -740,16 +740,16 @@ public class BuildingManager implements Serializable {
 //			return list.get(RandomUtil.getRandomInt(list.size()-1));
 		}
 	}
-	
+
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
 		List<Building> list = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
 				.collect(Collectors.toList());
 		return list.get(RandomUtil.getRandomInt(list.size()-1));
 	}
-	
+
 	/**
 	 * Gets the number of the same type of building.
-	 * 
+	 *
 	 * @param buildingType
 	 * @return a number
 	 */
@@ -757,10 +757,10 @@ public class BuildingManager implements Serializable {
 		return buildings.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
 				.collect(Collectors.counting());
 	}
-	
+
 	/**
 	 * Gets the number of buildings at the settlement.
-	 * 
+	 *
 	 * @return number of buildings
 	 */
 	public int getNumBuildings() {
@@ -778,7 +778,7 @@ public class BuildingManager implements Serializable {
 		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
 			Function l = b.getLivingAccommodations();
 			List<Point2D> spots = l.getActivitySpotsList();
-			for (Point2D s : spots) {		
+			for (Point2D s : spots) {
 				// Convert the activity spot (the bed location) to the settlement reference coordinate
 				double x = s.getX() + b.getXLocation();
 				double y = s.getY() + b.getYLocation();
@@ -787,7 +787,7 @@ public class BuildingManager implements Serializable {
 				map.put(s, b);
 			}
 		}
-		
+
 		for (Person p : getSettlement().getAllAssociatedPeople()) {
 			if (p.getBed() == null) {
 				Iterator<Point2D> i = beds.iterator();
@@ -802,7 +802,7 @@ public class BuildingManager implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Time passing for all buildings.
 	 *
@@ -815,12 +815,12 @@ public class BuildingManager implements Serializable {
 			buildingTypeIDMap = new ConcurrentHashMap<>();
 			createBuildingTypeIDMap();
 		}
-		
+
 		if (buildingFunctionsMap == null) {
 			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
 			setupBuildingFunctionsMap();
 		}
-		
+
 
 		if (pulse.isNewSol()) {
 
@@ -828,15 +828,15 @@ public class BuildingManager implements Serializable {
 //				registerBeds();
 //			}
 
-			if (meteorite == null) {		
+			if (meteorite == null) {
 				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
 			}
-			
+
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
 			meteorite.startMeteoriteImpact(this);
 		}
-		
+
 		for (Building b : buildings) {
 			try {
 				b.timePassing(pulse);
@@ -850,10 +850,10 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an empty bed in an airlock randomly
-	 * 
+	 *
 	 * @return
 	 */
-	public Point2D getAirlockEmptyBed() {		
+	public Point2D getAirlockEmptyBed() {
 		List<Building> list = getBuildings(FunctionType.EVA, FunctionType.LIVING_ACCOMMODATIONS);
 		Collections.shuffle(list);
 		for (Building b : list) {
@@ -862,20 +862,20 @@ public class BuildingManager implements Serializable {
 		}
 		return null;
 	}
-		
+
 	/**
 	 * Gets a random building with an airlock.
-	 * 
+	 *
 	 * @return random building.
 	 */
-	public Building getRandomAirlockBuilding() {		
+	public Building getRandomAirlockBuilding() {
 		return getABuilding(FunctionType.EVA);
-		
+
 //		if (buildingFunctionsMap == null) {
 //			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
 //			setupBuildingFunctionsMap();
 //		}
-//		
+//
 //		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
 //			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
 //			int num = list.size();
@@ -883,7 +883,7 @@ public class BuildingManager implements Serializable {
 //				return null;
 //			else if (num == 1)
 //				return list.get(0);
-//				
+//
 //			int rand = RandomUtil.getRandomInt(num - 1);
 //			return list.get(rand);
 //		}
@@ -898,7 +898,7 @@ public class BuildingManager implements Serializable {
 //			return list.get(0);
 //		}
 	}
-	
+
 	/**
 	 * Adds a person to a random medical building within a settlement.
 	 *
@@ -907,15 +907,15 @@ public class BuildingManager implements Serializable {
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
 	public static void addToMedicalBuilding(Person p, int settlementID) {
-	
+
 		Settlement s = unitManager.getSettlementByID(settlementID);
 		Building building = s.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
-	
+
 		if (building != null) {
 			addPersonOrRobotToBuildingRandomLocation(p, building);
-		} 
-		
+		}
+
 		else {
 			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
@@ -937,21 +937,21 @@ public class BuildingManager implements Serializable {
 		BuildingManager manager = s.getBuildingManager();
 		if (unit instanceof Person) {
 			person = (Person) unit;
-	
+
 			List<Building> list = getLeastCrowdedBuildings(manager.getBuildings(FunctionType.LIFE_SUPPORT)
 					.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 					.collect(Collectors.toList()));
-			
+
 			if (list.size() == 0)
 				return;
-			
+
 			Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
 
 			if (building != null) {
 				// Add the person to a random building loc
 				addPersonOrRobotToBuildingRandomLocation(person, building);
-			} 
-			
+			}
+
 			else {
 				logger.warning(person, "No inhabitable buildings available");
 			}
@@ -1060,62 +1060,62 @@ public class BuildingManager implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within
 	 * a settlement.
-	 * 
+	 *
 	 * @param vehicle    the vehicle to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
-	 * 
+	 *
 	 * @return Building the garage it's in or has just been added to
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 
 		if (vehicle.isBeingTowed())
 			return null;
-		
+
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return null;
 		}
-		
+
 		List<Building> garages = getGarages();
-		
+
 		if (garages.isEmpty()) {
 			// This settlement has no garages at all
 			vehicle.removeStatus(StatusType.GARAGED);
 			return null;
 		}
-		
+
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-			
+
 			if (garage != null && garage.containsVehicle(vehicle)) {
-				
-				logger.log(settlement, vehicle, Level.INFO, 60_000, 
+
+				logger.log(settlement, vehicle, Level.INFO, 60_000,
 						   "Already inside " + garage.getBuilding().getNickName() + ".");
-					
+
 				return garageBuilding;
 			}
 			else {
 				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
 					&& garage.addVehicle(vehicle)) {
 
-					logger.log(settlement, vehicle, Level.INFO, 60_000, 
+					logger.log(settlement, vehicle, Level.INFO, 60_000,
  							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
 					return garageBuilding;
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Removes a vehicle from garage
-	 * 
+	 *
 	 * @param vehicle
 	 * @return
 	 */
@@ -1125,67 +1125,67 @@ public class BuildingManager implements Serializable {
 		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle)) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within
 	 * a settlement.
-	 * 
+	 *
 	 * @param vehicle    the vehicle to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
-	 * 
-	 * @return true if it's already in the garage or added to a garage 
+	 *
+	 * @return true if it's already in the garage or added to a garage
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
 		if (vehicle.isBeingTowed())
 			return false;
-		
+
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
 			if (((Rover)vehicle).isTowingAVehicle())
 				return false;
 		}
-		
+
 		List<Building> garages = getGarages();
-		
+
 		if (garages.isEmpty()) {
 			// This settlement has no garages at all
 			vehicle.removeStatus(StatusType.GARAGED);
 			return false;
 		}
-		
+
 		if (isInGarage(vehicle)) {
 			vehicle.addStatus(StatusType.GARAGED);
-			
+
 			return true;
 		}
-		
+
 		else {
 			// Checks if this settlement have open garage space
 			for (Building garageBuilding : garages) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
 					&& garage.addVehicle(vehicle)) {
-						
+
 					// Update the vehicle's location state type
 					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-					
-					logger.log(settlement, vehicle, Level.INFO, 60_000, 
+
+					logger.log(settlement, vehicle, Level.INFO, 60_000,
  							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
 
 	/**
 	 * Checks if the vehicle is currently in a garage or not.
-	 * 
+	 *
 	 * @return true if vehicle is in a garage.
 	 */
 	public boolean isInGarage(Vehicle vehicle) {
@@ -1199,10 +1199,10 @@ public class BuildingManager implements Serializable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks if the vehicle is currently in a garage or not.
-	 * 
+	 *
 	 * @return true if vehicle is in a garage.
 	 */
 	public static boolean isInAGarage(Vehicle vehicle) {
@@ -1225,10 +1225,10 @@ public class BuildingManager implements Serializable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the vehicle maintenance building a given vehicle is in.
-	 * 
+	 *
 	 * @return building or null if none.
 	 */
 	public static Building getBuilding(Vehicle vehicle) {
@@ -1245,7 +1245,7 @@ public class BuildingManager implements Serializable {
 						return garageBuilding;
 					}
 				} catch (Exception e) {
-					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
+					logger.log(settlement, vehicle, Level.SEVERE, 2000,
 							   "is not in a building.", e);
 				}
 			}
@@ -1255,7 +1255,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the vehicle maintenance building a given vehicle is in.
-	 * 
+	 *
 	 * @return building or null if none.
 	 */
 	public static Building getBuilding(Vehicle vehicle, Settlement settlement) {
@@ -1271,7 +1271,7 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
-					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
+					logger.log(settlement, vehicle, Level.SEVERE, 2000,
 							   "is not in a building.", e);
 				}
 			}
@@ -1281,7 +1281,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an available vehicle maintenance building for resource hookup.
-	 * 
+	 *
 	 * @param settlement
 	 * @return building or null if none.
 	 */
@@ -1304,10 +1304,10 @@ public class BuildingManager implements Serializable {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the building a person or robot is in.
-	 * 
+	 *
 	 * @return building or null if none.
 	 */
 	public static Building getBuilding(Unit unit) {
@@ -1320,8 +1320,8 @@ public class BuildingManager implements Serializable {
 			if (person.isInSettlement()) {
 				return person.getBuildingLocation();
 			}
-		} 
-		
+		}
+
 		else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			if (robot.isInSettlement()) {
@@ -1333,7 +1333,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Check what building a given local settlement position is within.
-	 * 
+	 *
 	 * @param xLoc the local X position.
 	 * @param yLoc the local Y position.
 	 * @return building the position is within, or null if the position is not
@@ -1354,7 +1354,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of uncrowded buildings from a given list of buildings with life
 	 * support.
-	 * 
+	 *
 	 * @param buildingList list of buildings with the life support function.
 	 * @return list of buildings that are not at or above maximum occupant capacity.
 	 * @throws BuildingException if building in list does not have the life support
@@ -1370,7 +1370,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of the least crowded buildings from a given list of buildings
 	 * with life support.
-	 * 
+	 *
 	 * @param buildingList list of buildings with the life support function.
 	 * @return list of least crowded buildings.
 	 * @throws BuildingException if building in list does not have the life support
@@ -1430,7 +1430,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a map of buildings and their probabilities for being chosen based on the
 	 * best relationships for a given person from a list of buildings.
-	 * 
+	 *
 	 * @param person       the person to check for.
 	 * @param buildingList the list of buildings to filter.
 	 * @return map of buildings and their probabilities.
@@ -1464,7 +1464,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a map of buildings having on-going social conversations
-	 * 
+	 *
 	 * @param buildingList the list of buildings to filter.
 	 * @return map of buildings and their probabilities.
 	 */
@@ -1491,7 +1491,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of buildings that don't have any malfunctions from a list of
 	 * buildings.
-	 * 
+	 *
 	 * @param buildingList the list of buildings.
 	 * @return list of buildings without malfunctions.
 	 */
@@ -1503,7 +1503,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of buildings that have a valid interior walking path from the
 	 * person's current building.
-	 * 
+	 *
 	 * @param person       the person.
 	 * @param buildingList initial list of buildings.
 	 * @return list of buildings with valid walking path.
@@ -1553,10 +1553,10 @@ public class BuildingManager implements Serializable {
 		Building b = person.getBuildingLocation();
         return b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK);
     }
-		
+
 	/**
 	 * Adds the person to the building if possible.
-	 * 
+	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
@@ -1569,10 +1569,9 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
-						
+
 						person.setCurrentBuilding(building);
 					}
-
 				}
 
 				else if (unit instanceof Robot) {
@@ -1581,7 +1580,7 @@ public class BuildingManager implements Serializable {
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
-						
+
 						robot.setCurrentBuilding(building);
 					}
 				}
@@ -1590,14 +1589,14 @@ public class BuildingManager implements Serializable {
 				logger.log(building, unit, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
 			}
 		}
-		
-		else 
+
+		else
 			logger.log(unit, Level.SEVERE, 2000, "The building is null.");
 	}
 
 	/**
 	 * Adds the person to the building at a given location if possible.
-	 * 
+	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
@@ -1616,7 +1615,7 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
-						
+
 						person.setXLocation(xLocation);
 						person.setYLocation(yLocation);
 						person.setCurrentBuilding(building);
@@ -1629,7 +1628,7 @@ public class BuildingManager implements Serializable {
 
 					if (roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
-						
+
 						robot.setXLocation(xLocation);
 						robot.setYLocation(yLocation);
 						robot.setCurrentBuilding(building);
@@ -1646,7 +1645,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Adds the person to the building at a random location if possible.
-	 * 
+	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
@@ -1665,7 +1664,7 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
-						
+
 						person.setXLocation(settlementLoc.getX());
 						person.setYLocation(settlementLoc.getY());
 						person.setCurrentBuilding(building);
@@ -1679,9 +1678,9 @@ public class BuildingManager implements Serializable {
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
-						
+
 						robot.setXLocation(settlementLoc.getX());
-						robot.setYLocation(settlementLoc.getY());	
+						robot.setYLocation(settlementLoc.getY());
 						robot.setCurrentBuilding(building);
 					}
 				}
@@ -1695,7 +1694,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Removes the person from a building if possible.
-	 * 
+	 *
 	 * @param person   the person to remove.
 	 * @param building the building to remove the person from.
 	 */
@@ -1722,7 +1721,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Removes the robot from a building if possible.
-	 * 
+	 *
 	 * @param robot   the robot to remove.
 	 * @param building the building to remove the robot from.
 	 */
@@ -1734,7 +1733,7 @@ public class BuildingManager implements Serializable {
 
 				if (roboticStation.containsRobotOccupant(robot)) {
 					roboticStation.removeRobot(robot);
-				
+
 					robot.setCurrentBuilding(null);
 				}
 
@@ -1747,10 +1746,10 @@ public class BuildingManager implements Serializable {
 			logger.log(robot, Level.SEVERE, 2000, "building is null.");
 		}
 	}
-	
+
 	/**
 	 * Gets the value of a building at the settlement.
-	 * 
+	 *
 	 * @param buildingType the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @return building value (VP).
@@ -1764,7 +1763,7 @@ public class BuildingManager implements Serializable {
 			VPNewCache = new ConcurrentHashMap<>();
 		if (VPOldCache == null)
 			VPOldCache = new ConcurrentHashMap<>();
-		
+
 		// Update building values cache once per Sol.
 		// MarsClock currentTime =?
 		if ((lastVPUpdateTime == null)
@@ -1773,34 +1772,34 @@ public class BuildingManager implements Serializable {
 			VPOldCache.clear();
 			lastVPUpdateTime = (MarsClock) marsClock.clone();
 		}
-		
+
 		if (newBuilding && VPNewCache.containsKey(buildingType)) {
 			return VPNewCache.get(buildingType);
-		} 
-		
+		}
+
 		else if (!newBuilding && VPOldCache.containsKey(buildingType)) {
 			return VPOldCache.get(buildingType);
-		} 
-		
+		}
+
 		else {
 			double result = 0D;
 			Settlement settlement = unitManager.getSettlementByID(settlementID);
 			BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
 			for(FunctionType supported : spec.getFunctionSupported()) {
 				switch (supported) {
-				
+
 				case ADMINISTRATION:
 					result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case ASTRONOMICAL_OBSERVATION:
 					result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case BUILDING_CONNECTION:
 					result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case COMMUNICATION:
 					result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
@@ -1817,83 +1816,83 @@ public class BuildingManager implements Serializable {
 				case DINING:
 					result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case EARTH_RETURN:
 					result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case EVA:
 					result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case EXERCISE:
 					result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case FARMING:
 					result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case FISHERY:
 					result += Fishery.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case FOOD_PRODUCTION:
 					result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case GROUND_VEHICLE_MAINTENANCE:
 					result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case LIFE_SUPPORT:
 					result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case LIVING_ACCOMMODATIONS:
 					result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case MANAGEMENT:
 					result += Management.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case MANUFACTURE:
 					result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case MEDICAL_CARE:
 					result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case POWER_GENERATION:
 					result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case POWER_STORAGE:
 					result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case RECREATION:
 					result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case RESEARCH:
 					result += Research.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case RESOURCE_PROCESSING:
 					result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case ROBOTIC_STATION:
 					result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case STORAGE:
 					result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
-					
+
 				case THERMAL_GENERATION:
 					result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
@@ -1901,7 +1900,7 @@ public class BuildingManager implements Serializable {
 				case WASTE_DISPOSAL:
 					// Nothing to count here
 					break;
-					
+
 				default:
 					throw new IllegalArgumentException("Do not know how to build Function " + supported);
 				}
@@ -1951,7 +1950,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the value of a building at the settlement.
-	 * 
+	 *
 	 * @param building the building.
 	 * @return building value (VP).
 	 */
@@ -1970,7 +1969,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
-	 * 
+	 *
 	 * @param xLoc   the new building's X location.
 	 * @param yLoc   the new building's Y location.
 	 * @param width  the new building's width (meters).
@@ -1985,7 +1984,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
-	 * 
+	 *
 	 * @param xLoc   the new building's X location.
 	 * @param yLoc   the new building's Y location.
 	 * @param width  the new building's width (meters).
@@ -2007,7 +2006,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Checks if a building frame exists at the settlement. Either with an existing
 	 * building or at a construction site.
-	 * 
+	 *
 	 * @param frameName the frame's name.
 	 * @return true if frame exists.
 	 */
@@ -2052,7 +2051,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Obtains the inhabitable building having that particular id
-	 * 
+	 *
 	 * @param id
 	 * @return inhabitable building
 	 */
@@ -2074,7 +2073,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets the next template ID for a new building in a settlement (but not unique
 	 * in a simulation)
-	 * 
+	 *
 	 * @return template ID (starting from 0).
 	 */
 	public int getNextTemplateID() {
@@ -2093,12 +2092,12 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a unique ID for a new inhabitable building in a settlement (but not
 	 * unique in a simulation)
-	 * 
+	 *
 	 * @return inhabitable ID (starting from 0).
 	 */
 	public int obtainNextInhabitableID() {
 		return nextInhabitableID++;
-		
+
 //		int max = -1;
 //		for (Building b : buildings) {
 //			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
@@ -2108,14 +2107,14 @@ public class BuildingManager implements Serializable {
 //				// nextNum++;
 //			}
 //		}
-//		
+//
 ////		System.out.println("getNextInhabitableID() " + buildings.size());
 //		return max + 1;
 	}
 
 	/**
 	 * Gets the total number of inhabitable buildings in a settlement
-	 * 
+	 *
 	 * @return inhabitable ID (starting from 0).
 	 */
 	public int getNumInhabitables() {
@@ -2132,7 +2131,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Creates a map of building type id
-	 * 
+	 *
 	 * @param b a given building
 	 */
 	public void createBuildingTypeIDMap() {
@@ -2140,7 +2139,7 @@ public class BuildingManager implements Serializable {
 			String buildingType = b.getBuildingType();
 			String n = b.getNickName();
 			int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
-	
+
 			if (buildingTypeIDMap.containsKey(buildingType)) {
 				int old_id = buildingTypeIDMap.get(buildingType);
 				if (old_id < new_id)
@@ -2152,7 +2151,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an available building type ID for a new building.
-	 * 
+	 *
 	 * @param buildingType
 	 * @return type ID (starting from 1).
 	 */
@@ -2185,7 +2184,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a unique nick name for a new building
-	 * 
+	 *
 	 * @return a unique nick name
 	 */
 	public String getBuildingNickName(String buildingType) {
@@ -2200,7 +2199,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a list of farm buildings needing work from a list of buildings with the
 	 * farming function.
-	 * 
+	 *
 	 * @param buildingList list of buildings with the farming function.
 	 * @return list of farming buildings needing work.
 	 */
@@ -2209,10 +2208,10 @@ public class BuildingManager implements Serializable {
 
 		if (farmsNeedingWorkCache == null)
 			farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
-		
+
 		// Must use the absolute time otherwise it stalls after one sol day
 		double m = marsClock.getTotalMillisols();
-		
+
 		// Add caching and relocate from TendGreenhouse
 		if ((farmTimeCache + 20) >= m && !farmsNeedingWorkCache.isEmpty()) {
 			result = farmsNeedingWorkCache;
@@ -2237,7 +2236,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an available building with the recreational function.
-	 * 
+	 *
 	 * @param person the person looking for the recreational facility.
 	 * @return an available space or null if none found.
 	 */
@@ -2246,7 +2245,7 @@ public class BuildingManager implements Serializable {
 
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
-			
+
 			List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.RECREATION);
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
@@ -2259,10 +2258,10 @@ public class BuildingManager implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets an available building with the comm function.
-	 * 
+	 *
 	 * @param person the person looking for the comm facility.
 	 * @return an available space or null if none found.
 	 */
@@ -2271,7 +2270,7 @@ public class BuildingManager implements Serializable {
 
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
-			
+
 			List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.COMMUNICATION);
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
@@ -2287,7 +2286,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an available building with the admin function.
-	 * 
+	 *
 	 * @param person the person looking for the admin facility.
 	 * @return an available space or null if none found.
 	 */
@@ -2296,7 +2295,7 @@ public class BuildingManager implements Serializable {
 
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
-			
+
 			List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.ADMINISTRATION);
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
@@ -2309,7 +2308,7 @@ public class BuildingManager implements Serializable {
 
 		return result;
 	}
-	
+
 	// This method is called by MeteoriteImpactImpl
 	public void setProbabilityOfImpactPerSQMPerSol(double value) {
 		probabilityOfImpactPerSQMPerSol = value;
@@ -2323,11 +2322,11 @@ public class BuildingManager implements Serializable {
 	public void setDebrisMass(double value) {
 		debrisMass = value;
 	}
-	
+
 	public double getDebrisMass() {
 		return debrisMass;
 	}
-	
+
 	public void setWallPenetration(double value) {
 		wallPenetrationThicknessAL = value;
 	}
@@ -2351,7 +2350,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets an instance of the historical event manager
-	 * 
+	 *
 	 * @return
 	 */
 	public HistoricalEventManager getEventManager() {
@@ -2360,16 +2359,16 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of garages for the settlement
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Building> getGarages() {
-		return garages; 
+		return garages;
 	}
-	
+
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
@@ -2383,13 +2382,13 @@ public class BuildingManager implements Serializable {
 		relationshipManager = r;
 		unitManager = u;
 	}
-			
+
 	/**
 	 * Reconstruct the building lists after loading from a saved sim
 	 */
 	public void reinit() {
 		settlement = unitManager.getSettlementByID(settlementID);
-		
+
 		buildings = new CopyOnWriteArrayList<>();
 		for (Integer i : buildingInts) {
 			buildings.add(unitManager.getBuildingByID(i));
@@ -2399,8 +2398,8 @@ public class BuildingManager implements Serializable {
 			garages.add(unitManager.getBuildingByID(i));
 		}
 	}
-	
-	
+
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

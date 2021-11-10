@@ -2074,7 +2074,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-		
+
 		return false;
 	}
 
@@ -2101,8 +2101,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-//		else if (ut == UnitType.BUILDING) {
-//		}
+		else if (ut == UnitType.BUILDING) {
+//			BuildingManager.removePersonFromBuilding(this, (Building)cu);
+			transferred = true;
+		}
 		else if (ut == UnitType.SETTLEMENT) {
 			// Q1: should one remove this person from settlement's peopleWithin list,
 			//     especially if he is still inside the garage of a settlement ?
@@ -2126,6 +2128,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
+				transferred = ((Settlement)destination).addPeopleWithin(this);
+			}
+			else if (destination.getUnitType() == UnitType.BUILDING) {
+				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
 				transferred = ((Settlement)destination).addPeopleWithin(this);
 			}
 
