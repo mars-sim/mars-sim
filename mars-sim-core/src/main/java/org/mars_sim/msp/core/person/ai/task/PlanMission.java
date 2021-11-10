@@ -127,14 +127,9 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-//			logger.log(person, Level.INFO, 30_000, 
-//					"Already joined in a mission. Unable to start a new one at this moment.");
 			endTask();
 		}
 		else {
-			logger.log(person, Level.INFO, 30_000, 
-					"Looking into the settlement's mission needs.");
-			
 			// Start a new mission
 			person.getMind().getNewMission();
 			
@@ -143,8 +138,6 @@ public class PlanMission extends Task implements Serializable {
 				setPhase(SUBMITTING);
 			else {
 				// No mission found so stop planning for now
-				logger.log(person, Level.INFO, 30_000, 
-						"Determined that the settlement doesn't need a new mission.");
 				endTask();
 			}
 		}

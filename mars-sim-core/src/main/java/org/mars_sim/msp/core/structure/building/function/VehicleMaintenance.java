@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -105,21 +104,16 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	
 			if (vehicle instanceof Crewable) {
 				// Transfer the human occupants to the settlement
-				for (Person p: ((Crewable)vehicle).getCrew()) {
-					building.getSettlement().addPeopleWithin(p);
-					p.setContainerUnit(building.getSettlement());
+				Crewable c = (Crewable)vehicle;
+				for (Person p: new ArrayList<>(c.getCrew())) {
+					p.transfer(building.getSettlement());
 					BuildingManager.addPersonOrRobotToBuilding(p, building);
 				}
 				// Transfer the robot occupants to the settlement
-				for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
-					building.getSettlement().addRobot(r);
-					r.setContainerUnit(building.getSettlement());
+				for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+					r.transfer(building.getSettlement());
 					BuildingManager.addPersonOrRobotToBuilding(r, building);
 				}
-//					// Transfer the equipment to the settlement
-//					for (Equipment e: vehicle.getEquipmentSet()) {
-//						e.transfer(building.getSettlement());
-//					}
 			}		
 		
 			vehicle.removeStatus(StatusType.MOVING);
@@ -171,21 +165,18 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 				if (vehicle instanceof Crewable) {
 					// Remove the human occupants from the settlement
-					for (Person p: ((Crewable)vehicle).getCrew()) {
-						building.getSettlement().removePeopleWithin(p);
-						p.setContainerUnit(vehicle);
+					// But is this needed ? These should already be in the Vehicle
+					// if there are in the crew
+					Crewable c = ((Crewable)vehicle);
+					for (Person p: new ArrayList<>(c.getCrew())) {
+						p.transfer(vehicle);
 						BuildingManager.removePersonFromBuilding(p, building);
 					}
 					// Remove the robot occupants from the settlement
-					for (Robot r: ((Crewable)vehicle).getRobotCrew()) {
-						building.getSettlement().removeRobot(r);
-						r.setContainerUnit(vehicle);
+					for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+						r.transfer(vehicle);
 						BuildingManager.removeRobotFromBuilding(r, building);
 					}
-					// Remove the equipment from the settlement's equipment set
-//					for (Equipment e: vehicle.getEquipmentSet()) {
-//						e.transfer(vehicle);
-//					}
 				}
 				
 				ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);

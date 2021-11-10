@@ -500,5 +500,58 @@ public class EVASuit extends Equipment
 	public static Map<Integer, Double> getNormalRepairPart() {
 		return MalfunctionFactory.getRepairPartProbabilities(Set.of(TYPE));
 	}
-}
 
+	/**
+	 * Load the resources need from a source. Also unload any waste
+	 * @param source Source of resources
+	 * @return The %age full of the suit
+	 */
+	public double loadResources(ResourceHolder source) {
+		unloadWaste(source);
+		loadResource(source, OXYGEN_ID);
+		loadResource(source, WATER_ID);
+		
+		return getFullness();
+	}
+
+	/**
+	 * Fully load a resource into the EVASuit
+	 * @param source
+	 * @param resourceId
+	 * @return Suit is fully loaded with resource
+	 */
+	private boolean loadResource(ResourceHolder source, int resourceId) {
+		double needed = getAmountResourceRemainingCapacity(resourceId);
+		if (needed > 0D) {
+			double shortfall = source.retrieveAmountResource(resourceId, needed);
+			double taken = needed - shortfall;
+			if (taken > 0) {
+				storeAmountResource(resourceId, taken);
+			}
+		}
+		return needed <= 0D;
+	}
+
+	/**
+	 * Unload any waste products to the holder
+	 * @param newSuitOwner
+	 */
+	public void unloadWaste(ResourceHolder holder) {
+		double co2 = getAmountResourceStored(CO2_ID);
+		if (co2 > 0) {
+			retrieveAmountResource(CO2_ID, co2);
+			holder.storeAmountResource(CO2_ID, co2);
+		}
+	}
+
+	/**
+	 * How fully loaded is the Suit; lowest of water and oxygen
+	 * @return Percentage of lowest resource
+	 */
+	public double getFullness() {
+		double o2Loaded = getAmountResourceStored(OXYGEN_ID)/OXYGEN_CAPACITY;
+		double waterLoaded = getAmountResourceStored(WATER_ID)/WATER_CAPACITY;
+
+		return Math.min(o2Loaded, waterLoaded);
+	}
+}

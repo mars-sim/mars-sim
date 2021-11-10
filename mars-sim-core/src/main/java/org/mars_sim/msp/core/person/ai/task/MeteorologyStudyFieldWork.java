@@ -330,6 +330,9 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	 */
 	@Override
 	protected void clearDown() {
-		returnEquipmentToVehicle(rover);
+		if (rover != null) {
+			// Task may end early before a Rover is selected
+			returnEquipmentToVehicle(rover);
+		}
 	}
 }

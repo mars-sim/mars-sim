@@ -559,13 +559,8 @@ public class MissionManager implements Serializable, Temporal {
 		missionPlan.setPercentComplete(totalPercent);
 		double score = missionPlan.getScore();
 		missionPlan.setScore(score + weight * newScore);
-		
-		logger.info(reviewer, missionPlan.getMission().getName() 
-				+ " mission planning cumulative score : " + Math.round(missionPlan.getScore()*10.0)/10.0 
-				+ " (" + missionPlan.getPercentComplete() + "% review completed)");
-				
+			
 		missionPlan.setReviewedBy(reviewer.getName());
-
 	}
 
 	public Map<Integer, List<MissionPlanning>> getHistoricalMissions() {

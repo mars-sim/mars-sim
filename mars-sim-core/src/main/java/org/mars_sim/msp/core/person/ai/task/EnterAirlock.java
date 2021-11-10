@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -673,19 +674,18 @@ public class EnterAirlock extends Task implements Serializable {
 			// 1. Gets the suit instance
 			EVASuit suit = person.getSuit();
 
-			if (suit != null && suit.getLastOwner().equals(person)) {
+			if (suit != null) {
 
 				remainingDoffingTime -= time;
 
 				if (remainingDoffingTime <= 0) {
 
-					Settlement settlement = null;
-					Vehicle vehicle = null;
+					Unit newSuitOwner = null;
 
 					if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK)
-						settlement = ((Building)airlock.getEntity()).getSettlement();
+						newSuitOwner = ((Building)airlock.getEntity()).getSettlement();
 					else
-						vehicle = (Vehicle)airlock.getEntity();
+						newSuitOwner = (Vehicle)airlock.getEntity();
 
 					// 2. Doff this suit
 					// 2a. Records the person as the owner (if it hasn't been done)
@@ -695,94 +695,18 @@ public class EnterAirlock extends Task implements Serializable {
 
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
 
-					if (settlement != null) {
-						// 2c Transfer the EVA suit from person to settlement
-						suit.transfer(settlement);
+					// 2c Transfer the EVA suit from person to the new destination
+					suit.transfer(newSuitOwner);
 
-						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
-
-						// 2d. Unloads the resources from the EVA suit to the entityEnv
-						ResourceHolder rh = (ResourceHolder)airlock.getEntity();
-						try {
-							// 2e1. Unload oxygen from the suit.
-							double oxygenAmount = suit.getAmountResourceStored(OXYGEN_ID);
-							double oxygenCapacity = rh.getAmountResourceRemainingCapacity(OXYGEN_ID);
-							if (oxygenAmount > oxygenCapacity)
-								oxygenAmount = oxygenCapacity;
-
-							suit.retrieveAmountResource(OXYGEN_ID, oxygenAmount);
-							rh.storeAmountResource(OXYGEN_ID, oxygenAmount);
-//							rh.addAmountSupply(oxygenID, oxygenAmount);
-
-						} catch (Exception e) {
-							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen from " + suit);
-							// endTask();
-						}
-
-						// 2e2. Unload water from the suit.
-						double waterAmount = suit.getAmountResourceStored(WATER_ID);
-						double waterCapacity = rh.getAmountResourceRemainingCapacity(WATER_ID);
-						if (waterAmount > waterCapacity)
-							waterAmount = waterCapacity;
-
-						try {
-							suit.retrieveAmountResource(WATER_ID, waterAmount);
-							rh.storeAmountResource(WATER_ID, waterAmount);
-//							rh.addAmountSupply(waterID, waterAmount);
-
-						} catch (Exception e) {
-							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water from " + suit);
-							// endTask();
-						}
-					}
-
-					else {
-						// 2c Transfer the EVA suit from person to vehicle
-						suit.transfer(vehicle);
-
-						logger.log(person, Level.FINE, 4_000, "Retrieving the O2 and H2O in " + suit.getName() + ".");
-
-						// 2d. Unloads the resources from the EVA suit to the entityEnv
-						try {
-							// 2e1. Unload oxygen from the suit.
-							double oxygenAmount = suit.getAmountResourceStored(OXYGEN_ID);
-							double oxygenCapacity = vehicle.getAmountResourceRemainingCapacity(OXYGEN_ID);
-							if (oxygenAmount > oxygenCapacity)
-								oxygenAmount = oxygenCapacity;
-
-							suit.retrieveAmountResource(OXYGEN_ID, oxygenAmount);
-							vehicle.storeAmountResource(OXYGEN_ID, oxygenAmount);
-//							entityInv.addAmountSupply(oxygenID, oxygenAmount);
-
-						} catch (Exception e) {
-							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store oxygen from " + suit);
-							// endTask();
-						}
-
-						// 2e2. Unload water from the suit.
-						double waterAmount = suit.getAmountResourceStored(WATER_ID);
-						double waterCapacity = vehicle.getAmountResourceRemainingCapacity(WATER_ID);
-						if (waterAmount > waterCapacity)
-							waterAmount = waterCapacity;
-
-						try {
-							suit.retrieveAmountResource(WATER_ID, waterAmount);
-							vehicle.storeAmountResource(WATER_ID, waterAmount);
-//							entityInv.addAmountSupply(waterID, waterAmount);
-
-						} catch (Exception e) {
-							logger.log(person, Level.WARNING, 4_000, "Unable to retrieve/store water from " + suit);
-							// endTask();
-						}
-					}
-
+					// 2d Unload any waste
+					suit.unloadWaste((ResourceHolder) newSuitOwner);
+					
 					// Add experience
 					addExperience(time);
 
 					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
 
 					setPhase(CLEAN_UP);
-
 				}
 			}
 

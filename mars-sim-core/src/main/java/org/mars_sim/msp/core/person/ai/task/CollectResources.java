@@ -287,7 +287,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
-		returnEquipmentToVehicle(rover);
+		if (rover != null) {
+			// Task may end early before a Rover is selected
+			returnEquipmentToVehicle(rover);
+		}
 	}
 
 	/**

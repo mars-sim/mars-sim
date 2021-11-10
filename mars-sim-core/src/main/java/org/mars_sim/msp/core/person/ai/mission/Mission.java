@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -617,8 +618,14 @@ public abstract class Mission implements Serializable, Temporal {
 			throw new IllegalArgumentException("newPhase is null");
 		}
 		
+		// Comment in or out to see Mission logic
+//		logger.info(0, "======= " + this.getTypeID()
+//				 		+ " changed from "
+//				 		+ (phase != null ? phase.getName() : "<start>")
+//				 		+ " -> " + newPhase.getName());
+		
 		// Move phase on
-		phase = newPhase;
+ 		phase = newPhase;
 		setPhaseEnded(false);		
 		phaseStartTime = (MarsClock) marsClock.clone();
 
@@ -1227,7 +1234,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return map of equipment types and number.
 	 */
 	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		return Collections.emptyMap();
+		return new HashMap<>();
 	}
 
 	/**

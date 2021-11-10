@@ -1547,6 +1547,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		Unit cu = getContainerUnit();
 		UnitType ut = cu.getUnitType();
 
+		if (destination.equals(cu)) {
+			return true;
+		}
+		
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
 			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {

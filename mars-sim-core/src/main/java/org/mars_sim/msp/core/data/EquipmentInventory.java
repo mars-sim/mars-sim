@@ -203,11 +203,13 @@ public class EquipmentInventory
 
 		if (shortfall > 0D) {
 			for (Equipment e: equipmentSet) {
-//				if (e instanceof ResourceHolder)
-//				shortfall = ((ResourceHolder) e).retrieveAmountResource(resource, shortfall);
-				shortfall = e.retrieveAmountResource(resource, shortfall);
-				if (shortfall == 0D) {
-					return 0D;
+				if (e instanceof Container) {
+					// Only take resources out of Containers;
+					// other active Equipment, e.g. EVASuit need the resources to function
+					shortfall = e.retrieveAmountResource(resource, shortfall);
+					if (shortfall == 0D) {
+						return 0D;
+					}
 				}
 			}
 		}

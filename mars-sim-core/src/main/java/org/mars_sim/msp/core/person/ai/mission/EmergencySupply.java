@@ -462,7 +462,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				Person person = (Person) member;
 				if (!person.isDeclaredDead()) {
 					
-					EVASuit suit0 = getVehicle().findEVASuit(person);
+					EVASuit suit0 = getEVASuit(person);
 					if (suit0 == null) {				
 						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person); 
 						if (!suit1.transfer(getVehicle())) {

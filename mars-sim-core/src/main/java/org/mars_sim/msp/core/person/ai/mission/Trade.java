@@ -496,7 +496,7 @@ public class Trade extends RoverMission implements Serializable {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
 					if (!person.isDeclaredDead()) {
-						EVASuit suit0 = getVehicle().findEVASuit(person);
+						EVASuit suit0 = getEVASuit(person);
 						if (suit0 == null) { 
 							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
 								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person); 

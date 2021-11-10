@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -81,6 +82,9 @@ public abstract class RoverMission extends VehicleMission {
 
 	private static final double MAX_WAITING = 200D;
 
+	// What is the lowest fullness of an EVASuit to be usable
+	private static final double EVA_LOWEST_FILL = 0.5D;
+	
 	/** The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 	
@@ -356,14 +360,9 @@ public abstract class RoverMission extends VehicleMission {
 									&& !hasBaselineNumEVASuit(v)) {
 								
 								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-								if (suit != null) {									
-									boolean success = suit.transfer(v);									
-									if (success)
-										logger.info(person, "Transferred " + suit + " as spares from " 
-												+ settlement + " to " + v + ".");
-									else
-										logger.warning(person, "Unable to transfer a spare EVA suit from " 
-												+ settlement + " to " + v + ".");
+								if (suit != null && !suit.transfer(v)) {									
+									logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from " 
+											+ settlement + " to " + v + ".");
 								}
 							}
 						}
@@ -472,6 +471,7 @@ public abstract class RoverMission extends VehicleMission {
 		// Test if this rover is towing another vehicle or is being towed
         boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
         
+        // Feels like these stesp should only be done once at the start of disembarking
 		// Add vehicle to a garage if available.
 		boolean isRoverInAGarage = false;
         if (!tethered) {
@@ -479,14 +479,25 @@ public abstract class RoverMission extends VehicleMission {
         }
 
 		// Make sure the rover chasis is not overlapping a building structure in the settlement map
-        if (!isRoverInAGarage)
-        	rover.findNewParkingLoc();     
+        if (!isRoverInAGarage) {
+        	rover.findNewParkingLoc();
+        	
+        	// Outside so preload all EVASuits before the Unloading starts
+        	int suitsNeeded = rover.getCrew().size();
+        	logger.info(rover, 10_000, "Preload " + suitsNeeded + " EVA suits for disembarking");
+        	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
+        	while ((suitsNeeded > 0) && eIt.hasNext()) {
+        		Equipment e = eIt.next();
+        		if (e instanceof EVASuit) {
+        			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
+        				suitsNeeded--;
+        			}
+        		}
+        	}
+        }
         
         Set<Person> currentCrew = new HashSet<>(rover.getCrew());
 		for (Person p : currentCrew) {
-			// See if this person needs an EVA suit
-	        getEVASuit(rover, p, disembarkSettlement);
-	        
 			if (p.isDeclaredDead()) {
 				logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 			}
@@ -498,14 +509,26 @@ public abstract class RoverMission extends VehicleMission {
 			}
 			
 			else if (isRoverInAGarage) {
-				// Welcome this person home
-		        p.transfer(disembarkSettlement);
-				BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+				if (p.isInSettlement()) {
+					// Something is wrong because the Person is in a Settlement
+					// so it cannot be in the crew.
+					logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
+					rover.removePerson(p);
+				}
+				else {
+					// Welcome this person home
+			        p.transfer(disembarkSettlement);
+					BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+				}
+			}
+			else {
+				// See if this person needs an EVA suit
+		        getEVASuit(p, disembarkSettlement);
 			}
 		}
 		
 		// Unload rover if necessary.
-		boolean roverUnloaded = rover.getStoredMass() == 0D;
+		boolean roverUnloaded = UnloadVehicleEVA.isFullyUnloaded(rover);
 		if (!roverUnloaded) {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things 
@@ -517,15 +540,16 @@ public abstract class RoverMission extends VehicleMission {
 				}
 			}
 		}   
-        
-		// Check to see if no one is in the rover, unload the resources and end phase.
-		if (roverUnloaded) {
+		else if (rover.getCrewNum() > 0) {
+			// Check to see if no one is in the rover, unload the resources and end phase.
 			for (MissionMember mm  : getMembers()) {
 				// Walk back to the airlock
 				if (((Person)mm).isInVehicle() || ((Person)mm).isOutside())
 					walkToAirlock(rover, ((Person)mm), disembarkSettlement);
 			}
-		
+		}
+		else {
+			// Complete embark once everyone is out of the Vehicle
 			// Leave the vehicle.
 			leaveVehicle();
 			// Reset the vehicle reservation
@@ -560,40 +584,78 @@ public abstract class RoverMission extends VehicleMission {
 	}
 	
 	/**
-	 * Gets an EVA suit
+	 * Gets an EVA suit from the Vehicle. If one can not be found; then take
+	 * one from the Settlement
 	 * 
-	 * @param rover
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	private void getEVASuit(Rover rover, Person p, Settlement disembarkSettlement) {
+	protected void getEVASuit(Person p, Settlement disembarkSettlement) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 			// Checks to see if the rover has any EVA suit	
-			EVASuit suit = ((Vehicle)rover).findEVASuit(p);
+			EVASuit suit = getEVASuit(p);
+			Vehicle v = getVehicle();
 			
 			if (suit == null) {
 
-				logger.warning(p, "Could not find a working EVA suit in " + rover + " and needed to wait.");
+				logger.warning(p, "Could not find a working EVA suit in " + v + " and needed to wait.");
 			
 				// If the person does not have an EVA suit	
 				int availableSuitNum = disembarkSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 			
-				if (availableSuitNum > 1 && !hasBaselineNumEVASuit(rover)) {
+				if (availableSuitNum > 1 && !hasBaselineNumEVASuit(v)) {
 					// Deliver an EVA suit from the settlement to the rover
 					// Note: Need to generate a task for a person to hand deliver an extra suit
 					suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
 					if (suit != null) {				
-						boolean success = suit.transfer(rover);
+						boolean success = suit.transfer(v);
 						if (success)
-							logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + rover);
+							logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + v);
 						else
-							logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + rover);
+							logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + v);
 					}
 				}
 			}
 		}
 	}
 	
+
+	/**
+	 * Finds a EVA suit in storage. Select one with the most resources already
+	 * loaded.
+	 *
+	 * @param person Person needing the suit
+	 * @return instance of EVASuit or null if none.
+	 */
+	protected EVASuit getEVASuit(Person p) {
+		EVASuit goodSuit = null;
+		double goodFullness = 0D;
+		
+		for (Equipment e : getVehicle().getEquipmentSet()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				EVASuit suit = (EVASuit)e;
+				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+				double fullness = suit.getFullness();
+				boolean lastOwner = p.equals(suit.getLastOwner());
+
+				if (!malfunction && (fullness >= EVA_LOWEST_FILL)) {
+					if (lastOwner) {
+						// Pick this EVA suit since it has been used by the same person
+						return suit;
+					}
+					else if (fullness > goodFullness){
+						// For now, make a note of this suit but not selecting it yet.
+						// Continue to look for a better suit
+						goodSuit = suit;
+						goodFullness = fullness;
+					}
+				}
+			}
+		}
+
+		return goodSuit;
+	}
+
 	/**
 	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued
 	 * 
@@ -615,12 +677,8 @@ public abstract class RoverMission extends VehicleMission {
 				boolean hasStrength = p.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 				
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-			
-					if (!hasStrength) {
-						logger.info(p, 20_000, "No more strength left. Walking back to the settlement.");
-						// walk back home
-						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
-					}
+					// walk back home
+					assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 				} 
 				
 				else if (!hasStrength) {
@@ -642,6 +700,10 @@ public abstract class RoverMission extends VehicleMission {
 					// Note: how to force the person to receive some form of medical treatment ?
 					p.getMind().getTaskManager().clearAllTasks("Rover rescue");
 					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));		
+				}
+				else {
+					logger.severe(p, "Cannot find a walk path from "
+									+ rover.getName() + " to " + disembarkSettlement.getName());
 				}
 			}
 			
@@ -1057,14 +1119,15 @@ public abstract class RoverMission extends VehicleMission {
 		else {
 			// Decide what to do
 			MarsClock sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
-			logger.info(getVehicle(), "Sunrise @ " + sunrise.getTrucatedDateTimeStamp());
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
 					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAITING)) {
 				// No point waiting, move to next site
+				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
 				startTravellingPhase();
 			}
 			else {
 				// Wait for sunrise
+				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTrucatedDateTimeStamp());
 				setPhase(WAIT_SUNLIGHT, sunrise.getTrucatedDateTimeStamp());
 			}
 		}

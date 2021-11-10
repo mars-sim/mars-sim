@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -104,9 +103,6 @@ public abstract class Vehicle extends Unit
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 
-	private final static int OXYGEN = ResourceUtil.oxygenID;
-	private final static int WATER = ResourceUtil.waterID;
-
 	// Name format for numbers units
 	private static final String VEHICLE_TAG_NAME = "%s %03d";
 
@@ -117,6 +113,7 @@ public abstract class Vehicle extends Unit
 			StatusType.MOVING,
 			StatusType.STUCK,
 			StatusType.MALFUNCTION);
+
 
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 
@@ -1946,59 +1943,6 @@ public abstract class Vehicle extends Unit
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
 
-
-	/**
-	 * Finds a EVA suit in storage.
-	 *
-	 * @param person
-	 * @return instance of EVASuit or null if none.
-	 */
-	public EVASuit findEVASuit(Person person) {
-		EVASuit goodSuit = null;
-		for (Equipment e : eqmInventory.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				EVASuit suit = (EVASuit)e;
-				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-				boolean hasEnoughResources = hasEnoughResourcesForSuit(suit);
-				boolean lastOwner = (suit.getLastOwner() == person);
-
-				if (!malfunction && hasEnoughResources) {
-					if (lastOwner) {
-						// Pick this EVA suit since it has been used by the same person
-						return suit;
-					}
-					else {
-						// For now, make a note of this suit but not selecting it yet.
-						// Continue to look for a better suit
-						goodSuit = suit;
-					}
-				}
-			}
-		}
-
-		return goodSuit;
-	}
-
-	/**
-	 * Checks if enough resource supplies to fill the EVA suit.
-	 *
-	 * @param suit      the EVA suit.
-	 * @return true if enough supplies.
-	 * @throws Exception if error checking suit resources.
-	 */
-	private boolean hasEnoughResourcesForSuit(EVASuit suit) {
-		// Check if enough oxygen.
-		double neededOxygen = suit.getAmountResourceRemainingCapacity(OXYGEN);
-		double availableOxygen = getAmountResourceStored(OXYGEN);
-		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
-
-		// Check if enough water.
-		double neededWater = suit.getAmountResourceRemainingCapacity(WATER);
-		double availableWater = getAmountResourceStored(WATER);
-		boolean hasEnoughWater = (availableWater >= neededWater);
-
-		return hasEnoughOxygen && hasEnoughWater;
-	}
 
 	/**
 	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.

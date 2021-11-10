@@ -261,22 +261,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			Iterator<Equipment> k = originalEqm.iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {	
 				Equipment equipment = k.next();
+				boolean doUnload = true;
 				
 				if (vehicle instanceof Crewable && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					int numSuit = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
 					int numCrew = ((Crewable)vehicle).getCrewNum();
 					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
-					if (numSuit > numCrew) {
-						// Unload the EVA suit 
-						UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
-						equipment.transfer(settlement);		
-						amountUnloading -= equipment.getMass();
-						
-						logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
-							+ " from " + vehicle.getName() + ".");
-					}
+					doUnload = (numSuit > numCrew);
 				}
-				else {
+				
+				// Unload the equipment
+				if (doUnload) {
 					// Unload inventories of equipment (if possible)
 					UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
 					equipment.transfer(settlement);		
@@ -302,27 +297,23 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
-			try {
-				vehicle.retrieveAmountResource(id, amount);
-				settlement.storeAmountResource(id, amount);
-				
-				if (id != waterID && id != methaneID 
-						&& id != foodID && id != oxygenID) {
-					double laborTime = 0;
-					if (id == iceID || id == regolithID)
-						laborTime = CollectResources.LABOR_TIME;
-					else
-						laborTime = CollectMinedMinerals.LABOR_TIME;
-					
-//					settlement.addAmountSupply(id, amount);
-					// Add to the daily output
-					settlement.addOutput(id, amount, laborTime);
-		            // Recalculate settlement good value for output item.
-//		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
-				}
-				
-			} catch (Exception e) {
+
+			
+			vehicle.retrieveAmountResource(id, amount);
+			settlement.storeAmountResource(id, amount);
+			
+			if (id != waterID && id != methaneID 
+					&& id != foodID && id != oxygenID) {
+				double laborTime = 0;
+				if (id == iceID || id == regolithID)
+					laborTime = CollectResources.LABOR_TIME;
+				else
+					laborTime = CollectMinedMinerals.LABOR_TIME;
+
+				// Add to the daily output
+				settlement.addOutput(id, amount, laborTime);
 			}
+
 			amountUnloading -= amount;
 			
 			if (totalAmount > 0) {
@@ -541,11 +532,19 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 	/**
 	 * Returns true if the vehicle is fully unloaded.
+	 * This has to ignore any EVA suits.
 	 * 
 	 * @param vehicle Vehicle to check.
 	 * @return is vehicle fully unloaded?
 	 */
-	static public boolean isFullyUnloaded(Vehicle vehicle) {
-		return (vehicle.getStoredMass() == 0D);
+	public static boolean isFullyUnloaded(Vehicle vehicle) {
+		double total = vehicle.getStoredMass();
+		for(Equipment e : vehicle.getEquipmentSet()) {
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				total -= e.getMass();
+			}
+		}
+		
+		return total <= 0.001D;
 	}
 }

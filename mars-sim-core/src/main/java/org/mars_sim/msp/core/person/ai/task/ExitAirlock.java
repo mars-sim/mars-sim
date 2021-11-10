@@ -16,8 +16,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -29,12 +27,10 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -98,10 +94,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private Point2D exteriorDoorPos = null;
 	/** The interior airlock position. */
 	private Point2D interiorDoorPos = null;
-
-	private final static int oxygenID = ResourceUtil.oxygenID;
-	private final static int waterID = ResourceUtil.waterID;
-
 
 	/**
 	 * Constructor.
@@ -737,7 +729,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		// Get an EVA suit from entity inventory.
-		Unit housing = null;
+		ResourceHolder housing = null;
 		if (!hasSuit) {
 			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK)
 				housing = ((Building)airlock.getEntity()).getSettlement();
@@ -751,23 +743,18 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!hasSuit && suit != null) {
 
 			// if a person hasn't donned the suit yet
-			try {
-				// 1. Transfer the EVA suit from settlement/vehicle to person
-				suit.transfer(person);
-				// 2. set the person as the owner
-				suit.setLastOwner(person);
-				// 3. register the suit the person will take into the airlock to don
-				person.registerSuit(suit);
-				// 4. Loads the resources into the EVA suit
-				loadEVASuit(suit);
-				// the person has a EVA suit
-				hasSuit = true;
-
-			} catch (Exception e) {
-				logger.log(person, Level.WARNING, 4_000,
-						"Could not take " + suit.toString()
-						+ " or load resources into it.", e);
+			// 1. Transfer the EVA suit from settlement/vehicle to person
+			suit.transfer(person);
+			// 2. set the person as the owner
+			suit.setLastOwner(person);
+			// 3. register the suit the person will take into the airlock to don
+			person.registerSuit(suit);
+			// 4. Loads the resources into the EVA suit
+			if (suit.loadResources(housing) < 0.9D) {
+				logger.warning(suit, "Being used but not full loaded");
 			}
+			// the person has a EVA suit
+			hasSuit = true;
 		}
 
 		if (hasSuit) {
@@ -1195,65 +1182,6 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 
-	/**
-	 * Loads an EVA suit with resources from the container unit.
-	 *
-	 * @param suit the EVA suit.
-	 */
-	private void loadEVASuit(EVASuit suit) {
-		double neededOxygen = suit.getAmountResourceRemainingCapacity(oxygenID);
-		double neededWater = suit.getAmountResourceRemainingCapacity(waterID);
-
-		double takenOxygen = 0D;
-		double takenWater = 0D;
-
-		Unit housing = person.getContainerUnit();
-
-		if (housing.getUnitType() == UnitType.SETTLEMENT) {
-			Settlement settlement = (Settlement)housing;
-
-			// Fill oxygen in suit
-			double availableOxygen = settlement.getAmountResourceStored(oxygenID);
-//			entityInv.addAmountDemandTotalRequest(oxygenID, neededOxygen);
-
-			takenOxygen = neededOxygen;
-			if (takenOxygen > availableOxygen)
-				takenOxygen = availableOxygen;
-
-			// Retrieve resource
-			settlement.retrieveAmountResource(oxygenID, takenOxygen);
-//			entityInv.addAmountDemand(oxygenID, takenOxygen);
-
-			// Fill water in suit.
-			double availableWater = settlement.getAmountResourceStored(waterID);
-//			entityInv.addAmountDemandTotalRequest(waterID, neededWater);
-
-			takenWater = neededWater;
-			if (takenWater > availableWater)
-				takenWater = availableWater;
-
-			// Retrieve resource
-			settlement.retrieveAmountResource(waterID, takenWater);
-//			entityInv.addAmountDemand(waterID, takenWater);
-		}
-
-		else if (housing instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) housing;
-			takenOxygen = neededOxygen - rh.retrieveAmountResource(oxygenID, neededOxygen);
-			takenWater = neededWater - rh.retrieveAmountResource(waterID, neededWater);
-		}
-
-		// load up the Suit
-		if (takenOxygen > 0) {
-			suit.storeAmountResource(oxygenID, takenOxygen);
-		}
-		if (takenWater > 0) {
-			suit.storeAmountResource(waterID, takenWater);
-		}
-		// Return suit to entity's inventory.
-		logger.log(person, Level.FINER, 4_000,
-				"Loaded up "  + suit.getName() + ".");
-	}
 
 	/**
 	 * Release person from the associated Airlock

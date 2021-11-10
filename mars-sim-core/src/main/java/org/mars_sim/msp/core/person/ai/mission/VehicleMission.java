@@ -1018,10 +1018,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 	
 				Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
-	
-				StringBuilder buffer = new StringBuilder();
-	
-				buffer.append("Fetching spare parts (");
 
 				// Note: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1045,14 +1041,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int number = (int) Math.round(freq);
 					if (number > 0) {
 						result.put(id, number);								
-						buffer
-						.append("id:").append(id).append(" ")
-						.append(ItemResourceUtil.findItemResourceName(id)).append(" ")
-						.append("x").append(number).append("  ");
 					}
 				}
-				
-				buffer.append(")");
 				
 				// Manually override the number of wheel and battery needed for each mission
 				if (VehicleType.isRover(vehicle.getVehicleType())) { 
@@ -1061,8 +1051,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					result.put(wheel, 2);
 					result.put(battery, 1);
 				}
-
-				logger.info(vehicle, buffer.toString());
 			}
 		}
 		else {
@@ -1080,7 +1068,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param names
 	 * @return a map of parts
 	 */
-	public Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
+	private static Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
 		for (String n : names) {
 			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
 			if (i != null) {

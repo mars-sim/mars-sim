@@ -2089,6 +2089,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		Unit cu = getContainerUnit();
 		UnitType ut = cu.getUnitType();
 
+		if (destination.equals(cu)) {
+			return true;
+		}
+		
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
 			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
