@@ -751,7 +751,7 @@ public class ExitAirlock extends Task implements Serializable {
 			person.registerSuit(suit);
 			// 4. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
-				logger.warning(suit, "Being used but not full loaded");
+				logger.warning(suit, "Being used but not full loaded.");
 			}
 			// the person has a EVA suit
 			hasSuit = true;

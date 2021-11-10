@@ -40,7 +40,7 @@ public class MissionManager implements Serializable, Temporal {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
-	
+
 	private static final double PERCENT_PER_SCORE = 10D;
 	/** static mission identifier */
 	private int missionIdentifer;
@@ -52,15 +52,15 @@ public class MissionManager implements Serializable, Temporal {
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
 	private SolListDataLogger<MissionPlanning> historicalMissions;
-	
+
 	private Map<String, Integer> settlementID;
 
-	
+
 	/**
 	 * Constructor.
 	 */
 	public MissionManager() {
-			
+
 		// Initialize data members
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
@@ -72,34 +72,34 @@ public class MissionManager implements Serializable, Temporal {
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
-	 * 
+	 *
 	 * @return
 	 */
 	private synchronized int getNextIdentifier() {
 		return missionIdentifer++;
 	}
-	
+
 	private int getSettlementID(String name) {
 		synchronized (settlementID) {
 			if (settlementID.containsKey(name)) {
-				return settlementID.get(name);			
+				return settlementID.get(name);
 			}
 			else {
 				int size = settlementID.size();
 				settlementID.put(name, size);
-				
+
 				return size;
 			}
 		}
 	}
-	
+
 	public String getMissionDesignationString(String settlementName) {
 		return String.format("%2d-%d3", getSettlementID(settlementName), getNextIdentifier());
 	}
 
 	/**
 	 * Add a listener.
-	 * 
+	 *
 	 * @param newListener The listener to add.
 	 */
 	public void addListener(MissionManagerListener newListener) {
@@ -111,13 +111,13 @@ public class MissionManager implements Serializable, Temporal {
 		synchronized (listeners) {
 			if (!listeners.contains(newListener)) {
 				listeners.add(newListener);
-			}		
+			}
 		}
 	}
 
 	/**
 	 * Remove a listener.
-	 * 
+	 *
 	 * @param oldListener the listener to remove.
 	 */
 	public void removeListener(MissionManagerListener oldListener) {
@@ -132,7 +132,7 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the number of currently active missions.
-	 * 
+	 *
 	 * @return number of active missions
 	 */
 	public int getNumActiveMissions() {
@@ -141,7 +141,7 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a list of current missions.
-	 * 
+	 *
 	 * @return list of missions.
 	 */
 	public List<Mission> getMissions() {
@@ -155,7 +155,7 @@ public class MissionManager implements Serializable, Temporal {
 	/**
 	 * Gets the mission a given person is a member of. If member isn't a part of any
 	 * mission, return null.
-	 * 
+	 *
 	 * @param member the member.
 	 * @return mission for that member
 	 */
@@ -173,7 +173,7 @@ public class MissionManager implements Serializable, Temporal {
 	/**
 	 * Gets the mission a given person is a member of. If member isn't a part of any
 	 * mission, return null.
-	 * 
+	 *
 	 * @param member the member.
 	 * @return mission for that member
 	 */
@@ -186,11 +186,11 @@ public class MissionManager implements Serializable, Temporal {
 
 		return false;
 	}
-	
+
 
 	/**
 	 * Adds a new mission to the mission list.
-	 * 
+	 *
 	 * @param newMission new mission to be added
 	 */
 	public void addMission(Mission newMission) {
@@ -201,13 +201,13 @@ public class MissionManager implements Serializable, Temporal {
 		synchronized (onGoingMissions) {
 			if (!onGoingMissions.contains(newMission)) {
 				onGoingMissions.add(newMission);
-				
+
 				// Update listeners.
 				if (listeners != null) {
 					synchronized (listeners) {
 						for(MissionManagerListener l : listeners) {
 							l.addMission(newMission);
-						}						
+						}
 					}
 				}
 				logger.config("Added '" + newMission.getTypeID() + "' mission.");
@@ -217,7 +217,7 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Removes a mission from the mission list.
-	 * 
+	 *
 	 * @param the mission to be removed
 	 */
 	public void removeMission(Mission oldMission) {
@@ -226,13 +226,13 @@ public class MissionManager implements Serializable, Temporal {
 			onGoingMissions.remove(oldMission);
 
 			oldMission.fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-					
+
 			// Update listeners.
 			if (listeners != null) {
 				synchronized (listeners) {
 					for(MissionManagerListener l : listeners) {
 						l.removeMission(oldMission);
-					}						
+					}
 				}
 			}
 
@@ -242,16 +242,16 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a new mission for a person based on potential missions available.
-	 * 
+	 *
 	 * @param person person to find the mission for
 	 * @return new mission
 	 */
 	public Mission getNewMission(Person person) {
 		Mission result = null;
-		
+
 		// Probably must be calculated as a local otherwise method is not threadsafe using a shared cache
 		Map<MetaMission, Double> missionProbCache = new HashMap<>();
-		
+
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;
 
@@ -261,17 +261,17 @@ public class MissionManager implements Serializable, Temporal {
 			if (Double.isNaN(probability) || Double.isInfinite(probability)) {
 					logger.severe(person, "Bad mission probability on " + metaMission.getName() + " probability: "
 							+ probability);
-			} 
+			}
 			else if (probability > 0D) {
 				logger.info(person, "Mission " + metaMission.getName() + " with probability=" + probability);
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}
-		}	
+		}
 
 		if (totalProbCache == 0D) {
 			logger.fine(person, "Has zero total mission probability weight. No mission selected.");
-			
+
 			return null;
 		}
 
@@ -297,14 +297,14 @@ public class MissionManager implements Serializable, Temporal {
 
 		// Construct the mission
 		result = selectedMetaMission.constructInstance(person);
-		
+
 		return result;
 	}
 
 
 	/**
 	 * Gets the number of particular missions that are active
-	 * 
+	 *
 	 * @param mType
 	 * @param settlement
 	 * @return number
@@ -316,10 +316,10 @@ public class MissionManager implements Serializable, Temporal {
 									&& (m.getMissionType() == mType)))
 							.count();
 	}
-	
+
 	/**
 	 * Gets all the active missions associated with a given settlement.
-	 * 
+	 *
 	 * @param settlement the settlement to find missions.
 	 * @return list of missions associated with the settlement.
 	 */
@@ -330,20 +330,20 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> result = new ArrayList<>();		
+		List<Mission> result = new ArrayList<>();
 		for(Mission m : getMissions()) {
 			if (!m.isDone() && settlement.equals(m.getAssociatedSettlement())
 					&& !result.contains(m)) {
 				result.add(m);
 			}
 		}
-			
+
 		return result;
 	}
 
 	/**
 	 * Gets the missions pending for approval in a given settlement.
-	 * 
+	 *
 	 * @param settlement
 	 * @return list of pending missions associated with the settlement.
 	 */
@@ -353,14 +353,14 @@ public class MissionManager implements Serializable, Temporal {
 			// System.out.println("settlement is null");
 			throw new IllegalArgumentException("settlement is null");
 		}
-		
+
 		List<Mission> m0 = new ArrayList<>();
 		List<Mission> m1 = onGoingMissions;
-		if (!m1.isEmpty()) {		
+		if (!m1.isEmpty()) {
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
 				Mission m = i.next();
-				if (!m.isDone() 
+				if (!m.isDone()
 						&& settlement.getName().equalsIgnoreCase(m.getAssociatedSettlement().getName())
 //						&& !m.isApproved()
 						&& m.getPlan() != null
@@ -372,10 +372,10 @@ public class MissionManager implements Serializable, Temporal {
 
 		return m0;
 	}
-	
+
 	/**
 	 * Gets a mission that the given vehicle is a part of.
-	 * 
+	 *
 	 * @param vehicle the vehicle to check for.
 	 * @return mission or null if none.
 	 */
@@ -418,8 +418,8 @@ public class MissionManager implements Serializable, Temporal {
 	 * Remove missions that are already completed.
 	 */
 	private void cleanMissions() {
-		int index = 0;		
-		if (onGoingMissions != null && !onGoingMissions.isEmpty()) { 
+		int index = 0;
+		if (onGoingMissions != null && !onGoingMissions.isEmpty()) {
 			// Check if onGoingMissions is null for passing maven test
 			while (index < onGoingMissions.size()) {
 				Mission m = onGoingMissions.get(index);
@@ -427,42 +427,42 @@ public class MissionManager implements Serializable, Temporal {
 				if (mss != null && !mss.isEmpty()) {
 					for (MissionStatus ms: mss) {
 						// Note: m.isDone() // still want to keep a list of completed missions in Mission Tool
-						// Note: !m.isApproved() // initially it's not approved until it passes the approval phase 
+						// Note: !m.isApproved() // initially it's not approved until it passes the approval phase
 						if (m.getPlan() == null
 								|| m.getPhase() == null
-								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)								
-								|| ms == MissionStatus.CANNOT_ENTER_ROVER				
-								|| ms == MissionStatus.CANNOT_LOAD_RESOURCES									
-								|| ms == MissionStatus.DESTINATION_IS_NULL		
-								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED						
-								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE				
+								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
+								|| ms == MissionStatus.CANNOT_ENTER_ROVER
+								|| ms == MissionStatus.CANNOT_LOAD_RESOURCES
+								|| ms == MissionStatus.DESTINATION_IS_NULL
+								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED
+								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE
 								|| ms == MissionStatus.LUV_NOT_AVAILABLE
 								|| ms == MissionStatus.LUV_NOT_RETRIEVED
 								|| ms == MissionStatus.MINING_SITE_NOT_BE_DETERMINED
 								|| ms == MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED
 								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
 								|| ms == MissionStatus.NO_EXPLORATION_SITES
-								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES								
+								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES
 								|| ms == MissionStatus.NO_TRADING_SETTLEMENT
 								|| ms == MissionStatus.USER_ABORTED_MISSION
-								|| ms == MissionStatus.NO_ICE_COLLECTION_SITES								
+								|| ms == MissionStatus.NO_ICE_COLLECTION_SITES
 								// Note: ms.getName().toLowerCase().contains("no ") // need to first enforce standard
 								// Note: ms.getName().toLowerCase().contains("not ") // need to first enforce standard
 								) {
 							removeMission(m);
-						} 
+						}
 					}
 				}
-				
+
 				index++;
 			}
 		}
 	}
 
-	
+
 	/**
 	 * Updates mission based on passing time.
-	 * 
+	 *
 	 * @param pulse Simulation time has advanced
 	 */
 	@Override
@@ -474,36 +474,36 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Adds a mission plan
-	 * 
+	 *
 	 * @param plan {@link MissionPlanning}
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
-		
+
 		Mission mission = plan.getMission();
 		Person p = mission.getStartingPerson();
-		
-		logger.info(p, "Put together a mission plan for " + plan.getMission().getTypeID());
+
+		logger.info(p, "Put together a mission plan for " + plan.getMission().getTypeID() + ".");
 		historicalMissions.addData(plan);
-		
+
 		// Add this mission only after the mission plan has been submitted for review.
 		addMission(mission);
 	}
 
 	/**
 	 * Submit a request for approving a mission plan
-	 * 
+	 *
 	 * @param mission
 	 */
 	public void requestMissionApproving(MissionPlanning plan) {
 		addMissionPlanning(plan);
 	}
-	
+
 	/**
 	 * Approves a mission plan
-	 * 
+	 *
 	 * @param missionPlan
 	 * @param person
-	 * @param d 
+	 * @param d
 	 * @param status
 	 */
 	public void approveMissionPlan(MissionPlanning missionPlan, Person person,
@@ -524,7 +524,7 @@ public class MissionManager implements Serializable, Temporal {
 
 	/**
 	 * Score a mission plan
-	 * 
+	 *
 	 * @param missionPlan
 	 * @param person
 	 * @param status
@@ -559,7 +559,7 @@ public class MissionManager implements Serializable, Temporal {
 		missionPlan.setPercentComplete(totalPercent);
 		double score = missionPlan.getScore();
 		missionPlan.setScore(score + weight * newScore);
-			
+
 		missionPlan.setReviewedBy(reviewer.getName());
 	}
 
