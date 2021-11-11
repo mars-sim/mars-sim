@@ -275,15 +275,15 @@ public class MicroInventory implements Serializable {
 
 		double shortfall = 0D;
 		double remaining = s.storedAmount - quantity;
-		if (remaining < -SMALL_AMOUNT) {
-			remaining = 0;
-		}
-		else if (remaining < 0) {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			shortfall = -remaining;
-			logger.warning(owner, 10_000L, "Just retrieved all the remaining "
-					+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
-					+ name + ", still lacking " + Math.round(-remaining * 1_000.0)/1_000.0 + " kg.");
+
+		if (remaining < 0) {
+			if (-remaining > SMALL_AMOUNT) {
+				String name = ResourceUtil.findAmountResourceName(resource);
+				shortfall = -remaining;
+				logger.warning(owner, 10_000L, "Just retrieved all the remaining "
+						+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
+						+ name + ", still lacking " + Math.round(-remaining * 1_000.0)/1_000.0 + " kg.");
+			}
 			remaining = 0;
 		}
 
