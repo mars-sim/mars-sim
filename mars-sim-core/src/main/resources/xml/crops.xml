@@ -21,31 +21,31 @@
 	<!ATTLIST crop daily-PAR CDATA #REQUIRED>
 	<!ATTLIST crop seed-name CDATA #IMPLIED>
 	<!ATTLIST crop seed-plant (true|false) #IMPLIED>
-	
+
 ]>
 
 <!-- Read References 1 to 25 at the bottom -->
 
 <crop-configuration>
 
-	<!-- The average amount of carbon dioxide (kg) needed by a crop per square 
+	<!-- The average amount of carbon dioxide (kg) needed by a crop per square
 	     meter area during the day [kg/m2/sol] -->
 	<!-- Default: .2 -->
 	<carbon-dioxide-consumption-rate value =".2" />
 
-	<!-- The average amount of oxygen (kg) needed by a crop per square meter 
+	<!-- The average amount of oxygen (kg) needed by a crop per square meter
 	     area during the night -->
 	<!-- Default: .1 -->
 	<oxygen-consumption-rate value=".1" />
 
-	<!-- The average amount of water (kg) consumed by a crop per square meter 
+	<!-- The average amount of water (kg) consumed by a crop per square meter
 	     area in each Martian Sol [kg/m2/sol]
-	Note : KSC has daily water makeup requirements of 7 to 10 L/sq m/day 
+	Note : KSC has daily water makeup requirements of 7 to 10 L/sq m/day
 	depending on type and maturity of the crop -->
 	<!-- Default: 3 -->
 	<water-consumption-rate value="3" />
 
-	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for 
+	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for
 	     calculating the instantaneous PAR in Crop.java -->
 	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
     <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
@@ -65,7 +65,7 @@
 
 		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale -->
 
-	   	<crop name="Blueberry" growing-time="600" crop-category="fruits" life-cycle="perennial" 
+	   	<crop name="Blueberry" growing-time="600" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="14" edible-water-content=".87" inedible-biomass="5" daily-PAR="25.92" />
 	    	<!-- http://www.nasa.gov/pdf/190544main_SFN_Appendices.pdf
 	    	http://blueberries.ces.ncsu.edu/wp-content/uploads/2012/10/evaluating-the-profitability-of-blueberry-production.pdf
@@ -76,48 +76,46 @@
 			production of 8,000 pounds per acre
 
 	    	TODO: multi-year plant
-	    	 
+
 	    	http://www.offthegridnews.com/survival-gardening-2/4-perennial-berries-you-can-plant-once-and-enjoy-for-a-lifetime/
-	    	 
+
 	    	For blueberries to thrive, three conditions must be met: adequate water, weather that is not blazingly hot,
-	    	and the right soil. You may have heard that blueberries require acidic soil, and this is not an exaggeration. 
-	    	They thrive in a pH around four. 
-	    	
+	    	and the right soil. You may have heard that blueberries require acidic soil, and this is not an exaggeration.
+	    	They thrive in a pH around four.
+
 	    	-->
-	    	 
-	    	 
+
+
 
 
 		<crop name="Cabbage" growing-time="85.0" crop-category="leaves"  life-cycle="annual"
 	    	edible-biomass="75.78" edible-water-content=".92" inedible-biomass="6.74" daily-PAR="17.28" />
 		<!--
 		http://www.ehow.com/facts_7732455_life-cycle-cabbage-plant.html
-		
+
 		Growing Environment
-		Cabbage plants prefer summers with temperatures ranging from 70 to 85 degrees Fahrenheit, 
-		moist soil and full sun. Transplants benefit from a starter solution that is high in phosphorus, 
+		Cabbage plants prefer summers with temperatures ranging from 70 to 85 degrees Fahrenheit,
+		moist soil and full sun. Transplants benefit from a starter solution that is high in phosphorus,
 		low in nitrogen;
 		-->
-		
-		<crop name="Carrot"	growing-time="74.83" crop-category="roots" life-cycle="biennial" 
+
+		<crop name="Carrot"	growing-time="74.83" crop-category="roots" life-cycle="biennial"
 	    	edible-biomass="40"	edible-water-content=".88" inedible-biomass="59.87" daily-PAR="32.4"
 	    	/>
 
 		<!--
 		https://www.revistas.ufg.br/pat/article/download/42449/22580
 		31 T to 120 T/ha
-		
+
 		http://smallfarms.oregonstate.edu/sites/default/files/growth_stage_descriptions_online_2014-08-25.pdf
 		stages: seedling emergence, leaving, root development, harvest
-		
+
 		-->
-		
-		<crop name="Celery" growing-time="75.0" crop-category="stems" life-cycle="biennial" 
+
+		<crop name="Celery" growing-time="75.0" crop-category="stems" life-cycle="biennial"
 	    	edible-biomass="103.27" edible-water-content=".90" inedible-biomass="11.47" daily-PAR="17.28" />
-	    	
-	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf
-	    
-		-->
+
+	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf -->
 
 	  <crop name="Corn" growing-time="65" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
@@ -128,7 +126,7 @@
 		from the corn crop except the grain. This biomass is comprised of structural
 		components including stalks, leaves, tassel, husk, and cob. The U.S. Department of
 		Energy estimates that over 76 million metric tons of corn stover are available from the
-		roughly 28 million hectares of corn produced each year (Perlack, 2005).  
+		roughly 28 million hectares of corn produced each year (Perlack, 2005).
 
 		Worldwide, with a yield of over 5 T/ha . Production can be significantly higher in certain regions of the world;
 		2009 forecasts for production in Iowa were 11614 kg/ha
@@ -162,9 +160,9 @@
 	    	http://www.ecologynorth.ca/wp-content/uploads/2012/03/Stimulating-Commercial-Berry-Production-FINAL-FEB-2012.pdf
 	    	Production from mature plants is about 11 tonnes per hectare.
 	    	Well-managed bogs should produce 100 to 200 barrels of cranberries per acre,
-	    	
+
 	    	http://bioweb.uwlax.edu/bio203/2011/mullenba_brit/life.html
-	    	“I will survive” is a true saying for the cranberry.  The cranberry lives year round.  
+	    	“I will survive” is a true saying for the cranberry.  The cranberry lives year round.
 	    	They survive through the cold winters, sweltering summers, and cool springs and falls.
 	    	-->
 
@@ -173,7 +171,7 @@
 	    	<!--
 	    	http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
 	    	http://teca.fao.org/sites/default/files/technology_files/High%20yielding%20vegetable%20varieties.pdf
-	    	
+
 	    	The cucumber is a tropical perennial in zones 10 and warmer. In colder zones, it is grown as an annual.
 	    	-->
 
@@ -190,9 +188,9 @@
 	    		800/85 = 9.41 g/m2/d
 
 	    		79.7g/136g = 58.6% H20 from http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2
-	    		
+
 	    		Lifecycle: annual. Perennial grown as an annual. (Fall-planted, harvested the following summer.)
-	    		
+
 	    		-->
 
 
@@ -205,7 +203,7 @@
 	    	2. Harvesting is done from the 6th month onwards.
 	    	3.  TODO: making ginger Tea
 
-			It is a flowering edible herb that typically grows as an annual/perennial, which is defined as a plant 
+			It is a flowering edible herb that typically grows as an annual/perennial, which is defined as a plant
 			that can matures and completes its lifecycle over the course of one year or more.
 	    	 -->
 
@@ -221,28 +219,28 @@
 		<crop name="Green Bell Pepper" growing-time= "40" crop-category="fruits" life-cycle="annual"
 			edible-biomass= "50" edible-water-content= ".45" inedible-biomass="20" daily-PAR="25.92" />
 
-			<!-- Bell peppers, a tropical or sub-tropical vegetable, can easily be grown in warm-weather 
+			<!-- Bell peppers, a tropical or sub-tropical vegetable, can easily be grown in warm-weather
 			climates or in cooler climates where temperatures in the summer get seasonably warm and remain
-		 	warmer than 50 degrees every night.  
-		 	
-		 	Start seeds indoors 8-10 weeks before last frost. Wait until the soil temperature reaches at 
-		 	least 70 degrees before planting bell peppers outdoors. Once the plant seed has germinated, 
-		 	it takes approximately 70 to 80 days for a bell pepper to reach maturity. 
-		 	
+		 	warmer than 50 degrees every night.
+
+		 	Start seeds indoors 8-10 weeks before last frost. Wait until the soil temperature reaches at
+		 	least 70 degrees before planting bell peppers outdoors. Once the plant seed has germinated,
+		 	it takes approximately 70 to 80 days for a bell pepper to reach maturity.
+
 		 	The plants can produce peppers continually until first frost.
 		 	-->
-		 	
-		 	
+
+
 	    <crop name="Spring Onion" growing-time="70.0" crop-category="bulbs" life-cycle="perennial"
 	    	edible-biomass="81.82" edible-water-content=".89" inedible-biomass="10.0" daily-PAR="17.28" />
-	   		
+
 	   		<!-- 1. Harvest between 70-90 days
-	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ 
-	   			
+	   			Ref : http://www.veggiegardener.com/veggies/green-onions/
+
 			scallions, leeks, spring onions, green onion
-	   			
-	   		In some countries, such as England, all green onions are referred to as spring onions. 
-	   		One can grow spring onions from seeds or bulbs. Once planted it is important that you keep 
+
+	   		In some countries, such as England, all green onions are referred to as spring onions.
+	   		One can grow spring onions from seeds or bulbs. Once planted it is important that you keep
 	   		the soil moist and weed-free in order to help the plants grow.
 	   		-->
 
@@ -250,22 +248,22 @@
 	    <crop name="Kidney bean" growing-time="85.0" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="11.11" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
 
-			<!-- 
+			<!--
 			https://interiordr.com/kidney-bean/
-			
-			The kidney bean is an annual plant with a well-developed root system of rapid growth. 
-			The fruit is located inside flat and fleshy double ending pods, where seeds are found in rows, 
+
+			The kidney bean is an annual plant with a well-developed root system of rapid growth.
+			The fruit is located inside flat and fleshy double ending pods, where seeds are found in rows,
 			featuring a pine nut shape and is consumed dry as well as tender. -->
 
 	    <crop name="Lettuce" growing-time="28.0" crop-category="leaves" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".95" inedible-biomass="5" daily-PAR="17.28" />
 	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
-	    	 10 kg / week yield for greenhouse  
-	    	 
+	    	 10 kg / week yield for greenhouse
+
 	    	 Grown as a hardy annual, Lettuce (Lactuca sativa) is an annual plant of the daisy family, Asteraceae.
-	    
-	    	
+
+
 	    	-->
 
 
@@ -330,18 +328,18 @@
 	    	warm and moist, and the harvest season should be dry.
 
 			http://www.softschools.com/facts/plants/peanuts_facts/950/
-			
+
 			Seedlings
 			Seeds germinate in about seven to 14 days. Seedlings grow slowly and steadily for a month. Production improves if
-			you gradually mound loose soil around the base of the plant during this phase, when the nuts develop. 
-			 
+			you gradually mound loose soil around the base of the plant during this phase, when the nuts develop.
+
 			A top layer of loose soil will promote and easier growth and harvest for the plants. Between 30 and 40 days after
 			planting, peanut plants will begin to blossom.
-			
+
 			Plants
-			Peanut plant blossoms are small and yellow, resembling the flowers of the pea plant. After pollination and 
+			Peanut plant blossoms are small and yellow, resembling the flowers of the pea plant. After pollination and
 			fertilization, the peg takes 10 days to bend down and penetrate the soil. About a week later, the tip of the peg
-			begins to enlarge and the pod and kernel begin to develop. Another nine or 10 weeks will pass before the pods 
+			begins to enlarge and the pod and kernel begin to develop. Another nine or 10 weeks will pass before the pods
 			are ready to harvest.
 	    	-->
 
@@ -354,18 +352,18 @@
 
 	    	<!-- A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
 
-			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum, 
-			are in the Solanaceae or nightshade Family, is not related to the sweet potato, 
-			
-			Potato is more related to the tomato, pepper and eggplant than Sweet Potato. 
-			
-			Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons. 
-			The tubers form at the distal end of the stolon and/or along the stolon itself. 
-			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant. 
-	
-			To recap, sweet potato is a root tuber, potato is a stem tuber. 
-			
-			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight. 
+			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum,
+			are in the Solanaceae or nightshade Family, is not related to the sweet potato,
+
+			Potato is more related to the tomato, pepper and eggplant than Sweet Potato.
+
+			Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
+			The tubers form at the distal end of the stolon and/or along the stolon itself.
+			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
+
+			To recap, sweet potato is a root tuber, potato is a stem tuber.
+
+			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
 			Root tubers do not have these attributes. Both are considered vegetables.
 
 	    	-->
@@ -378,18 +376,18 @@
 	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
 	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
 	    	3. TODO:
-	    	
+
 	    	https://www.groworganic.com/pv-org-quinoa.html
-	    	Life Cycle	Annual		
-	    	Planting Time	Spring, Summer	
-			Approximate Harvest Time	Late Summer, Early Fall		
-			Ideal Soil Temperature	65-75°F	
-			Germination Requirements	Warmth		
-			Days to Maturity	90 - 120 Days	
-			Sun Requirements	Full Sun		
-			Growth Habit	Upright	
-			Starting Location	Direct Sow		
-			Plant Family	Amaranthaceae (Goosefoot)	
+	    	Life Cycle	Annual
+	    	Planting Time	Spring, Summer
+			Approximate Harvest Time	Late Summer, Early Fall
+			Ideal Soil Temperature	65-75°F
+			Germination Requirements	Warmth
+			Days to Maturity	90 - 120 Days
+			Sun Requirements	Full Sun
+			Growth Habit	Upright
+			Starting Location	Direct Sow
+			Plant Family	Amaranthaceae (Goosefoot)
 			Soil pH	6.1 - 7.0
 	    	-->
 
@@ -404,19 +402,19 @@
 			(22.4-15.7)*100/2/42 = 7.9762 g/m2/d
 
 		Categorized as an annual, they grow quickly in the cooler temperatures of early Spring and late Fall.
-		Once they are fully grown, they can be harvested, thus ending their lifecycle. 
-		
-		If temperatures become too hot, your beets will begin to bolt. This simply means that your Beetroot 
+		Once they are fully grown, they can be harvested, thus ending their lifecycle.
+
+		If temperatures become too hot, your beets will begin to bolt. This simply means that your Beetroot
 		plants will no longer send it's energy to produce it's roots, instead it will produce seeds.
 		 -->
 
 
-	     <crop name="Rice" growing-time="100.0" crop-category="grains" life-cycle="annual"
+	    <crop name="Rice" growing-time="100.0" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="10.3" edible-water-content=".12" inedible-biomass="38" daily-PAR="34.56" />
-		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf 
-		
+		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf
+
 		http://ricepedia.org/rice-as-a-plant/growth-phases
-		
+
 		-->
 
 
@@ -425,24 +423,24 @@
 	    	seed-name="Sesame Seed" seed-plant="true"/>
 	    	<!--http://en.wiki2.org/wiki/Sesame
 	    	~50 to 80 seeds per capsule
-	    	7.2 Metric Ton/hectare 
-	    	
+	    	7.2 Metric Ton/hectare
+
 	    	Sesamum plants are a genus of half hardy annual herbs that reach from 30 to 90 cm in height.
 
 			They bloom in the summer carrying tubular flowers of violet, pink or white.
-	    	
+
 	    	Sesame seeds contain around 50% of a highly unsaturated oil (oleic and linoleic acids predominate)
 	    	and 20 to 25% protein. The oil, which rarely goes rancid due to the presence of phenolic material,
-	    	is used in the manufacture of margarine, cooking fats, soaps, and paints and is used as a 
+	    	is used in the manufacture of margarine, cooking fats, soaps, and paints and is used as a
 	    	lubricant and illuminant. In India, it is used as a ghee substitute and is the basis of scented
-	    	oils used in perfumery. The residue left after extraction is a valuable animal feed. 
-	    	   
-	    	Throughout the world sesame seeds are used in food in a wide range of savory dishes and sweet 
+	    	oils used in perfumery. The residue left after extraction is a valuable animal feed.
+
+	    	Throughout the world sesame seeds are used in food in a wide range of savory dishes and sweet
 	    	confections.
 	    	-->
 
 
-	     <crop name="Soybean" growing-time="93" crop-category="legumes" life-cycle="annual" 
+	    <crop name="Soybean" growing-time="93" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="10" edible-water-content=".10" inedible-biomass="13" daily-PAR="34.56" />
 
 	   	<crop name="Strawberry" growing-time="45" crop-category="fruits" life-cycle="annual"
@@ -450,22 +448,22 @@
 	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
 	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
 	    	TODO:
-	    	    	
-	    	Annual/perrnnial :
-	    	
-	    	From zone 7 southward, strawberries can be planted in fall. 
-	    	
-	    	In Florida and other warm, humid coastal areas, many are grown as cool weather annuals. 
-	    	
-	    	Like most hardy perennials, strawberries die back in winter and start growing vigorously as the soil warms in spring. 
-	    	After bearing fruit (as early as February in Florida, or June farther north), many types of strawberries produce 
-	    	numerous runners with baby plants at the tips. 
-	    	
-	    	Those runners often root themselves nearby yet remain attached to 
-	    	the mother plant. These types of strawberries produce more fruit if you clip off most of the runners, 
-	    	allowing each plant to produce no more than 3 daughter plants each summer. 
-	    	
-	    	(Some varieties of strawberries 
+
+	    	Annual/perennial :
+
+	    	From zone 7 southward, strawberries can be planted in fall.
+
+	    	In Florida and other warm, humid coastal areas, many are grown as cool weather annuals.
+
+	    	Like most hardy perennials, strawberries die back in winter and start growing vigorously as the soil warms in spring.
+	    	After bearing fruit (as early as February in Florida, or June farther north), many types of strawberries produce
+	    	numerous runners with baby plants at the tips.
+
+	    	Those runners often root themselves nearby yet remain attached to
+	    	the mother plant. These types of strawberries produce more fruit if you clip off most of the runners,
+	    	allowing each plant to produce no more than 3 daughter plants each summer.
+
+	    	(Some varieties of strawberries
 	    	produce few to no runners.)
 	    	 -->
 
@@ -487,44 +485,42 @@
 	    	3. Grand Growth
 	    	4. Ripening, Maturation
 
-			4 varieties of sugarcane plants are available and numerous cultivars. 
-			
+			4 varieties of sugarcane plants are available and numerous cultivars.
+
 			Harvesting and Replanting
-			Sugarcane is harvested once per year. The plants are maintained for three years and will achieve 
-			three harvests before the field is replanted. When plants are 3 years old, production begins to 
-			decline, the sugar level decreases and the plants become more prone to pests or disease. 
-			
+			Sugarcane is harvested once per year. The plants are maintained for three years and will achieve
+			three harvests before the field is replanted. When plants are 3 years old, production begins to
+			decline, the sugar level decreases and the plants become more prone to pests or disease.
+
 			The old plants are simply plowed under and new seed canes are planted
-	    	
+
 	    	-->
 
 
 	    <crop name="Sweet Potato" growing-time="120.0" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="25" edible-water-content=".79" inedible-biomass="10" daily-PAR="34.56" />
 
-		<!--
-		
-    	A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf	    	
+		<!-- A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf
 
-		https://ask.extension.org/questions/216966
-		Sweet Potato tubers only contain root cells and grow on rhizomes. 
-		In order to grow a new sweet potato plant, part of the root cap must be present to have Sweet potatoes
-		Sweet Potato are commonly misnamed yams in the United States.  
-		
-		Potato is not related to the Sweet potato because Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons. 
-		The tubers form at the distal end of the stolon and/or along the stolon itself. 
-		Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant. 
+			https://ask.extension.org/questions/216966
+			Sweet Potato tubers only contain root cells and grow on rhizomes.
+			In order to grow a new sweet potato plant, part of the root cap must be present to have Sweet potatoes
+			Sweet Potato are commonly misnamed yams in the United States.
 
-		To recap, sweet potato is a root tuber, potato is a stem tuber. 
-		
-		http://www.biology.lifeeasy.org/3344/difference-between-root-tuber-and-stem-tuber
-		
-		Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight. 
-		Root tubers do not have these attributes. Both are considered vegetables.
-		
-		Lifecycle: Annual
-		Hardiness: Tender Annual
-		
+			Potato is not related to the Sweet potato because Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons.
+			The tubers form at the distal end of the stolon and/or along the stolon itself.
+			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant.
+
+			To recap, sweet potato is a root tuber, potato is a stem tuber.
+
+			http://www.biology.lifeeasy.org/3344/difference-between-root-tuber-and-stem-tuber
+
+			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
+			Root tubers do not have these attributes. Both are considered vegetables.
+
+			Lifecycle: Annual
+			Hardiness: Tender Annual
+
 		-->
 
 		<crop name="Swiss Chard" growing-time="65.0" crop-category="leaves" life-cycle="biennial"
@@ -539,15 +535,15 @@
 		 (61.74+30.64)/2*100/65 = 71.06
 
 		 previously edible-biomass="87.50" edible-water-content=".92" inedible-biomass="37.69"
-		 
+
 		 kale, Swiss chard, and onion, examples of biennial plant types
-		 
+
 		-->
 
 	    <crop name="Taro" growing-time="200.0" crop-category="corms" life-cycle="perennial"
 	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
 
-	<!--    Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
+		<!--  Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
 			http://www.harvesttotable.com/2010/03/taro/
 			Taro is a perennial herbaceous plant that grows from 3 to 6 feet tall. Its leaves are light green,
 			elongated, and heart shaped similar to an elephant’s ear. Tubers are spherical and about the size
@@ -574,25 +570,24 @@
 			phenological growth,
 			1. https://www.researchgate.net/publication/272030000_A_phenological_scale_for_the_development_of_Gladiolus
 			2. http://revistas.inia.es/index.php/sjar/article/view/7340/2514
-	-->
+		-->
 
 	    <crop name="Tomato" growing-time="80" crop-category="fruits" life-cycle="perennial"
 	    	edible-biomass="17" edible-water-content=".948" inedible-biomass="20" daily-PAR="32.4" />
 	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
 	    	 484 MT/ha for earth greenhouse
 	    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
-	    	 
+
 	    	 It is a perennial in its native habitat, although often grown outdoors in temperate climates as an annual.
 	    	-->
 
-		    <crop name="Wheat" growing-time="80" crop-category="grains" life-cycle="annual"
-	    		edible-biomass="13" edible-water-content=".12" inedible-biomass="26" daily-PAR="69.12" />
-		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
+		<crop name="Wheat" growing-time="80" crop-category="grains" life-cycle="annual"
+	    	edible-biomass="13" edible-water-content=".12" inedible-biomass="26" daily-PAR="69.12" />
+			<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
 	    <crop name="White Onion" growing-time="150.0" crop-category="bulbs" life-cycle="biennial"
-	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28"
-	    	/>
+	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28" />
 	    	<!-- 1. Onions are a cold-season crop
 		    	ref : http://www.almanac.com/plant/onions
 	    	 2. 170 days :
@@ -608,25 +603,24 @@
 	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
 
 			<!-- https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
-			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d 
-			   
-			Yams (Dioscorea spp.) are annual or perennial vines and climbers with annual or perennial underground tubers. 
-			
-			They belong to the Dioscoreaceae family. This tuber-producing plant is popular in the humid and subhumid tropics
-			particularly in Africa, the West Indies and parts of Asia and South and Central America.    
-			   
-			   -->
+			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
 
-	<!-- Rhizomes vs. roots
+			Yams (Dioscorea spp.) are annual or perennial vines and climbers with annual or perennial underground tubers.
+
+			They belong to the Dioscoreaceae family. This tuber-producing plant is popular in the humid and subhumid tropics
+			particularly in Africa, the West Indies and parts of Asia and South and Central America.
+
+			-->
+
+			<!-- Rhizomes vs. roots
 	    	 Tumeric
 	    	 Green Pepper
 	    	 Radish
 	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 
-		Beetroot conservative: 14; likely: 18 target yield: 25
-	   TODO: multi-year plants
+			 Beetroot conservative: 14; likely: 18 target yield: 25
+			 	TODO: multi-year plants -->
 
-	-->
 	</crop-list>
 
 <!--
@@ -684,31 +678,31 @@
 
 8.  Lighting Radiation Conversion
 
-	Plants use light energy between 300/400 nm and 700 nm, the region known as 
+	Plants use light energy between 300/400 nm and 700 nm, the region known as
 	Photosynthetically Active Radiation or PAR.
 
 	Illumination for plants, also known as "irradiance", is sometimes measured in PAR watts per square meter (W/m2).
-	
+
 	Another means of measuring light quantity for plant growth involves discrete units of quantum flux in the PAR
 	region called "photons". This light measurement is an instantaneous reading.
-	
-	Researchers measure instantaneous light in terms of photon flux commonly measured in units of 
-	micromoles per square meter per second [µmoles/m2/s or μmol·m-2·s-1 of PAR], where 1 mole of photons is equal to 
-	6.022 x 1023 photons. 
 
-	This quantum unit quantifies the number of photons (individual particles of energy) used in photosynthesis that 
+	Researchers measure instantaneous light in terms of photon flux commonly measured in units of
+	micromoles per square meter per second [µmoles/m2/s or μmol·m-2·s-1 of PAR], where 1 mole of photons is equal to
+	6.022 x 1023 photons.
+
+	This quantum unit quantifies the number of photons (individual particles of energy) used in photosynthesis that
 	fall on a square meter (10.8 square feet) every second.
 
-	Daily light integral (DLI) or Daily PAR is the amount of PAR received each day as a function of light intensity 
+	Daily light integral (DLI) or Daily PAR is the amount of PAR received each day as a function of light intensity
 	(instantaneous light: μmol·m-2·s-1) and duration (day).
-	
+
 	It is expressed	as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
 	The DLI concept is like a rain gauge.
 
-	Just as a rain gauge collects the total rain in a particular location over a period of time, so DLI measures 
+	Just as a rain gauge collects the total rain in a particular location over a period of time, so DLI measures
 	the total amount of PAR received in a day.
 
-	Greenhouse growers can use light meters to measure the number of light photons that accumulate in a square meter 
+	Greenhouse growers can use light meters to measure the number of light photons that accumulate in a square meter
 	over a 24-hour period.
 
 9. How much light do plants need?
@@ -719,7 +713,7 @@
 		o Hydroponic lettuce 15-17 mol/m2/day if vertical airflow fans are used (greater than
 		  this can cause leaf tip burn, a physiological disorder from calcium deficiency that
 		  occurs under high light)
-		o Tomatoes 20-30+ mol/m2/day (for maximum yield)    
+		o Tomatoes 20-30+ mol/m2/day (for maximum yield)
 
 
 10.	Total water use and water requirement:
@@ -829,7 +823,10 @@
 	http://www.passthepistil.com/transplanting-seedlings-vs-direct-sowing-seeds/
 
 18. Annuals - Plants that perform their entire life cycle from seed to flower
-	to seed within a single growing season. All roots, stems and leaves of the plant die annually.
+	to seed within a single growing season.
+
+	All roots, stems and leaves of the plant die annually.
+
 	Only the dormant seed bridges the gap between one generation and the next.
 
 	Annuals: amaranth, bean, broccoli*, corn, cowpea, cucumber, eggplant, fava, gourd, ground cherry,
@@ -849,10 +846,9 @@
 	results in a small rosette of leaves near the soil surface. During the second season's
 	growth stem elongation, flowering and seed formation occur followed by the entire plant's death.
 
-	Biennials: beet, broccoli*, Brussels sprout, cabbage, carrot, cauliflower, celeriac, celery, 
-	chicory, Chinese cabbage, collard, endive, kale, kohlrabi, leek, onion, parsley, parsnip, 
+	Biennials: beet, broccoli*, Brussels sprout, cabbage, carrot, cauliflower, celeriac, celery,
+	chicory, Chinese cabbage, collard, endive, kale, kohlrabi, leek, onion, parsley, parsnip,
 	radish (daikon), rutabaga, Swiss chard, turnip
-
 
 	Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic
 	and geographic growing conditions. In the southern portion of the United States, these plants
@@ -866,44 +862,44 @@
 	Today’s savvy gardeners should also expand their plant life cycle know-how to be able to characterize
 	winter annuals and tender perennials, as well as long- and short-lived perennials.
 
-	Some perennial plants are woody and will flower and fruit after several years of juvenile growth, 
-	while others are herbaceous and die back every winter to newly flower and fruit in the spring. 
-	
-	"Tender perennials" are very sensitive to cold temperatures and are grown as annuals in most climates. 
-	
-	Several of our beds feature tender perennials like tomatoes, potatoes, eggplants, and okra that will 
+	Some perennial plants are woody and will flower and fruit after several years of juvenile growth,
+	while others are herbaceous and die back every winter to newly flower and fruit in the spring.
+
+	"Tender perennials" are very sensitive to cold temperatures and are grown as annuals in most climates.
+
+	Several of our beds feature tender perennials like tomatoes, potatoes, eggplants, and okra that will
 	die back at the end of the season due to cold weather.
-	
+
 19. Legume Green Manuring
-    http://soiltosupper.com/why-green-manure-crops-are-good-for-your-soil/	
+    http://soiltosupper.com/why-green-manure-crops-are-good-for-your-soil/
     http://www1.agric.gov.ab.ca/%24department/deptdocs.nsf/all/agdex133
-    
-    Being a legume, Pigeon Pea has the ability to obtain and store nitrogen. This happens with the aid of 
+
+    Being a legume, Pigeon Pea has the ability to obtain and store nitrogen. This happens with the aid of
     bacteria called ‘Rhizobium’. These bacteria live in nodules on the plants roots and can take nitrogen
-    from the air and convert it for the plants use. This is called ‘Nitrogen Fixation’. 
-     
+    from the air and convert it for the plants use. This is called ‘Nitrogen Fixation’.
+
     To allow for this process and to use Pigeon Pea and other legumes as a nitrogen improver, the seeds of
-    this plant must have an inoculant present when sown. The inoculant contains the bacteria needed for 
+    this plant must have an inoculant present when sown. The inoculant contains the bacteria needed for
     the specific legume.
-   
-    
-20. Plant classification 
+
+
+20. Plant classification
 	https://www.ndsu.edu/pubweb/chiwonlee/plsc210/topics/chap2-classification/classification.html
 
 
 21. root tuber vs. stem tuber
 
 	http://www.biology.lifeeasy.org/3344/difference-between-root-tuber-and-stem-tuber
-		
-	e.g. sweet potato is a root tuber, potato is a stem tuber. 
-		
-	Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight. 
+
+	e.g. sweet potato is a root tuber, potato is a stem tuber.
+
+	Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight.
 	Root tubers do not have these attributes. Both are considered vegetables.
 
-	Root tuber	
-	1.    It is a swollen root	
-	2.    Apical bud is absent	
-	3.    Nodes and internodes are absent	
+	Root tuber
+	1.    It is a swollen root
+	2.    Apical bud is absent
+	3.    Nodes and internodes are absent
 	4.    No development of chlorophyll
 	5.    Scaly leaves and auxiliary buds are absent.
 
@@ -987,23 +983,23 @@
 30. http://extension.illinois.edu/bulbs/bulbbasics.cfm
 
 	Corms vs. Bulbs :
-	
-	Bulbs can be broken down into five types of storage structures. 
-	These include: true bulbs, corms, tubers, tuberous roots and rhizomes. 
-	A sixth category of fleshy roots has been added here for the purpose of showing the structure. 
+
+	Bulbs can be broken down into five types of storage structures.
+	These include: true bulbs, corms, tubers, tuberous roots and rhizomes.
+	A sixth category of fleshy roots has been added here for the purpose of showing the structure.
 	e.g. Daylilies and peonies, are popular bulb plants with gardeners.
-	
-	A corm is a swollen stem base that is modified into a mass of storage tissue. 
+
+	A corm is a swollen stem base that is modified into a mass of storage tissue.
 	A corm does not have visible storage rings when cut in half. This distinguishes it from a true bulb.
-	The corm contains a basal plate (bottom of bulb from which roots develop),thin tunic and a growing point. 
+	The corm contains a basal plate (bottom of bulb from which roots develop),thin tunic and a growing point.
 	e.g. Plants that develop from corms include gladiolus, crocus, and autumn crocus.
-	
+
 31. Using Growing Degree Days to Predict Plant Stages
-	http://msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf	
-	
+	http://msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf
+
 	e.g. Barley, Wheat, Oat, Canary Seed, Flax, Canola, Mustard, Chick Pea, Lentil, Pea, Sunflower
 
-32. ISS EDEN Greenhouse. "Glance into the Future: Research Steps on a Path to a COntinuous Human 
+32. ISS EDEN Greenhouse. "Glance into the Future: Research Steps on a Path to a COntinuous Human
      Presence on Moon, Mars and Beyond", German Aerospace Center DLR.
 
 -->

@@ -88,7 +88,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** The total loss of the high pressure sodium (HPS) lamp. */
 	public static final double LOSS_FACTOR_HPS = NON_VISIBLE_RADIATION_HPS * .75 + CONDUCTION_CONVECTION_HPS / 2D;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
+	private static final double MIN = 0.001;
 	/** The string reference for mushroom */
 	private static final String MUSHROOM = "mushroom";
 
@@ -169,7 +169,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private final static int O2_FACTOR = 4;
 	private final static int CO2_FACTOR = 5;
 
-	/** The cache values of the pastor environment factors influencing the crop */
+	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR+1];
 
 	private CropSpec cropSpec;
@@ -291,7 +291,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 			// Set the daily harvest
 			dailyHarvest = dailyMaxHarvest;
-			// Set the remaining harvest based on the fractional growth
+			// Set the remaining harvest based on percentageGrowth
 			remainingHarvest = (maxHarvest * percentageGrowth)/100D;
 		}
 
@@ -603,7 +603,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// Safety check
 		if ((phaseType == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
-			logger.log(building, Level.FINE, 0, name + "'s fractionalGrowingTimeCompleted is " + percentageGrowth
+			logger.log(building, Level.FINE, 0, name + "'s percentageGrowth is " + percentageGrowth
 					   + "%  Setting the phase to FINISHED.");
 			phaseType = PhaseType.FINISHED;
 		}
@@ -615,7 +615,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		boolean isSeedPlant = cropSpec.isSeedPlant();
 		int seedID = cropSpec.getSeedID();
 		int cropID = cropSpec.getCropID();
-		String source = "Crop::addWork";
+		String source = "Crop::collectProduce";
 
 		if (isSeedPlant) {
 			// Extract Sesame Seed.
@@ -635,13 +635,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
 		double cropWaste = inedible * RATIO_LEAVES;
 		if (cropWaste > 0) {
-			store(cropWaste, CROP_WASTE_ID, "Crop::generateCropWaste");
+			store(cropWaste, CROP_WASTE_ID, "Crop::collectProduce");
 		}
 
 		if (cropSpec.getCropCategoryType() == CropCategoryType.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				store(leaves, ResourceUtil.leavesID, "Crop::generateCropWaste");
+				store(leaves, ResourceUtil.leavesID, "Crop::collectProduce");
 			}
 		}
 	}
@@ -1231,7 +1231,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private boolean storeCO2(double amount) {
 		boolean result = false;
 		if (co2Cache + amount > co2Threshold) {
-			result = store(co2Cache, CO2_ID, "Crop::computeGases");
+			result = store(co2Cache, CO2_ID, "Crop::storeCO2");
 			co2Cache = amount;
 		}
 		else {
@@ -1249,7 +1249,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private boolean storeO2(double amount) {
 		boolean result = false;
 		if (o2Cache + amount > o2Threshold) {
-			result = store(o2Cache, OXYGEN_ID, "Crop::computeGases");
+			result = store(o2Cache, OXYGEN_ID, "Crop::storeO2");
 			o2Cache = amount;
 		}
 		else {

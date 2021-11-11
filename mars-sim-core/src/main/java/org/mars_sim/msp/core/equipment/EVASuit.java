@@ -488,10 +488,6 @@ public class EVASuit extends Equipment
 		return this;
 	}
 
-	public void destroy() {
-		malfunctionManager = null;
-		microInventory = null;
-	}
 
 	/**
 	 * Return the parts that mau normally fail on a EVA Suit
@@ -510,7 +506,7 @@ public class EVASuit extends Equipment
 		unloadWaste(source);
 		loadResource(source, OXYGEN_ID);
 		loadResource(source, WATER_ID);
-		
+
 		return getFullness();
 	}
 
@@ -553,5 +549,34 @@ public class EVASuit extends Equipment
 		double waterLoaded = getAmountResourceStored(WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
+	}
+
+	/**
+	 * Retrieves the item resource
+	 *
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return microInventory.retrieveItemResource(resource, quantity);
+	}
+
+	/**
+	 * Stores the item resource
+	 *
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return microInventory.storeItemResource(resource, quantity);
+	}
+
+	public void destroy() {
+		malfunctionManager = null;
+		microInventory = null;
 	}
 }

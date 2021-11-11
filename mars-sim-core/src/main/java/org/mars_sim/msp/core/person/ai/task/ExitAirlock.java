@@ -79,6 +79,8 @@ public class ExitAirlock extends Task implements Serializable {
 
 
 	// Data members
+	/** Is this a building airlock in a settlement? */
+	private boolean inSettlement;
 	/** True if person has an EVA suit. */
 	private boolean hasSuit = false;
 	/** The remaining time in donning the EVA suit. */
@@ -105,6 +107,12 @@ public class ExitAirlock extends Task implements Serializable {
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100);
 
 		this.airlock = airlock;
+
+		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			inSettlement = true;
+		}
+		else
+			inSettlement = false;
 
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
@@ -328,7 +336,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
 
@@ -525,7 +533,7 @@ public class ExitAirlock extends Task implements Serializable {
 			return 0;
 		}
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 			if (!airlock.isInnerDoorLocked()) {
 
@@ -627,7 +635,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 			if (transitionTo(2)) {
 				canProceed = true;
@@ -731,7 +739,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// Get an EVA suit from entity inventory.
 		ResourceHolder housing = null;
 		if (!hasSuit) {
-			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK)
+			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement();
 			else
 				housing = (Vehicle)airlock.getEntity();
@@ -743,11 +751,14 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!hasSuit && suit != null) {
 
 			// if a person hasn't donned the suit yet
+			// 0. Return the clothing to settlement
+			if (inSettlement)
+				person.unwearStandardClothing(housing);
 			// 1. Transfer the EVA suit from settlement/vehicle to person
 			suit.transfer(person);
-			// 2. set the person as the owner
+			// 2. Set the person as the owner
 			suit.setLastOwner(person);
-			// 3. register the suit the person will take into the airlock to don
+			// 3. Register the suit the person will take into the airlock to don
 			person.registerSuit(suit);
 			// 4. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
@@ -948,7 +959,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canExit = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 			if (transitionTo(3)) {
 
@@ -1030,7 +1041,7 @@ public class ExitAirlock extends Task implements Serializable {
 	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			if (inSettlement) {
 				logger.log(person, Level.FINER, 4_000,
 						"Concluded the airlock operator task.");
 			}
@@ -1190,7 +1201,7 @@ public class ExitAirlock extends Task implements Serializable {
 	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			if (inSettlement) {
 				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINE, 1_000,
 						"Concluded the airlock operator task.");
 			}

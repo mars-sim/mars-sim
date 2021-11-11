@@ -21,12 +21,12 @@ class GenericContainer extends Equipment implements Container, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private double totalCapacity;
 	private double amountStored;
 	private int resourceHeld = -1;
 	private boolean reusable;
-	
+
 	/**
 	 * Constructor.
 	 * @param name
@@ -40,16 +40,16 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		super(name, type, type.name(), base);
 
 		this.reusable = reusable;
-		
+
 		// Sets the base mass of the bag.
 		setBaseMass(EquipmentFactory.getEquipmentMass(type));
-		
+
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
 	}
 
 	/**
 	 * Gets the total capacity of resource that this container can hold.
-	 * 
+	 *
 	 * @return total capacity (kg).
 	 */
 	@Override
@@ -65,10 +65,10 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public int getResource() {
 		return resourceHeld;
 	}
-	
+
 	/**
 	 * Gets a list of supported resources
-	 * 
+	 *
 	 * @return a list of resource ids
 	 */
 	@Override
@@ -88,8 +88,8 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	}
 
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -116,7 +116,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -130,7 +130,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 
 	/**
 	 * Stores the resource but only if it matches current resource or empty
-	 * 
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -146,7 +146,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		else if (resourceHeld != resource) {
 			return quantity; // Allocated to a different resource
 		}
-		
+
 		double remainingCap = totalCapacity - amountStored;
 		if (remainingCap < quantity) {
 			amountStored = totalCapacity;
@@ -157,10 +157,10 @@ class GenericContainer extends Equipment implements Container, Serializable {
 			return 0D;
 		}
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -172,14 +172,14 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		else if (resourceHeld == resource) {
 			return totalCapacity - amountStored;
 		}
-		
+
 		return 0;
 	}
-		
+
 	/**
 	 * Gets the capacity of a particular amount resource. Check if container
 	 * is unallocated
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
@@ -190,7 +190,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public Building getBuildingLocation() {
 		return getContainerUnit().getBuildingLocation();
@@ -203,7 +203,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 
 	/**
 	 * Does this unit have this resource ?
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */
@@ -211,15 +211,27 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public boolean hasResource(int resource) {
 		return resourceHeld == resource;
 	}
-	
+
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
 	public Unit getHolder() {
 		return this;
+	}
+
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * CropType.java
- * @version 3.2.0 2021-06-20
+ * CropSpec.java
+ * @date 2021-11-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
- * The CropType class is a type of crop.
+ * The CropSpec class is a type of crop.
  */
 public class CropSpec implements Serializable, Comparable<CropSpec> {
 
@@ -72,18 +72,19 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param name               - Name of the crop.
+	 *
+	 * @param id               id of the crop.
+	 * @param name             Name of the crop.
 	 * @param growingTime        Length of growing phase for crop in millisols.
-	 * @param cropCategory       The type of crop.
-	 * @param life               cycle
+	 * @param cropCategoryType  The type of crop.
+	 * @param lifeCycle
 	 * @param edibleBiomass
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
 	 * @param dailyPAR
-	 * @param seedOnly 
-	 * @param seedName 
-	 * @param a                  map of phases
+	 * @param phases a list of phases
+	 * @param seedName
+	 * @param seedOnly
 	 */
 	CropSpec(int id, String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
@@ -99,18 +100,18 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
 		this.phases = phases;
-		
+
 		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
 		if (seedName != null) {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
 			this.seedOnly = seedOnly;
 		}
-		
+
 	}
 
 	/**
 	 * Gets the crop type's name.
-	 * 
+	 *
 	 * @return name
 	 */
 	public String getName() {
@@ -124,7 +125,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	public int getCropID() {
 		return cropID;
 	}
-	
+
 	/**
 	 * Get the Resource ID assigned to the seed of the crop..
 	 * @return
@@ -132,17 +133,17 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	public int getSeedID() {
 		return seedID;
 	}
-	
+
 	/**
 	 * Does this crop only produce a the seed.
 	 */
 	public boolean isSeedPlant() {
 		return seedOnly;
 	}
-	
+
 	/**
 	 * Gets the crop type's life cycle type.
-	 * 
+	 *
 	 * @return type of life cycle
 	 */
 	public int getLifeCycleType() {
@@ -158,7 +159,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the length of the crop type's growing phase.
-	 * 
+	 *
 	 * @return crop type's growing time in millisols.
 	 */
 	public double getGrowingTime() {
@@ -167,7 +168,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the crop's category type.
-	 * 
+	 *
 	 * @return cropCategoryType
 	 */
 	public CropCategoryType getCropCategoryType() {
@@ -176,7 +177,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the edible biomass
-	 * 
+	 *
 	 * @return crop's edible biomass (grams per m^2 per day)
 	 */
 	public double getEdibleBiomass() {
@@ -185,7 +186,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the edible water content
-	 * 
+	 *
 	 * @return crop's edible water content (grams per m^2 per day)
 	 */
 	public double getEdibleWaterContent() {
@@ -196,7 +197,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the inedible biomass
-	 * 
+	 *
 	 * @return crop's inedible biomass (grams per m^2 per day)
 	 */
 	public double getInedibleBiomass() {
@@ -206,7 +207,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	/**
 	 * Gets the daily PAR, the average amount of light needed per day in terms of
 	 * daily Photosynthetically active radiation (PAR)
-	 * 
+	 *
 	 * @return crop's daily PAR
 	 */
 	public double getDailyPAR() {
@@ -264,10 +265,10 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		return result;
 	}
 
-	
+
 	/**
 	 * Compares this object with the specified object for order.
-	 * 
+	 *
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
@@ -278,7 +279,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * String representation of this cropType.
-	 * 
+	 *
 	 * @return The settlement and cropType's name.
 	 */
 	public String toString() {

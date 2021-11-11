@@ -93,19 +93,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
-		
+
 	public static final String HALLWAY = "hallway";
-	
+
 	public static final String TUNNEL = "tunnel";
-			
+
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	
+
 	public static final String EVA_AIRLOCK = "EVA Airlock";
-	
+
 	public static final String ERV = "ERV";
-	
+
 	public static final String GREENHOUSE = "Greenhouse";
-	
+
 	public static final String ARRAY = "Array";
 
 	public static final String TURBINE = "Turbine";
@@ -113,10 +113,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public static final String WELL = "Well";
 
 	public static final int TISSUE_CAPACITY = 20;
-	
+
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
-	public static final double HEIGHT = 2.5; 
+	public static final double HEIGHT = 2.5;
 	/** The volume of an airlock in cubic meters */
 	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
@@ -124,10 +124,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
-	
+
 	/** A list of functions of this building. */
 	protected List<Function> functions;
-	
+
 	/** Default : 3340 Sols (5 orbits). Will be overridden by the value from buildings.xml for each building type. */
 	private int wearLifeTime = 3_340_000;
 	/** Default : 50 millisols maintenance time. */
@@ -143,7 +143,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected int inhabitableID = -1;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
-	
+
 	/** Unique identifier for the settlement of this building. */
 	private Integer settlementID;
 	private transient Settlement settlement;
@@ -171,10 +171,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private String nickName;
 	/** Description for this building. */
 	private String description;
-	
+
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
-	
+
 	private Communication comm;
 	private ThermalGeneration furnace;
 	private PowerGeneration powerGen;
@@ -210,7 +210,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Constructor 1. Constructs a Building object.
-	 * 
+	 *
 	 * @param template the building template.
 	 * @param manager  the building's building manager.
 	 * @throws BuildingException if building can not be created.
@@ -218,13 +218,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
-		
+
 		this.bid = template.getID();
 //		this.manager = manager;
 		buildingType = template.getBuildingType();
 		settlement = manager.getSettlement();
 		settlementID = settlement.getIdentifier();
-		
+
 		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
@@ -239,7 +239,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Constructor 2 Constructs a Building object.
-	 * 
+	 *
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
 	 * @param nickName     the building's nick name.
@@ -255,20 +255,20 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Building(int id, String buildingType, String nickName, double w, double l, double xLoc, double yLoc,
 			double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
-		
+
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 
 		this.settlement = manager.getSettlement();
 		this.settlementID = settlement.getIdentifier();
-		
+
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-		
+
 		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
-		
+
 		wallThickness = spec.getWallThickness();
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
@@ -285,13 +285,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (floorArea < 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
-		
+
 		// Sets the base mass
 		setBaseMass(spec.getBaseMass());
-		
+
 		baseLevel = spec.getBaseLevel();
 		description = spec.getDescription();
-		
+
 		// Get the building's functions
 		functions = buildFunctions(spec);
 
@@ -327,13 +327,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Constructor 3 (for use by Mock Building in Unit testing)
-	 * 
+	 *
 	 * @return manager
 	 */
 	protected Building(BuildingManager manager, String name) {
 //		super("Mock Building", new Coordinates(0D, 0D));
 		super(name, new Coordinates(0D, 0D));
-						
+
 		if (manager != null) {
 			this.settlement = manager.getSettlement();
 			this.settlementID = settlement.getIdentifier();
@@ -342,7 +342,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Constructor 4 (for use by Unit testing)
-	 * 
+	 *
 	 * @return manager
 	 */
 	protected Building() {
@@ -351,7 +351,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the description of a building.
-	 * 
+	 *
 	 * @return String description
 	 */
 	public String getDescription() {
@@ -360,7 +360,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Sets building nickname
-	 * 
+	 *
 	 * @param nick name
 	 */
 	public void setBuildingNickName(String name) {
@@ -369,14 +369,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the initial temperature of a building.
-	 * 
+	 *
 	 * @return temperature (deg C)
 	 */
 	public double getInitialTemperature() {
 		return initialTemperature;
 	}
 
-	
+
 	public Administration getAdministration() {
 		if (admin == null)
 			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
@@ -389,13 +389,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
 		return astro;
 	}
-	
+
 	public Dining getDining() {
 		if (dine == null)
 			dine = (Dining) getFunction(FunctionType.DINING);
 		return dine;
 	}
-	
+
 	public LifeSupport getLifeSupport() {
 		if (lifeSupport == null)
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
@@ -413,7 +413,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			fish = (Fishery) getFunction(FunctionType.FISHERY);
 		return fish;
 	}
-	
+
 	public Communication getComm() {
 		if (comm == null)
 			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
@@ -440,19 +440,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			eva = (EVA) getFunction(FunctionType.EVA);
 		return eva;
 	}
-	
+
 	public FoodProduction getFoodProduction() {
 		if (foodFactory == null)
 			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
 		return foodFactory;
 	}
-	
+
 	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
 		if (maint == null)
 			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		return maint;
 	}
-	
+
 	public LivingAccommodations getLivingAccommodations() {
 		if (livingAccommodations == null)
 			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMMODATIONS);
@@ -464,13 +464,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			management = (Management) getFunction(FunctionType.MANAGEMENT);
 		return management;
 	}
-	
+
 	public Manufacture getManufacture() {
 		if (workshop == null)
 			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
 		return workshop;
 	}
-	
+
 	public MedicalCare getMedical() {
 		if (medical == null)
 			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
@@ -506,7 +506,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			rec = (Recreation) getFunction(FunctionType.RECREATION);
 		return rec;
 	}
-	
+
 	public Research getResearch() {
 		if (lab == null)
 			lab = (Research) getFunction(FunctionType.RESEARCH);
@@ -537,7 +537,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			storage = (Storage) getFunction(FunctionType.STORAGE);
 		return storage;
 	}
-	
+
 	public WasteDisposal getWaste() {
 		if (waste == null)
 			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
@@ -552,7 +552,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the temperature of a building.
-	 * 
+	 *
 	 * @return temperature (deg C)
 	 */
 	public double getCurrentTemperature() {
@@ -564,7 +564,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets a function type that has with openly available (empty) activity spot
-	 * 
+	 *
 	 * @return FunctionType
 	 */
 	public FunctionType getEmptyActivitySpotFunctionType() {
@@ -574,10 +574,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Gets a function that has with openly available (empty) activity spot
-	 * 
+	 *
 	 * @return FunctionType
 	 */
 	public Function getEmptyActivitySpotFunction() {
@@ -587,19 +587,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			if (f.hasEmptyActivitySpot())
 				goodFunctions.add(f);
 		}
-		
+
 		if (goodFunctions.isEmpty())
 			return null;
-		
+
 		// Choose a random function
 		int index = RandomUtil.getRandomInt(goodFunctions.size() - 1);
 
 		return goodFunctions.get(index);
 	}
-	
+
 	/**
 	 * Determines the building functions.
-	 * 
+	 *
 	 * @return list of building .
 	 * @throws Exception if error in functions.
 	 */
@@ -608,27 +608,27 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		for(FunctionType supported : spec.getFunctionSupported()) {
 			switch (supported) {
-			
+
 			case ADMINISTRATION:
 				buildingFunctions.add(new Administration(this));
 				break;
-				
+
 			case ASTRONOMICAL_OBSERVATION:
 				buildingFunctions.add(new AstronomicalObservation(this));
 				break;
-				
+
 			case BUILDING_CONNECTION:
 				buildingFunctions.add(new BuildingConnection(this));
 				break;
-				
+
 			case COMMUNICATION:
 				buildingFunctions.add(new Communication(this));
 				break;
-				
+
 			case COMPUTATION:
 				buildingFunctions.add(new Computation(this));
 				break;
-				
+
 			case COOKING:
 				buildingFunctions.add(new Cooking(this));
 				buildingFunctions.add(new PreparingDessert(this));
@@ -637,87 +637,87 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			case DINING:
 				buildingFunctions.add(new Dining(this));
 				break;
-				
+
 			case EARTH_RETURN:
 				buildingFunctions.add(new EarthReturn(this));
 				break;
-				
+
 			case EVA:
 				buildingFunctions.add(new EVA(this));
 				break;
-				
+
 			case EXERCISE:
 				buildingFunctions.add(new Exercise(this));
 				break;
-				
+
 			case FARMING:
 				buildingFunctions.add(new Farming(this));
 				break;
-				
+
 			case FISHERY:
 				buildingFunctions.add(new Fishery(this));
 				break;
-				
+
 			case FOOD_PRODUCTION:
 				buildingFunctions.add(new FoodProduction(this));
 				break;
-				
+
 			case GROUND_VEHICLE_MAINTENANCE:
 				buildingFunctions.add(new GroundVehicleMaintenance(this));
 				break;
-				
+
 			case LIFE_SUPPORT:
 				buildingFunctions.add(new LifeSupport(this));
 				break;
-				
+
 			case LIVING_ACCOMMODATIONS:
 				buildingFunctions.add(new LivingAccommodations(this));
 				break;
-				
+
 			case MANAGEMENT:
 				buildingFunctions.add(new Management(this));
 				break;
-				
+
 			case MANUFACTURE:
 				buildingFunctions.add(new Manufacture(this));
 				break;
-				
+
 			case MEDICAL_CARE:
 				buildingFunctions.add(new MedicalCare(this));
 				break;
-				
+
 			case POWER_GENERATION:
 				buildingFunctions.add(new PowerGeneration(this));
 				break;
-				
+
 			case POWER_STORAGE:
 				buildingFunctions.add(new PowerStorage(this));
 				break;
-				
+
 			case RECREATION:
 				buildingFunctions.add(new Recreation(this));
 				break;
-				
+
 			case RESEARCH:
 				buildingFunctions.add(new Research(this));
 				break;
-				
+
 			case RESOURCE_PROCESSING:
 				buildingFunctions.add(new ResourceProcessing(this));
 				break;
-				
+
 			case ROBOTIC_STATION:
 				buildingFunctions.add(new RoboticStation(this));
 				break;
-				
+
 			case STORAGE:
 				buildingFunctions.add(new Storage(this));
 				break;
-				
+
 			case THERMAL_GENERATION:
 				buildingFunctions.add(new ThermalGeneration(this));
 				break;
-			
+
 			case WASTE_DISPOSAL:
 				// No Waste Disposal at the moment. Why ?
 				//buildingFunctions.add(new WasteDisposal(this));
@@ -732,11 +732,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Checks if this building has a particular function.
-	 * 
+	 *
 	 * @param function the enum name of the function.
 	 * @return true if it does.
 	 */
-	public boolean hasFunction(FunctionType functionType) {		
+	public boolean hasFunction(FunctionType functionType) {
 		for (Function f : functions) {
 			if (f.getFunctionType() == functionType) {
 				return true;
@@ -747,7 +747,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets a function if the building has it.
-	 * 
+	 *
 	 * @param functionType {@link FunctionType} the function of the building.
 	 * @return function.
 	 * @throws BuildingException if building doesn't have the function.
@@ -774,20 +774,20 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Remove a building function
-	 * 
+	 *
 	 * @param function
 	 */
 	public void removeFunction(Function function) {
 		if (functions.contains(function)) {
 			functions.remove(function);
-			// Need to remove the function from the building function map 
+			// Need to remove the function from the building function map
 			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
 	}
-	
+
 	/**
 	 * Gets the building's building manager.
-	 * 
+	 *
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
@@ -796,7 +796,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Sets the building's nickName
-	 * 
+	 *
 	 * @return none
 	 */
 	// Called by TabPanelBuilding.java for building nickname change
@@ -807,19 +807,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the building's nickName
-	 * 
+	 *
 	 * @return building's nickName as a String
 	 */
 	// Called by TabPanelBuilding.java for building nickname change
 	public String getNickName() {
 		if (nickName == null || nickName.equalsIgnoreCase(""))
-			nickName = getName();			
+			nickName = getName();
 		return nickName;
 	}
 
 	/**
 	 * Gets the building type, not building's nickname
-	 * 
+	 *
 	 * @return building type as a String.
 	 */
 	public String getName() {
@@ -828,7 +828,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the building type.
-	 * 
+	 *
 	 * @return building type as a String. TODO internationalize building names for
 	 *         display in user interface.
 	 */
@@ -850,7 +850,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Returns the volume of the building in liter
-	 * 
+	 *
 	 * @return volume in liter
 	 */
 	public double getVolumeInLiter() {
@@ -894,7 +894,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the base level of the building.
-	 * 
+	 *
 	 * @return -1 for in-ground, 0 for above-ground.
 	 */
 	public int getBaseLevel() {
@@ -903,28 +903,28 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the power this building currently requires for full-power mode.
-	 * 
+	 *
 	 * @return power in kW.
 	 */
 	public double getFullPowerRequired() {
 		double result = basePowerRequirement;
-		
+
 		// Determine power required for each function.
 		for (Function function : functions) {
 			double power = function.getFullPowerRequired();
 			if (power > 0)
-//				System.out.println(nickName + " : " 
-//					+ function.getFunctionType().toString() + " : " 
+//				System.out.println(nickName + " : "
+//					+ function.getFunctionType().toString() + " : "
 //					+ Math.round(power * 10.0)/10.0 + " kW");
-			result += power; 
+			result += power;
 		}
-		
+
 		return result + powerNeededForEVAheater;
 	}
 
 	/**
 	 * Gets the power the building requires for power-down mode.
-	 * 
+	 *
 	 * @return power in kW.
 	 */
 	public double getPoweredDownPowerRequired() {
@@ -932,7 +932,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		// Determine power required for each function.
 		for (Function function : functions) {
-			result += function.getPoweredDownPowerRequired();	
+			result += function.getPoweredDownPowerRequired();
 		}
 
 		return result;
@@ -954,7 +954,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
-	 * 
+	 *
 	 * @return heat in kW.
 	 */
 	public double getFullHeatRequired() {
@@ -968,8 +968,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	/**
-	 * Sets the value of the heat generated 
-	 * 
+	 * Sets the value of the heat generated
+	 *
 	 * @param heatGenerated
 	 */
 	public void setHeatGenerated(double heatGenerated) {
@@ -980,7 +980,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Sets the required power for heating
-	 * 
+	 *
 	 * @param powerReq
 	 */
 	public void setPowerRequiredForHeating(double powerReq) {
@@ -995,7 +995,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the heat the building requires for power-down mode.
-	 * 
+	 *
 	 * @return heat in kJ/s.
 	 */
 	public double getPoweredDownHeatRequired() {
@@ -1021,7 +1021,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the entity's malfunction manager.
-	 * 
+	 *
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
@@ -1030,7 +1030,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the total amount of lighting power in this greenhouse.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	public double getTotalPowerForEVA() {
@@ -1039,7 +1039,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Calculates the number of people in the airlock
-	 * 
+	 *
 	 * @return number of people
 	 */
 	public int numOfPeopleInAirLock() {
@@ -1054,27 +1054,27 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return num;
 	}
 
-	
+
 	/**
 	 * Gets the number of people
-	 * 
+	 *
 	 * @return
 	 */
 	public int getNumPeople() {
 
 		int people = 0;
-		
+
 		if (lifeSupport != null) {
 			people = lifeSupport.getOccupants().size();
 		}
 
 		return people;
 	}
-	
-	
+
+
 	/**
 	 * Gets a collection of inhabitants
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<Person> getInhabitants() {
@@ -1092,7 +1092,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets a collection of robots
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<Robot> getRobots() {
@@ -1104,18 +1104,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					robots.add(occupant);
 			}
 		}
-		
+
 		return robots;
 	}
-	
+
 	/**
 	 * Gets a collection of people affected by this entity. Children buildings
 	 * should add additional people as necessary.
-	 * 
+	 *
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		
+
 		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
 		Iterator<Person> i = settlement.getIndoorPeople().iterator();
@@ -1146,7 +1146,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * String representation of this building.
-	 * 
+	 *
 	 * @return building's nickName.
 	 */
 	public String toString() {
@@ -1155,7 +1155,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Compares this object with the specified object for order.
-	 * 
+	 *
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
@@ -1163,10 +1163,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public int compareTo(Building o) {
 		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
-	
+
 	/**
 	 * Time passing for building.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 */
 	@Override
@@ -1174,18 +1174,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (!isValid(pulse)) {
 			return false;
 		}
-		
+
 		// Send time to each building function.
 		for (Function f : functions)
 			f.timePassing(pulse);
-	
+
 		// If powered up, active time passing.
 		if (powerModeCache == PowerMode.FULL_POWER)
 			malfunctionManager.activeTimePassing(pulse.getElapsed());
-		
+
 		// Update malfunction manager.
-		malfunctionManager.timePassing(pulse); 
-		
+		malfunctionManager.timePassing(pulse);
+
 		if (pulse.isNewSol()) {
 			// Determine if a meteorite impact will occur within the new sol
 			checkForMeteoriteImpact(pulse);
@@ -1208,7 +1208,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		int moment_of_impact = 0;
 
 		BuildingManager manager = settlement.getBuildingManager();
-					
+
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
 		double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
@@ -1220,14 +1220,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		}
 
 		if (isImpactImminent) {
-			
+
 			int now = pulse.getMarsTime().getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTargetTR()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
-				
+
 				// Reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols
 				isImpactImminent = false;
@@ -1267,13 +1267,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 							// Store the meteorite fragment in the settlement
 							settlement.storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass());
-							
-							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0 
+
+							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0
 									+ " kg of meteorite fragments in " + getNickName() + ".");
-							
+
 							if (pc.getStress() > 30)
 								logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
-							
+
 						}
 					}
 				}
@@ -1287,7 +1287,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the building's inhabitable ID number.
-	 * 
+	 *
 	 * @return id.
 	 */
 	public int getInhabitableID() {
@@ -1296,7 +1296,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Sets the building's settlement inhabitable ID number.
-	 * 
+	 *
 	 * @param id.
 	 */
 	public void setInhabitableID(int id) {
@@ -1305,7 +1305,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets the building's settlement template ID number.
-	 * 
+	 *
 	 * @return id.
 	 */
 	public int getTemplateID() {
@@ -1314,7 +1314,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Sets the building's settlement template ID number.
-	 * 
+	 *
 	 * @param id.
 	 */
 	public void setTemplateID(int id) {
@@ -1336,14 +1336,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 		if (heating == null)
 			heating = furnace.getHeating();
-		
+
 		heating.setHeatLoss(heat);
 	}
 
 	public double getCurrentAirPressure() {
 		return getSettlement().getBuildingAirPressure(this);
 	}
-	
+
 	@Override
 	public String getImmediateLocation() {
 		return getLocationTag().getImmediateLocation();
@@ -1366,7 +1366,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return getSettlement(); 
+		return getSettlement();
 	}
 
 	public int getBuildingID() {
@@ -1382,15 +1382,15 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			functions = buildFunctions(spec);
 		}
 	}
-	
+
 	public boolean isAHabOrHub() {
         return buildingType.contains(" Hab")
                 || buildingType.contains(" Hub");
     }
-	
+
 	/**
 	 * Checks if the building has a lab with a particular science type
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -1400,7 +1400,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		return lab.hasSpecialty(type);
 	}
-	
+
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.BUILDING;
@@ -1408,17 +1408,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override
 	public boolean isInSettlement() {
 		return true;
 	}
-	
+
 	/**
 	 * Gets the amount resource stored
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -1429,7 +1429,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Stores the amount resource
-	 * 
+	 *
 	 * @param resource the amount resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
@@ -1438,10 +1438,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public double storeAmountResource(int resource, double quantity) {
 		return getSettlement().storeAmountResource(resource, quantity);
 	}
-	
+
 	/**
-	 * Retrieves the resource 
-	 * 
+	 * Retrieves the resource
+	 *
 	 * @param resource
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
@@ -1450,10 +1450,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public double retrieveAmountResource(int resource, double quantity) {
 		return getSettlement().retrieveAmountResource(resource, quantity);
 	}
-	
+
 	/**
 	 * Gets the capacity of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return capacity
 	 */
@@ -1464,7 +1464,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
-	 * 
+	 *
 	 * @param resource
 	 * @return quantity
 	 */
@@ -1475,17 +1475,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/**
 	 * Gets all stored amount resources
-	 * 
+	 *
 	 * @return all stored amount resources.
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return getSettlement().getAmountResourceIDs();
 	}
-	
+
 	/**
 	 * Sets the unit's container unit.
-	 * 
+	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
 	@Override
@@ -1505,10 +1505,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
 	}
-	
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 * 
+	 *
 	 * @return the unit's container unit
 	 */
 	@Override
@@ -1517,17 +1517,29 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			return null;
 		return unitManager.getSettlementByID(containerID);
 	}
-	
+
 	/**
 	 * Gets the holder's unit instance
-	 * 
+	 *
 	 * @return the holder's unit instance
 	 */
 	@Override
 	public Unit getHolder() {
 		return this;
 	}
-	
+
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -1538,10 +1550,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			&& this.buildingType.equals(b.getBuildingType());
 //			&& this.nickName.equals(b.getNickName());
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {
@@ -1550,7 +1562,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		hashCode *= buildingType.hashCode();
 		return hashCode;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1567,4 +1579,5 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		malfunctionManager.destroy();
 		malfunctionManager = null;
 	}
+
 }

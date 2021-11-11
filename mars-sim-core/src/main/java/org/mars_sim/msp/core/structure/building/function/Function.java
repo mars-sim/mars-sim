@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -39,21 +40,27 @@ public abstract class Function implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Function.class.getName());
-	
+
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
+	protected static final int GREY_WATER_ID = ResourceUtil. greyWaterID;
+	protected static final int TOILET_TISSUE_ID = ResourceUtil.toiletTissueID;
+	protected static final int TOXIC_WASTE_ID = ResourceUtil.toxicWasteID;
+
 	private FunctionType type;
 	protected Building building;
 	private List<Point2D> activitySpots;
 
 	private long lastPulse = 0; // First initial pulse is always 1
-	
+
 	protected static BuildingConfig buildingConfig;
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
-	
+
 	protected static SurfaceFeatures surface;
 	protected static UnitManager unitManager;
 	protected static Weather weather;
-	
+
 	protected static MarsClock marsClock;
 
 	/**
@@ -64,10 +71,10 @@ public abstract class Function implements Serializable, Temporal {
 	protected Function(FunctionType type, Building building) {
 		this(type, type, building);
 	}
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param type Type of this function
 	 * @param confType Function type to use for configuration
 	 * @param builind Parent building.
@@ -75,16 +82,16 @@ public abstract class Function implements Serializable, Temporal {
 	protected Function(FunctionType type, FunctionType confType, Building building) {
 		this.type = type;
 		this.building = building;
-		
+
 		// load any activity hotspots
 		if (buildingConfig == null) System.out.println("buildingConfig is null");
 		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), confType);
 	}
 
-	
+
 	/**
 	 * Gets the function.
-	 * 
+	 *
 	 * @return {@link FunctionType}
 	 */
 	public FunctionType getFunctionType() {
@@ -93,7 +100,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the function's building.
-	 * 
+	 *
 	 * @return {@link Building}
 	 */
 	public Building getBuilding() {
@@ -102,7 +109,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the maintenance time for this building function.
-	 * 
+	 *
 	 * @return maintenance work time (millisols). Default zero
 	 */
 	public double getMaintenanceTime() {
@@ -111,7 +118,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the function's malfunction scope strings.
-	 * 
+	 *
 	 * @return array of scope strings.
 	 */
 	public String[] getMalfunctionScopeStrings() {
@@ -136,10 +143,10 @@ public abstract class Function implements Serializable, Temporal {
 		lastPulse = newPulse;
 		return result;
 	}
-	
+
 	/**
 	 * Time passing for the function. By default this does nothing.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 */
 	public boolean timePassing(ClockPulse pulse) {
@@ -148,7 +155,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the amount of heat required when function is at full heat.
-	 * 
+	 *
 	 * @return heat (kW) default 0
 	 */
 	public double getFullHeatRequired() {
@@ -156,7 +163,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	/**
 	 * Gets the amount of heat required when function is at heat down level.
-	 * 
+	 *
 	 * @return heat (kW) default zero
 	 */
 	public double getPoweredDownHeatRequired() {
@@ -165,7 +172,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the amount of power required when function is at full power.
-	 * 
+	 *
 	 * @return power (kW) default zero
 	 */
 	public double getFullPowerRequired() {
@@ -174,7 +181,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the amount of power required when function is at power down level.
-	 * 
+	 *
 	 * @return power (kW) default zero
 	 */
 	public double getPoweredDownPowerRequired() {
@@ -191,7 +198,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets an available activity spot for the person.
-	 * 
+	 *
 	 * @param person the person looking for the activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
@@ -244,7 +251,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets an available activity spot for the robot.
-	 * 
+	 *
 	 * @param robot the bot looking for the activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
@@ -301,14 +308,14 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Checks if an activity spot is empty/unoccupied
-	 * 
+	 *
 	 * @param spot as a {@link Point2D}
 	 * @return true if this activity spot is empty.
 	 */
 	public boolean isActivitySpotEmpty(Point2D spot) {
 		if (activitySpots == null || activitySpots.isEmpty())
 			return true;
-		
+
 		boolean result = false;
 
 		Iterator<Point2D> i = activitySpots.iterator();
@@ -329,7 +336,7 @@ public abstract class Function implements Serializable, Temporal {
 						return true;
 					}
 				}
-				
+
 				for (Robot robot : b.getRobots()) {
 					// Check if robot location is identical or very very close (1e-5 meters) to
 					// activity spot.
@@ -346,7 +353,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Checks if a person is at an activity spot for this building function.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return true if the person is currently at an activity spot.
 	 */
@@ -356,14 +363,14 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Checks if a robot is at an activity spot for this building function.
-	 * 
+	 *
 	 * @param robot the robot.
 	 * @return true if the robot is currently at an activity spot.
 	 */
 	public boolean isAtActivitySpot(Robot robot) {
 		return isAtActivitySpot(robot.getXLocation(), robot.getYLocation());
 	}
-	
+
 	private boolean isAtActivitySpot(double x, double y) {
 		boolean result = false;
 
@@ -386,7 +393,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Check if this building function has any activity spots.
-	 * 
+	 *
 	 * @return true if building function has activity spots.
 	 */
 	public boolean hasActivitySpots() {
@@ -399,7 +406,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	/**
 	 * Gets the number of currently empty activity spots
-	 * 
+	 *
 	 * @return
 	 */
 	public int getNumEmptyActivitySpots() {
@@ -407,30 +414,30 @@ public abstract class Function implements Serializable, Temporal {
 		if (activitySpots != null && !activitySpots.isEmpty()) {
 			for (Point2D s: activitySpots) {
 				if (isActivitySpotEmpty(s))
-					empty++;		
-			}	
+					empty++;
+			}
 		}
 		return empty;
 	}
-	
+
 	/**
 	 * Checks if an empty activity spot is available
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean hasEmptyActivitySpot() {
 		if (activitySpots != null && !activitySpots.isEmpty()) {
 			for (Point2D s: activitySpots) {
 				if (isActivitySpotEmpty(s))
-					return true;		
-			}	
+					return true;
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the number of currently occupied activity spots
-	 * 
+	 *
 	 * @return
 	 */
 	public int getNumOccupiedActivitySpots() {
@@ -438,16 +445,16 @@ public abstract class Function implements Serializable, Temporal {
 		if (activitySpots != null && !activitySpots.isEmpty()) {
 			for (Point2D s: activitySpots) {
 				if (!isActivitySpotEmpty(s))
-					occupied++;		
-			}	
+					occupied++;
+			}
 		}
 		return occupied;
 
 	}
-	
+
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param bc {@link BuildingConfig}
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
@@ -463,7 +470,7 @@ public abstract class Function implements Serializable, Temporal {
 		surface = sf;
 		unitManager = u;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -62,6 +62,9 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final double STANDARD_CLEANINNG_TIME = 15;
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
+
+	/** Is this a building airlock in a settlement? */
+	private boolean inSettlement;
 	/** The time it takes to clean up oneself and the EVA suit. */
 	private double remainingCleaningTime;
 	/** The time it takes to doff an EVA suit. */
@@ -88,10 +91,15 @@ public class EnterAirlock extends Task implements Serializable {
 
 		this.airlock = airlock;
 
+		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			inSettlement = true;
+		}
+		else
+			inSettlement = false;
+
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.enterAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
-
 		addPhase(REQUEST_INGRESS);
 		addPhase(DEPRESSURIZE_CHAMBER);
 		addPhase(ENTER_AIRLOCK);
@@ -260,7 +268,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
 
@@ -434,7 +442,7 @@ public class EnterAirlock extends Task implements Serializable {
 			return 0;
 		}
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 //			if (exteriorDoorPos == null) {
 //				exteriorDoorPos = airlock.getAvailableExteriorPosition();
@@ -539,7 +547,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 			if (transitionTo(2)) {
 				canProceed = true;
@@ -680,12 +688,12 @@ public class EnterAirlock extends Task implements Serializable {
 
 				if (remainingDoffingTime <= 0) {
 
-					Unit newSuitOwner = null;
+					ResourceHolder housing = null;
 
-					if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK)
-						newSuitOwner = ((Building)airlock.getEntity()).getSettlement();
+					if (inSettlement)
+						housing = ((Building)airlock.getEntity()).getSettlement();
 					else
-						newSuitOwner = (Vehicle)airlock.getEntity();
+						housing = (Vehicle)airlock.getEntity();
 
 					// 2. Doff this suit
 					// 2a. Records the person as the owner (if it hasn't been done)
@@ -695,12 +703,16 @@ public class EnterAirlock extends Task implements Serializable {
 
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
 
-					// 2c Transfer the EVA suit from person to the new destination
-					suit.transfer(newSuitOwner);
+					// 2c. Transfer the EVA suit from person to the new destination
+					suit.transfer((Unit)housing);
 
-					// 2d Unload any waste
-					suit.unloadWaste((ResourceHolder) newSuitOwner);
-					
+					// 2d. Fetch the clothing from settlement
+					if (inSettlement)
+						person.wearStandardClothing(housing);
+
+					// 2e. Unload any waste
+					suit.unloadWaste(housing);
+
 					// Add experience
 					addExperience(time);
 
@@ -761,7 +773,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (doneCleaning) {
 
-			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			if (inSettlement) {
 				if (transitionTo(1)) {
 	//				// do nothing
 				}
@@ -792,7 +804,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canExit = false;
 
-		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+		if (inSettlement) {
 
 			if (transitionTo(0)) {
 
@@ -879,7 +891,7 @@ public class EnterAirlock extends Task implements Serializable {
 		// Clear the person as the airlock operator if task ended prematurely.
 
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+			if (inSettlement) {
 				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINE, 4_000,
 							"Concluded the airlock operator task.");
 			}

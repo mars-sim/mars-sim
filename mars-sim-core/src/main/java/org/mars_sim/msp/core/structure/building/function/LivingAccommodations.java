@@ -34,18 +34,18 @@ public class LivingAccommodations extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LivingAccommodations.class.getName());
-	
+
 	public static final int MAX_NUM_SOLS = 14;
-	
+
 	public static final double TOILET_WASTE_PERSON_SOL = .02D;
 	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
+	private static final double MIN = 0.001;
 	/** 1/5 of chance of going to a restroom per frame */
 	public static final int TOILET_CHANCE = 20;
 
 	/** max # of beds. */
-	private int maxNumBeds; 
+	private int maxNumBeds;
 	/** The # of registered sleepers. */
 	private int registeredSleepers;
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
@@ -53,7 +53,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	// private double wasteWaterProduced; // Waste water produced by
 	// urination/defecation per person per millisol (avg over Sol).
 	/** percent portion of grey water generated from waste water.*/
-	private double greyWaterFraction; 
+	private double greyWaterFraction;
 
 	/** The bed registry in this facility. */
 	private Map<Integer, Point2D> assignedBeds = new ConcurrentHashMap<>();
@@ -61,22 +61,19 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 
-	private static int waterID = ResourceUtil.waterID;
-	private static int blackWaterID = ResourceUtil.blackWaterID;
-	private static int greyWaterID = ResourceUtil. greyWaterID;
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
 	public LivingAccommodations(Building building) {
 		// Call Function constructor.
 		super(FunctionType.LIVING_ACCOMMODATIONS, building);
-	
-		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);	
-		// Loads the max # of beds available 
+
+		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
+		// Loads the max # of beds available
 		maxNumBeds = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIVING_ACCOMMODATIONS);
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
@@ -91,7 +88,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/**
 	 * Gets the value of the function for a named building.
-	 * 
+	 *
 	 * @param buildingName the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
@@ -126,7 +123,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/**
 	 * Gets the number of beds in the living accommodations.
-	 * 
+	 *
 	 * @return number of beds.
 	 */
 	public int getBedCap() {
@@ -135,16 +132,16 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/**
 	 * Gets the number of assigned beds in this building.
-	 * 
+	 *
 	 * @return number of assigned beds
 	 */
 	public int getNumAssignedBeds() {
 		return assignedBeds.size();
 	}
-	
+
 	/**
 	 * Gets the number of people registered to sleep in this building.
-	 * 
+	 *
 	 * @return number of registered sleepers
 	 */
 	public int getRegisteredSleepers() {
@@ -158,40 +155,43 @@ public class LivingAccommodations extends Function implements Serializable {
 	public boolean areAllBedsTaken() {
         return registeredSleepers >= maxNumBeds;
     }
-	
+
 	/**
 	 * Registers a sleeper with a bed.
-	 * 
+	 *
 	 * @param person
 	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
-	 * @return the bed registered with the given person 
+	 * @return the bed registered with the given person
 	 */
 	public Point2D registerSleeper(Person person, boolean isAGuest) {
+		// Obtain a standard set of clothing items
+		person.wearStandardClothing(building.getSettlement());
+
 		Point2D registeredBed = person.getBed();
-		
+
 		if (registeredBed == null) {
-			
-			if (areAllBedsTaken()) {		 
+
+			if (areAllBedsTaken()) {
 				 logger.log(building, Level.WARNING, 5000,  " All beds have been taken"
-						 		+ " (# Registered Beds: " + registeredSleepers 
-						 		+ ", Bed Capacity: " + maxNumBeds + ").");	
+						 		+ " (# Registered Beds: " + registeredSleepers
+						 		+ ", Bed Capacity: " + maxNumBeds + ").");
 			}
-			
+
 			else if (!assignedBeds.containsKey(person.getIdentifier())) {
 				// TODO: need to rework for guest stay
 				if (isAGuest) {
 					// Note : do not designate a bed since he's only a guest
 					Point2D bed = designateABed(person, isAGuest);
 					if (bed != null) {
-						logger.log(building, person, Level.WARNING, 2000, 
-								" was given a temporary bed.", null); 
+						logger.log(building, person, Level.WARNING, 2000,
+								" was given a temporary bed.", null);
 						return bed;
 					} else {
 						logger.log(building, person, Level.WARNING, 2000,
 								   "Could not find a temporary bed.", null);
 					}
-		
-	
+
+
 				} else {
 					// for a new inhabitant
 					// if a person has never been assigned a bed
@@ -200,13 +200,13 @@ public class LivingAccommodations extends Function implements Serializable {
 						registeredSleepers++;
 						return bed;
 					} else {
-						logger.log(building, person, Level.WARNING, 2000, 
+						logger.log(building, person, Level.WARNING, 2000,
 								"Did not have a bed assigned yet.", null);
 					}
 				}
 			}
 		}
-		
+
 		else {
 			// Ensure the person's registered bed has been added to the assignedBeds map
 			if (!assignedBeds.containsValue(registeredBed)) {
@@ -214,13 +214,13 @@ public class LivingAccommodations extends Function implements Serializable {
 			}
 			return registeredBed;
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Assigns a given bed to a given person
-	 * 
+	 *
 	 * @param person
 	 * @param bed
 	 */
@@ -228,15 +228,15 @@ public class LivingAccommodations extends Function implements Serializable {
 		assignedBeds.put(person.getIdentifier(), bed);
 		person.setBed(bed);
 		person.setQuarters(building);
-		
+
 		logger.log(building, person, Level.INFO, 0, "Designated a bed at ("
 					+ Math.round(bed.getX()*100.0)/100.0 + ", "
-					+ Math.round(bed.getY()*100.0)/100.0 + ").", null);	
+					+ Math.round(bed.getY()*100.0)/100.0 + ").", null);
 	}
-	
+
 	/**
 	 * Gets an empty bed location
-	 * 
+	 *
 	 * @return
 	 */
 	public Point2D getEmptyBed() {
@@ -252,11 +252,11 @@ public class LivingAccommodations extends Function implements Serializable {
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Assigns/designate an available bed to a person
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -279,7 +279,7 @@ public class LivingAccommodations extends Function implements Serializable {
 					}
 					else { // is a guest
 						logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
-								+ Math.round(bed.getX()*100.0)/100.0  + ", " 
+								+ Math.round(bed.getX()*100.0)/100.0  + ", "
 								+ Math.round(bed.getY()*100.0)/100.0  + ").", null);
 					}
 					break;
@@ -292,7 +292,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/**
 	 * Removes a sleeper from a bed.
-	 * 
+	 *
 	 * @throws BuildingException if no sleepers to remove.
 	 */
 	public void removeSleeper(Person person) {
@@ -304,10 +304,10 @@ public class LivingAccommodations extends Function implements Serializable {
 			// bedMap.remove(bedMap.get(person));
 		}
 	}
-	
+
 	/**
 	 * Time passing for the building.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
@@ -325,26 +325,26 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/**
 	 * Adds to the daily water usage
-	 * 
+	 *
 	 * @param waterUssed
 	 */
 	public void addDailyWaterUsage(double waterUssed) {
 		dailyWaterUsage.increaseDataPoint(waterUssed);
 	}
-	
+
 	/**
 	 * Gets the daily average water usage of the last 5 sols
 	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
-	 * 
+	 *
 	 * @return
 	 */
 	public double getDailyAverageWaterUsage() {
 		return dailyWaterUsage.getDailyAverage();
 	}
-	
+
 	/**
 	 * Utilizes water for bathing, washing, etc based on population.
-	 * 
+	 *
 	 * @param time amount of time passing (millisols)
 	 */
 	private void generateWaste(double time) {
@@ -354,7 +354,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Total average wash water used at the settlement over this time period.
 		// This includes showering, washing hands, washing dishes, etc.
 		Settlement settlement = building.getSettlement();
-		
+
 		double ration = 1;
 		// If settlement is rationing water, reduce water usage according to its level
 		int level = settlement.getWaterRation();
@@ -363,14 +363,14 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
 		double absenteeFactor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
-		
+
 		double usage =  (washWaterUsage * time / 1_000D) * numBed * absenteeFactor;
 		double waterUsed = usage * TOILET_CHANCE * random_factor * ration;
 		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
 		if (waterUsed> MIN) {
-			retrieve(waterUsed, waterID, true);
+			retrieve(waterUsed, WATER_ID, true);
 			// Track daily average
 			addDailyWaterUsage(waterUsed);
 		}
@@ -381,21 +381,25 @@ public class LivingAccommodations extends Function implements Serializable {
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 		String wasteName = "LivingAccomodation::generateWaste";
 		if (greyWaterProduced > MIN)
-			store(greyWaterProduced, greyWaterID, wasteName);
+			store(greyWaterProduced, GREY_WATER_ID, wasteName);
 		if (blackWaterProduced > MIN)
-			store(blackWaterProduced, blackWaterID, wasteName);
+			store(blackWaterProduced, BLACK_WATER_ID, wasteName);
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
 
-		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;// toiletPaperUsageSettlement
-																										// *																									// buildingProportionCap;
+		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;																									// buildingProportionCap;
 		if (toiletPaperUsageBuilding > MIN) {
-			retrieve(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, true);
-			store(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, wasteName);
+			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
+			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, wasteName);
 		}
 	}
 
+	/**
+	 * Gets the assigned bed map
+	 *
+	 * @return
+	 */
 	public Map<Integer, Point2D> getAssignedBeds() {
 		return assignedBeds;
 	}
@@ -407,6 +411,11 @@ public class LivingAccommodations extends Function implements Serializable {
         return getNumAssignedBeds() < maxNumBeds;
 	}
 
+	/**
+	 * is this activity spot empty ?
+	 *
+	 * @param spot
+	 */
 	public boolean isActivitySpotEmpty(Point2D spot) {
 		return super.isActivitySpotEmpty(spot);
 	}
@@ -415,7 +424,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	public double getMaintenanceTime() {
 		return maxNumBeds * 7D;
 	}
-	
+
 	public void destroy() {
 		building = null;
 		assignedBeds.clear();

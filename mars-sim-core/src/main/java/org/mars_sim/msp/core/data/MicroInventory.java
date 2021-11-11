@@ -30,7 +30,7 @@ public class MicroInventory implements Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		double capacity;
+		double capacity = 0;
 		double storedAmount = 0;
 		int quantity = 0;
 
@@ -277,17 +277,24 @@ public class MicroInventory implements Serializable {
 		double remaining = s.storedAmount - quantity;
 
 		if (remaining < 0) {
-			if (-remaining > SMALL_AMOUNT) {
+			shortfall = -remaining;
+			if (shortfall > SMALL_AMOUNT) {
 				String name = ResourceUtil.findAmountResourceName(resource);
-				shortfall = -remaining;
-				logger.warning(owner, 10_000L, "Just retrieved all the remaining "
+				logger.warning(owner, 10_000L, "Attempting to retrieve "
 						+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
-						+ name + ", still lacking " + Math.round(-remaining * 1_000.0)/1_000.0 + " kg.");
+						+ name + " but lacking " + Math.round(shortfall * 1_000.0)/1_000.0 + " kg.");
 			}
 			remaining = 0;
 		}
 
+		// Update the stored amount
 		s.storedAmount = remaining;
+
+		// Remove this 'general' resource since its capacity is not set
+		if (s.storedAmount == 0 && s.capacity == 0) {
+			storageMap.remove(resource);
+		}
+
 		// Update the total mass
 		updateAmountResourceTotalMass();
 
@@ -310,19 +317,29 @@ public class MicroInventory implements Serializable {
 		}
 
 		int shortfall = 0;
+		int remaining = s.quantity - quantity;
 
-		if (quantity > s.quantity) {
-			shortfall = quantity - s.quantity;
-			String name = ItemResourceUtil.findItemResourceName(resource);
-			logger.warning(owner, "Can only retrive " + quantity + "x " + name
-				+ " and return the shortfall " + shortfall + "x " + name + ".");
+		if (remaining < 0) {
+			shortfall = -remaining;
+			if (shortfall > 0) {
+				String name = ItemResourceUtil.findItemResourceName(resource);
+				logger.warning(owner, "Attempting to retrieve " + quantity + "x " + name
+					+ " but lacking " + shortfall + "x " + name + ".");
+			}
+			remaining = 0;
 		}
-		else {
-			s.quantity = s.quantity - quantity;
+
+		// Update the quantity
+		s.quantity = remaining;
+
+		// Remove this 'general' resource since its capacity is not set
+		if (s.quantity == 0 && s.capacity == 0) {
+			storageMap.remove(resource);
 		}
 
 		// Update the total mass
 		updateItemResourceTotalMass();
+
 		// Fire the unit event type
 		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;

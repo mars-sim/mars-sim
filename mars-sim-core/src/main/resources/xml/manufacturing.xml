@@ -44,7 +44,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
-	
+
 	<process name="extract minerals from basaltic deposits" tech="1" skill="1" work-time="10" process-time="100"
 			power-required="0.2">
 		<inputs>
@@ -52,16 +52,16 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="9.0" />
-			<resource name="magnesium" amount="7.0" />	
-			<resource name="sodium oxide" amount="5.0" />	
-			<resource name="potassium" amount="3.0" />	
+			<resource name="magnesium" amount="7.0" />
+			<resource name="sodium oxide" amount="5.0" />
+			<resource name="potassium" amount="3.0" />
 			<resource name="titanium" amount="3.0" />
 			<resource name="iron oxide" amount="3.0" />
-			<resource name="sand" amount="5.0" />	
-			<resource name="grey water" amount="10.0" />			
+			<resource name="sand" amount="5.0" />
+			<resource name="grey water" amount="10.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="extract minerals from smectite deposits" tech="1" skill="1" work-time="10" process-time="100"
 			power-required="0.2">
 		<inputs>
@@ -69,17 +69,17 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="9.0" />
-			<resource name="lithium" amount="0.5" />			
-			<resource name="magnesium" amount="4.0" />	
-			<resource name="sodium oxide" amount="2.0" />	
-			<resource name="potassium" amount="2.0" />	
+			<resource name="lithium" amount="0.5" />
+			<resource name="magnesium" amount="4.0" />
+			<resource name="sodium oxide" amount="2.0" />
+			<resource name="potassium" amount="2.0" />
 			<resource name="calcium" amount="4.0" />
 			<resource name="iron oxide" amount="2.0" />
 			<resource name="rock salt" amount="4.0" />
-			<resource name="sand" amount="10.0" />				
-			<resource name="grey water" amount="2.0" />	
+			<resource name="sand" amount="10.0" />
+			<resource name="grey water" amount="2.0" />
 		</outputs>
-	</process>	
+	</process>
 
 	<process name="extract minerals from allophane deposits" tech="1" skill="1" work-time="10" process-time="100"
 			power-required="0.2">
@@ -89,11 +89,11 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<outputs>
 			<resource name="aluminum oxide" amount="30.0" />
 			<resource name="silicon dioxide" amount="1.0" />
-			<resource name="sand" amount="6.0" />				
-			<resource name="grey water" amount="10.0" />	
+			<resource name="sand" amount="6.0" />
+			<resource name="grey water" amount="10.0" />
 		</outputs>
-	</process>	
-	
+	</process>
+
 	<process name="extract minerals from akaganeite deposits" tech="1" skill="1" work-time="10" process-time="100"
 			power-required="0.2">
 		<inputs>
@@ -102,8 +102,8 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<outputs>
 			<resource name="iron oxide" amount="20.0" />
 			<resource name="iron hydroxide" amount="10.0" />
-			<resource name="iron chloride" amount="10.0" />				
-			<resource name="grey water" amount="6.0" />	
+			<resource name="iron chloride" amount="10.0" />
+			<resource name="grey water" amount="6.0" />
 		</outputs>
 	</process>
 
@@ -113,24 +113,24 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="bassanite" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="calcium sulfate" amount="45.0" />		
-			<resource name="grey water" amount="3.0" />	
+			<resource name="calcium sulfate" amount="45.0" />
+			<resource name="grey water" amount="3.0" />
 		</outputs>
 	</process>
-					
+
 <!--
 	Note: In earth's ocean, the most common compound found in brine water are magnesium chloride, magnesium sulfate,
 	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate.
--->					
+-->
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table/epsom salt and other compounds"
 	tech="1" skill="1" work-time="10.0" process-time="100"
 			power-required=".4">
 		<description> http://www.madehow.com/Volume-2/Salt.html
-			One method of evaporating brine is solar evaporation. 
+			One method of evaporating brine is solar evaporation.
 			Most brine is processed by a multiple-effect vacuum evaporator.
-			This device consists of three or more closed metal cylinders with conical bottoms. 
-			Brine is first treated chemically to remove calcium and magnesium compounds. 
+			This device consists of three or more closed metal cylinders with conical bottoms.
+			Brine is first treated chemically to remove calcium and magnesium compounds.
 			It then fills the bottom.
 			Brine may also be processed in a grainer.
 		</description>
@@ -181,7 +181,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="Nitrite" amount="0.2" />
 			<resource name="Nitrogen" amount="1.0" />
 			<resource name="Ammonia" amount="1.0" />
-			<resource name="argon" amount="0.1" />			
+			<resource name="argon" amount="0.1" />
 			<resource name="regolith" amount="45.0" />
 		</outputs>
 	</process>
@@ -226,7 +226,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<outputs>
 			<resource name="pulp" amount="5.5" />
 			<resource name="grey water" amount=".4" />
-			<resource name="solid waste" amount=".1" />			
+			<resource name="solid waste" amount=".1" />
 		</outputs>
 	</process>
 
@@ -479,8 +479,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="aluminum oxide" amount="2.0" />
 			<resource name="silicon" amount="1.0" />
-			<resource name="sulfur" amount="1.0" />				
-			<resource name="sand" amount="40.0" />		
+			<resource name="sulfur" amount="1.0" />
+			<resource name="sand" amount="40.0" />
 		</outputs>
 	</process>
 
@@ -495,11 +495,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="aluminum oxide" amount="20.0" />
 			<resource name="silicon" amount="10.0" />
-			<resource name="sulfur" amount="10.0" />						
-			<resource name="sand" amount="400.0" />	
+			<resource name="sulfur" amount="10.0" />
+			<resource name="sand" amount="400.0" />
 		</outputs>
 	</process>
-  
+
 	<process name="extract silicon dioxide from sand"
 	tech="1" skill="0"
 			work-time="20"
@@ -510,10 +510,10 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="aluminum" amount="5.0" />
-			<resource name="silicon dioxide" amount="45.0" />				
+			<resource name="silicon dioxide" amount="45.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="extract silicon dioxide from sand (large batch)"
 	tech="1" skill="2"
 			work-time="100"
@@ -529,9 +529,9 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 -->
 
-<!-- Typically, manufactured glass contains around 15% sodium oxide, 70% silica 
-     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda" 
-     serves as a flux to lower the temperature at which the silica melts.  
+<!-- Typically, manufactured glass contains around 15% sodium oxide, 70% silica
+     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
+     serves as a flux to lower the temperature at which the silica melts.
      https://en.wikipedia.org/wiki/Sodium_oxide -->
 <!--
 	<process name="make glass from sand"
@@ -542,11 +542,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="sand" amount="50.0" />
 			<resource name="sodium carbonate" amount="5.0" />
-			
+
 		</inputs>
 		<outputs>
 			<resource name="glass" amount="30.0" />
-			<resource name="silicon dioxide" amount="10.0" />			
+			<resource name="silicon dioxide" amount="10.0" />
 		</outputs>
 	</process>
 -->
@@ -560,13 +560,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon dioxide" amount="45.0" />
 			<resource name="calcium carbonate" amount="1.0" />
 			<resource name="sodium carbonate" amount="1.0" />
-			
+
 		</inputs>
 		<outputs>
-			<resource name="quartz" amount="40.0" />		
+			<resource name="quartz" amount="40.0" />
 		</outputs>
-	</process>	
-<!-- 
+	</process>
+<!--
 	<process name="extract aluminum and oxide from sand"
 	tech="1" skill="0"
 			work-time="50"
@@ -578,10 +578,10 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="aluminum oxide" amount="2.0" />
 			<resource name="aluminum" amount="1.0" />
-			<resource name="silicon" amount="1.0" />			
+			<resource name="silicon" amount="1.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="extract aluminum and oxide from sand (large batch)"
 	tech="1" skill="2"
 			work-time="250"
@@ -593,11 +593,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="aluminum oxide" amount="20.0" />
 			<resource name="aluminum" amount="10.0" />
-			<resource name="silicon" amount="10.0" />			
+			<resource name="silicon" amount="10.0" />
 		</outputs>
 	</process>
  -->
-	
+
 	<process name="do carbon monoxide iron reduction"
 			tech="1" skill="1"
 			work-time="50"
@@ -635,7 +635,7 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="50"
 			process-time="200"
 			power-required=".2">
-		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; 
+		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt;
 		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
 		<inputs>
 			<resource name="iron oxide" amount="50.0" />
@@ -652,7 +652,7 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="250"
 			process-time="1000"
 			power-required="1">
-		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; 
+		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt;
 		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
 		<inputs>
 			<resource name="iron oxide" amount="500.0" />
@@ -760,7 +760,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum ingot" number="9" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum oxide" amount="0.8" />		
+			<resource name="aluminum oxide" amount="0.8" />
 			<part name="aluminum sheet" number="3" />
 		</outputs>
 	</process>
@@ -843,7 +843,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel ingot" number="8" />
 		</inputs>
 		<outputs>
-			<resource name="iron powder" amount="1" />		
+			<resource name="iron powder" amount="1" />
 			<part name="steel sheet" number="5" />
 		</outputs>
 	</process>
@@ -877,7 +877,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="1" />
 		</inputs>
 		<outputs>
-			<resource name="iron powder" amount="0.8" />		
+			<resource name="iron powder" amount="0.8" />
 			<part name="steel pipe" number="8" />
 		</outputs>
 	</process>
@@ -901,7 +901,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="2" />
 		</inputs>
 		<outputs>
-			<resource name="iron powder" amount="0.8" />	
+			<resource name="iron powder" amount="0.8" />
 			<part name="steel canister" number="3" />
 		</outputs>
 	</process>
@@ -952,7 +952,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="4" />
-			<part name="optical cable" number="2" />			
+			<part name="optical cable" number="2" />
 		</inputs>
 		<outputs>
 			<part name="satellite dish" number="1" />
@@ -979,7 +979,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
-			<part name="optical cable" number="1" />			
+			<part name="optical cable" number="1" />
 		</inputs>
 		<outputs>
 			<part name="radio antenna" number="5" />
@@ -1113,8 +1113,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="bottle" number="10" />
 		</outputs>
 	</process>
-	
-<!-- Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an 
+
+<!-- Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
 oxide or super oxide and can be converted into soda. Just dissolve the sodium oxide
  in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
   Boil down the result to extract the water and you have soda. -->
@@ -1122,33 +1122,33 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".1">
 		<inputs>
 			<resource name="sodium oxide" amount="10.0" />
-			<resource name="water" amount="1.0" />			
-			<resource name="carbon dioxide" amount="1.0" />	
+			<resource name="water" amount="1.0" />
+			<resource name="carbon dioxide" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="sodium carbonate" amount="5.0" />							
+			<resource name="sodium carbonate" amount="5.0" />
 		</outputs>
 	</process>
-	
-	<!-- 
+
+	<!--
 		NASA Mars ISRU Water Study
-		Case B : 
-				Deposit Type : Poly-hydrated 
+		Case B :
+				Deposit Type : Poly-hydrated
 					40% gypsum
 					3% allophane
 					3% akaganeite
-					3 smectite 
-					
+					3 smectite
+
 	-->
 	<process name="process regolith-B rich in poly-hydrated sulfate" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
-					40% gypsum; 
-					3% allophane; 
-					3% akaganeite; 
-					3% smectite;  
+					40% gypsum;
+					3% allophane;
+					3% akaganeite;
+					3% smectite;
 		</description>
 		<inputs>
 			<resource name="regolith-B" amount="50.0" />
@@ -1156,8 +1156,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="gypsum" amount="20.0" />
 			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />	
-			<resource name="smectite" amount="1.5" />	
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="smectite" amount="1.5" />
 			<resource name="sand" amount="20.0" />
 		</outputs>
 	</process>
@@ -1165,12 +1165,12 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="process regolith-C rich in phyllo-silicate" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
-					40% smectite; 
-					3% allophane; 
-					3% akaganeite; 
-					3% bassanite;  
+					40% smectite;
+					3% allophane;
+					3% akaganeite;
+					3% bassanite;
 		</description>
 		<inputs>
 			<resource name="regolith-C" amount="50.0" />
@@ -1178,8 +1178,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="smectite" amount="20.0" />
 			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />	
-			<resource name="bassanite" amount="1.5" />	
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="bassanite" amount="1.5" />
 			<resource name="sand" amount="20.0" />
 		</outputs>
 	</process>
@@ -1187,13 +1187,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="process regolith-D basaltic" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
-					23.5% basaltic; 
-					3% allophane; 
-					3% akaganeite; 
+					23.5% basaltic;
+					3% allophane;
+					3% akaganeite;
 					3% bassanite;
-					3% smectite;  
+					3% smectite;
 		</description>
 		<inputs>
 			<resource name="regolith-D" amount="50.0" />
@@ -1202,16 +1202,16 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="basaltic" amount="11.75" />
 			<resource name="smectite" amount="1.5" />
 			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />	
-			<resource name="bassanite" amount="1.5" />	
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="bassanite" amount="1.5" />
 			<resource name="sand" amount="25.0" />
 			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
-			<resource name="baking powder" amount="4.0" />	
-			<resource name="table salt" amount="0.4" />	
+			<resource name="baking powder" amount="4.0" />
+			<resource name="table salt" amount="0.4" />
 		</outputs>
-	</process>					
+	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
 	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="1" work-time="100"
@@ -1221,7 +1221,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
 			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
 			Note: ignoring hydrogen sulfide as waste for now.
-			
+
 			Gypsum has up to 8.6 % water
 		</description>
 		<inputs>
@@ -1247,9 +1247,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
 			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
 			Note: ignoring hydrogen sulfide as waste for now.
-			
+
 			Gypsum has up to 8.6 % water
-		</description>			
+		</description>
 		<inputs>
 			<resource name="gypsum" amount="500.0" />
 			<resource name="carbon" amount="70.0" />
@@ -1626,13 +1626,25 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
-	<process name="make sheet glass" tech="3" skill="3" work-time="200" process-time="300"
+	<process name="make sheet glass" tech="2" skill="3" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="sand" amount="26.0" />
 		</inputs>
 		<outputs>
 			<part name="glass sheet" number="1" />
+		</outputs>
+	</process>
+
+	<process name="make garment" tech="2" skill="2" work-time="100" process-time="100"
+			power-required=".2">
+		<inputs>
+			<resource name="cane fiber" amount="0.2" />
+			<resource name="polyurethane" amount="0.1" />
+			<resource name="polyester resin" amount="1.0" />
+		</inputs>
+		<outputs>
+			<part name="garment" number="2" />
 		</outputs>
 	</process>
 
@@ -1667,6 +1679,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<resource name="polyethylene" amount="1.0" />
 			<resource name="cane fiber" amount="0.3" />
+			<resource name="polyester resin" amount="0.5" />
 		</inputs>
 		<outputs>
 			<part name="counter pressure suit" number="1" />
@@ -1677,9 +1690,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
-			<resource name="polyurethane" amount="0.1" />	
+			<resource name="polyurethane" amount="0.1" />
 			<part name="fiberglass cloth" number="5" />
-			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
 			<part name="coveralls" number="1" />
@@ -1690,7 +1702,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
-			<resource name="polyurethane" amount="0.05" />			
+			<resource name="polyurethane" amount="0.05" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1703,7 +1715,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
-			<resource name="polyurethane" amount="0.1" />			
+			<resource name="polyurethane" amount="0.1" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="2" />
 			<part name="fiberglass" number="2" />
@@ -1717,7 +1729,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".7">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
-			<resource name="polyurethane" amount="0.05" />			
+			<resource name="polyurethane" amount="0.05" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1757,7 +1769,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="10" />
-			<part name="optical cable" number="1" />			
+			<part name="optical cable" number="1" />
 		</inputs>
 		<outputs>
 			<part name="eva antenna" number="20" />
@@ -1798,7 +1810,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="work gloves" number="2" />
 		</outputs>
 	</process>
-	
+
 	<!-- Small wheels are made with steel and steel wire. -->
 	<process name="make small wheels" tech="2" skill="2" work-time="100" process-time="200"
 			power-required="0.5">
@@ -1933,13 +1945,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="4" />
 			<part name="logic board" number="1" />
-			
+
 		</inputs>
 		<outputs>
 			<part name="small stepper motor" number="4" />
 		</outputs>
 	</process>
-	
+
 	<process name="manufacture small motor" tech="3" skill="3" work-time="200" process-time="200"
 			power-required=".2">
 		<inputs>
@@ -2031,7 +2043,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	
+
 	<process name="make fuel pump" tech="4" skill="3" work-time="200" process-time="100"
 			power-required="1.0">
 		<inputs>
@@ -2143,25 +2155,25 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="2" />
-			<part name="plastic pipe" number="1" />				
+			<part name="plastic pipe" number="1" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="small wheel" number="8" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="fuel tank" number="1" />
-			<part name="fuel pump" number="1" />						
+			<part name="fuel pump" number="1" />
 		</inputs>
 		<outputs>
 			<vehicle name="delivery drone" number="1" />
 		</outputs>
 	</process>
-	
+
 	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
 			<part name="navigation circuit board" number="1" />
-			<part name="communications circuit board" number="1" />	
+			<part name="communications circuit board" number="1" />
 			<part name="small vehicle frame" number="1" />
 			<part name="rover chassis panel" number="3" />
 			<part name="small motor" number="4" />
@@ -2171,33 +2183,33 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="3" />
-			<part name="plastic pipe" number="2" />			
+			<part name="plastic pipe" number="2" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="small wheel" number="8" />
 			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="4" />	
+			<part name="optical cable" number="4" />
 			<part name="fuel tank" number="1" />
-			<part name="fuel pump" number="1" />					
+			<part name="fuel pump" number="1" />
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />
 		</outputs>
 	</process>
-	
+
 	<process name="assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
 			power-required="4.0">
 		<inputs>
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-			
-			<part name="large vehicle frame" number="1" />			
+
+			<part name="large vehicle frame" number="1" />
 			<part name="rover chassis panel" number="6" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="fuel cell stack" number="4" />			
+			<part name="fuel cell stack" number="4" />
 			<part name="large motor" number="3" />
 			<part name="rover battery" number="2" />
 			<part name="rover control panel" number="1" />
@@ -2216,7 +2228,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="12" />
-			<part name="optical cable" number="6" />			
+			<part name="optical cable" number="6" />
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
@@ -2228,7 +2240,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-			
+
 			<part name="large vehicle frame" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
@@ -2254,7 +2266,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="16" />
-			<part name="optical cable" number="8" />			
+			<part name="optical cable" number="8" />
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
@@ -2266,7 +2278,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-					
+
 			<part name="large vehicle frame" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
@@ -2292,7 +2304,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="14" />
-			<part name="optical cable" number="10" />			
+			<part name="optical cable" number="10" />
 		</inputs>
 		<outputs>
 			<vehicle name="cargo rover" number="1" />
@@ -2358,7 +2370,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="magnesium" amount="14.4" />
 			<resource name="carbon dioxide" amount="52.2" />
-			<resource name="silicon dioxide" amount="5" />			
+			<resource name="silicon dioxide" amount="5" />
 		</outputs>
 	</process>
 
@@ -2497,7 +2509,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="copper sheet" number="1" />
 		</inputs>
 		<outputs>
-			<resource name="copper" amount=".9" />	
+			<resource name="copper" amount=".9" />
 			<part name="copper pipe" number="8" />
 		</outputs>
 	</process>
@@ -2536,7 +2548,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="heat pipe" number="4" />
 		</outputs>
 	</process>
-	
+
 	<process name="manufacture pneumatic drill" tech="3" skill="4" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
@@ -2645,7 +2657,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="wire connector" number="10" />
 			<part name="fiberglass" number="2" />
 			<part name="small semiconductor wafer" number="2" />
-			<part name="logic board" number="2" />			
+			<part name="logic board" number="2" />
 		</inputs>
 		<outputs>
 			<part name="solar panel" number="3" />
@@ -2701,7 +2713,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-<!-- 
+<!--
 	<process name="mix regolith mortar" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>Makes dry mortar mix with cement and regolith (1:5 mixture).</description>
@@ -2751,7 +2763,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
  -->
-	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates. 
+	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
 	     https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
 	     http://sffsymposium.engr.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf -->
 	<process name="mix sulfur concrete" tech="1" skill="1" work-time="50" process-time="0"
@@ -2778,7 +2790,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="concrete" amount="500.0" />
 		</outputs>
 	</process>
-	
+
 	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
 	<process name="mix concrete" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">
@@ -2839,8 +2851,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="grey water" amount="0.6" />			
-			<part name="brick" number="10" />		
+			<resource name="grey water" amount="0.6" />
+			<part name="brick" number="10" />
 		</outputs>
 	</process>
 
@@ -2852,7 +2864,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="grey water" amount="0.6" />	
+			<resource name="grey water" amount="0.6" />
 			<part name="brick" number="10" />
 		</outputs>
 	</process>
@@ -2865,8 +2877,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
-			<resource name="grey water" amount="6" />			
-			<part name="brick" number="100" />			
+			<resource name="grey water" amount="6" />
+			<part name="brick" number="100" />
 		</outputs>
 	</process>
 
@@ -2878,34 +2890,34 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
-			<resource name="grey water" amount="6" />			
-			<part name="brick" number="100" />			
+			<resource name="grey water" amount="6" />
+			<part name="brick" number="100" />
 		</outputs>
 	</process>
 
-	<!-- Melting permafrost ice and filtering the water. 
+	<!-- Melting permafrost ice and filtering the water.
 	     Note : Melting ice requires 450kJ/kg exraction energy
-	     
+
 		Specific heat capacity of ice is 2.09 J/g/C
-		
+
 		e.g. For 1 mol of ice, from -25 C to 0 C
 		= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
 
 		.941 kJ /mol
 
 		To transition from ice to liquid, it takes a total of 6.02 kJ/mol
-		
+
 		Specific heat capacity of water is 4.18 J/g/C
-		
+
 		To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
-				
+
 		It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
-		
-		For 1 kg, heating for 25 millisols, 
-		Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg 
+
+		For 1 kg, heating for 25 millisols,
+		Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
 
 		or 1.3939 kW for 8 kg of ice
-		
+
 		Note: assume using vacuum chamber/microwaving/other techniques to reduce
 		      power usage and speed up melting by 5-fold
 	     -->
@@ -3113,7 +3125,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Reducing carbon dioxide in oxygen and carbon monoxide. -->
-	<process name="do CO2 reduction" tech="2" skill="2" work-time="10" process-time="100" 
+	<process name="do CO2 reduction" tech="2" skill="2" work-time="10" process-time="100"
 	power-required="1.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
@@ -3213,9 +3225,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="plastic sheet" number="1" />
 			<part name="microcontroller" number="1" />
 			<part name="small transformer" number="1" />
-<!--		<part name="magnetron tube" number="1" /> 		-->	
+<!--		<part name="magnetron tube" number="1" /> 		-->
 			<part name="power transistor" number="1" />
-			<part name="logic board" number="1" />			
+			<part name="logic board" number="1" />
 		</inputs>
 		<outputs>
 			<part name="microwave" number="1" />
@@ -3285,7 +3297,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="heating element" number="4" />
 			<part name="microcontroller" number="1" />
 			<part name="ventilation fan" number="1" />
-			<part name="logic board" number="1" />			
+			<part name="logic board" number="1" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
@@ -3337,7 +3349,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="1.0">
 		<inputs>
 			<part name="microcontroller" number="1" />
-			<part name="logic board" number="2" />			
+			<part name="logic board" number="2" />
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
@@ -3381,7 +3393,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="microcontroller" number="40" />
 		</outputs>
 	</process>
-	
+
 	<!-- 2015-05-19 Added manufacturing lED kit assembly. -->
 	<process name="make light emitting diode kit" tech="3" skill="3" work-time="200" process-time="500"
 			power-required="0.5">
@@ -3410,7 +3422,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="glass sheet" number="1" />
 			<part name="optical lens" number="3" />
 			<part name="plastic sheet" number="1" />
-			<part name="diode" number="3" />			
+			<part name="diode" number="3" />
 		</inputs>
 		<outputs>
 			<part name="carbon dioxide laser" number="5" />
@@ -3438,7 +3450,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="optical cable" number="20" />
 		</outputs>
 	</process>
-	
+
 	<!-- 2015-05-19 Added manufacturing a helium–neon laser. -->
 	<process name="manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="2.0">
@@ -3452,7 +3464,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="optical lens" number="3" />
 			<part name="optical prism" number="3" />
 			<part name="plastic sheet" number="1" />
-			<part name="diode" number="3" />				
+			<part name="diode" number="3" />
 		</inputs>
 		<outputs>
 			<part name="helium neon laser" number="5" />
@@ -3472,17 +3484,17 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="heating element" number="2" />
 			<part name="heat pipe" number="2" />
 			<part name="microcontroller" number="2" />
-			<part name="logic board" number="3" />			
+			<part name="logic board" number="3" />
 			<part name="ventilation fan" number="1" />
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
 			<part name="glass sheet" number="1" />
 			<part name="small stepper motor" number="3" />
 			<part name="timing belt" number="3" />
-			<part name="optical prism" number="3" />	
-			<part name="diode" number="5" />	
-			<part name="optical cable" number="3" />	
-			<part name="power cable" number="1" />										
+			<part name="optical prism" number="3" />
+			<part name="diode" number="5" />
+			<part name="optical cable" number="3" />
+			<part name="power cable" number="1" />
 		</inputs>
 		<outputs>
 			<part name="laser sintering 3d printer" number="1" />
@@ -3496,7 +3508,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="sodium hypochlorite" amount=".1" />
 		</inputs>
 		<outputs>
-			<resource name="activated charcoal" amount="1" />	
+			<resource name="activated charcoal" amount="1" />
 		</outputs>
 	</process>
 
@@ -3592,15 +3604,15 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="polyurethane" amount="2.0" />
 		</outputs>
 	</process>
-	
+
 	<!-- Produces polycarbonate roofing. -->
 	<process name="manufacture polycarbonate roofing" tech="3" skill="3" work-time="100" process-time="200"
 			power-required="1.0">
 		<description>
-			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via 
-			methanolysis of ethylene carbonate. Ethylene carbonate is produced by the 
+			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via
+			methanolysis of ethylene carbonate. Ethylene carbonate is produced by the
 			reaction between ethylene oxide and carbon dioxide.
-		</description>	
+		</description>
 		<inputs>
 			<resource name="polycarbonate resin" amount="3.5" />
 		</inputs>
@@ -3630,26 +3642,26 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="5">
 		<description>
 			Each solid oxide fuel cell (SOFC) can generate 200W.
-		</description>	
+		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
-			<resource name="aluminum" amount=".5" />		
+			<resource name="aluminum" amount=".5" />
 			<resource name="nickel" amount=".05" />
-			<resource name="lithium" amount=".05" />			
-			<resource name="iron powder" amount=".5" />	
+			<resource name="lithium" amount=".05" />
+			<resource name="iron powder" amount=".5" />
 			<resource name="glass" amount=".5" />
 		</inputs>
 		<outputs>
 			<part name="solid oxide fuel cell" number="20" />
 		</outputs>
 	</process>
-	
+
 	<!-- 2015-09-28 Added manufacturing fuel cell stack. -->
 	<process name="make fuel cell stack" tech="3" skill="4" work-time="1000" process-time="100"
 			power-required="5">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
-		</description>	
+		</description>
 		<inputs>
 			<part name="steel sheet" number="1" />
 			<part name="plastic sheet" number="1" />
@@ -3657,7 +3669,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="wire connector" number="5" />
 			<part name="steel pipe" number="2" />
 			<part name="solid oxide fuel cell" number="75" />
-			<part name="logic board" number="1" />			
+			<part name="logic board" number="1" />
 		</inputs>
 		<outputs>
 			<part name="fuel cell stack" number="1" />
@@ -3684,7 +3696,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="0.1">
 		<inputs>
 			<resource name="calcium carbonate" amount="0.1" />
-			<resource name="activated charcoal" amount="3" />			
+			<resource name="activated charcoal" amount="3" />
 			<part name="plastic sheet" number="1" />
 		</inputs>
 		<outputs>
@@ -3699,9 +3711,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="aluminum" amount="0.1" />
 			<resource name="aluminum oxide" amount="0.1" />
 			<resource name="zinc" amount="0.1" />
-			<resource name="nickel" amount="0.1" />					
-			<resource name="iron" amount="0.1" />	
-			<resource name="carbon" amount="1" />		
+			<resource name="nickel" amount="0.1" />
+			<resource name="iron" amount="0.1" />
+			<resource name="carbon" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="resistor" number="200" />
@@ -3713,48 +3725,48 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="2">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
-			<resource name="aluminum oxide" amount="0.1" />		
+			<resource name="aluminum oxide" amount="0.1" />
 			<resource name="zinc" amount="0.05" />
-			<resource name="nickel" amount="0.05" />					
-			<resource name="iron" amount="0.05" />	
-			<resource name="carbon" amount="1" />		
-			<resource name="silicon" amount="1" />	
+			<resource name="nickel" amount="0.05" />
+			<resource name="iron" amount="0.05" />
+			<resource name="carbon" amount="1" />
+			<resource name="silicon" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="capacitor" number="150" />
 		</outputs>
 	</process>
-		
+
 <!-- 2017-09-11 Added manufacture diodes
 	https://en.wikipedia.org/wiki/Diode
-	Today, most diodes are made of silicon, but other semiconductors 
+	Today, most diodes are made of silicon, but other semiconductors
 	such as selenium and germanium are sometimes used.	-->
 	<process name="manufacture diodes" tech="1" skill="2" work-time="200" process-time="500"
 			power-required="5">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
-			<resource name="aluminum oxide" amount="0.1" />		
-			<resource name="silicon" amount="1" />				
-			<resource name="iron" amount="0.1" />			
+			<resource name="aluminum oxide" amount="0.1" />
+			<resource name="silicon" amount="1" />
+			<resource name="iron" amount="0.1" />
 		</inputs>
 		<outputs>
 			<part name="diode" number="200" />
 		</outputs>
 	</process>
-			
+
 	<!-- 2017-09-11 Added manufacture logic board -->
 	<process name="manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
 			power-required="5">
 		<inputs>
 			<resource name="copper" amount="0.2" />
-			<resource name="iron" amount="0.2" />					
+			<resource name="iron" amount="0.2" />
 			<resource name="aluminum" amount="0.1" />
 			<part name="glass sheet" number="1" />
-			<part name="plastic sheet" number="1" />			
+			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
-			<part name="small semiconductor wafer" number="1" />			
+			<part name="small semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
 			<part name="logic board" number="80" />
@@ -3817,9 +3829,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="12" />
-		<part-salvage name="steel scrap" number="4" />		
+		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="7" />
-		<part-salvage name="optical cable" number="10" />				
+		<part-salvage name="optical cable" number="10" />
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
@@ -3849,9 +3861,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="16" />
-		<part-salvage name="steel scrap" number="5" />		
-		<part-salvage name="aluminum scrap" number="7" />	
-		<part-salvage name="optical cable" number="10" />			
+		<part-salvage name="steel scrap" number="5" />
+		<part-salvage name="aluminum scrap" number="7" />
+		<part-salvage name="optical cable" number="10" />
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
@@ -3881,15 +3893,15 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="14" />
-		<part-salvage name="steel scrap" number="4" />		
+		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
-		<part-salvage name="optical cable" number="10" />				
+		<part-salvage name="optical cable" number="10" />
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
 		<part-salvage name="small vehicle frame" number="1" />
-		<part-salvage name="fuel cell stack" number="1" />	
+		<part-salvage name="fuel cell stack" number="1" />
 		<part-salvage name="large motor" number="2" />
 		<part-salvage name="rover battery" number="1" />
 		<part-salvage name="utility vehicle control panel" number="1" />
@@ -3899,9 +3911,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="lubricant bottle" number="1" />
 		<part-salvage name="small wheel" number="8" />
 		<part-salvage name="radio antenna" number="1" />
-		<part-salvage name="steel scrap" number="1" />		
-		<part-salvage name="aluminum scrap" number="2" />	
-		<part-salvage name="optical cable" number="3" />		
+		<part-salvage name="steel scrap" number="1" />
+		<part-salvage name="aluminum scrap" number="2" />
+		<part-salvage name="optical cable" number="3" />
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->

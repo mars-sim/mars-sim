@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.EquipmentInventory;
+import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
@@ -58,6 +59,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -2092,7 +2094,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		if (destination.equals(cu)) {
 			return true;
 		}
-		
+
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
 			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
@@ -2187,6 +2189,35 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			for (Equipment e: getEquipmentSet()) {
 				e.setCoordinates(newLocation);
 			}
+		}
+	}
+
+	/**
+	 * Does this person have a set of clothing
+	 */
+	public boolean hasGarment() {
+		return hasItemResource(ItemResourceUtil.garmentID);
+	}
+
+	/**
+	 * Puts on a standard set of clothing items
+	 *
+	 * @param holder the previous holder of the clothing
+	 */
+	public void wearStandardClothing(ResourceHolder holder) {
+		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
+			storeItemResource(ItemResourceUtil.garmentID, 1);
+		}
+	}
+
+	/**
+	 * Puts off a standard set of clothing items
+	 *
+	 * @param holder the new holder of the clothing
+	 */
+	public void unwearStandardClothing(ResourceHolder holder) {
+		if (hasGarment() && retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
+			holder.storeItemResource(ItemResourceUtil.garmentID, 1);
 		}
 	}
 

@@ -38,41 +38,43 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SOIL_COMPACTOR = "soil compactor";
 
 	public static final String PIPE_WRENCH = "pipe wrench";
-	
+
 	// Other strings
 	public static final String EXTINGUSHER = "fire extinguisher";
 	public static final String WORK_GLOVES = "work gloves";
 	public static final String CONTAINMENT = "mushroom containment kit";
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
-		
+
 	public static final String IRON_INGOT = "iron ingot";
 	public static final String STEEL_INGOT = "steel ingot";
 	public static final String IRON_SHEET = "iron sheet";
 	public static final String STEEL_SHEET = "steel sheet";
-	
+
 	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
 	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
 	public static final Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
-	
+
 	public static final Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
 	public static final Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
 	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
 	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
+	public static int garmentID;
+
 	public static int pneumaticDrillID;
 	public static int backhoeID;
 	public static int socketWrenchID;
 	public static int pipeWrenchID;
-	
+
 	public static int fireExtinguisherID;
 	public static int workGlovesID;
 	public static int mushroomBoxID;
 	public static int smallHammerID;
 
 	public static int printerID;
-	
+
 	public static int ironIngotID;
 	public static int ironSheetID;
 	public static int steelIngotID;
@@ -90,7 +92,7 @@ public class ItemResourceUtil implements Serializable {
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	public static List<String> ATTACHMENTS = new ArrayList<>();
-	
+
 	static {
 		ATTACHMENTS.add(BACKHOE);
 		ATTACHMENTS.add(BULLDOZER_BLADE);
@@ -99,9 +101,9 @@ public class ItemResourceUtil implements Serializable {
 		ATTACHMENTS.add(PNEUMATIC_DRILL);
 		ATTACHMENTS.add(SOIL_COMPACTOR);
 	}
-	
+
 	public static String[] EVASUIT_PARTS;
-	
+
 	static {
 		EVASUIT_PARTS = new String[] {
 					"eva helmet",
@@ -109,25 +111,25 @@ public class ItemResourceUtil implements Serializable {
 					"counter pressure suit",
 					"coveralls",
 					"suit heating unit",
-					
+
 					"eva gloves",
 					"eva boots",
 					"eva pads",
 					"eva backpack",
 					"eva antenna",
-					
+
 					"eva battery",
 					"eva radio",
 			};
 	}
-	
+
 	/**
 	 * Constructor
 	 */
 	public ItemResourceUtil() {
-		
+
 		partSet = getItemResources();
-		
+
 		createMaps();
 
 		createIDs();
@@ -135,7 +137,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Creates an item resource. This is only used for test cases but should it be here?
-	 * 
+	 *
 	 * @param resourceName
 	 * @param id
 	 * @param description
@@ -149,28 +151,30 @@ public class ItemResourceUtil implements Serializable {
 		ItemResourceUtil.registerBrandNewPart(p);
 		return p;
 	}
-	
+
 	/**
 	 * Prepares the id's of a few item resources
 	 */
 	public void createIDs() {
+		garmentID = findIDbyItemResourceName("garment");
+
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
 		socketWrenchID = findIDbyItemResourceName(SOCKET_WRENCH);
 		pipeWrenchID = findIDbyItemResourceName(PIPE_WRENCH);
-		
+
 		fireExtinguisherID = findIDbyItemResourceName(EXTINGUSHER);
 		workGlovesID = findIDbyItemResourceName(WORK_GLOVES);
 		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT);
 		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
 
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
-		
+
 		ironIngotID = findIDbyItemResourceName(IRON_INGOT);
 		ironSheetID = findIDbyItemResourceName(IRON_SHEET);
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
-		
+
 	}
 
 	/**
@@ -199,7 +203,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Prepares maps for storing all item resources
 	 */
-	public static void createTestMaps() {		
+	public static void createTestMaps() {
 		partSet = getItemResources();
 		itemResourceMap = new HashMap<>();
 		sortedParts = new CopyOnWriteArrayList<>(partSet);
@@ -210,10 +214,10 @@ public class ItemResourceUtil implements Serializable {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
 	}
-	
+
 	/**
 	 * Register a new part in all 3 item resource maps
-	 * 
+	 *
 	 * @param p {@link Part}
 	 */
 	public static void registerBrandNewPart(Part p) {
@@ -224,7 +228,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Finds an item resource by name.
-	 * 
+	 *
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -238,7 +242,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Finds an amount resource by id.
-	 * 
+	 *
 	 * @param id the resource's id.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -257,7 +261,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Creates a set of item resources
-	 * 
+	 *
 	 * @return
 	 */
 	public static Set<Part> getItemResources() {
@@ -270,7 +274,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Gets an immutable set of all the amount resources.
-	 * 
+	 *
 	 * @return set of amount resources.
 	 */
 	public static Set<Integer> getItemIDs() {
@@ -279,7 +283,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Gets a list of sorted parts
-	 * 
+	 *
 	 * @return
 	 */
 	public static List<Part> getSortedParts() {
@@ -291,7 +295,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * gets a sorted map of all amount resource names by calling
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * 
+	 *
 	 * @return {@link Map}<{@link Integer}, {@link String}>
 	 */
 	public static Map<Integer, String> getPartIDNameMap() {
@@ -300,7 +304,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Finds an item resource name by id.
-	 * 
+	 *
 	 * @param id the resource's id.
 	 * @return resource name
 	 * @throws ResourceException if resource could not be found.
@@ -308,11 +312,11 @@ public class ItemResourceUtil implements Serializable {
 	public static String findItemResourceName(int id) {
 		return partIDNameMap.get(id);
 	}
-	
-	
+
+
 	/**
 	 * Finds an amount resource by name.
-	 * 
+	 *
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -324,7 +328,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Returns the first matched key from a given value in a map for one-to-one
 	 * relationship
-	 * 
+	 *
 	 * @param map
 	 * @param value
 	 * @return key
@@ -340,7 +344,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Returns a set of keys from a given value in a map using Java 8 stream
-	 * 
+	 *
 	 * @param map
 	 * @param value
 	 * @return a set of key
@@ -352,7 +356,7 @@ public class ItemResourceUtil implements Serializable {
 
 	/**
 	 * Gets an immutable set of all the amount resources.
-	 * 
+	 *
 	 * @return set of amount resources.
 	 */
 	public static Set<Integer> getIDs() {
@@ -371,7 +375,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
-	 * 
+	 *
 	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
 	 */
 	public static Map<Integer, Part> getItemResourcesIDMap() {
@@ -390,7 +394,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
-	 * 
+	 *
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getItemResourceStringSortedList() {

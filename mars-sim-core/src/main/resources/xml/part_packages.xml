@@ -20,8 +20,8 @@
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
-
-		<part type="fiberglass" number="3"/>		
+		<part type="garment" number="6"/>
+		<part type="fiberglass" number="3"/>
 		<part type="fiberglass cloth" number="10"/>
 		<part type="logic board" number="25"/>
 		<part type="solid oxide fuel cell" number="200"/>
@@ -89,7 +89,7 @@
 		<part type="helmet visor" number="8" />
 		<part type="counter pressure suit" number="16" />
 		<part type="coveralls" number="16" />
-		<part type="work gloves" number="16" />		
+		<part type="work gloves" number="16" />
 		<part type="eva gloves" number="16" />
 		<part type="eva boots" number="16" />
 		<part type="eva pads" number="16" />
@@ -104,7 +104,7 @@
 		<part type="winch" number="2" />
 		<part type="small motor" number="2" />
 		<part type="large motor" number="4" />
-		<part type="small stepper motor" number="4"/>		
+		<part type="small stepper motor" number="4"/>
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -127,11 +127,12 @@
 		<part type="condenser coil" number="1" />
 		<part type="water pump" number="1" />
 		<part type="decontamination kit" number="2" />
-		
+
 	</part-package>
 
 	<part-package name="package 2" >
-		<part type="fiberglass" number="6"/>		
+		<part type="garment" number="12"/>
+		<part type="fiberglass" number="6"/>
 		<part type="fiberglass cloth" number="20"/>
 		<part type="logic board" number="50"/>
 	    <part type="solid oxide fuel cell" number="400"/>
@@ -198,7 +199,7 @@
 		<part type="helmet visor" number="16" />
 		<part type="counter pressure suit" number="32" />
 		<part type="coveralls" number="32" />
-		<part type="work gloves" number="32" />	
+		<part type="work gloves" number="32" />
 		<part type="eva gloves" number="32" />
 		<part type="eva boots" number="32" />
 		<part type="eva pads" number="32" />
@@ -213,7 +214,7 @@
 		<part type="winch" number="2" />
 		<part type="small motor" number="2" />
 		<part type="large motor" number="4" />
-		<part type="small stepper motor" number="4"/>		
+		<part type="small stepper motor" number="4"/>
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -238,13 +239,14 @@
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
 		<part type="decontamination kit" number="4" />
-		
+
 	</part-package>
 
 	<part-package name="package 3">
-		<part type="fiberglass" number="12"/>		
+		<part type="garment" number="24"/>
+		<part type="fiberglass" number="12"/>
 		<part type="fiberglass cloth" number="40"/>
-		<part type="logic board" number="100"/>	
+		<part type="logic board" number="100"/>
 		<part type="solid oxide fuel cell" number="600"/>
 		<part type="fuel cell stack" number="40"/>
 		<part type="polycarbonate roofing" number="30"/>
@@ -309,7 +311,7 @@
 		<part type="helmet visor" number="24" />
 		<part type="counter pressure suit" number="48" />
 		<part type="coveralls" number="48" />
-		<part type="work gloves" number="48" />	
+		<part type="work gloves" number="48" />
 		<part type="eva gloves" number="48" />
 		<part type="eva boots" number="48" />
 		<part type="eva pads" number="48" />
@@ -324,7 +326,7 @@
 		<part type="winch" number="4" />
 		<part type="small motor" number="3" />
 		<part type="large motor" number="6" />
-		<part type="small stepper motor" number="6"/>		
+		<part type="small stepper motor" number="6"/>
 		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
@@ -353,7 +355,8 @@
 	</part-package>
 
 	<part-package name="package 4">
-		<part type="fiberglass" number="24"/>		
+		<part type="garment" number="48"/>
+		<part type="fiberglass" number="24"/>
 		<part type="fiberglass cloth" number="80"/>
 		<part type="logic board" number="200"/>
 		<part type="solid oxide fuel cell" number="800"/>
@@ -420,7 +423,7 @@
 		<part type="helmet visor" number="24" />
 		<part type="counter pressure suit" number="48" />
 		<part type="coveralls" number="48" />
-		<part type="work gloves" number="48" />	
+		<part type="work gloves" number="48" />
 		<part type="eva gloves" number="48" />
 		<part type="eva boots" number="48" />
 		<part type="eva pads" number="48" />
@@ -435,7 +438,7 @@
 		<part type="winch" number="8" />
 		<part type="small motor" number="6" />
 		<part type="large motor" number="12" />
-		<part type="small stepper motor" number="12"/>		
+		<part type="small stepper motor" number="12"/>
 		<part type="rover chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />
@@ -443,7 +446,7 @@
 		<part type="gas tank" number="80" />
 		<part type="water tank" number="80" />
 		<part type="heating element" number="100" />
-		<part type="heat pipe" number="100" />		
+		<part type="heat pipe" number="100" />
 		<part type="pneumatic drill" number="6" />
 		<part type="backhoe" number="6" />
 		<part type="bulldozer blade" number="6" />
@@ -460,7 +463,7 @@
 		<part type="steel post" number="40" />
 		<part type="plastic sheet" number="16" />
 		<part type="decontamination kit" number="12" />
-		
+
 	</part-package>
 
 </part-package-list>
