@@ -291,9 +291,9 @@ public class MicroInventory implements Serializable {
 		s.storedAmount = remaining;
 
 		// Remove this 'general' resource since its capacity is not set
-		if (s.storedAmount == 0 && s.capacity == 0) {
-			storageMap.remove(resource);
-		}
+//		if (s.storedAmount == 0 && s.capacity == 0) {
+//			storageMap.remove(resource);
+//		}
 
 		// Update the total mass
 		updateAmountResourceTotalMass();
@@ -333,9 +333,9 @@ public class MicroInventory implements Serializable {
 		s.quantity = remaining;
 
 		// Remove this 'general' resource since its capacity is not set
-		if (s.quantity == 0 && s.capacity == 0) {
-			storageMap.remove(resource);
-		}
+//		if (s.quantity == 0 && s.capacity == 0) {
+//			storageMap.remove(resource);
+//		}
 
 		// Update the total mass
 		updateItemResourceTotalMass();
