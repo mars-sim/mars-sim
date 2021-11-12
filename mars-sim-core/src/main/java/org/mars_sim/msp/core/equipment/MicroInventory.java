@@ -52,16 +52,14 @@ public class MicroInventory implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		int quantity = 0;
-		int max = 0;
 
-		ItemStored(int max) {
+		ItemStored() {
 			super();
-			this.max = max;
 		}
 
 		@Override
 		public String toString() {
-			return "ItemStored max=" + max + ", quantity=" + quantity
+			return "ItemStored quantity=" + quantity
 					+ "]";
 		}
 	}
@@ -246,15 +244,14 @@ public class MicroInventory implements Serializable {
 	public int storeItemResource(int resource, int quantity) {
 		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
-			return quantity;
+			s = new ItemStored();
 		}
 
 		Part partSpec = ItemResourceUtil.findItemResource(resource);
 		double massPerItem = partSpec.getMassPerItem();
 		double totalMass = s.quantity * massPerItem;
 		double rCap = sharedCapacity - totalMass;
-		int remainingMaxItems = s.max - s.quantity;
-		int itemCap = Math.min(remainingMaxItems, (int)(rCap / massPerItem));
+		int itemCap = (int)Math.floor(rCap / massPerItem);
 
 		int missing = 0;
 
@@ -263,14 +260,17 @@ public class MicroInventory implements Serializable {
 			if (quantity > itemCap) {
 				s.quantity += itemCap;
 				missing = quantity - itemCap;
-				logger.warning(owner, "Can only store " + quantity + "@"
+				logger.warning(owner, "Storing " + itemCap + "x "
 						+ partSpec.getName()
-						+ " and return the surplus " + missing + ".");
+						+ ", returning the surplus " + missing + ".");
 			}
 			else {
 				s.quantity += quantity;
 				missing = 0;
 			}
+
+			// Save the item resource
+			itemStorage.put(resource, s);
 
 			// Update the item total mass
 			updateItemResourceTotalMass();
@@ -280,7 +280,7 @@ public class MicroInventory implements Serializable {
 		}
 		else {
 			missing = quantity;
-			logger.warning(owner, "No space to store " + quantity + "@"
+			logger.warning(owner, "No space to store " + quantity + "x "
 								+ partSpec.getName() + ".");
 		}
 
@@ -445,8 +445,7 @@ public class MicroInventory implements Serializable {
 			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
 			double totalMass = s.quantity * massPerItem;
 			double rCap = sharedCapacity - totalMass;
-			int remainingMaxItems = s.max - s.quantity;
-			return Math.min(remainingMaxItems, (int)(rCap / massPerItem));
+			return (int)Math.floor(rCap / massPerItem);
 		}
 		return 0;
 	}

@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.core.data;
+package org.mars_sim.msp.core.equipment;
 
 import java.util.Set;
 
@@ -33,18 +33,18 @@ extends TestCase {
 
 
 	private static final double CAPACITY_AMOUNT = 1000D;
-	
+
 	private Settlement settlement = null;
-	
+
 	@Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
         Simulation.instance().testRun();
-        
+
         UnitManager unitManager = Simulation.instance().getUnitManager();
-	
+
 		// Create test settlement.
-		settlement = new MockSettlement();	
+		settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
     }
 
@@ -58,15 +58,15 @@ extends TestCase {
 		int rock = ResourceUtil.rockSamplesID;
 		double co2Mass = CAPACITY_AMOUNT/10;
 		double rockMass = CAPACITY_AMOUNT/20;
-		
+
 		// Store some CO2 directly and then a Bag containing rocks
 		inv.storeAmountResource(co2, co2Mass);
-		
+
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		assertEquals("Bag can not store CO2", 0D, ((Container)bag).storeAmountResource(rock, rockMass));
 
 		inv.addEquipment(bag);
-		
+
 		assertEquals("CO2 stored", co2Mass, inv.getAmountResourceStored(co2));
 		assertEquals("Rock stored", rockMass, inv.getAmountResourceStored(rock));
 
@@ -74,7 +74,7 @@ extends TestCase {
 		assertEquals("Remaining cargo capacity after bag load", CAPACITY_AMOUNT - expectedMass, inv.getRemainingCargoCapacity());//.getAmountResourceRemainingCapacity(co2));
 		assertEquals("Total mass after bag load", expectedMass, inv.getStoredMass());
 		assertEquals("Resources held in inventory", Set.of(co2, rock), inv.getAmountResourceIDs());
-		
+
 		// REnovesoem rock from bag
 		bag.retrieveAmountResource(rock, rockMass/2);
 		expectedMass = co2Mass + rockMass/2 + bag.getBaseMass();
@@ -88,19 +88,19 @@ extends TestCase {
 		assertEquals("Resources held after bag remove", Set.of(co2), inv.getAmountResourceIDs());
 
 	}
-	
+
 	/*
 	 * Test method loading Equipment
 	 */
 	public void testAmountLoading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.co2ID;
-		
+
 		assertEquals("No excess on 1st load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, inv.getAmountResourceStored(resource));
 		assertEquals("Remaining after 1st load capacity", CAPACITY_AMOUNT/2, inv.getAmountResourceRemainingCapacity(resource));
 		assertEquals("Total mass after 1st load", CAPACITY_AMOUNT/2, inv.getStoredMass());
-		
+
 		assertEquals("No excess on 2nd load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 		assertEquals("Stored capacity after 2nd load", CAPACITY_AMOUNT, inv.getAmountResourceStored(resource));
 		assertEquals("Remaining after 2nd load capacity", 0D, inv.getAmountResourceRemainingCapacity(resource));
@@ -113,26 +113,28 @@ extends TestCase {
 	public void testItemOverloading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		Part drillPart = ItemResourceUtil.pneumaticDrillAR;
-		
+
 		int maxDrills = (int) Math.floor(CAPACITY_AMOUNT/drillPart.getMassPerItem());
-		
-		assertEquals("No excess on capacity load", 0, inv.storeItemResource(drillPart.getID(), maxDrills));
+
+		int returned = inv.storeItemResource(drillPart.getID(), maxDrills);
+
+		assertEquals("No excess on capacity load", 0, returned);
 		assertEquals("Stored drills after load", maxDrills, inv.getItemResourceStored(drillPart.getID()));
 		assertEquals("Stored mass after drill load", maxDrills * drillPart.getMassPerItem(),
 													inv.getStoredMass());
-		
+
 		// Try and load one more and should fail
 		assertEquals("Excess on overload", 1, inv.storeItemResource(drillPart.getID(), 1));
 	}
 
-	
+
 	/*
 	 * Test method loading Equipment
 	 */
 	public void testAmountOverloading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.co2ID;
-		
+
 		assertEquals("No excess on capacity load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
 
 		assertEquals("Excess on overload", CAPACITY_AMOUNT/2, inv.storeAmountResource(resource, CAPACITY_AMOUNT));
@@ -146,7 +148,7 @@ extends TestCase {
 	public void testAmountUnloading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.co2ID;
-		
+
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
 
 		assertEquals("Shortfall on 1st retrieve", 0D, inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2));
@@ -161,7 +163,7 @@ extends TestCase {
 
 		assertEquals("Shortfall on empty inventory", 100D, inv.retrieveAmountResource(resource, 100D));
 	}
-	
+
 	/*
 	 * Test method loading Amount Resources
 	 */
@@ -173,7 +175,7 @@ extends TestCase {
 		// if Using general/cargo capacity instead of the dedicated capacity for a resource
 		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());//getAmountResourceRemainingCapacity(resource));
 		assertEquals("Remaining capacity 2nd resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());//getAmountResourceRemainingCapacity(resource2));
-		
+
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		inv.storeAmountResource(resource2, CAPACITY_AMOUNT/4);
 		assertEquals("Total mass after combined load", (CAPACITY_AMOUNT/2 + CAPACITY_AMOUNT/4), inv.getStoredMass());
