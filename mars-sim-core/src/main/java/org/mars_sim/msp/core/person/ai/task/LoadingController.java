@@ -139,9 +139,10 @@ public class LoadingController implements Serializable {
 					// Adjust the manifest down
 					resources.put(resourceId, (capacity - amountLoaded));
 					logger.warning(vehicle, "Could not hold "
-									+ ResourceUtil.findAmountResourceName(resourceId)
-									+ " in the manifest (" + amountRequired
-									+ ") as capacity is " + capacity + ".");
+							+ amountRequired + " kg "
+							+ ResourceUtil.findAmountResourceName(resourceId)
+							+ " from the manifest "
+							+ "(Capacity: " + capacity + " kg).");
 					amountLoaded = 0;
 				}
 			}
@@ -287,9 +288,9 @@ public class LoadingController implements Serializable {
 				if (mandatory) {
 					retryAttempts--;
 					logger.warning(vehicle, "Not enough available for loading "
-							+ resourceName
 							+ Math.round(amountToLoad * 100D) / 100D
-							+ " kg. Settlement has "
+							+ " kg " + resourceName
+							+ ". Settlement has "
 							+ Math.round(settlementStored * 100D) / 100D
 							+ " kg. will try " + retryAttempts + " more times.");
 					return amountLoading;
@@ -363,7 +364,7 @@ public class LoadingController implements Serializable {
 		Part p = ItemResourceUtil.findItemResource(id);
 		boolean usedSupply = false;
 
-		// Determine number to load. Could oad at least one
+		// Determine number to load. Could load at least one
 		// Part if needed
 		int amountNeeded = (int)manifest.get(id).doubleValue();
 		int amountCouldLoad = Math.max(1, (int)(amountLoading/p.getMassPerItem()));
@@ -377,8 +378,8 @@ public class LoadingController implements Serializable {
 				if (mandatory) {
 					retryAttempts--;
 					logger.warning(vehicle, "Not enough available for loading "
+							+ amountToLoad + "x "
 							+ p.getName()
-							+ amountToLoad
 							+ ". Settlement has "
 							+ settlementStored + " will retry for another " + retryAttempts);
 				}
@@ -387,7 +388,7 @@ public class LoadingController implements Serializable {
 			}
 
 			// Check remaining capacity in vehicle inventory.
-			double remainingMassCapacity = vehicle.getCargoCapacity() - vehicle.getStoredMass();
+			double remainingMassCapacity = vehicle.getRemainingCargoCapacity();
 			if (remainingMassCapacity < 0D) {
 				remainingMassCapacity = 0D;
 			}
@@ -396,7 +397,7 @@ public class LoadingController implements Serializable {
 				if (mandatory) {
 					// Will load up as much required resource as possible
 					logger.warning(vehicle, "Not enough capacity for loading "
-							+ Math.round(loadingMass * 100D) / 100D + " "
+							+ Math.round(loadingMass * 100D) / 100D + " kg "
 							+ p.getName()
 							+ ". Vehicle remaining cap: "
 							+ Math.round(remainingMassCapacity * 100D) / 100D + " kg.");

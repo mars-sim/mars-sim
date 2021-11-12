@@ -1546,14 +1546,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	/**
-	 * Gets the remaining capacity of an item resource
+	 * Gets the remaining quantity of an item resource
 	 *
 	 * @param resource
-	 * @return capacity
+	 * @return quantity
 	 */
 	@Override
-	public double getItemResourceRemainingCapacity(int resource) {
-		return getSettlement().getItemResourceRemainingCapacity(resource);
+	public int getItemResourceRemainingQuantity(int resource) {
+		return getSettlement().getItemResourceRemainingQuantity(resource);
 	}
 
 	@Override

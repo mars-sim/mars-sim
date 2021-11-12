@@ -380,28 +380,30 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets all stored item resources
+	 * Gets a set of item resources in storage.
 	 *
-	 * @return all stored item resources.
+	 * @return a set of item resources.
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		Set<Integer> set = new HashSet<>(microInventory.getItemResourceIDs());
+		Set<Integer> set = new HashSet<>(microInventory.getItemsStored());
 		for (Equipment e: equipmentSet) {
-			set.addAll(e.getItemResourceIDs());
+			if (e instanceof ItemHolder) {
+				set.addAll(((ItemHolder) e).getItemResourceIDs());
+			}
 		}
 
 		return set;
 	}
 
 	/**
-	 * Gets a set of resources in storage.
-	 * @return  a set of resources
+	 * Gets a set of amount resources in storage.
+	 *
+	 * @return a set of amount resources
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
-		Set<Integer> set = new HashSet<Integer>();
-		set.addAll(microInventory.getResourcesStored());
+		Set<Integer> set = new HashSet<>(microInventory.getResourcesStored());
 		for (Equipment e: equipmentSet) {
 			if (e instanceof ResourceHolder) {
 				set.addAll(((ResourceHolder) e).getAmountResourceIDs());
@@ -444,6 +446,23 @@ public class EquipmentInventory
 	public void setResourceCapacity(int resource, double capacity) {
 		if (ResourceUtil.findAmountResource(resource) != null) {
 			microInventory.setCapacity(resource, capacity);
+		}
+	}
+
+	/**
+	 * Set the capacity of the Vehicle to support the manifest
+	 *
+	 * @param target
+	 * @param requiredResourcesMap
+	 */
+	public void setResourcesCapacity(Map<Integer, Number> requiredResourcesMap) {
+		for (Entry<Integer, Number> v : requiredResourcesMap.entrySet()) {
+			int key = v.getKey();
+			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				setResourceCapacity(key, v.getValue().doubleValue());
+			}
+			else
+				setResourceCapacity(key, v.getValue().intValue());
 		}
 	}
 
@@ -531,13 +550,13 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the remaining capacity of an item resource
+	 * Gets the remaining quantity of an item resource
 	 *
 	 * @param resource
-	 * @return capacity
+	 * @return quantity
 	 */
 	@Override
-	public double getItemResourceRemainingCapacity(int resource) {
-		return microInventory.getItemResourceRemainingCapacity(resource);
+	public int getItemResourceRemainingQuantity(int resource) {
+		return microInventory.getItemResourceRemainingQuantity(resource);
 	}
 }

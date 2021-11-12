@@ -25,12 +25,12 @@ public interface ItemHolder {
 	int getItemResourceStored(int resource);
 
 	/**
-	 * Gets the remaining capacity of an item resource
+	 * Gets the remaining quantity of an item resource
 	 *
 	 * @param resource
-	 * @return capacity
+	 * @return quantity
 	 */
-	double getItemResourceRemainingCapacity(int resource);
+	int getItemResourceRemainingQuantity(int resource);
 
 	/**
 	 * Gets the cargo/general/shared capacity of resource

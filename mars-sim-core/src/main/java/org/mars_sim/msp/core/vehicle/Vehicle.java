@@ -449,7 +449,7 @@ public abstract class Vehicle extends Unit
 		facingParked = 0D;
 
 		// Create microInventory instance
-		eqmInventory = new EquipmentInventory(this, 10000D);
+		eqmInventory = new EquipmentInventory(this, 2_000D);
 
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
@@ -2001,14 +2001,14 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the remaining capacity of an item resource
+	 * Gets the remaining quantity of an item resource
 	 *
 	 * @param resource
-	 * @return capacity
+	 * @return quantity
 	 */
 	@Override
-	public double getItemResourceRemainingCapacity(int resource) {
-		return eqmInventory.getItemResourceRemainingCapacity(resource);
+	public int getItemResourceRemainingQuantity(int resource) {
+		return eqmInventory.getItemResourceRemainingQuantity(resource);
 	}
 
 	/**
@@ -2176,6 +2176,10 @@ public abstract class Vehicle extends Unit
 		}
 
 		return transferred;
+	}
+
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
 	}
 
 	/**

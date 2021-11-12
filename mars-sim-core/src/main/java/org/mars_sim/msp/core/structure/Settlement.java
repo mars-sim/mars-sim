@@ -3930,14 +3930,14 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	}
 
 	/**
-	 * Gets the remaining capacity of an item resource
+	 * Gets the remaining quantity of an item resource
 	 *
 	 * @param resource
-	 * @return capacity
+	 * @return quantity
 	 */
 	@Override
-	public double getItemResourceRemainingCapacity(int resource) {
-		return eqmInventory.getItemResourceRemainingCapacity(resource);
+	public int getItemResourceRemainingQuantity(int resource) {
+		return eqmInventory.getItemResourceRemainingQuantity(resource);
 	}
 
 	/**

@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -403,9 +402,10 @@ public class MicroInventory implements Serializable {
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
-		return amountStorage.keySet().stream()
-				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
-				.collect(Collectors.toSet());
+		return amountStorage.keySet();
+//				.stream()
+//				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+//				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -413,10 +413,11 @@ public class MicroInventory implements Serializable {
 	 *
 	 * @return
 	 */
-	public Set<Integer> getItemResourceIDs() {
-		return itemStorage.keySet().stream()
-				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
-				.collect(Collectors.toSet());
+	public Set<Integer> getItemsStored() {
+		return itemStorage.keySet();
+//				.stream()
+//				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
+//				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -439,7 +440,7 @@ public class MicroInventory implements Serializable {
 	 * @param resource
 	 * @return quantity
 	 */
-	public int getItemResourceRemainingCapacity(int resource) {
+	public int getItemResourceRemainingQuantity(int resource) {
 		ItemStored s = itemStorage.get(resource);
 		if (s != null) {
 			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();

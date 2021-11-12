@@ -110,7 +110,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return
 	 */
 	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemResourceIDs();
+		return microInventory.getItemsStored();
 	}
 
 	/**
@@ -230,17 +230,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
 		return microInventory.getAmountResourceRemainingCapacity(resource);
-	}
-
-
-	/**
-	 * Obtains the remaining storage quantity of a particular item resource
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	public int getItemResourceRemainingCapacity(int resource) {
-		return microInventory.getItemResourceRemainingCapacity(resource);
 	}
 
 	/**
