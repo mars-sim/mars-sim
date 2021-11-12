@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.equipment.ItemHolder;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -87,7 +88,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Building class is a settlement's building.
  */
 public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
-		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder {
+		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder, ItemHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1530,14 +1531,34 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getSettlement().storeItemResource(resource, quantity);
 	}
 
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getSettlement().retrieveItemResource(resource, quantity);
+	}
+
+
+	@Override
+	public int getItemResourceStored(int resource) {
+		return getSettlement().getItemResourceStored(resource);
+	}
+
+	/**
+	 * Gets the remaining capacity of an item resource
+	 *
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getItemResourceRemainingCapacity(int resource) {
+		return getSettlement().getItemResourceRemainingCapacity(resource);
+	}
+
+	@Override
+	public Set<Integer> getItemResourceIDs() {
+		return getSettlement().getItemResourceIDs();
 	}
 
 	@Override

@@ -14,10 +14,10 @@ import java.util.TreeMap;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**

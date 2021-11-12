@@ -30,13 +30,12 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.EquipmentInventory;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -1884,8 +1883,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
      * @return total capacity (kg).
      */
 	@Override
-	public double getTotalCapacity() {
-		return eqmInventory.getTotalCapacity();
+	public double getCargoCapacity() {
+		return eqmInventory.getCargoCapacity();
 	}
 
 	/**
@@ -2204,7 +2203,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @param holder the previous holder of the clothing
 	 */
-	public void wearStandardClothing(ResourceHolder holder) {
+	public void wearStandardClothing(EquipmentOwner holder) {
 		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
 			storeItemResource(ItemResourceUtil.garmentID, 1);
 		}
@@ -2215,7 +2214,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @param holder the new holder of the clothing
 	 */
-	public void unwearStandardClothing(ResourceHolder holder) {
+	public void unwearStandardClothing(EquipmentOwner holder) {
 		if (hasGarment() && retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
 			holder.storeItemResource(ItemResourceUtil.garmentID, 1);
 		}

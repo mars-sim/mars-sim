@@ -498,7 +498,7 @@ public class Manufacture extends Function implements Serializable {
 						int id = part.getID();
 						int num = (int) item.getAmount();
 						double mass = num * part.getMassPerItem();
-						double capacity = settlement.getTotalCapacity();
+						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
 							settlement.storeItemResource(id, num);
 							// Add tracking supply
@@ -589,7 +589,7 @@ public class Manufacture extends Function implements Serializable {
 						int num = (int) item.getAmount();
 						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
 						double mass = num * part.getMassPerItem();
-						double capacity = settlement.getTotalCapacity();
+						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
 							settlement.storeItemResource(id, num);
 						}
@@ -688,7 +688,7 @@ public class Manufacture extends Function implements Serializable {
 					partsSalvaged.put(id, totalNumber);
 	
 					double mass = totalNumber * part.getMassPerItem();
-					double capacity = settlement.getTotalCapacity();
+					double capacity = settlement.getCargoCapacity();
 					if (mass <= capacity)
 						settlement.storeItemResource(id, totalNumber);
 

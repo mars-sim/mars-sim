@@ -13,7 +13,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.MicroInventory;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -137,12 +136,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
      *
      * @return total capacity (kg).
      */
-	public double getTotalCapacity() {
+	public double getCargoCapacity() {
 		return ContainerUtil.getContainerCapacity(equipmentType);
 	}
 
 	/**
-     * Gets the capacity of this resource that this container can hold.
+     * Gets the capacity of this amount resource that this container can hold.
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
@@ -181,7 +180,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// should it be tagged for only regolith and NOT for another resource ?
 		if (!isResourceSupported(resource)) {
 			// Allocate the capacity to this new resource
-			microInventory.setCapacity(resource, getTotalCapacity());
+			microInventory.setCapacity(resource, getCargoCapacity());
 		}
 
 		return microInventory.storeAmountResource(resource, quantity);
@@ -218,7 +217,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// Note: this method is different from
 		// EVASuit's getAmountResourceRemainingCapacity
 		if (isResourceSupported(resource)) {
-			return getTotalCapacity();
+			return getCargoCapacity();
 		}
 		return 0;
 	}

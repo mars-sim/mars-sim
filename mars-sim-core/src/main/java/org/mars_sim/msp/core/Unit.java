@@ -739,9 +739,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 *
 	 * @return
 	 */
-	public double getTotalCapacity() {
+	public double getCargoCapacity() {
 		if (getUnitType() == UnitType.EQUIPMENT) {
-			return ((Equipment) this).getTotalCapacity();
+			return ((Equipment) this).getCargoCapacity();
 		}
 
 		// if Inventory is presents, use getGeneralCapacity

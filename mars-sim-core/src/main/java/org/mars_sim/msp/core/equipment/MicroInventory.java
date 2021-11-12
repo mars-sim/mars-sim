@@ -4,7 +4,7 @@
  * @date 2021-10-21
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.data;
+package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,7 +32,6 @@ public class MicroInventory implements Serializable {
 
 		double capacity = 0;
 		double storedAmount = 0;
-		int quantity = 0;
 
 		ResourceStored(double capacity) {
 			super();
@@ -41,7 +40,28 @@ public class MicroInventory implements Serializable {
 
 		@Override
 		public String toString() {
-			return "ResourceStored [capacity=" + capacity + ", storedAmount=" + storedAmount + ", quantity=" + quantity
+			return "ResourceStored [capacity=" + capacity
+					+ ", storedAmount=" + storedAmount
+					+ "]";
+		}
+	}
+
+	static final class ItemStored implements Serializable {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		int quantity = 0;
+		int max = 0;
+
+		ItemStored(int max) {
+			super();
+			this.max = max;
+		}
+
+		@Override
+		public String toString() {
+			return "ItemStored max=" + max + ", quantity=" + quantity
 					+ "]";
 		}
 	}
@@ -56,22 +76,51 @@ public class MicroInventory implements Serializable {
 
 	/** The owner of this micro inventory. */
 	private Unit owner;
-	/** A map of resources. */
-	private Map<Integer, ResourceStored> storageMap = new HashMap<>();
+	/** A map of amount resources. */
+	private Map<Integer, ResourceStored> amountStorage = new HashMap<>();
+	/** A map of item resources. */
+	private Map<Integer, ItemStored> itemStorage = new HashMap<>();
 
-	private double totalMass = 0D;
+	private double amountTotalMass = 0D;
+	private double itemTotalMass = 0D;
+	private double generalTotalMass = 0D;
+
+	private double sharedCapacity = 0D;
 
 	public MicroInventory(Unit owner) {
 		this.owner = owner;
 	}
 
+	public MicroInventory(Unit owner, double sharedCapacity) {
+		this.owner = owner;
+		this.sharedCapacity = sharedCapacity;
+	}
+
 	/**
-     * Gets the capacity of this resource that this container can hold.
+	 * Gets the shared/general/stock capacity
+	 *
+	 * @return
+	 */
+	public double getSharedCapacity() {
+		return sharedCapacity;
+	}
+
+	/**
+	 * Sets the shared/general/stock capacity
+	 *
+	 * @return
+	 */
+	public void setSharedCapacity(double capacity) {
+		sharedCapacity = capacity;
+	}
+
+	/**
+     * Gets the capacity of this amount resource that this container can hold.
      *
      * @return capacity (kg).
      */
     public double getCapacity(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s != null) {
 			return s.capacity;
 		}
@@ -79,45 +128,45 @@ public class MicroInventory implements Serializable {
     }
 
 	/**
-	 * Sets the capacity of a particular resource
+	 * Sets the capacity of an amount resource
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
 	public void setCapacity(int resource, double capacity) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s != null) {
 			s.capacity = capacity;
 		}
 		else {
-			storageMap.put(resource, new ResourceStored(capacity));
+			amountStorage.put(resource, new ResourceStored(capacity));
 		}
 	}
 
 	/**
-	 * Adds the capacity of a particular resource
+	 * Adds the capacity of an amount resource
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
 	public void addCapacity(int resource, double capacity) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s != null) {
 			s.capacity += capacity;
 		}
 		else {
-			storageMap.put(resource, new ResourceStored(capacity));
+			amountStorage.put(resource, new ResourceStored(capacity));
 		}
 	}
 
 	/**
-	 * Removes the capacity of a particular resource
+	 * Removes the capacity of an amount resource
 	 *
 	 * @param resource
 	 * @param capacity
 	 */
 	public void removeCapacity(int resource, double capacity) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 
 		if (s != null) {
 			s.capacity -= capacity;
@@ -133,38 +182,38 @@ public class MicroInventory implements Serializable {
 	 * @return mass [kg]
 	 */
 	public double getStoredMass() {
-		return totalMass;
+		return amountTotalMass + itemTotalMass + generalTotalMass;
 	}
 
 	/**
-	 * Is this suit empty ?
+	 * Is this inventory empty ?
 	 *
 	 * @return
 	 */
 	public boolean isEmpty() {
-		return totalMass == 0D;
+		return getStoredMass() == 0D;
 	}
 
 	/**
-	 * Is this suit empty of this resource ?
+	 * Is this inventory empty of this amount resource ?
 	 *
 	 * @param resource
 	 * @return
 	 */
 	public boolean isEmpty(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		return (s == null) || (s.storedAmount == 0D);
 	}
 
 	/**
-	 * Stores the resource
+	 * Stores the amount resource
 	 *
 	 * @param resource
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
@@ -180,6 +229,7 @@ public class MicroInventory implements Serializable {
 
 		s.storedAmount += quantity;
 
+		// Update the amount total mass
 		updateAmountResourceTotalMass();
 		// Fire the unit event type
 		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
@@ -194,7 +244,7 @@ public class MicroInventory implements Serializable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public int storeItemResource(int resource, int quantity) {
-		ResourceStored s = storageMap.get(resource);
+		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
@@ -202,8 +252,10 @@ public class MicroInventory implements Serializable {
 		Part partSpec = ItemResourceUtil.findItemResource(resource);
 		double massPerItem = partSpec.getMassPerItem();
 		double totalMass = s.quantity * massPerItem;
-		double rCap = s.capacity - totalMass;
-		int itemCap = (int)(rCap / massPerItem);
+		double rCap = sharedCapacity - totalMass;
+		int remainingMaxItems = s.max - s.quantity;
+		int itemCap = Math.min(remainingMaxItems, (int)(rCap / massPerItem));
+
 		int missing = 0;
 
 		if (itemCap > 0) {
@@ -220,7 +272,7 @@ public class MicroInventory implements Serializable {
 				missing = 0;
 			}
 
-			// Update the total mass
+			// Update the item total mass
 			updateItemResourceTotalMass();
 
 			// Fire the unit event type
@@ -240,7 +292,7 @@ public class MicroInventory implements Serializable {
 	 */
 	private void updateAmountResourceTotalMass() {
 		// Note: to avoid ConcurrentModificationException, use new ArrayList
-		totalMass = storageMap.values().stream().mapToDouble(r -> r.storedAmount).sum();
+		amountTotalMass = amountStorage.values().stream().mapToDouble(r -> r.storedAmount).sum();
 	}
 
 	/**
@@ -248,8 +300,8 @@ public class MicroInventory implements Serializable {
 	 */
 	private void updateItemResourceTotalMass() {
 		double result = 0;
-		for (int resource: storageMap.keySet()) {
-			int q = storageMap.get(resource).quantity;
+		for (int resource: itemStorage.keySet()) {
+			int q = itemStorage.get(resource).quantity;
 			if (q > 0) {
 				ItemResource ir = ItemResourceUtil.findItemResource(resource);
 				if (ir != null)
@@ -257,7 +309,7 @@ public class MicroInventory implements Serializable {
 			}
 		}
 
-		totalMass = result;
+		itemTotalMass = result;
 	}
 
 	/**
@@ -268,7 +320,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity that cannot be retrieved
 	 */
 	public double retrieveAmountResource(int resource, double quantity) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
@@ -311,7 +363,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity that cannot be retrieved
 	 */
 	public int retrieveItemResource(int resource, int quantity) {
-		ResourceStored s = storageMap.get(resource);
+		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
@@ -351,7 +403,7 @@ public class MicroInventory implements Serializable {
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
-		return storageMap.keySet().stream()
+		return amountStorage.keySet().stream()
 				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
 				.collect(Collectors.toSet());
 	}
@@ -362,7 +414,7 @@ public class MicroInventory implements Serializable {
 	 * @return
 	 */
 	public Set<Integer> getItemResourceIDs() {
-		return storageMap.keySet().stream()
+		return itemStorage.keySet().stream()
 				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
 				.collect(Collectors.toSet());
 	}
@@ -374,7 +426,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public double getAmountResourceRemainingCapacity(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s != null) {
 			return s.capacity - s.storedAmount;
 		}
@@ -388,12 +440,13 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public int getItemResourceRemainingCapacity(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ItemStored s = itemStorage.get(resource);
 		if (s != null) {
 			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
 			double totalMass = s.quantity * massPerItem;
-			double rCap = s.capacity - totalMass;
-			return (int)(rCap / massPerItem);
+			double rCap = sharedCapacity - totalMass;
+			int remainingMaxItems = s.max - s.quantity;
+			return Math.min(remainingMaxItems, (int)(rCap / massPerItem));
 		}
 		return 0;
 	}
@@ -405,7 +458,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public double getAmountResourceStored(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ResourceStored s = amountStorage.get(resource);
 		if (s != null) {
 			return s.storedAmount;
 		}
@@ -419,7 +472,7 @@ public class MicroInventory implements Serializable {
 	 * @return quantity
 	 */
 	public int getItemResourceStored(int resource) {
-		ResourceStored s = storageMap.get(resource);
+		ItemStored s = itemStorage.get(resource);
 		if (s != null) {
 			return s.quantity;
 		}
@@ -427,13 +480,13 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Does this resource exist in storage ?
+	 * Does this amount resource exist in storage ?
 	 *
 	 * @param resource
 	 * @return
 	 */
 	public boolean isResourceSupported(int resource) {
-		return storageMap.containsKey(resource);
+		return amountStorage.containsKey(resource);
 	}
 
 
@@ -441,6 +494,7 @@ public class MicroInventory implements Serializable {
 	 * Clean this container for future use
 	 */
 	public void clean() {
-		storageMap.clear();
+		amountStorage.clear();
+		itemStorage.clear();
 	}
 }

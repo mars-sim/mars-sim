@@ -280,7 +280,7 @@ public final class TradeUtil {
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
 		sellerGoodsManager.prepareForLoadCalculation();
 
-		double massCapacity = rover.getTotalCapacity();
+		double massCapacity = rover.getCargoCapacity();
 
 		// Subtract mission base mass (estimated).
 		double missionPartsMass = MISSION_BASE_MASS;

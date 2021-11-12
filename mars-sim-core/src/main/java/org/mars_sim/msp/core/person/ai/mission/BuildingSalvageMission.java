@@ -657,7 +657,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			if (salvagedNumber > 0) {
 				Part p = ItemResourceUtil.findItemResource(part);
 				double mass = salvagedNumber * p.getMassPerItem();
-				double capacity = settlement.getTotalCapacity();
+				double capacity = settlement.getCargoCapacity();
 				if (mass <= capacity) {
 					settlement.storeItemResource(part, salvagedNumber);
 				}

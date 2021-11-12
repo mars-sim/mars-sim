@@ -53,7 +53,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @return total capacity (kg).
 	 */
 	@Override
-	public double getTotalCapacity() {
+	public double getCargoCapacity() {
 		return totalCapacity;
 	}
 
@@ -221,17 +221,4 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	public Unit getHolder() {
 		return this;
 	}
-
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

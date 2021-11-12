@@ -23,7 +23,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.data.ResourceHolder;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;

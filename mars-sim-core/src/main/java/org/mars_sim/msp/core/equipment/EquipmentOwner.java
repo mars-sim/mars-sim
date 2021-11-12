@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.equipment;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.ResourceHolder;
-
 public interface EquipmentOwner extends ResourceHolder {
 	  
 	/**

@@ -21,10 +21,10 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -1335,8 +1335,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
      * @return total capacity (kg).
      */
 	@Override
-	public double getTotalCapacity() {
-		return eqmInventory.getTotalCapacity();
+	public double getCargoCapacity() {
+		return eqmInventory.getCargoCapacity();
 	}
 
 	/**

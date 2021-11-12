@@ -368,7 +368,7 @@ public class FoodProduction extends Function implements Serializable {
 						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
 						int num = (int) item.getAmount();
 						double mass = num * part.getMassPerItem();
-						double capacity = settlement.getTotalCapacity();
+						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
 							settlement.storeItemResource(id, num);
 //							inv.addItemSupply(id, num);
@@ -437,7 +437,7 @@ public class FoodProduction extends Function implements Serializable {
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						int id = part.getID();
 						double mass = item.getAmount() * part.getMassPerItem();
-						double capacity = settlement.getTotalCapacity();
+						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
 							settlement.storeItemResource(id, (int) item.getAmount());
 						}

@@ -18,9 +18,9 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
@@ -374,7 +374,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	private void collectingPhase(MissionMember member) {
 		
 		Rover rover = getRover();
-		double roverRemainingCap = rover.getTotalCapacity() - rover.getStoredMass();
+		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
 		
 		double weight = ((Person)member).getMass();
 

@@ -14,8 +14,8 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -688,7 +688,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 				if (remainingDoffingTime <= 0) {
 
-					ResourceHolder housing = null;
+					EquipmentOwner housing = null;
 
 					if (inSettlement)
 						housing = ((Building)airlock.getEntity()).getSettlement();

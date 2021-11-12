@@ -275,7 +275,7 @@ public final class DeliveryUtil {
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
 		sellerGoodsManager.prepareForLoadCalculation();
 
-		double massCapacity = drone.getTotalCapacity();
+		double massCapacity = drone.getCargoCapacity();
 
 
 		// Determine repair parts for trip.

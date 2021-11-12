@@ -28,14 +28,15 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -77,7 +78,8 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * a specific type of vehicle.
  */
 public abstract class Vehicle extends Unit
-		implements Malfunctionable, Salvagable, Temporal, Indoor, LocalBoundedObject, Serializable, EquipmentOwner {
+		implements Malfunctionable, Salvagable, Temporal, Indoor,
+		LocalBoundedObject, Serializable, EquipmentOwner, ItemHolder {
 
 	private static final long serialVersionUID = 1L;
 
@@ -1891,8 +1893,8 @@ public abstract class Vehicle extends Unit
      * @return total capacity (kg).
      */
 	@Override
-	public double getTotalCapacity() {
-		return eqmInventory.getTotalCapacity();
+	public double getCargoCapacity() {
+		return eqmInventory.getCargoCapacity();
 	}
 
 	/**
@@ -1996,6 +1998,17 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
+	}
+
+	/**
+	 * Gets the remaining capacity of an item resource
+	 *
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getItemResourceRemainingCapacity(int resource) {
+		return eqmInventory.getItemResourceRemainingCapacity(resource);
 	}
 
 	/**

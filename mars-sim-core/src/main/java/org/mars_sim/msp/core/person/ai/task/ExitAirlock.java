@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -737,7 +736,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		// Get an EVA suit from entity inventory.
-		ResourceHolder housing = null;
+		EquipmentOwner housing = null;
 		if (!hasSuit) {
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement();

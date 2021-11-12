@@ -53,7 +53,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		String capacity = "Limitless";
 		String available = "All";
 
-		double eqmCapacity = eqmOwner.getTotalCapacity();
+		double eqmCapacity = eqmOwner.getCargoCapacity();
 		capacity = String.format(CommandHelper.KG_FORMAT, eqmCapacity);
 		available = String.format(CommandHelper.KG_FORMAT, (eqmCapacity - eqmOwner.getStoredMass()));
 

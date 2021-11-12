@@ -30,14 +30,15 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.EquipmentInventory;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Commander;
@@ -92,7 +93,8 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, Temporal, LifeSupportInterface, Objective, EquipmentOwner  {
+public class Settlement extends Structure implements Serializable, Temporal,
+	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -3881,8 +3883,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
      * @return total capacity (kg).
      */
 	@Override
-	public double getTotalCapacity() {
-		return eqmInventory.getTotalCapacity();
+	public double getCargoCapacity() {
+		return eqmInventory.getCargoCapacity();
 	}
 
 	/**
@@ -3925,6 +3927,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	@Override
 	public boolean hasItemResource(int resource) {
 		return eqmInventory.hasItemResource(resource);
+	}
+
+	/**
+	 * Gets the remaining capacity of an item resource
+	 *
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getItemResourceRemainingCapacity(int resource) {
+		return eqmInventory.getItemResourceRemainingCapacity(resource);
 	}
 
 	/**
@@ -4075,6 +4088,5 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		scientificAchievement = null;
 	}
-
 
 }

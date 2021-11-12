@@ -63,7 +63,7 @@ public class BuildingKit extends Equipment
      * Gets the total capacity of resource that this container can hold.
      * @return total capacity (kg).
      */
-    public double getTotalCapacity() {
+    public double getCargoCapacity() {
         return CAPACITY;
     }
     

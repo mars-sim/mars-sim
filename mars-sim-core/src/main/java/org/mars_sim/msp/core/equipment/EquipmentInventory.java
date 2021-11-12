@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.core.data;
+package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -16,10 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -30,7 +27,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * in the underlying Equipment.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, Serializable {
+		implements EquipmentOwner, ItemHolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,8 +53,7 @@ public class EquipmentInventory
 		equipmentSet = new UnitSet<>();
 
 		// Create microInventory instance
-		microInventory = new MicroInventory(owner);
-
+		microInventory = new MicroInventory(owner, cargoCapacity);
 	}
 
 	/**
@@ -167,10 +163,6 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		if (!microInventory.isResourceSupported(resource)) {
-			microInventory.setCapacity(resource, getTotalCapacity());
-		}
-
 		return microInventory.storeItemResource(resource, quantity);
 	}
 
@@ -230,6 +222,8 @@ public class EquipmentInventory
 		// Note: this method is different from
 		// Equipment's storeAmountResource
 		if (!microInventory.isResourceSupported(resource)) {
+			// Since cargoCapacity is changing dynamically,
+			// does it mean one must constantly update the capacity of this amount resource ?
 			microInventory.setCapacity(resource, cargoCapacity);
 		}
 		return microInventory.storeAmountResource(resource, quantity);
@@ -278,7 +272,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Obtains the remaining general storage space
+	 * Obtains the remaining cargo/general/shared capacity
 	 *
 	 * @return quantity
 	 */
@@ -288,12 +282,12 @@ public class EquipmentInventory
 	}
 
 	/**
-     * Gets the total capacity that this person can hold.
+     * Gets the cargo/general/shared capacity
      *
-     * @return total capacity (kg).
+     * @return capacity (kg).
      */
 	@Override
-	public double getTotalCapacity() {
+	public double getCargoCapacity() {
 		// Question: Should the total capacity varies ?
 		// based on one's instant carrying capacity ?
 		return cargoCapacity;
@@ -486,12 +480,13 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds to the cargo capacity (aka the general capacity)
+	 * Adds to the cargo/general/shared capacity
 	 *
 	 * @param value
 	 */
 	public void addCargoCapacity(double value) {
 		cargoCapacity += value;
+		microInventory.setSharedCapacity(cargoCapacity);
 	}
 
 	/**
@@ -533,5 +528,16 @@ public class EquipmentInventory
 	@Override
 	public boolean hasItemResource(int resource) {
 		return getItemResourceIDs().contains(resource);
+	}
+
+	/**
+	 * Gets the remaining capacity of an item resource
+	 *
+	 * @param resource
+	 * @return capacity
+	 */
+	@Override
+	public double getItemResourceRemainingCapacity(int resource) {
+		return microInventory.getItemResourceRemainingCapacity(resource);
 	}
 }

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.data.ResourceHolder;
 
 /**
  * This interface accounts for units that are considered container for resources

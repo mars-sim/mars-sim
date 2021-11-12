@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.data.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -178,7 +177,7 @@ public class EVASuit extends Equipment
      * @return total capacity (kg).
      */
 	@Override
-    public double getTotalCapacity() {
+    public double getCargoCapacity() {
         return CAPACITY;
     }
 
@@ -502,7 +501,7 @@ public class EVASuit extends Equipment
 	 * @param source Source of resources
 	 * @return The %age full of the suit
 	 */
-	public double loadResources(ResourceHolder source) {
+	public double loadResources(EquipmentOwner source) {
 		unloadWaste(source);
 		loadResource(source, OXYGEN_ID);
 		loadResource(source, WATER_ID);
@@ -532,7 +531,7 @@ public class EVASuit extends Equipment
 	 * Unload any waste products to the holder
 	 * @param newSuitOwner
 	 */
-	public void unloadWaste(ResourceHolder holder) {
+	public void unloadWaste(EquipmentOwner holder) {
 		double co2 = getAmountResourceStored(CO2_ID);
 		if (co2 > 0) {
 			retrieveAmountResource(CO2_ID, co2);
@@ -549,30 +548,6 @@ public class EVASuit extends Equipment
 		double waterLoaded = getAmountResourceStored(WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
-	}
-
-	/**
-	 * Retrieves the item resource
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return microInventory.retrieveItemResource(resource, quantity);
-	}
-
-	/**
-	 * Stores the item resource
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return microInventory.storeItemResource(resource, quantity);
 	}
 
 	public void destroy() {

@@ -247,7 +247,7 @@ class VehiclePanel extends WizardPanel {
 					else if (column == 5)
 						result = vehicle.hasSickBay();
 					else if (column == 6)
-						result = (int) vehicle.getTotalCapacity();
+						result = (int) vehicle.getCargoCapacity();
 					else if (column == 7)
 						result = (int) vehicle.getStoredMass();
 					else if (column == 8)

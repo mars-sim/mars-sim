@@ -4,7 +4,7 @@
  * @date 2021-10-14
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.data;
+package org.mars_sim.msp.core.equipment;
 
 import java.util.Set;
 
@@ -63,7 +63,7 @@ public interface ResourceHolder {
 	 *
 	 * @return total capacity (kg).
 	 */
-	double getTotalCapacity();
+	double getCargoCapacity();
 
 	/**
 	 * Gets a collection of supported resources
@@ -71,24 +71,6 @@ public interface ResourceHolder {
 	 * @return a collection of resource ids
 	 */
 	Set<Integer> getAmountResourceIDs();
-
-	/**
-	 * Stores the item resource
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	int storeItemResource(int resource, int quantity);
-
-	/**
-	 * Retrieves the item resource
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	int retrieveItemResource(int resource, int quantity);
 
 	/**
 	 * Gets the holder's unit instance

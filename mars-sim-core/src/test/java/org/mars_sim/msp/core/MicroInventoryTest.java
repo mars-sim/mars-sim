@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core;
 
-import org.mars_sim.msp.core.data.MicroInventory;
+import org.mars_sim.msp.core.equipment.MicroInventory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;

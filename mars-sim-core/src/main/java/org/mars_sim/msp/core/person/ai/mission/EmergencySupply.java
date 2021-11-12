@@ -887,8 +887,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
 			// Check if one has more general cargo capacity than the other.
-			double firstCapacity = firstVehicle.getTotalCapacity();
-			double secondCapacity = secondVehicle.getTotalCapacity();
+			double firstCapacity = firstVehicle.getCargoCapacity();
+			double secondCapacity = secondVehicle.getCargoCapacity();
 			if (firstCapacity > secondCapacity) {
 				result = 1;
 			} else if (secondCapacity > firstCapacity) {
