@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -440,6 +441,7 @@ extends TestCase {
 		}
 		assertTrue("Multiple loadings", (loadingCount > 1));
 		assertTrue("Load operation stopped on load complete", loaded);
+		assertFalse("Loading controller successful", controller.isFailure());
 		assertTrue("Loading controller complete", controller.isCompleted());
 
 		return controller;
@@ -500,7 +502,14 @@ extends TestCase {
 	 * @param requiredResourcesMap
 	 */
 	private void setResourcesCapacity(Vehicle target, Map<Integer, Number> requiredResourcesMap) {
-		target.getEquipmentInventory().setResourcesCapacity(requiredResourcesMap);
+		EquipmentInventory inv = target.getEquipmentInventory();
+		
+		for (Entry<Integer, Number> v : requiredResourcesMap.entrySet()) {
+			int key = v.getKey();
+			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				inv.setResourceCapacity(key, v.getValue().doubleValue() * 1.01D);
+			}
+		}
 	}
 
 	/**

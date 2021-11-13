@@ -450,23 +450,6 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Set the capacity of the Vehicle to support the manifest
-	 *
-	 * @param target
-	 * @param requiredResourcesMap
-	 */
-	public void setResourcesCapacity(Map<Integer, Number> requiredResourcesMap) {
-		for (Entry<Integer, Number> v : requiredResourcesMap.entrySet()) {
-			int key = v.getKey();
-			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				setResourceCapacity(key, v.getValue().doubleValue());
-			}
-			else
-				setResourceCapacity(key, v.getValue().intValue());
-		}
-	}
-
-	/**
 	 * Set the resource capacities.
 	 *
 	 * TODO should be keyed on resourceID not string.
