@@ -111,6 +111,12 @@ public class EVASuit extends Equipment
 	private static double massO2MinimumLimit;
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
+	/** The average amount of carbon dioxide expelled by a person on each millisol for high metabolic activities. */
+	private static double co2Expelled;
+	/** The average amount of oxygen breathed in by a person on each millisol for high metabolic activities. */
+	private static double o2Consumed;
+	/** The ratio of CO2 expelled to O2 breathed in. */
+	private static double ratioCO2ToO2;
 
 	// Data members
 	/** The equipment's malfunction manager. */
@@ -123,6 +129,10 @@ public class EVASuit extends Equipment
 		 }
 
 		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		 o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D;
+		 co2Expelled = personConfig.getCO2ExpelledRate() / 1000D;
+		 ratioCO2ToO2 = co2Expelled / o2Consumed;
+
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
 
 		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
@@ -298,45 +308,17 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double oxygenTaken) {
-//		double oxygenTaken = amountRequested;
 		double oxygenLacking = 0;
 
 		// NOTE: Should we assume breathing in pure oxygen or trimix and heliox
 		// http://www.proscubadiver.net/padi-course-director-joey-ridge/helium-and-diving/
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on
 		// the ISS
-//		if (amountRequested > 0) {
-//			try {
-//				double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
-	//			if (oxygenTaken * 100 > oxygenLeft) {
-	//				// O2 is running out soon
-	//				// Walk back to the building or vehicle
-	//				person.getMind().getTaskManager().clearTask();//
-	//				person.getMind().getTaskManager().addTask(new Relax(person));
-	//			}
 
-//				if (oxygenTaken > oxygenLeft)
-//					oxygenTaken = oxygenLeft;
-//
-//				if (oxygenTaken > 0)
-				oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
+		oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 
-				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
-				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
-				// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g
-				// (= 2g/L x .04 x 0.5L).
-
-				double carbonDioxideProvided = .04 * .04 * (oxygenTaken - oxygenLacking);
-//				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
-//				if (carbonDioxideProvided > carbonDioxideCapacity)
-//					carbonDioxideProvided = carbonDioxideCapacity;
-
-				storeAmountResource(CO2_ID, carbonDioxideProvided);
-
-//			} catch (Exception e) {
-//				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
-//			}
-//		}
+		double carbonDioxideProvided = ratioCO2ToO2 * (oxygenTaken - oxygenLacking);
+		storeAmountResource(CO2_ID, carbonDioxideProvided);
 
 		return oxygenTaken - oxygenLacking;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}

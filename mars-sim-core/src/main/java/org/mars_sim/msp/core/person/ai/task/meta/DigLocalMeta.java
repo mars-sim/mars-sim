@@ -22,8 +22,8 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	private static final double VALUE = 2.0;
 	private EquipmentType containerType;
-    
-    
+
+
     public DigLocalMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION);
@@ -39,13 +39,13 @@ public abstract class DigLocalMeta extends MetaTask {
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
-    	
+
         double result = 0D;
-       	
+
     	// Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-    		return 0;   
-        
+    		return 0;
+
         //Checked for radiation events
     	boolean[]exposed = settlement.getExposed();
 
@@ -53,15 +53,15 @@ public abstract class DigLocalMeta extends MetaTask {
 			// SEP can give lethal dose of radiation
             return 0;
 		}
-		
-        // Check if it is night time.          
+
+        // Check if it is night time.
         if (EVAOperation.isGettingDark(person))
         	return 0;
 
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
         	return 0;
-        
+
         // Checks if the person is physically drained
 		if (EVAOperation.isExhausted(person))
 			return 0;
@@ -83,20 +83,20 @@ public abstract class DigLocalMeta extends MetaTask {
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-            
+
             if (!condition.isFitByLevel(300, 30, 300))
             	return 0;
-  
+
 	        result = collectionProbability * VALUE;
-	    	
+
 	        if (result > 3000)
 	        	result = 3000;
-	        
+
             result = result - stress * 3 - fatigue/2 - hunger/2;
-            
+
 	        if (result < 0)
 	        	return 0;
-	
+
 	        // Crowded settlement modifier
         if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
             result = result * (settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity());
@@ -107,10 +107,12 @@ public abstract class DigLocalMeta extends MetaTask {
         result = applyPersonModifier(result, person);
 
     	if (exposed[0]) {
-			result = result/5D;// Baseline can give a fair amount dose of radiation
+    		// Baseline can give a fair amount dose of radiation
+			result = result/5D;
 		}
 
-    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+    	if (exposed[1]) {
+    		// GCR can give nearly lethal dose of radiation
 			result = result/10D;
 		}
 
