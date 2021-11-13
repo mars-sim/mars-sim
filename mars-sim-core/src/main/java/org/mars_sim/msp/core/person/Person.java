@@ -2195,7 +2195,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * Does this person have a set of clothing
 	 */
 	public boolean hasGarment() {
-		return hasItemResource(ItemResourceUtil.garmentID);
+		return getItemResourceStored(ItemResourceUtil.garmentID) > 0;
 	}
 
 	/**
