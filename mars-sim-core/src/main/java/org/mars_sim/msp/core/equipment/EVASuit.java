@@ -293,19 +293,21 @@ public class EVASuit extends Equipment
 	/**
 	 * Gets oxygen from system.
 	 *
-	 * @param amountRequested the amount of oxygen requested from system (kg)
+	 * @param oxygenTaken the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
-	public double provideOxygen(double amountRequested) {
-		double oxygenTaken = amountRequested;
+	public double provideOxygen(double oxygenTaken) {
+//		double oxygenTaken = amountRequested;
+		double oxygenLacking = 0;
+
 		// NOTE: Should we assume breathing in pure oxygen or trimix and heliox
 		// http://www.proscubadiver.net/padi-course-director-joey-ridge/helium-and-diving/
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on
 		// the ISS
-		if (amountRequested > 0) {
-			try {
-				double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
+//		if (amountRequested > 0) {
+//			try {
+//				double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 	//			if (oxygenTaken * 100 > oxygenLeft) {
 	//				// O2 is running out soon
 	//				// Walk back to the building or vehicle
@@ -313,30 +315,30 @@ public class EVASuit extends Equipment
 	//				person.getMind().getTaskManager().addTask(new Relax(person));
 	//			}
 
-				if (oxygenTaken > oxygenLeft)
-					oxygenTaken = oxygenLeft;
-
-				if (oxygenTaken > 0)
-					retrieveAmountResource(OXYGEN_ID, oxygenTaken);
+//				if (oxygenTaken > oxygenLeft)
+//					oxygenTaken = oxygenLeft;
+//
+//				if (oxygenTaken > 0)
+				oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 
 				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
 				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
-				// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g ( 2g/L x .04 x
-				// .5l).
+				// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g
+				// (= 2g/L x .04 x 0.5L).
 
-				double carbonDioxideProvided = .04 * .04 * oxygenTaken;
-				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
-				if (carbonDioxideProvided > carbonDioxideCapacity)
-					carbonDioxideProvided = carbonDioxideCapacity;
+				double carbonDioxideProvided = .04 * .04 * (oxygenTaken - oxygenLacking);
+//				double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
+//				if (carbonDioxideProvided > carbonDioxideCapacity)
+//					carbonDioxideProvided = carbonDioxideCapacity;
 
 				storeAmountResource(CO2_ID, carbonDioxideProvided);
 
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
-			}
-		}
+//			} catch (Exception e) {
+//				logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
+//			}
+//		}
 
-		return oxygenTaken;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
+		return oxygenTaken - oxygenLacking;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
 	/**
@@ -347,15 +349,16 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-		double waterLeft = getAmountResourceStored(WATER_ID);
+//		double waterLeft = getAmountResourceStored(WATER_ID);
+		double lacking = 0;
 
-		if (waterTaken > waterLeft) {
-			waterTaken = waterLeft;
-		}
-		if (waterTaken > 0)
-			retrieveAmountResource(WATER_ID, waterTaken);
+//		if (waterTaken > waterLeft) {
+//			waterTaken = waterLeft;
+//		}
+//		if (waterTaken > 0)
+			lacking = retrieveAmountResource(WATER_ID, waterTaken);
 
-		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
+		return waterTaken - lacking;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 
 	/**

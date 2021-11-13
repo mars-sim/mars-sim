@@ -51,6 +51,8 @@ public class MicroInventory implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		int quantity = 0;
+		double massPerItem = 0;
+		double totalMass = 0;
 
 		ItemStored() {
 			super();
@@ -58,7 +60,8 @@ public class MicroInventory implements Serializable {
 
 		@Override
 		public String toString() {
-			return "ItemStored quantity=" + quantity
+			return "ItemStored quantity=" + quantity + " massPerItem=" + massPerItem
+					+ " totalMass=" + totalMass
 					+ "]";
 		}
 	}
@@ -241,32 +244,39 @@ public class MicroInventory implements Serializable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public int storeItemResource(int resource, int quantity) {
+		double massPerItem = 0;
+		double totalMass = 0;
+
 		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
 			s = new ItemStored();
+			massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+			totalMass = s.quantity * massPerItem;
+		}
+		else {
+			massPerItem = s.massPerItem;
+			totalMass = s.totalMass;
 		}
 
-		Part partSpec = ItemResourceUtil.findItemResource(resource);
-		double massPerItem = partSpec.getMassPerItem();
-		double totalMass = s.quantity * massPerItem;
 		double rCap = sharedCapacity - totalMass;
 		int itemCap = (int)Math.floor(rCap / massPerItem);
-
 		int missing = 0;
 
 		if (itemCap > 0) {
-
 			if (quantity > itemCap) {
 				s.quantity += itemCap;
 				missing = quantity - itemCap;
 				logger.warning(owner, "Storing " + itemCap + "x "
-						+ partSpec.getName()
+						+ ItemResourceUtil.findItemResource(resource).getName()
 						+ ", returning the surplus " + missing + ".");
 			}
 			else {
 				s.quantity += quantity;
 				missing = 0;
 			}
+
+			s.massPerItem = massPerItem;
+			s.totalMass = totalMass;
 
 			// Save the item resource
 			itemStorage.put(resource, s);
@@ -280,7 +290,7 @@ public class MicroInventory implements Serializable {
 		else {
 			missing = quantity;
 			logger.warning(owner, "No space to store " + quantity + "x "
-								+ partSpec.getName() + ".");
+								+ ItemResourceUtil.findItemResource(resource).getName() + ".");
 		}
 
 		return missing;

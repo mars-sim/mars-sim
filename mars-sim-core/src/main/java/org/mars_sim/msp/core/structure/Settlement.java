@@ -882,59 +882,68 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	/**
 	 * Gets oxygen from the inventory.
 	 *
-	 * @param amountRequested the amount of oxygen requested [kg]
+	 * @param oxygenTaken the amount of oxygen requested [kg]
 	 * @return the amount of oxygen actually received [kg]
 	 * @throws Exception if error providing oxygen.
 	 */
-	public double provideOxygen(double amountRequested) {
-		double oxygenTaken = amountRequested;
-		try {
-			double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
+	public double provideOxygen(double oxygenTaken) {
+//		double oxygenTaken = amountRequested;
+		double oxygenLacking = 0;
 
-			if (oxygenTaken > oxygenLeft)
-				oxygenTaken = oxygenLeft;
+//		try {
+//			double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
+//
+//			if (oxygenTaken > oxygenLeft)
+//				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
 			// CompositionOfAir is doing it for all inhabitants once per frame.
-			retrieveAmountResource(OXYGEN_ID, oxygenTaken);
+			oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 //			addAmountDemand(OXYGEN_ID, oxygenTaken);
 
-			double carbonDioxideProvided = oxygenTaken;
-			double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
-			if (carbonDioxideProvided > carbonDioxideCapacity)
-				carbonDioxideProvided = carbonDioxideCapacity;
+			// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
+			// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
+			// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g
+			// (= 2g/L x .04 x 0.5L).
+
+			double carbonDioxideProvided = .04 * .04 * (oxygenTaken - oxygenLacking);
+//			double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
+//			if (carbonDioxideProvided > carbonDioxideCapacity)
+//				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			storeAmountResource(CO2_ID, carbonDioxideProvided);
 
-		} catch (Exception e) {
-			logger.log(this, null, Level.SEVERE, 5000, "Error in providing O2/removing CO2 ", e);
-		}
+//		} catch (Exception e) {
+//			logger.log(this, Level.SEVERE, 50_000, "Error in providing O2/removing CO2 ", e);
+//		}
 
-		return oxygenTaken;
+		return oxygenTaken - oxygenLacking;
 	}
 
 	/**
 	 * Gets water from the inventory
 	 *
-	 * @param amountRequested the amount of water requested [kg]
+	 * @param waterTaken the amount of water requested [kg]
 	 * @return the amount of water actually received [kg]
 	 * @throws Exception if error providing water.
 	 */
-	public double provideWater(double amountRequested) {
-		double waterTaken = amountRequested;
-		try {
-			double waterLeft = getAmountResourceStored(WATER_ID);
-			if (waterTaken > waterLeft)
-				waterTaken = waterLeft;
-			if (waterTaken > MIN) {
-//				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
-				retrieveAmountResource(WATER_ID, waterTaken);
-			}
-		} catch (Exception e) {
-			logger.log(this, null, Level.SEVERE, 5000, "Error in providing H2O needs: ", e);
-		}
+	public double provideWater(double waterTaken) {
+//		double waterTaken = amountRequested;
+		double lacking = 0;
 
-		return waterTaken;
+//		try {
+//			double waterLeft = getAmountResourceStored(WATER_ID);
+//			if (waterTaken > waterLeft)
+//				waterTaken = waterLeft;
+//			if (waterTaken > MIN) {
+//				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
+			lacking = retrieveAmountResource(WATER_ID, waterTaken);
+//			}
+//		} catch (Exception e) {
+//			logger.log(this, Level.SEVERE, 50_000, "Error in providing H2O needs: ", e);
+//		}
+
+		return waterTaken - lacking;
 	}
 
 	/**
