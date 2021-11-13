@@ -453,10 +453,10 @@ public class MicroInventory implements Serializable {
 	public int getItemResourceRemainingQuantity(int resource) {
 		ItemStored s = itemStorage.get(resource);
 		if (s != null) {
-			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
-			double totalMass = s.quantity * massPerItem;
-			double rCap = sharedCapacity - totalMass;
-			return (int)Math.floor(rCap / massPerItem);
+//			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+//			double totalMass = s.quantity * massPerItem;
+			double rCap = sharedCapacity - s.totalMass;
+			return (int)Math.floor(rCap / s.massPerItem);
 		}
 		return 0;
 	}

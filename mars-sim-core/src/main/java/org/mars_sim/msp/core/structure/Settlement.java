@@ -112,7 +112,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
 	private static final int RESOURCE_UPDATE_FREQ = 50;
-	private static final int CHECK_WATER_RATION = 100;
+	private static final int CHECK_WATER_RATION = 66;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
@@ -1127,7 +1127,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			remainder = msol % CHECK_WATER_RATION;
 			if (remainder == 1) {
 				// Recompute the water ration level
-				computeWaterRation();
+				computeWaterRationLevel();
 			}
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
@@ -3051,7 +3051,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @return level of water ration.
 	 */
-	public int getWaterRation() {
+	public int getWaterRationLevel() {
 		return waterRationLevel;
 	}
 
@@ -3060,27 +3060,31 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @return level of water ration.
 	 */
-	private void computeWaterRation() {
-		double storedWater = getAmountResourceStored(WATER_ID);
+	private void computeWaterRationLevel() {
+		double storedWater = Math.max(1, getAmountResourceStored(WATER_ID) - getNumCitizens() * 500.0);
 		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens() // getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// If stored water is less than 20% of required drinking water for Orbit, wash
 		// water should be rationed.
-		double ratio = storedWater / requiredDrinkingWaterOrbit;
-		double mod = goodsManager.getWaterValue() / ratio;
-		if (mod < 1)
-			mod = 1;
-		else if (mod > 1000)
-			mod = 1000;
-		goodsManager.setWaterValue(mod);
+//		double ratio = (storedWater + .01) / requiredDrinkingWaterOrbit;
+		double ratio = requiredDrinkingWaterOrbit / storedWater;
+		waterRationLevel = (int) ratio;
 
-		waterRationLevel = (int) (1.0 / ratio);
+//		double newWaterValue = goodsManager.getWaterValue() / ratio;
+//		if (newWaterValue < 1)
+//			newWaterValue = 1;
+//		else if (newWaterValue > 1000)
+//			newWaterValue = 1000;
+//		goodsManager.setWaterValue(newWaterValue);
 
 		if (waterRationLevel < 1)
 			waterRationLevel = 1;
-		else if (waterRationLevel > 50)
-			waterRationLevel = 50;
+		else if (waterRationLevel > 1000)
+			waterRationLevel = 1000;
+
+		if (waterRationLevel > 100)
+			logger.severe(this, 20_000L, "Water Ration Level: " + Math.round(ratio * 10.0)/10.0);
 	}
 
 	/**
@@ -3296,7 +3300,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			ice_value = 1;
 
 		double water_value = goodsManager.getGoodValuePerItem(WATER_ID);
-		water_value = water_value * goodsManager.getWaterValue();
+		water_value = water_value * waterRationLevel;
 		if (water_value > WATER_MAX)
 			water_value = WATER_MAX;
 		if (water_value < 1)

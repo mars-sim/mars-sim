@@ -727,7 +727,7 @@ public class Cooking extends Function implements Serializable {
 			usage = 1 - rand;
 
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = building.getSettlement().getWaterRation();
+		int level = building.getSettlement().getWaterRationLevel();
 		if (level != 0)
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {

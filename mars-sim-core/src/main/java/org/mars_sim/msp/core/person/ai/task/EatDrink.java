@@ -947,7 +947,7 @@ public class EatDrink extends Task implements Serializable {
 			}
 			
 			else if (waterFinal > 0) {
-				int level = person.getAssociatedSettlement().getWaterRation();
+				int level = person.getAssociatedSettlement().getWaterRationLevel();
 				double new_thirst = (currentThirst - waterFinal) / 10;
 				double [] levels = {1D, 1.5D, 3D, 4.5D};
 				

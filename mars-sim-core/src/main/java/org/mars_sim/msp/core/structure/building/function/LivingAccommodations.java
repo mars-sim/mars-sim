@@ -357,7 +357,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		double ration = 1;
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.getWaterRation();
+		int level = settlement.getWaterRationLevel();
 		if (level != 0)
 			ration = 1.0 / level;
 		// Account for people who are out there in an excursion and NOT in the
