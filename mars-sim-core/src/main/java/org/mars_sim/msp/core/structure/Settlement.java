@@ -887,37 +887,24 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double oxygenTaken) {
-//		double oxygenTaken = amountRequested;
-		double oxygenLacking = 0;
+//		double oxygenLacking = 0;
 
-//		try {
-//			double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
-//
-//			if (oxygenTaken > oxygenLeft)
-//				oxygenTaken = oxygenLeft;
-			// Note: do NOT retrieve O2 here since calculateGasExchange() in
-			// CompositionOfAir is doing it for all inhabitants once per frame.
-			oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-//			addAmountDemand(OXYGEN_ID, oxygenTaken);
+//		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 
-			// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
-			// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
-			// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g
-			// (= 2g/L x .04 x 0.5L).
+		// Note: do NOT retrieve O2 here since calculateGasExchange() in
+		// CompositionOfAir is doing it for all inhabitants once per frame.
 
-			double carbonDioxideProvided = .04 * .04 * (oxygenTaken - oxygenLacking);
-//			double carbonDioxideCapacity = getAmountResourceRemainingCapacity(CO2_ID);
-//			if (carbonDioxideProvided > carbonDioxideCapacity)
-//				carbonDioxideProvided = carbonDioxideCapacity;
-			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
-			// is doing it for all inhabitants once per frame.
-			storeAmountResource(CO2_ID, carbonDioxideProvided);
+//		oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
+//		addAmountDemand(OXYGEN_ID, oxygenTaken);
 
-//		} catch (Exception e) {
-//			logger.log(this, Level.SEVERE, 50_000, "Error in providing O2/removing CO2 ", e);
-//		}
+//		double carbonDioxideProvided = ratio * (oxygenTaken - oxygenLacking);
 
-		return oxygenTaken - oxygenLacking;
+		// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
+		// is doing it for all inhabitants once per frame.
+
+//		storeAmountResource(CO2_ID, carbonDioxideProvided);
+
+		return oxygenTaken;
 	}
 
 	/**
@@ -928,21 +915,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-//		double waterTaken = amountRequested;
-		double lacking = 0;
-
-//		try {
-//			double waterLeft = getAmountResourceStored(WATER_ID);
-//			if (waterTaken > waterLeft)
-//				waterTaken = waterLeft;
-//			if (waterTaken > MIN) {
-//				Storage.retrieveAnResource(waterTaken, WATER_ID, getInventory(), true);
-			lacking = retrieveAmountResource(WATER_ID, waterTaken);
-//			}
-//		} catch (Exception e) {
-//			logger.log(this, Level.SEVERE, 50_000, "Error in providing H2O needs: ", e);
-//		}
-
+		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
 		return waterTaken - lacking;
 	}
 

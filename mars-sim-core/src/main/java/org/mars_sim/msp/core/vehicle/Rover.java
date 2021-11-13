@@ -525,7 +525,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double oxygenTaken) {
-//		double oxygenTaken = amountRequested;
 		double lacking = 0;
 
 		Vehicle v = null;
@@ -535,21 +534,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 				v = getTowingVehicle();
 
-//				double oxygenLeft = v.getAmountResourceStored(OXYGEN);
-//
-//				if (oxygenTaken > oxygenLeft)
-//					oxygenTaken = oxygenLeft;
-
 				lacking = v.retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 				v.storeAmountResource(CO2_ID, oxygenTaken - lacking);
 			}
 
 			else {
-
-//				double oxygenLeft = getSettlement().getAmountResourceStored(OXYGEN);
-//
-//				if (oxygenTaken > oxygenLeft)
-//					oxygenTaken = oxygenLeft;
 
 				lacking = getSettlement().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 				getSettlement().storeAmountResource(CO2_ID, oxygenTaken - lacking);
@@ -557,11 +546,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		}
 
 		else {
-
-//			double oxygenLeft = getAmountResourceStored(OXYGEN);
-//
-//			if (oxygenTaken > oxygenLeft)
-//				oxygenTaken = oxygenLeft;
 
 			lacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 			storeAmountResource(CO2_ID, oxygenTaken - lacking);
@@ -588,29 +572,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 				v = getTowingVehicle();
-//				double waterLeft = v.getAmountResourceStored(WATER);
-//
-//				if (waterTaken > waterLeft)
-//					waterTaken = waterLeft;
 
 				lacking = v.retrieveAmountResource(WATER_ID, waterTaken);
 			}
 
 			else {
 
-//				double waterLeft = getSettlement().getAmountResourceStored(WATER);
-//
-//				if (waterTaken > waterLeft)
-//					waterTaken = waterLeft;
-
 				lacking = getSettlement().retrieveAmountResource(WATER_ID, waterTaken);
 			}
 		}
 		else {
-//			double waterLeft = getAmountResourceStored(WATER);
-//
-//			if (waterTaken > waterLeft)
-//				waterTaken = waterLeft;
 
 			lacking = retrieveAmountResource(WATER_ID, waterTaken);
 		}

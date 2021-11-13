@@ -1,132 +1,132 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE people-configuration [
 	<!ELEMENT people-configuration (
-	person-attributes, 
-	personality-types, 
-	person-name-list, 
+	person-attributes,
+	personality-types,
+	person-name-list,
 	country-list)>
-	
+
 	<!ELEMENT person-attributes (
-	base-carrying-capacity, 
-	average-tall-height, 
-	average-short-height, 
-	average-high-weight, 
-	average-low-weight, 
-	low-activity-metaboic-load-o2-consumption-rate, 
-	nominal-activity-metaboic-load-o2-consumption-rate, 
-	high-activity-metaboic-load-o2-consumption-rate, 
-	co2-expelled-rate, 
-	water-consumption-rate, 
-	water-usage-rate, 
+	base-carrying-capacity,
+	average-tall-height,
+	average-short-height,
+	average-high-weight,
+	average-low-weight,
+	low-activity-metaboic-load-o2-consumption-rate,
+	nominal-activity-metaboic-load-o2-consumption-rate,
+	high-activity-metaboic-load-o2-consumption-rate,
+	co2-expelled-rate,
+	water-consumption-rate,
+	water-usage-rate,
 	grey-to-black-water-ratio,
-	dessert-consumption-rate, 
-	food-consumption-rate, 
-	oxygen-deprivation-time, 
-	water-deprivation-time, 
+	dessert-consumption-rate,
+	food-consumption-rate,
+	oxygen-deprivation-time,
+	water-deprivation-time,
 	dehydration-start-time,
-	food-deprivation-time, 
-	starvation-start-time, 
-	decompression-time, 
+	food-deprivation-time,
+	starvation-start-time,
+	decompression-time,
 	min-air-pressure,
 	min-o2-partial-pressure,
-	min-temperature, 
-	max-temperature, 
-	freezing-time, 
-	stress-breakdown-chance, 
+	min-temperature,
+	max-temperature,
+	freezing-time,
+	stress-breakdown-chance,
 	high-fatigue-collapse-chance,
 	gender-male-percentage)
 	>
-	
+
 	<!ELEMENT base-carrying-capacity EMPTY>
 	<!ATTLIST base-carrying-capacity value CDATA #REQUIRED>
-	
+
 	<!ELEMENT average-tall-height EMPTY>
 	<!ATTLIST average-tall-height value CDATA #REQUIRED>
-	
+
 	<!ELEMENT average-short-height EMPTY>
 	<!ATTLIST average-short-height value CDATA #REQUIRED>
-	
+
 	<!ELEMENT average-high-weight EMPTY>
 	<!ATTLIST average-high-weight value CDATA #REQUIRED>
-	
+
 	<!ELEMENT average-low-weight EMPTY>
 	<!ATTLIST average-low-weight value CDATA #REQUIRED>
-	
+
 	<!ELEMENT low-activity-metaboic-load-o2-consumption-rate EMPTY>
 	<!ATTLIST low-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT nominal-activity-metaboic-load-o2-consumption-rate EMPTY>
 	<!ATTLIST nominal-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT high-activity-metaboic-load-o2-consumption-rate EMPTY>
 	<!ATTLIST high-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT co2-expelled-rate EMPTY>
 	<!ATTLIST co2-expelled-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT water-consumption-rate EMPTY>
 	<!ATTLIST water-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT water-usage-rate EMPTY>
 	<!ATTLIST water-usage-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT grey-to-black-water-ratio EMPTY>
 	<!ATTLIST grey-to-black-water-ratio value CDATA #REQUIRED>
-	
+
 	<!ELEMENT dessert-consumption-rate EMPTY>
 	<!ATTLIST dessert-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT food-consumption-rate EMPTY>
 	<!ATTLIST food-consumption-rate value CDATA #REQUIRED>
-	
+
 	<!ELEMENT oxygen-deprivation-time EMPTY>
 	<!ATTLIST oxygen-deprivation-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT water-deprivation-time EMPTY>
 	<!ATTLIST water-deprivation-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT dehydration-start-time EMPTY>
 	<!ATTLIST dehydration-start-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT food-deprivation-time EMPTY>
 	<!ATTLIST food-deprivation-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT starvation-start-time EMPTY>
 	<!ATTLIST starvation-start-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT decompression-time EMPTY>
 	<!ATTLIST decompression-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT min-air-pressure EMPTY>
 	<!ATTLIST min-air-pressure value CDATA #REQUIRED>
-	
+
 	<!ELEMENT min-o2-partial-pressure EMPTY>
 	<!ATTLIST min-o2-partial-pressure value CDATA #REQUIRED>
-	
+
 	<!ELEMENT min-temperature EMPTY>
 	<!ATTLIST min-temperature value CDATA #REQUIRED>
-	
+
 	<!ELEMENT max-temperature EMPTY>
 	<!ATTLIST max-temperature value CDATA #REQUIRED>
-	
+
 	<!ELEMENT freezing-time EMPTY>
 	<!ATTLIST freezing-time value CDATA #REQUIRED>
-	
+
 	<!ELEMENT stress-breakdown-chance EMPTY>
 	<!ATTLIST stress-breakdown-chance value CDATA #REQUIRED>
-	
+
 	<!ELEMENT high-fatigue-collapse-chance EMPTY>
 	<!ATTLIST high-fatigue-collapse-chance value CDATA #REQUIRED>
-	
+
 	<!ELEMENT gender-male-percentage EMPTY>
 	<!ATTLIST gender-male-percentage value CDATA #REQUIRED>
-	
+
 	<!ELEMENT personality-types (mbti*)>
-	
+
 	<!ELEMENT mbti EMPTY>
 	<!ATTLIST mbti type CDATA #REQUIRED>
 	<!ATTLIST mbti percentage CDATA #REQUIRED>
-	
+
 	<!ELEMENT person-name-list (person-name*)>
 	<!ELEMENT person-name EMPTY>
 	<!ATTLIST person-name value CDATA #REQUIRED>
@@ -141,7 +141,7 @@
 	<!ELEMENT first-name EMPTY>
 	<!ATTLIST first-name value CDATA #REQUIRED>
 	<!ATTLIST first-name gender (male|female) #REQUIRED>
-	
+
 	<!ELEMENT last-name-list (last-name*)>
 	<!ELEMENT last-name EMPTY>
 	<!ATTLIST last-name value CDATA #REQUIRED>
@@ -159,8 +159,8 @@
 		<average-high-weight value="68.5" />
 		<!-- The lower average weight of a person in kg -->
 		<average-low-weight value="57.2" />
-	
-		<!-- The average amount of oxygen breathed in by a person on each Sol for 
+
+		<!-- The average amount of oxygen breathed in by a person on each Sol for
 			low, nominal & high metabolic activities -->
 		<!-- Default: 0.78, 0.84, 0.96 [in kg] -->
 		<low-activity-metaboic-load-o2-consumption-rate
@@ -169,142 +169,152 @@
 			value="0.84" />
 		<high-activity-metaboic-load-o2-consumption-rate
 			value="0.96" />
-		<!-- e.g. total surface requirement for a crew of 3 during a 500-day surface 
+		<!-- e.g. total surface requirement for a crew of 3 during a 500-day surface
 			stay based on nominal activity is ~1260 kg of O2 -->
-	
-		<!-- The average amount of carbon dioxide expelled by a person on each Sol 
+
+		<!-- The average amount of carbon dioxide expelled by a person on each Sol
 			for high metabolic activities -->
 		<!-- Default: 1.0433 [in kg/sol] -->
 		<co2-expelled-rate value="1.0433" />
-		<!-- Note: this is in contrast with the value of 700 to 900 mL CO2 exhaled 
-			due to norminal activity. https://www.globe.gov/explore-science/scientists-blog/archived-posts/sciblog/index.html_p=183.html -->
-	
-	
+		<!--
+
+		Note: this is in contrast with the value of 700 to 900 mL CO2 exhaled
+			due to norminal activity from https://www.globe.gov/explore-science/scientists-blog/archived-posts/sciblog/index.html_p=183.html
+
+		// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up.
+		// The breath rate is 12 to 25 per minute.
+		// Size of breath is 500 mL.
+		// Percent CO2 exhaled is 4%.
+		// CO2 per breath is approx 0.04g = 2g/L x 4% x 500mL.
+
+		-->
+
+
 		<!-- The normal average amount of water drank by a person on each sol -->
 		<!-- Default: 3.0 -->
 		<water-consumption-rate value="3.0" />
-	
-		<!-- The normal average amount (kg) of hygiene water (toilet, shower, clothing 
+
+		<!-- The normal average amount (kg) of hygiene water (toilet, shower, clothing
 			wash) toilet, etc.) by a person each martian sol -->
 		<!-- This compares with ~288 kg water usage per person per day in US -->
 		<!-- Note : 1 US gallon = 3.79 kg or liter (water) -->
-		<!-- Instead of consuming an average of 50 liters to take a shower (typical 
+		<!-- Instead of consuming an average of 50 liters to take a shower (typical
 			on Earth), denizens of the ISS uses 4 liters to bathe. -->
 		<!-- Default: 20.0 -->
 		<water-usage-rate value="20.0" />
-	
-		<!-- The fictitious ratio denoting the amount of grey water and black water 
+
+		<!-- The fictitious ratio denoting the amount of grey water and black water
 			generated per unit water usage -->
-		<!-- Default: 4.0. This translates to 80% grey water and 20% black water 
+		<!-- Default: 4.0. This translates to 80% grey water and 20% black water
 			(OR 4 to 1) -->
 		<grey-to-black-water-ratio value="4.0" />
-	
-		<!-- The normal average amount of dessert (kg) in dry weight eaten by a 
+
+		<!-- The normal average amount of dessert (kg) in dry weight eaten by a
 			person on each Martian Sol -->
-		<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary 
+		<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary
 			predefined weight -->
 		<dessert-consumption-rate value="0.3" />
-	
-		<!-- The normal average amount of food (kg) in dry weight eaten by a person 
+
+		<!-- The normal average amount of food (kg) in dry weight eaten by a person
 			on each Martian Sol -->
 		<!-- Default: 0.62 dry Weight -->
 		<food-consumption-rate value="0.62" />
-	
-		<!-- TODO: account for carbohydrates & protein content (1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food 
-			A heavy workload requires about 3000 Cal/day...consist of 2000 g of water, 
-			470 g dry weight of various carbohydrates and fats, 60 to 70 g dry weight 
-			of proteins, and adequate quantities of various minerals and vitamins (2). 
-			http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN 
-			Food solids: 0.62Kg , Water in food: 1.15Kg (3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy 
-			a. Fats and ethanol have 37 and 29 kJ/g (8.8 and 6.9 kcal/g) b. Proteins 
-			and most carbohydrates have about 17 kJ/g (4.1 kcal/g) c. Notes: 1. Each 
-			meal is 0.62kg / 4 2. Assume a daily intake of: 0.1 kg of fats, 0.4 kg of 
-			proteins and carbo, 0.12 of fibers and others, Daily intake : .1 * 1000 * 
-			33 kJ + .4 * 1000 * 17 kJ + ... = 10100 kJ or 2415.2 kcal Each meal has 0.1550 
-			kg or 2525 kJ 1 kg ==> 16290.323 kJ FOOD_COMPOSITION_ENERGY_RATIO = 16290.323 
-			(4). A standard conversion in the Systeme Internation de'Unites is that one 
-			calorie equals 4.186 joules, which is how much energy is given off in heat 
-			to raise 1 kg of water 1 degree Celsius. 4.186 J = 1 cal OR 4.186 kJ = 1 
-			Cal or 1 kcal a). 1 small kilocalorie (kcal) is equal to 1 large food calorie 
-			(Cal): 1 kcal = 1 Cal b). 1 small kilocalorie (kcal) is equal to 1000 small 
+
+		<!-- TODO: account for carbohydrates & protein content (1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food
+			A heavy workload requires about 3000 Cal/day...consist of 2000 g of water,
+			470 g dry weight of various carbohydrates and fats, 60 to 70 g dry weight
+			of proteins, and adequate quantities of various minerals and vitamins (2).
+			http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN
+			Food solids: 0.62Kg , Water in food: 1.15Kg (3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy
+			a. Fats and ethanol have 37 and 29 kJ/g (8.8 and 6.9 kcal/g) b. Proteins
+			and most carbohydrates have about 17 kJ/g (4.1 kcal/g) c. Notes: 1. Each
+			meal is 0.62kg / 4 2. Assume a daily intake of: 0.1 kg of fats, 0.4 kg of
+			proteins and carbo, 0.12 of fibers and others, Daily intake : .1 * 1000 *
+			33 kJ + .4 * 1000 * 17 kJ + ... = 10100 kJ or 2415.2 kcal Each meal has 0.1550
+			kg or 2525 kJ 1 kg ==> 16290.323 kJ FOOD_COMPOSITION_ENERGY_RATIO = 16290.323
+			(4). A standard conversion in the Systeme Internation de'Unites is that one
+			calorie equals 4.186 joules, which is how much energy is given off in heat
+			to raise 1 kg of water 1 degree Celsius. 4.186 J = 1 cal OR 4.186 kJ = 1
+			Cal or 1 kcal a). 1 small kilocalorie (kcal) is equal to 1 large food calorie
+			(Cal): 1 kcal = 1 Cal b). 1 small kilocalorie (kcal) is equal to 1000 small
 			calories (cal): 1 kcal = 1000 cal -->
-	
+
 		<!-- Number of millisols a person can survive without oxygen -->
 		<!-- Note: 1 millisol = 88.77 seconds -->
 		<!-- Default: 3.38 -->
 		<oxygen-deprivation-time value="3.38" />
-	
+
 		<!-- Number of sols a person can go without water before dying -->
 		<!-- Default: 7.0 -->
 		<water-deprivation-time value="7.0" />
-	
+
 		<!-- Number of sols without water before dehydration kicks in -->
 		<!-- Default: 2.0 -->
 		<dehydration-start-time value="2.0" />
-	
+
 		<!-- Number of sols a person can go without food before dying -->
 		<!-- Default: 30.0 -->
 		<food-deprivation-time value="30.0" />
-	
+
 		<!-- Number of sols without food before starvation kicks in -->
 		<!-- Default: 7.0 -->
 		<starvation-start-time value="7.0" />
-	
+
 		<!-- Number of millisols a person can survive in decompression -->
 		<!-- Note: 1 millisol = 88.77 seconds -->
 		<!-- Default: 10.0 ) -->
 		<decompression-time value="10.0" />
-	
-		<!-- Minimum air pressure (kPa) a person can withstand without harm At least 
-			170 mb (2.5 psi, or 17.24 kPa) without a spacesuit, Note : 1kPa = 0.1450377 
+
+		<!-- Minimum air pressure (kPa) a person can withstand without harm At least
+			170 mb (2.5 psi, or 17.24 kPa) without a spacesuit, Note : 1kPa = 0.1450377
 			psi see "How To Live On Mars" per Zubrin, P.91 -->
 		<!-- Default: 17.24 -->
 		<min-air-pressure value="17.24" />
-	
+
 		<!-- The absolute minimum oxygen partial pressure -->
-		<!-- According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for 
-			a space suit, the absolute minimum safe oxygen requirement is a partial pressure 
+		<!-- According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for
+			a space suit, the absolute minimum safe oxygen requirement is a partial pressure
 			of 11.94 kPa (1.732 psi) -->
 		<!-- Default: 11.94 -->
 		<min-o2-partial-pressure value="11.94" />
-	
-		<!-- Minimum temperature (degrees celsius) a person can withstand without 
+
+		<!-- Minimum temperature (degrees celsius) a person can withstand without
 			harm -->
 		<!-- Default: 0 degrees celsius -->
 		<min-temperature value="-20.0" />
-	
-		<!-- Maximum temperature (degrees celsius) a person can withstand without 
+
+		<!-- Maximum temperature (degrees celsius) a person can withstand without
 			harm -->
 		<!-- Default: 48 degrees celsius -->
 		<max-temperature value="48.0" />
-	
+
 		<!-- Number of millisols a person can survive below minimum temperature -->
 		<!-- Note: 1 millisol = 88.77 seconds -->
 		<!-- Default: 25.0 -->
 		<freezing-time value="250.0" />
-	
-		<!-- Base percent chance per millisol that a person at high stress will 
+
+		<!-- Base percent chance per millisol that a person at high stress will
 			have a panic attack or depression. -->
 		<!-- See medical complaint: "Panic Attack" and "Depression" in medical.xml. -->
 		<!-- Default: 10 [in percentage] -->
 		<stress-breakdown-chance value="10.0" />
-	
-		<!-- Base percent chance per millisol that a person at high fatigue will 
+
+		<!-- Base percent chance per millisol that a person at high fatigue will
 			collapse. -->
 		<!-- See medical complaint: "High Fatigue Collapse" in medical.xml. -->
 		<!-- Default: 10 [in percentage] -->
 		<high-fatigue-collapse-chance value="10.0" />
-	
+
 		<!-- The average percentage of males to total population in the simulation. -->
 		<!-- Default 50 (equal numbers of males and females) -->
 		<gender-male-percentage value="50.0" />
 	</person-attributes>
-	
+
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
-	<!-- TODO: Find statistics appropriate for Martian settlers, perhaps from 
+	<!-- TODO: Find statistics appropriate for Martian settlers, perhaps from
 		personality studies of scientists, -->
 	<!-- engineers or computer programmers. -->
-	<!-- The Proposed average percentages of the 16 MBTI among settlers are 
+	<!-- The Proposed average percentages of the 16 MBTI among settlers are
 		as follows -->
 	<personality-types>
 		<!-- Note: The total percentage for all personality types must equal 100%. -->
@@ -759,7 +769,7 @@
 	<country-list>
 		<country name="China">
 			<first-name-list>
-				<!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts 
+				<!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts
 					http://www.20000-names.com/male_chinese_names.htm -->
 				<first-name value="Boming" gender="male" />
 				<first-name value="Chongfu" gender="male" />
@@ -2556,7 +2566,7 @@
 		<country name="India">
 			<first-name-list>
 
-				<!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html 
+				<!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html
 					https://www.quora.com/Which-is-the-most-common-surname-and-first-name-in-India -->
 				<first-name value="Nikhil" gender="male" />
 				<first-name value="Talan" gender="male" />
