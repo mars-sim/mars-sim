@@ -3062,21 +3062,11 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	private void computeWaterRationLevel() {
 		double storedWater = Math.max(1, getAmountResourceStored(WATER_ID) - getNumCitizens() * 500.0);
-		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens() // getIndoorPeopleCount()
+		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
-		// If stored water is less than 20% of required drinking water for Orbit, wash
-		// water should be rationed.
-//		double ratio = (storedWater + .01) / requiredDrinkingWaterOrbit;
 		double ratio = requiredDrinkingWaterOrbit / storedWater;
 		waterRationLevel = (int) ratio;
-
-//		double newWaterValue = goodsManager.getWaterValue() / ratio;
-//		if (newWaterValue < 1)
-//			newWaterValue = 1;
-//		else if (newWaterValue > 1000)
-//			newWaterValue = 1000;
-//		goodsManager.setWaterValue(newWaterValue);
 
 		if (waterRationLevel < 1)
 			waterRationLevel = 1;
@@ -3877,7 +3867,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+		return eqmInventory.getAmountResourceRemainingCapacity(resource);
 	}
 
 	/**
