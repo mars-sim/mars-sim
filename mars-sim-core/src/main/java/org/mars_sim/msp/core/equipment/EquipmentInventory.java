@@ -251,30 +251,44 @@ public class EquipmentInventory
 		double result = 0;
 
 		for (Equipment e: equipmentSet) {
-			result += e.getAmountResourceCapacity(resource);
+			if (e instanceof ResourceHolder) {
+				result += e.getAmountResourceCapacity(resource);
+			}
 		}
 
-		result += microInventory.getCapacity(resource);
-
-		return result;
+		return result + microInventory.getCapacity(resource);
 	}
 
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 *
 	 * @param resource
-	 * @return quantity
+	 * @return remaining capacity
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
 		// Note: it does not include the general capacity (aka cargo capacity)
-		return getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
+//		return getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
+
+		double cap = 0;
+		double stored = 0;
+
+		for (Equipment e: equipmentSet) {
+
+			if (e instanceof ResourceHolder) {
+				cap += e.getAmountResourceCapacity(resource);
+				stored += e.getAmountResourceStored(resource);
+			}
+		}
+
+		return cap + microInventory.getCapacity(resource)
+			- stored - microInventory.getAmountResourceStored(resource);
 	}
 
 	/**
 	 * Obtains the remaining cargo/general/shared capacity
 	 *
-	 * @return quantity
+	 * @return remaining capacity
 	 */
 	@Override
 	public double getRemainingCargoCapacity() {
@@ -301,7 +315,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public double getAmountResourceStored(int resource) {
-		double result = microInventory.getAmountResourceStored(resource);
+		double result = 0;
 
 		for(Equipment e: equipmentSet) {
 			if (e instanceof ResourceHolder) {
@@ -309,7 +323,7 @@ public class EquipmentInventory
 			}
 		}
 
-		return result;
+		return result + microInventory.getAmountResourceStored(resource);
 	}
 
 
