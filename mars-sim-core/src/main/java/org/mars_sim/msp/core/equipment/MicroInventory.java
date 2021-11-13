@@ -243,20 +243,19 @@ public class MicroInventory implements Serializable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public int storeItemResource(int resource, int quantity) {
-		double massPerItem = 0;
-		double totalMass = 0;
-
 		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
 			s = new ItemStored();
-			massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
-			totalMass = s.quantity * massPerItem;
-		}
-		else {
-			massPerItem = s.massPerItem;
-			totalMass = s.totalMass;
+			s.massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
+			s.totalMass = 0;
+
+			// Save the item resource
+			itemStorage.put(resource, s);
 		}
 
+		double massPerItem = s.massPerItem;
+		double totalMass = s.totalMass;
+	
 		double rCap = sharedCapacity - totalMass;
 		int itemCap = (int)Math.floor(rCap / massPerItem);
 		int missing = 0;
@@ -274,11 +273,7 @@ public class MicroInventory implements Serializable {
 				missing = 0;
 			}
 
-			s.massPerItem = massPerItem;
-			s.totalMass = totalMass;
-
-			// Save the item resource
-			itemStorage.put(resource, s);
+			s.totalMass = s.quantity * s.massPerItem;
 
 			// Update the item total mass
 			updateItemResourceTotalMass();
