@@ -97,7 +97,9 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
 		super(name, missionType, startingMember);
-		calculateMissionCapacity(getRover().getCrewCapacity());
+		if (!isDone()) {
+			calculateMissionCapacity(getRover().getCrewCapacity());
+		}
 	}
 
 	/**
@@ -111,7 +113,9 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, Rover rover) {
 		// Use VehicleMission constructor.
 		super(missionName, missionType, startingMember, rover);
-		calculateMissionCapacity(getRover().getCrewCapacity());
+		if (!isDone()) {
+			calculateMissionCapacity(getRover().getCrewCapacity());
+		}
 	}
 
 	/**
