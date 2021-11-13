@@ -69,7 +69,7 @@ import org.mars_sim.msp.core.time.Temporal;
  *
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, ResourceHolder, Serializable, Malfunctionable,
+	implements LifeSupportInterface, Serializable, Malfunctionable,
 				Temporal {
 
 	/** default serial id. */
@@ -479,17 +479,6 @@ public class EVASuit extends Equipment
 	private Person getOwner() {
 		return (Person)getLastOwner();
 	}
-
-	/**
-	 * Gets the holder's unit instance
-	 *
-	 * @return the holder's unit instance
-	 */
-	@Override
-	public Unit getHolder() {
-		return this;
-	}
-
 
 	/**
 	 * Return the parts that mau normally fail on a EVA Suit

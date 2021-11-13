@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -140,8 +143,15 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		// Question: if a bag was filled with regolith and later was emptied out
 		// should it be tagged for only regolith and NOT for another resource ?
 		if (resourceHeld == -1) {
-			// Allocate the capacity to this new resource
-			resourceHeld = resource;
+			if (canStore(resource)) {
+				// Allocate the capacity to this new resource
+				resourceHeld = resource;
+			}
+			else {
+				throw new IllegalArgumentException("Can not resource "
+							+ ResourceUtil.findAmountResourceName(resource)
+							+ " in a " + getEquipmentType().getName());
+			}
 		}
 		else if (resourceHeld != resource) {
 			return quantity; // Allocated to a different resource
@@ -159,6 +169,16 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	}
 
 	/**
+	 * Can this container hold a specific Amount Resources; this will look at
+	 * the Phase Type
+	 */
+	private boolean canStore(int resourceId) {
+		PhaseType supported = ContainerUtil.getContainerPhase(getEquipmentType());
+		AmountResource required = ResourceUtil.findAmountResource(resourceId);
+		return (supported == required.getPhase());
+	}
+	
+	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 *
 	 * @param resource
@@ -166,7 +186,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		if (resourceHeld == -1) {
+		if ((resourceHeld == -1) && canStore(resource)) {
 			return totalCapacity;
 		}
 		else if (resourceHeld == resource) {
@@ -185,7 +205,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		if ((resourceHeld == -1) || (resource == resourceHeld)) {
+		if (((resourceHeld == -1) && canStore(resource)) || (resource == resourceHeld)) {
 			return totalCapacity;
 		}
 		return 0;

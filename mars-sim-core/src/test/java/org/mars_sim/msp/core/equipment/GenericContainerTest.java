@@ -7,9 +7,12 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import static org.junit.Assert.assertThrows;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -151,5 +154,95 @@ extends TestCase {
 		// Both should be back to full capacity
 		assertEquals("Capacity of prime resource after full unload", bagCap, c.getAmountResourceRemainingCapacity(rockID));
 		assertEquals("Capacity of secondary resource after full unload", bagCap, c.getAmountResourceRemainingCapacity(secondResource));
+	}
+
+	/*
+	 * Test container with Liquids
+	 */
+	public void testBarrelLiquid() throws Exception {
+		assertPhaseSupported(EquipmentType.BARREL, PhaseType.LIQUID);
+	}
+	
+	/*
+	 * Test container with Gas
+	 */
+	public void testCanisterGas() throws Exception {
+		assertPhaseSupported(EquipmentType.GAS_CANISTER, PhaseType.GAS);
+	}
+	
+	/*
+	 * Test container with Solids
+	 */
+	public void testLargeBagSolid() throws Exception {
+		assertPhaseSupported(EquipmentType.LARGE_BAG, PhaseType.SOLID);
+	}
+	
+	public void testBoxSolid() throws Exception {
+		assertPhaseSupported(EquipmentType.SPECIMEN_BOX, PhaseType.SOLID);
+	}
+	
+	public void testBagSolid() throws Exception {
+		assertPhaseSupported(EquipmentType.BAG, PhaseType.SOLID);
+	}
+	
+	/**
+	 * Test that a specific container type can only support the specific PhaseType.
+	 * @param cType
+	 * @param required
+	 */
+	private void assertPhaseSupported(EquipmentType cType, PhaseType required) {
+		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
+
+		double cap = ContainerUtil.getContainerCapacity(cType);
+		int allowedId = 0;
+		int failedId1 = 0;
+		int failedId2 = 0;
+		switch(required) {
+		case LIQUID:
+			allowedId = ResourceUtil.waterID;
+			failedId1 = ResourceUtil.oxygenID;
+			failedId2 = ResourceUtil.regolithBID;
+			break;
+		
+		case GAS:
+			allowedId = ResourceUtil.oxygenID;
+			failedId1 = ResourceUtil.waterID;
+			failedId2 = ResourceUtil.regolithBID;
+			break;
+			
+		case SOLID:
+			allowedId = ResourceUtil.regolithBID;
+			failedId1 = ResourceUtil.oxygenID;
+			failedId2 = ResourceUtil.waterID;
+			break;
+		}
+		
+		// Test negatives first
+		assertPhaseNotSupported(c, failedId1);
+		assertPhaseNotSupported(c, failedId2);
+
+		assertEquals("Container capacity", cap, c.getAmountResourceRemainingCapacity(allowedId));
+		
+		// Check the correct resource can be stored
+		c.storeAmountResource(allowedId, cap/2);
+		
+		// Both should be back to full capacity
+		assertEquals("Container " + c.getName() + " resource stored", allowedId, c.getResource());
+		assertEquals("Container " + c.getName() + " stored", cap/2, c.getStoredMass());
+	}
+	
+	private void assertPhaseNotSupported(GenericContainer c, int resourceId) {
+		double cap = ContainerUtil.getContainerCapacity(c.getEquipmentType());
+
+		assertEquals("Container no capacity", 0D, c.getAmountResourceRemainingCapacity(resourceId));
+		
+		// Load resource
+		assertThrows(IllegalArgumentException.class, () -> {
+				c.storeAmountResource(resourceId, cap/2);
+		    });
+		  
+		// Both should be back to full capacity
+		assertEquals("Container " + c.getName() + " has no resource", -1, c.getResource());
+		assertEquals("Container " + c.getName() + " nothing stored", 0D, c.getStoredMass());
 	}
 }
