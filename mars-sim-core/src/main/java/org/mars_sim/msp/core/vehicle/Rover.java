@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -1064,6 +1065,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 	public boolean hasLUV() {
 		return luv != null;
+	}
+
+	/**
+	 * Does this rover have a set of clothing
+	 */
+	public boolean hasGarment() {
+		return getItemResourceStored(ItemResourceUtil.garmentID) > 0;
 	}
 
 	@Override

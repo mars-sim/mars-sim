@@ -694,27 +694,25 @@ public class EnterAirlock extends Task implements Serializable {
 						housing = ((Building)airlock.getEntity()).getSettlement();
 					else
 						housing = (Vehicle)airlock.getEntity();
-
 					// 2. Doff this suit
 					// 2a. Records the person as the owner (if it hasn't been done)
 					suit.setLastOwner(person);
 					// 2b. Doff this suit. Deregister the suit from the person
 					person.registerSuit(null);
-
+					// Print log
 					logger.log(person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
-
 					// 2c. Transfer the EVA suit from person to the new destination
 					suit.transfer((Unit)housing);
-
-					// 2d. Fetch the clothing from settlement
-					if (inSettlement)
-						person.wearStandardClothing(housing);
-					else
-						person.wearPressureSuit(suit);
-
+					// 2d. Remove pressure suit and put on garment
+					if (inSettlement && person.unwearPressureSuit(housing)) {
+						person.wearGarment(housing);
+					}
+					// Note: vehicle may or may not have garment available
+					else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+						person.wearGarment(housing);
+					}
 					// 2e. Unload any waste
 					suit.unloadWaste(housing);
-
 					// Add experience
 					addExperience(time);
 

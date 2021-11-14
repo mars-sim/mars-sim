@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.MarsSurface;
@@ -964,14 +965,20 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public Set<Person> noEVASuit() {
-		Set<Person> list = new HashSet<>();
-		Set<Integer> intList = getAllInsideOccupants();
-		for (Integer id: intList) {
-			Person p = getPersonByID(id);
-			if (p.getSuit() == null)
-				list.add(p);
-		}
-		return list;
+		return getAllInsideOccupants()
+				.stream()
+				.map(i -> getPersonByID(i))
+				.filter(p -> (p == null))
+				.collect(Collectors.toSet());
+
+//		Set<Person> list = new HashSet<>();
+//		Set<Integer> intList = getAllInsideOccupants();
+//		for (Integer id: intList) {
+//			Person p = getPersonByID(id);
+//			if (p.getSuit() == null)
+//				list.add(p);
+//		}
+//		return list;
 	}
 
 	/**

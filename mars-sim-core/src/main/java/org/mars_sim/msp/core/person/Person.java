@@ -2199,11 +2199,18 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Puts on a standard set of clothing items
+	 * Does this person have a pressure suit
+	 */
+	public boolean hasPressureSuit() {
+		return getItemResourceStored(ItemResourceUtil.pressureSuitID) > 0;
+	}
+
+	/**
+	 * Puts on a garment
 	 *
 	 * @param holder the previous holder of the clothing
 	 */
-	public void wearStandardClothing(EquipmentOwner holder) {
+	public void wearGarment(EquipmentOwner holder) {
 		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
 			storeItemResource(ItemResourceUtil.garmentID, 1);
 		}
@@ -2214,33 +2221,41 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 *
 	 * @param suit
 	 */
-	public void wearPressureSuit(EVASuit suit) {
-		if (suit.retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+	public void wearPressureSuit(EquipmentOwner holder) {
+		if (!hasPressureSuit() && holder.retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
 			storeItemResource(ItemResourceUtil.pressureSuitID, 1);
 		}
 	}
 
 
 	/**
-	 * Puts off a standard set of clothing items
+	 * Puts off the garment
 	 *
 	 * @param holder the new holder of the clothing
+	 * @return true if successful
 	 */
-	public void unwearStandardClothing(EquipmentOwner holder) {
+	public boolean unwearGarment(EquipmentOwner holder) {
 		if (hasGarment() && retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
-			holder.storeItemResource(ItemResourceUtil.garmentID, 1);
+			if (holder.storeItemResource(ItemResourceUtil.garmentID, 1) == 0) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/**
-	 * Puts off a pressure suit set
+	 * Puts off the pressure suit set
 	 *
 	 * @param suit
+	 * @return true if successful
 	 */
-	public void unwearPressureSuit(EVASuit suit) {
-		if (retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
-			suit.storeItemResource(ItemResourceUtil.pressureSuitID, 1);
+	public boolean unwearPressureSuit(EquipmentOwner holder) {
+		if (hasPressureSuit() && retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+			if (holder.storeItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/**

@@ -750,18 +750,18 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!hasSuit && suit != null) {
 
 			// if a person hasn't donned the suit yet
-			// 0. Return the clothing to settlement
-			if (inSettlement)
-				person.unwearStandardClothing(housing);
-			else
-				person.unwearPressureSuit(suit);
-
+			// 0. Remove garment and put on pressure suit
+			if (person.unwearGarment(housing)) {
+				person.wearPressureSuit(housing);
+			}
 			// 1. Transfer the EVA suit from settlement/vehicle to person
 			suit.transfer(person);
 			// 2. Set the person as the owner
 			suit.setLastOwner(person);
 			// 3. Register the suit the person will take into the airlock to don
 			person.registerSuit(suit);
+			// Print log
+			logger.log(person, Level.FINE, 4_000, "Just donned the " + suit.getName() + ".");
 			// 4. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
 				logger.warning(suit, "Being used but not full loaded.");

@@ -165,7 +165,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 */
 	public Point2D registerSleeper(Person person, boolean isAGuest) {
 		// Obtain a standard set of clothing items
-		person.wearStandardClothing(building.getSettlement());
+		person.wearGarment(building.getSettlement());
 
 		Point2D registeredBed = person.getBed();
 

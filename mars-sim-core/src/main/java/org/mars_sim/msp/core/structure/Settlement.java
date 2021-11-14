@@ -753,8 +753,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	public Collection<Person> getOutsideEVAPeople() {
 
-		return citizens.stream().filter(
-				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+		return citizens.stream()
+				.filter(p -> !p.isDeclaredDead()
+						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.toList());
 
@@ -1988,7 +1989,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	public Collection<Person> getBuriedPeople() {
 		// using java 8 stream
-		return unitManager.getPeople().stream().filter(p -> p.getBuriedSettlement() == this)
+		return unitManager.getPeople().stream()
+				.filter(p -> p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
 	}
 
@@ -2000,8 +2002,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	public Collection<Person> getDeceasedPeople() {
 		// using java 8 stream
-		return unitManager.getPeople().stream().filter(
-				p -> (p.getAssociatedSettlement() == this && p.isDeclaredDead()) || p.getBuriedSettlement() == this)
+		return unitManager.getPeople().stream()
+				.filter(p -> (p.getAssociatedSettlement() == this && p.isDeclaredDead()) || p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
 	}
 
