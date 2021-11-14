@@ -97,7 +97,6 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
 		if (resourceHeld == resource) {
 			if (quantity < amountStored) {
@@ -177,7 +176,7 @@ class GenericContainer extends Equipment implements Container, Serializable {
 		AmountResource required = ResourceUtil.findAmountResource(resourceId);
 		return (supported == required.getPhase());
 	}
-	
+
 	/**
 	 * Obtains the remaining storage space of a particular amount resource
 	 *
@@ -227,9 +226,22 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * @param resource
 	 * @return
 	 */
-	@Override
 	public boolean hasResource(int resource) {
 		return resourceHeld == resource;
+	}
+
+	/**
+	 * Is this equipment empty ?
+	 *
+	 * @param brandNew true if it needs to be brand new
+	 * @return
+	 */
+	public boolean isEmpty(boolean brandNew) {
+		if (brandNew) {
+			return (getLastOwnerID() == -1);
+		}
+
+		return resourceHeld == -1;
 	}
 
 	/**

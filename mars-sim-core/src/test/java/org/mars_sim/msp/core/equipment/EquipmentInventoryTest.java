@@ -70,7 +70,7 @@ extends TestCase {
 		assertEquals("Total mass after bag load", expectedMass, inv.getStoredMass());
 		assertEquals("Resources held in inventory", Set.of(co2, rock), inv.getAmountResourceIDs());
 
-		// REnovesoem rock from bag
+		// Remove some rock from bag
 		bag.retrieveAmountResource(rock, rockMass/2);
 		expectedMass = co2Mass + rockMass/2 + bag.getBaseMass();
 		assertEquals("Rock after bag unload", rockMass/2, inv.getAmountResourceStored(rock));

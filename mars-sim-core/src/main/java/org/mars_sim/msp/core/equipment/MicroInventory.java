@@ -83,7 +83,7 @@ public class MicroInventory implements Serializable {
 
 	private double amountTotalMass = 0D;
 	private double itemTotalMass = 0D;
-	private double generalTotalMass = 0D;
+//	private double generalTotalMass = 0D;
 
 	private double sharedCapacity = 0D;
 
@@ -182,7 +182,7 @@ public class MicroInventory implements Serializable {
 	 * @return mass [kg]
 	 */
 	public double getStoredMass() {
-		return amountTotalMass + itemTotalMass + generalTotalMass;
+		return amountTotalMass + itemTotalMass; // + generalTotalMass;
 	}
 
 	/**

@@ -69,7 +69,7 @@ import org.mars_sim.msp.core.time.Temporal;
  *
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, Serializable, Malfunctionable, ItemHolder,
+	implements LifeSupportInterface, Serializable, Malfunctionable, ResourceHolder, ItemHolder,
 				Temporal {
 
 	/** default serial id. */
@@ -121,6 +121,8 @@ public class EVASuit extends Equipment
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	/** The MicroInventory instance. */
+	private MicroInventory microInventory;
 
 	static {
 
@@ -174,6 +176,9 @@ public class EVASuit extends Equipment
 		malfunctionManager.addScopeString(TYPE);
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
+		// Create MicroInventory instance
+		microInventory = new MicroInventory(this);
+
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 
@@ -191,6 +196,16 @@ public class EVASuit extends Equipment
     public double getCargoCapacity() {
         return CAPACITY;
     }
+
+	/**
+	 * Is this resource supported ?
+	 *
+	 * @param resource
+	 * @return true if this resource is supported
+	 */
+	public boolean isResourceSupported(int resource) {
+		return microInventory.isResourceSupported(resource);
+	}
 
 	/**
 	 * Stores the resource
@@ -549,8 +564,103 @@ public class EVASuit extends Equipment
 		return this;
 	}
 
+	/**
+	 * Gets a list of all stored item resources
+	 *
+	 * @return a list of resource ids
+	 */
+	public Set<Integer> getItemResourceIDs() {
+		return microInventory.getItemsStored();
+	}
+
+	@Override
+	public double getAmountResourceStored(int resource) {
+		return microInventory.getAmountResourceStored(resource);
+	}
+
+	/**
+	 * Retrieves the resource
+	 *
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	public double retrieveAmountResource(int resource, double quantity) {
+		if (isResourceSupported(resource)) {
+			return microInventory.retrieveAmountResource(resource, quantity);
+		}
+
+		else {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "No such resource. Cannot retrieve "
+					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
+			return quantity;
+		}
+	}
+
+	/**
+	 * Obtains the remaining storage space of a particular amount resource
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAmountResourceRemainingCapacity(int resource) {
+		return microInventory.getAmountResourceRemainingCapacity(resource);
+	}
+
+	/**
+	 * Gets a list of all stored amount resources
+	 *
+	 * @return a list of resource ids
+	 */
+	@Override
+	public Set<Integer> getAmountResourceIDs() {
+		return microInventory.getResourcesStored();
+	}
+
+	/**
+	 * Is this equipment empty ?
+	 *
+	 * @param brandNew true if it needs to be brand new
+	 * @return
+	 */
+	public boolean isEmpty(boolean brandNew) {
+		if (brandNew) {
+			return (getLastOwnerID() == -1);
+		}
+
+		return microInventory.isEmpty();
+	}
+
+	/**
+	 * Gets the total weight of the stored resources
+	 *
+	 * @return
+	 */
+	public double getStoredMass() {
+		if (microInventory == null)
+			// Note: needed when starting up
+			return 0;
+		return microInventory.getStoredMass();
+	}
+
+//	/**
+//	 * Does this unit have this resource ?
+//	 *
+//	 * @param resource
+//	 * @return
+//	 */
+//	public boolean hasResource(int resource) {
+//		for (int id: getAmountResourceIDs()) {
+//			if (id == resource)
+//				return true;
+//		}
+//		return false;
+//	}
+
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;
 	}
+
 }

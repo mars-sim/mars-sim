@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingKit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-14
  * @author Manny Kung
  */
 
@@ -32,7 +32,7 @@ public class BuildingKit extends Equipment
 	public static final double EMPTY_MASS = 30D;
 	/** capacity (kg). */
 	public static final double CAPACITY = 0;
-	
+
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
@@ -58,7 +58,7 @@ public class BuildingKit extends Equipment
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 	}
-	
+
 	/**
      * Gets the total capacity of resource that this container can hold.
      * @return total capacity (kg).
@@ -66,10 +66,10 @@ public class BuildingKit extends Equipment
     public double getCargoCapacity() {
         return CAPACITY;
     }
-    
+
 	/**
 	 * Checks if the item is salvaged.
-	 * 
+	 *
 	 * @return true if salvaged.
 	 */
 	public boolean isSalvaged() {
@@ -82,7 +82,7 @@ public class BuildingKit extends Equipment
 
 	/**
 	 * Indicate the start of a salvage process on the item.
-	 * 
+	 *
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
@@ -93,7 +93,7 @@ public class BuildingKit extends Equipment
 
 	/**
 	 * Gets the salvage info.
-	 * 
+	 *
 	 * @return salvage info or null if item not salvaged.
 	 */
 	public SalvageInfo getSalvageInfo() {
@@ -102,7 +102,7 @@ public class BuildingKit extends Equipment
 
 	/**
 	 * Gets the unit's malfunction manager.
-	 * 
+	 *
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
@@ -111,7 +111,7 @@ public class BuildingKit extends Equipment
 
 	/**
 	 * Time passing for the Building Kit.
-	 * 
+	 *
 	 * @param time the amount of time passing (millisols)
 	 * @throws Exception if error during time.
 	 */
@@ -163,5 +163,41 @@ public class BuildingKit extends Equipment
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
+	}
+
+	@Override
+	public double storeAmountResource(int resource, double quantity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double retrieveAmountResource(int resource, double quantity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getAmountResourceCapacity(int resource) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getAmountResourceStored(int resource) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isEmpty(boolean brandNew) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public double getStoredMass() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
