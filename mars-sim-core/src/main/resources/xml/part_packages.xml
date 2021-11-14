@@ -87,7 +87,7 @@
 		<part type="iron pipe" number="12" />
 		<part type="eva helmet" number="16" />
 		<part type="helmet visor" number="8" />
-		<part type="counter pressure suit" number="16" />
+		<part type="pressure suit" number="16" />
 		<part type="coveralls" number="16" />
 		<part type="work gloves" number="16" />
 		<part type="eva gloves" number="16" />
@@ -197,7 +197,7 @@
 		<part type="iron pipe" number="18" />
 		<part type="eva helmet" number="32" />
 		<part type="helmet visor" number="16" />
-		<part type="counter pressure suit" number="32" />
+		<part type="pressure suit" number="32" />
 		<part type="coveralls" number="32" />
 		<part type="work gloves" number="32" />
 		<part type="eva gloves" number="32" />
@@ -309,7 +309,7 @@
 		<part type="iron pipe" number="26" />
 		<part type="eva helmet" number="48" />
 		<part type="helmet visor" number="24" />
-		<part type="counter pressure suit" number="48" />
+		<part type="pressure suit" number="48" />
 		<part type="coveralls" number="48" />
 		<part type="work gloves" number="48" />
 		<part type="eva gloves" number="48" />
@@ -421,7 +421,7 @@
 		<part type="iron pipe" number="38" />
 		<part type="eva helmet" number="48" />
 		<part type="helmet visor" number="24" />
-		<part type="counter pressure suit" number="48" />
+		<part type="pressure suit" number="48" />
 		<part type="coveralls" number="48" />
 		<part type="work gloves" number="48" />
 		<part type="eva gloves" number="48" />

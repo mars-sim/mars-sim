@@ -248,7 +248,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getItemResourceStored(int resource) {
+	public int getItemResourceStored(int resource) {
 		return microInventory.getItemResourceStored(resource);
 	}
 

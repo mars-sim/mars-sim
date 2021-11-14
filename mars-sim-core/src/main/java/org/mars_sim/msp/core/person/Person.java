@@ -2210,6 +2210,18 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
+	 * Puts on a pressure suit set
+	 *
+	 * @param suit
+	 */
+	public void wearPressureSuit(EVASuit suit) {
+		if (suit.retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+			storeItemResource(ItemResourceUtil.pressureSuitID, 1);
+		}
+	}
+
+
+	/**
 	 * Puts off a standard set of clothing items
 	 *
 	 * @param holder the new holder of the clothing
@@ -2217,6 +2229,17 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public void unwearStandardClothing(EquipmentOwner holder) {
 		if (hasGarment() && retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
 			holder.storeItemResource(ItemResourceUtil.garmentID, 1);
+		}
+	}
+
+	/**
+	 * Puts off a pressure suit set
+	 *
+	 * @param suit
+	 */
+	public void unwearPressureSuit(EVASuit suit) {
+		if (retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+			suit.storeItemResource(ItemResourceUtil.pressureSuitID, 1);
 		}
 	}
 

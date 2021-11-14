@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * EquipmentFactory.java
- * @date 2021-08-26
+ * @date 2021-11-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -16,7 +17,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 public final class EquipmentFactory {
 
 	private static UnitManager unitManager;
-	
+
 	/**
 	 * Private constructor for static factory class.
 	 */
@@ -38,15 +39,17 @@ public final class EquipmentFactory {
 		switch (type) {
 		case EVA_SUIT:
 			newEqm = new EVASuit(newName, settlement);
+			// Store a pressure suit inside the EVA suit
+			((EVASuit)newEqm).storeItemResource(ItemResourceUtil.pressureSuitID, 1);
 			break;
-			
+
 		case BAG:
 		case BARREL:
 		case GAS_CANISTER:
 		case LARGE_BAG:
 			newEqm = new GenericContainer(newName, type, false, settlement);
 			break;
-			
+
 		case SPECIMEN_BOX:
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
@@ -54,33 +57,32 @@ public final class EquipmentFactory {
 		default:
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 		}
-		
+
 		unitManager.addUnit(newEqm);
 		// Add this equipment as being owned by this settlement
 		settlement.addEquipment(newEqm);
 		// Set the container unit
 		newEqm.setContainerUnit(settlement);
-		
+
 		return newEqm;
 	}
-	
+
 	/**
 	 * Gets an equipment instance from an equipment type string.
-	 * 
+	 *
 	 * @param type     the equipment type string.
 	 * @param location the location of the equipment.
 	 * @return {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment createEquipment(String type, Settlement settlement) {
-		
-		// Create a new instance of the equipment		
+		// Create a new instance of the equipment
 		return createEquipment(EquipmentType.convertName2Enum(type), settlement);
 	}
 
 	/**
 	 * Gets the empty mass of the equipment.
-	 * 
+	 *
 	 * @param type the equipment type string.
 	 * @return empty mass (kg).
 	 * @throws Exception if equipment mass could not be determined.
@@ -103,7 +105,7 @@ public final class EquipmentFactory {
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 		}
 	}
-	
+
 	/**
 	 * Set up the default Unit Manager to use.
 	 * @param mgr

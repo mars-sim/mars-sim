@@ -69,7 +69,7 @@ import org.mars_sim.msp.core.time.Temporal;
  *
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, Serializable, Malfunctionable,
+	implements LifeSupportInterface, Serializable, Malfunctionable, ItemHolder,
 				Temporal {
 
 	/** default serial id. */
@@ -177,6 +177,7 @@ public class EVASuit extends Equipment
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);
 
+		// Set capacity for each resource
 		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
 		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
@@ -381,7 +382,7 @@ public class EVASuit extends Equipment
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
-		double result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
+		return NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
 //		double ambient = weather.getTemperature(getCoordinates());
 
 //		if (result < ambient) {
@@ -391,8 +392,6 @@ public class EVASuit extends Equipment
 			// if cooling coil malfunction, then return ambient only
 //			return result;
 //		}
-
-		return result;
 	}
 
 	/**
@@ -522,6 +521,32 @@ public class EVASuit extends Equipment
 		double waterLoaded = getAmountResourceStored(WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
+	}
+
+
+	@Override
+	public int getItemResourceStored(int resource) {
+		return microInventory.getItemResourceStored(resource);
+	}
+
+	@Override
+	public int getItemResourceRemainingQuantity(int resource) {
+		return microInventory.getItemResourceRemainingQuantity(resource);
+	}
+
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return microInventory.storeItemResource(resource, quantity);
+	}
+
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return microInventory.retrieveItemResource(resource, quantity);
+	}
+
+	@Override
+	public Unit getHolder() {
+		return this;
 	}
 
 	public void destroy() {

@@ -709,6 +709,8 @@ public class EnterAirlock extends Task implements Serializable {
 					// 2d. Fetch the clothing from settlement
 					if (inSettlement)
 						person.wearStandardClothing(housing);
+					else
+						person.wearPressureSuit(suit);
 
 					// 2e. Unload any waste
 					suit.unloadWaste(housing);

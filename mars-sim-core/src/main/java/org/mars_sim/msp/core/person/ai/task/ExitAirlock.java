@@ -753,6 +753,9 @@ public class ExitAirlock extends Task implements Serializable {
 			// 0. Return the clothing to settlement
 			if (inSettlement)
 				person.unwearStandardClothing(housing);
+			else
+				person.unwearPressureSuit(suit);
+
 			// 1. Transfer the EVA suit from settlement/vehicle to person
 			suit.transfer(person);
 			// 2. Set the person as the owner

@@ -262,7 +262,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="counter pressure suit" mass="1.0" >
+	<part name="pressure suit" mass="1.0" >
 		<description>Spandex inner EVA suit for counter pressure.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />

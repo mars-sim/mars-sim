@@ -1674,15 +1674,15 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make counter pressure suit" tech="2" skill="2" work-time="400" process-time="300"
+	<process name="make pressure suit" tech="2" skill="2" work-time="400" process-time="300"
 			power-required=".2">
 		<inputs>
-			<resource name="polyethylene" amount="1.0" />
+			<resource name="polyethylene" amount="0.2" />
 			<resource name="cane fiber" amount="0.3" />
 			<resource name="polyester resin" amount="0.5" />
 		</inputs>
 		<outputs>
-			<part name="counter pressure suit" number="1" />
+			<part name="pressure suit" number="1" />
 		</outputs>
 	</process>
 
@@ -1781,7 +1781,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="eva helmet" number="1" />
 			<part name="helmet visor" number="1" />
-			<part name="counter pressure suit" number="1" />
+			<part name="pressure suit" number="1" />
 			<part name="coveralls" number="1" />
 			<part name="eva gloves" number="1" />
 			<part name="eva boots" number="1" />
@@ -3789,7 +3789,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
 		<part-salvage name="eva helmet" number="1" />
 		<part-salvage name="helmet visor" number="1" />
-		<part-salvage name="counter pressure suit" number="1" />
+		<part-salvage name="pressure suit" number="1" />
 		<part-salvage name="coveralls" number="1" />
 		<part-salvage name="eva gloves" number="1" />
 		<part-salvage name="eva boots" number="1" />

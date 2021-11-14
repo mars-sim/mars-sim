@@ -28,6 +28,8 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final String PRESSURE_SUIT = "pressure suit";
+
 	// Light utility vehicle attachment parts for mining.
 	public static final String BACKHOE = "backhoe";
 	public static final String BULLDOZER_BLADE = "bulldozer blade";
@@ -62,6 +64,7 @@ public class ItemResourceUtil implements Serializable {
 	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
 	public static int garmentID;
+	public static int pressureSuitID;
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;
@@ -108,7 +111,7 @@ public class ItemResourceUtil implements Serializable {
 		EVASUIT_PARTS = new String[] {
 					"eva helmet",
 					"helmet visor",
-					"counter pressure suit",
+					PRESSURE_SUIT,
 					"coveralls",
 					"suit heating unit",
 
@@ -157,6 +160,7 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	public void createIDs() {
 		garmentID = findIDbyItemResourceName("garment");
+		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
 
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
