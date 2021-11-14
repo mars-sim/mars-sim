@@ -96,7 +96,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Gets a list of supported resources
+	 * Gets all stored amount resources
 	 *
 	 * @return a list of resource ids
 	 */
@@ -107,7 +107,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/**
 	 * Gets all stored item resources
 	 *
-	 * @return
+	 * @return a list of resource ids
 	 */
 	public Set<Integer> getItemResourceIDs() {
 		return microInventory.getItemsStored();

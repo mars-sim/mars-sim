@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -255,7 +256,7 @@ public class MicroInventory implements Serializable {
 
 		double massPerItem = s.massPerItem;
 		double totalMass = s.totalMass;
-	
+
 		double rCap = sharedCapacity - totalMass;
 		int itemCap = (int)Math.floor(rCap / massPerItem);
 		int missing = 0;
@@ -406,10 +407,10 @@ public class MicroInventory implements Serializable {
 	 * @return
 	 */
 	public Set<Integer> getResourcesStored() {
-		return amountStorage.keySet();
-//				.stream()
-//				.filter(i -> (i.intValue() < ResourceUtil.FIRST_ITEM_RESOURCE_ID))
-//				.collect(Collectors.toSet());
+		return amountStorage.keySet()
+				.stream()
+				.filter(i -> (amountStorage.get(i).storedAmount > 0))
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -418,10 +419,10 @@ public class MicroInventory implements Serializable {
 	 * @return
 	 */
 	public Set<Integer> getItemsStored() {
-		return itemStorage.keySet();
-//				.stream()
-//				.filter(i -> (i.intValue() >= ResourceUtil.FIRST_ITEM_RESOURCE_ID))
-//				.collect(Collectors.toSet());
+		return itemStorage.keySet()
+				.stream()
+				.filter(i -> (itemStorage.get(i).quantity > 0))
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -484,7 +485,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Does this amount resource exist in storage ?
+	 * Is this amount resource being labeled in storage ?
 	 *
 	 * @param resource
 	 * @return
