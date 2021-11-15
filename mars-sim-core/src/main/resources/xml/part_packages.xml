@@ -20,6 +20,7 @@
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
+		<part type="petri dish" number="100"/>
 		<part type="garment" number="6"/>
 		<part type="fiberglass" number="3"/>
 		<part type="fiberglass cloth" number="10"/>
@@ -131,6 +132,7 @@
 	</part-package>
 
 	<part-package name="package 2" >
+		<part type="petri dish" number="200"/>
 		<part type="garment" number="12"/>
 		<part type="fiberglass" number="6"/>
 		<part type="fiberglass cloth" number="20"/>
@@ -243,6 +245,7 @@
 	</part-package>
 
 	<part-package name="package 3">
+		<part type="petri dish" number="300"/>
 		<part type="garment" number="24"/>
 		<part type="fiberglass" number="12"/>
 		<part type="fiberglass cloth" number="40"/>
@@ -355,6 +358,7 @@
 	</part-package>
 
 	<part-package name="package 4">
+		<part type="petri dish" number="400"/>
 		<part type="garment" number="48"/>
 		<part type="fiberglass" number="24"/>
 		<part type="fiberglass cloth" number="80"/>

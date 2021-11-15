@@ -945,6 +945,12 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="petri dish" mass="0.03">
+		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
+	</part>
+
+
+
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

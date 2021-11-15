@@ -1362,7 +1362,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<!-- CaC2 + H2O -> C2H2 (acetylene) + CaO -->
 	<!-- 3C2H2 (acetylene) -> (condensed) C6H6 (benzene) -->
 	<!-- C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene) -->
-	<process name="produce styrene" tech="3" skill="3" work-time="100" process-time="400"
+	<process name="produce styrene" tech="2" skill="2" work-time="100" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="carbon" amount="32.12" />
@@ -1381,7 +1381,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<!-- CaC2 + H2O -> C2H2 (acetylene) + CaO -->
 	<!-- 3C2H2 (acetylene) -> (condensed) C6H6 (benzene) -->
 	<!-- C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene) -->
-	<process name="produce styrene (large batch)" tech="3" skill="5" work-time="500" process-time="2000"
+	<process name="produce styrene (large batch)" tech="2" skill="2" work-time="500" process-time="2000"
 			power-required=".5">
 		<inputs>
 			<resource name="carbon" amount="321.2" />
@@ -1392,6 +1392,26 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="carbon monoxide" amount="249.7" />
 			<resource name="styrene" amount="309.5" />
+		</outputs>
+	</process>
+
+	<process name="produce polystyrene" tech="2" skill="2" work-time="50" process-time="40"
+			power-required=".1">
+		<inputs>
+			<resource name="styrene" amount="5" />
+		</inputs>
+		<outputs>
+			<resource name="polystyrene" amount="5" />
+		</outputs>
+	</process>
+
+	<process name="produce petri dish" tech="2" skill="2" work-time="50" process-time="40"
+			power-required=".1">
+		<inputs>
+			<resource name="polystyrene" amount="1.5" />
+		</inputs>
+		<outputs>
+			<part name="petri dish" number="50" />
 		</outputs>
 	</process>
 

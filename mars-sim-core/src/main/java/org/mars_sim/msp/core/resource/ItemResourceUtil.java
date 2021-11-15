@@ -65,6 +65,7 @@ public class ItemResourceUtil implements Serializable {
 
 	public static int garmentID;
 	public static int pressureSuitID;
+	public static int PETRI_DISH_ID;
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;
@@ -159,6 +160,7 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares the id's of a few item resources
 	 */
 	public void createIDs() {
+		PETRI_DISH_ID = findIDbyItemResourceName("petri dish");
 		garmentID = findIDbyItemResourceName("garment");
 		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
 

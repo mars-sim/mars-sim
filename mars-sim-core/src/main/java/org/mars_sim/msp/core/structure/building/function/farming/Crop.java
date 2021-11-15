@@ -250,6 +250,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 				phaseType = PhaseType.INCUBATION;
 				logger.log(building, Level.INFO, 0, " No " + cropSpec.getName()
 						+ " tissue-culture left. Restocking.");
+				// Need a petri dish
+				if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
+					building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+				}
+				else
+					logger.log(building, Level.WARNING, 60_000, "No petri dish left for growing " + cropSpec.getName()
+						+ " tissue-culture.");
 			}
 
 			else if (tissuePercent >= 100) {
@@ -303,9 +310,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 			if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
 				building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
 			}
+			// Need a petri dish
+			if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
+				building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+			}
+			else
+				logger.log(building, Level.WARNING, 60_000, "No petri dish left for isolating " + cropSpec.getName()
+					+ " tissue-culture.");
 			// Require some dead matter for fungi to decompose
-			if (growingArea * .5 > MIN)
-				retrieve(growingArea * .5, CROP_WASTE_ID, true);
+			if (growingArea * .2 > MIN)
+				retrieve(growingArea * .2, CROP_WASTE_ID, true);
 		}
 	}
 

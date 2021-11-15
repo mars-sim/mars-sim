@@ -259,11 +259,9 @@
 	    	edible-biomass="35" edible-water-content=".95" inedible-biomass="5" daily-PAR="17.28" />
 	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
-	    	 10 kg / week yield for greenhouse
+	    	10 kg / week yield for greenhouse
 
-	    	 Grown as a hardy annual, Lettuce (Lactuca sativa) is an annual plant of the daisy family, Asteraceae.
-
-
+	    	Grown as a hardy annual, Lettuce (Lactuca sativa) is an annual plant of the daisy family, Asteraceae.
 	    	-->
 
 
@@ -273,6 +271,10 @@
 	    	Morel Mushroom is also called MORCHELLA.
 	    	https://www.sciencenews.org/article/morel-mushroom-may-grow-crop-its-own?mode=magazine&context=189396
 	    	Strands of the thick-footed morel fungus serve as a highway for...six times as dense...common soil bacteria.
+
+	    	Mushroom culivation Automation using Rashberry-pi
+	    	https://kylegabriel.com/projects/2021/09/mushroom-cultivation-automation.html
+	    	https://www.youtube.com/watch?v=z41Wy5ZF4O8
 	      	-->
 
 	  <crop name="White Mustard" growing-time="82.5" crop-category="leaves" life-cycle="annual"
