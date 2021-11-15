@@ -40,25 +40,25 @@ public class ConstructionSiteTest extends TestCase {
         site = new ConstructionSite(Settlement.createConstructionStage());
 
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        
-        Part ir = ItemResourceUtil.createItemResource("test part", 1, "test part description", 1D, 1);
+
+        Part ir = ItemResourceUtil.createItemResource("test part", 1, "test part description", "test type", 1D, 1);
         parts.put(ir.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
 
         AmountResource ar = ResourceUtil.sandAR;
         resources.put(ar.getID(), 1D);
-        
+
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);
-        
-        ItemResource atth = ItemResourceUtil.createItemResource("attachment part", 2, "test attachment description", 1D, 1);
+
+        ItemResource atth = ItemResourceUtil.createItemResource("attachment part", 2, "test attachment description", "test type", 1D, 1);
         parts.put(atth.getID(), 1);
-        
+
         attachments.add(atth.getID());
-        
-        
+
+
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
@@ -188,7 +188,7 @@ public class ConstructionSiteTest extends TestCase {
 //     */
 //     Note: commenting out for now.  Fails on null pointer exception thrown by
 //     testSite.createBuilding() due to use of MarsClock from uninitialized Simulation.
-//    
+//
 //    public void testCreateBuilding() {
 //        try {
 //            Settlement settlement = new MockSettlement();
@@ -204,5 +204,5 @@ public class ConstructionSiteTest extends TestCase {
 //            fail(e.getMessage());
 //        }
 //    }
-    
+
 }

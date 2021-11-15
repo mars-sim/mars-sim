@@ -36,6 +36,7 @@ public final class PartConfig implements Serializable {
 	public static final String PART = "part";
 	public static final String DESCRIPTION = "description";
 	public static final String NAME = "name";
+	public static final String TYPE = "type";
 	public static final String MASS = "mass";
 	public static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
 	public static final String ENTITY = "entity";
@@ -48,10 +49,10 @@ public final class PartConfig implements Serializable {
 
 	private Set<Part> partSet = new TreeSet<>();
 	private Map<String,List<MaintenanceScope>> scopes = new HashMap<>();
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param itemResourceDoc the item resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
@@ -63,7 +64,7 @@ public final class PartConfig implements Serializable {
 
 	/**
 	 * Loads item resources from the parts.xml config document.
-	 * 
+	 *
 	 * @param itemResourceDoc the configuration XML document.
 	 * @throws Exception if error loading item resources.
 	 */
@@ -91,15 +92,22 @@ public final class PartConfig implements Serializable {
 			if (mass == 0 || partElement.getAttributeValue(MASS) == null)
 				throw new IllegalStateException(
 						"PartConfig detected invalid mass in parts.xml : " + name);
-		
-			Part p = new Part(name, nextID, description, mass, 1);
-			
+
+			// Get type.
+			String type = partElement.getAttributeValue(TYPE);
+
+			if (type == null || partElement.getAttributeValue(TYPE) == null)
+				throw new IllegalStateException(
+						"PartConfig detected invalid type in parts.xml : " + type);
+
+			Part p = new Part(name, nextID, description, type, mass, 1);
+
 			for (Part pp: partSet) {
 				if (pp.getName().equalsIgnoreCase(name))
 					throw new IllegalStateException(
 							"PartConfig detected an duplicated part entry in parts.xml : " + name);
 			}
-			
+
 			partSet.add(p);
 
 			// Add maintenance entities for part.
@@ -110,7 +118,7 @@ public final class PartConfig implements Serializable {
 					String entityName = entityElement.getAttributeValue(NAME);
 					double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
 					int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-					
+
 					MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
 					addPartScope(entityName, newMaintenance);
 				}
@@ -119,12 +127,12 @@ public final class PartConfig implements Serializable {
 	}
 
 	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
-		
+
 		String key = scope.toLowerCase();
 		List<MaintenanceScope> maintenance = scopes.computeIfAbsent(key, k -> new ArrayList<>());
 		maintenance.add(newMaintenance);
 	}
-	
+
 	/**
 	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
 	 * @param scope Possible scopes
@@ -151,10 +159,10 @@ public final class PartConfig implements Serializable {
 	public List<MaintenanceScope> getMaintenance(Collection<String> scope, Part part) {
 		return getMaintenance(scope).stream().filter(m -> m.getPart().equals(part)).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Gets a set of all parts.
-	 * 
+	 *
 	 * @return a set of parts.
 	 */
 	public Set<Part> getPartSet() {

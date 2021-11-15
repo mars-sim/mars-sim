@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * The ItemResource class represents a type of resource measured in countable
- * units of quantity. It's for simple tools and parts. 
+ * units of quantity. It's for simple tools and parts.
  */
 public class ItemResource extends ResourceAbstract implements Serializable {
 
@@ -21,39 +21,27 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	// Data members
 	private double massPerItem;
 	private int startSol;
-
-//	private static PartConfig partConfig;
-
-//	public ItemResource() {
-////		partConfig = SimulationConfig.instance().getPartConfiguration();
-//		ResourceUtil.getInstance();
-//	}
-
-//	/*
-//	 * Default private constructor
-//	 *
-//	private ItemResource() {
-//		throw new UnsupportedOperationException("invalid constructor");
-//	}
+	protected String type;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name        the name of the resource.
 	 * @param description {@link String}
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 * @param the         sol when this resource is put to use.
 	 */
-	protected ItemResource(String name, int id, String description, double massPerItem, int startSol) {
+	protected ItemResource(String name, int id, String description, String type, double massPerItem, int startSol) {
 		super(name, id, description);
 
 		this.massPerItem = massPerItem;
 		this.startSol = startSol;
+		this.type = type;
 	}
 
 	/**
 	 * Gets the starting sol of the resource
-	 * 
+	 *
 	 * @return the starting sol
 	 */
 	public int getStartSol() {
@@ -62,11 +50,20 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 
 	/**
 	 * Gets the mass for an item of the resource.
-	 * 
+	 *
 	 * @return mass (kg)
 	 */
 	public double getMassPerItem() {
 		return massPerItem;
+	}
+
+	/**
+	 * Gets the type for an item of the resource.
+	 *
+	 * @return type
+	 */
+	public String getType() {
+		return type;
 	}
 
 	@Override
@@ -92,30 +89,4 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 				^ (Double.doubleToLongBits(this.massPerItem) >>> 32));
 		return hash;
 	}
-
-	
-//	public static Part createItemResource(String resourceName, int id, String description, double massPerItem,
-//			int solsUsed) {
-//		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
-//		ItemResourceUtil.registerBrandNewPart(p);
-//		return p;
-//	}
-
-//	private static class UnknownResourceName extends RuntimeException {
-//
-//		/** default serial id. */
-//		private static final long serialVersionUID = 1L;
-//
-//		private String name;
-//
-//		public UnknownResourceName(String name) {
-//			super("Unknown resource name : " + name);
-//			this.name = name;
-//		}
-//
-////		public String getName() {
-////			return name;
-////		}
-//
-//	}
 }

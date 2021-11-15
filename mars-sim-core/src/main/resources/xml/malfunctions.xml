@@ -435,7 +435,7 @@
 		<probability value="3.0" />
 		<repair-inside time="50.0" />
 		<system-list>
-			<system name="EVA Suit" />
+			<system name="eva" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
@@ -561,7 +561,7 @@
 		<probability value="3.0" />
 		<repair-inside time="30.0" />
 		<system-list>
-			<system name="EVA suit" />
+			<system name="eva" />
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Temperature" change-rate="-.1" />
@@ -665,7 +665,7 @@
 		<probability value="2.0" />
 		<repair-inside time="5.0" />
 		<system-list>
-			<system name="EVA suit" />
+			<system name="eva" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Frostnip" probability="50.0" />
@@ -684,7 +684,7 @@
 		<probability value="5.0" />
 		<repair-inside time="5.0" />
 		<system-list>
-			<system name="EVA suit" />
+			<system name="eva" />
 		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="4" probability="40" />
@@ -703,7 +703,7 @@
 		<system-list>
 			<system name="robot" />
 			<system name="rover" />
-			<system name="EVA suit" />
+			<system name="eva" />
 			<system name="power generation" />
 			<system name="power storage" />
 			<system name="Building" />

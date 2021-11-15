@@ -22,19 +22,19 @@ public class TestItemResource extends TestCase {
     @Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
-        
-        // initialize 
+
+        // initialize
        	ResourceUtil.getInstance();
         resources = ItemResourceUtil.getItemResources();
-        
-        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a tool", 1.4D, 1);
-        socketWrench = ItemResourceUtil.createItemResource("socket wrench", 2, "another tool", .5D, 1);
-        pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 3, "and another tool", 2.5D, 1);
- 
+
+        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a hand tool", "tool", 1.4D, 1);
+        socketWrench = ItemResourceUtil.createItemResource("socket wrench", 2, "a hand tool", "tool", .5D, 1);
+        pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 3, "a hand tool", "tool", 2.5D, 1);
+
         resources = Arrays.asList(hammer, socketWrench, pipeWrench);
-        
+
     }
-    
+
     public void testResourceMass() {
         double hammerMass = hammer.getMassPerItem();
         assertEquals(1.4D, hammerMass, 0D);

@@ -22,17 +22,17 @@ import junit.framework.TestCase;
 public class ConstructionVehicleTypeTest extends TestCase {
 
     private ConstructionVehicleType vehicleType;
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
         List<Integer> attachments = new ArrayList<Integer>(1);
-        
-        Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", 1D, 1);  		    
+
+        Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", "test type", 1D, 1);
         attachments.add(p.getID());
-        
-        vehicleType = new ConstructionVehicleType("Light Utility Vehicle", 
+
+        vehicleType = new ConstructionVehicleType("Light Utility Vehicle",
                 LightUtilityVehicle.class, attachments);
     }
 
@@ -44,7 +44,7 @@ public class ConstructionVehicleTypeTest extends TestCase {
         List<Integer> parts = vehicleType.getAttachmentParts();
         assertNotNull(parts);
         assertEquals(1, parts.size());
-        
+
         Part part = ItemResourceUtil.findItemResource(parts.get(0));
         assertNotNull(part);
         assertEquals("attachment part", part.getName());

@@ -40,21 +40,21 @@ public class Part extends ItemResource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name        the name of the part.
 	 * @param id          the id# of the part
 	 * @param description {@link String}
 	 * @param mass        the mass of the part (kg)
 	 * @param the         sol when this part is put to use
 	 */
-	public Part(String name, int id, String description, double mass, int solsUsed) {
+	public Part(String name, int id, String description, String type, double mass, int solsUsed) {
 		// Use ItemResource constructor.
-		super(name, id, description, mass, solsUsed);
+		super(name, id, description, type, mass, solsUsed);
 	}
-	
+
 	/**
 	 * Gets a set of all parts.
-	 * 
+	 *
 	 * @return set of parts.
 	 */
 	public static Set<Part> getParts() {
@@ -63,7 +63,7 @@ public class Part extends ItemResource {
 
 	/**
 	 * Gets a set of all parts.
-	 * 
+	 *
 	 * @return set of parts.
 	 */
 	public static Set<Integer> getItemIDs() {
@@ -86,19 +86,19 @@ public class Part extends ItemResource {
 		}
 
 		if (mtbf == 0) {
-			percentReliability = MAX_RELIABILITY;		
+			percentReliability = MAX_RELIABILITY;
 		}
 		else {
 			percentReliability = Math.exp(-numSols / mtbf) * 100;
 
-			percentReliability = Math.min(MAX_RELIABILITY, percentReliability);	
+			percentReliability = Math.min(MAX_RELIABILITY, percentReliability);
 		}
 	}
-	
+
 	private double computeMTBF(double numSols) {
 		int numItem = 0;
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		
+
 		// Obtain the total # of this part in used from all settlements
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {

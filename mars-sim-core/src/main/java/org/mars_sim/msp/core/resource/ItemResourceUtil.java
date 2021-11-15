@@ -149,9 +149,9 @@ public class ItemResourceUtil implements Serializable {
 	 * @param solsUsed
 	 * @return
 	 */
-	public static Part createItemResource(String resourceName, int id, String description, double massPerItem,
+	public static Part createItemResource(String resourceName, int id, String description, String type, double massPerItem,
 			int solsUsed) {
-		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
+		Part p = new Part(resourceName, id, description, type, massPerItem, solsUsed);
 		ItemResourceUtil.registerBrandNewPart(p);
 		return p;
 	}

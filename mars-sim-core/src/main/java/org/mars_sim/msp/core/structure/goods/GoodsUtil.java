@@ -40,29 +40,17 @@ public class GoodsUtil {
     private static final String MID = "Vehicle Mid";
     private static final String SMALL = "Vehicle Small";
 
-    
     private static final String ATTACHMENT = "Attachment";
-    
     public static final String CHEMICAL = "Chemical";
-
     public static final String ELEMENT = "Element";
-    
     public static final String COMPOUND = "Compound";
-    
     public static final String VEHICLE_PART = "Vehicle Part";
-
     public static final String METALLIC = "Metallic";
-
     public static final String UTILITY = "Utility";
-
     public static final String INSTRUMENT = "Instrument";
-    
     public static final String RAW = "Raw";
-
     public static final String ELECTRICAL = "Electrical";
-
     public static final String KITCHEN = "Kitchen";
-
     public static final String CONSTRUCTION = "Construction";
 
     // Data members
@@ -188,7 +176,7 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
- 
+
     public static String getVehicleCategory(VehicleType vehicleType) {
         if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
             return HEAVY;
@@ -356,124 +344,128 @@ public class GoodsUtil {
             else
                 return "";
         } else if (cat == GoodCategory.ITEM_RESOURCE) {
-            String name = good.getName().toLowerCase();
 
-            if (name.contains("eva ")
-                    || name.equalsIgnoreCase("helmet visor")
-                    || name.contains("suit")
-                    || name.equalsIgnoreCase("coveralls"))
-                return EVASuit.GOODTYPE;
+			return ItemResourceUtil.findItemResource(good.getName().toLowerCase()).getType();
 
-            else if (name.contains("rover ")
-                    || name.contains("wheel")
-                    || name.contains("chassle")
-                    || name.contains("vehicle frame")
-                    || name.contains("utility vehicle")
-            		)
-                return VEHICLE_PART;
+//            String name = good.getName().toLowerCase();
+//
+//            if (name.contains("eva ")
+//                    || name.equalsIgnoreCase("helmet visor")
+//                    || name.contains("suit")
+//                    || name.equalsIgnoreCase("coveralls"))
+//                return EVASuit.GOODTYPE;
+//
+//            else if (name.contains("rover ")
+//                    || name.contains("wheel")
+//                    || name.contains("chassle")
+//                    || name.contains("vehicle frame")
+//                    || name.contains("utility vehicle")
+//            		)
+//                return VEHICLE_PART;
+//
+//            else if (vehicleConfig.getAttachmentNames().contains(name))
+//                return ATTACHMENT;
+//
+//            else if (name.contains("brick")
+//            		|| name.contains("fiberglass")
+//            		|| name.contains("sheet")
+//            		|| name.contains("roofing")
+//               		|| name.contains("truss")
+//            		)
+//            	return CONSTRUCTION;
+//
+//            else if (name.contains("pump")
+//                    || name.contains("tank")
+//                    || name.contains("gasket")
+//                    || name.contains("tube")
+//                    || name.contains("heat pipe")
+//                    || name.contains("plastic")
+//                    || name.contains("air")
+//                    || name.contains("glove")
+//                    || name.contains("decontamination")
+//                    || name.contains("heating")
+//                    || name.contains("bottle")
+//                    || name.contains("containment")
+//                    || name.contains("hose")
+//                    || name.contains("belt")
+//                    || name.contains("valve")
+//                    || name.contains("filter")
+//                    || name.contains("hammer")
+//                    || name.contains("wrench")
+//                    || name.contains("extinguisher")
+//                    || name.contains("winch")
+//            		)
+//
+//                return UTILITY;
+//
+//            else if (name.contains("wire")
+//                    || name.contains("copper")
+//                    || name.contains("aluminum")
+//                    || name.contains("steel")
+//                    || name.contains("iron")
+//                    || name.contains("ingot")
+//                    )
+//
+//                return METALLIC;
+//
+//            else if (name.contains("resistor")
+//                    || name.contains("capacitor")
+//                    || name.contains("coil")
+//                    || name.contains("fuel cell")
+//                    || name.contains("diode")
+//                    || name.contains("motor")
+//                    || name.contains("lamp")
+//                    || name.contains("light")
+//                    || name.contains("transistor")
+//                    || name.contains("cable")
+//                    || name.contains("antenna")
+//                    || name.contains("satellite dish")
+//                    || name.contains("transformer")
+//                    || name.contains("solar")
+//                    || name.contains("spark")
+//                    || name.contains("generator")
+//
+//            		)
+//                return ELECTRICAL;
+//
+//            else if (name.contains("stove")
+//                    || name.contains("autoclave")
+//                    || name.contains("microwave")
+//                    || name.contains("refrigerator")
+//                    || name.contains("blender")
+//                    || name.contains("oven")
+//                    || name.contains("fan")
+//            		)
+//                return KITCHEN;
+//
+//            else if (name.contains("printer")
+//                    || name.contains("laser")
+//                    || name.contains("circuit")
+//                    || name.contains("bore drill")
+//                    || name.contains("optical")
+//                    || name.contains("logic board")
+//                    || name.contains("microcontroller")
+//                    || name.contains("lens")
+//                    || name.contains("purification")
+//                    || name.contains("chromatograph")
+//                    || name.contains("spectrometer")
+//                    || name.contains("camera")
+//                    || name.contains("blade")
+//                    || name.contains("probe")
+//                    || name.contains("precipitator")
+//            		)
+//                return INSTRUMENT;
+//
+//            else if (name.contains("wafer")
+//            		)
+//                return RAW;
 
-            else if (vehicleConfig.getAttachmentNames().contains(name))
-                return ATTACHMENT;
+//            return Conversion.capitalize(cat.getMsgKey());
 
-            else if (name.contains("brick")
-            		|| name.contains("fiberglass")
-            		|| name.contains("sheet")
-            		|| name.contains("roofing")
-               		|| name.contains("truss")
-            		) 
-            	return CONSTRUCTION;
-            
-            else if (name.contains("pump")
-                    || name.contains("tank")
-                    || name.contains("gasket")
-                    || name.contains("tube")
-                    || name.contains("heat pipe")
-                    || name.contains("plastic")
-                    || name.contains("air")
-                    || name.contains("glove")
-                    || name.contains("decontamination")
-                    || name.contains("heating")
-                    || name.contains("bottle")
-                    || name.contains("containment")
-                    || name.contains("hose")
-                    || name.contains("belt")
-                    || name.contains("valve")
-                    || name.contains("filter")
-                    || name.contains("hammer")
-                    || name.contains("wrench")
-                    || name.contains("extinguisher")
-                    || name.contains("winch")
-            		)
-
-                return UTILITY;
-
-            else if (name.contains("wire")
-                    || name.contains("copper")
-                    || name.contains("aluminum")
-                    || name.contains("steel")
-                    || name.contains("iron")
-                    || name.contains("ingot")
-                    )
-            	
-                return METALLIC;
-
-            else if (name.contains("resistor")
-                    || name.contains("capacitor")
-                    || name.contains("coil")
-                    || name.contains("fuel cell")
-                    || name.contains("diode")
-                    || name.contains("motor")
-                    || name.contains("lamp")
-                    || name.contains("light")
-                    || name.contains("transistor")
-                    || name.contains("cable")
-                    || name.contains("antenna")
-                    || name.contains("satellite dish")
-                    || name.contains("transformer")
-                    || name.contains("solar")
-                    || name.contains("spark")
-                    || name.contains("generator")
-
-            		)
-                return ELECTRICAL;
-
-            else if (name.contains("stove")
-                    || name.contains("autoclave")
-                    || name.contains("microwave")
-                    || name.contains("refrigerator")
-                    || name.contains("blender")
-                    || name.contains("oven")
-                    || name.contains("fan")
-            		)
-                return KITCHEN;
-
-            else if (name.contains("printer")
-                    || name.contains("laser")
-                    || name.contains("circuit")
-                    || name.contains("bore drill")
-                    || name.contains("optical")
-                    || name.contains("logic board")
-                    || name.contains("microcontroller")
-                    || name.contains("lens")
-                    || name.contains("purification")
-                    || name.contains("chromatograph")
-                    || name.contains("spectrometer")
-                    || name.contains("camera")
-                    || name.contains("blade")
-                    || name.contains("probe")
-                    || name.contains("precipitator")
-            		)
-                return INSTRUMENT;
-
-            else if (name.contains("wafer")
-            		)
-                return RAW;
-            
-            return Conversion.capitalize(cat.getMsgKey());
         } else if (cat == GoodCategory.CONTAINER) {
             return Conversion.capitalize(cat.getMsgKey());
         } else if (cat == GoodCategory.EQUIPMENT) {
-            return EVASuit.GOODTYPE;
+            return EVASuit.GOOD_TYPE;
         } else if (cat == GoodCategory.VEHICLE) {
             return GoodsUtil.getVehicleCategory(VehicleType.convertNameToVehicleType(good.getName()));
         }

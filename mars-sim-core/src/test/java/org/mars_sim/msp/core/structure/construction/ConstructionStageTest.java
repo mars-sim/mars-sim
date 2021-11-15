@@ -38,14 +38,14 @@ public class ConstructionStageTest extends TestCase {
 
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
         parts.put(ItemResourceUtil.smallHammerAR.getID(), 1);
-        
+
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
         resources.put(ResourceUtil.methaneAR.getID(), 1D);
-        
+
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);
-        attachments.add(new Part("attachment part", 2, "test resource description", 1D, 1).getID());
+        attachments.add(new Part("attachment part", 2, "test resource description", "test type", 1D, 1).getID());
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
