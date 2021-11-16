@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -49,7 +50,7 @@ public class CropTableModel extends UnitTableModel {
 //	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
 
 	private GameMode mode;
-	
+
 	// Column indexes
 	private final static int SETTLEMENT_NAME = 0;
 	private final static int GREENHOUSE_NAME = 1;
@@ -93,7 +94,7 @@ public class CropTableModel extends UnitTableModel {
 	private Map<Integer, String> catMap;
 
 	private Settlement commanderSettlement;
-	
+
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/*
@@ -121,7 +122,7 @@ public class CropTableModel extends UnitTableModel {
 		}
 
 		updateMaps();
-		
+
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -139,9 +140,9 @@ public class CropTableModel extends UnitTableModel {
 	public void updateMaps() {
 		paddedSettlements.clear();
 		buildings.clear();
-		
+
 		List<Settlement> settlements = new ArrayList<Settlement>();
-		
+
 		if (mode == GameMode.COMMAND) {
 			settlements.add(commanderSettlement);
 		}
@@ -149,7 +150,7 @@ public class CropTableModel extends UnitTableModel {
 			settlements.addAll(unitManager.getSettlements());
 			Collections.sort(settlements);
 		}
-		
+
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) {
 			Settlement s = i.next();
@@ -181,7 +182,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Gets the total number of crop in a crop group from cropMap or cropCache
-	 * 
+	 *
 	 * @param return a number
 	 */
 	private Integer getValueAtCropCat(int rowIndex, int cropColumn) {
@@ -193,7 +194,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Return the value of a Cell
-	 * 
+	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
@@ -266,7 +267,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Get the number of rows in the model.
-	 * 
+	 *
 	 * @return the number of Units in the super class.
 	 */
 	public int getRowCount() {
@@ -275,7 +276,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Gets the total numbers of all crops in a greenhouse building
-	 * 
+	 *
 	 * @param b Building
 	 * @return total num of crops
 	 */
@@ -326,7 +327,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Catch unit update event.
-	 * 
+	 *
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
@@ -335,22 +336,22 @@ public class CropTableModel extends UnitTableModel {
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
 
-		
+
 		if (mode == GameMode.COMMAND) {
 			; // do nothing
 		}
 		else {
 			unitIndex = getUnitIndex(unit);
 		}
-		
+
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT)
 			columnNum = SETTLEMENT_NAME; // = 0
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			if (target instanceof Farming)
 				columnNum = GREENHOUSE_NAME; // = 1
-		} 
-		
+		}
+
 		else if (eventType == UnitEventType.CROP_EVENT) {
 			Crop crop = (Crop) target;
 			String catName = crop.getCropType().getCropCategoryType().getName();
@@ -428,7 +429,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Add a unit (a settlement) to the model.
-	 * 
+	 *
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
@@ -452,7 +453,7 @@ public class CropTableModel extends UnitTableModel {
 
 	/**
 	 * Remove a unit from the model.
-	 * 
+	 *
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
@@ -527,21 +528,21 @@ public class CropTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit manager update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			if (mode == GameMode.COMMAND) {
 				; // do nothing
 			}
-			
+
 			else {
 				Unit unit = event.getUnit();
 				UnitManagerEventType eventType = event.getEventType();
-				
-				if (unit instanceof Settlement) {
+
+				if (unit.getUnitType() == UnitType.SETTLEMENT) {
 					if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-						addUnit(unit);		
+						addUnit(unit);
 					} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
 						removeUnit(unit);
 					}

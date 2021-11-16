@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -131,7 +132,7 @@ public class PersonTableModel extends UnitTableModel {
 		columnNames[PERFORMANCE] = Msg.getString("PersonTableModel.column.performance"); //$NON-NLS-1$
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[EMOTION] = Msg.getString("PersonTableModel.column.emotion"); //$NON-NLS-1$
-		columnTypes[EMOTION] = String.class;		
+		columnTypes[EMOTION] = String.class;
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
 		columnNames[LOCALE] = Msg.getString("PersonTableModel.column.locale"); //$NON-NLS-1$
@@ -190,12 +191,12 @@ public class PersonTableModel extends UnitTableModel {
 
 //		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
-		
+
 		if (GameManager.mode == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
 			setSource(unitManager.getPeople());
-		
+
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -307,7 +308,7 @@ public class PersonTableModel extends UnitTableModel {
 				double thirst = condition.getThirst();
 				String thirstString = PhysicalCondition.getThirstyStatus(thirst);
 				performanceItemMap.put(WATER, thirstString);
-				
+
 				double fatigue = condition.getFatigue();
 				String fatigueString = PhysicalCondition.getFatigueStatus(fatigue);
 				performanceItemMap.put(FATIGUE, fatigueString);
@@ -393,7 +394,7 @@ public class PersonTableModel extends UnitTableModel {
 
 					t = mgr.getTaskDescription(false);
 
-//					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) && 
+//					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) &&
 //						result = t;
 //					else
 						result = t;
@@ -458,7 +459,7 @@ public class PersonTableModel extends UnitTableModel {
 				}
 			}
 				break;
-				
+
 			case FATIGUE: {
 				// double fatigue = person.getPhysicalCondition().getFatigue();
 				// result = new Float(fatigue).intValue();
@@ -498,9 +499,9 @@ public class PersonTableModel extends UnitTableModel {
 //				performanceItemMap.put(EMOTION, emotionString);
 
 			}
-			
+
 				break;
-				
+
 			case HEALTH: {
 				result = person.getPhysicalCondition().getHealthSituation();
 			}
@@ -515,7 +516,7 @@ public class PersonTableModel extends UnitTableModel {
 				result = person.getLocationTag().getLocale();
 			}
 				break;
-				
+
 			case ROLE: {
 				if (person.getPhysicalCondition().isDead())
 					result = "N/A";
@@ -611,7 +612,7 @@ public class PersonTableModel extends UnitTableModel {
 	private static class PersonTableUpdater implements Runnable {
 
 		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
-		
+
 		static {
 			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
@@ -719,7 +720,7 @@ public class PersonTableModel extends UnitTableModel {
 					} else {
 						performanceItemMap.put(WATER, thirstString);
 					}
-				}	
+				}
 			} else if (eventType == UnitEventType.FATIGUE_EVENT) {
 				Person person = (Person) event.getSource();
 				double fatigue = person.getPhysicalCondition().getFatigue();
@@ -762,7 +763,7 @@ public class PersonTableModel extends UnitTableModel {
 						performanceItemMap.put(PERFORMANCE, performanceString);
 					}
 				}
-				
+
 			} else if (eventType == UnitEventType.EMOTION_EVENT) {
 				Person person = (Person) event.getSource();
 				String emotionString = person.getMind().getEmotion().getDescription();
@@ -797,13 +798,14 @@ public class PersonTableModel extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-
 			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Person)
-					addUnit((Unit) event.getTarget());
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON)
+					addUnit(unit);
 			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Person)
-					removeUnit((Unit) event.getTarget());
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON)
+					removeUnit(unit);
 			}
 		}
 	}
@@ -838,7 +840,7 @@ public class PersonTableModel extends UnitTableModel {
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
-			if (unit instanceof Person) {
+			if (unit.getUnitType() == UnitType.PERSON) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
 					if (!containsUnit(unit))
 						addUnit(unit);
@@ -862,11 +864,13 @@ public class PersonTableModel extends UnitTableModel {
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
 			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Person)
-					addUnit((Unit) event.getTarget());
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON)
+					addUnit(unit);
 			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Person)
-					removeUnit((Unit) event.getTarget());
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON)
+					removeUnit(unit);
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
@@ -26,10 +27,10 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 public class TradeTab
 extends TableTab
 implements UnitManagerListener {
-	
+
 	/** The minimum number of decimal places to be displayed. */
 	private static final int NUM_DIGITS = 2;
-			
+
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.
@@ -39,13 +40,13 @@ implements UnitManagerListener {
 		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
 		TableColumnModel m = table.getColumnModel();
-		
+
 		for (int i= 0; i<m.getColumnCount(); i++) {
 			int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
 			if (col % 2 == 1)
 				m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 		}
-		
+
 		// Override default cell renderer for formatting double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
@@ -56,7 +57,7 @@ implements UnitManagerListener {
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
-		if (event.getUnit() instanceof Settlement) {
+		if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
 
 			Settlement settlement = (Settlement) event.getUnit();
 

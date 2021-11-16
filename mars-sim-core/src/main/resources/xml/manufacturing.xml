@@ -3601,12 +3601,12 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="produce polycarbonate resin" tech="3" skill="3" work-time="100" process-time="200"
+	<process name="produce polycarbonate resin" tech="2" skill="2" work-time="100" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<resource name="ethylene" amount="1.0" />
-			<resource name="food waste" amount="2.0" />
-			<resource name="carbon dioxide" amount="2.0" />
+			<resource name="food waste" amount="0.5" />
+			<resource name="carbon dioxide" amount="1.0" />
 			<resource name="bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>

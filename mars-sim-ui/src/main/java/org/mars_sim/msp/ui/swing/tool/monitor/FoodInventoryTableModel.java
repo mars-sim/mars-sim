@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -37,17 +38,17 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final int STARTING_COLUMN = 2;
-	
+
 	private static final String FOOD_ITEMS = " Food Items";
 
 	private GameMode mode;
-	
+
 	// Data members
 	private List<Food> foodList;
 	private List<Settlement> settlements = new ArrayList<Settlement>();
 
 	private Settlement commanderSettlement;
-	
+
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
@@ -78,7 +79,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	/**
 	 * Catch unit update event.
-	 * 
+	 *
 	 * @param event the unit event.
 	 */
 	@Override
@@ -88,7 +89,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		Object source = event.getTarget();
 		if (eventType == UnitEventType.GOODS_VALUE_EVENT) {
 			if (mode == GameMode.COMMAND) {
-				if (source instanceof Good 
+				if (source instanceof Good
 						&& unit instanceof Settlement
 						&& unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
 					SwingUtilities.invokeLater(new FoodTableUpdater(event));
@@ -101,7 +102,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 //	/**
 //	 * Gets the index of the row a given unit is at.
-//	 * 
+//	 *
 //	 * @param unit the unit to find.
 //	 * @return the row index or -1 if not in table model.
 //	 */
@@ -111,7 +112,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 //		else
 //			return -1;
 //	}
-	
+
 	/**
 	 * Gets the model count string.
 	 */
@@ -133,7 +134,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	/**
 	 * Return the object at the specified row indexes.
-	 * 
+	 *
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
@@ -151,14 +152,14 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	/**
 	 * Return the name of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0)
 			return Msg.getString("FoodInventoryTableModel.firstColumn");
-		else if (columnIndex == 1) 
+		else if (columnIndex == 1)
 			return "Type";
 		else  {
 			return Msg.getString("FoodInventoryTableModel.settlementColumns",
@@ -168,7 +169,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	/**
 	 * Return the type of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -195,11 +196,11 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			Object result = foodList.get(rowIndex).getName();
 			return Conversion.capitalize(result.toString());
 		}
-		
+
 		else if (columnIndex == 1) {
 //			FoodType result = getFoodType(foodList.get(rowIndex));
 			Object result = foodList.get(rowIndex).getType();
-			return Conversion.capitalize(result.toString()); 
+			return Conversion.capitalize(result.toString());
 		}
 
 		else {
@@ -227,7 +228,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 //	public Object getFoodType(Food food) {
 //		return food.getFoodType();
 //	}
-	
+
 	/**
 	 * Inner class for updating food table.
 	 */
@@ -255,7 +256,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
 		if (mode == GameMode.COMMAND
-				&& event.getUnit() instanceof Settlement
+				&& event.getUnit().getUnitType() == UnitType.SETTLEMENT
 				&&  settlements.contains((Settlement) event.getUnit())) {
 				// Update table structure due to cells changing.
 				SwingUtilities.invokeLater(new Runnable() {
@@ -266,9 +267,9 @@ public class FoodInventoryTableModel extends AbstractTableModel
 					}
 				});
 		}
-		
+
 		else {
-			if (event.getUnit() instanceof Settlement) {
+			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
 
 				Settlement settlement = (Settlement) event.getUnit();
 
@@ -294,7 +295,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 //						fireTableStructureChanged();
 					}
 				});
-			}		
+			}
 		}
 	}
 
@@ -310,7 +311,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 		// Remove as listener to unit manager.
 		unitManager.removeUnitManagerListener(this);
-		
+
 		foodList = null;
 		settlements = null;
 		unitManager = null;

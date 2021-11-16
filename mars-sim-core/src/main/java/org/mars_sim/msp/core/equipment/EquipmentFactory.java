@@ -40,7 +40,7 @@ public final class EquipmentFactory {
 		case EVA_SUIT:
 			newEqm = new EVASuit(newName, settlement);
 			// Store a pressure suit inside the EVA suit
-			((EVASuit)newEqm).storeItemResource(ItemResourceUtil.pressureSuitID, 1);
+//			((EVASuit)newEqm).storeItemResource(ItemResourceUtil.pressureSuitID, 1);
 			break;
 
 		case BAG:

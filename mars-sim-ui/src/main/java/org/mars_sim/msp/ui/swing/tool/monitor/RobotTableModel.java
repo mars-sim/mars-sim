@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -161,7 +162,7 @@ public class RobotTableModel extends UnitTableModel {
 	/**
 	 * constructor. Constructs a RobotTableModel object that displays all people in
 	 * the simulation.
-	 * 
+	 *
 	 * @param unitManager Manager containing Robot objects.
 	 */
 	public RobotTableModel(MainDesktopPane desktop) {
@@ -170,7 +171,7 @@ public class RobotTableModel extends UnitTableModel {
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.ALL_ROBOTS;
-		
+
 		if (GameManager.mode == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getRobots());
 		else
@@ -184,7 +185,7 @@ public class RobotTableModel extends UnitTableModel {
 	/**
 	 * Constructs a RobotTableModel object that displays all people from the
 	 * specified vehicle.
-	 * 
+	 *
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
 	public RobotTableModel(Crewable vehicle) {
@@ -202,7 +203,7 @@ public class RobotTableModel extends UnitTableModel {
 	/**
 	 * Constructs a RobotTableModel that displays residents are all associated
 	 * people with a specified settlement.
-	 * 
+	 *
 	 * @param settlement    the settlement to check.
 	 * @param allAssociated Are all people associated with this settlement to be
 	 *                      displayed?
@@ -233,7 +234,7 @@ public class RobotTableModel extends UnitTableModel {
 	/**
 	 * Constructs a RobotTableModel object that displays all Robot from the
 	 * specified mission.
-	 * 
+	 *
 	 * @param mission Monitored mission Robot objects.
 	 */
 	public RobotTableModel(Mission mission) {
@@ -259,7 +260,7 @@ public class RobotTableModel extends UnitTableModel {
 
 	/**
 	 * Catch unit update event.
-	 * 
+	 *
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
@@ -268,7 +269,7 @@ public class RobotTableModel extends UnitTableModel {
 
 	/**
 	 * Return the value of a Cell
-	 * 
+	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
@@ -281,7 +282,7 @@ public class RobotTableModel extends UnitTableModel {
 //			Boolean isDead = robot.getSystemCondition().isInoperable();
 
 			switch (columnIndex) {
-			
+
 			case NAME: {
 				result = robot.getName();
 			}
@@ -378,7 +379,7 @@ public class RobotTableModel extends UnitTableModel {
 
 	/**
 	 * Give the status of a robot's hunger level
-	 * 
+	 *
 	 * @param hunger
 	 * @return status
 	 */
@@ -430,7 +431,7 @@ public class RobotTableModel extends UnitTableModel {
 
 	/**
 	 * Give the status of a robot's hunger level
-	 * 
+	 *
 	 * @param hunger
 	 * @return status
 	 */
@@ -579,7 +580,7 @@ public class RobotTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
@@ -602,7 +603,7 @@ public class RobotTableModel extends UnitTableModel {
 
 		/**
 		 * Catch mission update event.
-		 * 
+		 *
 		 * @param event the mission event.
 		 */
 		public void missionUpdate(MissionEvent event) {
@@ -621,13 +622,13 @@ public class RobotTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit manager update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
-			if (unit instanceof Robot) {
+			if (unit.getUnitType() == UnitType.ROBOT) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
 					if (!containsUnit(unit))
 						addUnit(unit);
@@ -646,17 +647,19 @@ public class RobotTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
 			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Robot)
-					addUnit((Unit) event.getTarget());
+				Unit unit = (Unit) event.getTarget();
+				if (unit.getUnitType() == UnitType.ROBOT)
+					addUnit(unit);
 			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-				if (event.getTarget() instanceof Robot)
-					removeUnit((Unit) event.getTarget());
+				Unit unit = (Unit) event.getTarget();
+				if (unit.getUnitType() == UnitType.ROBOT)
+					removeUnit(unit);
 			}
 		}
 	}
@@ -668,7 +671,7 @@ public class RobotTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
@@ -24,7 +25,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	/**
 	 * constructor.
-	 * 
+	 *
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public FoodInventoryTab(final MonitorWindow window) {
@@ -41,7 +42,7 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
-		if (event.getUnit() instanceof Settlement) {
+		if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
 
 			Settlement settlement = (Settlement) event.getUnit();
 
@@ -72,7 +73,7 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 
 		/**
 		 * Constructor
-		 * 
+		 *
 		 * @param column    the column to add or remove.
 		 * @param addColumn true for adding column or false for removing column.
 		 */

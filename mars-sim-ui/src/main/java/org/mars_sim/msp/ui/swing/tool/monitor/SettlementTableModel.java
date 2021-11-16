@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -117,17 +118,17 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int methaneID = ResourceUtil.methaneID;
 	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
 	private final static int iceID = ResourceUtil.iceID;
-	
+
 	private final static int greyWaterID = ResourceUtil.greyWaterID;
 	private final static int blackWaterID = ResourceUtil.blackWaterID;
 	private final static int co2ID = ResourceUtil.co2ID;
 	private final static int hydrogenID = ResourceUtil.hydrogenID;
-	
+
 	static {
 		df.setMinimumFractionDigits(2);
 		df.setMinimumIntegerDigits(1);
 	}
-	
+
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
@@ -140,10 +141,10 @@ public class SettlementTableModel extends UnitTableModel {
 //			addUnit(unitManager.getCommanderSettlement());
 //		else
 			setSource(unitManager.getSettlements());
-		
+
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-		
+
 	}
 
 	/**
@@ -162,10 +163,10 @@ public class SettlementTableModel extends UnitTableModel {
 		unitManager.addUnitManagerListener(unitManagerListener);
 
 	}
-	
+
 	/**
 	 * Return the value of a Cell
-	 * 
+	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
@@ -266,7 +267,7 @@ public class SettlementTableModel extends UnitTableModel {
 					}
 					if (malfunction != null)
 						result = malfunction.getName();
-					else 
+					else
 						result = "";
 				}
 					break;
@@ -299,23 +300,23 @@ public class SettlementTableModel extends UnitTableModel {
 		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER;
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
-			int target = -1;	
+			int target = -1;
 			if (source instanceof AmountResource) {
 				target = ((AmountResource)source).getID();
 			}
-				
+
 			else if (source instanceof Integer) {
 				target = (Integer)source;
 				if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
 					// if it's an item resource, quit
 					return;
 			}
-				
+
 			try {
 				int tempColumnNum = -1;
 				double currentValue = 0.0;
 				Map<Integer, Double> resourceMap = resourceCache.get(unit);
-				
+
 				if (target == oxygenID) {
 					tempColumnNum = OXYGEN;
 					currentValue = resourceMap.get(oxygenID);
@@ -323,13 +324,13 @@ public class SettlementTableModel extends UnitTableModel {
 				else if (target == hydrogenID) {
 					tempColumnNum = HYDROGEN;
 					currentValue = resourceMap.get(hydrogenID);
-				}	
+				}
 				else if (target == co2ID) {
 					tempColumnNum = CO2;
 					currentValue = resourceMap.get(co2ID);
 				}
 				else if (target == methaneID) {
-					tempColumnNum = METHANE;		
+					tempColumnNum = METHANE;
 					currentValue = resourceMap.get(methaneID);
 				}
 				else if (target == waterID) {
@@ -356,7 +357,7 @@ public class SettlementTableModel extends UnitTableModel {
 					tempColumnNum = ICE;
 					currentValue = resourceMap.get(iceID);
 				}
-				
+
 				if (tempColumnNum > -1) {
 					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
 					double newValue = Math.round (getResourceStored((Settlement)unit, target) * 10.0 ) / 10.0;
@@ -425,7 +426,7 @@ public class SettlementTableModel extends UnitTableModel {
 
 	/**
 	 * Gets the amount of resources stored in a unit.
-	 * 
+	 *
 	 * @param unit     the unit to check.
 	 * @param resource the resource to check.
 	 * @return integer amount of resource.
@@ -474,13 +475,13 @@ public class SettlementTableModel extends UnitTableModel {
 
 		/**
 		 * Catch unit manager update event.
-		 * 
+		 *
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
-			if (unit instanceof Settlement) {
+			if (unit.getUnitType() == UnitType.SETTLEMENT) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
 					if (!containsUnit(unit))
 						addUnit(unit);

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -31,16 +32,16 @@ public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
-	private static final String TRADE_GOODS = "Types";
+	private static final String TRADE_GOODS = "Name";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
 	private static final String TYPE = "Type";
-	
+
 	private static final String ONE_SPACE = " ";
-	
+
 	static final int NUM_INITIAL_COLUMNS = 3;
-	
+
 	// Data members
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
@@ -51,7 +52,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * Constructor.
 	 */
 	public TradeTableModel() {
-		
+
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
 
@@ -88,7 +89,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		// Remove as listener to unit manager.
 		unitManager.removeUnitManagerListener(this);
-		
+
 		unitManager = null;
 	}
 
@@ -121,9 +122,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to. If this
-	 * value is true, then it implies that the user should not be allowed to
-	 * order.
+	 * Has this model got a natural order that the model conforms to.
+	 *
+	 * @return If true, it implies that the user should not be allowed to order.
 	 */
 	public boolean getOrdered() {
 		return false;
@@ -153,7 +154,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < NUM_INITIAL_COLUMNS - 1) return String.class;
+		if (columnIndex < NUM_INITIAL_COLUMNS) return String.class;
 		else return Double.class;
 	}
 
@@ -167,20 +168,20 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) {
-			return Conversion.capitalize(goodsList.get(rowIndex).getName().toString());
+			return Conversion.capitalize(goodsList.get(rowIndex).getName());
 		}
 
 		else if (columnIndex == 1) {
-			return Conversion.capitalize(getGoodCategoryName(goodsList.get(rowIndex)).toString());
+			return Conversion.capitalize(getGoodCategoryName(goodsList.get(rowIndex)));
 		}
 
 		else if (columnIndex == 2) {
-			return Conversion.capitalize(GoodsUtil.getGoodType(goodsList.get(rowIndex))).toString();
+			return Conversion.capitalize(GoodsUtil.getGoodType(goodsList.get(rowIndex)));
 		}
-		
+
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			if (col % 2 == 0) // is even 
+			if (col % 2 == 0) // is even
 				return settlements.get(col/2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
 			else // is odd
 				return settlements.get(col/2).getGoodsManager().getPricePerItem(goodsList.get(rowIndex));
@@ -194,18 +195,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return
 	 */
 	public String getGoodCategoryName(Good good) {
-//		GoodCategory cat = good.getCategory();
-//		
-//		if (cat == GoodCategory.EQUIPMENT) {
-//			if (Container.class.isAssignableFrom(good.getClassType())) 
-//				return GoodCategory.CONTAINER.getMsgKey(); //$NON-NLS-1$
-//		}
-//		
-//		return cat.getMsgKey();
-		
 		return good.getCategory().getMsgKey();
 	}
-	
+
 	/**
 	 * Inner class for updating goods table.
 	 */
@@ -218,11 +210,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		public void run() {
-			if (event.getTarget() == null) 
+			if (event.getTarget() == null)
 				fireTableDataChanged();
 			else {
 				int rowIndex = goodsList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) * 2 + NUM_INITIAL_COLUMNS; 
+				int columnIndex = settlements.indexOf(event.getSource()) * 2 + NUM_INITIAL_COLUMNS;
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}
@@ -231,7 +223,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
-		if (event.getUnit() instanceof Settlement) {
+		if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
 
 			Settlement settlement = (Settlement) event.getUnit();
 

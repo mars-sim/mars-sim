@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditEvent;
 import org.mars_sim.msp.core.structure.goods.CreditListener;
@@ -47,10 +48,10 @@ extends TabPanel {
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** The Settlement instance. */
 	private Settlement settlement;
-	
+
 	private JTable creditTable;
 
 	/**
@@ -70,14 +71,14 @@ extends TabPanel {
 		settlement = (Settlement) unit;
 
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		// Prepare credit label panel.
 		WebPanel creditLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(creditLabelPanel);
@@ -100,17 +101,17 @@ extends TabPanel {
 		creditTable = new ZebraJTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setRowSelectionAllowed(true);
-		
+
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
-		
+
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		
+
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 //		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
+
 		// Add sorting
 		creditTable.setAutoCreateRowSorter(true);
 
@@ -119,11 +120,11 @@ extends TabPanel {
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		creditTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		creditTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		
+
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		creditTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-		
+
 		TableStyle.setTableStyle(creditTable);
 
 	}
@@ -135,7 +136,7 @@ extends TabPanel {
 	public void update() {
 		if (!uiDone)
 			this.initializeUI();
-		
+
 		TableStyle.setTableStyle(creditTable);
 	}
 
@@ -154,7 +155,7 @@ extends TabPanel {
 		private Collection<Settlement> settlements;
 		private Settlement thisSettlement;
 		private UnitManager unitManager = Simulation.instance().getUnitManager();
-		
+
 		/**
 		 * hidden constructor.
 		 * @param thisSettlement {@link Settlement}
@@ -251,7 +252,7 @@ extends TabPanel {
 		@Override
 		public void unitManagerUpdate(UnitManagerEvent event) {
 
-			if (event.getUnit() instanceof Settlement) {
+			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
 				settlements.clear();
 				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
 						getSettlements()).iterator();
@@ -284,7 +285,7 @@ extends TabPanel {
 //		}
 
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

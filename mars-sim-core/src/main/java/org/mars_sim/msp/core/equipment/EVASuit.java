@@ -177,7 +177,7 @@ public class EVASuit extends Equipment
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Create MicroInventory instance
-		microInventory = new MicroInventory(this);
+		microInventory = new MicroInventory(this, CAPACITY + emptyMass);
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(emptyMass);

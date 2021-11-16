@@ -75,7 +75,7 @@ extends ModalInternalFrame {
 
 			// If a bar, look for Number classes
 			if (bar) {
-				if (Number.class.isAssignableFrom(columnType)) {
+				if (isNumber(columnType)) {
 					columnMappings[items.size()] = i;
 					items.add(model.getColumnName(i));
 				}
@@ -137,7 +137,7 @@ extends ModalInternalFrame {
 //		    setLocation(width, height);
 //		}
 
-        // 2016-10-22 Add to its own tab pane
+        // Add to its own tab pane
         //if (desktop.getMainScene() != null)
         //	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(0).add(this);
@@ -149,7 +149,6 @@ extends ModalInternalFrame {
 	    //setVisible(true);
 		//pack();
 
-		//System.out.println("done ColumnSelector's constructor");
 	}
 
 	/**
@@ -160,18 +159,15 @@ extends ModalInternalFrame {
 	 */
 	public static int[] createBarSelector(MainDesktopPane desktop,
 			MonitorModel model) {
-        //System.out.println("ColumnSelector.java : start calling createBarSelector ");
 		ColumnSelector select = new ColumnSelector(desktop, model, true);
 		select.setVisible(true);
 		//select.setModal(true);
 		//return select.getSelectedColumns();
 		int columns[] = select.getSelectedColumns();
 		//if (columns.length > 0) {
-			//System.out.println("createBarSelector() : columns is not null");
 			return columns;
 		//}
 		//else {
-			//System.out.println("createBarSelector() : columns is " + columns);
 		//	return columns;
 		//}
 	}
@@ -244,12 +240,18 @@ extends ModalInternalFrame {
 
 	/**
 	 * Is the class specified suitable to be displayed as a category dataset.
-	 * This is basically any class that is an Class and not a numerical
+	 * This is basically any non-numerical class
 	 * @param columnClass The Class of the data in the column.
 	 * @return Is the class a category
 	 */
 	private boolean isCategory(Class<?> columnClass) {
-		return (!Number.class.isAssignableFrom(columnClass) &&
-				!Coordinates.class.equals(columnClass));
+		return (String.class.equals(columnClass)
+				&& !Number.class.isAssignableFrom(columnClass)
+				&& !Coordinates.class.equals(columnClass));
+	}
+
+	private boolean isNumber(Class<?> columnClass) {
+		return (Number.class.isAssignableFrom(columnClass)
+				&& !String.class.equals(columnClass));
 	}
 }
