@@ -704,8 +704,10 @@ public class EnterAirlock extends Task implements Serializable {
 					// 2c. Transfer the EVA suit from person to the new destination
 					suit.transfer((Unit)housing);
 					// 2d. Remove pressure suit and put on garment
-					if (inSettlement && person.unwearPressureSuit(housing)) {
-						person.wearGarment(housing);
+					if (inSettlement) {
+						if (person.unwearPressureSuit(housing)) {
+							person.wearGarment(housing);
+						}
 					}
 					// Note: vehicle may or may not have garment available
 					else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {

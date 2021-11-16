@@ -909,7 +909,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public static RobotType selectNewRobotType(Settlement s) {
 
-		// Ordinal numder
+		// Ordinal number
 		// 0 CHEFBOT
 		// 1 CONSTRUCTIONBOT
 		// 2 DELIVERYBOT
@@ -950,27 +950,27 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// determine the robotType
 		if (max <= 4) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
+			if (numBots[4] < 1)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 1)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 1)
 				robotType = RobotType.REPAIRBOT;
-//			else if (numBots[0] < 1)
-//				robotType = RobotType.CHEFBOT;
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;
+//			else if (numBots[2] < 1)
+//				robotType = RobotType.DELIVERYBOT;
 		}
 
 		else if (max <= 6) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
+			if (numBots[4] < 2)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 1)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 1)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 1)
 				robotType = RobotType.CHEFBOT;
 //			else if (numBots[5] < 1)
@@ -980,58 +980,52 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		else if (max <= 9) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 2)
+			if (numBots[4] < 2)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 2)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 1)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 1)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 1)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 12) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 3)
+			if (numBots[4] < 3)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 3)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 2)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 1)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 1)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 18) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 5)
+			if (numBots[4] < 5)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 3)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 4)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 2)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 2)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 1)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
@@ -1045,37 +1039,35 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 5)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 2)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 2)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 1)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 2)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 36) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 9)
+			if (numBots[4] < 9)
 				robotType = RobotType.MAKERBOT;
 			else if (numBots[3] < 9)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 7)
 				robotType = RobotType.REPAIRBOT;
+			else if (numBots[2] < 3)
+				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[0] < 5)
 				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
+			else if (numBots[5] < 2)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 2)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 3)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 48) {
-			if (numBots[2] < 3)
+			if (numBots[2] < 4)
 				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[4] < 11)
 				robotType = RobotType.MAKERBOT;
@@ -1087,14 +1079,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 2)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 4)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else {
-			if (numBots[2] < 3)
+			if (numBots[2] < 4)
 				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[4] < 11)
 				robotType = RobotType.MAKERBOT;
@@ -1106,8 +1096,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[5] < 2)
 				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
 			else if (numBots[1] < 4)
 				robotType = RobotType.CONSTRUCTIONBOT;
 			else {
@@ -1550,7 +1538,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		if (destination.equals(cu)) {
 			return true;
 		}
-		
+
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
 			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {

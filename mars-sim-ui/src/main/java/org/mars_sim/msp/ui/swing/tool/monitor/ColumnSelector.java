@@ -44,18 +44,15 @@ extends ModalInternalFrame {
 	private JList<?> columnList = null;
 	private int columnMappings[] = null;
 	private boolean okPressed = false;
-	//private Frame owner;
-
 
 	/**
 	 * Constructs the dialog with a title and columns extracted from the
 	 * specified model.
-	 * @param desktop MainDesktopPane // owner the owner of the dialog.
+	 * @param desktop MainDesktopPane the owner of the dialog.
 	 * @param model Model driving the columns.
 	 * @param bar Display selection for a Bar chart.
 	 */
 	public ColumnSelector(MainDesktopPane desktop, MonitorModel model, boolean bar) {
-		//super(owner, model.getName(), true);
 		// Use ModalInternalFrame constructor
         super(model.getName());
 
@@ -145,7 +142,7 @@ extends ModalInternalFrame {
         	desktop.add(this);
 
         setModal(true);
-
+        moveToFront();
 	    //setVisible(true);
 		//pack();
 
