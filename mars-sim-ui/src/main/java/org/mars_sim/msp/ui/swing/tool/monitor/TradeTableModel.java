@@ -23,9 +23,12 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 @SuppressWarnings("serial")
 public class TradeTableModel
@@ -33,6 +36,7 @@ extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Name";
+	private static final String QUANTITY = "Num/kg - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
@@ -40,7 +44,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String ONE_SPACE = " ";
 
-	static final int NUM_INITIAL_COLUMNS = 3;
+	protected static final int NUM_INITIAL_COLUMNS = 3;
+	private static final int NUM_DATA_COL = 3;
 
 	// Data members
 	private List<Good> goodsList;
@@ -141,10 +146,14 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		else if (columnIndex == 2) return TYPE;
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			if (col % 2 == 0) // is even
-				return VP_AT + settlements.get(col/2).getName();
-			else // is odd
-				return PRICE_AT + settlements.get(col/2).getName();
+			int q = col / NUM_DATA_COL;
+			int r = col % NUM_DATA_COL;
+			if (r == 0)
+				return QUANTITY + settlements.get(q).getName();
+			else if (r == 1)
+				return VP_AT + settlements.get(q).getName();
+			else
+				return PRICE_AT + settlements.get(q).getName();
 		}
 	}
 
@@ -154,12 +163,24 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < NUM_INITIAL_COLUMNS) return String.class;
-		else return Double.class;
+		if (columnIndex < NUM_INITIAL_COLUMNS)
+			return String.class;
+		else {
+			return Double.class;
+//			int col = columnIndex - NUM_INITIAL_COLUMNS;
+//			int r = col % NUM_DATA_COL;
+//			if (r == 0)
+//				// Note: if using Number.class, this column will NOT be able to sort
+//				return Number.class;
+//			else if (r == 1)
+//				return Double.class;
+//			else
+//				return Double.class;
+		}
 	}
 
 	public int getColumnCount() {
-		return settlements.size() * 2 + NUM_INITIAL_COLUMNS;
+		return settlements.size() * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
 	}
 
 	public int getRowCount() {
@@ -181,12 +202,32 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			if (col % 2 == 0) // is even
-				return settlements.get(col/2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
-			else // is odd
-				return settlements.get(col/2).getGoodsManager().getPricePerItem(goodsList.get(rowIndex));
+			int q = col / NUM_DATA_COL;
+			int r = col % NUM_DATA_COL;
+			if (r == 0)
+				return getQuantity(settlements.get(q), goodsList.get(rowIndex).getID());
+			else if (r == 1)
+				return settlements.get(q).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
+			else
+				return Math.round(settlements.get(q).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0;
 		}
 	}
+
+    private double getQuantity(Settlement settlement, int id) {
+
+    	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+    		return Math.round(settlement.getAmountResourceStored(id) * 1.0)/1.0;
+    	}
+    	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+    		return settlement.getItemResourceStored(id);
+    	}
+    	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+    		return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
+    	}
+    	else {
+    		return settlement.findNumContainersOfType(EquipmentType.convertID2Type(id));
+    	}
+    }
 
 
 	/**
@@ -214,7 +255,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 				fireTableDataChanged();
 			else {
 				int rowIndex = goodsList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) * 2 + NUM_INITIAL_COLUMNS;
+				int columnIndex = settlements.indexOf(event.getSource()) * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}

@@ -39,16 +39,20 @@ implements UnitManagerListener {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
+		// Override default cell renderer for formatting double values.
+		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
+
+
 		TableColumnModel m = table.getColumnModel();
 
-		for (int i= 0; i<m.getColumnCount(); i++) {
+		for (int i= 0; i < m.getColumnCount(); i++) {
 			int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
-			if (col % 2 == 1)
+			if (col % 3 == 0)
+				m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
+			else if (col % 3 == 2)
 				m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 		}
 
-		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		// Add as unit manager listener.
 		Simulation.instance().getUnitManager().addUnitManagerListener(this);

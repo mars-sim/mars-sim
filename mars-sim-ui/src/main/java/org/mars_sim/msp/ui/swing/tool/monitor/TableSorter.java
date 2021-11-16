@@ -25,7 +25,7 @@ public class TableSorter extends AbstractTableModel
 
     // Minimum time (milliseconds) between table sorts.
     private static final long SORTING_TIME_BUFFER = 500L;
-    
+
     private int indexes[];
     private boolean sortAscending = false;
     private int sortedColumn;
@@ -93,17 +93,17 @@ public class TableSorter extends AbstractTableModel
             indexes[row] = row;
         }
     }
-    
+
     /**
      * Fired when there are changed to the source table. If any rows have been
      * deleted/inserted or a change to the sorted column, then re-sort
      */
     public void tableChanged(TableModelEvent e) {
-        
+
         // boolean resort = false;
         TableModelEvent newEvent = null;
         int type = e.getType();
-        
+
         // Determine the first and low rows.
         int firstRow = e.getFirstRow();
         int lastRow = e.getLastRow();
@@ -125,12 +125,12 @@ public class TableSorter extends AbstractTableModel
             long currentTime = System.currentTimeMillis();
             long timeDiff = currentTime - lastSortedTime;
             if (timeDiff > SORTING_TIME_BUFFER) {
-                
+
                 // If the model has been resorted, flag all changes
                 if (sortModel()) {
                     newEvent = new TableModelEvent(this, 0, sourceModel.getRowCount());
                 }
-                
+
                 lastSortedTime = currentTime;
             }
         }
@@ -167,7 +167,7 @@ public class TableSorter extends AbstractTableModel
     // arrays. The number of compares appears to vary between N-1 and
     // NlogN depending on the initial order but the main reason for
     // using it here is that, unlike qsort, it is stable.
-    
+
 //    private void shuttlesort(int from[], int to[], int low, int high) {
 //        if (high - low < 2) {
 //            return;
@@ -277,7 +277,7 @@ public class TableSorter extends AbstractTableModel
 //    	else return null;
 //    }
 
-    
+
     /**
      * The mapping only affects the contents of the data rows.
      * Pass all requests to these rows through the mapping array: "indexes".
@@ -288,7 +288,7 @@ public class TableSorter extends AbstractTableModel
     public void setValueAt(Object aValue, int aRow, int aColumn) {
         sourceModel.setValueAt(aValue, indexes[aRow], aColumn);
     }
-    
+
     /**
      * Gets the model count string.
      */
@@ -325,7 +325,9 @@ public class TableSorter extends AbstractTableModel
         int original[] = indexes.clone();
         reallocateIndexes();
 
-        // Only do sorting if cells contians Comparable
+        // Only do sorting if cells contains Comparable
+        // Note: Number.class cannot be sorted
+        // See https://stackoverflow.com/questions/480632/why-doesnt-java-lang-number-implement-comparable
         Class<?> cellType = sourceModel.getColumnClass(sortedColumn);
         if (Comparable.class.isAssignableFrom(cellType)) {
 
@@ -344,7 +346,7 @@ public class TableSorter extends AbstractTableModel
         indexes[i] = indexes[j];
         indexes[j] = tmp;
     }
-    
+
     /**
      * Prepares the model for deletion.
      */

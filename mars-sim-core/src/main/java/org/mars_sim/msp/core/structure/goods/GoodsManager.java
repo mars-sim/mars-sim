@@ -4358,14 +4358,10 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (VP)
 	 */
 	public double getGoodValuePerItem(int id) {
-//		try {
 		if (goodsValues.containsKey(id))
 			return goodsValues.get(id);
 		else
 			logger.severe(settlement, " - Good Value of " + id + " not valid.");
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, e.getMessage());
-//		}
 		return 0;
 	}
 
@@ -4386,15 +4382,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (VP)
 	 */
 	public double getPartDemandValue(int id) {
-//		try {
 		if (partDemandCache.containsKey(id))
 			return partDemandCache.get(id);
 		else
 			logger.severe(settlement,
 					" - Part  " + ItemResourceUtil.findItemResourceName(id) + "(" + id + ")" + " not valid.");
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, e.getMessage());
-//		}
 		return 1;
 	}
 
