@@ -36,7 +36,7 @@ extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Name";
-	private static final String QUANTITY = "Num/kg - ";
+	private static final String QUANTITY = "#/kg - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
