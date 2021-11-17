@@ -54,33 +54,33 @@ public class UnitManager implements Serializable, Temporal {
 	private static final Logger logger = Logger.getLogger(UnitManager.class.getName());
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
-	
+
 	//  The number of bits in the identifier field to use for the type element
 	private static final int TYPE_BITS = 4;
 	private static final int TYPE_MASK = (1 << (TYPE_BITS)) - 1;
-	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1; 
-	
+	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1;
+
 	/** Flag true if the class has just been loaded */
 	public static boolean justLoaded = true;
 	/** Flag true if the class has just been reloaded/deserialized */
 	public static boolean justReloaded = false;
-	
+
 	/** List of unit manager listeners. */
 	private static CopyOnWriteArrayList<UnitManagerListener> listeners;
 
 	private static ExecutorService executor;
-	
+
 	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	
+
 	// Data members
 	/** The commander's unique id . */
     public int commanderID = -1;
 	/** The core engine's original build. */
 	public String originalBuild;
-	
+
 	/** A map of all map display units (settlements and vehicles). */
 	private volatile List<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
@@ -97,14 +97,14 @@ public class UnitManager implements Serializable, Temporal {
 	private volatile Map<Integer, Equipment> lookupEquipment;
 	/** A map of building with its unit identifier. */
 	private volatile Map<Integer, Building> lookupBuilding;
-	
+
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 
 	private static MalfunctionFactory factory;
 
 	private static ThreadLocal<Settlement> activeSettlement = new ThreadLocal<>();
-	
+
 	/** The instance of MarsSurface. */
 	private MarsSurface marsSurface;
 
@@ -125,10 +125,10 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
-		
+
 		listeners = new CopyOnWriteArrayList<>();
 
-		factory = sim.getMalfunctionFactory();		
+		factory = sim.getMalfunctionFactory();
 	}
 
 	/**
@@ -165,13 +165,13 @@ public class UnitManager implements Serializable, Temporal {
 		default:
 			throw new IllegalArgumentException("No Unit map for type " + type);
 		}
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * Gets the unit with a particular identifier (unit id)
-	 * 
+	 *
 	 * @param id identifier
 	 * @return
 	 */
@@ -181,7 +181,7 @@ public class UnitManager implements Serializable, Temporal {
 		else if (id.intValue() == Unit.UNKNOWN_UNIT_ID) {
 			return null;
 		}
-		
+
 		Unit found = getUnitMap(id).get(id);
 		if (found == null) {
 			logger.warning("Unit not found " + id + ". Type of unit : " + getTypeFromIdentifier(id)
@@ -197,21 +197,21 @@ public class UnitManager implements Serializable, Temporal {
 	public Settlement getCommanderSettlement() {
 		return getPersonByID(commanderID).getAssociatedSettlement();
 	}
-	
+
 	/**
 	 * Gets the settlement list including the commander's associated settlement
 	 * and the settlement that he's at or in the vicinity of
-	 * 
+	 *
 	 * @return {@link List<Settlement>}
 	 */
 	public List<Settlement> getCommanderSettlements() {
 		List<Settlement> settlements = new ArrayList<>();
-		
+
 		Person cc = getPersonByID(commanderID);
 		// Add the commander's associated settlement
 		Settlement as = cc.getAssociatedSettlement();
 		settlements.add(as);
-		
+
 		// Find the settlement the commander is at
 		Settlement s = cc.getSettlement();
 		// If the commander is in the vicinity of a settlement
@@ -219,10 +219,10 @@ public class UnitManager implements Serializable, Temporal {
 			s = CollectionUtils.findSettlement(cc.getCoordinates());
 		if (s != null && as != s)
 			settlements.add(s);
-		
+
 		return settlements;
 	}
-	
+
 	public Person getPersonByID(Integer id) {
 		return lookupPerson.get(id);
 	}
@@ -242,7 +242,7 @@ public class UnitManager implements Serializable, Temporal {
 	public Vehicle getVehicleByID(Integer id) {
 		return lookupVehicle.get(id);
 	}
-	
+
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
@@ -320,12 +320,12 @@ public class UnitManager implements Serializable, Temporal {
 		synchronized (unitCounts) {
 			return unitCounts.merge(name, 1, (a, b) -> a + b);
 		}
-	}	
+	}
 
 	public void setCommanderId(int commanderID) {
 		this.commanderID = commanderID;
 	}
-	
+
 	public int getCommanderID() {
 		return commanderID;
 	}
@@ -333,7 +333,7 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * Determines the number of shifts for a settlement and assigns a work shift for
 	 * each person
-	 * 
+	 *
 	 * @param settlement
 	 * @param pop population
 	 */
@@ -370,10 +370,10 @@ public class UnitManager implements Serializable, Temporal {
 	 * @throws Exception if error during time passing.
 	 */
 	@Override
-	public boolean timePassing(ClockPulse pulse) {	
-		if (pulse.isNewSol() || justLoaded) {			
-			// Compute reliability daily
-			factory.computeReliability();
+	public boolean timePassing(ClockPulse pulse) {
+		if (pulse.isNewSol() || justLoaded) {
+			// Compute reliability daily for each part
+			factory.computePartReliability(pulse.getMarsTime().getMissionSol());
 			justLoaded = false;
 		}
 
@@ -383,10 +383,10 @@ public class UnitManager implements Serializable, Temporal {
 		else {
 			logger.warning("Zero elapsed pulse #" + pulse.getId());
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Sets up executive service
 	 */
@@ -400,7 +400,7 @@ public class UnitManager implements Serializable, Temporal {
 					new ThreadFactoryBuilder().setNameFormat("unitmanager-thread-%d").build());
 		}
 	}
-	
+
 	/**
 	 * Sets up settlement tasks for executive service
 	 */
@@ -410,7 +410,7 @@ public class UnitManager implements Serializable, Temporal {
 			lookupSettlement.values().forEach(s -> activateSettlement(s));
 		}
 	}
-	
+
 	/**
 	 * Add a Settlement to the managed list and activate it for time pulses.
 	 * @param s
@@ -420,11 +420,11 @@ public class UnitManager implements Serializable, Temporal {
 			throw new IllegalStateException("Do not know new Settlement "
 						+ s.getName());
 		}
-		
+
 		SettlementTask st = new SettlementTask(s);
 		settlementTaskList.add(st);
 	}
-	
+
 	/**
 	 * This method validates whether teh current active Settlement in this thread matches
 	 * the owner of an entity. This is a Thread specific method.
@@ -447,10 +447,10 @@ public class UnitManager implements Serializable, Temporal {
 					new IllegalStateException(operation));
 		}
 	}
-	
+
 	/**
 	 * Fires the clock pulse to each clock listener
-	 * 
+	 *
 	 * @param pulse
 	 */
 	private void runExecutor(ClockPulse pulse) {
@@ -467,7 +467,7 @@ public class UnitManager implements Serializable, Temporal {
 			for (Future<String> future : results) {
 				future.get();
 			};
-		} 
+		}
 		catch (ExecutionException ee) {
 			// Problem running the pulse
 			logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
@@ -479,7 +479,7 @@ public class UnitManager implements Serializable, Temporal {
 			}
 		}
 	}
-	
+
 	/**
 	 * Ends the current executor
 	 */
@@ -487,7 +487,7 @@ public class UnitManager implements Serializable, Temporal {
 		if (executor != null)
 			executor.shutdownNow();
 	}
-	
+
 	/**
 	 * Get number of settlements
 	 *
@@ -545,21 +545,21 @@ public class UnitManager implements Serializable, Temporal {
 	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
 			displayUnits = new ArrayList<>();
-		
+
 		displayUnits.add(unit);
 	}
-	
+
 	/**
 	 * Obtains the settlement and vehicle units for map display
 	 * @return
 	 */
 	public List<Unit> getDisplayUnits() {
-		return displayUnits; 
+		return displayUnits;
 	}
 
 	/**
 	 * Adds a unit manager listener
-	 * 
+	 *
 	 * @param newListener the listener to add.
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
@@ -573,7 +573,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Removes a unit manager listener
-	 * 
+	 *
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
@@ -587,7 +587,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Fire a unit update event.
-	 * 
+	 *
 	 * @param eventType the event type.
 	 * @param unit      the unit causing the event.
 	 */
@@ -605,11 +605,11 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param clock
 	 */
 	public void reinit(MarsClock clock) {
-		
+
 		for (Person p: lookupPerson.values()) {
 			p.reinit();
 		}
@@ -622,16 +622,16 @@ public class UnitManager implements Serializable, Temporal {
 		for (Settlement s: lookupSettlement.values()) {
 			s.reinit();
 		}
-		
+
 		// Sets up the executor
 		setupExecutor();
 		// Sets up the concurrent tasks
 		setupTasks();
 	}
-	
+
 	/**
 	 * Returns Mars surface instance
-	 * 
+	 *
 	 * @return {@Link MarsSurface}
 	 */
 	public MarsSurface getMarsSurface() {
@@ -670,7 +670,7 @@ public class UnitManager implements Serializable, Temporal {
 		while (i6.hasNext()) {
 			i6.next().destroy();
 		}
-	
+
 		lookupSite.clear();
 		lookupSettlement.clear();
 		lookupVehicle.clear();
@@ -678,7 +678,7 @@ public class UnitManager implements Serializable, Temporal {
 		lookupPerson.clear();
 		lookupRobot.clear();
 		lookupEquipment.clear();
-		
+
 		lookupSite = null;
 		lookupSettlement = null;
 		lookupVehicle = null;
@@ -696,18 +696,18 @@ public class UnitManager implements Serializable, Temporal {
 
 		factory = null;
 	}
-	
+
 	/**
 	 * Prepares the Settlement task for setting up its own thread.
 	 */
 	class SettlementTask implements Callable<String> {
 		private Settlement settlement;
 		private ClockPulse currentPulse;
-		
+
 		protected Settlement getSettlement() {
 			return settlement;
 		}
-		
+
 		public void setCurrentPulse(ClockPulse pulse) {
 			this.currentPulse = pulse;
 		}
@@ -741,17 +741,17 @@ public class UnitManager implements Serializable, Temporal {
 	public static UnitType getTypeFromIdentifier(int id) {
 		// Extract the bottom 4 bit
 		int typeId = (id & TYPE_MASK);
-		
+
 		return UnitType.values()[typeId];
 	}
-	
+
 	/**
 	 * Generate a new unique UnitId for a certain type. This will be used later
 	 * for lookups.
-	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits 
+	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits
 	 * are a unique increasing number.
-	 * This guarantees 
-	 * uniqueness PLUS a quick means to identify the UnitType from only the 
+	 * This guarantees
+	 * uniqueness PLUS a quick means to identify the UnitType from only the
 	 * identifier.
 	 * @param unitType
 	 * @return
@@ -762,7 +762,7 @@ public class UnitManager implements Serializable, Temporal {
 			throw new IllegalStateException("Too many Unit created " + MAX_BASE_ID);
 		}
 		int typeId = unitType.ordinal();
-		
+
 		return (baseId << TYPE_BITS) + typeId;
 	}
 

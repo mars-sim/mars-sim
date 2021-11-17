@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResourceUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-16
  * @author Manny Kung
  */
 
@@ -28,21 +28,21 @@ public class ResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
-	
+
 	public static final int FIRST_ITEM_RESOURCE_ID = 2000;
 
-	public static final int FIRST_VEHICLE_RESOURCE_ID = 3000; 
+	public static final int FIRST_VEHICLE_RESOURCE_ID = 3000;
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 3010;
-	
+
 	public static final String[] KITCHEN_WARE = new String[] {
-			"autoclave", 
-			"blender", 
-			"microwave", 
+			"autoclave",
+			"blender",
+			"microwave",
 			"oven",
-			"refrigerator", 
+			"refrigerator",
 			"stove" };
-	
+
 	public static String[] ROCKS  = new String[] {
 	        "rock samples",
 			"columnar basalt",
@@ -54,7 +54,7 @@ public class ResourceUtil implements Serializable {
 			"cross bedding",
 			"meteorite",
 			"scoria"};
-	
+
 	public static String[] MINERAL_CONCENTRATIONS = new String[] {
 	        "chalcopyrite",
 			"goethite",
@@ -66,7 +66,7 @@ public class ResourceUtil implements Serializable {
 			"olivine",
 			"taenite",
 			"sylvite"};
-	
+
 	public static String[] ORE_DEPOSITS = new String[] {
 			"allophane",
 			"akaganeite",
@@ -74,7 +74,7 @@ public class ResourceUtil implements Serializable {
 			"bassanite",
 			"gypsum",
 			"smectite"};
-	
+
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";
 	public static final String CO = "carbon monoxide";
@@ -98,7 +98,7 @@ public class ResourceUtil implements Serializable {
 	public static final String FOOD_WASTE = "food waste";
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
-	
+
 //	public static final String TOILET_WASTE = "toilet waste";
 
 	public static final String GREY_WATER = "grey water";
@@ -106,7 +106,7 @@ public class ResourceUtil implements Serializable {
 	public static final String TABLE_SALT = "table salt";
 	public static final String ROCK_SALT = "rock salt";
 	public static final String EPSOM_SALT = "epsom salt";
-	
+
 	public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
 	public static final String NAPKIN = "napkin";
 
@@ -118,16 +118,16 @@ public class ResourceUtil implements Serializable {
 	public static final String PEANUT_OIL = "peanut oil";
 	public static final String RICE_BRAN_OIL = "rice bran oil";
 	public static final String FISH_OIL = "fish oil";
-	
+
 	public static final String TOILET_TISSUE = "toilet tissue";
-	
+
 	public static final String SOYMILK = "soymilk";
-	
+
 	public static final String LEAVES = "leaves";
 
 	public static final String FISH_MEAT = "fish meat";
 
-	
+
 	// Data members.
 	// private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
 	private static Map<String, AmountResource> amountResourceMap;
@@ -150,12 +150,12 @@ public class ResourceUtil implements Serializable {
 	public static int coID;
 
 	public static int iceID;
-	
+
 	public static int regolithID;
 	public static int regolithBID;
 	public static int regolithCID;
 	public static int regolithDID;
-	
+
 	public static int soilID;
 	public static int sandID;
 	public static int soymilkID;
@@ -164,44 +164,44 @@ public class ResourceUtil implements Serializable {
 
 	public static int blackWaterID;
 	public static int greyWaterID;
-	
+
 	public static int compostID;
 	public static int cropWasteID;
 	public static int foodWasteID;
 	public static int toxicWasteID;
 	public static int solidWasteID;
-	
+
 	public static int toiletTissueID;
-	
+
 	public static int fertilizerID;
 	public static int NaClOID;
 
 	public static int leavesID;
-	
+
 	public static int soybeanOilID;
 	public static int garlicOilID;
 	public static int sesameOilID;
 	public static int peanutOilID;
 	public static int riceBranOilID;
 	public static int fishOilID;
-	
+
 	public static int epsomSaltID;
 	public static int tableSaltID;
 	public static int rockSaltID;
-	
+
 	public static int eWasteID;
-	
+
 	public static int napkinID;
-	
+
 	public static int meteoriteID;
-	
+
 	public static int[] rockIDs = new int[ROCKS.length];
 	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
 	public static int[] REGOLITH_TYPES = new int[3];
-	
+
 	public static int fishMeatID;
-	
+
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -213,7 +213,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource methaneAR;
 
 	public static AmountResource coAR;
-	
+
 //	public static AmountResource soilAR;
 	public static AmountResource iceAR;
 //	public static AmountResource compostAR;
@@ -222,7 +222,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource regolithBAR;
 	public static AmountResource regolithCAR;
 	public static AmountResource regolithDAR;
-	
+
 //	public static AmountResource tableSaltAR;
 	public static AmountResource NaClOAR;
 	public static AmountResource greyWaterAR;
@@ -258,7 +258,7 @@ public class ResourceUtil implements Serializable {
 
 	/**
 	 * Gets the singleton instance.
-	 * 
+	 *
 	 * @param instance the singleton instance.
 	 */
 	public static ResourceUtil getInstance() {
@@ -272,7 +272,7 @@ public class ResourceUtil implements Serializable {
 		resources = SimulationConfig.instance().getResourceConfiguration().getAmountResources();
 		createItemResourceUtil();
 	}
-	
+
 	/**
 	 * Starts ItemResourceUtil
 	 */
@@ -282,7 +282,7 @@ public class ResourceUtil implements Serializable {
 
 	/**
 	 * Sets the singleton instance.
-	 * 
+	 *
 	 * @param instance the singleton instance.
 	 */
 	public static void setInstance(ResourceUtil instance) {
@@ -332,22 +332,22 @@ public class ResourceUtil implements Serializable {
 		if (amountResourceMap == null) {
 			sortedResources = new ArrayList<>(resources);
 			Collections.sort(sortedResources);
-	
+
 			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
 			for (AmountResource resource : sortedResources) {
 				tempAmountResourceMap.put(resource.getName(), resource);
 			}
-	
+
 			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
 			for (AmountResource resource : sortedResources) {
 				tempAmountResourceIDMap.put(resource.getID(), resource);
 			}
-	
+
 			Map<Integer, String> tempArIDNameMap = new HashMap<>();
 			for (AmountResource resource : sortedResources) {
 				tempArIDNameMap.put(resource.getID(), resource.getName());
 			}
-			
+
 			// Create immuatable internals
 			amountResourceMap = Collections.unmodifiableMap(tempAmountResourceMap);
 			amountResourceIDMap = Collections.unmodifiableMap(tempAmountResourceIDMap);
@@ -358,7 +358,7 @@ public class ResourceUtil implements Serializable {
 	public static void mapInstances() {
 
 		// AmountResource instances as Integer
-		
+
 		foodID = findIDbyAmountResourceName(LifeSupportInterface.FOOD); // 1
 		waterID = findIDbyAmountResourceName(LifeSupportInterface.WATER); // 2
 
@@ -382,64 +382,64 @@ public class ResourceUtil implements Serializable {
 		toxicWasteID = findIDbyAmountResourceName(TOXIC_WASTE);
 		solidWasteID = findIDbyAmountResourceName(SOLID_WASTE);
 		eWasteID = findIDbyAmountResourceName(ELECTRONIC_WASTE); // 16
-		compostID = findIDbyAmountResourceName(COMPOST); // 
-		
+		compostID = findIDbyAmountResourceName(COMPOST); //
+
 		fertilizerID = findIDbyAmountResourceName(FERTILIZER); // 139
 
 		leavesID = findIDbyAmountResourceName(LEAVES);
-		
+
 		meteoriteID = findIDbyAmountResourceName(METEORITE);
-		
+
 		soilID = findIDbyAmountResourceName(REGOLITH);  // 12
 		sandID = findIDbyAmountResourceName(SAND);
 
 		soymilkID = findIDbyAmountResourceName(SOYMILK);
-	
+
 		NaClOID = findIDbyAmountResourceName(SODIUM_HYPOCHLORITE);
-		
+
 		soybeanOilID = findIDbyAmountResourceName(SOYBEAN_OIL); // 27
 		garlicOilID = findIDbyAmountResourceName(GARLIC_OIL); // 41
 		sesameOilID = findIDbyAmountResourceName(SESAME_OIL); // 53
 		peanutOilID = findIDbyAmountResourceName(PEANUT_OIL); // 46
-		riceBranOilID = findIDbyAmountResourceName(RICE_BRAN_OIL); // 
-		fishOilID = findIDbyAmountResourceName(FISH_OIL); // 
-		
+		riceBranOilID = findIDbyAmountResourceName(RICE_BRAN_OIL); //
+		fishOilID = findIDbyAmountResourceName(FISH_OIL); //
+
 		tableSaltID = findIDbyAmountResourceName(TABLE_SALT); // 23
-		rockSaltID = findIDbyAmountResourceName(ROCK_SALT); // 
-		epsomSaltID = findIDbyAmountResourceName(EPSOM_SALT); // 
-				
+		rockSaltID = findIDbyAmountResourceName(ROCK_SALT); //
+		epsomSaltID = findIDbyAmountResourceName(EPSOM_SALT); //
+
 		toiletTissueID = findIDbyAmountResourceName(TOILET_TISSUE);
-		napkinID = findIDbyAmountResourceName(NAPKIN); // 
-		
+		napkinID = findIDbyAmountResourceName(NAPKIN); //
+
 		// Assemble the rockIDs array
 		for (int i=0; i<ROCKS.length; i++) {
 			rockIDs[i] = findIDbyAmountResourceName(ROCKS[i]);
 		}
-		
+
 		// Assemble the mineralConcIDs array
 		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {
 			mineralConcIDs[i] = findIDbyAmountResourceName(MINERAL_CONCENTRATIONS[i]);
 		}
-		
+
 		// Assemble the oreDepositIDs array
 		for (int i=0; i<ORE_DEPOSITS.length; i++) {
 			oreDepositIDs[i] = findIDbyAmountResourceName(ORE_DEPOSITS[i]);
 		}
-		
+
 		// Assemble the regolith type array
 		regolithID = findIDbyAmountResourceName(REGOLITH); // 156
-		regolithBID = findIDbyAmountResourceName(REGOLITH_B); // 
-		regolithCID = findIDbyAmountResourceName(REGOLITH_C); // 
-		regolithDID = findIDbyAmountResourceName(REGOLITH_D); // 
-		REGOLITH_TYPES = new int[] {		
+		regolithBID = findIDbyAmountResourceName(REGOLITH_B); //
+		regolithCID = findIDbyAmountResourceName(REGOLITH_C); //
+		regolithDID = findIDbyAmountResourceName(REGOLITH_D); //
+		REGOLITH_TYPES = new int[] {
 				ResourceUtil.regolithBID,
 				ResourceUtil.regolithCID,
 				ResourceUtil.regolithDID};
-		
-		fishMeatID = findIDbyAmountResourceName(FISH_MEAT); // 
-		
+
+		fishMeatID = findIDbyAmountResourceName(FISH_MEAT); //
+
 		// AmountResource instances as objects
-		
+
 		foodAR = findAmountResource(LifeSupportInterface.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportInterface.WATER); // 2
 		oxygenAR = findAmountResource(LifeSupportInterface.OXYGEN); // 3
@@ -461,35 +461,35 @@ public class ResourceUtil implements Serializable {
 		blackWaterAR = findAmountResource(BLACK_WATER); // 21
 //		tableSaltAR = findAmountResource(TABLE_SALT); // 23
 //		fertilizerAR = findAmountResource(FERTILIZER); // 139
-		
+
 		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
-		
+
 		regolithAR = findAmountResource(REGOLITH); // 156
 		regolithBAR = findAmountResource(REGOLITH_B);
 		regolithCAR = findAmountResource(REGOLITH_C);
 		regolithDAR = findAmountResource(REGOLITH_D);
-		
+
 		rockSamplesAR = findAmountResource(ROCK_SAMPLES); //
 		sandAR = findAmountResource(SAND); // 159
 	}
 
 	public static void createInstancesArray() {
 
-		ARs = new AmountResource[] { 
-				foodAR, waterAR, oxygenAR, carbonDioxideAR, 
-				argonAR, nitrogenAR, coAR, hydrogenAR, 
-				methaneAR, 
+		ARs = new AmountResource[] {
+				foodAR, waterAR, oxygenAR, carbonDioxideAR,
+				argonAR, nitrogenAR, coAR, hydrogenAR,
+				methaneAR,
 				iceAR,
 				greyWaterAR, blackWaterAR,
 				regolithAR, regolithBAR, regolithCAR, regolithDAR,
 				rockSamplesAR, sandAR,
-				NaClOAR, 
+				NaClOAR,
 				};
 	}
 
 	/**
 	 * Finds an amount resource name by id.
-	 * 
+	 *
 	 * @param id the resource's id.
 	 * @return resource name
 	 * @throws ResourceException if resource could not be found.
@@ -497,19 +497,19 @@ public class ResourceUtil implements Serializable {
 	public static String findAmountResourceName(int id) {
 		return arIDNameMap.get(id);
 	}
-	
+
 	/**
-	 * Prints the capitalized name of the resource 
+	 * Prints the capitalized name of the resource
 	 * @param id the resource's id.
 	 * @return capitalized name
 	 */
 	public static String printCapName(int id) {
 		return Conversion.capitalize(findAmountResourceName(id));
 	}
-	
+
 	/**
 	 * Finds an amount resource by id.
-	 * 
+	 *
 	 * @param id the resource's id.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -517,14 +517,14 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource findAmountResource(int id) {
 		return amountResourceIDMap.get(id);
 	}
-	
+
 	public static Map<Integer, AmountResource> getAmountResourceIDMap() {
 		return amountResourceIDMap;
 	}
 
 	/**
 	 * Finds an amount resource by name.
-	 * 
+	 *
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -537,7 +537,7 @@ public class ResourceUtil implements Serializable {
 
 	/**
 	 * Finds an amount resource by name.
-	 * 
+	 *
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
@@ -549,7 +549,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Returns the first matched key from a given value in a map for one-to-one
 	 * relationship
-	 * 
+	 *
 	 * @param map
 	 * @param value
 	 * @return key
@@ -565,7 +565,7 @@ public class ResourceUtil implements Serializable {
 
 	/**
 	 * Gets an immutable set of all the amount resources.
-	 * 
+	 *
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
@@ -574,7 +574,7 @@ public class ResourceUtil implements Serializable {
 
 	/**
 	 * Gets an immutable set of all the amount resources.
-	 * 
+	 *
 	 * @return set of amount resources.
 	 */
 	public static Set<Integer> getIDs() {
@@ -584,7 +584,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
-	 * 
+	 *
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getAmountResourceStringSortedList() {

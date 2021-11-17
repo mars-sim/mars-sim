@@ -41,7 +41,7 @@ public class CollectionUtils {
 	public static Collection<Robot> getRobot(
 		Collection<Unit> units
 	) {
-		
+
 //		return units
 //				.stream()
 //				.filter(u-> u instanceof Robot)
@@ -57,17 +57,17 @@ public class CollectionUtils {
 
 	}
 
-	
+
 	/**
 	 * Finds the settlement's unique id based on its name
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
 	public static int findSettlementID(String name) {
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
-				
+
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			if (s.getName().equals(name))
@@ -76,17 +76,17 @@ public class CollectionUtils {
 
 		return -1;
 	}
-	
+
 	/**
 	 * Finds the settlement instance based on its name
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
 	public static Settlement findSettlement(String name) {
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
-				
+
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			if (s.getName().equals(name))
@@ -95,25 +95,25 @@ public class CollectionUtils {
 
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Finds a nearby settlement based on its coordinate
-	 * 
+	 *
 	 * @param c {@link Coordinates}
 	 * @return
 	 */
 	public static Settlement findSettlement(Coordinates c) {
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
-				
+
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
 				return s;
 		}
 
-		return null; 
+		return null;
 		// WARNING : using associated settlement needs to exercise more caution
 	}
 
@@ -135,7 +135,7 @@ public class CollectionUtils {
 	/**
 	 * Gets a list of people to display on a settlement map.
 	 * Note: a person can be either inside the settlement or within its vicinity
-	 * 
+	 *
 	 * @param settlement the settlement
 	 * @return list of people to display.
 	 */
@@ -159,6 +159,24 @@ public class CollectionUtils {
 					}
 				}
 			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the total number of parts from all settlements
+	 *
+	 * @param id
+	 * @return
+	 */
+	public static int getTotalNumPart(int id) {
+		int result = 0;
+		// Obtain the total # of this part in used from all settlements
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			int num = s.getItemResourceStored(id);
+			result += num;
 		}
 
 		return result;

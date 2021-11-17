@@ -684,7 +684,7 @@
 
 	<part name="small semiconductor wafer" type="electronic" mass="1"/>
 
-	<part name="laser sintering 3d printer" type="electrical" mass="50.0">
+	<part name="laser sintering 3d printer" type="electronic" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="3" max-number="2" />
 		</maintenance-entity-list>
@@ -717,7 +717,21 @@
 
 	<part name="charcoal filter" type="utility" mass="1"/>
 
-	<part name="electrostatic precipitator" type="utility" mass=".7"/>
+	<part name="electrostatic precipitator" type="utility" mass=".7">
+		<description>A filterless device that removes fine particles,
+			like dust and smoke, from a flowing gas using the force of
+			an induced electrostatic charge minimally impeding the
+			flow of gases through the unit</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="1" />
+			<entity name="dining" probability="2" max-number="1" />
+			<entity name="living accommodation" probability="2" max-number="1" />
+			<entity name="eva" probability="3" max-number="1" />
+			<entity name="waste disposal" probability="3" max-number="1" />
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
 
 	<part name="large air duct" type="utility" mass=".3">
 		<maintenance-entity-list>

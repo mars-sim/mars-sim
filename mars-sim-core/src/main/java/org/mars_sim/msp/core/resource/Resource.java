@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * AmountResource.java
- * @version 3.2.0 2021-06-20
+ * Resource.java
+ * @date 2021-11-16
  * @author Scott Davis
  */
 
@@ -14,21 +14,21 @@ public interface Resource extends Comparable<Resource> {
 
 	/**
 	 * Gets the resource's id.
-	 * 
+	 *
 	 * @return resource id.
 	 */
 	public int getID();
 
 	/**
 	 * Gets the resource's name.
-	 * 
+	 *
 	 * @return name
 	 */
 	public String getName();
 
 	/**
 	 * Gets the resource's description.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	public String getDescription();

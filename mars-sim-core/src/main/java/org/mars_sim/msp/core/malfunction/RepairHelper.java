@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RepairHelper.java
- * @date 2021-10-20
+ * @date 2021-11-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.malfunction;
@@ -23,11 +23,11 @@ public final class RepairHelper {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(RepairHelper.class.getName());
-	
+
 	private RepairHelper() {
-		
+
 	}
-	
+
 	/**
 	 * Start working on a Malfunction. This selects Deputy or Cheif if available and registers for work.
 	 * @param malfunction
@@ -37,31 +37,31 @@ public final class RepairHelper {
 	 */
 	public static void startRepair(Malfunction malfunction, Worker repairer,
 									MalfunctionRepairWork type, Malfunctionable entity) {
-	
+
 		String chief = malfunction.getChiefRepairer(type);
 		String deputy = malfunction.getDeputyRepairer(type);
 		String myName = repairer.getName();
 		if (chief == null) {
-			logger.fine(repairer, "Was appointed as the chief repairer handling the " 
-					+ type.getName() + " work for '" 
+			logger.fine(repairer, "Was appointed as the chief repairer handling the "
+					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
-			 malfunction.setChiefRepairer(type, myName);						
+			 malfunction.setChiefRepairer(type, myName);
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
 			logger.fine(repairer, "Was appointed as the deputy repairer handling the "
-					+ type.getName() + " work for '" 
+					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
 			malfunction.setDeputyRepairer(type, myName);
 		}
-		
+
 		logger.log(repairer, Level.FINEST, 500, "About to repair malfunction.");
-	
+
 		// Add time to reserved a slot
 		malfunction.addWorkTime(type, 0D, myName);
 	}
-	
+
 
 	/**
 	 * Does a container have the parts required in stock ?
@@ -79,7 +79,7 @@ public final class RepairHelper {
 		if (malfunction == null)
 			throw new IllegalArgumentException("malfunction is null");
 
-		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {	
+		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {
 			Integer part = item.getKey();
 			int number = item.getValue();
 			if (((EquipmentOwner)containerUnit).getItemResourceStored(part) < number) {
@@ -87,13 +87,13 @@ public final class RepairHelper {
 				result = false;
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Claim any needed parts from the Inventory of the container. Valid that none may be needed.
-	 * 
+	 *
 	 * @param containerUnit
 	 * @param malfunction
 	 */
@@ -102,7 +102,7 @@ public final class RepairHelper {
 		if (!needed.isEmpty()) {
 			// Take a copy because source will get modified
 			Map<Integer, Integer> parts = new HashMap<>(needed);
-			
+
 			// Add repair parts if necessary.
 			for (Entry<Integer, Integer> part : parts.entrySet()) {
 				Integer id = part.getKey();

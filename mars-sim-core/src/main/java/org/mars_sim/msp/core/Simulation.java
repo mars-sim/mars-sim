@@ -301,7 +301,7 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
 
-		// Build plantary objects
+		// Build planetary objects
 		MarsSurface marsSurface = new MarsSurface();
 		unitManager.addUnit(marsSurface);
 
@@ -317,8 +317,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		simulationConfig = SimulationConfig.instance();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-											   medicalManager, eventManager,
-											   simulationConfig.getPartConfiguration());
+												simulationConfig.getMalfunctionConfiguration(),
+												medicalManager, eventManager,
+												simulationConfig.getPartConfiguration());
 
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, environment,
 				 environment.getWeather(), surfaceFeatures, new MissionManager());
@@ -401,8 +402,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize instances prior to UnitManager initiatiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-											   medicalManager, eventManager,
-											   simulationConfig.getPartConfiguration());
+											simulationConfig.getMalfunctionConfiguration(),
+											medicalManager, eventManager,
+											simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
 		RadiationExposure.initializeInstances(marsClock);
 
@@ -662,8 +664,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-											   medicalManager, eventManager,
-											   simulationConfig.getPartConfiguration());
+												simulationConfig.getMalfunctionConfiguration(),
+												medicalManager, eventManager,
+												simulationConfig.getPartConfiguration());
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 
@@ -1311,6 +1314,10 @@ public class Simulation implements ClockListener, Serializable {
 
 	public void setJustSaved(boolean value) {
 		justSaved = value;
+	}
+
+	public int getMissionSol() {
+		return masterClock.getMarsClock().getMissionSol();
 	}
 
 	/**

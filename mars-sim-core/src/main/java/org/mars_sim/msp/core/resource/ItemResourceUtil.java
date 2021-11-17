@@ -42,9 +42,11 @@ public class ItemResourceUtil implements Serializable {
 	public static final String PIPE_WRENCH = "pipe wrench";
 
 	// Other strings
-	public static final String EXTINGUSHER = "fire extinguisher";
+	public static final String DECONTAMINATION_KIT = "decontamination kit";
+	public static final String AIRLEAK_PATCH = "airleak patch";
+	public static final String FIRE_EXTINGUSHER = "fire extinguisher";
 	public static final String WORK_GLOVES = "work gloves";
-	public static final String CONTAINMENT = "mushroom containment kit";
+	public static final String CONTAINMENT_KIT = "mushroom containment kit";
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 
@@ -58,9 +60,9 @@ public class ItemResourceUtil implements Serializable {
 	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
 	public static final Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
 
-	public static final Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
+	public static final Part fireExtinguisherAR = (Part) findItemResource(FIRE_EXTINGUSHER);
 	public static final Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
-	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
+	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT_KIT);
 	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
 	public static int garmentID;
@@ -169,9 +171,9 @@ public class ItemResourceUtil implements Serializable {
 		socketWrenchID = findIDbyItemResourceName(SOCKET_WRENCH);
 		pipeWrenchID = findIDbyItemResourceName(PIPE_WRENCH);
 
-		fireExtinguisherID = findIDbyItemResourceName(EXTINGUSHER);
+		fireExtinguisherID = findIDbyItemResourceName(FIRE_EXTINGUSHER);
 		workGlovesID = findIDbyItemResourceName(WORK_GLOVES);
-		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT);
+		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT_KIT);
 		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
 
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);

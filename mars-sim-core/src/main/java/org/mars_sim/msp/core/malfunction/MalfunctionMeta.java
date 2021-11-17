@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * Malfunction.java
- * @version 3.2.0 2021-06-20
+ * MalfunctionMeta.java
+ * @date 2021-11-16
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 
 /**
- * The MalfunctionMeta class represents a defintion of a malfunction in a vehicle, structure or
+ * The MalfunctionMeta class represents a definition of a malfunction in a vehicle, structure or
  * equipment.
  */
 public class MalfunctionMeta implements Serializable {
@@ -26,7 +26,7 @@ public class MalfunctionMeta implements Serializable {
 
 		private double workTime;
 		private int desiredWorkers;
-		
+
 		EffortSpec(double workTime, int desiredWorkers) {
 			super();
 			this.workTime = workTime;
@@ -40,16 +40,16 @@ public class MalfunctionMeta implements Serializable {
 		public int getDesiredWorkers() {
 			return desiredWorkers;
 		}
-		
+
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private int severity;
 
 	private double probability;
-	
+
 	private String name;
 
 	private Set<String> systems;
@@ -61,7 +61,7 @@ public class MalfunctionMeta implements Serializable {
 
 	/**
 	 * Constructs a Malfunction object
-	 * 
+	 *
 	 * @param name name of the malfunction
 	 */
 	public MalfunctionMeta(String name,int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
@@ -82,19 +82,19 @@ public class MalfunctionMeta implements Serializable {
 	}
 
 
-	
+
 	/**
 	 * Returns the name of the malfunction.
-	 * 
+	 *
 	 * @return name of the malfunction
 	 */
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Returns the severity level of the malfunction.
-	 * 
+	 *
 	 * @return severity of malfunction (1 - 100)
 	 */
 	public int getSeverity() {
@@ -103,20 +103,25 @@ public class MalfunctionMeta implements Serializable {
 
 	/**
 	 * Returns the probability of failure of the malfunction
-	 * 
+	 *
 	 * @return probability in %
 	 */
 	public double getProbability() {
 		return probability;
 	}
 
+	/**
+	 * Sets the probability of failure
+	 *
+	 * @param p
+	 */
 	public void setProbability(double p) {
 		probability = p;
 	}
 
 	/**
 	 * Returns the effort required to repair the malfunction.
-	 * 
+	 *
 	 * @return Effort is borken down by the type of work.
 	 */
 	public Map<MalfunctionRepairWork, EffortSpec> getRepairEffort() {
@@ -126,7 +131,7 @@ public class MalfunctionMeta implements Serializable {
 	/**
 	 * Checks if a unit's scope strings have any matches with the malfunction's
 	 * scope strings.
-	 * 
+	 *
 	 * @return true if any matches
 	 */
 	public boolean isMatched(Collection<String> scopes) {
@@ -145,7 +150,7 @@ public class MalfunctionMeta implements Serializable {
 
 	/**
 	 * Gets the resource effects of the malfunction.
-	 * 
+	 *
 	 * @return resource effects as name-value pairs in Map
 	 */
 	public Map<Integer, Double> getResourceEffects() {
@@ -154,7 +159,7 @@ public class MalfunctionMeta implements Serializable {
 
 	/**
 	 * Gets the life support effects of the malfunction.
-	 * 
+	 *
 	 * @return life support effects as name-value pairs in Map
 	 */
 	public Map<String, Double> getLifeSupportEffects() {
@@ -164,7 +169,7 @@ public class MalfunctionMeta implements Serializable {
 	/**
 	 * Gets the medical complaints produced by this malfunction and their
 	 * probability of occurrence.
-	 * 
+	 *
 	 * @return medical complaints as name-value pairs in Map
 	 */
 	public Map<ComplaintType, Double> getMedicalComplaints() {
@@ -178,7 +183,7 @@ public class MalfunctionMeta implements Serializable {
 	public List<RepairPart> getParts() {
 		return parts;
 	}
-	
+
 	/**
 	 * Gets the string value for the object.
 	 */
@@ -196,7 +201,7 @@ public class MalfunctionMeta implements Serializable {
 
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {

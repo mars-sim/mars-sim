@@ -510,8 +510,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             if (columnIndex == 0) return Msg.getString("InventoryTabPanel.item.header.name");
             else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.item.header.quantity");
             else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.item.header.reliability");
-            else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.item.header.mtbf");
-            else return "unknown";
+            else return Msg.getString("InventoryTabPanel.item.header.mtbf");
         }
 
         public Object getValueAt(int row, int column) {
@@ -525,7 +524,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             else if (column == 2) {
             	return formatter2.format(reliabilities.get(keys.get(row)));
             }
-            else if (column == 2) {
+            else if (column == 3) {
             	return formatter2.format(mtbf.get(keys.get(row)));
             }
             return 0 + "";

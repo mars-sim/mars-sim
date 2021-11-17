@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RepairPart.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-16
  * @author Barry Evans
  */
 
@@ -24,7 +24,7 @@ class RepairPart implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param name        the name of the part.
 	 * @param partID      the ID of the part.
 	 * @param number      the maximum number of parts.
@@ -44,7 +44,7 @@ class RepairPart implements Serializable {
 	protected int getPartID() {
 		return partID;
 	}
-	
+
 	protected int getNumber() {
 		return number;
 	}

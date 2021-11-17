@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2021-10-20
+ * @date 2021-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -60,14 +60,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
-	
+
 	/** Modifier for number of parts needed for a trip. */
 	public static final double PARTS_NUMBER_MODIFIER = 7.5;
 	/** Estimate number of broken parts per malfunctions */
 	public static final double AVERAGE_NUM_MALFUNCTION = 2.5;
 	/** Estimate number of broken parts per malfunctions for EVA suits. */
 	public static final double AVERAGE_EVA_MALFUNCTION = 2.0;
-	
+
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
 	/** Initial estimate for maintenances per orbit for an entity. */
@@ -86,7 +86,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	private static final String CAUSE = ". Probable Cause : ";
 	private static final String CAUSED_BY = " caused by ";
-			
+
 	private static final int SCORE_DEFAULT = 50;
 
 	// Data members
@@ -109,7 +109,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double maintenanceTimeCompleted;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondition;
-	
+
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
@@ -119,32 +119,33 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * The current life time [in millisols] of active use
 	 */
 	private double currentWearLifeTime;
-	
+
 	// Life support modifiers.
 	private double oxygenFlowModifier = 100D;
 
 	/** The owning entity. */
 	private Malfunctionable entity;
-	
+
 	/** The collection of affected scopes. */
 	private Set<String> scopes;
 	/** The current malfunctions in the unit. */
 	private Collection<Malfunction> malfunctions;
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
-	
+
 	private static MasterClock masterClock;
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
 	private static HistoricalEventManager eventManager;
 	private static PartConfig partConfig;
-	
+	private static MalfunctionConfig malfunctionConfig;
+
 	// NOTE : each building has its own MalfunctionManager
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param entity              the malfunctionable entity.
 	 * @param wearLifeTime        the expected life time (millisols) of active use
 	 *                            before the entity is worn out.
@@ -163,13 +164,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		baseWearLifeTime = wearLifeTime;
 		currentWearLifeTime = wearLifeTime;
-		
+
 		currentWearCondition = 100D;
 	}
 
 	/**
 	 * Add a scope string of a system or a function to the manager.
-	 * 
+	 *
 	 * @param scopeString
 	 */
 	public void addScopeString(String scopeString) {
@@ -179,14 +180,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Update maintenance parts.
 		determineNewMaintenanceParts();
 	}
-	
+
 	public Set<String> getScopes() {
 		return scopes;
 	}
 
 	/**
 	 * Checks if entity has a malfunction.
-	 * 
+	 *
 	 * @return true if malfunction
 	 */
 	public boolean hasMalfunction() {
@@ -196,7 +197,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Checks if entity has any general malfunctions.
-	 * 
+	 *
 	 * @return true if general malfunction
 	 */
 	public boolean hasInsideMalfunction() {
@@ -214,7 +215,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Checks if entity has any EVA malfunctions.
-	 * 
+	 *
 	 * @return true if EVA malfunction
 	 */
 	public boolean hasEVAMalfunction() {
@@ -232,7 +233,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a list of the unit's current malfunctions.
-	 * 
+	 *
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
@@ -241,7 +242,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the most serious malfunction the entity has.
-	 * 
+	 *
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousMalfunction() {
@@ -265,7 +266,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Gets the most serious general malfunction the entity has.
 	 * Malfunction must need work of the specified work type and
 	 * have worker slots vacent.
-	 * 
+	 *
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousMalfunctionInNeed(MalfunctionRepairWork work) {
@@ -289,7 +290,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a list of all general malfunctions sorted by highest severity first.
-	 * 
+	 *
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllInsideMalfunctions() {
@@ -304,7 +305,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets a list of all EVA malfunctions sorted by highest severity first.
-	 * 
+	 *
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllEVAMalfunctions() {
@@ -319,7 +320,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Select a malfunction randomly to the unit, based on the affected scope.
-	 * 
+	 *
 	 * @param actor
 	 */
 	private boolean selectMalfunction(Worker actor) {
@@ -336,7 +337,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Triggers a particular malfunction (used by VehicleChatUtils)
-	 * 
+	 *
 	 * @param {@link Malfunction}
 	 * @param value
 	 */
@@ -347,10 +348,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		return malfunction;
 	}
-	
+
 	/**
 	 * Adds a malfunction to the unit.
-	 * 
+	 *
 	 * @param malfunction   the malfunction to add.
 	 * @param registerEvent
 	 * @param actor
@@ -358,13 +359,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private void addMalfunction(Malfunction malfunction, boolean registerEvent, Worker actor) {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
-		
+
 		getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
-		} 
-
+		}
 
 		// Register the failure of the Parts involved
 		Map<Integer, Integer> parts = malfunction.getRepairParts();
@@ -376,53 +376,55 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Add tracking item demand
 //			inv.addItemDemandTotalRequest(p, num);
 //			inv.addItemDemand(p, num);
-			
+
 			// Compute the new reliability and failure rate for this malfunction
 			Part part = ItemResourceUtil.findItemResource(p);
 			String part_name = part.getName();
 
-			if (part_name.equalsIgnoreCase("decontamination kit") || part_name.equalsIgnoreCase("airleak patch")
-					|| part_name.equalsIgnoreCase("fire extinguisher")) {
-				// NOTE : they do NOT contribute to the malfunctions and are tools to fix the
-				// malfunction and therefore do NOT need to change their reliability.
-				return;
-			}
+//			if (part_name.equalsIgnoreCase(ItemResourceUtil.DECONTAMINATION_KIT)
+//					|| part_name.equalsIgnoreCase(ItemResourceUtil.AIRLEAK_PATCH)
+//					|| part_name.equalsIgnoreCase(ItemResourceUtil.FIRE_EXTINGUSHER)) {
+//				// NOTE : they do NOT contribute to the malfunctions and are tools to fix the
+//				// malfunction and therefore do NOT need to change their reliability.
+//				return;
+//			}
 
-//			double old_rel = part.getReliability();
-//			double old_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
-//			double old_failure = (100 - old_rel) * old_prob / 100D;
-//			double old_mal_probl_failure = malfunction.getProbability();
-//			double old_MTBF = part.getMTBF();
+			double old_rel = part.getReliability();
+			double old_prob = getRepairPartProbability(malfunction, part_name);
+			double old_failure = (100 - old_rel) * old_prob / 100D;
+			double old_mal_prob_failure = malfunction.getProbability();
+			double old_MTBF = part.getMTBF();
 
-			// Increment the number of failure for this Part
-			part.setFailure(num);
+			// Record the number of failure
+			// and recompute the new reliability
+			part.setFailure(num, currentTime.getMissionSol());
 
 			// Need to calculate the new probability for the whole MalfunctionMeta object
 			// String name = p.getName();
-//			double new_rel = part.getReliability();
-//			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
-//			double new_failure = (100 - new_rel) * new_prob / 100D;
-//			double new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
-//			double new_MTBF = part.getMTBF();
-//			
-//			logger.warning("          *** Part : " + part_name + " ***");
-//			
-//			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
-//							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
-//
-//			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") 
-//							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
-//
-//			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
-//							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
-//
-//			logger.warning("          *** Malfunction : " + malfunctionName + " ***");
-//			
-//			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
-//							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
-			
-			// Should be on MalfunctionMeta ??
-			//malfunction.setProbability(new_mal_prob_failure);
+			double new_rel = part.getReliability();
+			double new_prob = getRepairPartProbability(malfunction, part_name);
+			double new_failure = (100 - new_rel) * new_prob / 100D;
+			double new_mal_prob_failure = (old_mal_prob_failure + new_failure) / 2.0;
+			double new_MTBF = part.getMTBF();
+
+			logger.warning("           *** Part : " + part_name + " ***");
+
+			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %")
+							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
+
+			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %")
+							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
+
+			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr")
+							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+
+			logger.warning("          *** Malfunction : " + malfunction.getName() + " ***");
+
+			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_prob_failure * 1000.0) / 1000.0 + " %")
+							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+
+			// Modify the probability of failure for this particular malfunction
+			malfunction.setProbability(new_mal_prob_failure);
 
 		}
 
@@ -431,8 +433,49 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the probability of a repair part for a malfunction.
+	 *
+	 * @param malfunctionName the name of the malfunction.
+	 * @param partName        the name of the part.
+	 * @return the probability of the repair part.
+	 */
+	public double getRepairPartProbability(Malfunction malfunction, String partName) {
+		double result = 0;
+		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
+		if (partList != null) {
+			Iterator<RepairPart> i = partList.iterator();
+			while (i.hasNext()) {
+				RepairPart part = i.next();
+				if (part.getName().equalsIgnoreCase(partName)) {
+					return part.getProbability();
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Adds whitespaces
+	 *
+	 * @param text
+	 * @return
+	 */
+	public String addWhiteSpace(String text) {
+		StringBuffer s = new StringBuffer();
+		int max = 11;
+		int size = text.length();
+
+		for (int j=0; j< (max-size); j++) {
+			s.append(" ");
+		}
+		s.append(text);
+
+		return s.toString();
+	}
+
+	/**
 	 * Sets up a malfunction event
-	 * 
+	 *
 	 * @param malfunction
 	 * @param actor
 	 */
@@ -443,46 +486,46 @@ public class MalfunctionManager implements Serializable, Temporal {
 		String loc0 = entity.getNickName();
 		String loc1 = entity.getImmediateLocation();
 		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
-		
+
 		String offender = "None";
 		String task = "N/A";
 		if (actor != null) {
 			task = actor.getTaskDescription();
 			offender = actor.getName();
-			
+
 			if (actor instanceof Person) {
 				eventType = EventType.MALFUNCTION_HUMAN_FACTORS;
 			}
 			else {
-				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;				
+				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;
 			}
 		}
-		
+
 		// Meteorite override the event type
 		if (malfunction.getName().equals(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
 			eventType = EventType.MALFUNCTION_ACT_OF_GOD;
 		}
-		
+
 		HistoricalEvent newEvent = new MalfunctionEvent(eventType,
 								malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 		eventManager.registerNewEvent(newEvent);
 
-		logger.log(entity, Level.WARNING, 0, malfunction.getName() 
+		logger.log(entity, Level.WARNING, 0, malfunction.getName()
 									+ CAUSE + eventType.getName()
-									+ (actor != null ? CAUSED_BY 
+									+ (actor != null ? CAUSED_BY
 									+ offender + "." : "."));
 	}
 
 	/**
 	 * Time passing for tracking the wear and tear condition while the unit is being actively used.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void activeTimePassing(double time) {
 
 		effectiveTimeSinceLastMaintenance += time;
 		currentWearLifeTime -= time;
-		
+
 		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 		if (currentWearCondition < 0D)
 			currentWearCondition = 0D;
@@ -495,8 +538,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
-//			maxCondition = (wearCondition + 400D)/500D; 
-			logger.warning(entity,  
+//			maxCondition = (wearCondition + 400D)/500D;
+			logger.warning(entity,
 					"Experienced a malfunction due to wear-and-tear.  "
 					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(currentWearCondition*10.0)/10.0
 					+ " %.");
@@ -508,30 +551,30 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Time passing for unit.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		double time = pulse.getElapsed();
-		
+
 		// Check if life support modifiers are still in effect.
 //		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
 		depleteResources(time);
-		
+
 		checkFixedMalfunction();
 
 		// Add time passing.
 		timeSinceLastMaintenance += time;
-		
+
 		return true;
 	}
 
 	/**
 	 * Resets one or more flow modifier
-	 * 
+	 *
 	 * @param type
 	 */
 	private void resetModifiers(int type) {
@@ -541,36 +584,36 @@ public class MalfunctionManager implements Serializable, Temporal {
 			oxygenFlowModifier = 100D;
 			logger.log(entity, Level.WARNING, 5_000, "The oxygen flow retrictor had been fixed");
 		}
-//		
+//
 //		else if (type == 1) {
 //			waterFlowModifier = 100D;
 //			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
 //					+ entity.getImmediateLocation(), null);
 //		}
-//		
+//
 //		else if (type == 2) {
 //			airPressureModifier = 100D;
 //			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
 //				+ entity.getImmediateLocation(), null);
 //		}
-//		
+//
 //		else if (type == 3) {
 //			temperatureModifier = 100D;
 //			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
 //					+ entity.getImmediateLocation(), null);
-//			
+//
 //		}
 	}
-	
+
 	/**
 	 * Checks if any malfunctions have been fixed
-	 * 
+	 *
 	 * @param time
 	 */
-	private void checkFixedMalfunction() { 
+	private void checkFixedMalfunction() {
 		Collection<Malfunction> fixedMalfunctions = new ArrayList<>();
 
 		// Check if any malfunctions are fixed.
@@ -596,27 +639,27 @@ public class MalfunctionManager implements Serializable, Temporal {
 //					if (effects.containsKey(TEMPERATURE))
 //						resetModifiers(3);
 			}
-				
+
 			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
 
 			String chiefRepairer = m.getMostProductiveRepairer();
-				
+
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 					m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
 					entity.getNickName(), entity.getLocale());
 
 			eventManager.registerNewEvent(newEvent);
-			
+
 			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with");
-		
+
 			// Remove the malfunction
-			malfunctions.remove(m);				
+			malfunctions.remove(m);
 		}
 	}
-	
+
 	/**
 	 * Determine life support modifiers for given time.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void setLifeSupportModifiers(double time) {
@@ -648,13 +691,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 					oxygenFlowModifier = 0;
 				logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity");
-			} 
+			}
 		}
 	}
 
 	/**
 	 * Depletes resources due to malfunctions.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error depleting resources.
 	 */
@@ -678,7 +721,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 						if (amountDepleted >= 0) {
 							rh.retrieveAmountResource(resource, amountDepleted);
 							logger.log(entity, Level.WARNING, 15_000, "Leaking "
-											+ Math.round(amountDepleted*100.0)/100.0 + " of  " 
+											+ Math.round(amountDepleted*100.0)/100.0 + " of  "
 											+ ResourceUtil.findAmountResource(resource));
 						}
 					}
@@ -696,14 +739,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		int nervousness = SCORE_DEFAULT;
 		if (r instanceof Person) {
 			Person p = (Person) r;
-			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);			
+			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		}
 		determineNumOfMalfunctions(location, nervousness, r);
 	}
 
 	/**
 	 * Determines the numbers of malfunctions.
-	 * 
+	 *
 	 * @param type  the type of malfunction
 	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
@@ -734,9 +777,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 
 			// More generic simplifed log message
-			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred caused by " 
+			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred caused by "
 						 + actor.getName());
-			
+
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
@@ -749,7 +792,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the time since last maintenance on entity.
-	 * 
+	 *
 	 * @return time (in millisols)
 	 */
 	public double getTimeSinceLastMaintenance() {
@@ -758,7 +801,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the time the entity has been actively used since its last maintenance.
-	 * 
+	 *
 	 * @return time (in millisols)
 	 */
 	public double getEffectiveTimeSinceLastMaintenance() {
@@ -767,7 +810,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the required work time for maintenance for the entity.
-	 * 
+	 *
 	 * @return time (in millisols)
 	 */
 	public double getMaintenanceWorkTime() {
@@ -776,7 +819,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the work time completed on maintenance.
-	 * 
+	 *
 	 * @return time (in millisols)
 	 */
 	public double getMaintenanceWorkTimeCompleted() {
@@ -785,7 +828,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Add work time to maintenance.
-	 * 
+	 *
 	 * @param time (in millisols)
 	 */
 	public void addMaintenanceWorkTime(double time) {
@@ -796,15 +839,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 			effectiveTimeSinceLastMaintenance = 0D;
 			determineNewMaintenanceParts();
 			numberMaintenances++;
-			
+
 			// Improve the currentWearlifetime
-			currentWearLifeTime *= (1 + RandomUtil.getRandomDouble(.005)); 
+			currentWearLifeTime *= (1 + RandomUtil.getRandomDouble(.005));
 		}
 	}
 
 	/**
 	 * Issues any necessary medical complaints.
-	 * 
+	 *
 	 * @param malfunction the new malfunction
 	 */
 	private void issueMedicalComplaints(Malfunction malfunction) {
@@ -815,7 +858,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Complaint complaint = medic.getComplaintByName(impact.getKey());
 			if (complaint != null) {
 				double probability = impact.getValue();
-				
+
 				// Get people who can be affected by this malfunction.
 				Iterator<Person> i2 = entity.getAffectedPeople().iterator();
 				while (i2.hasNext()) {
@@ -831,7 +874,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the oxygen flow modifier.
-	 * 
+	 *
 	 * @return modifier
 	 */
 	public double getOxygenFlowModifier() {
@@ -840,7 +883,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //
 //	/**
 //	 * Gets the water flow modifier.
-//	 * 
+//	 *
 //	 * @return modifier
 //	 */
 //	public double getWaterFlowModifier() {
@@ -849,7 +892,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //
 //	/**
 //	 * Gets the air flow modifier.
-//	 * 
+//	 *
 //	 * @return modifier
 //	 */
 //	public double getAirPressureModifier() {
@@ -858,7 +901,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //
 //	/**
 //	 * Gets the temperature modifier.
-//	 * 
+//	 *
 //	 * @return modifier
 //	 */
 //	public double getTemperatureModifier() {
@@ -867,7 +910,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the unit associated with this malfunctionable.
-	 * 
+	 *
 	 * @return associated unit.
 	 * @throws Exception if error finding associated unit.
 	 */
@@ -896,13 +939,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 						number += partsNeededForMaintenance.get(id);
 				}
 				partsNeededForMaintenance.put(id, number);
-			}	
+			}
 		}
 	}
 
 	/**
 	 * Gets the parts needed for maintenance on this entity.
-	 * 
+	 *
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts() {
@@ -913,7 +956,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Adds a number of a part to the entity for maintenance.
-	 * 
+	 *
 	 * @param part   the part.
 	 * @param number the number used.
 	 */
@@ -938,7 +981,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the repair part probabilities for the malfunctionable.
-	 * 
+	 *
 	 * @return maps of parts and probable number of parts needed per malfunction.
 	 * @throws Exception if error finding probabilities.
 	 */
@@ -948,19 +991,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the repair part probabilities for maintenance.
-	 * 
+	 *
 	 * @return maps of parts and probable number of parts in case of maintenance.
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getMaintenancePartProbabilities() {
 		return MalfunctionFactory.getMaintenancePartProbabilities(scopes);
 	}
-		
+
 
 	/**
 	 * Gets the estimated number of malfunctions this entity will have in one
 	 * Martian orbit.
-	 * 
+	 *
 	 * @return number of malfunctions.
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
@@ -987,7 +1030,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Gets the estimated number of periodic maintenances this entity will have in
 	 * one Martian orbit.
-	 * 
+	 *
 	 * @return number of maintenances.
 	 */
 	public double getEstimatedNumberOfMaintenancesPerOrbit() {
@@ -1031,7 +1074,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Get the percentage representing the malfunctionable's condition from wear &
 	 * tear. 100% = new condition 0% = worn out condition.
-	 * 
+	 *
 	 * @return wear condition.
 	 */
 	public double getWearCondition() {
@@ -1041,7 +1084,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Gets the multiplying modifier for the chance of an accident due to the
 	 * malfunctionable entity's wear condition.
-	 * 
+	 *
 	 * @return accident modifier.
 	 */
 	public double getWearConditionAccidentModifier() {
@@ -1050,23 +1093,24 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * initializes instances after loading from a saved sim
-	 * 
+	 *
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
 	 * @param mf {@link MalfunctionFactory}
-	 * @param m {@link MedicalManager}	 
+	 * @param m {@link MedicalManager}
 	 * @param e {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf,
-										   MedicalManager m, HistoricalEventManager e, PartConfig pc) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf, MalfunctionConfig mc,
+										   MedicalManager mm, HistoricalEventManager em, PartConfig pc) {
 		masterClock = c0;
 		currentTime = c1;
-		partConfig = pc;
 		factory = mf;
-		medic = m;
-		eventManager = e;
+		malfunctionConfig = mc;
+		medic = mm;
+		eventManager = em;
+		partConfig = pc;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

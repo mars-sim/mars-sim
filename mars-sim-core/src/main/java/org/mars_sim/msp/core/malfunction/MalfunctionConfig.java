@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MalfunctionConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -68,17 +68,15 @@ public class MalfunctionConfig implements Serializable {
 	private static final String REPAIRERS_ATTR = "repairers";
 	private static final String TIME_ATTR = "time";
 
-	private static final int MIN_REPAIRERS = 2; // Mimimum repairers
-	private static final int MAX_REPAIRERS = 4; // Maximum repaiers
-
-
+	private static final int MIN_REPAIRERS = 2; // Minimum repairers
+	private static final int MAX_REPAIRERS = 4; // Maximum repairers
 
 	private List<MalfunctionMeta> malfunctionList;
 
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param malfunctionDoc DOM document containing malfunction configuration.
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
@@ -87,17 +85,17 @@ public class MalfunctionConfig implements Serializable {
 
 	/**
 	 * Gets a list of malfunctions
-	 * 
+	 *
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
 	public List<MalfunctionMeta> getMalfunctionList() {
 		return malfunctionList;
 	}
-	
+
 	/**
 	 * Build the malfunction list
-	 * 
+	 *
 	 * @param configDoc
 	 */
 	private synchronized void buildMalfunctionList(Document configDoc) {
@@ -105,7 +103,7 @@ public class MalfunctionConfig implements Serializable {
 			// just in case if another thread is being created
 			return;
 		}
-		
+
 		// Build list of potential known systems
 		Set<String> knownSystems = Arrays.stream(FunctionType.values())
 									.map(i -> i.getName().toLowerCase())
@@ -115,14 +113,14 @@ public class MalfunctionConfig implements Serializable {
 							.collect(Collectors.toSet()));
 		knownSystems.addAll(Arrays.stream(HeatSourceType.values())
 							.map(i -> i.getName().toLowerCase())
-							.collect(Collectors.toSet()));		
+							.collect(Collectors.toSet()));
 		knownSystems.addAll(Arrays.stream(PowerSourceType.values())
 							.map(i -> i.getName().toLowerCase())
-							.collect(Collectors.toSet()));	
+							.collect(Collectors.toSet()));
 		knownSystems.addAll(Arrays.stream(VehicleType.values())
 							.map(i -> i.getName().toLowerCase())
-							.collect(Collectors.toSet()));	
-		
+							.collect(Collectors.toSet()));
+
 		// Build the global list in a temp to avoid access before it is built
 		List<MalfunctionMeta> newList = new ArrayList<>();
 
@@ -145,7 +143,7 @@ public class MalfunctionConfig implements Serializable {
 					malfunctionElement, INSIDE_EL);
 			addWorkEffort(severity, workEffort, MalfunctionRepairWork.EVA,
 					malfunctionElement, EVA_EL);
-			
+
 			// Get affected entities.
 			Set<String> systems = new TreeSet<>();
 			Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST_EL);
@@ -221,7 +219,7 @@ public class MalfunctionConfig implements Serializable {
 			for (AmountResource ar : resourceEffects.keySet()) {
 				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
 			}
-			
+
 
 			// Add repair parts.
 			List<RepairPart> parts = new ArrayList<>();
@@ -243,7 +241,7 @@ public class MalfunctionConfig implements Serializable {
 					}
 				}
 			}
-			
+
 			// Create malfunction.
 			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort, systems,
 															  resourceEffectIDs, lifeSupportEffects,
@@ -251,17 +249,17 @@ public class MalfunctionConfig implements Serializable {
 			// Add malfunction meta to newList.
 			newList.add(malfunction);
 		}
-		
+
 		// Assign the newList now built
 		malfunctionList = Collections.unmodifiableList(newList);
 	}
-	
+
 	private static void addWorkEffort(int severity, Map<MalfunctionRepairWork, EffortSpec> workEffort,
-									  MalfunctionRepairWork type, 
+									  MalfunctionRepairWork type,
 									  Element parent, String childName) {
 		Element childElement = parent.getChild(childName);
 		if (childElement != null) {
-			
+
 			double workTime = Double.parseDouble(childElement.getAttributeValue(TIME_ATTR));
 			String repairersTxt = childElement.getAttributeValue(REPAIRERS_ATTR);
 			int repairers = 0;

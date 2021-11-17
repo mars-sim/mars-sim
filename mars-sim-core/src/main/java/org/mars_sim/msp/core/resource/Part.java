@@ -1,18 +1,14 @@
 /*
  * Mars Simulation Project
  * Part.java
- * @date 2021-10-21
+ * @date 2021-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
 
-import java.util.Collection;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.CollectionUtils;
 
 /**
  * The Part class represents a type of unit resource that is used for
@@ -29,7 +25,6 @@ public class Part extends ItemResource {
 	public static final double MAX_MTBF = 669D * NUM_YEARS;
 	/** The maximum possible reliability percentage. */
 	public static final double MAX_RELIABILITY = 99.999;
-
 
 	// Number of failures
 	private int numFailures = 0;
@@ -70,41 +65,38 @@ public class Part extends ItemResource {
 		return ItemResourceUtil.getItemIDs();
 	}
 
-	public void computeReliability() {
+	/**
+	 * Compute the reliability
+	 */
+	public void computeReliability(int missionSol) {
 
-		// TODO need to resolve this later
-		MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		int numSols = missionSol - getStartSol();
 
-		int sol = marsClock.getMissionSol();
-		int numSols = sol - getStartSol();
-
-		if (numFailures  == 0)
+		if (numFailures == 0)
 			mtbf = MAX_MTBF;
 		else {
 			numSols = Math.max(1, numSols);
 			mtbf = computeMTBF(numSols);
+//			System.out.println(getName() + "'s MTBF: " + mtbf);
 		}
 
 		if (mtbf == 0) {
 			percentReliability = MAX_RELIABILITY;
 		}
 		else {
-			percentReliability = Math.exp(-numSols / mtbf) * 100;
-
-			percentReliability = Math.min(MAX_RELIABILITY, percentReliability);
+			percentReliability = Math.min(MAX_RELIABILITY, Math.exp(-numSols / mtbf) * 100);
 		}
 	}
 
+	/**
+	 * Computes the MTBF
+	 *
+	 * @param numSols
+	 * @return
+	 */
 	private double computeMTBF(double numSols) {
-		int numItem = 0;
-		UnitManager unitManager = Simulation.instance().getUnitManager();
-
 		// Obtain the total # of this part in used from all settlements
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			int num = s.getItemResourceStored(getID());
-			numItem += num;
-		}
+		int numItem = CollectionUtils.getTotalNumPart(getID());
 
 		// Take the average between the factory mtbf and the field measured mtbf
 		return (numItem * numSols / numFailures + MAX_MTBF) / 2D;
@@ -118,8 +110,14 @@ public class Part extends ItemResource {
 		return mtbf;
 	}
 
-	public void setFailure(int num) {
+	public void setFailure(int num, int missionSol) {
 		numFailures += num;
-		computeReliability();
+		// Recompute the reliability for this part
+		computeReliability(missionSol);
 	}
+
+	public int getFailure() {
+		return numFailures;
+	}
+
 }
