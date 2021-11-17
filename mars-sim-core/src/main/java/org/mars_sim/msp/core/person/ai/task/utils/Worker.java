@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -28,10 +29,10 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return the person's natural attribute manager
 	 */
 	public NaturalAttributeManager getNaturalAttributeManager();
-	
+
 	/**
 	 * Returns a reference to the Person's skill manager
-	 * 
+	 *
 	 * @return the person's skill manager
 	 */
 	public SkillManager getSkillManager();
@@ -70,21 +71,21 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 
 	/**
 	 * Is the worker in a vehicle
-	 * 
+	 *
 	 * @return true if the worker in a vehicle
 	 */
 	public boolean isInVehicle();
-	
+
 	/**
 	 * Get vehicle worker is in, null if member is not in vehicle
-	 * 
+	 *
 	 * @return the worker's vehicle
 	 */
 	public Vehicle getVehicle();
 
 	/**
 	 * Is the worker in a settlement
-	 * 
+	 *
 	 * @return true if the worker in a settlement
 	 */
 	public boolean isInSettlement();
@@ -94,17 +95,17 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return
 	 */
 	public Settlement getSettlement();
-	
+
 	/**
 	 * Is the Worker outside
-	 * 
+	 *
 	 * @return true if the worker is on the MarsSurface
 	 */
 	public boolean isOutside();
-	
+
 	/**
 	 * Is the worker outside of a settlement but within its vicinity
-	 * 
+	 *
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement();
@@ -115,17 +116,17 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return the worker's settlement
 	 */
 	public Settlement getNearbySettlement();
-	
+
 	/**
 	 * Adds a unit listener
-	 * 
+	 *
 	 * @param newListener the listener to add.
 	 */
 	public void addUnitListener(UnitListener newListener);
 
 	/**
 	 * Removes a unit listener
-	 * 
+	 *
 	 * @param oldListener the listener to remove.
 	 */
 	public void removeUnitListener(UnitListener oldListener);
@@ -136,20 +137,20 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return
 	 */
 	public Mission getMission();
-	
+
 	/**
 	 * Sets the person's current mission.
-	 * 
+	 *
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission);
 
-	
+
 	// These methods below should be moved to separate Walker interface
 	// Also should be converted into a single LocalCoordinate class
 	// instead of 2DPoint which is a UI AWT class
-	
-	
+
+
 	/**
 	 * Gets the worker X location at a settlement.
 	 *
@@ -177,9 +178,16 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @param yLocation
 	 */
 	public void setYLocation(double yLocation);
-	
+
 	/**
-	 * Get the manager of the Worker's Tasks
+	 * Gets the manager of the Worker's Tasks
 	 */
 	public TaskManager getTaskManager();
+
+	/**
+	 * Gets the unit type
+	 *
+	 * @return
+	 */
+	public UnitType getUnitType();
 }

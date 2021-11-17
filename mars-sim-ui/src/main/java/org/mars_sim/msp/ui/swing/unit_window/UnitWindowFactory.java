@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
@@ -42,13 +43,13 @@ public class UnitWindowFactory {
      */
     public static UnitWindow getUnitWindow(Unit unit, MainDesktopPane desktop) {
 
-        if (unit instanceof Person) return new PersonWindow(desktop, (Person) unit);
-        else if (unit instanceof Robot) return new RobotWindow(desktop, (Robot) unit);
-        else if (unit instanceof Vehicle) return new VehicleWindow(desktop, (Vehicle) unit);
-        else if (unit instanceof Settlement) return new SettlementUnitWindow(desktop, unit);
-        else if (unit instanceof Building) return new BuildingWindow(desktop, (Building) unit);
-        else if (unit instanceof EVASuit) return new EquipmentWindow(desktop, (EVASuit) unit);
-        else if (unit instanceof Equipment) return new EquipmentWindow(desktop, (Equipment) unit);
+        if (unit.getUnitType() == UnitType.PERSON) return new PersonWindow(desktop, (Person) unit);
+        else if (unit.getUnitType() == UnitType.ROBOT) return new RobotWindow(desktop, (Robot) unit);
+        else if (unit.getUnitType() == UnitType.VEHICLE) return new VehicleWindow(desktop, (Vehicle) unit);
+        else if (unit.getUnitType() == UnitType.SETTLEMENT) return new SettlementUnitWindow(desktop, unit);
+        else if (unit.getUnitType() == UnitType.BUILDING) return new BuildingWindow(desktop, (Building) unit);
+        else if (unit.getUnitType() == UnitType.EVA_SUIT) return new EquipmentWindow(desktop, (EVASuit) unit);
+        else if (unit.getUnitType() == UnitType.EQUIPMENT) return new EquipmentWindow(desktop, (Equipment) unit);
         else return null;
     }
 }

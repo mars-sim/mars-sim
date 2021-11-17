@@ -23,7 +23,7 @@ public enum MissionType {
 	METEOROLOGY				(Msg.getString("Mission.description.meteorologyFieldStudy")), //$NON-NLS-1$
 	MINING					(Msg.getString("Mission.description.mining")), //$NON-NLS-1$
 	RESCUE_SALVAGE_VEHICLE	(Msg.getString("Mission.description.rescueSalvageVehicle")), //$NON-NLS-1$
-	
+
 	TRADE					(Msg.getString("Mission.description.trade")), //$NON-NLS-1$
 	TRAVEL_TO_SETTLEMENT	(Msg.getString("Mission.description.travelToSettlement")), //$NON-NLS-1$
 	BUILDING_CONSTRUCTION	(Msg.getString("Mission.description.buildingConstructionMission")), //$NON-NLS-1$
@@ -50,5 +50,21 @@ public enum MissionType {
     			return t;
     	}
     	return null;
+    }
+
+    public static boolean isVehicleMission(MissionType missionType) {
+    	if (missionType == BUILDING_CONSTRUCTION
+    		|| missionType == BUILDING_SALVAGE) {
+    		return false;
+    	}
+    	return true;
+    }
+
+    public static boolean isTravelMission(MissionType missionType) {
+    	if (missionType == BUILDING_CONSTRUCTION
+    		|| missionType == BUILDING_SALVAGE) {
+    		return false;
+    	}
+    	return true;
     }
 }

@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -73,13 +74,13 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	// Data members
 
 	private boolean hasDescription;
-	
+
 	private String oldRoleString = "";
 	private String oldJobString = "";
 	private String oldTownString = "";
-	
+
 	private ShiftType oldShiftType = null;
-	
+
 	private WebLabel townLabel;
 	private WebLabel jobLabel;
 	private WebLabel roleLabel;
@@ -91,10 +92,10 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/** The center panel. */
 	private JTabbedPane tabPane;
 //	private JideTabbedPane tabPanel;
-	
+
 	/** The cache for the currently selected TabPanel. */
 	private TabPanel oldTab;
-	
+
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
@@ -117,33 +118,33 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		this.hasDescription = hasDescription;
 
 		setFrameIcon(MainWindow.getLanderIcon());
-		
-		if (unit instanceof Person) {
+
+		if (unit.getUnitType() == UnitType.PERSON) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		}
-		else if (unit instanceof Settlement) {
+		else if (unit.getUnitType() == UnitType.SETTLEMENT) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT + 30));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT + 30));
 		}
 		else { //if (unit instanceof Vehicle) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
-		}		
+		}
 //		else if (unit instanceof Equipment) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
 //			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
-//		}	
-		
+//		}
+
 		this.setIconifiable(false);
-		
+
 		initializeUI();
 	}
-	
+
 	private void initializeUI() {
-    
+
 		tabPanels = new ArrayList<TabPanel>();
-        
+
 		// Create main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 //		mainPane.setBorder(new MarsPanelBorder());// setBorder(MainDesktopPane.newEmptyBorder());
@@ -157,8 +158,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
-		
-		if (unit instanceof Person) {
+
+		if (unit.getUnitType() == UnitType.PERSON) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
 //		}
 
@@ -268,7 +269,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 //		com.jidesoft.plaf.LookAndFeelFactory.installJideExtension(com.jidesoft.plaf.LookAndFeelFactory.OFFICE2003_STYLE);
 //		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
-		
+
 //		if (MainWindow.OS.contains("linux")) {
 //			try {
 //				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -277,15 +278,15 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //			} catch (IllegalAccessException e) {
 //			} catch (UnsupportedLookAndFeelException e) {
 //			}
-//			
+//
 //			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
 //		}
-//		
+//
 //		else
 //			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
-		
+
 //		logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
-		
+
 //		tabPanel = new JideTabbedPane();
 ////		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
 //		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
@@ -294,36 +295,36 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //		tabPanel.setBoldActiveTab(true);
 //		tabPanel.set2SelectedTabOnWheel(true);
 //		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
-//		
+//
 //		// Setting foreground color for tab text.
 //		tabPanel.setForeground(Color.DARK_GRAY);
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPane = new WebTabbedPane(WebTabbedPane.LEFT, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
 //		tabPane.setPreferredSize(new Dimension(WIDTH - 50, HEIGHT - 40));
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT + 25));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
 		}
-		else if (unit instanceof Settlement) {
+		else if (unit.getUnitType() == UnitType.SETTLEMENT) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 40));
 		}
 		else  { //if (unit instanceof Vehicle) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
-		}	
+		}
 //		else if (unit instanceof Equipment) {
 ////			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
 //			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
-//		}	
-		
+//		}
+
 //		tabPane.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.tabbedpane);
 //		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
 //		Color bk = tabPane.getBackground();
 //		UIManager.put("TabbedPane.tabAreaBackground", bk);//ColorUIResource.RED);
-		
+
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -338,25 +339,25 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			}
 		});
 
-		
+
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 //		centerPanel.setOpaque(false);
 //		centerPanel.setBackground(new Color(0,0,0,128));
 		centerPanel.add(tabPane);
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
-		
+
 		// Add focusListener to play sounds and alert users of critical conditions.
 		// Disabled in SVN while in development
 		// this.addInternalFrameListener(new
 		// UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
-		
+
 		desktop.getMainWindow().initializeTheme();//initializeWeblaf();
 	}
 
 	/**
 	 * Sets the image on the label
-	 * 
+	 *
 	 * @param imageLocation
 	 * @param label
 	 */
@@ -367,7 +368,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	/**
 	 * Gets the image from the location
-	 * 
+	 *
 	 * @param imageLocation
 	 * @return
 	 */
@@ -390,7 +391,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			else if (p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath() != null)
 				townString = Conversion.capitalize(p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath());
 		}
-			
+
 		else if (p.getAssociatedSettlement() != null)
 			townString = Conversion.capitalize(p.getAssociatedSettlement().getName());
 
@@ -424,7 +425,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	/**
 	 * Gets the time period string
-	 * 
+	 *
 	 * @param shiftType
 	 * @return
 	 */
@@ -496,8 +497,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	public void update() {
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
-			if (tabPanel.isVisible() && tabPanel.isShowing()) { // 
-				SwingUtilities.invokeLater(() -> 
+			if (tabPanel.isVisible() && tabPanel.isShowing()) { //
+				SwingUtilities.invokeLater(() ->
 					tabPanel.update()
 				);
 //				tabPanel.updateUI();
@@ -506,20 +507,20 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		}
 
 		setTitle(unit.getName());
-		
-		if (unit instanceof Person) {
+
+		if (unit.getUnitType() == UnitType.PERSON) {
 			statusUpdate((Person)unit);
 		}
 
 	}
-	
+
 	@Override
     public String getName() {
 		if (unit != null && unit.getName() != null)
 			return unit.getName() +"'s unit window";
 		return null;
     }
-    
+
 	public void setTitle(String value) {
 		super.setTitle(unit.getName());
 	}
@@ -537,7 +538,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			selected = tabPanels.get(selectedIdx);
 		return selected;
 	}
-	
+
 	/**
 	 * Prepares unit window for deletion.
 	 */

@@ -45,24 +45,24 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	private int robotNumCache;
 	private int robotCapacityCache;
 	private int robotIndoorCache;
-	
+
 	private Settlement settlement;
-	
+
 	private WebLabel robotNumLabel;
 	private WebLabel robotCapLabel;
 	private WebLabel robotIndoorLabel;
-	
+
 	private RobotListModel robotListModel;
 	private JList<Robot> robotList;
 	private WebScrollPane robotScrollPanel;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -75,14 +75,14 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		settlement = (Settlement) unit;
 
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -95,11 +95,11 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
 //		countPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(countPanel);
-		
+
 		// Create robot num label
 		WebLabel robotNumHeader = new WebLabel(Msg.getString("TabPanelBots.associated"), WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(robotNumHeader);
-		
+
 		robotNumCache = settlement.getNumBots();
 		robotNumLabel = new WebLabel("" + robotNumCache, WebLabel.LEFT); // $NON-NLS-1$
 		countPanel.add(robotNumLabel);
@@ -107,24 +107,24 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		// Create robot indoor label
 		WebLabel robotIndoorHeader = new WebLabel(Msg.getString("TabPanelBots.indoor"), WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(robotIndoorHeader);
-		
+
 		robotIndoorCache = settlement.getNumBots();
 		robotIndoorLabel = new WebLabel("" + robotIndoorCache, WebLabel.LEFT);
 		countPanel.add(robotIndoorLabel);
-		
+
 		// Create robot capacity label
 		WebLabel robotCapHeader = new WebLabel(Msg.getString("TabPanelBots.capacity"), WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(robotCapHeader);
-		
+
 		robotCapacityCache = settlement.getRobotCapacity();
 		robotCapLabel = new WebLabel("" + robotCapacityCache, WebLabel.LEFT); // $NON-NLS-1$
 		countPanel.add(robotCapLabel);
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				5, 10, // initX, initY
+				1, 10, // initX, initY
 				5, 2); // xPad, yPad
-		
+
 		// Create spring layout robot display panel
 		WebPanel robotDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
 //		robotDisplayPanel.setBorder(new MarsPanelBorder());
@@ -152,9 +152,9 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 //		buttonPane.setPreferredSize(new Dimension(25, 25));
 		buttonPane.add(monitorButton);
-		
+
 		robotDisplayPanel.add(buttonPane);
-		
+
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(robotDisplayPanel, 2, 1, // rows, cols
 				30, 10, // initX, initY
@@ -167,7 +167,7 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 	public void update() {
 		if (!uiDone)
 			this.initializeUI();
-		
+
 		// Update robot num
 		if (robotNumCache != settlement.getNumBots()) {
 			robotNumCache = settlement.getNumBots();
@@ -242,7 +242,7 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 	/**
 	 * Action event occurs.
-	 * 
+	 *
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
@@ -252,7 +252,7 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 	/**
 	 * Mouse clicked event occurs.
-	 * 
+	 *
 	 * @param event the mouse event
 	 */
 	public void mouseClicked(MouseEvent event) {

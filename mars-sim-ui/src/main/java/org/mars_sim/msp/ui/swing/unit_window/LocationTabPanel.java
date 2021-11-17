@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -71,16 +72,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	private static final String S = "S";
 	private static final String E = "E";
 	private static final String W = "W";
-	
+
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	private int themeCache;
 
 	private double elevationCache;
-	
+
 	private String locationStringCache;
-	
+
 	private Unit containerCache;
 	private Unit topContainerCache;
 
@@ -99,10 +100,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	private static TerrainElevation terrainElevation;
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -111,24 +112,24 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
 		this.unit = unit;
-		
+
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();
 		topContainerCache = unit.getTopContainerUnit();
-		
+
 		if (masterClock == null)
 			masterClock = sim.getMasterClock();
-		
+
 		masterClock.addClockListener(this);
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
@@ -204,7 +205,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 		elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
 
-		logger.info(unit.getName() 
+		logger.info(unit.getName()
 				+ "'s coordinates: " + unit.getCoordinates()
 				+ "   Elevation: " + elevationCache + " km.");
 
@@ -272,12 +273,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		lcdText.setVisible(true);
 		lcdText.setLcdNumericValues(false);
 		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-		
+
 		lcdText.setLcdText(locationStringCache);
-				
+
 		// Pause the location lcd text the sim is pause
         lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
-		
+
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
 		updateLocationBanner();
@@ -434,20 +435,20 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			Vehicle vv = p.getVehicle();
 
 			if (vv == null) {
-				
+
 				Settlement s = p.findSettlementVicinity();
-				
+
 				if (s != null) {
 					desktop.openToolWindow(SettlementWindow.NAME);
-	
+
 					// System.out.println("Just open Settlement Map Tool");
-	
+
 					// TODO: Case 1 : person is on a mission on the surface of Mars and just happens
 					// to step outside the vehicle temporarily
-	
+
 					// TODO: Case 2 : person just happens to step outside the settlement at its
 					// vicinity temporarily
-	
+
 					combox.setSelectedItem(s);
 
 					double xLoc = p.getXLocation();
@@ -456,12 +457,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 					mapPanel.reCenter();
 					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
 	//				mapPanel.setShowBuildingLabels(true);
-	
+
 					if (mapPanel.getSelectedPerson() != null && mapPanel.getSelectedPerson() != p)
 						mapPanel.selectPerson(p);
 				}
-			} 
-			
+			}
+
 			else {
 				if (vv.getSettlement() == null) {
 
@@ -473,9 +474,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			}
 		}
 	}
-	
+
 	public void robotUpdate(Robot r) {
-		
+
 		if (r.isInSettlement()) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -519,9 +520,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 		else if (r.isOutside()) {
 //			Vehicle vv = r.getVehicle();
-			
+
 			Settlement s = r.findSettlementVicinity();
-			
+
 			if (s != null) {
 				desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -549,7 +550,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 				desktop.centerMapGlobe(r.getCoordinates());
 		}
 	}
-	
+
 	public void vehicleUpdate(Vehicle v) {
 		if (v.getSettlement() != null) {
 			desktop.openToolWindow(SettlementWindow.NAME);
@@ -571,7 +572,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			desktop.centerMapGlobe(unit.getCoordinates());
 		}
 	}
-	
+
 	public void equipmentUpdate(Equipment e) {
 		if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			desktop.openToolWindow(SettlementWindow.NAME);
@@ -622,7 +623,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		else
 			desktop.centerMapGlobe(e.getCoordinates());
 	}
-	
+
 	/**
 	 * Action event occurs.
 	 *
@@ -631,29 +632,29 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	public void actionPerformed(ActionEvent event) {
 		JComponent source = (JComponent) event.getSource();
 		// If the center map button was pressed, update navigator tool.
-		if (source == locatorButton) {		
+		if (source == locatorButton) {
 			// Add codes to open the settlement map tool and center the map to
 			// show the exact/building location inside a settlement if possible
 			// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
-			
+
 			// TODO: should it open the unit window also ?
 			// desktop.openUnitWindow(unit.getContainerUnit(), false);
 
 			update();
 
-			if (unit instanceof Person) {
+			if (unit.getUnitType() == UnitType.PERSON) {
 				personUpdate((Person) unit);
 			}
 
-			else if (unit instanceof Robot) {
+			else if (unit.getUnitType() == UnitType.ROBOT) {
 				robotUpdate((Robot) unit);
 			}
 
-			else if (unit instanceof Vehicle) {
+			else if (unit.getUnitType() == UnitType.VEHICLE) {
 				vehicleUpdate((Vehicle) unit);
 			}
 
-			else if (unit instanceof Equipment) {
+			else if (unit.getUnitType() == UnitType.EQUIPMENT) {
 				equipmentUpdate((Equipment) unit);
 			}
 		}
@@ -666,7 +667,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
+
 		// If unit's location has changed, update location display.
 		// TODO: if a person goes outside the settlement for servicing an equipment
 		// does the coordinate (down to how many decimal) change?
@@ -694,17 +695,17 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 			if (mars == null)
 				mars = Simulation.instance().getMars();
-			
+
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
-			double elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) 
+			double elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates())
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);
 
 		}
-		
+
 		// Update location button or location text label as necessary.
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
@@ -717,7 +718,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		}
 
 		updateLocationBanner();
-		
+
 		checkTheme(false);
 
 	}
@@ -755,13 +756,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	@Override
 	public void clockPulse(ClockPulse currentPulse) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uiPulse(double time) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
