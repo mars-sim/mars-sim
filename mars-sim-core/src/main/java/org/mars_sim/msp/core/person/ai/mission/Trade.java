@@ -51,12 +51,12 @@ public class Trade extends RoverMission implements Serializable {
 
 	/** Mission Type enum. */
 	private static final MissionType MISSION_TYPE = MissionType.TRADE;
-	
+
 	/** Mission phases. */
-	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking"); 
-	private static final MissionPhase TRADE_NEGOTIATING = new MissionPhase("Mission.phase.tradeNegotiating"); 
-	public static final MissionPhase UNLOAD_GOODS = new MissionPhase("Mission.phase.unloadGoods"); 
-	public static final MissionPhase LOAD_GOODS = new MissionPhase("Mission.phase.loadGoods"); 
+	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking");
+	private static final MissionPhase TRADE_NEGOTIATING = new MissionPhase("Mission.phase.tradeNegotiating");
+	public static final MissionPhase UNLOAD_GOODS = new MissionPhase("Mission.phase.unloadGoods");
+	public static final MissionPhase LOAD_GOODS = new MissionPhase("Mission.phase.loadGoods");
 	private static final MissionPhase TRADE_EMBARKING = new MissionPhase("Mission.phase.tradeEmbarking");
 
 	// Static members
@@ -84,7 +84,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Constructor. Started by TradeMeta
-	 * 
+	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
 	public Trade(MissionMember startingMember) {
@@ -95,7 +95,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (isDone()) {
 			return;
 		}
-		
+
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
 		if (getMissionCapacity() > MAX_MEMBERS) {
@@ -160,8 +160,8 @@ public class Trade extends RoverMission implements Serializable {
 	}
 
 	/**
-	 * Constructor 2. Started by MissionDataBean 
-	 * 
+	 * Constructor 2. Started by MissionDataBean
+	 *
 	 * @param members
 	 * @param startingSettlement
 	 * @param tradingSettlement
@@ -182,7 +182,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (getMissionCapacity() > MAX_MEMBERS) {
 			setMissionCapacity(MAX_MEMBERS);
 		}
-		
+
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
 		addNavpoint(tradingSettlement);
@@ -216,22 +216,22 @@ public class Trade extends RoverMission implements Serializable {
 			if (TRAVELLING.equals(getPhase())) {
 				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 					if (outbound) {
-						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName()); 
+						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName());
 					}
 					else {
 						startDisembarkingPhase();
 					}
 				}
-			} 
-		
+			}
+
 			else if (TRADE_DISEMBARKING.equals(getPhase())) {
-				setPhase(TRADE_NEGOTIATING, tradingSettlement.getName()); 
-			} 
-			
+				setPhase(TRADE_NEGOTIATING, tradingSettlement.getName());
+			}
+
 			else if (TRADE_NEGOTIATING.equals(getPhase())) {
 				setPhase(UNLOAD_GOODS, tradingSettlement.getName());
-			} 
-			
+			}
+
 			else if (UNLOAD_GOODS.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
@@ -240,12 +240,12 @@ public class Trade extends RoverMission implements Serializable {
 				else {
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
 				}
-			} 
-			
+			}
+
 			else if (LOAD_GOODS.equals(getPhase())) {
 				setPhase(TRADE_EMBARKING, tradingSettlement.getName());
-			} 
-			
+			}
+
 			else if (TRADE_EMBARKING.equals(getPhase())) {
 				startTravellingPhase();
 			}
@@ -253,7 +253,7 @@ public class Trade extends RoverMission implements Serializable {
 				handled = false;
 			}
 		}
-		
+
 		return handled;
 	}
 
@@ -276,7 +276,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Performs the trade disembarking phase.
-	 * 
+	 *
 	 * @param member the mission member performing the mission.
 	 */
 	private void performTradeDisembarkingPhase(MissionMember member) {
@@ -285,11 +285,11 @@ public class Trade extends RoverMission implements Serializable {
 		if ((v != null) && (v.getSettlement() == null)) {
 
 			tradingSettlement.addParkedVehicle(v);
-	
+
 			// Add vehicle to a garage if available.
 			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
 				// or else re-orient it
-				v.findNewParkingLoc();
+//				v.findNewParkingLoc();
 			}
 		}
 
@@ -332,7 +332,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Perform the trade negotiating phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performTradeNegotiatingPhase(MissionMember member) {
@@ -345,11 +345,11 @@ public class Trade extends RoverMission implements Serializable {
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
-				} 
-				
+				}
+
 				else {
 					Person settlementTrader = getSettlementTrader();
-					
+
 					if (settlementTrader != null) {
 						if (member instanceof Person) {
 							Person person = (Person) member;
@@ -373,21 +373,21 @@ public class Trade extends RoverMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			resetToReturnTrip(
-					new NavPoint(tradingSettlement.getCoordinates(), 
+					new NavPoint(tradingSettlement.getCoordinates(),
 							tradingSettlement,
 							tradingSettlement.getName()),
 
-					new NavPoint(getStartingSettlement().getCoordinates(), 
+					new NavPoint(getStartingSettlement().getCoordinates(),
 								getStartingSettlement(),
 								getStartingSettlement().getName()));
-			
+
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
 	}
 
 	/**
 	 * Perform the unload goods phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performUnloadGoodsPhase(MissionMember member) {
@@ -404,7 +404,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Performs the load goods phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performLoadGoodsPhase(MissionMember member) {
@@ -446,7 +446,7 @@ public class Trade extends RoverMission implements Serializable {
 					getRover().setTowedVehicle(buyVehicle);
 					buyVehicle.setTowingVehicle(getRover());
 					tradingSettlement.removeParkedVehicle(buyVehicle);
-				} else {	
+				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					endMission(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 				}
@@ -456,7 +456,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Performs the trade embarking phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performTradeEmbarkingPhase(MissionMember member) {
@@ -489,17 +489,17 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				}
 			}
-			
-			// Question: is the trading settlement responsible 
-			// for providing an EVA suit for each person 
+
+			// Question: is the trading settlement responsible
+			// for providing an EVA suit for each person
 			for (MissionMember mm: getMembers()) {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
 					if (!person.isDeclaredDead()) {
 						EVASuit suit0 = getEVASuit(person);
-						if (suit0 == null) { 
+						if (suit0 == null) {
 							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person); 
+								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
 								if (suit1 != null) {
 									boolean done = suit1.transfer(getVehicle());
 									if (!done)
@@ -509,7 +509,7 @@ public class Trade extends RoverMission implements Serializable {
 								}
 							}
 						}
-						
+
 						// Walk back to the vehicle and be ready to embark and go home
 						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
 							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
@@ -586,7 +586,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the type of vehicle in a load.
-	 * 
+	 *
 	 * @param buy true if buy load, false if sell load.
 	 * @return vehicle type or null if none.
 	 */
@@ -613,7 +613,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the initial load vehicle.
-	 * 
+	 *
 	 * @param vehicleType the vehicle type string.
 	 * @param buy         true if buying load, false if selling load.
 	 * @return load vehicle.
@@ -744,7 +744,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the trader for the mission.
-	 * 
+	 *
 	 * @return the trader.
 	 */
 	private Person getMissionTrader() {
@@ -769,7 +769,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the trader and the destination settlement for the mission.
-	 * 
+	 *
 	 * @return the trader.
 	 */
 	private Person getSettlementTrader() {
@@ -793,7 +793,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the load that is being sold in the trade.
-	 * 
+	 *
 	 * @return sell load.
 	 */
 	public Map<Good, Integer> getSellLoad() {
@@ -806,7 +806,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the load that is being bought in the trade.
-	 * 
+	 *
 	 * @return buy load.
 	 */
 	public Map<Good, Integer> getBuyLoad() {
@@ -819,7 +819,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the profit for the settlement initiating the trade.
-	 * 
+	 *
 	 * @return profit (VP).
 	 */
 	public double getProfit() {
@@ -828,7 +828,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the load that the starting settlement initially desires to buy.
-	 * 
+	 *
 	 * @return desired buy load.
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
@@ -841,7 +841,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the profit initially expected by the starting settlement.
-	 * 
+	 *
 	 * @return desired profit (VP).
 	 */
 	public double getDesiredProfit() {
@@ -850,7 +850,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the settlement that the starting settlement is trading with.
-	 * 
+	 *
 	 * @return trading settlement.
 	 */
 	public Settlement getTradingSettlement() {
@@ -859,7 +859,7 @@ public class Trade extends RoverMission implements Serializable {
 
 	/**
 	 * Estimates the profit for the starting settlement for a given buy load.
-	 * 
+	 *
 	 * @param buyingLoad the load to buy.
 	 * @return profit (VP).
 	 */
@@ -877,7 +877,7 @@ public class Trade extends RoverMission implements Serializable {
 
 			double totalProfit = sellingProfit + buyingProfit;
 
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(), 
+			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
 					tradingSettlement.getCoordinates()) * 2D;
 			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
 					estimatedDistance);
@@ -912,7 +912,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * Inner class for storing trade profit info.
 	 */
 	public static class TradeProfitInfo {
-		
+
 		public double profit;
 		public MarsClock time;
 
@@ -934,7 +934,7 @@ public class Trade extends RoverMission implements Serializable {
 		}
 		return super.isVehicleUnloadableHere(settlement);
 	}
-	
+
 	/**
 	 * Can the mission vehicle be loaded at a Settlement. Must be in
 	 * the LOAD_GOODS phase at the mission trading settlement.

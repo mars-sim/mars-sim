@@ -38,10 +38,10 @@ public abstract class DroneMission extends VehicleMission {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(DroneMission.class.getName());
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name           the name of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 */
@@ -49,10 +49,10 @@ public abstract class DroneMission extends VehicleMission {
 		// Use VehicleMission constructor.
 		super(name, missionType, startingMember);
 	}
-	
+
 	/**
 	 * Constructor with min people and drone. Initiated by MissionDataBean.
-	 * 
+	 *
 	 * @param missionName    the name of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople      the minimum number of people required for mission.
@@ -62,10 +62,10 @@ public abstract class DroneMission extends VehicleMission {
 		// Use VehicleMission constructor.
 		super(missionName, missionType, startingMember, drone);
 	}
-	
+
 	/**
 	 * Gets the mission's drone if there is one.
-	 * 
+	 *
 	 * @return drone or null if none.
 	 */
 	public final Drone getDrone() {
@@ -74,7 +74,7 @@ public abstract class DroneMission extends VehicleMission {
 
 	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
-	 * 
+	 *
 	 * @param settlement         the settlement to check.
 	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
 	 * @return vehicle or null if none available.
@@ -93,10 +93,10 @@ public abstract class DroneMission extends VehicleMission {
 				usable = false;
 
 			usable = drone.isVehicleReady();
-			
+
 			if (drone.getStoredMass() > 0D)
 				usable = false;
-			
+
 			if (usable) {
 				if (result == null)
 					// so far, this is the first vehicle being picked
@@ -112,7 +112,7 @@ public abstract class DroneMission extends VehicleMission {
 
 	/**
 	 * Checks to see if any drones are available at a settlement.
-	 * 
+	 *
 	 * @param settlement         the settlement to check.
 	 * @param allowMaintReserved allow drones that are reserved for maintenance.
 	 * @return true if drones are available.
@@ -129,9 +129,9 @@ public abstract class DroneMission extends VehicleMission {
 
             if (!allowMaintReserved && drone.isReserved())
 				usable = false;
-			
+
 			usable = drone.isVehicleReady();
-				
+
 			if (drone.getStoredMass() > 0D)
 				usable = false;
 
@@ -145,7 +145,7 @@ public abstract class DroneMission extends VehicleMission {
 	/**
 	 * Checks if vehicle is usable for this mission. (This method should be
 	 * overridden by children)
-	 * 
+	 *
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 * @throws MissionException if problem determining if vehicle is usable.
@@ -157,10 +157,10 @@ public abstract class DroneMission extends VehicleMission {
 			usable = false;
 		return usable;
 	}
-	
+
 	/**
 	 * Gets a new instance of an OperateVehicle task for the mission member.
-	 * 
+	 *
 	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
 	 */
@@ -195,31 +195,31 @@ public abstract class DroneMission extends VehicleMission {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Performs the embark from settlement phase of the mission.
-	 * 
+	 *
 	 * @param member the mission member currently performing the mission
 	 */
 	@Override
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 		Vehicle v = getVehicle();
-		
+
 		if (v == null) {
 			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
-			
+
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			logger.warning(Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 			return;
 		}
-		
+
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
 			endMission();
@@ -257,7 +257,7 @@ public abstract class DroneMission extends VehicleMission {
 		else {
 			// If drone is loaded and everyone is aboard, embark from settlement.
 			if (!isDone()) {
-				
+
 				// Set the members' work shift to on-call to get ready
 				for (MissionMember m : getMembers()) {
 					if (m instanceof Person) {
@@ -271,10 +271,10 @@ public abstract class DroneMission extends VehicleMission {
 				if (v.isInAGarage()) {
 					BuildingManager.removeFromGarage(v);
 				}
-				
+
 				// Record the start mass right before departing the settlement
 				recordStartMass();
-				
+
 				// Embark from settlement
 				if (v.transfer(unitManager.getMarsSurface())) {
 					setPhaseEnded(true);
@@ -288,29 +288,29 @@ public abstract class DroneMission extends VehicleMission {
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
-	 * 
+	 *
 	 * @param member              the mission member currently performing the
 	 *                            mission.
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	@Override
 	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
-		
+
 		Vehicle v0 = getVehicle();
 		disembark(member, v0, disembarkSettlement);
 	}
-	
+
 	/**
 	 * Disembarks the vehicle and unload cargo upon arrival
-	 * 
+	 *
 	 * @param member
 	 * @param v
 	 * @param disembarkSettlement
 	 */
 	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
-		logger.log(v, Level.INFO, 10_000, 
+		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
-		
+
 		Drone drone = (Drone) v;
 
 		if (v != null) {
@@ -322,19 +322,19 @@ public abstract class DroneMission extends VehicleMission {
 
 			// Add vehicle to a garage if available.
 			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-			
+
 			// Make sure the drone chasis is not overlapping a building structure in the settlement map
-	        if (!inAGarage)
-	        	drone.findNewParkingLoc();
+//	        if (!inAGarage)
+//	        	drone.findNewParkingLoc();
 
 			// Reset the vehicle reservation
 			v.correctVehicleReservation();
 
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getStoredMass() == 0D;
-			
+
 			if (!droneUnloaded) {
-				
+
 				boolean result = false;
 				// Alert the people in the disembarked settlement to unload cargo
 				for (Person person: disembarkSettlement.getIndoorPeople()) {
@@ -343,29 +343,29 @@ public abstract class DroneMission extends VehicleMission {
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
 							result = unloadCargo(person, drone);
-						}		
+						}
 					}
 					if (result)
 						break;
 				}
 			}
-			
+
 			else {
 				// End the phase.
 
 				// If the rover is in a garage, put the rover outside.
 				BuildingManager.removeFromGarage(v);
-				
+
 				// Leave the vehicle.
 				leaveVehicle();
 				setPhaseEnded(true);
 			}
 		}
 	}
-	
+
 	/**
 	 * Give a person the task from unloading the drone
-	 * 
+	 *
 	 * @param p
 	 * @param drone
 	 */
@@ -373,8 +373,8 @@ public abstract class DroneMission extends VehicleMission {
 		boolean result = false;
 		if (isInAGarage()) {
 			result = assignTask(p, new UnloadVehicleGarage(p, drone));
-		} 
-		
+		}
+
 		else {
 			// Check if it is day time.
 			if (!EVAOperation.isGettingDark(p)) {
@@ -383,16 +383,16 @@ public abstract class DroneMission extends VehicleMission {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Checks if the drone is currently in a garage or not.
-	 * 
+	 *
 	 * @return true if drone is in a garage.
 	 */
 	protected boolean isInAGarage() {
 		return getVehicle().isInAGarage();
 	}
-	
+
 	@Override
 	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement, int minMembers) {
 		// Get all people qualified for the mission.
@@ -403,7 +403,7 @@ public abstract class DroneMission extends VehicleMission {
 				addRobot(robot);
 			}
 		}
-		
+
 		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 
 		return true;

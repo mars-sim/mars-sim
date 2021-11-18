@@ -176,35 +176,36 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 
+	private Administration admin;
+	private AstronomicalObservation astro;
 	private Communication comm;
-	private ThermalGeneration furnace;
-	private PowerGeneration powerGen;
 	private Computation computation;
-	private PowerStorage powerStorage;
-	private LifeSupport lifeSupport;
-	private RoboticStation roboticStation;
-	private Heating heating;
+	private Cooking cooking;
+	private Dining dine;
+	private EarthReturn earthReturn;
 	private EVA eva;
+	private Exercise gym;
 	private Farming farm;
 	private Fishery fish;
+	private FoodProduction foodFactory;
+	private GroundVehicleMaintenance maint;
+	private Heating heating;
 	private LivingAccommodations livingAccommodations;
-	private PreparingDessert preparingDessert;
-	private Cooking cooking;
+	private LifeSupport lifeSupport;
 	private Management management;
+	private Manufacture workshop;
 	private MedicalCare medical;
+	private ThermalGeneration furnace;
+	private PowerGeneration powerGen;
+	private PowerStorage powerStorage;
+	private PreparingDessert preparingDessert;
+	private Recreation rec;
+	private Research lab;
+	private ResourceProcessing processing;
+	private RoboticStation roboticStation;
+	private Storage storage;
 	private WasteDisposal waste;
 	private VehicleMaintenance garage;
-	private FoodProduction foodFactory;
-	private ResourceProcessing processing;
-	private Research lab;
-	private Manufacture workshop;
-	private Administration admin;
-	private Recreation rec;
-	private Dining dine;
-	private GroundVehicleMaintenance maint;
-	private AstronomicalObservation astro;
-	private Exercise gym;
-	private Storage storage;
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
@@ -433,7 +434,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (gym == null)
 			gym = (Exercise) getFunction(FunctionType.EXERCISE);
 		return gym;
-
 	}
 
 	public EVA getEVA() {
@@ -441,6 +441,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			eva = (EVA) getFunction(FunctionType.EVA);
 		return eva;
 	}
+
+	public EarthReturn getEarthReturn() {
+		if (earthReturn == null)
+			earthReturn = (EarthReturn) getFunction(FunctionType.EARTH_RETURN);
+		return earthReturn;
+	}
+
 
 	public FoodProduction getFoodProduction() {
 		if (foodFactory == null)

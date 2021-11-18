@@ -52,7 +52,7 @@ public class LocalAreaUtil {
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	
+
 	/**
 	 * Private empty constructor for utility class.
 	 */
@@ -64,7 +64,7 @@ public class LocalAreaUtil {
 	/**
 	 * Gets a local relative location from a location relative to this bounded
 	 * object.
-	 * 
+	 *
 	 * @param xLoc          the X location relative to this bounded object.
 	 * @param yLoc          the Y location relative to this bounded object.
 	 * @param boundedObject the local bounded object.
@@ -88,7 +88,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets a object relative location for a given location and an object.
-	 * 
+	 *
 	 * @param xLoc          the X location relative to the local area.
 	 * @param yLoc          the Y location relative to the local area.
 	 * @param boundedObject the local bounded object.
@@ -111,7 +111,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets a random location inside a local bounded object.
-	 * 
+	 *
 	 * @param boundedObject the local bounded object.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
@@ -121,7 +121,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets a random location inside a local bounded object.
-	 * 
+	 *
 	 * @param boundedObject the local bounded object.
 	 * @param useBoundary   true if inner boundary distance should be used.
 	 * @return random X/Y location relative to the center of the bounded object.
@@ -156,7 +156,7 @@ public class LocalAreaUtil {
 	/**
 	 * Gets a random location outside a local bounded object at a given distance
 	 * away.
-	 * 
+	 *
 	 * @param boundedObject the local bounded object.
 	 * @param distance      the distance away from the object.
 	 * @return random X/Y location relative to the center of the bounded object.
@@ -202,7 +202,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a point location does not collide with any existing vehicle,
 	 * building, or construction site.
-	 * 
+	 *
 	 * @param xLoc        the new X location.
 	 * @param yLoc        the new Y location.
 	 * @param coordinates the global coordinate location to check.
@@ -230,7 +230,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a point location does not collide with any Immovable bounded
 	 * objects (existing vehicle, & construction sites).
-	 * 
+	 *
 	 * @param xLoc        the new X location.
 	 * @param yLoc        the new Y location.
 	 * @param coordinates the global coordinate location to check.
@@ -258,7 +258,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a point location does not collide with any existing vehicle or
 	 * construction site.
-	 * 
+	 *
 	 * @param object      LocalBoundedObject
 	 * @param coordinates Coordinates
 	 * @param needToMove  does it need to move the intersected vehicle, if any
@@ -291,7 +291,7 @@ public class LocalAreaUtil {
 //	/**
 //	 * Checks if a point location does not collide with any existing vehicle or
 //	 * construction site.
-//	 * 
+//	 *
 //	 * @param xLoc        the new X location.
 //	 * @param yLoc        the new Y location.
 //	 * @param coordinates the global coordinate location to check.
@@ -308,7 +308,7 @@ public class LocalAreaUtil {
 //				result = false;
 //				if (needToMove) {
 //					Vehicle v = (Vehicle) object;
-//					logger.warning("Collided with a vehicle " 
+//					logger.warning("Collided with a vehicle "
 //							+ v + ". Moving to another location.");
 //					v.findNewParkingLoc();
 //					// Call again recursively to clear any vehicles
@@ -343,7 +343,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets a set of vehicles at a given coordinate location.
-	 * 
+	 *
 	 * @param coordinates the coordinate location.
 	 * @return set of local bounded objects at location (may be empty).
 	 */
@@ -365,7 +365,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Checks for collisions with any immovable objects
-	 * 
+	 *
 	 * @return true if location collides with something.
 	 * @param LocalBoundedObject object
 	 * @param Coordinates        coordinates
@@ -390,7 +390,7 @@ public class LocalAreaUtil {
 	/**
 	 * Gets a set of local Immovable bounded objects (buildings and construction
 	 * sites) at a given coordinate location.
-	 * 
+	 *
 	 * @param coordinates the coordinate location.
 	 * @return set of local bounded objects at location (may be empty).
 	 */
@@ -426,7 +426,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets a set of local bounded objects at a given coordinate location.
-	 * 
+	 *
 	 * @param coordinates the coordinate location.
 	 * @return set of local bounded objects at location (may be empty).
 	 */
@@ -468,7 +468,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Checks if a point location is within a local bounded object's bounds.
-	 * 
+	 *
 	 * @param xLoc   the new X location.
 	 * @param yLoc   the new Y location.
 	 * @param object the local bounded object.
@@ -492,7 +492,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets the bounding rectangle around a local bounded object with facing.
-	 * 
+	 *
 	 * @param object the local bounded object.
 	 * @return bounding rectangle.
 	 */
@@ -508,7 +508,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a bounded object can move to a given new location and facing
 	 * without colliding with any existing vehicle, building, or construction site.
-	 * 
+	 *
 	 * @param boundedObject the boundedObject to be moved.
 	 * @param newXLoc       the new X location.
 	 * @param newYLoc       the new Y location.
@@ -528,7 +528,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if an object with a given position, facing, and dimensions collides
 	 * with any existing vehicle, building, or construction site at a settlement.
-	 * 
+	 *
 	 * @param object      the boundedObject to be moved.
 	 * @param width       the object's width.
 	 * @param length      the object's length.
@@ -555,7 +555,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a line path collides with any existing vehicle, building, or
 	 * construction site at a settlement.
-	 * 
+	 *
 	 * @param line        the line.
 	 * @param coordinates the global coordinate location to check.
 	 * @param useCache    true if caching should be used.
@@ -621,7 +621,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Checks if two bound objects collide
-	 * 
+	 *
 	 * @param o1 the first bound object
 	 * @param o2 the second bound object
 	 * @return true if they do collide
@@ -692,7 +692,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Create a thin (1 mm wide) rectangle path representing a line.
-	 * 
+	 *
 	 * @param line the line.
 	 * @return rectangle path for the line.
 	 */
@@ -717,7 +717,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets the direction from point1 to point2.
-	 * 
+	 *
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return direction in degrees clockwise from North.
@@ -742,7 +742,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a path collides with an existing building, construction site, or
 	 * vehicle at a location.
-	 * 
+	 *
 	 * @param object      the object being checked (may be null if no object).
 	 * @param path        the path to check.
 	 * @param coordinates the global coordinate location to check.
@@ -827,7 +827,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Checks if two areas collide.
-	 * 
+	 *
 	 * @param area1 the first area.
 	 * @param area2 the second area.
 	 * @return true if areas collide.
@@ -842,7 +842,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Creates a Path2D object from a rectangle with a given rotation.
-	 * 
+	 *
 	 * @param rectangle the rectangle.
 	 * @param rotation  the rotation (degrees clockwise from North).
 	 * @return path representing rotated rectangle.
@@ -856,7 +856,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets the distance between two points.
-	 * 
+	 *
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return distance (meters).
@@ -867,7 +867,7 @@ public class LocalAreaUtil {
 
 	/**
 	 * Gets the distance between two points.
-	 * 
+	 *
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return distance (meters).
@@ -875,10 +875,10 @@ public class LocalAreaUtil {
 	public static double getDistance(double x1, double y1, double x2, double y2) {
 		return Point2D.Double.distance(x1, y1, x2, y2);
 	}
-	
+
 	/**
 	 * Checks if two locations are very close together.
-	 * 
+	 *
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return true if very close together
@@ -888,7 +888,7 @@ public class LocalAreaUtil {
 	}
 	/**
 	 * Checks if two locations are very close together.
-	 * 
+	 *
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return true if very close together

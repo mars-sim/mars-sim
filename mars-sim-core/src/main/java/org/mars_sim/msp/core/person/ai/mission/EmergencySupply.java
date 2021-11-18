@@ -54,13 +54,13 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EmergencySupply.class.getName());
-	
+
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	private static final MissionType MISSION_TYPE = MissionType.EMERGENCY_SUPPLY;
-	
+
 	// Static members
 	private static final int MAX_MEMBERS = 2;
 
@@ -92,7 +92,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param startingPerson the person starting the settlement.
 	 */
 	public EmergencySupply(Person startingPerson) {
@@ -102,7 +102,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		if (isDone()) {
 			return;
 		}
-		
+
 		// Set the mission capacity.
 		calculateMissionCapacity(MAX_MEMBERS);
 
@@ -139,7 +139,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			setPhase(REVIEWING, null);
 
 			logger.info(s, startingPerson
-					+ "Reviewing an emergency supply mission to help out " 
+					+ "Reviewing an emergency supply mission to help out "
 					+ getEmergencySettlement() + " using "
 					+ getRover().getName());
 		}
@@ -147,7 +147,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Constructor with explicit parameters.
-	 * 
+	 *
 	 * @param members             collection of mission members.
 	 * @param emergencySettlement the starting settlement.
 	 * @param rover               the rover used on the mission.
@@ -180,16 +180,16 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			case AMOUNT_RESOURCE:
 				emergencyResources.put(good.getID(), (double) amount);
 				break;
-			
+
 			case ITEM_RESOURCE:
 				emergencyParts.put(good.getID(), amount);
 				break;
-			
+
 			case EQUIPMENT:
 			case CONTAINER:
 				emergencyEquipment.put(good.getID(), amount);
 				break;
-				
+
 			case VEHICLE:
 				String vehicleType = good.getName();
 				Iterator<Vehicle> h = getStartingSettlement().getParkedVehicles().iterator();
@@ -210,11 +210,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		addMembers(members, false);
 
 		// Set initial phase
-		setPhase(EMBARKING, getStartingSettlement().getName()); 
+		setPhase(EMBARKING, getStartingSettlement().getName());
 		Person startingPerson = getStartingPerson();
 		if (startingPerson != null && getRover() != null) {
 			logger.info(startingPerson,
-					"Reviewing an emergency supply mission to help out " 
+					"Reviewing an emergency supply mission to help out "
 					+ getEmergencySettlement() + " using "
 					+ getRover().getName());
 		}
@@ -232,12 +232,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						startDisembarkingPhase();
 					}
 				}
-			} 
-			
+			}
+
 			else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
 				setPhase(SUPPLY_DELIVERY, emergencySettlement.getName());
-			} 
-			
+			}
+
 			else if (SUPPLY_DELIVERY.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
@@ -246,16 +246,16 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				else {
 					setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
 				}
-			} 
-			
+			}
+
 			else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
 				setPhase(RETURN_TRIP_EMBARKING, emergencySettlement.getName());
-			} 
-			
+			}
+
 			else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
 				startTravellingPhase();
-			} 
-	
+			}
+
 			else {
 				handled = false;
 			}
@@ -314,7 +314,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Perform the supply delivery disembarking phase.
-	 * 
+	 *
 	 * @param member the member performing the phase.
 	 */
 	private void performSupplyDeliveryDisembarkingPhase(MissionMember member) {
@@ -323,11 +323,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 
 			emergencySettlement.addParkedVehicle(getVehicle());
-			
+
 			// Add vehicle to a garage if available.
 			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
 				// or else re-orient it
-				getVehicle().findNewParkingLoc();
+//				getVehicle().findNewParkingLoc();
 			}
 		}
 
@@ -371,7 +371,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Perform the supply delivery phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performSupplyDeliveryPhase(MissionMember member) {
@@ -415,7 +415,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Perform the load return trip supplies phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performLoadReturnTripSuppliesPhase(MissionMember member) {
@@ -446,13 +446,13 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Perform the return trip embarking phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performReturnTripEmbarkingPhase(MissionMember member) {
 
 		if (member.isInVehicle()) {
-				
+
 			// Move person to random location within rover.
 			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
 			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), vehicleLoc.getY(),
@@ -461,15 +461,15 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				if (!person.isDeclaredDead()) {
-					
+
 					EVASuit suit0 = getEVASuit(person);
-					if (suit0 == null) {				
-						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person); 
+					if (suit0 == null) {
+						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person);
 						if (!suit1.transfer(getVehicle())) {
 							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
 						}
-					}			
-					
+					}
+
 					// If person is not aboard the rover, board rover.
 					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
 						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
@@ -478,8 +478,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						endMission(MissionStatus.CANNOT_ENTER_ROVER);
 					}
 				}
-			} 
-			
+			}
+
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
 				// If robot is not aboard the rover, board rover.
@@ -506,7 +506,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Finds a settlement within range that needs emergency supplies.
-	 * 
+	 *
 	 * @param startingSettlement the starting settlement.
 	 * @param rover              the rover to carry the supplies.
 	 * @return settlement needing supplies or null if none found.
@@ -554,7 +554,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	/**
 	 * Checks if a settlement has sufficient supplies to send an emergency supply
 	 * mission.
-	 * 
+	 *
 	 * @param startingSettlement        the starting settlement.
 	 * @param emergencyResourcesNeeded  the emergency resources needed.
 	 * @param emergencyContainersNeeded the containers needed to hold emergency
@@ -587,7 +587,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			int numberRequired = emergencyContainersNeeded.get(containerType);
 			EquipmentType type = EquipmentType.convertID2Type(containerType);
 			int numberAvailable = startingSettlement.findNumEmptyContainersOfType(type, false);
-			
+
 			// Note: add tracking demand for containers
 			if (numberAvailable < numberRequired) {
 				result = false;
@@ -599,7 +599,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the amount of a resource needed at the starting settlement.
-	 * 
+	 *
 	 * @param startingSettlement the starting settlement.
 	 * @param resource           the amount resource.
 	 * @return amount (kg) needed.
@@ -636,7 +636,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	/**
 	 * Checks if a settlement has a current mission to deliver emergency supplies to
 	 * it.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @return true if current emergency supply mission.
 	 */
@@ -683,7 +683,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the emergency amount resource supplies needed at a settlement.
-	 * 
+	 *
 	 * @param settlement the settlement
 	 * @return map of amount resources and amounts needed.
 	 */
@@ -693,7 +693,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
 		int numPeople = settlement.getNumCitizens();
-		
+
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
 		double oxygenAmountAvailable = settlement.getAmountResourceStored(OXYGEN_ID);
@@ -751,7 +751,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the amount of a resource on associated rover missions.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @param resource   the amount resource.
 	 * @return the amount of resource on missions.
@@ -780,7 +780,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the containers required to hold a collection of resources.
-	 * 
+	 *
 	 * @param resourcesMap the map of resources and their amounts.
 	 * @return map of containers and the number required of each.
 	 */
@@ -803,8 +803,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				}
 
 				result.put(containerID, numContainers);
-					
-			}  
+
+			}
 		}
 
 		return result;
@@ -812,7 +812,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the emergency part supplies needed at a settlement.
-	 * 
+	 *
 	 * @param settlement the settlement
 	 * @return map of parts and numbers needed.
 	 */
@@ -863,7 +863,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the settlement that emergency supplies are being delivered to.
-	 * 
+	 *
 	 * @return settlement
 	 */
 	public Settlement getEmergencySettlement() {
@@ -975,7 +975,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/**
 	 * Gets the emergency supplies as a goods map.
-	 * 
+	 *
 	 * @return map of goods and amounts.
 	 */
 	public Map<Good, Integer> getEmergencySuppliesAsGoods() {

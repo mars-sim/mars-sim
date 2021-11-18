@@ -484,7 +484,7 @@ public abstract class RoverMission extends VehicleMission {
 
 		// Make sure the rover chasis is not overlapping a building structure in the settlement map
         if (!isRoverInAGarage) {
-        	rover.findNewParkingLoc();
+//        	rover.findNewParkingLoc();
 
         	// Outside so preload all EVASuits before the Unloading starts
         	int suitsNeeded = rover.getCrew().size();

@@ -44,11 +44,11 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
-	
+
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.deliveryDisembarking");
 	private static final MissionPhase TRADE_NEGOTIATING = new MissionPhase("Mission.phase.deliveryNegotiating");
-	public static final MissionPhase UNLOAD_GOODS = new MissionPhase("Mission.phase.unloadGoods"); 
+	public static final MissionPhase UNLOAD_GOODS = new MissionPhase("Mission.phase.unloadGoods");
 	public static final MissionPhase LOAD_GOODS = new MissionPhase("Mission.phase.loadGoods");
 	private static final MissionPhase TRADE_EMBARKING = new MissionPhase("Mission.phase.deliveryEmbarking");
 
@@ -77,18 +77,18 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Constructor. Started by DeliveryMeta
-	 * 
+	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember);
-		
+
 		// Problem starting Mission
 		if (isDone()) {
 			return;
 		}
-		
+
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
 		calculateMissionCapacity(MAX_MEMBERS);
@@ -150,8 +150,8 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	/**
-	 * Constructor 2. Started by MissionDataBean 
-	 * 
+	 * Constructor 2. Started by MissionDataBean
+	 *
 	 * @param members
 	 * @param tradingSettlement
 	 * @param drone
@@ -199,7 +199,7 @@ public class Delivery extends DroneMission implements Serializable {
 	@Override
 	protected boolean determineNewPhase() {
 		boolean handled = true;
-		
+
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
 				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
@@ -209,39 +209,39 @@ public class Delivery extends DroneMission implements Serializable {
 						startDisembarkingPhase();
 					}
 				}
-			} 
-			
+			}
+
 			else if (TRADE_DISEMBARKING.equals(getPhase())) {
 				setPhase(TRADE_NEGOTIATING, tradingSettlement.getName());
-			} 
-			
+			}
+
 			else if (TRADE_NEGOTIATING.equals(getPhase())) {
 				setPhase(UNLOAD_GOODS, tradingSettlement.getName());
-			} 
-			
+			}
+
 			else if (UNLOAD_GOODS.equals(getPhase())) {
 				if (isVehicleLoadable()) {
 					clearLoadingPlan(); // Clear the original loading plan
-					setPhase(LOAD_GOODS, tradingSettlement.getName());	
+					setPhase(LOAD_GOODS, tradingSettlement.getName());
 				}
 				else {
 					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 				}
-			} 
-			
+			}
+
 			else if (LOAD_GOODS.equals(getPhase())) {
 				setPhase(TRADE_EMBARKING, tradingSettlement.getName());
-			} 
-			
+			}
+
 			else if (TRADE_EMBARKING.equals(getPhase())) {
 				startTravellingPhase();
-			} 
+			}
 
 			else {
 				handled = false;
 			}
 		}
-		
+
 		return handled;
 	}
 
@@ -264,7 +264,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Performs the trade disembarking phase.
-	 * 
+	 *
 	 * @param member the mission member performing the mission.
 	 */
 	private void performDeliveryDisembarkingPhase() {
@@ -273,11 +273,11 @@ public class Delivery extends DroneMission implements Serializable {
 		if ((v != null) && (v.getSettlement() == null)) {
 
 			tradingSettlement.addParkedVehicle(v);
-	
+
 			// Add vehicle to a garage if available.
 			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
 				// or else re-orient it
-				v.findNewParkingLoc();
+//				v.findNewParkingLoc();
 			}
 		}
 
@@ -286,7 +286,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Perform the delivery negotiating phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performDeliveryNegotiatingPhase(MissionMember member) {
@@ -313,27 +313,27 @@ public class Delivery extends DroneMission implements Serializable {
 							assignTask((Person)member, negotiationTask);
 						}
 					}
-				} 
-				
+				}
+
 				else {
 					Person settlementTrader = getSettlementTrader();
-					
+
 					if (settlementTrader != null) {
 						boolean assigned = false;
-						
+
 						for (MissionMember mm: getMembers()) {
-							
+
 							if (mm instanceof Person) {
 								Person person = (Person) mm;
 								negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
 										sellLoad, person, settlementTrader);
 								assigned = assignTask(person, negotiationTask);
 							}
-							
+
 							if (assigned)
-								break;	
+								break;
 						}
-						
+
 					}
 					else if (getPhaseDuration() > 1000D) {
 						buyLoad = new HashMap<>();
@@ -349,11 +349,11 @@ public class Delivery extends DroneMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			resetToReturnTrip(
-					new NavPoint(tradingSettlement.getCoordinates(), 
+					new NavPoint(tradingSettlement.getCoordinates(),
 							tradingSettlement,
 							tradingSettlement.getName()),
 
-					new NavPoint(getStartingSettlement().getCoordinates(), 
+					new NavPoint(getStartingSettlement().getCoordinates(),
 								getStartingSettlement(),
 								getStartingSettlement().getName()));
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
@@ -362,7 +362,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Perform the unload goods phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performDestinationUnloadGoodsPhase() {
@@ -375,7 +375,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Performs the load goods phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performDestinationLoadGoodsPhase() {
@@ -387,7 +387,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Performs the delivery embarking phase.
-	 * 
+	 *
 	 * @param member the mission member performing the phase.
 	 */
 	private void performDeliveryEmbarkingPhase(MissionMember member) {
@@ -457,7 +457,7 @@ public class Delivery extends DroneMission implements Serializable {
 				}
 				result.put(id, num);
 			}
-			
+
 			else if (good.getCategory() == GoodCategory.CONTAINER) {
 				int num = load.get(good);
 				int id = good.getID();
@@ -543,7 +543,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the trader and the destination settlement for the mission.
-	 * 
+	 *
 	 * @return the trader.
 	 */
 	private Person getSettlementTrader() {
@@ -567,7 +567,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the load that is being sold in the trade.
-	 * 
+	 *
 	 * @return sell load.
 	 */
 	public Map<Good, Integer> getSellLoad() {
@@ -580,7 +580,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the load that is being bought in the trade.
-	 * 
+	 *
 	 * @return buy load.
 	 */
 	public Map<Good, Integer> getBuyLoad() {
@@ -593,7 +593,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the profit for the settlement initiating the trade.
-	 * 
+	 *
 	 * @return profit (VP).
 	 */
 	public double getProfit() {
@@ -602,7 +602,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the load that the starting settlement initially desires to buy.
-	 * 
+	 *
 	 * @return desired buy load.
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
@@ -615,7 +615,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the profit initially expected by the starting settlement.
-	 * 
+	 *
 	 * @return desired profit (VP).
 	 */
 	public double getDesiredProfit() {
@@ -624,7 +624,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Gets the settlement that the starting settlement is trading with.
-	 * 
+	 *
 	 * @return trading settlement.
 	 */
 	public Settlement getTradingSettlement() {
@@ -633,7 +633,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 	/**
 	 * Estimates the profit for the starting settlement for a given buy load.
-	 * 
+	 *
 	 * @param buyingLoad the load to buy.
 	 * @return profit (VP).
 	 */
@@ -651,7 +651,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 			double totalProfit = sellingProfit + buyingProfit;
 
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(), 
+			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
 					tradingSettlement.getCoordinates()) * 2D;
 			double missionCost = DeliveryUtil.getEstimatedMissionCost(getStartingSettlement(), getDrone(),
 					estimatedDistance);
@@ -686,7 +686,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 * Inner class for storing trade profit info.
 	 */
 	public static class DeliveryProfitInfo {
-		
+
 		public double profit;
 		public MarsClock time;
 
@@ -708,7 +708,7 @@ public class Delivery extends DroneMission implements Serializable {
 		}
 		return super.isVehicleUnloadableHere(settlement);
 	}
-	
+
 	/**
 	 * Can the mission vehicle be loaded at a Settlement. Must be in
 	 * the LOAD_GOODS phase at the mission trading settlement.

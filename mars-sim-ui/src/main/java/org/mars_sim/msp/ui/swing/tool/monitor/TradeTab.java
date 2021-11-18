@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -40,17 +41,20 @@ implements UnitManagerListener {
 		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
 		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
-
+//		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		TableColumnModel m = table.getColumnModel();
 
 		for (int i= 0; i < m.getColumnCount(); i++) {
-			int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
-			if (col % 3 == 0)
-				m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-			else if (col % 3 == 2)
-				m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+			if (i >= TradeTableModel.NUM_INITIAL_COLUMNS) {
+				int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
+				if (col % 3 == 0)
+					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
+				else if (col % 3 == 1)
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
+				else if (col % 3 == 2)
+					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+			}
 		}
 
 

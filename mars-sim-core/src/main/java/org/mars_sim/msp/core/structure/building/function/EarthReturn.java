@@ -27,7 +27,7 @@ public class EarthReturn extends Function implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param building the building this function is for.
 	 */
 	public EarthReturn(Building building) {
@@ -43,7 +43,7 @@ public class EarthReturn extends Function implements Serializable {
 
 	/**
 	 * Gets the value of the function for a named building.
-	 * 
+	 *
 	 * @param buildingName the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
@@ -59,7 +59,7 @@ public class EarthReturn extends Function implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.EARTH_RETURN).iterator();
 		while (i.hasNext()) {
 			Building earthReturnBuilding = i.next();
-			EarthReturn earthReturn = (EarthReturn) earthReturnBuilding.getFunction(FunctionType.EARTH_RETURN);
+			EarthReturn earthReturn = earthReturnBuilding.getEarthReturn();
 			double crewCapacity = earthReturn.getCrewCapacity();
 			double wearFactor = ((earthReturnBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
 			supply += crewCapacity * wearFactor;
@@ -76,7 +76,7 @@ public class EarthReturn extends Function implements Serializable {
 
 	/**
 	 * Get the crew capacity for an Earth return mission.
-	 * 
+	 *
 	 * @return crew capacity.
 	 */
 	public int getCrewCapacity() {
@@ -85,7 +85,7 @@ public class EarthReturn extends Function implements Serializable {
 
 	/**
 	 * Checks if the Earth return mission for this building has launched.
-	 * 
+	 *
 	 * @return true if mission has launched.
 	 */
 	public boolean hasLaunched() {

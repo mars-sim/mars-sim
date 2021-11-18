@@ -36,7 +36,7 @@ extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Name";
-	private static final String QUANTITY = "#/kg - ";
+	private static final String QUANTITY = "kg/# - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
@@ -74,6 +74,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Catch unit update event.
+	 *
 	 * @param event the unit event.
 	 */
 	@Override
@@ -119,6 +120,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Return the object at the specified row indexes.
+	 *
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
@@ -137,6 +139,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Return the name of the column requested.
+	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
@@ -213,6 +216,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 	}
 
+	/**
+	 * Gets the quantity/amount of the resource
+	 *
+	 * @param settlement
+	 * @param id
+	 * @return
+	 */
     private double getQuantity(Settlement settlement, int id) {
 
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
@@ -232,6 +242,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Gets the good category name in the internationalized string
+	 *
 	 * @param good
 	 * @return
 	 */
