@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -292,7 +291,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Check if there are enough resources at the settlement.
 		for (Entry<Integer, Number> required : resources.entrySet()) {
 			int resource = required.getKey();
-			if (resource < FIRST_ITEM_RESOURCE_ID) {
+			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
 				double stored = settlement.getAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
@@ -309,7 +308,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 			}
 
-			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
+			else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				int needed = required.getValue().intValue();
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vehicle.getItemResourceStored(resource);

@@ -35,12 +35,10 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -69,24 +67,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
-	private static final double JOB_STRESS_MODIFIER = .5D;
 	// if that task is an a.i. task within a person's job, then the stress effect is
 	// 1/2
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
-	protected static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
-
-	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
-
-	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	protected static final int FOOD_ID = ResourceUtil.foodID;
-	protected static final int WATER_ID = ResourceUtil.waterID;
-	protected static final int ICE_ID = ResourceUtil.iceID;
-	protected static final int REGOLITH_ID = ResourceUtil.regolithID;
-	protected static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 	
 	// Data members
 	/** True if task is finished. */
@@ -149,9 +135,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
-	public static HistoricalEventManager eventManager;
+	protected static HistoricalEventManager eventManager;
 	/** The static instance of the relationship manager */
-	public static RelationshipManager relationshipManager;
+	protected static RelationshipManager relationshipManager;
 	/** The static instance of the UnitManager */
 	protected static UnitManager unitManager;
 	/** The static instance of the ScientificStudyManager */
@@ -337,9 +323,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 						""));
 			}
 		}
-//		else {
-//			logger.warning(worker, "EndTask repeated " + name);
-//		}
 	}
 
 	/**
@@ -707,14 +690,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			double effectiveStressModifier = stressModifier;
 
-			if (stressModifier > 0D) {
-
-				JobType job = person.getMind().getJob();
-
-				//	TODO What to do about this ?
-//				if ((job != null) && JobUtil.getJobSpec(job).isJobRelatedTask(getClass())) {
-//					effectiveStressModifier *= JOB_STRESS_MODIFIER;
-//				}
+			if (effectiveStressModifier > 0D) {
 
 				// Reduce stress modifier for person's skill related to the task.
 				int skill = getEffectiveSkillLevel();

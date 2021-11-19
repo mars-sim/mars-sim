@@ -73,6 +73,9 @@ public class EatDrink extends Task implements Serializable {
 	private static final TaskPhase DRINK_WATER = new TaskPhase(Msg.getString("Task.phase.drinkingWater")); //$NON-NLS-1$
 
 	// Static members
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
 	private static final double DESSERT_STRESS_MODIFIER = -.8D;

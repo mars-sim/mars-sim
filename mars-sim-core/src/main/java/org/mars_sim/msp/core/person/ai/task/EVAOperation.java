@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -64,9 +63,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 			Msg.getString("Task.phase.dropOffResource")); //$NON-NLS-1$
 	protected static final TaskPhase WALK_TO_BIN = new TaskPhase(
 			Msg.getString("Task.phase.walkToBin")); //$NON-NLS-1$
-	
-	private static final String WALK_BACK_INSIDE_DESCRIPTION = 
-			Msg.getString("Task.description.walk.backInside");  //$NON-NLS-1$
 	
 	// Static members
 	/** The stress modified per millisol. */
