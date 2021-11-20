@@ -17,6 +17,7 @@ import org.mars.sim.console.chat.simcommand.unit.EquipmentCommand;
 import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.unit.MissionCommand;
+import org.mars.sim.console.chat.simcommand.unit.ResourceHolderRefillCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitMalfunctionCommand;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -30,7 +31,7 @@ public class VehicleChat extends ConnectedUnitCommand {
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(VehicleSpecCommand.SPEC,
 																	AirlockCommand.AIRLOCK,
 																	VehicleCrewCommand.CREW,
-																	VehicleRefillCommand.REFUEL,
+																	new ResourceHolderRefillCommand(VEHICLE_GROUP),
 																	new EquipmentCommand(VEHICLE_GROUP),
 																	new InventoryCommand(VEHICLE_GROUP),
 																	new MissionCommand(VEHICLE_GROUP),

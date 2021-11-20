@@ -150,7 +150,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
 
         MedicalAid result = null;
 
-        List<MedicalAid> goodMedicalAids = new ArrayList<MedicalAid>();
+        List<MedicalAid> goodMedicalAids = new ArrayList<>();
 
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(

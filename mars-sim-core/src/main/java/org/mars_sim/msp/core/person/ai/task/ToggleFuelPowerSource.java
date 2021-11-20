@@ -141,26 +141,6 @@ implements Serializable {
     }
 
     /**
-     * Determine location to toggle power source.
-     * @return location.
-     */
-    private Point2D determineToggleLocation() {
-
-        Point2D.Double newLocation = new Point2D.Double(0D, 0D);
-
-        boolean goodLocation = false;
-        for (int x = 0; (x < 50) && !goodLocation; x++) {
-            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
-                    boundedLocalPoint.getY(), building);
-            goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-                    person.getCoordinates());
-        }
-
-        return newLocation;
-    }
-
-    /**
      * Walk to power source building.
      * @param powerBuilding the power source building.
      */
@@ -349,7 +329,7 @@ implements Serializable {
 
     @Override
     public List<SkillType> getAssociatedSkills() {
-        List<SkillType> result = new ArrayList<SkillType>(2);
+        List<SkillType> result = new ArrayList<>(2);
         result.add(SkillType.MECHANICS);
         if (isEVA) {
             result.add(SkillType.EVA_OPERATIONS);

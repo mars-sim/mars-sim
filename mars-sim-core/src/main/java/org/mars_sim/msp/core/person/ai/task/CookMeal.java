@@ -7,10 +7,9 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -373,7 +372,7 @@ public class CookMeal extends Task implements Serializable {
 	 * @throws BuildingException if error
 	 */
 	private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) {
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		if (kitchenBuildings != null) {
 			Iterator<Building> i = kitchenBuildings.iterator();
