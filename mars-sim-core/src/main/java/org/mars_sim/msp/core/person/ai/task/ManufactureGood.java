@@ -556,7 +556,7 @@ public class ManufactureGood extends Task implements Serializable {
 		Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
-			if (process.getInfo().getName() == processInfo.getName()) {
+			if (process.getInfo().getName().equals(processInfo.getName())) {
 				result = true;
 			}
 		}

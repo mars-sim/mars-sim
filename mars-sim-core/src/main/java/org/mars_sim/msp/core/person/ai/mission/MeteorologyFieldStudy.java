@@ -71,11 +71,6 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 		return new MeteorologyStudyFieldWork(person, leadResearcher, study, vehicle);
 	}
 
-	@Override
-	protected boolean canResearchSite(MissionMember researcher) {
-		return MeteorologyStudyFieldWork.canResearchSite(researcher, getRover());
-	}
-
 	/**
 	 * Need some Specimen boxes
 	 */

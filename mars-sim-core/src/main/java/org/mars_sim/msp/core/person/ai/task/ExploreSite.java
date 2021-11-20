@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
@@ -78,8 +77,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		this.rover = rover;
 		
 		// Determine location for field work.
-		Point2D exploreLoc = determineExploreLocation();
-		setOutsideSiteLocation(exploreLoc.getX(), exploreLoc.getY());
+		setRandomOutsideLocation(rover);
 
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
@@ -93,34 +91,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		
 		// Add task phase
 		addPhase(EXPLORING);
-	}
-
-	/**
-	 * Determine location to explore.
-	 * 
-	 * @return field work X and Y location outside rover.
-	 */
-	private Point2D determineExploreLocation() {
-
-		Point2D newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
-
-				double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
-
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						rover);
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			}
-		}
-
-		return newLocation;
 	}
 
 	/**

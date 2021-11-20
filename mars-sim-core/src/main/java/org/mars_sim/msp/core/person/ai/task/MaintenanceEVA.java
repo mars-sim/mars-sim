@@ -6,18 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -43,7 +41,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(MaintenanceEVA.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(MaintenanceEVA.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -65,14 +63,6 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
-//		if (shouldEndEVAOperation()) {
-//        	if (person.isOutside())
-//        		setPhase(WALK_BACK_INSIDE);
-//        	else
-//        		endTask();
-//        	return;
-//        }
-			
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -119,13 +109,12 @@ implements Serializable {
 		}
 
         // Determine location for maintenance.
-        Point2D maintenanceLoc = determineMaintenanceLocation();
-        setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
+        setOutsideLocation((LocalBoundedObject) entity);
 
 		// Initialize phase
 		addPhase(MAINTAIN);
 
-		logger.fine(person.getName() + " was starting " + getDescription());
+		logger.fine(person, "Starting " + getDescription());
 	}
 
 	public MaintenanceEVA(Robot robot) {
@@ -155,28 +144,6 @@ implements Serializable {
 //		logger.finest(robot.getName() + " is starting " + getDescription());
 	}
 
-    /**
-     * Determine location to perform maintenance.
-     * @return location.
-     */
-    private Point2D determineMaintenanceLocation() {
-
-        Point2D.Double newLocation = new Point2D.Double(0D, 0D);
-
-        if (entity instanceof LocalBoundedObject) {
-            LocalBoundedObject bounds = (LocalBoundedObject) entity;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 50) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(bounds, 1D);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
-                        boundedLocalPoint.getY(), bounds);
-                goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-                        worker.getCoordinates());
-            }
-        }
-
-        return newLocation;
-    }
 
     @Override
     protected TaskPhase getOutsideSitePhase() {
@@ -263,9 +230,6 @@ implements Serializable {
 				int number = parts.get(part);
 				settlement.retrieveItemResource(part, number);
 				manager.maintainWithParts(part, number);
-				// Add item demand
-//				inv.addItemDemandTotalRequest(part, number);
-//				inv.addItemDemand(part, number);
 			}
 
 	        // Add work to the maintenance
@@ -306,7 +270,7 @@ implements Serializable {
 		Malfunctionable result = null;
 
 		// Determine all malfunctionables local to the person.
-		Map<Malfunctionable, Double> malfunctionables = new HashMap<Malfunctionable, Double>();
+		Map<Malfunctionable, Double> malfunctionables = new HashMap<>();
 
 		if (person != null) {
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();

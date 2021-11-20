@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.InventoryUtil;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -101,8 +100,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		this.containerType = containerType;
 
 		// Determine location for collection site.
-		Point2D collectionSiteLoc = determineCollectionSiteLocation();
-		setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
+		setRandomOutsideLocation(rover);
 
 		// Take container for collecting resource.
 		if (!hasAContainer()) {
@@ -127,33 +125,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 		addPhase(COLLECT_RESOURCES);
 	}
 
-	/**
-	 * Determine location for the collection site.
-	 * 
-	 * @return site X and Y location outside rover.
-	 */
-	private Point2D determineCollectionSiteLocation() {
-
-		Point2D newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
-
-				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
-
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						rover);
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			}
-		}
-
-		return newLocation;
-	}
 
 	@Override
 	protected TaskPhase getOutsideSitePhase() {

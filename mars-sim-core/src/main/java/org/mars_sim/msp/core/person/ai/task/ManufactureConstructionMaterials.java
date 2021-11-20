@@ -589,7 +589,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
-			if (process.getInfo().getName() == processInfo.getName()) {
+			if (process.getInfo().getName().equals(processInfo.getName())) {
 				result = true;
 			}
 		}

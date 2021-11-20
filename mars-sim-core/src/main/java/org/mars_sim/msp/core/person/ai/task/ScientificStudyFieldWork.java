@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * AreologyStudyFieldWork.java
- * @date 2021-08-28
- * @author Scott Davis
+ * ScientificStudyFieldWork.java
+ * @date 2021-11-19
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -10,7 +10,6 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -58,41 +57,11 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 		this.rover = rover;
 
 		// Determine location for field work.
-		Point2D fieldWorkLoc = determineFieldWorkLocation();
-		if (fieldWorkLoc != null)
-			setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
+		setRandomOutsideLocation(rover);
 
 		// Add task phases
 		this.fieldWork = fieldwork;
 		addPhase(fieldWork);
-	}
-
-	/**
-	 * Determine location for field work.
-	 * 
-	 * @return field work X and Y location outside rover.
-	 */
-	private Point2D determineFieldWorkLocation() {
-
-		Point2D newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
-
-				double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
-
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						rover);
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			}
-		}
-
-		return newLocation;
 	}
 
 	/**
@@ -180,6 +149,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 
 	/**
 	 * Performs any specific study activities
+	 * @param time Time to do the study; maybe used by overriding classes
 	 * @return Is the field work completed
 	 */
 	protected boolean performStudy(double time) {

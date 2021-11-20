@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -126,8 +125,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			loadingPlan = vehicleMission.prepareLoadingPlan(starter.getAssociatedSettlement());
 			
 			// Determine location for loading.
-			Point2D loadingLoc = determineLoadingLocation();
-			setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
+			setOutsideLocation(vehicle);
 
 			// Initialize task phase
 			addPhase(LOADING);
@@ -294,25 +292,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		return vehicle;
 	}
 
-	/**
-	 * Determine location to load the vehicle.
-	 * 
-	 * @return location.
-	 */
-	private Point2D determineLoadingLocation() {
-
-		Point2D.Double newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					vehicle);
-			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-					worker.getCoordinates());
-		}
-
-		return newLocation;
-	}
 
 	@Override
 	protected TaskPhase getOutsideSitePhase() {

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
@@ -38,6 +39,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -623,6 +625,73 @@ public abstract class EVAOperation extends Task implements Serializable {
 		return false;
 	}
 
+
+	/**
+	 * Determine a random location for for working outside a Rover for the
+	 * assigned Worker.
+	 * If no site is found then the Task is ended
+	 * 
+	 * @param rover Base rover hosting EVA
+	 * @return Was a site found
+	 */
+	protected boolean setRandomOutsideLocation(Rover rover) {
+
+		Point2D newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 5) && !goodLocation; x++) {
+			for (int y = 0; (y < 10) && !goodLocation; y++) {
+
+				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+
+				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+						rover);
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+						worker.getCoordinates());
+			}
+		}
+
+		if (goodLocation) {
+			setOutsideSiteLocation(newLocation.getX(), newLocation.getY());
+		}
+		else {
+			endTask();
+			logger.warning(worker, "Can not find a suitable random EVA location");
+		}
+		return goodLocation;
+	}
+	
+	/**
+	 * Set the outside location near a BoundedObject
+	 * @param basePoint 
+	 * 
+	 * @return A locaiton has been choosen.
+	 */
+	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
+
+		Point2D.Double newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 50) && !goodLocation; x++) {
+			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(basePoint, 1D);
+			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+					basePoint);
+			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+					worker.getCoordinates());
+		}
+
+		if (goodLocation) {
+			setOutsideSiteLocation(newLocation.getX(), newLocation.getY());
+		}
+		else {
+			endTask();
+			logger.warning(worker, "Can not find a suitable EVA location near " + basePoint);
+		}
+		return goodLocation;
+	}
+	
 	/**
 	 * Gets the closest available airlock to a given location that has a walkable
 	 * path from the person's current location.

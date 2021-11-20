@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
@@ -99,8 +98,7 @@ implements Serializable {
             vehicle.setReservedForMaintenance(true);
             vehicle.addStatus(StatusType.MAINTENANCE);
             // Determine location for maintenance.
-            Point2D maintenanceLoc = determineMaintenanceLocation();
-            setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
+            setOutsideLocation(vehicle);
             
             // Initialize phase.
             addPhase(MAINTAIN_VEHICLE);
@@ -116,25 +114,6 @@ implements Serializable {
         }
     }
 
-    /**
-     * Determine location to perform vehicle maintenance.
-     * 
-     * @return location.
-     */
-    private Point2D determineMaintenanceLocation() {
-
-        Point2D.Double newLocation = null;
-        boolean goodLocation = false;
-        for (int x = 0; (x < 50) && !goodLocation; x++) {
-            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
-                    boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-                    person.getCoordinates());
-        }
-
-        return newLocation;
-    }
 
     @Override
     protected TaskPhase getOutsideSitePhase() {

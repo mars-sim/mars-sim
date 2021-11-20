@@ -21,9 +21,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -56,7 +54,6 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	// Data members
 	private Coordinates site;
-	private Rover rover;
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
 
@@ -75,7 +72,6 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		// Initialize data members.
 		this.site = site;
-		this.rover = rover;
 		this.luv = luv;
 		operatingLUV = false;
 
@@ -96,75 +92,10 @@ public class MineSite extends EVAOperation implements Serializable {
 		}
 		
 		// Determine location for mining site.
-		Point2D miningSiteLoc = determineMiningSiteLocation();
-		setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
+		setRandomOutsideLocation(rover);
 
 		// Add task phase
 		addPhase(MINING);
-	}
-
-	public MineSite(Robot robot, Coordinates site, Rover rover, LightUtilityVehicle luv) {
-
-		// Use EVAOperation parent constructor.
-		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.AREOLOGY);
-
-		// Initialize data members.
-		this.site = site;
-		this.rover = rover;
-		this.luv = luv;
-		operatingLUV = false;
-
-		if (shouldEndEVAOperation()) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-        }
-		
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-		}
-		
-		// Determine location for mining site.
-		Point2D miningSiteLoc = determineMiningSiteLocation();
-		setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
-
-		// Add task phase
-		addPhase(MINING);
-	}
-
-	/**
-	 * Determine location for the mining site.
-	 * 
-	 * @return site X and Y location outside rover.
-	 */
-	private Point2D determineMiningSiteLocation() {
-
-		Point2D newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
-
-				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
-
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						rover);
-
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							worker.getCoordinates());
-			}
-		}
-
-		return newLocation;
 	}
 
 	/**

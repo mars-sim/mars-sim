@@ -68,15 +68,4 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
 		return new AreologyStudyFieldWork(person, leadResearcher, study, vehicle);
 	}
-
-	/**
-	 * Can a researcher do the field study
-	 * @param researcher
-	 * @param rover Current vehicle
-	 */
-	@Override
-	protected boolean canResearchSite(MissionMember researcher) {
-		return AreologyStudyFieldWork.canResearchSite(researcher, getRover()); 
-	}
-
 }

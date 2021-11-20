@@ -10,7 +10,6 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -86,8 +85,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					entity.getNickName())); // $NON-NLS-1$
 
 			// Determine location for repairing malfunction.
-			Point2D malfunctionLoc = determineMalfunctionLocation();
-			setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+			setOutsideLocation((LocalBoundedObject) entity);
 			
 			// Can fail to get a path and Task will be Done
 			if (!isDone()) {
@@ -163,30 +161,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return null;
 	}
 
-
-	/**
-	 * Determine location to repair malfunction.
-	 * 
-	 * @return location.
-	 */
-	private Point2D determineMalfunctionLocation() {
-
-		Point2D.Double newLocation = new Point2D.Double(0D, 0D);
-
-		if (entity instanceof LocalBoundedObject) {
-			LocalBoundedObject bounds = (LocalBoundedObject) entity;
-			boolean goodLocation = false;
-			for (int x = 0; (x < 50) && !goodLocation; x++) {
-				Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(bounds, 1D);
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						bounds);
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						worker.getCoordinates());
-			}
-		}
-
-		return newLocation;
-	}
 
 	@Override
 	protected TaskPhase getOutsideSitePhase() {

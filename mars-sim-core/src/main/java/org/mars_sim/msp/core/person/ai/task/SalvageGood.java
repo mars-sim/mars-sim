@@ -354,7 +354,7 @@ implements Serializable {
 		Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
 		while (i.hasNext()) {
 			SalvageProcess process = i.next();
-			if (process.getInfo().getItemName() == processInfo.getItemName()) {
+			if (process.getInfo().getItemName().equals(processInfo.getItemName())) {
 				result = true;
 			}
 		}

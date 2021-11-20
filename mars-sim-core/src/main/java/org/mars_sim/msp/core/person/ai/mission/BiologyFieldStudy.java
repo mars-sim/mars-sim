@@ -66,9 +66,4 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
 		return new BiologyStudyFieldWork(person, leadResearcher, study, vehicle);
 	}
-
-	@Override
-	protected boolean canResearchSite(MissionMember researcher) {
-		return BiologyStudyFieldWork.canResearchSite(researcher, getRover());
-	}
 }
