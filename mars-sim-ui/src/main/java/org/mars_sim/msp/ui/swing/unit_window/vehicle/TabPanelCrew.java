@@ -416,21 +416,33 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		void updateMembers() {
 			if (mission != null) {
-				clearMembers();
-				members = new ArrayList<MissionMember>(mission.getMembers());
-				Collections.sort(members, new Comparator<MissionMember>() {
-
+//				clearMembers();
+				List<MissionMember> newList = new ArrayList<MissionMember>(mission.getMembers());
+				Collections.sort(newList, new Comparator<MissionMember>() {
 					@Override
 					public int compare(MissionMember o1, MissionMember o2) {
 						return o1.getName().compareToIgnoreCase(o2.getName());
 					}
 				});
-				Iterator<MissionMember> i = members.iterator();
-				while (i.hasNext()) {
-					MissionMember member = i.next();
-					member.addUnitListener(this);
+
+				if (!members.equals(newList)) {
+					for (MissionMember mm: members) {
+						if (!newList.contains(mm)) {
+							mm.removeUnitListener(this);
+						}
+					}
+
+					for (MissionMember mm: newList) {
+						if (!members.contains(mm)) {
+							mm.addUnitListener(this);
+						}
+					}
+
+					// Replace the old member list with new one.
+					members = newList;
+
+					SwingUtilities.invokeLater(new MemberTableUpdater());
 				}
-				SwingUtilities.invokeLater(new MemberTableUpdater());
 			} else {
 				if (members.size() > 0) {
 					clearMembers();

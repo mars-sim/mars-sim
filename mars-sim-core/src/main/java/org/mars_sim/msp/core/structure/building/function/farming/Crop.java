@@ -149,17 +149,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double diseaseIndex = 0;
 
 	private double cumulativeWaterUsed = 0;
-
 	private double cumulativeO2Generated = 0;
-
 	private double cumulativeCO2Consumed = 0;
 
 	private double co2Cache = 0;
-
-	private final double co2Threshold;
-
 	private double o2Cache = 0;
 
+	private final double co2Threshold;
 	private final double o2Threshold;
 
 	private final static int LIGHT_FACTOR = 0;
@@ -171,6 +167,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR+1];
+
+	private String name;
 
 	private CropSpec cropSpec;
 
@@ -215,6 +213,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		this.isStartup = isStartup;
 		this.co2Threshold = growingArea/10.0;
 		this.o2Threshold = growingArea/10.0;
+		this.name = cropSpec.getName();
 
 		// Set up env factor to be balanced
 		Arrays.fill(environmentalFactor, 1D);
@@ -248,7 +247,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
-				logger.log(building, Level.INFO, 0, " No " + cropSpec.getName()
+				logger.log(building, Level.INFO, 0, " No " + name
 						+ " tissue-culture left. Restocking.");
 				// Need a petri dish
 				if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
@@ -263,10 +262,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.log(building, Level.INFO, 0, "Done growing " + cropSpec.getName()
+				logger.log(building, Level.INFO, 0, "Done growing " + name
 						+ "'s tissue-culture. Transferring plantflets to the field.");
+
 				// if it's growing mushroom
-				setupMushroom();
+				if (name.toLowerCase().contains(MUSHROOM)) {
+					setupMushroom();
+				}
 			}
 
 			else {
@@ -274,7 +276,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired() * (100D - tissuePercent) / 100D;
 				logger.log(building, Level.INFO, 0, "A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
-								+ " sols is needed to clone enough " + cropSpec.getName() + " tissues before planting.");
+								+ " sols is needed to clone enough " + name + " tissues before planting.");
 			}
 
 		}
@@ -304,23 +306,23 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	}
 
+	/**
+	 * Set up mushroom
+	 */
 	private void setupMushroom() {
-		if (cropSpec.getName().toLowerCase().contains(MUSHROOM)) {
-
-			if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
-				building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
-			}
-			// Need a petri dish
-			if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
-				building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
-			}
-			else
-				logger.log(building, Level.WARNING, 60_000, "No petri dish left for isolating " + cropSpec.getName()
-					+ " tissue-culture.");
-			// Require some dead matter for fungi to decompose
-			if (growingArea * .2 > MIN)
-				retrieve(growingArea * .2, CROP_WASTE_ID, true);
+		if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
+			building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
 		}
+		// Need a petri dish
+		if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
+			building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+		}
+		else
+			logger.log(building, Level.WARNING, 60_000, "No petri dish left for isolating " + name
+				+ " tissue-culture.");
+		// Require some dead matter for fungi to decompose
+		if (growingArea * .2 > MIN)
+			retrieve(growingArea * .2, CROP_WASTE_ID, true);
 	}
 
 	public double getLightingPower() {
@@ -346,7 +348,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return crop name
 	 */
 	public String getCropName() {
-		return cropSpec.getName();
+		return name;
 	}
 
 	/**
@@ -432,13 +434,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (percentageGrowth > 10D) {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
-				logger.log(building, Level.WARNING, 0, "Crop " + cropSpec.getName()
+				logger.log(building, Level.WARNING, 0, "Crop " + name
 						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %)");
 				// Add Crop Waste
 				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
-					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + cropSpec.getName());
+					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
 				}
 				phaseType = PhaseType.FINISHED;
 			}
@@ -448,13 +450,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
 			if (health < .2) {
-				logger.log(building, Level.WARNING, 0, "The seedlings of " + cropSpec.getName() + " had poor health ("
+				logger.log(building, Level.WARNING, 0, "The seedlings of " + name + " had poor health ("
 						+ Math.round(health * 100D) / 100D + " %) and didn't survive.");
 				// Add Crop Waste
 				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
-					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + cropSpec.getName());
+					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
 				}
 				phaseType = PhaseType.FINISHED;
 			}
@@ -504,9 +506,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public double addWork(Worker worker, double workTime) {
 		// Called by Farming's addWork()
-		double remainingTime = 0;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
-		String name = cropSpec.getName();
+		double remainingTime = 0;
 
 		// Improve the health of the crop each time it's being worked on
 		if (healthCondition < 1)
@@ -601,7 +602,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			break;
 
 		case FINISHED:
-			// Shouldn;t be here
+			// Shouldn't be here
 			break;
 
 		default:
@@ -649,13 +650,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
 		double cropWaste = inedible * RATIO_LEAVES;
 		if (cropWaste > 0) {
-			store(cropWaste, CROP_WASTE_ID, "Crop::collectProduce");
+			store(cropWaste, CROP_WASTE_ID, source);
 		}
 
 		if (cropSpec.getCropCategoryType() == CropCategoryType.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				store(leaves, ResourceUtil.leavesID, "Crop::collectProduce");
+				store(leaves, ResourceUtil.leavesID, source);
 			}
 		}
 	}
@@ -666,7 +667,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @param currentSol
 	 */
 	private synchronized void updateUsage(int currentSol) {
-		String name = cropSpec.getName();
+
 //		if (cumulative_water_usage > 0) {
 			// Records the water usage per crop in the farm
 			farm.addCropUsage(name, cumulativeWaterUsed, currentSol, 0);
@@ -1325,7 +1326,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	@Override
 	public String toString() {
-		return "Crop [name=" + cropSpec.getName() + " @ " + building + "]";
+		return "Crop [name=" + name + " @ " + building + "]";
 	}
 
 	@Override
