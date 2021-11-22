@@ -426,6 +426,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				});
 
 				if (!members.equals(newList)) {
+					List<Integer> rows = new ArrayList<Integer>();
+
 					for (MissionMember mm: members) {
 						if (!newList.contains(mm)) {
 							mm.removeUnitListener(this);
@@ -435,13 +437,18 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 					for (MissionMember mm: newList) {
 						if (!members.contains(mm)) {
 							mm.addUnitListener(this);
+							int index = newList.indexOf(mm);
+							rows.add(index);
 						}
 					}
 
 					// Replace the old member list with new one.
 					members = newList;
 
-					SwingUtilities.invokeLater(new MemberTableUpdater());
+					for (int i : rows) {
+						// Update this row
+						SwingUtilities.invokeLater(new MemberTableUpdater(i));
+					}
 				}
 			} else {
 				if (members.size() > 0) {
@@ -494,6 +501,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				entireData = false;
 			}
 
+			private MemberTableUpdater(int row) {
+				this.row = row;
+				this.column = -1;
+				entireData = false;
+			}
+
 			private MemberTableUpdater() {
 				entireData = true;
 			}
@@ -501,6 +514,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			public void run() {
 				if (entireData) {
 					fireTableDataChanged();
+				} else if (column == -1) {
+					fireTableRowsUpdated(row, row);
 				} else {
 					fireTableCellUpdated(row, column);
 				}
