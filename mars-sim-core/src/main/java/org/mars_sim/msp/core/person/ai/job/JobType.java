@@ -18,19 +18,19 @@ public enum JobType {
 	ASTRONOMER			(Msg.getString("JobType.Astronomer")), //$NON-NLS-1$
 	BIOLOGIST			(Msg.getString("JobType.Biologist")), //$NON-NLS-1$
 	BOTANIST			(Msg.getString("JobType.Botanist")), //$NON-NLS-1$t
-	
+
 	CHEF				(Msg.getString("JobType.Chef")), //$NON-NLS-1$
 	CHEMIST				(Msg.getString("JobType.Chemist")), //$NON-NLS-1$
 	COMPUTER_SCIENTIST  (Msg.getString("JobType.ComputerScientist")),  //$NON-NLS-1$
 	DOCTOR				(Msg.getString("JobType.Doctor")), //$NON-NLS-1$
 	ENGINEER			(Msg.getString("JobType.Engineer")), //$NON-NLS-1$
-	
+
 	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
 	METEOROLOGIST		(Msg.getString("JobType.Meteorologist")), //$NON-NLS-1$
 	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
 	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
 	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
-	
+
 	PSYCHOLOGIST		(Msg.getString("JobType.Psychologist")), //$NON-NLS-1$
 	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
 	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
@@ -40,7 +40,7 @@ public enum JobType {
 	/**
 	 * That have an academic background
 	 */
-	public static final Set<JobType> ACADEMICS = 
+	public static final Set<JobType> ACADEMICS =
 				Set.of(JobType.AREOLOGIST,
 						JobType.ASTRONOMER,
 						JobType.BIOLOGIST,
@@ -85,16 +85,17 @@ public enum JobType {
 								JobType.BOTANIST,
 								JobType.CHEMIST,
 								JobType.COMPUTER_SCIENTIST,
-								JobType.PHYSICIST);
-							
-					
+								JobType.PHYSICIST
+								);
+
+
 	private String name;
 
 	/** hidden constructor. */
 	private JobType(String name) {
 		this.name = name;
 	}
-	
+
 	public final String getName() {
 		return this.name;
 	}
@@ -103,7 +104,7 @@ public enum JobType {
 	public final String toString() {
 		return getName();
 	}
-	
+
 	public static JobType getJobTypeByName(String name) {
 		if (name != null) {
 	    	for (JobType ra : JobType.values()) {
@@ -113,5 +114,20 @@ public enum JobType {
 	    	}
 		}
 		throw new IllegalArgumentException("Cannot find a Job with the name " + name);
+	}
+
+	/**
+	 * Is this job of an academic type ?
+	 *
+	 * @param type
+	 * @return
+	 */
+	public static boolean isAcademic(JobType type) {
+		for (JobType ra : JobType.values()) {
+    		if (ra == type) {
+    			return true;
+    		}
+    	}
+		return false;
 	}
 }

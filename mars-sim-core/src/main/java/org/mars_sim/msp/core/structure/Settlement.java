@@ -3049,7 +3049,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			waterRationLevel = 1000;
 
 		if (waterRationLevel > 100)
-			logger.severe(this, 20_000L, "Water Ration Level: " + Math.round(ratio * 10.0)/10.0);
+			logger.severe(this, 20_000L, "Water Ration Level: " + waterRationLevel);//Math.round(ratio * 10.0)/10.0);
 	}
 
 	/**

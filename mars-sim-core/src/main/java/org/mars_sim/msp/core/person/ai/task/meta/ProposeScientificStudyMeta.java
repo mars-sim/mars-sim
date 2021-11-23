@@ -50,7 +50,7 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
         double result = 0D;
 
-        if (!ScienceType.isScienceJob(person.getMind().getJob())) {
+        if (!JobType.isAcademic(person.getMind().getJob())) {
         	return 0;
         }
 
@@ -75,9 +75,21 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	            Role role = person.getRole();
 
 	            // Check person has a science role
-	            if ((role != null) && ((role.getType() == RoleType.CHIEF_OF_SCIENCE)
-	            				|| (role.getType() == RoleType.SCIENCE_SPECIALIST))) {
-	                result += 40D;
+	            if (role != null) {
+	            	if (role.getType() == RoleType.CHIEF_OF_SCIENCE
+	            		|| role.getType() == RoleType.SCIENCE_SPECIALIST) {
+	            			result += 40D;
+	            	}
+	            	else if (role.getType() == RoleType.CHIEF_OF_AGRICULTURE
+		            		|| role.getType() == RoleType.AGRICULTURE_SPECIALIST
+		            		) {
+            			result += 20D;
+            		}
+	            	else if (role.getType() == RoleType.CHIEF_OF_COMPUTING
+		            		|| role.getType() == RoleType.COMPUTING_SPECIALIST
+		            		) {
+            			result += 30D;
+            		}
 	            }
 	            else
 	            	result += 1D;

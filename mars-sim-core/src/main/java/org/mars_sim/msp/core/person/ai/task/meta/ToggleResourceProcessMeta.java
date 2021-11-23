@@ -28,7 +28,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 
 	private static final double FACTOR = 10_000D;
-	
+
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -47,17 +47,24 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 		// Note: A person can now remotely toggle the resource process
 		// instead of having to do an EVA outside.
-		// Question: are there circumstances when a person still 
-		// has to go outside ? 
+		// Question: are there circumstances when a person still
+		// has to go outside ?
 		if (person.isInSettlement()) {
-   
+
 			Settlement settlement = person.getSettlement();
 
 			// Check if settlement has resource process override set.
 			if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 				Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
 				if (building != null) {
-					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					
+					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
+
+					String name = process.getProcessName();
+
+					if (name.toLowerCase().contains("sabatier")) {
+						int waterRationLevel = settlement.getWaterRationLevel();
+						result += waterRationLevel;
+					}
 
 					double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
 					double baseProb = diff * FACTOR;
@@ -65,7 +72,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 						baseProb = 10000;
 					}
 					result += baseProb;
-					
+
 	                if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 	                    // Factor in building crowding and relationship factors.
 	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);

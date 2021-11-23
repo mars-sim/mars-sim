@@ -43,16 +43,16 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String NAME_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
-	
-	private static final String C2 = "command and control"; 
-	
+
+	private static final String C2 = "command and control";
+
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
-	
+
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
 	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
-	
+
 	private static final String OFF = "off";
 	private static final String ON = "on";
 
@@ -61,7 +61,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private boolean toBeToggledOn;
 	/** True if the finished phase of the process has been completed. */
 	private boolean finished = false;
-	
+
 	/** The resource process to toggle. */
 	private ResourceProcess process;
 	/** The building the resource process is in. */
@@ -71,16 +71,16 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public ToggleResourceProcess(Person person) {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 5D + RandomUtil.getRandomInt(5));
 
         if (person.isInSettlement()) {
-			process = selectResourceProcess(person);					
+			process = selectResourceProcess(person);
 			if (process != null) {
-				// Copy the current state of this process running 
+				// Copy the current state of this process running
 				toBeToggledOn = !process.isProcessRunning();
 
 				if (!toBeToggledOn) {
@@ -90,23 +90,23 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				else {
 					setDescription(NAME_ON);
 				}
-				
+
             	Management m = resourceProcessBuilding.getManagement();
     			if (m != null) {
     				destination = resourceProcessBuilding;
     				walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.MANAGEMENT, false);
     			}
-				
+
 				else {
 					boolean done = false;
 					// Pick an administrative building for remote access to the resource building
 					List<Building> admins = person.getSettlement().getBuildingManager()
 							.getBuildings(FunctionType.ADMINISTRATION);
-					
+
 					if (!admins.isEmpty()) {
-						
+
 						List<Building> adminsNotFull = new ArrayList<>();
-						
+
 						for (Building b : admins) {
 							if (b.getBuildingType().toLowerCase().equals(C2)) {
 								destination = b;
@@ -118,7 +118,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 								adminsNotFull.add(b);
 							}
 						}
-						
+
 						if (!done) {
 							if (!adminsNotFull.isEmpty()) {
 								int rand = RandomUtil.getRandomInt(admins.size()-1);
@@ -161,7 +161,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/**
 	 * Gets the building at a person's settlement with the resource process that
 	 * needs toggling.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return building with resource process to toggle, or null if none.
 	 */
@@ -192,7 +192,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	/**
 	 * Gets the resource process to toggle at a building.
-	 * 
+	 *
 	 * @param building the building
 	 * @return the resource process to toggle or null if none.
 	 */
@@ -221,7 +221,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	/**
 	 * Gets the resource process that needs toggling.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return the resource process to toggle or null if none.
 	 */
@@ -251,11 +251,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		return result;
 	}
 
-	
+
 	/**
 	 * Gets the resources value diff between inputs and outputs for a resource
 	 * process.
-	 * 
+	 *
 	 * @param settlement the settlement the resource process is at.
 	 * @param process    the resource process.
 	 * @return the resource value diff (value points)
@@ -274,10 +274,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			diff *= -1D;
 		}
 
+		// Check if settlement is missing one or more of the output resources.
+		if (isEmptyOutputResourceInProcess(settlement, process)) {
+			diff *= 2D;
+		}
+
 		// Check if settlement is missing one or more of the input resources.
 		if (isEmptyInputResourceInProcess(settlement, process)) {
 			if (process.isProcessRunning()) {
-				diff = 1D;
+				diff *= 1D;
 			} else {
 				diff = 0D;
 			}
@@ -287,7 +292,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	/**
 	 * Gets the total value of a resource process's input or output.
-	 * 
+	 *
 	 * @param settlement the settlement for the resource process.
 	 * @param process    the resource process.
 	 * @param input      is the resource value for the input?
@@ -316,11 +321,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
 				double remain = settlement.getAmountResourceRemainingCapacity(resource);
 //				double stored = cap - remain;
-		
+
 				if (input) {
 					rate = process.getMaxInputResourceRate(resource);
 
-					// For input value, the higher the stored, 
+					// For input value, the higher the stored,
 					if (rate > remain) {
 						rate = remain;
 					}
@@ -329,7 +334,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				} else {
 					rate = process.getMaxOutputResourceRate(resource);
 
-					// For output value, the 
+					// For output value, the
 					if (rate > remain) {
 						rate = remain;
 					}
@@ -344,7 +349,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	/**
 	 * Checks if a resource process has no input resources.
-	 * 
+	 *
 	 * @param settlement the settlement the resource is at.
 	 * @param process    the resource process.
 	 * @return true if any input resources are empty.
@@ -368,8 +373,31 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 
 	/**
+	 * Checks if a resource process has no output resources.
+	 *
+	 * @param settlement the settlement the resource is at.
+	 * @param process    the resource process.
+	 * @return true if any output resources are empty.
+	 */
+	private static boolean isEmptyOutputResourceInProcess(Settlement settlement, ResourceProcess process) {
+		boolean result = false;
+
+		Iterator<Integer> i = process.getOutputResources().iterator();
+		while (i.hasNext()) {
+			int resource = i.next();
+			double stored = settlement.getAmountResourceStored(resource);
+			if (stored == 0D) {
+				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Performs the toggle process phase.
-	 * 
+	 *
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
@@ -415,19 +443,19 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (destination == resourceProcessBuilding) {
 			checkForAccident(resourceProcessBuilding, time, 0.005D);
 		}
-		
+
 		return 0;
 	}
 
 	/**
 	 * Performs the finished phase.
-	 * 
+	 *
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double finishedPhase(double time) {
-		
-		if (!finished) {			
+
+		if (!finished) {
 			String toggle = OFF;
 			if (toBeToggledOn) {
 				toggle = ON;
@@ -436,9 +464,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			else {
 				process.setProcessRunning(false);
 			}
-	
+
 			if (destination == resourceProcessBuilding) {
-				logger.log(destination, person, Level.FINE, 0,  
+				logger.log(destination, person, Level.FINE, 0,
 						   "Manually turned " + toggle + " " + process.getProcessName()
 						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
@@ -452,7 +480,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			// Only need to run the finished phase once and for all
 			finished = true;
 		}
-		
+
 		return 0D;
 	}
 

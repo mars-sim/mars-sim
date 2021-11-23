@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -25,16 +24,16 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  * Meta task for the EatNDrink task.
  */
 public class EatDrinkMeta extends MetaTask {
-	
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		
+
 		setFavorite(FavoriteType.COOKING);
 	}
-    
+
 	@Override
 	public Task constructInstance(Person person) {
 		return new EatDrink(person);
@@ -51,7 +50,7 @@ public class EatDrinkMeta extends MetaTask {
 		if (container != null && container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
 			foodAmount = rh.getAmountResourceStored(FOOD_ID);
-			waterAmount = rh.getAmountResourceStored(WATER_ID);	
+			waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 //		else {
 //			if (inv != null) {
@@ -60,30 +59,30 @@ public class EatDrinkMeta extends MetaTask {
 //				waterAmount = inv.getAmountResourceStored(WATER_ID, false);
 //			}
 //		}
-		
+
 		boolean food = false;
 		boolean water = false;
-	
+
 		int meals = 0;
 		double mFactor = 1;
-		
+
 		int desserts = 0;
 		double dFactor = 1;
-		
+
 		// Check if a cooked meal is available in a kitchen building at the settlement.
 		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 		if (kitchen0 != null) {
 			meals = kitchen0.getNumberOfAvailableCookedMeals();
 			mFactor = 1.5 * meals;
-		} 
-		
+		}
+
 		// Check dessert is available in a kitchen building at the settlement.
 		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
 		if (kitchen1 != null) {
 			desserts = kitchen1.getAvailableServingsDesserts();
 			dFactor = 1.5 * desserts;
-		} 
-		
+		}
+
 		PhysicalCondition pc = person.getPhysicalCondition();
 
 		double thirst = pc.getThirst();
@@ -92,40 +91,40 @@ public class EatDrinkMeta extends MetaTask {
 
 		boolean hungry = pc.isHungry();
 		boolean thirsty = pc.isThirsty();
-		
-		
+
+
 		// CircadianClock cc = person.getCircadianClock();
 		// double ghrelin = cc.getSurplusGhrelin();
 		// double leptin = cc.getSurplusLeptin();
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
-		// persson per sol
-		
+		// person per sol
+
 		if (person.isInSettlement()) {
 			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
 				food = true;
 			}
-			
+
 			if (thirsty && waterAmount > 0) {
 				water = true;
 			}
 		}
-		
+
 		else if (person.isInVehicle()) {
 			if (hungry && (foodAmount > 0 || desserts > 0)) {
 				food = true;
 			}
-			
+
 			if (thirsty && waterAmount > 0) {
 				water = true;
 			}
 		}
-		
+
 		else {
 			if (thirsty && waterAmount > 0) {
 				water = true;
 			}
 		}
-		
+
 
 		if (food || water) {
 			// Calculate ...
@@ -135,14 +134,14 @@ public class EatDrinkMeta extends MetaTask {
 				h0 += hunger / 2D;
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
-				
+
 				if (person.isInSettlement()) {
-					
+
 					if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 						// If it's not meal time yet, reduce the probability
 						mFactor /= 5D;
 					}
-					
+
 					// Check if there is a local dining building.
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
 					if (diningBuilding != null) {
@@ -153,27 +152,27 @@ public class EatDrinkMeta extends MetaTask {
 					}
 				}
 			}
-			
+
 			double t0 = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
 			if (t0 <= 0)
 				t0 = 0;
-			
+
 			result = (h0 * mFactor * dFactor) + t0;
 		}
-		
+
 		else
-			return 0;		
+			return 0;
 
 		if (result <= 0)
 			return 0;
 		else
 			// Add Preference modifier
-			result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+			result += result * person.getPreference().getPreferenceScore(this) / 8D;
 
-//		 if (result > 100) 
-//			 logger.warning(person + "'s EatMealMeta : " 
+//		 if (result > 100)
+//			 logger.warning(person + "'s EatMealMeta : "
 //				 +  Math.round(result * 10D)/10D);
-		 
+
 		return result;
 	}
 }

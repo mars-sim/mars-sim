@@ -705,8 +705,13 @@ public class Farming extends Function implements Serializable {
 		return valid;
 	}
 
+	/**
+	 * Transfers the seedling
+	 *
+	 * @param time
+	 * @param worker
+	 */
 	public void transferSeedling(double time, Worker worker) {
-
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
 			CropSpec ct;
@@ -1084,8 +1089,8 @@ public class Farming extends Function implements Serializable {
 	 * @param waterUssed
 	 * @param solElapsed
 	 */
-	public void addDailyWaterUsage(double waterUssed) {
-		dailyWaterUsage.increaseDataPoint(waterUssed);
+	public void addDailyWaterUsage(double waterUsed) {
+		dailyWaterUsage.increaseDataPoint(waterUsed);
 	}
 
 	public int getNumCrops2Plant() {

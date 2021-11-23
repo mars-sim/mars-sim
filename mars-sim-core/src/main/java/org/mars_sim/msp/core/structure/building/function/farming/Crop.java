@@ -31,7 +31,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
-	private static final double TUNING_FACTOR = .18;
+	private static final double TUNING_FACTOR = .08;
 
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	/**
@@ -905,7 +905,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	private void computeWaterFertilizer(double compositeFactor, double time, double greyFilterRate) {
 		// Calculate water usage kg per sol
-		double waterRequired =  TUNING_FACTOR * compositeFactor * averageWaterNeeded;
+		double waterRequired = compositeFactor * averageWaterNeeded;
+		if (waterRequired <= 0)
+			return;
 		// Determine the amount of grey water available.
 		double gw = building.getSettlement().getAmountResourceStored(GREY_WATER_ID);
 		double greyWaterAvailable = Math.min(gw * greyFilterRate * time, gw);
@@ -965,7 +967,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// not enough fertilizer
 				fertilizerUsed = fertilizerAvailable;
 				// should incur penalty due to insufficient fertilizer
-				fertilizerModifier = fertilizerUsed / ( fertilizerRequired + 0.0001);
+				fertilizerModifier = fertilizerUsed / (fertilizerRequired + 0.0001);
 			} else {
 				// there's enough fertilizer
 				fertilizerModifier = 1D;
@@ -992,11 +994,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// Assume an universal rate of water vapor evaporation rate of 5%
 		// farm.addMoisture(totalWaterUsed*.05);
+
 		// Record the amount of water taken up by the crop
-		cumulativeWaterUsed = cumulativeWaterUsed + waterUsed;// * .95;
+		if (waterUsed > MIN)
+			addWaterUsed(waterUsed);
 
 		adjustEnvironmentFactor(waterModifier, WATER_FACTOR);
 
+	}
+
+	private synchronized void addWaterUsed(double amount) {
+		cumulativeWaterUsed += amount;
 	}
 
 	/***
@@ -1131,10 +1139,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// needFactor ranges from growthFactor * 2.5 to growthFactor * 11
 		}
 
-		double compositeFactor = needFactor * time / 1000.0 * growingArea;
+		double compositeFactor = TUNING_FACTOR * needFactor * time / 1000.0;
 
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(compositeFactor, time, greyFilterRate);
+		computeWaterFertilizer(compositeFactor * .5, time, greyFilterRate);
 
 		// STEP 5 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization
