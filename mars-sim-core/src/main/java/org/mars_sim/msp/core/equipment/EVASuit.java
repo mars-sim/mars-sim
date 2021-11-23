@@ -446,16 +446,6 @@ public class EVASuit extends Equipment
 	}
 
 	@Override
-	public String getImmediateLocation() {
-		return getLocationTag().getImmediateLocation();
-	}
-
-	@Override
-	public String getLocale() {
-		return getLocationTag().getLocale();
-	}
-
-	@Override
 	public Building getBuildingLocation() {
 		return getContainerUnit().getBuildingLocation();
 	}

@@ -25,8 +25,6 @@ import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 /**
  * The BuildingAirlock class represents an airlock for a building.
@@ -255,11 +253,6 @@ public class BuildingAirlock extends Airlock {
     @Override
     public Object getEntity() {
         return building;
-    }
-
-    @Override
-    public String getLocale() {
-        return building.getLocale();
     }
 
     @Override

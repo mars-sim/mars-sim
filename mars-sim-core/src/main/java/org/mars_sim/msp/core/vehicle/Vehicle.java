@@ -1475,16 +1475,6 @@ public abstract class Vehicle extends Unit
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 
-	@Override
-	public String getImmediateLocation() {
-		return getLocationTag().getImmediateLocation();
-	}
-
-	@Override
-	public String getLocale() {
-		return getLocationTag().getLocale();
-	}
-
 	/**
 	 * Is the vehicle outside of a settlement but within its vicinity
 	 *

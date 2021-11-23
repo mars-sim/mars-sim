@@ -42,20 +42,6 @@ public interface Malfunctionable extends Loggable, Serializable {
 	public Collection<Person> getAffectedPeople();
 
 	/**
-	 * Gets the short location name associated with this entity.
-	 * 
-	 * @return location
-	 */
-	public String getImmediateLocation();
-
-	/**
-	 * Gets the long location name associated with this entity.
-	 * 
-	 * @return location
-	 */
-	public String getLocale();
-
-	/**
 	 * Get the Settlement associated with the malfunctioning entity.
 	 * @return
 	 */

@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 // see discussions on Airlocks for Mars Colony at
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -874,7 +873,7 @@ public abstract class Airlock implements Serializable {
 	 *
 	 * @return entity.
 	 */
-	public abstract String getLocale();
+	//public abstract String getLocale();
 
 	/**
 	 * Gets an available position inside the airlock entity.

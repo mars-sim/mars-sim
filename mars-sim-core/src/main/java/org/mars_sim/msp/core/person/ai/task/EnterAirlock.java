@@ -873,14 +873,14 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (person.isInside()) {
 			logger.log(person, Level.WARNING, 4_000,
-					"Could not enter " + airlock.getEntityName() + " in " + airlock.getLocale()
+					"Could not enter " + airlock.getEntityName()
 					+ ". Already inside and not outside.");
 			result = false;
 		}
 
 		else if (airlock.isChamberFull() || !airlock.hasSpace()) {
 			logger.log(person, Level.INFO, 4_000,
-					"Could not enter " + airlock.getEntityName() + " in " + airlock.getLocale()
+					"Could not enter " + airlock.getEntityName() 
 					+ ". Already full.");
 			result = false;
 		}

@@ -24,11 +24,6 @@ public class MockVehicle extends Vehicle {
 	public String getNickName() {
 		return getName();
 	}
-	
-	@Override
-	public String getImmediateLocation() {
-		return getLocationTag().getSettlementName();
-	}
 
 	@Override
 	public double getBaseWearLifetime() {

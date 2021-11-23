@@ -818,30 +818,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public String getNickName() {
 		return nickName;
 	}
-
-	@Override
-	public String getImmediateLocation() {
-		return getLocationTag().getImmediateLocation();
-	}
-
-	/**
-	 * Obtains the modified immediate location
-	 *
-	 * @return the name string of the location the unit is at
-	 */
-	public String getModifiedLoc() {
-		return getLocationTag().getModifiedLoc();
-	}
-
-	@Override
-	public String getLocale() {
-		return getLocationTag().getLocale();
-	}
-
-	public String getExtendedLocations() {
-		return getLocationTag().getExtendedLocation();
-	}
-
+	
 	public Settlement findSettlementVicinity() {
 		return getLocationTag().findSettlementVicinity();
 	}

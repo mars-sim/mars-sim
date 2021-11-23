@@ -1350,16 +1350,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	@Override
-	public String getImmediateLocation() {
-		return getLocationTag().getImmediateLocation();
-	}
-
-	@Override
-	public String getLocale() {
-		return getLocationTag().getLocale();
-	}
-
-	@Override
 	public Building getBuildingLocation() {
 		return this;
 	}

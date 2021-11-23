@@ -18,8 +18,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -191,11 +189,6 @@ extends Airlock {
 	@Override
 	public Object getEntity() {
 		return vehicle;
-	}
-
-	@Override
-	public String getLocale() {
-		return vehicle.getLocale();
 	}
 
 	@Override
