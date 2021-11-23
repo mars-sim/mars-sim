@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 public class ResourceProcessSpec implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String name;
 	private double powerRequired;
 	private boolean defaultOn;
@@ -32,19 +32,22 @@ public class ResourceProcessSpec implements Serializable {
 	private Map<Integer, Double> maxAmbientInputResourceRates;
 	private Map<Integer, Double> maxOutputResourceRates;
 	private Map<Integer, Double> maxWasteOutputResourceRates;
-	
+
 	// Cache some aggregate values
 	private transient Set<Integer> inputResources;
 	private transient Set<Integer> outputResources;
-	
+
 	/** The minimum period of time in millisols the process must stay on or off. */
 	private int togglePeriodicity = 200;
 
 	/** The work time required to toggle this process on or off. */
 	private int toggleDuration = 20;
 
-	public ResourceProcessSpec(String name, double powerRequired, boolean defaultOn) {
+	private int modules = 1;
+
+	public ResourceProcessSpec(String name, int modules, double powerRequired, boolean defaultOn) {
 		this.name = name;
+		this.modules = modules;
 		this.maxInputResourceRates = new HashMap<>();
 		this.maxAmbientInputResourceRates = new HashMap<>();
 		this.maxOutputResourceRates = new HashMap<>();
@@ -55,31 +58,31 @@ public class ResourceProcessSpec implements Serializable {
 
 	/**
 	 * Adds a maximum input resource rate if it doesn't already exist.
-	 * 
+	 *
 	 * @param resource the amount resource.
 	 * @param rate     max input resource rate (kg/millisol)
 	 * @param ambient  is resource from available from surroundings? (air)
 	 */
 	public void addMaxInputResourceRate(Integer resource, double rate, boolean ambient) {
 		if (ambient) {
-			maxAmbientInputResourceRates.put(resource, rate);
+			maxAmbientInputResourceRates.put(resource, modules * rate);
 		} else {
-			maxInputResourceRates.put(resource, rate);
+			maxInputResourceRates.put(resource, modules * rate);
 		}
 	}
 
 	/**
 	 * Adds a maximum output resource rate if it doesn't already exist.
-	 * 
+	 *
 	 * @param resource the amount resource.
 	 * @param rate     max output resource rate (kg/millisol)
 	 * @param waste    is resource waste material not to be stored?
 	 */
 	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
-			maxWasteOutputResourceRates.put(resource, rate);
+			maxWasteOutputResourceRates.put(resource, modules * rate);
 		} else {
-			maxOutputResourceRates.put(resource, rate);
+			maxOutputResourceRates.put(resource, modules * rate);
 		}
 	}
 
@@ -101,7 +104,7 @@ public class ResourceProcessSpec implements Serializable {
 			inputResources.addAll(maxInputResourceRates.keySet());
 			inputResources.addAll(maxAmbientInputResourceRates.keySet());
 		}
-		return inputResources;	
+		return inputResources;
 	}
 
 	/**
@@ -111,10 +114,10 @@ public class ResourceProcessSpec implements Serializable {
 	public Map<Integer, Double> getMaxInputResourceRates() {
 		return maxInputResourceRates;
 	}
-	
+
 	/**
 	 * Gets the max input resource rate for a given resource.
-	 * 
+	 *
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxInputResourceRate(Integer resource) {
@@ -125,10 +128,10 @@ public class ResourceProcessSpec implements Serializable {
 			result = maxAmbientInputResourceRates.get(resource);
 		return result;
 	}
-	
+
 	/**
 	 * Checks if resource is an ambient input.
-	 * 
+	 *
 	 * @param resource the resource to check.
 	 * @return true if ambient resource.
 	 */
@@ -136,7 +139,7 @@ public class ResourceProcessSpec implements Serializable {
 		return maxAmbientInputResourceRates.containsKey(resource);
 	}
 
-	
+
 	/**
 	 * Get all output from this process.
 	 * @return
@@ -149,7 +152,7 @@ public class ResourceProcessSpec implements Serializable {
 		}
 		return outputResources;
 	}
-	
+
 	/**
 	 * Get resource output rates of non-waste products
 	 * @return
@@ -158,10 +161,10 @@ public class ResourceProcessSpec implements Serializable {
 		return maxOutputResourceRates;
 	}
 
-	
+
 	/**
 	 * Gets the max output resource rate for a given resource.
-	 * 
+	 *
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxOutputResourceRate(Integer resource) {
@@ -171,18 +174,18 @@ public class ResourceProcessSpec implements Serializable {
 		else if (maxWasteOutputResourceRates.containsKey(resource))
 			result = maxWasteOutputResourceRates.get(resource);
 		return result;
-	}	
+	}
 
 	/**
 	 * Checks if resource is a waste output.
-	 * 
+	 *
 	 * @param resource the resource to check.
 	 * @return true if waste output.
 	 */
 	public boolean isWasteOutputResource(Integer resource) {
 		return maxWasteOutputResourceRates.containsKey(resource);
 	}
-	
+
 	public double getPowerRequired() {
 		return powerRequired;
 	}
@@ -202,7 +205,7 @@ public class ResourceProcessSpec implements Serializable {
 	public void setTogglePeriodicity(int togglePeriodicity) {
 		this.togglePeriodicity = togglePeriodicity;
 	}
-	
+
 	/**
 	 * How long does the toggle operation take for this process type
 	 * @return

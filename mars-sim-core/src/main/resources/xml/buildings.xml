@@ -115,6 +115,7 @@
 	<!ATTLIST process default (on|off) #REQUIRED>
 	<!ATTLIST process toggle-duration CDATA #IMPLIED>
 	<!ATTLIST process toggle-periodicity CDATA #IMPLIED>
+	<!ATTLIST process number-modules CDATA #IMPLIED>
 	<!ELEMENT input EMPTY>
 	<!ATTLIST input resource CDATA #REQUIRED>
 	<!ATTLIST input rate CDATA #REQUIRED>
@@ -511,7 +512,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				2CO : 16.8 g/mol
 				4H2O : 21.6 kg/sol
 				-->
-				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="3" power-required="0.47" default="on">
 				<!-- 33.6g imported from outside. 6g from storage
 					<input resource="carbon dioxide" rate="33.6" ambient="true" />
 					<input resource="carbon dioxide" rate="6" ambient="false" /-->
@@ -1114,7 +1115,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" power-required="1.88" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="5" power-required="1.88" default="on">
+					<!-- the amount of input and output (per module) -->
 					<input resource="carbon dioxide" rate="158.4" ambient="true" />
 					<input resource="hydrogen" rate="14.4" ambient="false" />
 					<output resource="methane" rate="19.2" ambient="false" />
@@ -2283,7 +2285,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" power-required="2.08" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="6" power-required="2.08" default="on">
 					<input resource="carbon dioxide" rate="264" ambient="true" />
 					<input resource="hydrogen" rate="24" ambient="false" />
 					<output resource="methane" rate="32" ambient="false" />
@@ -2832,8 +2834,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="2" ambient="false" />
 				</process>
 
-
-				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="3" power-required="0.47" default="on">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />

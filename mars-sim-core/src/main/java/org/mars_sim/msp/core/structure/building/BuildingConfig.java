@@ -66,6 +66,7 @@ public class BuildingConfig implements Serializable {
 
 	private static final String RESOURCE_PROCESSING = "resource-processing";
 
+	private static final String NUMBER_MODULES = "number-modules";
 	private static final String POWER_REQUIRED = "power-required";
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
@@ -102,11 +103,11 @@ public class BuildingConfig implements Serializable {
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED_LOCATION = "bed-location";
-	
+
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
-	
+
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
@@ -117,16 +118,16 @@ public class BuildingConfig implements Serializable {
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
 	private static final String COOLING_DEMAND = "cooling-demand";
-	
+
 	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param buildingDoc DOM document with building configuration
 	 */
 	public BuildingConfig(Document buildingDoc) {
-		
+
 		List<Element> buildingNodes = buildingDoc.getRootElement().getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
 			String buildingType = buildingElement.getAttributeValue(BUILDING_TYPE);
@@ -134,10 +135,10 @@ public class BuildingConfig implements Serializable {
 			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement));
 		}
 	}
-	
+
 	/**
 	 * Gets a set of all building types.
-	 * 
+	 *
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
@@ -146,7 +147,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Parse a building spec node
-	 * 
+	 *
 	 * @param buildingTypeName
 	 * @param buildingElement
 	 * @return
@@ -155,68 +156,68 @@ public class BuildingConfig implements Serializable {
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
 		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
-		
+
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
 		double roomTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
 		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
 		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
-		
+
 		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
 		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
-		
+
 		// Get functions
 		Map<FunctionType, BuildingSpec.FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
 			String name = element.getName().toUpperCase().trim().replace("-", "_");
 			FunctionType function = FunctionType.valueOf(name.toUpperCase());
-			
+
 			// Has any Activity spots ?
 			List<Point2D> spots = parseLocations(element, ACTIVITY, ACTIVITY_SPOT,
 													width, length);
-			
+
 			// Get attributes
 			Properties props = new Properties();
 			for(Attribute attr : element.getAttributes()) {
 				props.setProperty(attr.getName(), attr.getValue());
 			}
-			
+
 			BuildingSpec.FunctionSpec fspec = new BuildingSpec.FunctionSpec(props, spots);
-			
+
 			supportedFunctions.put(function, fspec);
 		}
 		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, width, length, baseLevel,
 			 	roomTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
-		
+
 		String thickness = buildingElement.getAttributeValue(THICKNESS);
 		if (thickness != null) {
 			newSpec.setWallThickness(Double.parseDouble(thickness));
 		}
-		
+
 		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
 		if (baseMass != null) {
 			newSpec.setBaseMass(Double.parseDouble(baseMass));
 		}
-			
+
 		// Get Storage
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
 		if (storageElement != null) {
 			parseStorage(newSpec, storageElement);
 		}
-		
+
 		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
 		if (thermalGenerationElement != null) {
 			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
 														   CAPACITY);
 			newSpec.setHeatSource(heatSourceList);
 		}
-		
+
 		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
 		if (powerGenerationElement != null) {
 			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
@@ -229,12 +230,12 @@ public class BuildingConfig implements Serializable {
 		if (computationElement != null) {
 			parseComputation(newSpec, computationElement);
 		}
-		
+
 		Element researchElement = functionsElement.getChild(RESEARCH);
 		if (researchElement != null) {
 			parseResearch(newSpec, researchElement);
 		}
-		
+
 		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
 		if (resourceProcessingElement != null) {
 			parseResourceProcessing(newSpec, resourceProcessingElement);
@@ -244,14 +245,14 @@ public class BuildingConfig implements Serializable {
 		if (wasteElement != null) {
 			parseWaste(newSpec, wasteElement);
 		}
-		
+
 		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
-			List<Point2D> parking = parseLocations(vehicleElement, "parking", PARKING_LOCATION, 	
+			List<Point2D> parking = parseLocations(vehicleElement, "parking", PARKING_LOCATION,
 												   width, length);
 			newSpec.setParking(parking);
 		}
-		
+
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
 			List<Point2D> beds = parseLocations(medicalElement, BEDS, BED_LOCATION,
@@ -278,9 +279,16 @@ public class BuildingConfig implements Serializable {
 
             double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
 
-			ResourceProcessSpec process = new ResourceProcessSpec(processElement.getAttributeValue(NAME), powerRequired,
+            int modules = 1;
+
+            String mods = processElement.getAttributeValue(NUMBER_MODULES);
+
+            if (mods != null)
+            	modules = Integer.parseInt(mods);
+
+			ResourceProcessSpec process = new ResourceProcessSpec(processElement.getAttributeValue(NAME), modules, powerRequired,
 					defaultOn);
-			
+
 			// Check optional attrs
 			String duration = processElement.getAttributeValue(TOGGLE_DURATION);
 			if (duration != null) {
@@ -329,13 +337,13 @@ public class BuildingConfig implements Serializable {
 
 		double powerDemand = Double.parseDouble(computationElement.getAttributeValue(POWER_DEMAND));
 //		newSpec.setPowerDemand(powerDemand);
-		
+
 		double coolingDemand = Double.parseDouble(computationElement.getAttributeValue(COOLING_DEMAND));
 //		newSpec.setCoolingDemand(coolingDemand);
-		
+
 		newSpec.setComputation(computingPower, powerDemand, coolingDemand);
 	}
-	
+
 	/**
 	 * Parse a specific research details
 	 * @param newSpec
@@ -343,7 +351,7 @@ public class BuildingConfig implements Serializable {
 	 */
 	private void parseResearch(BuildingSpec newSpec, Element researchElement) {
 		List<ScienceType> result = new ArrayList<>();
-		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
+		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
 			// The name of research-specialty in buildings.xml must conform to enum values of {@link
@@ -390,14 +398,14 @@ public class BuildingConfig implements Serializable {
 		Map<Integer, Double> storageMap = new HashMap<>();
 		Map<Integer, Double> initialMap = new HashMap<>();
 		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
-		
+
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 		for (Element resourceStorageElement : resourceStorageNodes) {
 			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
 			Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
 			Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
 			storageMap.put(resource, capacity);
-		}	
+		}
 
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
 		for (Element resourceInitialElement : resourceInitialNodes) {
@@ -406,13 +414,13 @@ public class BuildingConfig implements Serializable {
 			Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
 			initialMap.put(resource, amount);
 		}
-		
+
 		newSpec.setStorage(stockCapacity, storageMap, initialMap);
 	}
 
 	/**
 	 * Parse an list of locations for a building's function. These have a <xloc> & <yloc> structure.
-	 * 
+	 *
 	 * @param functionElement Element holding locations
 	 * @param locations Name of the location elements
 	 * @param pointName Nmae of the point item
@@ -425,18 +433,18 @@ public class BuildingConfig implements Serializable {
 		// Maximum coord is half the width or length
 		double maxX = buildingWidth/2D;
 		double maxY = buildingLength/2D;
-		
+
 		Element activityElement = functionElement.getChild(locations);
 		if (activityElement != null) {
 			for(Element activitySpot : activityElement.getChildren(pointName)) {
 				double xLocation = Double.parseDouble(activitySpot.getAttributeValue(X_LOCATION));
 				double yLocation = Double.parseDouble(activitySpot.getAttributeValue(Y_LOCATION));
-				
-				// Check location is within the building. Check as long as the maximum 
+
+				// Check location is within the building. Check as long as the maximum
 				// is defined
 				if (((maxX > 0) && (maxX < Math.abs(xLocation)))
 						|| ((maxY > 0) && (maxY < Math.abs(yLocation)))) {
-					
+
 					// Roughly walk back over the XPath
 					StringBuilder name = new StringBuilder();
 					do {
@@ -444,12 +452,12 @@ public class BuildingConfig implements Serializable {
 						functionElement = functionElement.getParentElement();
 					} while (!functionElement.getName().equals(BUILDING));
 					name.append(" in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
-					
-					throw new IllegalArgumentException("Locations '" + locations 
+
+					throw new IllegalArgumentException("Locations '" + locations
 							+ "' of " + name.toString()
 							+ " are outside building");
 				}
-				
+
 				result.add(new Point2D.Double(xLocation, yLocation));
 			}
 		}
@@ -473,7 +481,7 @@ public class BuildingConfig implements Serializable {
 //		}
 		newSpec.setWasteSpecialties(result);
 	}
-	
+
 	/**
 	 * Find a Building spec according to the name.
 	 * @param buildingType
@@ -489,7 +497,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Checks if building has a certain function capability.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @param function Type of service.
 	 * @return true if function supported.
@@ -498,7 +506,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasFunction(String buildingType, FunctionType function) {
 		return getBuildingSpec(buildingType).getFunctionSupported().contains(function);
 	}
-	
+
 	/**
 	 * Get teh activity spots for a function.
 	 * @param buildingType
@@ -511,10 +519,10 @@ public class BuildingConfig implements Serializable {
 		if (fs != null) {
 			result = fs.getActivitySpots();
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Get a property for a Function from a building type.
 	 * @param buildingType Building type name
@@ -525,7 +533,7 @@ public class BuildingConfig implements Serializable {
 	public int getFunctionIntProperty(String buildingType, FunctionType function, String name) {
 		return Integer.parseInt(getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
 	}
-	
+
 	/**
 	 * Get a property for a Function from a building type.
 	 * @param buildingType Building type name
@@ -540,7 +548,7 @@ public class BuildingConfig implements Serializable {
 	/**
 	 * Gets the capacity for a Function. This capacity usually reference to the number of Unit
 	 * supported by a function but it could be used differently
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @param function Type of function
 	 * @return number of people
@@ -552,7 +560,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the capacity for a Function. This capacity usually reference an amount.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @param function Type of function
 	 * @return number of people
@@ -561,10 +569,10 @@ public class BuildingConfig implements Serializable {
 	public double getFunctionCapacityDouble(String buildingType, FunctionType function) {
 		return getFunctionDoubleProperty(buildingType, function, CAPACITY);
 	}
-	
+
 	/**
 	 * Gets the tech level for a Function.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @param function Type of function
 	 * @return number of people
@@ -573,10 +581,10 @@ public class BuildingConfig implements Serializable {
 	public int getFunctionTechLevel(String buildingType, FunctionType function) {
 		return getFunctionIntProperty(buildingType, function, TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets the building width.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return building width (meters).
 	 * @throws Exception if building type cannot be found.
@@ -588,7 +596,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the building length.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return building length (meters).
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -600,7 +608,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the base level of the building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return -1 for in-ground, 0 for above-ground.
 	 * @deprecated Use {@link #getBuildingSpec(String)}
@@ -611,7 +619,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the power required for life support.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return power required (kW)
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -622,7 +630,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the heat required for life support.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return heat required (J)
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -635,20 +643,20 @@ public class BuildingConfig implements Serializable {
 		return getBuildingSpec(buildingType).getComputingUnit();
 //		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COMPUTING_UNIT);
 	}
-	
+
 	public double getPowerDemand(String buildingType) {
 		return getBuildingSpec(buildingType).getPowerDemand();
 //		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, POWER_DEMAND);
 	}
-	
+
 	public double getCoolingDemand(String buildingType) {
 		return getBuildingSpec(buildingType).getCoolingDemand();
 //		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COOLING_DEMAND);
 	}
-	
+
 	/**
 	 * Gets a list of research specialties for the building's lab.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return list of research specialties as {@link ScienceType}.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -660,7 +668,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets a list of waste specialties for the building's lab.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return list of waste specialties as {@link ScienceType}.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -672,7 +680,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative X location of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative X location.
 	 */
@@ -682,7 +690,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative Y location of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative Y location.
 	 */
@@ -692,7 +700,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative X location of the interior side of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative X location.
 	 */
@@ -702,7 +710,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative Y location of the interior side of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative Y location.
 	 */
@@ -712,7 +720,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative X location of the exterior side of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative X location.
 	 */
@@ -722,7 +730,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative Y location of the exterior side of the airlock.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return relative Y location.
 	 */
@@ -733,7 +741,7 @@ public class BuildingConfig implements Serializable {
 	/**
 	 * Gets the level of resource processing when the building is in power down
 	 * mode.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return power down level
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -744,7 +752,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the building's resource processes.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return a list of resource processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -755,7 +763,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets a list of the building's resource capacities.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return list of storage capacities
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -770,7 +778,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets a map of the initial resources stored in this building.
-	 * 
+	 *
 	 * @param buildingType the type of the building
 	 * @return map of initial resources
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -781,7 +789,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets a list of the building's heat sources.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return list of heat sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -792,7 +800,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets a list of the building's power sources.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return list of power sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -804,7 +812,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the number of crops in the building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return number of crops
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -815,7 +823,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the power required to grow a crop.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return power (kW)
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -826,7 +834,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the power required to sustain a crop.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return power (kW)
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -837,7 +845,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the crop growing area in the building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return crop growing area (square meters)
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -848,7 +856,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the number of parking locations in the building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return number of parking locations.
 	 */
@@ -858,7 +866,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the relative location in the building of a parking location.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @param parkingIndex the parking location index.
 	 * @return Point object containing the relative X & Y position from the building
@@ -876,7 +884,7 @@ public class BuildingConfig implements Serializable {
 	/**
 	 * Gets the concurrent process limit of the Food Production facility in the
 	 * building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return concurrent process limit.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -887,7 +895,7 @@ public class BuildingConfig implements Serializable {
 
 	/**
 	 * Gets the power required by the astronomical observation function.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return power required (kW).
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -899,7 +907,7 @@ public class BuildingConfig implements Serializable {
 	/**
 	 * Gets the concurrent process limit of the manufacture facility in the
 	 * building.
-	 * 
+	 *
 	 * @param buildingType the type of the building.
 	 * @return concurrent process limit.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -911,7 +919,7 @@ public class BuildingConfig implements Serializable {
 	public int getFishTankSize(String buildingType) {
 		return getFunctionIntProperty(buildingType, FunctionType.FISHERY, "volume");
 	}
-	
+
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replace(" ", "-");
 	}
