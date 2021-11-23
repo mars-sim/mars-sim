@@ -35,12 +35,12 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			context.println("Sorry this Unit does not hold resources");
 		}
 		else if (input == null) {
-			context.println("Specify a 'resource@quantity' as an arguments");
+			context.println("Specify a 'resource@quantity' as an argument");
 		}
 		else {
 			String [] args = input.split("@");
 			if (args.length != 2) {
-				context.println("Argumetn format is 'resource@quantity'");
+				context.println("Argument format is 'resource@quantity'");
 			}
 			else {
 				ResourceHolder rh = (ResourceHolder) source;

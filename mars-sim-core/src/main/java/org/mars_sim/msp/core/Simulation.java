@@ -317,7 +317,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		simulationConfig = SimulationConfig.instance();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-												simulationConfig.getMalfunctionConfiguration(),
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 
@@ -402,7 +401,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize instances prior to UnitManager initiatiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-											simulationConfig.getMalfunctionConfiguration(),
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
@@ -664,7 +662,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-												simulationConfig.getMalfunctionConfiguration(),
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 		ScientificStudy.initializeInstances(marsClock);
@@ -673,7 +670,6 @@ public class Simulation implements ClockListener, Serializable {
 		Resupply.initializeInstances(bc, unitManager);
 
 		// Re-initialize Unit related class
-//		Vehicle.initializeInstances();
 		SalvageValues.initializeInstances(unitManager);
 
 		// Re-initialize Person/Robot related class

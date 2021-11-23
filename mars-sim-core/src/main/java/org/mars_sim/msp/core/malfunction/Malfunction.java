@@ -175,8 +175,9 @@ public class Malfunction implements Serializable {
 	 *
 	 * @param incident the incident id
 	 * @param definition the MalfunctionMeta instance
+	 * @param supportsInside Does the entity supports inside repairs
 	 */
-	Malfunction(int incident, MalfunctionMeta definition) {
+	Malfunction(int incident, MalfunctionMeta definition, boolean supportsInside) {
 		repairParts = new HashMap<>();
 
 		incidentNum = incident;
@@ -187,12 +188,20 @@ public class Malfunction implements Serializable {
 
 		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
 		for (Entry<MalfunctionRepairWork, EffortSpec> effort : workEffort.entrySet()) {
+			MalfunctionRepairWork type = effort.getKey();
+			
+			// If inside repairs; then change to EVA
+			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
+				type = MalfunctionRepairWork.EVA;
+				logger.warning(0, name + " cannot do " + effort.getKey() + ", changed to " + type);
+			}
+			
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				logger.info(10_000, name + " - Estimated " + effort.getKey() + " work time: "
+				logger.info(10_000, name + " - Estimated " + type + " work time: "
 								+ Math.round(actualEffort*10.0)/10.0);
-				work.put(effort.getKey(), new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
+				work.put(type, new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
 			}
 		}
 

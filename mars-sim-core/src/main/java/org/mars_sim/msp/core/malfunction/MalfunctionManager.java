@@ -80,9 +80,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
 	private static final String OXYGEN = "Oxygen";
-//	private static final String WATER = "Water";
-//	private static final String PRESSURE = "Air Pressure";
-//	private static final String TEMPERATURE = "Temperature";
 
 	private static final String CAUSE = ". Probable Cause : ";
 	private static final String CAUSED_BY = " caused by ";
@@ -133,15 +130,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
+	private boolean supportsInside = true;
+
 	private static MasterClock masterClock;
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
 	private static HistoricalEventManager eventManager;
 	private static PartConfig partConfig;
-	private static MalfunctionConfig malfunctionConfig;
-
-	// NOTE : each building has its own MalfunctionManager
 
 	/**
 	 * Constructor.
@@ -160,7 +156,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new HashSet<>();
-		malfunctions = new CopyOnWriteArrayList<Malfunction>();
+		malfunctions = new CopyOnWriteArrayList<>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		baseWearLifeTime = wearLifeTime;
 		currentWearLifeTime = wearLifeTime;
@@ -168,6 +164,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		currentWearCondition = 100D;
 	}
 
+	/**
+	 * Does this malfunctionable support inside Repairs?
+	 * @param supported New inside repairs supported
+	 */
+	public void setSupportsInside(boolean supported) {
+		this.supportsInside = supported;
+	}
+	
 	/**
 	 * Add a scope string of a system or a function to the manager.
 	 *
@@ -192,43 +196,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public boolean hasMalfunction() {
 		return !malfunctions.isEmpty();
-	}
-
-
-	/**
-	 * Checks if entity has any general malfunctions.
-	 *
-	 * @return true if general malfunction
-	 */
-	public boolean hasInsideMalfunction() {
-		boolean result = false;
-
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
-					return true;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if entity has any EVA malfunctions.
-	 *
-	 * @return true if EVA malfunction
-	 */
-	public boolean hasEVAMalfunction() {
-		boolean result = false;
-
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
-					return true;
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -326,9 +293,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private boolean selectMalfunction(Worker actor) {
 		boolean result = false;
 		// Clones a malfunction and determines repair parts
-		Malfunction malfunction = factory.pickAMalfunction(scopes);
+		MalfunctionMeta malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
-			addMalfunction(malfunction, true, actor);
+			triggerMalfunction(malfunction, true, actor);
 			result = true;
 		}
 
@@ -341,22 +308,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param {@link Malfunction}
 	 * @param value
 	 */
-	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent) {
-		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m);
+	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Worker actor) {
+		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m, supportsInside);
 
-		addMalfunction(malfunction, registerEvent, null);
-
-		return malfunction;
-	}
-
-	/**
-	 * Adds a malfunction to the unit.
-	 *
-	 * @param malfunction   the malfunction to add.
-	 * @param registerEvent
-	 * @param actor
-	 */
-	private void addMalfunction(Malfunction malfunction, boolean registerEvent, Worker actor) {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
 
@@ -367,27 +321,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		// Register the failure of the Parts involved
-		Map<Integer, Integer> parts = malfunction.getRepairParts();
-		Set<Integer> partSet = parts.keySet();
-
-		for (Integer p : partSet) {
-			int num = parts.get(p);
-
-			// Add tracking item demand
-//			inv.addItemDemandTotalRequest(p, num);
-//			inv.addItemDemand(p, num);
+		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {
+			int num = p.getValue();
 
 			// Compute the new reliability and failure rate for this malfunction
-			Part part = ItemResourceUtil.findItemResource(p);
+			Part part = ItemResourceUtil.findItemResource(p.getKey());
 			String part_name = part.getName();
-
-//			if (part_name.equalsIgnoreCase(ItemResourceUtil.DECONTAMINATION_KIT)
-//					|| part_name.equalsIgnoreCase(ItemResourceUtil.AIRLEAK_PATCH)
-//					|| part_name.equalsIgnoreCase(ItemResourceUtil.FIRE_EXTINGUSHER)) {
-//				// NOTE : they do NOT contribute to the malfunctions and are tools to fix the
-//				// malfunction and therefore do NOT need to change their reliability.
-//				return;
-//			}
 
 			double old_rel = part.getReliability();
 			double old_prob = getRepairPartProbability(malfunction, part_name);
@@ -430,6 +369,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		issueMedicalComplaints(malfunction);
 
+		return malfunction;
 	}
 
 	/**
@@ -1010,6 +950,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double avgMalfunctionsPerOrbit = 0D;
 
 		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
+		
 		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		if (totalTimeOrbits < 1D) {
@@ -1100,12 +1041,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param m {@link MedicalManager}
 	 * @param e {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf, MalfunctionConfig mc,
+	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf,
 										   MedicalManager mm, HistoricalEventManager em, PartConfig pc) {
 		masterClock = c0;
 		currentTime = c1;
 		factory = mf;
-		malfunctionConfig = mc;
 		medic = mm;
 		eventManager = em;
 		partConfig = pc;

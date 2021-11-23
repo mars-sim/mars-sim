@@ -125,14 +125,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
-
+	
 	/** A list of functions of this building. */
 	protected List<Function> functions;
 
-	/** Default : 3340 Sols (5 orbits). Will be overridden by the value from buildings.xml for each building type. */
-	private int wearLifeTime = 3_340_000;
-	/** Default : 50 millisols maintenance time. */
-	private int maintenanceTime = 50;
 	/** Default : 22.5 deg celsius. */
 	private double initialTemperature = 22.5D;
 
@@ -300,20 +296,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		// Get base power requirements.
 		basePowerRequirement = spec.getBasePowerRequirement();
 		basePowerDownPowerRequirement = spec.getBasePowerDownPowerRequirement();
-		wearLifeTime = spec.getWearLifeTime();
-		maintenanceTime = spec.getMaintenanceTime();
 
 		// Set room temperature
 		initialTemperature = spec.getRoomTemperature();
 
 		// Determine total maintenance time.
-		double totalMaintenanceTime = maintenanceTime;
+		double totalMaintenanceTime = spec.getMaintenanceTime();
 		for (Function mfunction : functions) {
 			totalMaintenanceTime += mfunction.getMaintenanceTime();
 		}
 
 		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, wearLifeTime, totalMaintenanceTime);
+		malfunctionManager = new MalfunctionManager(this, spec.getWearLifeTime(), totalMaintenanceTime);
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 
@@ -324,6 +318,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				malfunctionManager.addScopeString(scope);
 			}
 		}
+		
+		// If no life support then no internal repairs
+		malfunctionManager.setSupportsInside(hasFunction(FunctionType.LIFE_SUPPORT));
 	}
 
 
@@ -1247,7 +1244,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					// Simulate the meteorite impact as a malfunction event for now
 					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
 							.getMalfunctionByname(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
-							true);
+							true, null);
 
 					String victimName = "None";
 //					String task = "N/A";

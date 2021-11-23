@@ -25,7 +25,7 @@ public class TestMalfunction extends TestCase {
     }
     
     private Malfunction createInsideMalfunction() {
-		return new Malfunction(counter++, insideMeta);
+		return new Malfunction(counter++, insideMeta, true);
 	}
     
     public void testComplete() {

@@ -65,7 +65,7 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param scopes a collection of scope strings defining the unit.
 	 * @return a randomly-picked malfunction or null if there are none available.
 	 */
-	public Malfunction pickAMalfunction(Collection<String> scopes) {
+	public MalfunctionMeta pickAMalfunction(Collection<String> scopes) {
 		MalfunctionMeta choosenMalfunction = null;
 
 		List<MalfunctionMeta> malfunctions = mc.getMalfunctionList();
@@ -96,15 +96,13 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		double failureRate = choosenMalfunction.getProbability();
-		Malfunction mal = null;
 		// Note : the composite probability of a malfunction is dynamically updated as
 		// the field reliability data trickles in
-		if (RandomUtil.lessThanRandPercent(failureRate)) {
-			// Clones a malfunction and determines repair parts
-			mal = new Malfunction(getNewIncidentNum(), choosenMalfunction);
+		if (!RandomUtil.lessThanRandPercent(failureRate)) {
+			choosenMalfunction = null;
 		}
 
-		return mal;
+		return choosenMalfunction;
 	}
 
 	/**
