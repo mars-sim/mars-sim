@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-24
  * @author Scott Davis
  */
 
@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -86,7 +85,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -117,17 +115,22 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
 
 	// Data members
-	private double farmTimeCache = -5D;
-	private transient Settlement settlement;
+	/** The id of the settlement. */
 	private Integer settlementID;
+	/** The id of the next inhabitable building. */
 	private int nextInhabitableID = 0;
+	/** The population capacity (determined by the # of beds) of the settlement. */
+	private int popCap = 0;
 
+	private double farmTimeCache = -5D;
 	private double debrisMass;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
 	private List<Integer> buildingInts = new ArrayList<>();
 	private List<Integer> garageInts = new ArrayList<>();
+
+	private transient Settlement settlement;
 
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -221,6 +224,7 @@ public class BuildingManager implements Serializable {
 			garageInts.add(b.getIdentifier());
 		}
 
+		// Calling setupBuildingFunctionsMap will create exceptions
 //		setupBuildingFunctionsMap();
 	}
 
@@ -318,6 +322,32 @@ public class BuildingManager implements Serializable {
 				}
 			}
 		}
+
+		// Computes the population capacity based on the # of beds available
+		computePopulationCapacity();
+	}
+
+	/**
+	 * Computes the population capacity of the settlement
+	 *
+	 * @return the population capacity
+	 */
+	public void computePopulationCapacity() {
+		int result = 0;
+		List<Building> bs = getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+		for (Building building : bs) {
+			result += building.getLivingAccommodations().getBedCap();
+		}
+		popCap = result;
+	}
+
+	/**
+	 * Gets the population capacity of the settlement
+	 *
+	 * @return the population capacity
+	 */
+	public int getPopulationCapacity() {
+		return popCap;
 	}
 
 	/**
@@ -355,6 +385,9 @@ public class BuildingManager implements Serializable {
 				}
 			}
 		}
+
+		// Computes the population capacity based on the # of beds available
+		computePopulationCapacity();
 	}
 
 	/**

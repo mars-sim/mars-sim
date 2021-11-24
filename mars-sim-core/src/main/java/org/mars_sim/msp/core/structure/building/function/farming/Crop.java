@@ -31,7 +31,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
-	private static final double TUNING_FACTOR = .08;
+	private static final double TUNING_FACTOR = .18;
 
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	/**
@@ -1142,7 +1142,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double compositeFactor = TUNING_FACTOR * needFactor * time / 1000.0;
 
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(compositeFactor * .5, time, greyFilterRate);
+		computeWaterFertilizer(compositeFactor * .75, time, greyFilterRate);
 
 		// STEP 5 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization

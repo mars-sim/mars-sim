@@ -188,7 +188,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private boolean justLoaded = true;
 	/** The base mission probability of the settlement. */
 	private boolean missionProbability = false;
-
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -709,13 +708,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @return the population capacity
 	 */
 	public int getPopulationCapacity() {
-		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
-		for (Building building : bs) {
-			result += building.getLivingAccommodations().getBedCap();
-		}
-
-		return result;
+		return buildingManager.getPopulationCapacity();
 	}
 
 	/**
@@ -732,7 +725,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			logger.log(this, p, Level.INFO, 4_000,
 						"Had to end the current indoor tasks at ("
 						+ Math.round(p.getXLocation()*10.0)/10.0 + ", "
-						+ Math.round(p.getYLocation()*10.0)/10.0, null);
+						+ Math.round(p.getYLocation()*10.0)/10.0 + ")", null);
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
 	}
@@ -4066,5 +4059,4 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 		scientificAchievement = null;
 	}
-
 }

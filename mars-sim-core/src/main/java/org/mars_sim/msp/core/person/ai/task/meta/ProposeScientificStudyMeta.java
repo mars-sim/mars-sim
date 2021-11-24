@@ -50,6 +50,8 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
         double result = 0D;
 
+        int pop = person.getAssociatedSettlement().getPopulationCapacity();
+
         if (!JobType.isAcademic(person.getMind().getJob())) {
         	return 0;
         }
@@ -78,21 +80,21 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	            if (role != null) {
 	            	if (role.getType() == RoleType.CHIEF_OF_SCIENCE
 	            		|| role.getType() == RoleType.SCIENCE_SPECIALIST) {
-	            			result += 40D;
+	            			result += 50D;
 	            	}
-	            	else if (role.getType() == RoleType.CHIEF_OF_AGRICULTURE
-		            		|| role.getType() == RoleType.AGRICULTURE_SPECIALIST
-		            		) {
-            			result += 20D;
-            		}
 	            	else if (role.getType() == RoleType.CHIEF_OF_COMPUTING
 		            		|| role.getType() == RoleType.COMPUTING_SPECIALIST
 		            		) {
-            			result += 30D;
+            			result += 20D;
+            		}
+	            	else if (role.getType() == RoleType.CHIEF_OF_AGRICULTURE
+		            		|| role.getType() == RoleType.AGRICULTURE_SPECIALIST
+		            		) {
+            			result += 10D;
             		}
 	            }
 	            else
-	            	result += 1D;
+	            	result += 5D;
 	        }
 
 	        // Crowding modifier
