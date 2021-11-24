@@ -124,8 +124,6 @@ public abstract class Mission implements Serializable, Temporal {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
-	/** True if the mission has been requested. */
-	protected boolean requested = false;
 	
 	/** The name of the settlement. */
 	private String settlementName;
@@ -1305,7 +1303,7 @@ public abstract class Mission implements Serializable, Temporal {
 		Person p = (Person)member;
 		
 		if (plan == null) {			
-			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
+			plan = new MissionPlanning(this);
 			logger.log(member, Level.INFO, 0, "Serving as the mission lead on " + this + ".");
 
 			 missionManager.requestMissionApproving(plan);

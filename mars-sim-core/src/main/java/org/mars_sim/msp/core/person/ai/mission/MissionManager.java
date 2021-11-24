@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -330,15 +331,9 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> result = new ArrayList<>();
-		for(Mission m : getMissions()) {
-			if (!m.isDone() && settlement.equals(m.getAssociatedSettlement())
-					&& !result.contains(m)) {
-				result.add(m);
-			}
-		}
-
-		return result;
+		return onGoingMissions.stream()
+				.filter(m -> (!m.isDone() && settlement.equals(m.getAssociatedSettlement())))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -431,23 +426,6 @@ public class MissionManager implements Serializable, Temporal {
 						if (m.getPlan() == null
 								|| m.getPhase() == null
 								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
-								|| ms == MissionStatus.CANNOT_ENTER_ROVER
-								|| ms == MissionStatus.CANNOT_LOAD_RESOURCES
-								|| ms == MissionStatus.DESTINATION_IS_NULL
-								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED
-								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE
-								|| ms == MissionStatus.LUV_NOT_AVAILABLE
-								|| ms == MissionStatus.LUV_NOT_RETRIEVED
-								|| ms == MissionStatus.MINING_SITE_NOT_BE_DETERMINED
-								|| ms == MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED
-								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
-								|| ms == MissionStatus.NO_EXPLORATION_SITES
-								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES
-								|| ms == MissionStatus.NO_TRADING_SETTLEMENT
-								|| ms == MissionStatus.USER_ABORTED_MISSION
-								|| ms == MissionStatus.NO_ICE_COLLECTION_SITES
-								// Note: ms.getName().toLowerCase().contains("no ") // need to first enforce standard
-								// Note: ms.getName().toLowerCase().contains("not ") // need to first enforce standard
 								) {
 							removeMission(m);
 						}
