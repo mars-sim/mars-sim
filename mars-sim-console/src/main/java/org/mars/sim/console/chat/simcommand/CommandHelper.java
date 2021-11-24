@@ -21,8 +21,8 @@ import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -54,6 +54,10 @@ public class CommandHelper {
 	public static final int TASK_WIDTH = 30;
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
+	// Width of a truncated timestamp 
+	private static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
+	// Width of a Coordinate
+	private static final int COORDINATE_WIDTH = 19;
 	
 	// Base value formats for use with String.format
 	public static final String KG_FORMAT = "%.2f kg";
@@ -266,31 +270,18 @@ public class CommandHelper {
 			response.appendLabeledString("Plan Status", planMsg.toString());
 		}
 		
-		// Most significant date
-		MissionPhase phase = mission.getPhase();
-		if (phase.equals(VehicleMission.REVIEWING)
-				|| phase.equals(VehicleMission.EMBARKING)) {
-			response.appendLabeledString("Date Filed", mission.getDateFiled());
-		}
-		else if (phase.equals(VehicleMission.COMPLETED)) {
-			response.appendLabeledString("Date Returned", mission.getDateReturned());
-		}
-		else {
-			response.appendLabeledString("Date Embarked", mission.getDateEmbarked());
-		}
-		
 		response.appendLabeledString("Lead", startingPerson.getName());
 
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
 		response.appendNumberedList("Members", names);
 	
-		// Travel mission has aroute
+		// Travel mission has a route
 		if (mission instanceof TravelMission) {
 			TravelMission tm = (TravelMission) mission;
 			int navPoints = tm.getNumberOfNavpoints();
 			if (navPoints > 0) {
 				response.appendText("Itinerary:");
-				response.appendTableHeading("Way Point", 19, "Description");
+				response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Description");
 				for(int i = tm.getNextNavpointIndex(); i < navPoints; i++) {
 					NavPoint nv = tm.getNavpoint(i);
 					if (nv.isSettlementAtNavpoint()) {
@@ -315,6 +306,13 @@ public class CommandHelper {
 				outputEquipment("Equipment", response, lp.getEquipmentManifest());	
 				outputEquipment("Optional Equipment", response, lp.getOptionalEquipmentManifest());	
 			}
+		}
+		
+		// Mission log
+		response.appendText("Log:");
+		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
+		for (MissionLogEntry entry : mission.getLog()) {
+			response.appendTableRow(entry.getTime(), entry.getPhase().getName());
 		}
 	}
 

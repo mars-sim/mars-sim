@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class MissionPlanning implements Serializable {
@@ -23,8 +22,6 @@ public class MissionPlanning implements Serializable {
 	private double percentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
-	
-	private String approvedBy;
 
 	private PlanType status = PlanType.PENDING;
 
@@ -107,10 +104,6 @@ public class MissionPlanning implements Serializable {
 		this.status = status;
 	}
 
-	public void setApproved(Person p) {
-		this.approvedBy = p.getName();
-	}
-	
 	public void setScore(double value) {
 		score = value;
 	}
