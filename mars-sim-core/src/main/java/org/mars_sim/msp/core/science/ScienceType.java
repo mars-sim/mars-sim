@@ -22,9 +22,9 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
  */
 public enum ScienceType {
 	// the actual enum value is followed by data associated to the value.
-	
+
 	/** Environmental science of Mars. */
-	AREOLOGY( 
+	AREOLOGY(
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
 			SkillType.AREOLOGY, JobType.AREOLOGIST),
 
@@ -47,7 +47,7 @@ public enum ScienceType {
 	/** Provides fundamental computing skill. */
 	COMPUTING (Msg.getString("ScienceType.computing"), //$NON-NLS-1$
 			SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
-	
+
 	/** How to make stuff. */
 	ENGINEERING(Msg.getString("ScienceType.engineering"), //$NON-NLS-1$
 			SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
@@ -63,7 +63,7 @@ public enum ScienceType {
 	/** Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
 			SkillType.METEOROLOGY, JobType.METEOROLOGIST),
-	
+
 	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
 			SkillType.PHYSICS, JobType.PHYSICIST),
@@ -71,8 +71,8 @@ public enum ScienceType {
 	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
 			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
-	
-	
+
+
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 
@@ -122,7 +122,7 @@ public enum ScienceType {
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
 		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
-		
+
 		areology.setCollaborativeSciences(new Science[]    { biology, chemistry, physics, meteorology });
 		astronomy.setCollaborativeSciences(new Science[]   { biology, chemistry, mathematics, physics });
 		biology.setCollaborativeSciences(new Science[]     { botany, chemistry, mathematics, medicine });
@@ -139,7 +139,7 @@ public enum ScienceType {
 	/**
 	 * Gives back the {@link ScienceType} associated with the given job or
 	 * <code>null</code>.
-	 * 
+	 *
 	 * @param job {@link Job}
 	 * @return {@link ScienceType}
 	 */
@@ -161,12 +161,12 @@ public enum ScienceType {
 
 	/** <code>true</code> if a scientist is needed for the job. */
 	public static boolean isScienceJob(JobType job) {
-		return getJobScience(job) != null;
+		return JobType.isScienceType(job);
 	}
 
 	/**
 	 * Checks if a science is collaborative to a primary science.
-	 * 
+	 *
 	 * @param sciencePrimary   {@link ScienceType}
 	 * @param scienceSecondary {@link ScienceType}
 	 * @return {@link Boolean}
@@ -183,7 +183,7 @@ public enum ScienceType {
 	public static List<ScienceType> valuesList() {
 		return Arrays.asList(ScienceType.values());
 	}
-	
+
 	public static ScienceType getType(String name) {
 		if (name != null) {
 	    	for (ScienceType t : ScienceType.values()) {
@@ -192,7 +192,7 @@ public enum ScienceType {
 	    		}
 	    	}
 		}
-		
+
 		return null;
 	}
 }

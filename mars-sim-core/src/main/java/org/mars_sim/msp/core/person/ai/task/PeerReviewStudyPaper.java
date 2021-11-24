@@ -69,7 +69,7 @@ implements Serializable {
 //			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
 //			endTask();
 //		}
-		
+
         // Determine study to review.
         study = determineStudy(person);
         if (study != null) {
@@ -161,7 +161,7 @@ implements Serializable {
                     JobType job = person.getMind().getJob();
                     if (job != null) {
 						ScienceType jobScience = ScienceType.getJobScience(job);
-						if (study.getScience().equals(jobScience)) {
+						if (study.getScience() == jobScience) {
 						    possibleStudies.add(study);
                         }
                     }
@@ -202,7 +202,7 @@ implements Serializable {
         if (person.getPerformanceRating() < 0.1) {
             endTask();
         }
-        
+
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
 			endTask();
@@ -210,10 +210,10 @@ implements Serializable {
 
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {
-			logger.log(worker, Level.INFO, 0, "Just spent " 
+			logger.log(worker, Level.INFO, 0, "Just spent "
 					+ Math.round(study.getPeerReviewTimeCompleted() *10.0)/10.0
 					+ " millisols to finish peer reviewing a paper "
-					+ " for " + study.getName() + ".");	
+					+ " for " + study.getName() + ".");
             endTask();
         }
 

@@ -38,10 +38,10 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 
     public PerformLaboratoryResearchMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		
+
 		setFavorite(FavoriteType.LAB_EXPERIMENTATION, FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC);
-		
+
 		// Jobs are the lab technicans and some scientists
 		Set<JobType> jobs = new HashSet<>(JobType.SCIENTISTS);
 		jobs.add(JobType.MATHEMATICIAN);
@@ -58,17 +58,17 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
+
         ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy == null)
         	return 0;
-        
+
         if (person.isInSettlement()) {
-   
+
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
-            
+
 	        // Add probability for researcher's primary study (if any).
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
@@ -84,7 +84,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                        JobType job = person.getMind().getJob();
 	                        if (job != null) {
 	                            ScienceType jobScience = ScienceType.getJobScience(job);
-	                            if (!primaryStudy.getScience().equals(jobScience)) {
+	                            if (primaryStudy.getScience() != jobScience) {
 	                                primaryResult /= 2D;
 	                            }
 	                        }
@@ -93,7 +93,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                    }
 	                }
 	                catch (Exception e) {
-	                	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);	                
+	                	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);
 	                }
 	            }
 	        }
@@ -118,7 +118,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                            JobType job = person.getMind().getJob();
 	                            if (job != null) {
 	                                ScienceType jobScience = ScienceType.getJobScience(job);
-	                                if (!collabScience.equals(jobScience)) {
+	                                if (collabScience != jobScience) {
 	                                    collabResult /= 2D;
 	                                }
 	                            }
@@ -127,25 +127,25 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	                        }
 	                    }
 	                    catch (Exception e) {
-	                    	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);	                
+	                    	logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab research.", e);
 	                    }
 	                }
 	            }
 	        }
 
-	        if (result <= 0) 
+	        if (result <= 0)
 	        	return 0;
-	        
+
 	        else {
-	            if (person.isInVehicle()) {	
+	            if (person.isInVehicle()) {
 	    	        // Check if person is in a moving rover.
 	    	        if (Vehicle.inMovingRover(person)) {
-	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    		        // the bonus for proposing scientific study inside a vehicle,
 	    	        	// rather than having nothing to do if a person is not driving
 	    	        	result += -20;
-	    	        } 	       
+	    	        }
 	    	        else
-	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    		        // the bonus for proposing scientific study inside a vehicle,
 	    	        	// rather than having nothing to do if a person is not driving
 	    	        	result += 20;
 	            }
@@ -156,7 +156,7 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
         }
 
         if (result < 0) result = 0;
-        
+
         return result;
     }
 }

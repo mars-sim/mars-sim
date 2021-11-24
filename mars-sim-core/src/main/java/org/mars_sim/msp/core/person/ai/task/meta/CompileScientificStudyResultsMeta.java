@@ -50,17 +50,17 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-        
+
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
         	return 0;
         }
-        
+
         if (person.isInside()) {
-        	
+
 	        // Add probability for researcher's primary study (if any).
             ScientificStudy primaryStudy = person.getStudy();
-	        if ((primaryStudy != null) 
+	        if ((primaryStudy != null)
         		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
             	&& !primaryStudy.isPrimaryPaperCompleted()) {
                 try {
@@ -70,7 +70,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                     JobType job = person.getMind().getJob();
                     if (job != null) {
                         //ScienceType jobScience = ScienceType.getJobScience(job);
-                        if (!primaryStudy.getScience().equals(ScienceType.getJobScience(job))) 
+                        if (primaryStudy.getScience() != ScienceType.getJobScience(job))
                         	primaryResult /= 2D;
                     }
 
@@ -96,7 +96,8 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                         JobType job = person.getMind().getJob();
                         if (job != null) {
                             ScienceType jobScience = ScienceType.getJobScience(job);
-                            if (!collabScience.equals(jobScience)) collabResult /= 2D;
+                            if (collabScience != jobScience)
+                            	collabResult /= 2D;
                         }
 
                         result += collabResult;
@@ -108,7 +109,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 	        }
 
 	        if (result > 0) {
-	            if (person.isInVehicle()) {	
+	            if (person.isInVehicle()) {
 	    	        // Check if person is in a moving rover.
 	    	        if (Vehicle.inMovingRover(person)) {
 	    	        	result += 20;
@@ -119,7 +120,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 	        }
 	        else
 	        	return 0;
-	        
+
 	        // Crowding modifier
             Building b = BuildingManager.getAvailableBuilding(null, person);
             if (b != null) {
@@ -127,7 +128,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
             }
             result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-            
+
             result = applyPersonModifier(result, person);
         }
 

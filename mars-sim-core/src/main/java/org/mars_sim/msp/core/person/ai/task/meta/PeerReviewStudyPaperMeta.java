@@ -26,11 +26,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Meta task for the PeerReviewStudyPaper task.
  */
 public class PeerReviewStudyPaperMeta extends MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
-    
+
     public PeerReviewStudyPaperMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
@@ -47,13 +47,13 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
+
         if (person.isInside()) {
-        	
+
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
-            
+
 	        // Get all studies in the peer review phase.
             ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
 	        Iterator<ScientificStudy> i = sm.getOngoingStudies().iterator();
@@ -70,17 +70,17 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
 	                    JobType job = person.getMind().getJob();
 	                    if (job != null) {
 	                        //ScienceType jobScience = ScienceType.getJobScience(job);
-	                        if (study.getScience().equals(ScienceType.getJobScience(job))) {
+	                        if (study.getScience() == ScienceType.getJobScience(job)) {
 	                            result += 50D * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();;
 	                        }
 	                    }
 	                }
-	            }            
+	            }
 	        }
-	        
+
 	        if (result == 0) return 0;
-	        
-            if (person.isInVehicle()) {	
+
+            if (person.isInVehicle()) {
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
     	        	result += -10D;
@@ -88,7 +88,7 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
     	        else
     	        	result += 10D;
             }
-	        
+
 	        result = applyPersonModifier(result, person);
         }
 

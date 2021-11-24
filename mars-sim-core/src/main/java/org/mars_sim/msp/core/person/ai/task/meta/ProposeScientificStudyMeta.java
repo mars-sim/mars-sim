@@ -50,10 +50,23 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
         double result = 0D;
 
-        int pop = person.getAssociatedSettlement().getPopulationCapacity();
+        int pop = person.getAssociatedSettlement().getInitialPopulation();
 
-        if (!JobType.isAcademic(person.getMind().getJob())) {
-        	return 0;
+        if (pop <= 6) {
+	        if (!JobType.isAcademicType(person.getMind().getJob())) {
+	        	return 0;
+	        }
+        }
+        else if (pop <= 12) {
+        	if (!JobType.isMedical(person.getMind().getJob())
+        			&& !JobType.isScienceType(person.getMind().getJob())) {
+	        	return 0;
+	        }
+        }
+        else {
+        	if (!JobType.isScienceType(person.getMind().getJob())) {
+	        	return 0;
+	        }
         }
 
         // Probability affected by the person's stress and fatigue.

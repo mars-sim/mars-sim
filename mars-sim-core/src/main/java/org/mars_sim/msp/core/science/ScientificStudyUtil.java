@@ -28,7 +28,7 @@ public class ScientificStudyUtil {
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
-    
+
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -47,36 +47,36 @@ public class ScientificStudyUtil {
         Iterator<Person> i = allPeople.iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            
+
             // Make sure person is not already part of study
-            if (!person.equals(study.getPrimaryResearcher()) && 
+            if (!person.equals(study.getPrimaryResearcher()) &&
                     !alreadyInvited.contains(person) &&
                     !person.getPhysicalCondition().isDead()) {
                 JobType job = person.getMind().getJob();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
-                    
+
                     // Is their Job Science suitable for the study
-                    if ((jobScience != null) && (jobScience.equals(study.getScience())
+                    if ((jobScience != null) && (jobScience == study.getScience()
                         		|| ScienceType.isCollaborativeScience(study.getScience(), jobScience))) {
                     	result.add(person);
                     }
                 }
             }
         }
-        
+
         return result;
     }
-  
+
     /**
      * Modify researchers relationships with other known scientists in the same field due to new achievement.
      * @param researcher the achieving researcher.
      * @param science the field of science.
      * @param achievement the new achievement credit.
      */
-    static void modifyScientistRelationshipsFromAchievement(Person researcher, 
+    static void modifyScientistRelationshipsFromAchievement(Person researcher,
             ScienceType science, double achievement) {
-        
+
         Iterator<Person> i = relationshipManager.getAllKnownPeople(researcher).iterator();
         while (i.hasNext()) {
             Person person = i.next();
@@ -89,14 +89,14 @@ public class ScientificStudyUtil {
             }
         }
     }
-    
+
 	/**
 	 * initializes instances after loading from a saved sim
-	 * 
+	 *
 	 * @param {{@link MarsClock}
 	 */
 	public static void initializeInstances(RelationshipManager r, UnitManager u) {
-		unitManager = u;		
+		unitManager = u;
 		relationshipManager = r;
 	}
 }

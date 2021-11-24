@@ -117,13 +117,43 @@ public enum JobType {
 	}
 
 	/**
-	 * Is this job of an academic type ?
+	 * Is this job one of 11 academic type ?
 	 *
 	 * @param type
 	 * @return
 	 */
-	public static boolean isAcademic(JobType type) {
-		for (JobType ra : JobType.values()) {
+	public static boolean isAcademicType(JobType type) {
+		for (JobType ra : ACADEMICS) {
+    		if (ra == type) {
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	/**
+	 * Is this job of one of the 7 science types ?
+	 *
+	 * @param type
+	 * @return
+	 */
+	public static boolean isScienceType(JobType type) {
+		for (JobType ra : SCIENTISTS) {
+    		if (ra == type) {
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	/**
+	 * Is this job of one of the 2 medical types ?
+	 *
+	 * @param type
+	 * @return
+	 */
+	public static boolean isMedical(JobType type) {
+		for (JobType ra : MEDICS) {
     		if (ra == type) {
     			return true;
     		}
