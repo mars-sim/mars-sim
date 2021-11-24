@@ -113,9 +113,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The rover's internal air pressure. */
 	private double airPressure = 0; //NORMAL_AIR_PRESSURE;
 	/** The rover's internal temperature. */
-	private double temperature = 0; //NORMAL_TEMP;
-	/** The rover's cargo capacity */
-	private double cargoCapacity = 0;
+	private double temperature = 0; //NORMAL_TE
 	/** The rover's total crew internal volume. */
 	private double cabinAirVolume;
 
@@ -1044,11 +1042,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	@Override
 	public String getNickName() {
 		return getName();
-	}
-
-
-	public double getCargoCapacity() {
-		return cargoCapacity;
 	}
 
 	public boolean setLUV(LightUtilityVehicle luv) {

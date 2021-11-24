@@ -22,7 +22,7 @@ public class MissionPlanCommand extends ChatCommand {
 	public static final ChatCommand MISSION_PLAN = new MissionPlanCommand();
 
 	private MissionPlanCommand() {
-		super(TopLevel.SIMULATION_GROUP, "mp", "mission plan", "Planned mission counts");
+		super(TopLevel.SIMULATION_GROUP, "mp", "planning", "Planned mission counts");
 		
 		setInteractive(true);
 	}

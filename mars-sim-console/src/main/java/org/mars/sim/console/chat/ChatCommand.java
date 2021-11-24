@@ -121,10 +121,15 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 		List<String> result;
 		List<String> activeArgs = getArguments(context);
 		if (activeArgs != null) {
-			String match = parameter.toLowerCase();
-			result = activeArgs.stream()
-					.filter(n -> n.toLowerCase().startsWith(match))
-					.collect(Collectors.toList());
+			if (parameter != null) {
+				String match = parameter.toLowerCase();
+				result = activeArgs.stream()
+						.filter(n -> n.toLowerCase().startsWith(match))
+						.collect(Collectors.toList());
+			}
+			else {
+				result = activeArgs;
+			}
 		}
 		else {
 			result = Collections.emptyList();

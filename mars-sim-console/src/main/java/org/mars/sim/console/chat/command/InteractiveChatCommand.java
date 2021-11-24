@@ -206,7 +206,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * @return
 	 */
 	public List<ChatCommand> getSubCommands() {
-		return new ArrayList<ChatCommand>(longCommands.values());
+		return new ArrayList<>(longCommands.values());
 	}
 
 	/**
@@ -221,40 +221,47 @@ public class InteractiveChatCommand extends ChatCommand {
 		}
 		
 		ChatCommand found = null;
-		int tailIndex = 0;
 		String matchedCommand = null;
-		
-		if (input.startsWith(SHORT_PREFIX)) {
-			tailIndex = input.indexOf(' ');
-			String command = input;
-			if (tailIndex > 0) {
-				command = input.substring(SHORT_PREFIX.length(), tailIndex);
+		String argument = null;
+		String [] words = input.split(" ");
+		if (words.length > 0) {
+			int tailIndex = 0;
+			// Has a user input
+			if (input.startsWith(SHORT_PREFIX)) {
+				String command = words[0].substring(SHORT_PREFIX.length());
+				found = shortCommands.get(command);
+				matchedCommand = SHORT_PREFIX + command;
+				tailIndex = 1;
 			}
 			else {
-				command = input.substring(SHORT_PREFIX.length());
-			}
-			found = shortCommands.get(command);
-			matchedCommand = SHORT_PREFIX + command;
-		}
-		else {
-			// Try to find a match using the words
-			while ((tailIndex >= 0) && (found == null)) {
-				tailIndex = input.indexOf(' ', tailIndex + 1);
-				matchedCommand = input;
-				if (tailIndex > 0) {
-					matchedCommand = input.substring(0, tailIndex);
+				// Try to find a match using as many words as possible
+				tailIndex = words.length;
+				while ((tailIndex >= 0) && (found == null)) {
+					StringBuilder command = new StringBuilder();
+					for(int i = 0; i < tailIndex; i++) {
+						command.append(words[i]);
+						command.append(" ");
+					}
+					matchedCommand = command.toString().trim();
+					found = longCommands.get(matchedCommand);
+					if (found == null) {
+						tailIndex--;
+					}
 				}
-				found = longCommands.get(matchedCommand);
+			}
+			
+			// Was there are tail left as the parameter ?
+			if ((tailIndex > 0) && (tailIndex < words.length)) {
+				StringBuilder args = new StringBuilder();
+				for(int i = tailIndex; i < words.length; i++) {
+					args.append(words[i]);
+					args.append(" ");
+				}
+				argument = args.toString().trim();
 			}
 		}
 		
-		// Was there are tail left as the parameter ?
-		String tail = null;
-		if (tailIndex >= 0) {
-			tail = input.substring(tailIndex+1);
-		}
-
-		return new ParseResult(found, tail, matchedCommand);
+		return new ParseResult(found, argument, matchedCommand);
 	}
 
 	@Override
