@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -78,7 +79,7 @@ public abstract class Mission implements Serializable, Temporal {
 			return "MemberScore [candidate=" + candidate + ", score=" + score + "]";
 		}
 	}
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
@@ -124,26 +125,18 @@ public abstract class Mission implements Serializable, Temporal {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
-	/** True if the mission has been requested. */
-	protected boolean requested = false;
 	
 	/** The name of the settlement. */
 	private String settlementName;
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
-	/** The date the mission was filed. */
-	private String dateFiled = "";
-	/** The date the mission embarked. */
-	private String dateEmbarked = "";
-	/** The date the mission was completed. */
-	private String dateCompleted = "";
 	/** The Name of this mission. */
 	private String missionName;
 	/** The description of this mission. */
 	private String description;
 	/** The full mission designation. */
 	private String fullMissionDesignation = "";
-	
+
 	/** The mission type enum. */
 	private MissionType missionType;
 
@@ -155,6 +148,9 @@ public abstract class Mission implements Serializable, Temporal {
 	private String phaseDescription;
 	/** Time the phase started */
 	private MarsClock phaseStartTime;
+	/** Log of mission activity	 */
+	private List<MissionLogEntry> log = new ArrayList<>();
+	
 	/** The name of the starting member */
 	private MissionMember startingMember;
 	/** The mission plan. */
@@ -203,9 +199,6 @@ public abstract class Mission implements Serializable, Temporal {
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 		this.description = missionName;
-		
-		// Create the date filed timestamp
-		createDateFiled();
 
 		missionStatus = new HashSet<>();
 		members = new ConcurrentLinkedQueue<>();
@@ -263,7 +256,10 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public String getDateFiled() {
-		return dateFiled;
+		if (!log.isEmpty()) {
+			return log.get(0).getTime();
+		}
+		return "";
 	}
 
 	/**
@@ -272,7 +268,8 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public String getDateEmbarked() {
-		return dateEmbarked;
+		// Basic Missions doesn't embark
+		return "";
 	}
 
 	/**
@@ -281,38 +278,13 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public String getDateReturned() {
-		return dateCompleted;
+		if (isDone() && !log.isEmpty()) {
+			return log.get(log.size()-1).getTime(); 
+		}
+		
+		return "";
 	}
 
-	/**
-	 * Creates the date filed timestamp of the mission.
-	 */
-	private void createDateFiled() {
-		if (dateFiled.equals("")) {
-			dateFiled = marsClock.getTrucatedDateTimeStamp();
-			fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
-		}
-	}
-	
-	/**
-	 * Creates the date completed timestamp of the mission.
-	 */
-	protected void createDateCompleted() {
-		if (dateCompleted.equals("")) {
-			dateCompleted = marsClock.getTrucatedDateTimeStamp();
-			fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
-		}
-	}
-
-	/**
-	 * Creates the date embarked timestamp of the mission.
-	 */
-	protected void createDateEmbarked() {
-		if (dateEmbarked.equals("")) {
-			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
-			fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
-		}
-	}
 	
 	/**
 	 * Return the unique identifier of the mission.
@@ -618,12 +590,6 @@ public abstract class Mission implements Serializable, Temporal {
 			throw new IllegalArgumentException("newPhase is null");
 		}
 		
-		// Comment in or out to see Mission logic
-//		logger.info(0, "======= " + this.getTypeID()
-//				 		+ " changed from "
-//				 		+ (phase != null ? phase.getName() : "<start>")
-//				 		+ " -> " + newPhase.getName());
-		
 		// Move phase on
  		phase = newPhase;
 		setPhaseEnded(false);		
@@ -637,9 +603,20 @@ public abstract class Mission implements Serializable, Temporal {
 			phaseDescription = "";
 		}
 		
+		// Add entry to the log
+		String time = MarsClockFormat.getTruncatedDateTimeStamp(phaseStartTime);
+		log.add(new MissionLogEntry(time, newPhase));
+		
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);		
 	}
 
+	/**
+	 * Get the mission log
+	 */
+	public List<MissionLogEntry> getLog() {
+		return log;
+	}
+	
 	/**
 	 * Time that the current phases started
 	 */
@@ -1305,7 +1282,7 @@ public abstract class Mission implements Serializable, Temporal {
 		Person p = (Person)member;
 		
 		if (plan == null) {			
-			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
+			plan = new MissionPlanning(this);
 			logger.log(member, Level.INFO, 0, "Serving as the mission lead on " + this + ".");
 
 			 missionManager.requestMissionApproving(plan);

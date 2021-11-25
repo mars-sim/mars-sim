@@ -71,7 +71,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		boolean result = true;
 		
 		if (input == null || input.isBlank()) {
-			response.append("Sorry I don't know a job called '" + input + "'" + System.lineSeparator());
+			response.append("Must specify as Job as an argument" + System.lineSeparator());
 			result = false;
 		}
 		else {

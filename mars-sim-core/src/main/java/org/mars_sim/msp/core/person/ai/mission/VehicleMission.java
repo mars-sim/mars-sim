@@ -104,8 +104,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private double distanceTravelled;
 
 	// Data members
-	/** The vehicle recorded as being used in the mission. */
-	private Vehicle vehicleCache;
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
@@ -126,6 +124,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	// When was the last check on the remaining resources
 	private int lastResourceCheck = 0;
+
+	private String dateEmbarked;
 
 	/**
 	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
@@ -203,15 +203,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Gets the vehicle being used in this mission if there is one.
-	 *
-	 * @return vehicle or null if none.
-	 */
-	public final Vehicle getVehicleCache() {
-		return vehicleCache;
-	}
-
-	/**
 	 * Get the current loading plan for this Mission phase.
 	 * @return
 	 */
@@ -255,7 +246,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			usable = isUsableVehicle(newVehicle);
 			if (usable) {
 				vehicle = newVehicle;
-				vehicleCache = newVehicle;
 				startingTravelledDistance = vehicle.getOdometerMileage();
 				newVehicle.setReservedForMission(true);
 				vehicle.addUnitListener(this);
@@ -288,6 +278,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
 			vehicle = null;
+
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 	}
@@ -457,16 +448,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// for ALL OTHER REASONS
 			setPhaseEnded(true);
 
-			if (vehicleCache instanceof Drone) {
-				if (vehicleCache.getStoredMass() != 0D) {
+			if (vehicle instanceof Drone) {
+				if (vehicle.getStoredMass() != 0D) {
 					continueToEndMission = false;
 					startDisembarkingPhase();
 				}
 			}
 
-			else if (VehicleType.isRover(vehicleCache.getVehicleType())) {
-				if (((Rover)vehicleCache).getCrewNum() != 0
-						|| (vehicleCache.getStoredMass() != 0D)) {
+			else if (VehicleType.isRover(vehicle.getVehicleType())) {
+				if (((Rover)vehicle).getCrewNum() != 0
+						|| (vehicle.getStoredMass() != 0D)) {
 					continueToEndMission = false;
 					startDisembarkingPhase();
 				}
@@ -670,6 +661,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return handled;
 	}
 
+
+	/**
+	 * Gets the date embarked timestamp of the mission.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getDateEmbarked() {
+		return dateEmbarked;
+	}
+	
 	public void flag4Submission() {
 		isMissionPlanReady = true;
 	}
@@ -692,14 +694,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			performEmbarkFromSettlementPhase(member);
 		}
 		else if (TRAVELLING.equals(getPhase())) {
-			createDateEmbarked();
 			performTravelPhase(member);
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
 			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
 		}
 		else if (COMPLETED.equals(getPhase())) {
-			createDateCompleted();
 			setPhaseEnded(true);
 		}
 	}
@@ -832,16 +832,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param member the mission member currently performing the mission.
 	 */
 	protected abstract void performEmbarkFromSettlementPhase(MissionMember member);
-
-	/**
-	 * Obtains approval from the commander of the settlement for the mission.
-	 *
-	 * @param member the mission member currently performing the mission.
-	 */
-	@Override
-	protected void requestReviewPhase(MissionMember member) {
-		super.requestReviewPhase(member);
-	}
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
@@ -1415,8 +1405,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return distance (km)
 	 */
 	public final double getActualTotalDistanceTravelled() {
-		if (vehicleCache != null) {
-			double dist = vehicleCache.getOdometerMileage() - startingTravelledDistance;
+		if (vehicle != null) {
+			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
 			if (dist > distanceTravelled) {
 				// Update or record the distance
 				distanceTravelled = dist;
@@ -1700,6 +1690,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
+		if (dateEmbarked == null) {
+			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
+		}
 		startTravelToNextNode();
 		setPhase(TRAVELLING, getNextNavpoint().getDescription());
 	}

@@ -7,16 +7,15 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.data.SolListDataLogger;
+import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
@@ -51,7 +50,7 @@ public class MissionManager implements Serializable, Temporal {
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
-	private SolListDataLogger<MissionPlanning> historicalMissions;
+	private SolMetricDataLogger<String> historicalMissions;
 
 	private Map<String, Integer> settlementID;
 
@@ -64,7 +63,7 @@ public class MissionManager implements Serializable, Temporal {
 		// Initialize data members
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
-		historicalMissions = new SolListDataLogger<>(5);
+		historicalMissions = new SolMetricDataLogger<>(30);
 		settlementID = new HashMap<>();
 		listeners = null;
 	}
@@ -220,23 +219,22 @@ public class MissionManager implements Serializable, Temporal {
 	 *
 	 * @param the mission to be removed
 	 */
-	public void removeMission(Mission oldMission) {
-
-		if (onGoingMissions.contains(oldMission)) {
-			onGoingMissions.remove(oldMission);
-
-			oldMission.fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-
-			// Update listeners.
-			if (listeners != null) {
-				synchronized (listeners) {
-					for(MissionManagerListener l : listeners) {
-						l.removeMission(oldMission);
+	private void removeMission(Mission oldMission) {
+		synchronized (onGoingMissions) {
+			if (onGoingMissions.contains(oldMission)) {
+				onGoingMissions.remove(oldMission);
+	
+				// Update listeners.
+				if (listeners != null) {
+					synchronized (listeners) {
+						for(MissionManagerListener l : listeners) {
+							l.removeMission(oldMission);
+						}
 					}
 				}
+	
+				logger.config("Removing '" + oldMission.getTypeID() + "' mission.");
 			}
-
-			logger.config("Removing '" + oldMission.getTypeID() + "' mission.");
 		}
 	}
 
@@ -311,8 +309,8 @@ public class MissionManager implements Serializable, Temporal {
 	 */
 	public int numParticularMissions(MissionType mType, Settlement settlement) {
 		return (int) onGoingMissions.stream()
-							.filter(( m ->
-									settlement.equals(m.getAssociatedSettlement())
+							.filter(( m -> !m.isDone()
+									&& settlement.equals(m.getAssociatedSettlement())
 									&& (m.getMissionType() == mType)))
 							.count();
 	}
@@ -326,19 +324,12 @@ public class MissionManager implements Serializable, Temporal {
 	public List<Mission> getMissionsForSettlement(Settlement settlement) {
 
 		if (settlement == null) {
-			// System.out.println("settlement is null");
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> result = new ArrayList<>();
-		for(Mission m : getMissions()) {
-			if (!m.isDone() && settlement.equals(m.getAssociatedSettlement())
-					&& !result.contains(m)) {
-				result.add(m);
-			}
-		}
-
-		return result;
+		return onGoingMissions.stream()
+				.filter(m -> (!m.isDone() && settlement.equals(m.getAssociatedSettlement())))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -350,27 +341,15 @@ public class MissionManager implements Serializable, Temporal {
 	public List<Mission> getPendingMissions(Settlement settlement) {
 
 		if (settlement == null) {
-			// System.out.println("settlement is null");
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> m0 = new ArrayList<>();
-		List<Mission> m1 = onGoingMissions;
-		if (!m1.isEmpty()) {
-			Iterator<Mission> i = m1.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();
-				if (!m.isDone()
-						&& settlement.getName().equalsIgnoreCase(m.getAssociatedSettlement().getName())
-//						&& !m.isApproved()
-						&& m.getPlan() != null
-						&& m.getPlan().getStatus() == PlanType.PENDING) {
-					m0.add(m);
-				}
-			}
-		}
-
-		return m0;
+		return onGoingMissions.stream()
+							  .filter(m -> (!m.isDone()
+									  && settlement.equals(m.getAssociatedSettlement())
+									  && m.getPlan() != null
+									  && m.getPlan().getStatus() == PlanType.PENDING))
+							  .collect(Collectors.toList());
 	}
 
 	/**
@@ -415,52 +394,6 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Remove missions that are already completed.
-	 */
-	private void cleanMissions() {
-		int index = 0;
-		if (onGoingMissions != null && !onGoingMissions.isEmpty()) {
-			// Check if onGoingMissions is null for passing maven test
-			while (index < onGoingMissions.size()) {
-				Mission m = onGoingMissions.get(index);
-				Set<MissionStatus> mss = m.getMissionStatus();
-				if (mss != null && !mss.isEmpty()) {
-					for (MissionStatus ms: mss) {
-						// Note: m.isDone() // still want to keep a list of completed missions in Mission Tool
-						// Note: !m.isApproved() // initially it's not approved until it passes the approval phase
-						if (m.getPlan() == null
-								|| m.getPhase() == null
-								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
-								|| ms == MissionStatus.CANNOT_ENTER_ROVER
-								|| ms == MissionStatus.CANNOT_LOAD_RESOURCES
-								|| ms == MissionStatus.DESTINATION_IS_NULL
-								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED
-								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE
-								|| ms == MissionStatus.LUV_NOT_AVAILABLE
-								|| ms == MissionStatus.LUV_NOT_RETRIEVED
-								|| ms == MissionStatus.MINING_SITE_NOT_BE_DETERMINED
-								|| ms == MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED
-								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
-								|| ms == MissionStatus.NO_EXPLORATION_SITES
-								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES
-								|| ms == MissionStatus.NO_TRADING_SETTLEMENT
-								|| ms == MissionStatus.USER_ABORTED_MISSION
-								|| ms == MissionStatus.NO_ICE_COLLECTION_SITES
-								// Note: ms.getName().toLowerCase().contains("no ") // need to first enforce standard
-								// Note: ms.getName().toLowerCase().contains("not ") // need to first enforce standard
-								) {
-							removeMission(m);
-						}
-					}
-				}
-
-				index++;
-			}
-		}
-	}
-
-
-	/**
 	 * Updates mission based on passing time.
 	 *
 	 * @param pulse Simulation time has advanced
@@ -468,7 +401,8 @@ public class MissionManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		// Remove inactive missions
-		cleanMissions();
+		//TODO Create a history mission, e.g. keep aborted & completed seperate and purge
+
 		return true;
 	}
 
@@ -483,7 +417,6 @@ public class MissionManager implements Serializable, Temporal {
 		Person p = mission.getStartingPerson();
 
 		logger.info(p, "Put together a mission plan for " + plan.getMission().getTypeID() + ".");
-		historicalMissions.addData(plan);
 
 		// Add this mission only after the mission plan has been submitted for review.
 		addMission(mission);
@@ -509,15 +442,17 @@ public class MissionManager implements Serializable, Temporal {
 	public void approveMissionPlan(MissionPlanning missionPlan, Person person,
 								   PlanType newStatus, double threshold) {
 
-		missionPlan.setApproved(person);
 		if (missionPlan.getStatus() == PlanType.PENDING) {
 			missionPlan.setPassingScore(threshold);
 
 			if (newStatus == PlanType.APPROVED) {
 				missionPlan.setStatus(PlanType.APPROVED);
+				historicalMissions.increaseDataPoint(PlanType.APPROVED.name(), 1D);
 			}
 			else if (newStatus == PlanType.NOT_APPROVED) {
-				missionPlan.setStatus(PlanType.NOT_APPROVED);;
+				missionPlan.setStatus(PlanType.NOT_APPROVED);
+				historicalMissions.increaseDataPoint(PlanType.NOT_APPROVED.name(), 1D);
+				removeMission(missionPlan.getMission());
 			}
 		}
 	}
@@ -563,7 +498,7 @@ public class MissionManager implements Serializable, Temporal {
 		missionPlan.setReviewedBy(reviewer.getName());
 	}
 
-	public Map<Integer, List<MissionPlanning>> getHistoricalMissions() {
+	public Map<Integer, Map<String, Double>> getHistoricalMissions() {
 		return historicalMissions.getHistory();
 	}
 

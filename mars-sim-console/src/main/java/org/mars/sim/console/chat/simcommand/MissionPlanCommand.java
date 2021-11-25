@@ -7,12 +7,11 @@
 
 package org.mars.sim.console.chat.simcommand;
 
-import java.util.List;
 import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 
 /**
  * Command to display mission stats
@@ -23,7 +22,7 @@ public class MissionPlanCommand extends ChatCommand {
 	public static final ChatCommand MISSION_PLAN = new MissionPlanCommand();
 
 	private MissionPlanCommand() {
-		super(TopLevel.SIMULATION_GROUP, "mp", "mission plan", "Planned mission counts");
+		super(TopLevel.SIMULATION_GROUP, "mp", "planning", "Planned mission counts");
 		
 		setInteractive(true);
 	}
@@ -94,54 +93,31 @@ public class MissionPlanCommand extends ChatCommand {
 		response.appendHeading("On Sol " + today + ", the " + (totals ? "combined " : "")
 								+ "data for the last " + max + " sols shows");
 
-		Map<Integer, List<MissionPlanning>> plannings = context.getSim().getMissionManager().getHistoricalMissions();
+		Map<Integer, Map<String, Double>> plannings = context.getSim().getMissionManager().getHistoricalMissions();
 
 		int totalApproved = 0;
 		int totalNotApproved = 0;
-		int totalPending = 0;
 		int firstSol = today;
 		int lastSol = Math.max(0, today - max); // Don't go negative
 		for (int i = firstSol; i > lastSol; i--) {
-			List<MissionPlanning> plans = plannings.get(i);
-			int approved = 0;
-			int notApproved = 0;
-			int pending = 0;
-
-			if (plans != null) {
-				for (MissionPlanning mp : plans) {
-					switch(mp.getStatus()) {
-					case PENDING:
-						pending++;
-						break;
-						
-					case NOT_APPROVED:
-						notApproved++;
-						break;
-						
-					case APPROVED:
-						approved++;
-						break;
-					}
-				}
-			}
+			Map<String, Double> plans = plannings.get(i);
+			int approved = (int) plans.getOrDefault(PlanType.APPROVED.name(), 0D).doubleValue();
+			int notApproved = (int) plans.getOrDefault(PlanType.NOT_APPROVED.name(), 0D).doubleValue();
 
 			if (totals) {
 				totalApproved += approved;
 				totalNotApproved += notApproved;
-				totalPending += pending;
 			}
 			else {
 				response.appendText("Stats for sol " + i);
 				response.appendLabelledDigit("# of plans approved", approved);
 				response.appendLabelledDigit("# of plans not approved", notApproved);
-				response.appendLabelledDigit("# of plans pending", pending);
 			}
 		}
 		
 		if (totals) {
 			response.appendLabelledDigit("# of plans approved", totalApproved);
 			response.appendLabelledDigit("# of plans not approved", totalNotApproved);
-			response.appendLabelledDigit("# of plans pending", totalPending);
 		}
 		
 		context.println(response.getOutput());
