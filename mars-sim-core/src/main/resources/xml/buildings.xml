@@ -2809,6 +2809,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<output resource="water" rate="38" ambient="false" />
 					<output resource="solid waste" rate="2" ambient="false" />
+
 				</process>
 					<process name="Black Water Processor" power-required=".315" default="on">
 					<input resource="black water" rate="20" ambient="false" />
