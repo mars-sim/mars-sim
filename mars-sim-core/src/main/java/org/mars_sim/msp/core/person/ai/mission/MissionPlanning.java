@@ -11,33 +11,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class MissionPlanning implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(MissionPlanning.class.getName());
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
 	
 	private int requestedSol;
 	private double percentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
 
-	
-	private String requestedBy;
-	private String approvedBy;
-	
-	private String requestTimeStamp;
-	private String lastReviewedTimeStamp;
-
-	private RoleType requesterRole;
-	private RoleType approvedRole;
 	private PlanType status = PlanType.PENDING;
 
 	private Mission mission;
@@ -46,19 +31,14 @@ public class MissionPlanning implements Serializable {
 	
 	private static MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 
-	public MissionPlanning(Mission mission, String requestedBy, RoleType role) {
+	public MissionPlanning(Mission mission) {
 		this.requestedSol = clock.getMissionSol();
-		this.requestTimeStamp = clock.getDateTimeStamp();
 		this.mission = mission;
-		this.requestedBy = requestedBy;
-		this.requesterRole = role;
 		reviewers = new ConcurrentHashMap<>();
 	}
 	
 	public void setReviewedBy(String name) {
 		setReviewer(name);
-		// Note : resetting marsClock is needed after loading from a saved sim 
-		lastReviewedTimeStamp = clock.getDateTimeStamp();
 	}
 	
 	public void setReviewer(String name) {
@@ -123,16 +103,7 @@ public class MissionPlanning implements Serializable {
 	public void setStatus(PlanType status) {
 		this.status = status;
 	}
-	
-	public void setApprovedRole(RoleType roleType) {
-		this.approvedRole = roleType;
-	}
 
-	public void setApproved(Person p) {
-		this.approvedBy = p.getName();
-		this.approvedRole = p.getRole().getType();
-	}
-	
 	public void setScore(double value) {
 		score = value;
 	}

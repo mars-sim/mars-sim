@@ -771,7 +771,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 //			boolean isVehicle = false;
 		if (MissionType.isVehicleMission(mission.getMissionType())) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
-			Vehicle vehicle = vehicleMission.getVehicleCache();
+			Vehicle vehicle = vehicleMission.getVehicle();
 			if (vehicle != null) {
 //					isVehicle = true;
 				vehicleButton.setText(vehicle.getName());
@@ -794,9 +794,26 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 						estTotalDistance
 						));
 
-				vehicle.addUnitListener(this);
-
-				currentVehicle = vehicle;
+				if (!vehicle.equals(currentVehicle)) {
+					vehicle.addUnitListener(this);
+					if (currentVehicle != null) {
+						currentVehicle.removeUnitListener(this);
+					}
+					vehicle.addUnitListener(this);
+					currentVehicle = vehicle;
+				}
+			}
+			else {
+				vehicleButton.setText("");
+				vehicleStatusLabel.setText("");
+				speedLabel.setText("");
+				traveledLabel.setText("");
+				distanceNextNavLabel.setText("");
+				vehicleButton.setVisible(false);
+				if (currentVehicle != null) {
+					currentVehicle.removeUnitListener(this);
+				}
+				currentVehicle = null;
 			}
 		} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 			// Display first of mission's list of construction vehicles.
@@ -909,7 +926,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * Mission event update.
 	 */
 	public void missionUpdate(MissionEvent e) {
-		SwingUtilities.invokeLater(new MissionEventUpdater(e, this));
+		if (e.getSource().equals(currentMission)) {
+			SwingUtilities.invokeLater(new MissionEventUpdater(e, this));
+		}
 	}
 
 	/**
@@ -933,8 +952,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		if (((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE) {
-			SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
+		if ((((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE)
+			&& event.getSource().equals(currentVehicle)) {
+				SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
 		}
 	}
 

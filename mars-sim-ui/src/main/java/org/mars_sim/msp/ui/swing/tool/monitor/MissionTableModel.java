@@ -129,8 +129,12 @@ public class MissionTableModel extends AbstractTableModel
 		missionManager.addListener(this);
 
 		Iterator<Mission> i = missionCache.iterator();
-		while (i.hasNext())
-			i.next().addMissionListener(this);
+		while (i.hasNext()) {
+			Mission m = i.next();
+			if (!m.isDone()) {
+				i.next().addMissionListener(this);
+			}
+		}
 	}
 
 	/**
@@ -182,8 +186,6 @@ public class MissionTableModel extends AbstractTableModel
 			int index = missionCache.indexOf(mission);
 			missionCache.remove(mission);
 			mission.removeMissionListener(this);
-
-//			System.out.println("removeMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
 
 			// Delete a particular row
 			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
@@ -253,7 +255,6 @@ public class MissionTableModel extends AbstractTableModel
 		int index = missionCache.indexOf(event.getSource());
 
 		if (index > -1) {// && (index < missionCache.size())) {
-//			System.out.println("missionCache: " + missionCache.size());
 			MissionEventType eventType = event.getType();
 
 			int column0 = -1;
@@ -414,13 +415,6 @@ public class MissionTableModel extends AbstractTableModel
 
 				case STARTING_SETTLEMENT: {
 					result = mission.getAssociatedSettlement();
-//					if (mission instanceof TravelMission) {
-//						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
-//						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
-//							result = nav0.getSettlement().getName();
-//						}
-//					}
-
 				}
 					break;
 
