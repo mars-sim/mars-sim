@@ -309,11 +309,10 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
-		if (!airlock.hasReservation(person.getIdentifier())) {
-			if (!airlock.addReservation(person.getIdentifier())) {
-				walkAway(person, "Reservation not found");
-				return 0;
-			}
+		if (!airlock.hasReservation(person.getIdentifier())
+				&& !airlock.addReservation(person.getIdentifier())) {
+			walkAway(person, "Reservation not found");
+			return 0;
 		}
 
 		if (!isFit()) {

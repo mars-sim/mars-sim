@@ -77,7 +77,6 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
 	        ScientificStudy study = person.getStudy();
 	        if (study != null) {
-
 	            // Check if study is in proposal phase.
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 	                // Once a person starts a Study they should focus on the Proposal
@@ -88,7 +87,6 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	        else {
 	            // Probability of starting a new scientific study.
 	            Role role = person.getRole();
-
 	            // Check person has a science role
 	            if (role != null) {
 	            	if (role.getType() == RoleType.CHIEF_OF_SCIENCE

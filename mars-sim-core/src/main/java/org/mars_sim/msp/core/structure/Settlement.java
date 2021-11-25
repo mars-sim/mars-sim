@@ -1716,7 +1716,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
-				if (!chamberFull || (chamberFull && !reservationFull)) {
+				if (!chamberFull || !reservationFull) {
 					double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
 							person.getYLocation());
 					if (distance < leastDistance) {
@@ -1799,7 +1799,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if ((!chamberFull || (chamberFull && !reservationFull))
+			if ((!chamberFull || !reservationFull)
 				&& buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
@@ -1855,7 +1855,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if (!chamberFull || (chamberFull && !reservationFull)) {
+			if (!chamberFull || !reservationFull) {
 				if (!availableAirlocks.contains(id)) {
 					availableAirlocks.add(id);
 				}
@@ -1892,7 +1892,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if ((!chamberFull || (chamberFull && !reservationFull))
+			if ((!chamberFull || !reservationFull)
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
 				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), xLocation,

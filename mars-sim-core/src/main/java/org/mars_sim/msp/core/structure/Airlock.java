@@ -133,6 +133,12 @@ public abstract class Airlock implements Serializable {
 		reservationMap = new HashMap<>();
 	}
 
+	/**
+	 * Is this person's id on the reservation map ?
+	 *
+	 * @param personInt
+	 * @return
+	 */
 	public boolean hasReservation(int personInt) {
 		if (reservationMap.containsKey(personInt)) {
 			int msol = marsClock.getMillisolInt();
@@ -154,6 +160,12 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Removes the id from the reservation map
+	 *
+	 * @param personInt
+	 * @return
+	 */
 	public boolean removeReservation(int personInt) {
 		if (reservationMap.containsKey(personInt)) {
 			reservationMap.remove(personInt);
@@ -162,6 +174,12 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Adds a person's id to the reservation map
+	 *
+	 * @param personInt
+	 * @return
+	 */
 	public boolean addReservation(int personInt) {
 		if (!reservationMap.containsKey(personInt)) {
 			// Test if the reservation map already has 4 people
@@ -190,10 +208,20 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Gets the reservation ids
+	 *
+	 * @return
+	 */
 	public Set<Integer> getReserved() {
 		return reservationMap.keySet();
 	}
 
+	/**
+	 * Is the reservation full ?
+	 *
+	 * @return
+	 */
 	public boolean isReservationFull() {
 		if (reservationMap.size() > MAX_RESERVED - 1) {
 			return true;

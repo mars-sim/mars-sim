@@ -63,70 +63,67 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
 
 	        // Add probability for researcher's primary study (if any).
 	        ScientificStudy primaryStudy = person.getStudy();
-	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-	            if (!primaryStudy.isPrimaryResearchCompleted()) {
-	                if (experimentalSciences.contains(primaryStudy.getScience())) {
-	                    try {
-	                        Lab lab = PerformLaboratoryExperiment.getLocalLab(person, primaryStudy.getScience());
-	                        if (lab != null) {
-	                            double primaryResult = 50D;
+	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+	        		&& !primaryStudy.isPrimaryResearchCompleted()
+	        		&& experimentalSciences.contains(primaryStudy.getScience())) {
+                try {
+                    Lab lab = PerformLaboratoryExperiment.getLocalLab(person, primaryStudy.getScience());
+                    if (lab != null) {
+                        double primaryResult = 50D;
 
-	                            // Get lab building crowding modifier.
-	                            primaryResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
+                        // Get lab building crowding modifier.
+                        primaryResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
 
-	                            // If researcher's current job isn't related to study science, divide by two.
-	                            JobType job = person.getMind().getJob();
-	                            if (job != null) {
-	                                ScienceType jobScience = ScienceType.getJobScience(job);
-	                                if (primaryStudy.getScience() != jobScience) {
-	                                    primaryResult /= 2D;
-	                                }
-	                            }
+                        // If researcher's current job isn't related to study science, divide by two.
+                        JobType job = person.getMind().getJob();
+                        if (job != null) {
+                            ScienceType jobScience = ScienceType.getJobScience(job);
+                            if (primaryStudy.getScience() != jobScience) {
+                                primaryResult /= 2D;
+                            }
+                        }
 
-	                            result += primaryResult;
-	                        }
-	                    }
-	                    catch (Exception e) {
-                            logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
-	                    }
-	                }
-	            }
+                        result += primaryResult;
+                    }
+                }
+                catch (Exception e) {
+                    logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
+                }
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
 	        Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
-	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                    ScienceType collabScience = collabStudy.getContribution(person);
-	                    if (experimentalSciences.contains(collabScience)) {
-	                        try {
-	                            Lab lab = PerformLaboratoryExperiment.getLocalLab(person, collabScience);
-	                            if (lab != null) {
-	                                double collabResult = 25D;
+	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+	            		&& !collabStudy.isCollaborativeResearchCompleted(person)) {
+                    ScienceType collabScience = collabStudy.getContribution(person);
+                    if (experimentalSciences.contains(collabScience)) {
+                        try {
+                            Lab lab = PerformLaboratoryExperiment.getLocalLab(person, collabScience);
+                            if (lab != null) {
+                                double collabResult = 25D;
 
-	                                // Get lab building crowding modifier.
-	                                collabResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
+                                // Get lab building crowding modifier.
+                                collabResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
 
-	                                // If researcher's current job isn't related to study science, divide by two.
-	                                JobType job = person.getMind().getJob();
-	                                if (job != null) {
-	                                    ScienceType jobScience = ScienceType.getJobScience(job);
-	                                    if (collabScience != jobScience) {
-	                                        collabResult /= 2D;
-	                                    }
-	                                }
+                                // If researcher's current job isn't related to study science, divide by two.
+                                JobType job = person.getMind().getJob();
+                                if (job != null) {
+                                    ScienceType jobScience = ScienceType.getJobScience(job);
+                                    if (collabScience != jobScience) {
+                                        collabResult /= 2D;
+                                    }
+                                }
 
-	                                result += collabResult;
-	                            }
-	                        }
-	                        catch (Exception e) {
-	                            logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
-	                        }
-	                    }
-	                }
-	            }
+                                result += collabResult;
+                            }
+                        }
+                        catch (Exception e) {
+                            logger.severe(person.getVehicle(), 10_000L, person + " was unable to perform lab experiements.", e);
+                        }
+                    }
+                }
 	        }
 
 	        if (result > 0) {

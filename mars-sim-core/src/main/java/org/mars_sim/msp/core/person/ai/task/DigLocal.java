@@ -45,9 +45,9 @@ implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(DigLocal.class.getName());
 
 	public static final double SMALL_AMOUNT = 0.00001;
-	
+
 	private double compositeRate;
-	
+
 	private double factor;
 
 	/** Total resource collected in kg. */
@@ -59,18 +59,18 @@ implements Serializable {
 	private Settlement settlement;
 
 	private TaskPhase collectionPhase;
-	
+
 	// Resource being collected
 	private int resourceID;
 	private String resourceName;
 
 	private EquipmentType containerType;
-	
+
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
 	 */
-	public DigLocal(String name, TaskPhase collectionPhase, int resourceID, 
+	public DigLocal(String name, TaskPhase collectionPhase, int resourceID,
 					EquipmentType containerType, Person person) {
         // Use EVAOperation constructor.
         super(name, person, false, 20, SkillType.AREOLOGY);
@@ -79,7 +79,7 @@ implements Serializable {
         this.resourceID = resourceID;
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
-        
+
         if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -94,7 +94,7 @@ implements Serializable {
         	endTask();
         	return;
         }
-        
+
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
      		endTask();
@@ -108,11 +108,10 @@ implements Serializable {
 	        	endTask();
 	     		return;
 	        }
-	        else if (!airlock.hasReservation(person.getIdentifier())) {
-	    		if (!airlock.addReservation(person.getIdentifier())) {
-			    	endTask();
-			    	return;
-	    		}
+	        else if (!airlock.hasReservation(person.getIdentifier())
+	        		&& !airlock.addReservation(person.getIdentifier())) {
+			    endTask();
+			    return;
 	        }
      	}
 
@@ -122,8 +121,8 @@ implements Serializable {
         // If bags are not available, end task.
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
-        				+ " for " + resourceName + " are available."); 
-        	
+        				+ " for " + resourceName + " are available.");
+
         	if (person.isOutside()){
                 setPhase(WALK_BACK_INSIDE);
             }
@@ -137,14 +136,14 @@ implements Serializable {
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
         setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
-        
+
 		// set the boolean to true so that it won't be done again today
 //		person.getPreference().setTaskDue(this, true);
-		
+
      // Determine storage bin location.
 //            Point2D.Double binLoc = determineBinLocation();
 //            setBinLocation(binLoc.getX(), binLoc.getY());
-        
+
        	// Add task phases
     	addPhase(collectionPhase);
 //        	addPhase(WALK_TO_BIN);
@@ -159,7 +158,7 @@ implements Serializable {
 	protected Settlement getSettlement() {
 		return settlement;
 	}
-	
+
 	/**
 	 * This set the colleciton trate for the resource.
 	 * @param collectionRate
@@ -169,11 +168,11 @@ implements Serializable {
         int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-        
+
         factor = .9 * (1 - (agility + strength) / 200D);
 		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
 	}
-	
+
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
@@ -193,16 +192,16 @@ implements Serializable {
         return time;
     }
 
-			
+
 	/**
      * Perform collect resource phase.
-     * 
+     *
      * @param time time (millisol) to perform phase.
      * @return time (millisol) remaining after performing phase.
      * @throws Exception
      */
     private double collectResource(double time) {
-    	
+
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
@@ -211,7 +210,7 @@ implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
         // Check if there is any EVA problems and if on-site time is over.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			if (person.isOutside())
@@ -220,7 +219,7 @@ implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -233,12 +232,12 @@ implements Serializable {
      		endTask();
      		return 0;
      	}
-  
+
      	// Get a container
         Container aBag = person.findContainer(containerType, false, resourceID);
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "Has no " + containerType.getName()
-        			+ " for " + resourceName); 
+        			+ " for " + resourceName);
         	if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
             else {
@@ -246,11 +245,11 @@ implements Serializable {
             }
         	return 0;
         }
-        
+
         double collected = time * compositeRate;
-        
+
 		// Modify collection rate by "Areology" skill.
-		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY); 
+		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (areologySkill >= 1) {
 			collected = collected + .1 * collected * areologySkill;
 		}
@@ -270,7 +269,7 @@ implements Serializable {
         	aBag.storeAmountResource(resourceID, collected);
 	     	totalCollected += collected;
         }
-        
+
         if (!finishedCollecting) {
         	double loadCap = person.getCarryingCapacity();
             if (totalCollected >= loadCap) {
@@ -278,7 +277,7 @@ implements Serializable {
     			finishedCollecting = true;
     		}
         }
-        
+
         if (!finishedCollecting) {
         	// Can not physically carry any more
 	        finishedCollecting = (person.getRemainingCarryingCapacity() <= 0);
@@ -287,19 +286,19 @@ implements Serializable {
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
         double strengthMod = condition.getStrengthMod();
-        
+
         // Add penalty to the fatigue
         condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod));
-        
+
         // Add experience points
         addExperience(time);
-        
+
         if (finishedCollecting) {
-     	
-            logger.log(person, Level.FINE, 4_000, "Collected a total of " 
-            	+ Math.round(totalCollected*100D)/100D 
-        		+ " kg " + resourceName + "."); 
-         
+
+            logger.log(person, Level.FINE, 4_000, "Collected a total of "
+            	+ Math.round(totalCollected*100D)/100D
+        		+ " kg " + resourceName + ".");
+
             if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
             else {
@@ -307,20 +306,20 @@ implements Serializable {
          		return 0;
             }
     	}
-     	
+
 	    // Check for an accident during the EVA operation.
 	    checkForAccident(time);
-	    
+
         return 0D;
     }
-    
+
     /**
      * Transfers an empty bag from a settlement to a person
      * @return a bag
      */
     private Container transferContainer() {
     	// Note: should take a bag before leaving the airlock
-    	// Note: also consider dropping off the resource in a shed 
+    	// Note: also consider dropping off the resource in a shed
     	// or a shed outside of the workshop/landerhab for processing
         Container aBag = person.findContainer(containerType, false, resourceID);
         if (aBag == null) {
@@ -380,7 +379,7 @@ implements Serializable {
     public Building findBin() {
     	return null;
     }
-    
+
     /**
      * Determine storage bin location for dropping off regolith.
      * @return storage bin X and Y location outside settlement.
@@ -391,7 +390,7 @@ implements Serializable {
     	double x = bin.getXLocation();
     	double y = bin.getYLocation();
     	int facing = (int)bin.getFacing();
-    	
+
     	if (facing == 0) {
 			x -= 3;
 		} else if (facing == 90) {
@@ -406,7 +405,7 @@ implements Serializable {
 
         return new Point2D.Double(x, y);
     }
-    
+
     /**
      * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement
      */
@@ -415,29 +414,29 @@ implements Serializable {
     	if (person.isOutside()) {
     		setPhase(WALK_BACK_INSIDE);
     	}
-    	
+
     	else {
 	    	Container bag = person.findContainer(containerType, false, resourceID);
 	    	if (bag == null)
 	    		return;
-	    	
+
             double amount = bag.getAmountResourceStored(resourceID);
 
             if (amount > 0) {
-      	
+
 	            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
 
 	            if (amount > settlementCap) {
 	            	amount = settlementCap;
-	            	
-	            	logger.warning(person, 
-	            			resourceName + " storage full. Could only check in " 
+
+	            	logger.warning(person,
+	            			resourceName + " storage full. Could only check in "
 	            			+ Math.round(amount*10.0)/10.0 + " kg.");
 	            }
-	            
+
 	            else {
-	            	logger.fine(person,  
-	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");	
+	            	logger.fine(person,
+	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
 	            }
 
 
