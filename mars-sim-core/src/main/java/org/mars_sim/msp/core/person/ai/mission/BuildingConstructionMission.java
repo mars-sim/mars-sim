@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -1470,8 +1471,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// Check to see if proposed new site position intersects with any existing
 			// buildings
 			// or construction sites.
-			if (settlement.getBuildingManager().isBuildingLocationOpen(rectCenterX, rectCenterY, site.getWidth(),
-					site.getLength(), rectRotation, site)) {
+			BoundedObject sitePosition = new BoundedObject(rectCenterX, rectCenterY, site.getWidth(), site.getLength(), rectRotation);
+			if (settlement.getBuildingManager().isBuildingLocationOpen(sitePosition, site)) {
 				// Set the new site here.
 				site.setXLocation(rectCenterX);
 				site.setYLocation(rectCenterY);

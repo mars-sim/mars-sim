@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -2003,35 +2004,28 @@ public class BuildingManager implements Serializable {
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
 	 *
-	 * @param xLoc   the new building's X location.
-	 * @param yLoc   the new building's Y location.
-	 * @param width  the new building's width (meters).
-	 * @param length the new building's length (meters).
-	 * @param facing the new building's facing (degrees clockwise from North).
+	 * @param position The positino of the new building
 	 * @return true if new building location is open.
 	 */
-	public boolean isBuildingLocationOpen(double xLoc, double yLoc, double width, double length, double facing) {
-		return isBuildingLocationOpen(xLoc, yLoc, width, length, facing, null);
+	public boolean isBuildingLocationOpen(BoundedObject position) {
+		return isBuildingLocationOpen(position, null);
 	}
 
 	/**
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
 	 *
-	 * @param xLoc   the new building's X location.
-	 * @param yLoc   the new building's Y location.
-	 * @param width  the new building's width (meters).
-	 * @param length the new building's length (meters).
-	 * @param facing the new building's facing (degrees clockwise from North).
+	 * @param position New building position
 	 * @param site   the new construction site or null if none.
 	 * @return true if new building location is open.
 	 */
-	public boolean isBuildingLocationOpen(double xLoc, double yLoc, double width, double length, double facing,
-			ConstructionSite site) {
+	public boolean isBuildingLocationOpen(BoundedObject position, ConstructionSite site) {
 		boolean goodLocation = true;
 
-		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, width, length, xLoc, yLoc, facing,
-				unitManager.getSettlementByID(settlementID).getCoordinates());
+		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
+														   position.getXLocation(), position.getYLocation(),
+														   position.getFacing(),
+														   unitManager.getSettlementByID(settlementID).getCoordinates());
 
 		return goodLocation;
 	}

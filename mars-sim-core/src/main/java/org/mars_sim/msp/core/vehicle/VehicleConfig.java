@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -196,9 +196,9 @@ public class VehicleConfig implements Serializable {
 			// airlock locations (optional).
 			Element airlockElement = vehicleElement.getChild(AIRLOCK);
 			if (airlockElement != null) {
-				LocalPosition airlockLoc = SimulationConfig.parseLocalPosition(airlockElement);
-				LocalPosition airlockInteriorLoc = SimulationConfig.parseLocalPosition(airlockElement.getChild(INTERIOR_LOCATION));
-				LocalPosition airlockExteriorLoc = SimulationConfig.parseLocalPosition(airlockElement.getChild(EXTERIOR_LOCATION));
+				LocalPosition airlockLoc = ConfigHelper.parseLocalPosition(airlockElement);
+				LocalPosition airlockInteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(INTERIOR_LOCATION));
+				LocalPosition airlockExteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(EXTERIOR_LOCATION));
 				
 				v.setAirlock(airlockLoc, airlockInteriorLoc, airlockExteriorLoc);
 			}

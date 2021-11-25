@@ -16,6 +16,9 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.BoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -36,10 +39,6 @@ public class ResupplyConfig implements Serializable {
     private static final String RESUPPLY = "resupply";
     private static final String NAME = "name";
     private static final String BUILDING = "building";
-    private static final String WIDTH = "width";
-    private static final String LENGTH = "length";
-    private static final String X_LOCATION = "x-location";
-    private static final String Y_LOCATION = "y-location";
     private static final String FACING = "facing";
     private static final String VEHICLE = "vehicle";
     private static final String EQUIPMENT = "equipment";
@@ -90,34 +89,15 @@ public class ResupplyConfig implements Serializable {
             List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
             for (Element buildingElement : buildingNodes) {
                 String buildingType = buildingElement.getAttributeValue(TYPE);
-                double width = -1D;
-                if (buildingElement.getAttribute(WIDTH) != null) {
-                    width = Double.parseDouble(buildingElement
-                            .getAttributeValue(WIDTH));
-                }
-
-                // Determine optional length attribute value. "-1" if it doesn't
-                // exist.
-                double length = -1D;
-                if (buildingElement.getAttribute(LENGTH) != null) {
-                    length = Double.parseDouble(buildingElement
-                            .getAttributeValue(LENGTH));
-                }
-
-                double xLoc = Double.parseDouble(buildingElement
-                        .getAttributeValue(X_LOCATION));
-                double yLoc = Double.parseDouble(buildingElement
-                        .getAttributeValue(Y_LOCATION));
-                double facing = Double.parseDouble(buildingElement
-                        .getAttributeValue(FACING));
-
+                BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
+                
                 String scenario = "A";
                 //if (NAME.toLowerCase().equals("Mars Direct Base Resupply 3".toLowerCase()))
                 //	scenario = "A";
                 // TODO: need to rework how "scenario" and "scenarioID" are applied
 
                 template.buildings.add(new BuildingTemplate(template.name, 0, scenario, buildingType,
-                        buildingType, width, length, xLoc, yLoc, facing));
+                        buildingType, bounds));
 
             }
 

@@ -120,8 +120,8 @@ public class BuildingConnectorManager implements Serializable {
 							+ " does not exist for settlement " + settlement.getName());
 				}
 
-				double connectionXLoc = connectionTemplate.getXLocation();
-				double connectionYLoc = connectionTemplate.getYLocation();
+				double connectionXLoc = connectionTemplate.getLocation().getX();
+				double connectionYLoc = connectionTemplate.getLocation().getY();
 				Point2D.Double connectionSettlementLoc = LocalAreaUtil.getLocalRelativeLocation(connectionXLoc,
 						connectionYLoc, building);
 

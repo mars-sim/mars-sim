@@ -210,38 +210,43 @@ public class Resupply implements Serializable, Transportable {
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
 				BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
-				double width = spec.getWidth();
+				BoundedObject correctedBounds = getCorrectedBounds(spec, template.getBounds());
 
-				if (template.getWidth() > 0D) {
-					width = template.getWidth();
-				}
-				if (width <= 0D) {
-					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-				}
-
-				double length = spec.getLength();
-				if (template.getLength() > 0D) {
-					length = template.getLength();
-				}
-				if (length <= 0D) {
-					length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-				}
 				int buildingID = buildingManager.getNextTemplateID();
 				
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(template.getBuildingType());
-//				int scenarioID = settlement.getID();
 				String scenario = getCharForNumber(scenarioID + 1);
 				// String scenario = template.getScenario(); // Note: scenario is null since
 				// template does NOT have a scenario string yet
 				String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
 
 				BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID,
-						scenario, template.getBuildingType(), buildingNickName, width, length, template.getXLoc(),
-						template.getYLoc(), template.getFacing());
+						scenario, template.getBuildingType(), buildingNickName, correctedBounds);
 
 				checkTemplateAddBuilding(correctedTemplate);
 			}
 		}
+	}
+
+	private static BoundedObject getCorrectedBounds(BuildingSpec spec, BoundedObject bounds) {
+		double width = spec.getWidth();
+
+		if (bounds.getWidth() > 0D) {
+			width = bounds.getWidth();
+		}
+		if (width <= 0D) {
+			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+		}
+
+		double length = spec.getLength();
+		if (bounds.getLength() > 0D) {
+			length = bounds.getLength();
+		}
+		if (length <= 0D) {
+			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+		}
+		
+		return new BoundedObject(bounds.getXLocation(), bounds.getYLocation(), width, length, bounds.getFacing());
 	}
 
 	/**
@@ -270,7 +275,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @param count number of counts
 	 * @return corrected building template
 	 */
-	public BuildingTemplate clearCollision(BuildingTemplate bt, int count) {
+	private BuildingTemplate clearCollision(BuildingTemplate bt, int count) {
 		count--;
 		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : calling clearCollision() for " + bt.getNickName());
 		
@@ -325,12 +330,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	public static boolean isCollisionFreeResupplyBuildings(BuildingTemplate bt, BuildingManager mgr) {
 
-		double x0 = bt.getXLoc();
-		double y0 = bt.getYLoc();
-		double w0 = bt.getWidth();
-		double l0 = bt.getLength();
-		double f0 = bt.getFacing();
-		BoundedObject b0 = new BoundedObject(x0, y0, w0, l0, f0);
+		BoundedObject b0 = bt.getBounds();
 
 		List<Resupply> resupplies = ResupplyUtil.loadInitialResupplyMissions();
 
@@ -343,18 +343,10 @@ public class Resupply implements Serializable, Transportable {
 				Iterator<BuildingTemplate> j = templates.iterator();
 				while (j.hasNext()) {
 					BuildingTemplate t = j.next();
-					// System.out.println("t : " + t.getNickName());
-					double x1 = t.getXLoc();
-					double y1 = t.getYLoc();
-					double w1 = t.getWidth();
-					double l1 = t.getLength();
-					double f1 = t.getFacing();
-					BoundedObject b1 = new BoundedObject(x1, y1, w1, l1, f1);
+					BoundedObject b1 = t.getBounds();
 
 					if (LocalAreaUtil.isTwoBoundedOjectsIntersected(b0, b1))
 						return false;
-					// else
-					// System.out.println("no intersection from " + r.hashCode());
 				}
 			}
 		}
@@ -371,17 +363,8 @@ public class Resupply implements Serializable, Transportable {
 	 * @param coordinates
 	 * @return true if the location is clear of collision
 	 */
-	public boolean isCollisionFreeVehicle(BuildingTemplate t) {
-
-		double xLoc = t.getXLoc();
-		double yLoc = t.getYLoc();
-		double w = t.getWidth();
-		double l = t.getLength();
-		double f = t.getFacing();
-
-		// BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-
-		return !LocalAreaUtil.isVehicleBoundedOjectIntersected(new BoundedObject(xLoc, yLoc, w, l, f),
+	private boolean isCollisionFreeVehicle(BuildingTemplate t) {
+		return !LocalAreaUtil.isVehicleBoundedOjectIntersected(t.getBounds(),
 				unitManager.getSettlementByID(settlementID).getCoordinates(), true);
 
 	}
@@ -392,17 +375,9 @@ public class Resupply implements Serializable, Transportable {
 	 * @param t a building template
 	 * @return true if no collision.
 	 */
-	public boolean isCollisionFreeImmovable(BuildingTemplate t) {
+	private boolean isCollisionFreeImmovable(BuildingTemplate t) {
 
-		double xLoc = t.getXLoc();
-		double yLoc = t.getYLoc();
-		double w = t.getWidth();
-		double l = t.getLength();
-		double f = t.getFacing();
-
-		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-
-		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(boundedObject, 
+		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(t.getBounds(), 
 				unitManager.getSettlementByID(settlementID).getCoordinates());
 	}
 
@@ -437,8 +412,8 @@ public class Resupply implements Serializable, Transportable {
 		Iterator<Building> i = list.iterator();
 		while (i.hasNext()) {
 			Building startingBuilding = i.next();
-			double distance = Point2D.distance(startingBuilding.getXLocation(), startingBuilding.getYLocation(),
-					bt.getXLoc(), bt.getYLoc());
+			double distance = startingBuilding.getPosition().getDistanceTo(bt.getBounds().getLocation());
+
 			if (distance < leastDistance) {
 				withinRadius = false;
 				break;
@@ -621,29 +596,14 @@ public class Resupply implements Serializable, Transportable {
 	public boolean isTemplatePositionClear(BuildingTemplate template) {
 
 		boolean result = true;
-
+		
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
 		BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
-		double width = spec.getWidth();
-		if (template.getWidth() > 0D) {
-			width = template.getWidth();
-		}
-		if (width <= 0D) {
-			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-		}
+		BoundedObject correctedBounds = getCorrectedBounds(spec, template.getBounds());
 
-		double length = spec.getLength();
-		if (template.getLength() > 0D) {
-			length = template.getLength();
-		}
-		if (length <= 0D) {
-			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-		}
-		
 		result = unitManager.getSettlementByID(settlementID).getBuildingManager()
-				.isBuildingLocationOpen(template.getXLoc(), template.getYLoc(), width,
-				length, template.getFacing());
+				.isBuildingLocationOpen(correctedBounds);
 
 		return result;
 	}
@@ -770,7 +730,7 @@ public class Resupply implements Serializable, Transportable {
 				// TODO : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(
 						"Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
-						buildingType, buildingNickName, width, length, 0, 0, 0);
+						buildingType, buildingNickName, new BoundedObject(0,  0, width, length, 0));
 
 				logger.config("Positioning " + buildingNickName + " at (0,0)");
 			}
@@ -1095,9 +1055,8 @@ public class Resupply implements Serializable, Transportable {
 			// buildings
 			// or construction sites.
 			BuildingManager buildingManager = unitManager.getSettlementByID(settlementID).getBuildingManager();
-			
-			if (buildingManager.isBuildingLocationOpen(rectCenterX, rectCenterY, width, length,
-					rectRotation)) {
+			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, width, length, rectRotation);
+			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
 				int buildingID = buildingManager.getNextTemplateID();
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(newBuildingType);
@@ -1111,7 +1070,7 @@ public class Resupply implements Serializable, Transportable {
 
 				newPosition = new BuildingTemplate(
 						"Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
-						newBuildingType, buildingNickName, width, length, rectCenterX, rectCenterY, rectRotation);
+						newBuildingType, buildingNickName, position);
 				break;
 			}
 		}
@@ -1119,7 +1078,7 @@ public class Resupply implements Serializable, Transportable {
 		return newPosition;
 	}
 
-	/**
+	/**new 
 	 * Determine the position and length (for variable length) for a connector
 	 * building between two existing buildings.
 	 * 
@@ -1204,8 +1163,8 @@ public class Resupply implements Serializable, Transportable {
 			String buildingNickName = newBuildingType + " " + buildingTypeID;
 
 			newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate),
-					buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX, centerY,
-					facingDegrees);
+					buildingID, scenario, newBuildingType, buildingNickName, 
+					new BoundedObject(centerX, centerY, width, newLength,	facingDegrees));
 		}
 
 		return newPosition;

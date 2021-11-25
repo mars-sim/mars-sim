@@ -11,15 +11,13 @@ public class BuildingConnectorTest extends TestCase {
         MockBuilding building1 = new MockBuilding();
         building1.setWidth(10D);
         building1.setLength(10D);
-        building1.setXLocation(0D);
-        building1.setYLocation(0D);
+        building1.setLocation(0D, 0D);
         building1.setFacing(0D);
         
         MockBuilding building2 = new MockBuilding();
         building2.setWidth(10D);
         building2.setLength(10D);
-        building2.setXLocation(0D);
-        building2.setYLocation(10D);
+        building2.setLocation(0D, 0D);
         building2.setFacing(0D);
         
         BuildingConnector connector = new BuildingConnector(building1, 
@@ -61,15 +59,13 @@ public class BuildingConnectorTest extends TestCase {
         MockBuilding building1 = new MockBuilding();
         building1.setWidth(10D);
         building1.setLength(10D);
-        building1.setXLocation(0D);
-        building1.setYLocation(0D);
+        building1.setLocation(0D, 0D);
         building1.setFacing(0D);
         
         MockBuilding building2 = new MockBuilding();
         building2.setWidth(10D);
         building2.setLength(10D);
-        building2.setXLocation(0D);
-        building2.setYLocation(12D);
+        building2.setLocation(0D, 12D);
         building2.setFacing(0D);
         
         BuildingConnector connector = new BuildingConnector(building1, 

@@ -18,6 +18,9 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.BoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -61,11 +64,6 @@ public class SettlementConfig implements Serializable {
 	private static final String BUILDING = "building";
 	private static final String ID = "id";
 	private static final String TYPE = "type";
-	private static final String WIDTH = "width";
-	private static final String LENGTH = "length";
-	private static final String X_LOCATION = "x-location";
-	private static final String Y_LOCATION = "y-location";
-	private static final String FACING = "facing";
 	private static final String CONNECTION_LIST = "connection-list";
 	private static final String CONNECTION = "connection";
 	private static final String NUMBER = "number";
@@ -261,20 +259,7 @@ public class SettlementConfig implements Serializable {
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
 
-				double width = -1D;
-				if (buildingElement.getAttribute(WIDTH) != null) {
-					width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-				}
-
-				// Determine optional length attribute value. "-1" if it doesn't exist.
-				double length = -1D;
-				if (buildingElement.getAttribute(LENGTH) != null) {
-					length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-				}
-
-				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
-				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
-				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
+				BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 
 				int bid = -1;
 
@@ -307,7 +292,7 @@ public class SettlementConfig implements Serializable {
 				String buildingNickName = buildingType + " " + buildingTypeID;
 
 				BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, templateString,
-						buildingType, buildingNickName, width, length, xLoc, yLoc, facing);
+						buildingType, buildingNickName, bounds);
 
 				template.addBuildingTemplate(buildingTemplate);
 
@@ -325,10 +310,8 @@ public class SettlementConfig implements Serializable {
 											+ " in settlement template: " + settlementTemplateName);
 						}
 
-						double connectionXLoc = Double.parseDouble(connectionElement.getAttributeValue(X_LOCATION));
-						double connectionYLoc = Double.parseDouble(connectionElement.getAttributeValue(Y_LOCATION));
-
-						buildingTemplate.addBuildingConnection(connectionID, connectionXLoc, connectionYLoc);
+						LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
+						buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
 					}
 				}
 			}

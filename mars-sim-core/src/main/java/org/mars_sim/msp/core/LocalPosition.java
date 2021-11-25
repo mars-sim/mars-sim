@@ -26,7 +26,22 @@ public class LocalPosition implements Serializable {
 	public double getY() {
 		return y;
 	}
-
+ 
+    /**
+     * Returns the distance to another point
+     *
+     * @param other Other location
+     * @return the distance between the two sets of specified
+     * coordinates.
+     * @since 1.2
+     */
+    public double getDistanceTo(LocalPosition other)
+    {
+        double x1 = x - other.x;
+        double y1 = y - other.y;
+        return Math.sqrt(x1 * x1 + y1 * y1);
+    }
+    
 	@Override
 	public int hashCode() {
 		final int prime = 31;

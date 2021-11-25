@@ -16,8 +16,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -149,8 +151,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected double length;
 	protected double floorArea;
 	private double wallThickness;
-	protected double xLoc;
-	protected double yLoc;
+	protected LocalPosition loc;
 	protected double zLoc;
 	protected double facing;
 	protected double basePowerRequirement;
@@ -214,8 +215,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @throws BuildingException if building can not be created.
 	 */
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
-				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
+		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getBounds(), manager);
 
 		this.bid = template.getID();
 //		this.manager = manager;
@@ -241,17 +241,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
 	 * @param nickName     the building's nick name.
-	 * @param w            the width (meters) of the building or -1 if not set.
-	 * @param l            the length (meters) of the building or -1 if not set.
-	 * @param xLoc         the x location of the building in the settlement.
-	 * @param yLoc         the y location of the building in the settlement.
-	 * @param facing       the facing of the building (degrees clockwise from
-	 *                     North).
+	 * @param bounds       the physical position of this Building
 	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String buildingType, String nickName, double w, double l, double xLoc, double yLoc,
-			double facing, BuildingManager manager) {
+	public Building(int id, String buildingType, String nickName, BoundedObject bounds, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
 
 		this.templateID = id;
@@ -261,9 +255,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.settlement = manager.getSettlement();
 		this.settlementID = settlement.getIdentifier();
 
-		this.xLoc = xLoc;
-		this.yLoc = yLoc;
-		this.facing = facing;
+		this.loc = bounds.getLocation();
+		this.facing = bounds.getFacing();
 
 		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
 
@@ -272,11 +265,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		heatModeCache = HeatMode.HALF_HEAT;
 		width = spec.getWidth();
 		if (width < 0) {
-			width = w;
+			width = bounds.getWidth();
 		}
 		length = spec.getLength();
 		if (length < 0) {
-			length = l;
+			length = bounds.getLength();
 		}
 
 		floorArea = length * width;
@@ -862,32 +855,26 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return floorArea * HEIGHT * 1000; // 1 Cubic Meter = 1,000 Liters
 	}
 
+
+	public LocalPosition getPosition() {
+		return loc;
+	}
+	
 	@Override
 	public double getXLocation() {
-		return xLoc;
-	}
-
-	public void setXLocation(double x) {
-		this.xLoc = x;
+		return loc.getX();
 	}
 
 	@Override
 	public double getYLocation() {
-		return yLoc;
+		return loc.getY();
 	}
-
-	public void setYLocation(double y) {
-		this.yLoc = y;
-	}
-
+	
 	@Override
 	public double getFacing() {
 		return facing;
 	}
 
-	public void setFacing(double facing) {
-		this.facing = facing;
-	}
 
 	public boolean getInTransport() {
 		return inTransportMode;
@@ -1594,5 +1581,4 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		malfunctionManager.destroy();
 		malfunctionManager = null;
 	}
-
 }
