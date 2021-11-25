@@ -2,7 +2,7 @@
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
 	<!ELEMENT vehicle (description?, drivetrain-efficiency, base-speed,
-	empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
+	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle type CDATA #REQUIRED>
 	<!ATTLIST vehicle width CDATA #REQUIRED>
@@ -16,6 +16,8 @@
 	<!ATTLIST empty-mass value CDATA #REQUIRED>
 	<!ELEMENT crew-size EMPTY>
 	<!ATTLIST crew-size value CDATA #REQUIRED>
+	<!ELEMENT terrain-handling EMPTY>
+	<!ATTLIST terrain-handling value CDATA #REQUIRED>
 	<!ELEMENT cargo (capacity*)>
 	<!ATTLIST cargo total-capacity CDATA #REQUIRED>
 	<!ELEMENT capacity EMPTY>
@@ -32,13 +34,15 @@
 	<!ATTLIST lab tech-level CDATA #REQUIRED>
 	<!ELEMENT tech-specialty EMPTY>
 	<!ATTLIST tech-specialty value CDATA #REQUIRED>
-	<!ELEMENT airlock EMPTY>
+	<!ELEMENT airlock (interior, exterior)>
 	<!ATTLIST airlock xloc CDATA #REQUIRED>
 	<!ATTLIST airlock yloc CDATA #REQUIRED>
-	<!ATTLIST airlock interior-xloc CDATA #REQUIRED>
-	<!ATTLIST airlock interior-yloc CDATA #REQUIRED>
-	<!ATTLIST airlock exterior-xloc CDATA #REQUIRED>
-	<!ATTLIST airlock exterior-yloc CDATA #REQUIRED>
+	<!ELEMENT interior EMPTY>
+	<!ATTLIST interior xloc CDATA #REQUIRED>
+	<!ATTLIST interior yloc CDATA #REQUIRED>
+	<!ELEMENT exterior EMPTY>
+	<!ATTLIST exterior xloc CDATA #REQUIRED>
+	<!ATTLIST exterior yloc CDATA #REQUIRED>
 	<!ELEMENT activity (activity-spot+)>
 	<!ELEMENT activity-spot EMPTY>
 	<!ATTLIST activity-spot type CDATA #REQUIRED>
@@ -95,10 +99,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="2000.0" />
 
+		<!-- How well does a Ground Vehicle handle terrain -->
+		<terrain-handling value="5.0"/>
+		
 		<!-- The crew size of an rover -->
 		<!-- Default: varies according to the type of vehicle -->
 		<crew-size value="4" />
-
+	
 		<!-- Cargo capacity list -->
 		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
@@ -190,9 +197,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
 		<!-- interior-xloc, interior-yloc: the relative X/Y location inside the vehicle. -->
 		<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the vehicle. -->
-		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
-		exterior-yloc="0.0" />
-
+		<airlock xloc="-1.25" yloc="0.0">
+			<interior xloc="-.75" yloc="0.0"/>
+			<exterior xloc="-2.75" yloc="0.0"/>
+	    </airlock>
+	    
 		<!-- Activity spots -->
 		<!-- Locations for people to perform various activities within the vehicle. -->
 		<activity>
@@ -213,6 +222,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
 		<empty-mass value="3000.0" />
+		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
 		<cargo total-capacity="3500.0">
 			<capacity resource="methane" value="220.0" />
@@ -236,8 +246,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
-		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
-		exterior-yloc="0.0" />
+		<airlock xloc="-1.25" yloc="0.0">
+			<interior xloc="-.75" yloc="0.0"/>
+			<exterior xloc="-2.75" yloc="0.0" />
+		</airlock>
 		<activity>
 			<activity-spot type="operator" xloc=".45" yloc="4.3" />
 			<activity-spot type="passenger" xloc="-.45" yloc="4.3" />
@@ -258,6 +270,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
 		<empty-mass value="2500.0" />
+		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
 		<cargo total-capacity="5000.0">
 			<capacity resource="methane" value="260.0" />
@@ -280,8 +293,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="ice" value="400.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
-		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"
-		exterior-yloc="0.0" />
+		<airlock xloc="-1.5" yloc="0.0">
+			<interior xloc="-1.0" yloc="0.0"/>
+			<exterior xloc="-3.0" yloc="0.0" />
+		</airlock>
 		<activity>
 			<activity-spot type="operator" xloc=".5" yloc="2.9" />
 			<activity-spot type="passenger" xloc="-.5" yloc="2.9" />
@@ -297,6 +312,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".8" />
 		<base-speed value="30.0" />
 		<empty-mass value="300.0" />
+		<terrain-handling value="1.0"/>
 		<crew-size value="1" />
 		<part-attachment number-slots="2">
             <part name="bulldozer blade" />

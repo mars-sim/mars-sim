@@ -303,8 +303,9 @@ public abstract class Vehicle extends Unit
 
 		// Set width and length of vehicle.
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		width = vehicleConfig.getWidth(vehicleTypeString);
-		length = vehicleConfig.getLength(vehicleTypeString);
+		VehicleSpec spec = vehicleConfig.getVehicleSpec(vehicleTypeString);
+		width = spec.getWidth();
+		length = spec.getLength();
 
 		// Set description
 		setDescription(vehicleTypeString);
@@ -313,18 +314,16 @@ public abstract class Vehicle extends Unit
 		// Set distance traveled by vehicle since last maintenance (km)
 		distanceMaint = 0;
 		// Set base speed.
-		baseSpeed = vehicleConfig.getBaseSpeed(vehicleTypeString);
+		baseSpeed = spec.getBaseSpeed();
 
 		// Set the empty mass of the vehicle.
-		setBaseMass(vehicleConfig.getEmptyMass(vehicleTypeString));
+		setBaseMass(spec.getEmptyMass());
 
 		// Set the drivetrain efficiency [in kWh/km] of the vehicle.
-		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleTypeString) ;
-
+		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
-		Map<String, Double> capacities = vehicleConfig.getCargoCapacity(vehicleTypeString);
-		fuelCapacity = capacities.getOrDefault(ResourceUtil.findAmountResourceName(getFuelType()), 0D);
-
+		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
+		
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 
@@ -344,18 +343,21 @@ public abstract class Vehicle extends Unit
 		baseFuelConsumption = baseRange / totalEnergy;
 
 		// Gets the crew capacity
-		int numCrew = vehicleConfig.getCrewSize(vehicleTypeString);
+		int numCrew = spec.getCrewSize();
 
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 
-		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleTypeString);
+		cargoCapacity = spec.getTotalCapacity();
 
 		// Create microInventory instance
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 
 		// Set the capacities for each supported resource
-		eqmInventory.setResourceCapacityMap(capacities);
-
+		Map<String, Double> capacities = spec.getCargoCapacityMap();
+		if (capacities != null) {
+			eqmInventory.setResourceCapacityMap(capacities);
+		}
+		
 		if (this instanceof Rover) {
 
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;
@@ -385,10 +387,10 @@ public abstract class Vehicle extends Unit
 		findNewParkingLoc();
 
 		// Initialize operator activity spots.
-		operatorActivitySpots = new ArrayList<>(vehicleConfig.getOperatorActivitySpots(vehicleTypeString));
+		operatorActivitySpots = spec.getOperatorActivitySpots();
 
 		// Initialize passenger activity spots.
-		passengerActivitySpots = new ArrayList<>(vehicleConfig.getPassengerActivitySpots(vehicleTypeString));
+		passengerActivitySpots = spec.getPassengerActivitySpots();
 	}
 
 	/**
@@ -464,7 +466,7 @@ public abstract class Vehicle extends Unit
 
 	public String getDescription(String vehicleType) {
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		return vehicleConfig.getDescription(vehicleType);
+		return vehicleConfig.getVehicleSpec(vehicleType).getDescription();
 	}
 
 	public String getVehicleTypeString() {

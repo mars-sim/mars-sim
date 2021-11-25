@@ -32,9 +32,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** The amount of work time to perform maintenance (millisols). */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
 	
-	/** The terrain handling bonus of this vehicle. */
-	public static final double TERRAIN_HANDLING = 1;
-	
 	// Data members.
 	/** The LightUtilityVehicle's capacity for crewmembers. */
 	private int crewCapacity = 0;
@@ -53,16 +50,17 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 		
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		if (vehicleConfig.hasPartAttachments(type)) {
-			attachments = vehicleConfig.getAttachableParts(type);
-			slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);
+		VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
+		if (spec.hasPartAttachments()) {
+			attachments = spec.getAttachableParts();
+			slotNumber = spec.getPartAttachmentSlotNumber();
 		}
 
-		crewCapacity = vehicleConfig.getCrewSize(type);
-		robotCrewCapacity = vehicleConfig.getCrewSize(type);
+		crewCapacity = spec.getCrewSize();
+		robotCrewCapacity = spec.getCrewSize();
 
 		// Set rover terrain modifier
-		setTerrainHandlingCapability(TERRAIN_HANDLING);
+		setTerrainHandlingCapability(spec.getTerrainHandling());
 	}
 
 	@Override

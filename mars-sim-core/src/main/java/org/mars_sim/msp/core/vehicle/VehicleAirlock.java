@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -44,10 +45,8 @@ extends Airlock {
 	 * @param capacity number of people airlock can hold.
 	 */
 	public VehicleAirlock(
-		Vehicle vehicle, int capacity, double xLoc, double yLoc,
-		double interiorXLoc, double interiorYLoc, double exteriorXLoc,
-		double exteriorYLoc
-	) {
+		Vehicle vehicle, int capacity, LocalPosition loc, LocalPosition interiorLoc,
+		LocalPosition exteriorLoc) {
 		// User Airlock constructor
 		super(capacity);
 
@@ -65,13 +64,13 @@ extends Airlock {
 		}
 
 		// Determine airlock interior position.
-		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, vehicle);
+		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorLoc.getX(), interiorLoc.getY(), vehicle);
 
 		// Determine airlock exterior position.
-		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc, exteriorYLoc, vehicle);
+		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorLoc.getX(), exteriorLoc.getY(), vehicle);
 
 		// Determine airlock inside position.
-		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, vehicle);
+		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(loc.getX(), loc.getY(), vehicle);
 
 	}
 

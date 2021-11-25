@@ -112,7 +112,7 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all vehicle attachment parts are mapped to a SVG image.
         Iterator<Part> i = SimulationConfig.instance().getVehicleConfiguration().
-                getAttachableParts("Light Utility Vehicle").iterator();
+                getVehicleSpec("Light Utility Vehicle").getAttachableParts().iterator();
         while (i.hasNext()) {
             Part attachmentPart = i.next();
             GraphicsNode svg = SVGMapUtil.getAttachmentPartSVG(attachmentPart.getName());

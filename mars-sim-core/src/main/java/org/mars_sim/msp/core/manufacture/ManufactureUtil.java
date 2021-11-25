@@ -547,7 +547,7 @@ public final class ManufactureUtil {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
-			mass = item.getAmount() * vehicleConfig.getEmptyMass(item.getName());
+			mass = item.getAmount() * vehicleConfig.getVehicleSpec(item.getName()).getEmptyMass();
 		}
 
 		return mass;
