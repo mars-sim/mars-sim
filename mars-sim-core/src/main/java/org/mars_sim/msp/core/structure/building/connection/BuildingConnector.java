@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.connection;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -26,38 +27,38 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     private Hatch hatch1;
     private Hatch hatch2;
 
+	private LocalPosition pos;
+
     /**
      * Constructor
      * @param building1 The first connected building.
-     * @param building1HatchXLocation The hatch X location connecting the first building.
-     * @param building1HatchYLocation The hatch Y location connecting the first building.
+     * @param building1HatchPosition The hatch position connecting the first building.
      * @param building1HatchFacing The hatch facing (degrees) connecting the first building.
      * @param building2 The second connected building.
-     * @param building2HatchXLocation The hatch X location connecting the second building.
-     * @param building2HatchYLocation The hatch y location connecting the second building.
+     * @param building2HatchPosition The hatch position connecting the second building.
      * @param building2HatchFacing The hatch facing (degrees) connecting the second building.
      */
     public BuildingConnector(
     		Building building1, 
-    		double building1HatchXLocation,
-            double building1HatchYLocation, double building1HatchFacing, 
+    		LocalPosition building1HatchPosition, double building1HatchFacing, 
             Building building2,
-            double building2HatchXLocation, double building2HatchYLocation,
-            double building2HatchFacing) {
-
-        this.building1 = building1;
-        hatch1 = new Hatch(building1, this, building1HatchXLocation, building1HatchYLocation,
-                building1HatchFacing);
-        this.building2 = building2;
-        hatch2 = new Hatch(building2, this, building2HatchXLocation, building2HatchYLocation,
-                building2HatchFacing);
-
-        // Check if building 1 and 2 locations are off by a small amount.
-        if (Math.abs(building1HatchXLocation - building2HatchXLocation) < SMALL_AMOUNT_COMPARISON) {
-            hatch2.setXLocation(building1HatchXLocation);
+            LocalPosition building2HatchPosition, double building2HatchFacing) {
+        
+    	// Check if building 1 and 2 locations are off by a small amount.
+        if (building1HatchPosition.getDistanceTo(building2HatchPosition) < SMALL_AMOUNT_COMPARISON) {
+        	building2HatchPosition = building1HatchPosition;
         }
-        if (Math.abs(building1HatchYLocation - building2HatchYLocation) < SMALL_AMOUNT_COMPARISON) {
-            hatch2.setYLocation(building1HatchYLocation);
+        this.building1 = building1;
+        hatch1 = new Hatch(building1, this, building1HatchPosition, building1HatchFacing);
+        this.building2 = building2;
+        hatch2 = new Hatch(building2, this, building2HatchPosition, building2HatchFacing);
+
+        // Finally calculate the local position
+        if (isSplitConnection()) {
+        	pos = building1HatchPosition.getMidPosition(building2HatchPosition);
+        }
+        else {
+        	pos = hatch1.getPosition();
         }
     }
 
@@ -99,46 +100,14 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
      */
     public boolean isSplitConnection() {
 
-        return ((hatch1.getXLocation() != hatch2.getXLocation()) ||
-                (hatch1.getYLocation() != hatch2.getYLocation()));
+        return !hatch1.getPosition().equals(hatch2.getPosition());
     }
 
-    /**
-     * Gets the X location of the center of the building connection.
-     * @return x location.
-     */
-    public double getXLocation() {
-
-        double result = 0D;
-
-        if (isSplitConnection()) {
-            result = (hatch1.getXLocation() + hatch2.getXLocation()) / 2D;
-        }
-        else {
-            result = hatch1.getXLocation();
-        }
-
-        return result;
+    @Override
+    public LocalPosition getPosition() {
+    	return pos;
     }
-
-    /**
-     * Gets the Y location of the center of the building connection.
-     * @return y location.
-     */
-    public double getYLocation() {
-
-        double result = 0D;
-
-        if (isSplitConnection()) {
-            result = (hatch1.getYLocation() + hatch2.getYLocation()) / 2D;
-        }
-        else {
-            result = hatch1.getYLocation();
-        }
-
-        return result;
-    }
-
+    
     @Override
     public boolean equals(Object other) {
 

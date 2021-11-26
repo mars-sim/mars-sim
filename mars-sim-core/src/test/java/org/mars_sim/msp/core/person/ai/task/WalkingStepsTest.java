@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import org.junit.Before;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -27,6 +28,8 @@ import junit.framework.TestCase;
 public class WalkingStepsTest extends TestCase {
 	
 
+	private static final LocalPosition LOCAL_POSITION2 = new LocalPosition(-7.5D, 0D);
+	private static final LocalPosition LOCAL_POSITION1 = new LocalPosition(-4.5D, 0D);
 	private UnitManager unitManager;
 
 	@Before
@@ -95,9 +98,9 @@ public class WalkingStepsTest extends TestCase {
         buildingManager.addMockBuilding(building2);
 
         connectorManager.addBuildingConnection(new BuildingConnector(building0,
-                -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
+                LOCAL_POSITION1, 90D, building2, LOCAL_POSITION1, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1,
-                -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
+                LOCAL_POSITION2, 270D, building2, LOCAL_POSITION2, 90D));
 
         buildingManager.setupBuildingFunctionsMap();
 

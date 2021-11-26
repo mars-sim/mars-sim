@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * ConfigHelper.java
+ * @date 2021-11-25
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.configuration;
 
 import org.jdom2.Element;

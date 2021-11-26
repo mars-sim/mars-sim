@@ -255,7 +255,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.settlement = manager.getSettlement();
 		this.settlementID = settlement.getIdentifier();
 
-		this.loc = bounds.getLocation();
+		this.loc = bounds.getPosition();
 		this.facing = bounds.getFacing();
 
 		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);

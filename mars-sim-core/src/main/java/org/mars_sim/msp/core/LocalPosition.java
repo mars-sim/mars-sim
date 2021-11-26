@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 /**
@@ -17,6 +18,16 @@ public class LocalPosition implements Serializable {
 		super();
 		this.x = x;
 		this.y = y;
+	}
+
+	/**
+	 * Constructor provides a temporary bridge between the 2 approaches
+	 * @param point
+	 */
+	@Deprecated
+	public LocalPosition(Point2D point) {
+		this.x = point.getX();
+		this.y = point.getY();
 	}
 
 	public double getX() {
@@ -42,6 +53,16 @@ public class LocalPosition implements Serializable {
         return Math.sqrt(x1 * x1 + y1 * y1);
     }
     
+    /**
+     * Get the position that is the mid point between two Positions.
+     * @param other Other end of the line
+     * @return
+     */
+	public LocalPosition getMidPosition(LocalPosition other) {
+        return new LocalPosition((x + other.x) / 2D,
+        						 (y + other.y) / 2D);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -74,4 +95,5 @@ public class LocalPosition implements Serializable {
 	public String toString() {
 		return "[x=" + x + ", y=" + y + "]";
 	}
+
 }

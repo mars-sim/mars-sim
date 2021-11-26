@@ -50,7 +50,11 @@ public class BoundedObject implements LocalBoundedObject{
 		return f;
 	}
 
-	public LocalPosition getLocation() {
+	/**
+	 * Get the local position within the context of an existing Unit.
+	 * @return
+	 */
+	public LocalPosition getPosition() {
 		return loc;
 	}
 }

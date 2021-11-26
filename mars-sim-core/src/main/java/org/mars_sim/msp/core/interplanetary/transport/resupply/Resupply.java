@@ -412,7 +412,7 @@ public class Resupply implements Serializable, Transportable {
 		Iterator<Building> i = list.iterator();
 		while (i.hasNext()) {
 			Building startingBuilding = i.next();
-			double distance = startingBuilding.getPosition().getDistanceTo(bt.getBounds().getLocation());
+			double distance = startingBuilding.getPosition().getDistanceTo(bt.getBounds().getPosition());
 
 			if (distance < leastDistance) {
 				withinRadius = false;
