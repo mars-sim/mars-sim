@@ -52,7 +52,7 @@ public class ResupplyConfig implements Serializable {
     private static final String AMOUNT = "amount";
 
     // Data members
-    Collection<ResupplyTemplate> resupplyTemplates;
+    private Collection<ResupplyTemplate> resupplyTemplates;
 
     /**
      * Constructor
@@ -234,7 +234,7 @@ public class ResupplyConfig implements Serializable {
      */
     public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
 
-        List<BuildingTemplate> result = new ArrayList<BuildingTemplate>();
+        List<BuildingTemplate> result = new ArrayList<>();
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
         if (foundTemplate != null) {
             result = new ArrayList<BuildingTemplate>(foundTemplate.buildings);
@@ -250,7 +250,7 @@ public class ResupplyConfig implements Serializable {
     public List<String> getResupplyVehicleTypes(String resupplyName) {
 
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
         while (j.hasNext()) {
             String vehicleType = j.next();
@@ -268,7 +268,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<String, Integer> getResupplyEquipment(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<String, Integer>(foundTemplate.equipment);
+        return new HashMap<>(foundTemplate.equipment);
     }
 
     /**
@@ -288,7 +288,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<Part, Integer> getResupplyParts(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<Part, Integer>(foundTemplate.parts);
+        return new HashMap<>(foundTemplate.parts);
     }
 
     /**
@@ -298,7 +298,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<AmountResource, Double>(foundTemplate.resources);
+        return new HashMap<>(foundTemplate.resources);
     }
 
     /**
@@ -342,11 +342,11 @@ public class ResupplyConfig implements Serializable {
         private Map<Part, Integer> parts;
 
         private ResupplyTemplate() {
-            buildings = new ArrayList<BuildingTemplate>();
-            vehicles = new HashMap<String, Integer>();
-            equipment = new HashMap<String, Integer>();
-            resources = new HashMap<AmountResource, Double>();
-            parts = new HashMap<Part, Integer>();
+            buildings = new ArrayList<>();
+            vehicles = new HashMap<>();
+            equipment = new HashMap<>();
+            resources = new HashMap<>();
+            parts = new HashMap<>();
         }
     }
 }

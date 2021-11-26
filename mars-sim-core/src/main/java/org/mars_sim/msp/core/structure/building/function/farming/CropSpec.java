@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The CropSpec class is a type of crop.
@@ -41,19 +40,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 */
 	private double dailyPAR; // Note: not umol / m^2 / s // PAR is the instantaneous light with a wavelength
 								// between 400 to 700 nm
-
-	/**
-	 * The Photosynthetic Photon Flux (PPF) is the amount of light needed [in micro
-	 * mol per sq meter per second]
-	 */
-	// private double ppf;
-	/** The Photoperiod is the number of hours of light needed [in hours per day] */
-	// private double photoperiod;
-	/**
-	 * The average harvest index (from 0 to 1) -- the ratio of the edible over the
-	 * inedible part of the harvested crop [dimenionsion-less]
-	 */
-	// private double harvestIndex;
 
 	/** TODO The name of the type of crop should be internationalizable. */
 	private String name;
@@ -106,7 +92,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);
 			this.seedOnly = seedOnly;
 		}
-
 	}
 
 	/**
@@ -190,8 +175,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @return crop's edible water content (grams per m^2 per day)
 	 */
 	public double getEdibleWaterContent() {
-		// System.out.println(name + "'s water content in getEdibleWaterContent() is " +
-		// edibleWaterContent);
 		return edibleWaterContent;
 	}
 
@@ -223,6 +206,24 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param phaseType
 	 * @return
 	 */
+	public Phase getNextPhase(Phase currentPhase) {
+		int nextId = 1;
+
+		PhaseType target = currentPhase.getPhaseType();
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == target) {
+				return phases.get(nextId);
+			}
+			nextId++;
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the next phase in the growing sequence
+	 * @param phaseType
+	 * @return
+	 */
 	public PhaseType getNextPhaseType(PhaseType phaseType) {
 		int nextId = 1;
 
@@ -246,7 +247,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 				return entry;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Phase type " + phaseType.getName() + " is not support in " + name);
 	}
 
 	/**
@@ -265,6 +266,13 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		return result;
 	}
 
+	/**
+	 * Does this crop need light ?
+	 * @return
+	 */
+	public boolean needsLight() {
+		return (cropCategoryType != CropCategoryType.FUNGI);
+	}
 
 	/**
 	 * Compares this object with the specified object for order.
@@ -280,10 +288,10 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	/**
 	 * String representation of this cropType.
 	 *
-	 * @return The settlement and cropType's name.
+	 * @return The cropType's name.
 	 */
 	public String toString() {
-		return Conversion.capitalize(name);
+		return name;
 	}
 
 	@Override

@@ -74,7 +74,6 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -149,8 +148,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
-	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
 
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
@@ -493,29 +490,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-		// Initialize the general storage capacity for this settlement
-		//getInventory().addGeneralCapacity(GEN_MAX);
-
-		// initialize the oxygen type capacity
-//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
-
-//		final double PHASE_MAX = 10_000;
-		// initialize the phase type capacity
-//		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
-//		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
-//		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
-
 		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
-
-//		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-
-//		final double INITIAL_FREE_CAP = 1_000;
-		// Initialize a limited storage capacity for each resource
-//		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-//			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
-//		}
 
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
@@ -3182,16 +3159,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			cropsNeedingTendingCache = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
 				Farming farm = b.getFarming();
-				for (Crop c : farm.getCrops()) {
-					if (c.requiresWork()) {
-						cropsNeedingTendingCache++;
-					}
-					// if the health condition is below 50%,
-					// need special care
-					if (c.getHealthCondition() < .5)
-						cropsNeedingTendingCache++;
-				}
-				cropsNeedingTendingCache += farm.getNumCrops2Plant();
+				cropsNeedingTendingCache += farm.getNumNeedTending();
 			}
 		}
 	}

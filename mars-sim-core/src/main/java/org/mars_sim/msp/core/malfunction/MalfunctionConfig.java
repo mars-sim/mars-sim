@@ -161,8 +161,8 @@ public class MalfunctionConfig implements Serializable {
 			}
 
 			// Get effects.
-			Map<String, Double> lifeSupportEffects = new HashMap<String, Double>();
-			Map<AmountResource, Double> resourceEffects = new HashMap<AmountResource, Double>();
+			Map<String, Double> lifeSupportEffects = new HashMap<>();
+			Map<AmountResource, Double> resourceEffects = new HashMap<>();
 			Element effectListElement = malfunctionElement.getChild(EFFECT_LIST);
 
 			if (effectListElement != null) {
@@ -215,7 +215,7 @@ public class MalfunctionConfig implements Serializable {
 			}
 
 			// Convert resourceEffects
-			Map<Integer, Double> resourceEffectIDs = new HashMap<Integer, Double>();
+			Map<Integer, Double> resourceEffectIDs = new HashMap<>();
 			for (AmountResource ar : resourceEffects.keySet()) {
 				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
 			}

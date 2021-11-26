@@ -95,7 +95,7 @@ public class ConstructionConfig implements Serializable {
             stageInfo = buildingStageInfoList;
         }
         else
-        	stageInfo = new ArrayList<ConstructionStageInfo>(stageInfo);
+        	stageInfo = new ArrayList<>(stageInfo);
 
 //        Collections.sort(stageInfo, new Comparator<ConstructionStageInfo>() {
 //            @Override
@@ -119,15 +119,15 @@ public class ConstructionConfig implements Serializable {
 
 		List<ConstructionStageInfo> stageInfoList = null;
 		if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
-			foundationStageInfoList = new ArrayList<ConstructionStageInfo>();
+			foundationStageInfoList = new ArrayList<>();
 			stageInfoList = foundationStageInfoList;
 		}
 		else if (ConstructionStageInfo.FRAME.equals(stageType)) {
-			frameStageInfoList = new ArrayList<ConstructionStageInfo>();
+			frameStageInfoList = new ArrayList<>();
 			stageInfoList = frameStageInfoList;
 		}
 		else if (ConstructionStageInfo.BUILDING.equals(stageType)) {
-			buildingStageInfoList = new ArrayList<ConstructionStageInfo>();
+			buildingStageInfoList = new ArrayList<>();
 			stageInfoList = buildingStageInfoList;
 		}
 		else throw new IllegalStateException("stageType: " + stageType + " not valid.");
@@ -222,7 +222,7 @@ public class ConstructionConfig implements Serializable {
 
                 List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
                 List<ConstructionVehicleType> vehicles =
-                    new ArrayList<ConstructionVehicleType>(vehicleList.size());
+                    new ArrayList<>(vehicleList.size());
 
                 for (Element vehicleElement : vehicleList) {
                     String vehicleType = vehicleElement.getAttributeValue(TYPE);
@@ -264,29 +264,5 @@ public class ConstructionConfig implements Serializable {
     	foundationStageInfoList = null;
     	frameStageInfoList = null;
     	buildingStageInfoList = null;
-
-//        if(foundationStageInfoList != null){
-//
-//            Iterator<ConstructionStageInfo> i = foundationStageInfoList.iterator();
-//            while (i.hasNext()) {
-//                i.next().destroy();
-//            }
-//        }
-//
-//        if(frameStageInfoList != null){
-//
-//            Iterator<ConstructionStageInfo> j = frameStageInfoList.iterator();
-//            while (j.hasNext()) {
-//                j.next().destroy();
-//            }
-//        }
-//
-//        if(buildingStageInfoList != null){
-//
-//            Iterator<ConstructionStageInfo> k = buildingStageInfoList.iterator();
-//            while (k.hasNext()) {
-//                k.next().destroy();
-//            }
-//        }
     }
 }

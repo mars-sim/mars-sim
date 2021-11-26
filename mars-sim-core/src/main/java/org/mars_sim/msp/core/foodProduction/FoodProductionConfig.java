@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -40,7 +39,6 @@ public class FoodProductionConfig implements Serializable {
 	private static final String NUMBER = "number";
 	private static final String EQUIPMENT = "equipment";
 	
-//	private Document foodProductionDoc;
 	private List<FoodProductionProcessInfo> foodproductionProcessList;
 
     /**
@@ -67,7 +65,7 @@ public class FoodProductionConfig implements Serializable {
     	}
     	
 		// Build the global list in a temp to avoid access before it is built
-        List<FoodProductionProcessInfo> newList = new ArrayList<FoodProductionProcessInfo>();
+        List<FoodProductionProcessInfo> newList = new ArrayList<>();
 	
         Element root = foodProductionDoc.getRootElement();
         List<Element> processNodes = root.getChildren(PROCESS);
@@ -105,7 +103,7 @@ public class FoodProductionConfig implements Serializable {
             process.setDescription(description);
 
             Element inputs = processElement.getChild(INPUTS);
-            List<FoodProductionProcessItem> inputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
+            List<FoodProductionProcessItem> inputList = new ArrayList<>();
             process.setInputList(inputList);
 
             parseResources(inputList, inputs.getChildren(RESOURCE));
@@ -115,7 +113,7 @@ public class FoodProductionConfig implements Serializable {
             parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
 
             Element outputs = processElement.getChild(OUTPUTS);
-            List<FoodProductionProcessItem> outputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
+            List<FoodProductionProcessItem> outputList = new ArrayList<>();
             process.setOutputList(outputList);
 
             parseResources(outputList, outputs.getChildren(RESOURCE));

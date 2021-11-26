@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -73,15 +72,16 @@ public class CropConfig implements Serializable {
 	/** Lookup of crop phases **/
 	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
 
-	private final static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	private transient PersonConfig personConfig;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param cropDoc the crop DOM document.
 	 */
-	public CropConfig(Document cropDoc) {
-
+	public CropConfig(Document cropDoc, PersonConfig personConfig) {
+		this.personConfig = personConfig;
+		
 		buildPhases();	
 
 		consumptionRates[0] = getValueAsDouble(cropDoc, CARBON_DIOXIDE_CONSUMPTION_RATE);
@@ -115,7 +115,7 @@ public class CropConfig implements Serializable {
 		}
 			
 		// Build the global list in a temp to avoid access before it is built
-		List<CropSpec> newList = new ArrayList<CropSpec>();
+		List<CropSpec> newList = new ArrayList<>();
 
 		Element root = rootDoc.getRootElement();
 		Element cropElement = root.getChild(CROP_LIST);

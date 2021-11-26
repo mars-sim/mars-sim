@@ -49,7 +49,6 @@ public class MealConfig implements Serializable {
 
 	private static List<HotMeal> mainDishList;
 	private static List<HotMeal> sideDishList;
-//	private static List<HotMeal> dishList;
 	
 	/**
 	 * Constructor.
@@ -141,19 +140,13 @@ public class MealConfig implements Serializable {
 			// just in case if another thread is being created
 			return;
 		}
-		
-//		if (dishList != null) {
-//			// just in case if another thread is being created
-//			return;
-//		}
-		
+
 		Element root = mealDoc.getRootElement();
 		Element mealListElement = root.getChild(MEAL_LIST);
 		
-//		List<HotMeal> dishMeals = new ArrayList<HotMeal>();
 		
 		// Main Dishes
-		List<HotMeal> mainDishMeals = new ArrayList<HotMeal>();
+		List<HotMeal> mainDishMeals = new ArrayList<>();
 		List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
 
 		for (Element mainDish : mainDishes) {
@@ -209,7 +202,7 @@ public class MealConfig implements Serializable {
 		mainDishList = Collections.unmodifiableList(mainDishMeals);
 		
 		// Side Dishes
-		List<HotMeal> sideDishMeals = new ArrayList<HotMeal>();
+		List<HotMeal> sideDishMeals = new ArrayList<>();
 		List<Element> sideDishes = mealListElement.getChildren(SIDE_DISH);
 
 		for (Element sideDish : sideDishes) {
@@ -269,9 +262,6 @@ public class MealConfig implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-//		if (dishList != null) {
-//			dishList = null;
-//		}
 		if (mainDishList != null) {
 			mainDishList = null;
 		}

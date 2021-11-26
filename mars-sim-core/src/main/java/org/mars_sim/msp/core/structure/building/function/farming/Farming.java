@@ -1097,17 +1097,33 @@ public class Farming extends Function implements Serializable {
 		return numCrops2Plant;
 	}
 
-
 	@Override
 	public void destroy() {
 		super.destroy();
 
 		lab = null;
-
 		cropListInQueue = null;
-
 		crops = null;
-
 	}
 
+	/**
+	 * How many things need tending in this Farm
+	 * @return
+	 */
+	public int getNumNeedTending() {
+		
+		int cropsNeedingTending = 0;
+		for (Crop c : crops) {
+			if (c.requiresWork()) {
+				cropsNeedingTending++;
+			}
+			// if the health condition is below 50%,
+			// need special care
+			if (c.getHealthCondition() < .5)
+				cropsNeedingTending++;
+		}
+		cropsNeedingTending += numCrops2Plant;
+		
+		return cropsNeedingTending;
+	}
 }

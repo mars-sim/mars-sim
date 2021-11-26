@@ -88,7 +88,7 @@ public class MedicalConfig implements Serializable {
 		}
 		
 		// Build the global list in a temp to avoid access before it is built
-		List<Treatment> newList1 = new ArrayList<Treatment>();
+		List<Treatment> newList1 = new ArrayList<>();
 
 		Element medicalTreatmentList = configDoc.getRootElement().getChild(TREATMENT_LIST);
 		List<Element> treatments = medicalTreatmentList.getChildren(TREATMENT);
@@ -154,7 +154,7 @@ public class MedicalConfig implements Serializable {
 		}
 			
 		// Build the global list in a temp to avoid access before it is built
-		List<Complaint> newList2 = new ArrayList<Complaint>();
+		List<Complaint> newList2 = new ArrayList<>();
 
 		Element root = configDoc.getRootElement();
 		Element medicalComplaintList = root.getChild(MEDICAL_COMPLAINT_LIST);

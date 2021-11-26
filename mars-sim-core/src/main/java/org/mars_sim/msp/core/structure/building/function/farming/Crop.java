@@ -173,7 +173,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private CropSpec cropSpec;
 
 	/** Current phase of crop. */
-	private PhaseType phaseType;
+	private Phase currentPhase;
 
 	private Farming farm;
 	private Building building;
@@ -240,6 +240,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_PER_MILLISOL;
 
+		PhaseType phaseType;
 		if (!isStartup) {
 			// if this is not a grown crop at the start of the sim, start from the beginning
 
@@ -303,7 +304,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Set the remaining harvest based on percentageGrowth
 			remainingHarvest = (maxHarvest * percentageGrowth)/100D;
 		}
+		
+		updatePhase(phaseType);
+	}
 
+	/**
+	 * Update the current phase to a new type.
+	 * @param phaseType
+	 */
+	private void updatePhase(PhaseType phaseType) {
+		currentPhase = cropSpec.getPhase(phaseType);
 	}
 
 	/**
@@ -357,7 +367,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return phaseType
 	 */
 	public PhaseType getPhaseType() {
-		return phaseType;
+		return currentPhase.getPhaseType();
 	}
 
 
@@ -385,15 +395,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
-		if (phaseType == PhaseType.HARVESTING)
+		if (currentPhase.getPhaseType() == PhaseType.HARVESTING)
 			return true;
-		else {
-			Phase active = cropSpec.getPhase(phaseType);
-			if (active != null) {
-				return active.getWorkRequired() * 1000D >= currentPhaseWorkCompleted;
-			}
-		}
-		return false;
+
+		return currentPhase.getWorkRequired() * 1000D >= currentPhaseWorkCompleted;
 	}
 
 
@@ -405,7 +410,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// 0:bad, 1:good
 		double health = 0D;
 
-		switch(phaseType) {
+		switch(currentPhase.getPhaseType()) {
 		case INCUBATION:
 		case PLANTING:
 			health = 1D;
@@ -442,7 +447,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
 					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
 				}
-				phaseType = PhaseType.FINISHED;
+				updatePhase(PhaseType.FINISHED);
 			}
 		}
 
@@ -458,7 +463,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
 					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
 				}
-				phaseType = PhaseType.FINISHED;
+				updatePhase(PhaseType.FINISHED);
 			}
 		}
 
@@ -515,7 +520,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (healthCondition > 1)
 			healthCondition = 1;
 
-		Phase currentPhase = cropSpec.getPhase(phaseType);
 		double w = currentPhase.getWorkRequired() * 1000D;
 
 		if (dailyHarvest < 0D) {
@@ -524,6 +528,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 
 		// Only do phases that need manual work
+		PhaseType phaseType = currentPhase.getPhaseType();
 		switch (phaseType) {
 		case INCUBATION:
 		case PLANTING:
@@ -533,8 +538,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 			if (currentPhaseWorkCompleted >= w * 1.01) {
 				remainingTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = 0D;
-				phaseType = cropSpec.getNextPhaseType(phaseType);
-				logger.log(building, Level.FINE, 0, name + " had entered a new phase " + phaseType
+				advancePhase();
+				logger.log(building, Level.FINE, 0, name + " had entered a new phase " + currentPhase.getPhaseType()
 						+ "   Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
 						+ "   Work Required : " + Math.round(w * 10D) / 10D);
 			}
@@ -576,7 +581,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 						// Reset the totalHarvest back to zero.
 						totalHarvest = 0;
 						// Sets the phase to FINISHED
-						phaseType = PhaseType.FINISHED;
+						updatePhase(PhaseType.FINISHED);
 
 						//  Check to see if a botany lab is available
 						if (worker instanceof Person && !farm.checkBotanyLab(cropSpec, worker))
@@ -617,13 +622,21 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 
 		// Safety check
-		if ((phaseType == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
+		if ((currentPhase.getPhaseType() == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
 			logger.log(building, Level.FINE, 0, name + "'s percentageGrowth is " + percentageGrowth
 					   + "%  Setting the phase to FINISHED.");
-			phaseType = PhaseType.FINISHED;
+			updatePhase(PhaseType.FINISHED);
 		}
 
 		return remainingTime;
+	}
+
+	/**
+	 * Advanc ethe crop to the next phase of growth
+	 */
+	private void advancePhase() {
+		currentPhase = cropSpec.getNextPhase(currentPhase);
+		logger.fine(building, name + " is now in " + currentPhase.getPhaseType());
 	}
 
 	private void collectProduce(double harvestMass) {
@@ -714,6 +727,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
 
+		PhaseType phaseType = currentPhase.getPhaseType();
 		if (phaseType == PhaseType.FINISHED) {
 			return true;
 		}
@@ -726,7 +740,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Right before the harvesting phase
 			if (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
 				// Advance onto the next phase
-				phaseType = cropSpec.getNextPhaseType(phaseType);
+				advancePhase();
 			}
 		}
 
@@ -740,7 +754,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			updateUsage(pulse.getMarsTime().getMissionSol());
 
 			if (dailyHarvest < 0) {
-				phaseType = PhaseType.FINISHED;
+				updatePhase(PhaseType.FINISHED);
 				dailyHarvest = 0;
 				return true;
 			}
@@ -771,10 +785,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 		remainingHarvest += maxPeriodHarvest * harvestModifier;
 
 		if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
-			phaseType = PhaseType.FINISHED;
+			updatePhase(PhaseType.FINISHED);
 		}
 
-		if (phaseType == PhaseType.FINISHED) {
+		if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
 			dailyHarvest = 0;
 			totalHarvest = 0;
 		}
@@ -1116,7 +1130,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double growthFactor = percentageGrowth/100.0;
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
-		if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {
+		if (!cropSpec.needsLight()) {
 			adjustEnvironmentFactor(1D, LIGHT_FACTOR);
 		}
 		else {
@@ -1151,6 +1165,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// STEP 6 : TUNE HARVEST MODIFIER
 		double harvestModifier = 1D;
+		PhaseType phaseType = currentPhase.getPhaseType();
 		// Note that light is the dominant environmental factor
 		if (phaseType == PhaseType.GERMINATION) {
 			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[LIGHT_FACTOR];
@@ -1301,6 +1316,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return
 	 */
 	public boolean needsPower() {
+		PhaseType phaseType = currentPhase.getPhaseType();
 		return (phaseType != PhaseType.INCUBATION) && (phaseType != PhaseType.FINISHED);
 	}
 
