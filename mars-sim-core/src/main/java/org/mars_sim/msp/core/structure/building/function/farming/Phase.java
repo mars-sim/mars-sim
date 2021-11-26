@@ -38,4 +38,9 @@ public class Phase implements Serializable {
 	public PhaseType getPhaseType() {
 		return phaseType;
 	}
+	
+	@Override
+	public String toString() {
+		return phaseType.name();
+	}
 }

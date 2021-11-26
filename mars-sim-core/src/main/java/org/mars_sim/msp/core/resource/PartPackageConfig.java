@@ -62,7 +62,7 @@ public class PartPackageConfig implements Serializable {
 			return;
 		}
 		
-		List<PartPackage> newList = new ArrayList<PartPackage>();
+		List<PartPackage> newList = new ArrayList<>();
 		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
@@ -110,7 +110,7 @@ public class PartPackageConfig implements Serializable {
 		}
 
 		if (foundPartPackage != null)
-			result = new HashMap<Part, Integer>(foundPartPackage.parts);
+			result = new HashMap<>(foundPartPackage.parts);
 		else
 			throw new IllegalStateException("name: " + name + " does not match any part packages.");
 
@@ -141,7 +141,7 @@ public class PartPackageConfig implements Serializable {
 		private Map<Part, Integer> parts;
 
 		private PartPackage() {
-			parts = new HashMap<Part, Integer>();
+			parts = new HashMap<>();
 		}
 	}
 }

@@ -98,21 +98,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
 	public static final String HALLWAY = "hallway";
-
 	public static final String TUNNEL = "tunnel";
-
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-
 	public static final String EVA_AIRLOCK = "EVA Airlock";
-
 	public static final String ERV = "ERV";
-
 	public static final String GREENHOUSE = "Greenhouse";
-
+	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
 	public static final String ARRAY = "Array";
-
 	public static final String TURBINE = "Turbine";
-
 	public static final String WELL = "Well";
 
 	public static final int TISSUE_CAPACITY = 20;
@@ -127,15 +120,16 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
-	
+
 	/** A list of functions of this building. */
 	protected List<Function> functions;
 
-	/** Default : 22.5 deg celsius. */
-	private double initialTemperature = 22.5D;
-
-
 	// Data members
+	boolean isImpactImminent = false;
+	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
+	boolean inTransportMode = true;
+	/** building id on the building template. */
+	private int bid;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	/** The inhabitable ID for this building. */
@@ -143,10 +137,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
 
-	/** Unique identifier for the settlement of this building. */
-	private Integer settlementID;
-	private transient Settlement settlement;
-
+	/** Default : 22.5 deg celsius. */
+	private double initialTemperature = 22.5D;
 	protected double width;
 	protected double length;
 	protected double floorArea;
@@ -158,17 +150,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected double basePowerDownPowerRequirement;
 	protected double powerNeededForEVAheater;
 
-	boolean isImpactImminent = false;
-	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
-	boolean inTransportMode = true;
-	/** building id on the building template. */
-	private int bid;
+
 	/** Type of building. */
 	protected String buildingType;
 	/** Nick name for this building. */
 	private String nickName;
 	/** Description for this building. */
 	private String description;
+
+	/** Unique identifier for the settlement of this building. */
+	private Integer settlementID;
+	/** The settlement of this building. */
+	private transient Settlement settlement;
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
@@ -311,7 +304,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				malfunctionManager.addScopeString(scope);
 			}
 		}
-		
+
 		// If no life support then no internal repairs
 		malfunctionManager.setSupportsInside(hasFunction(FunctionType.LIFE_SUPPORT));
 	}

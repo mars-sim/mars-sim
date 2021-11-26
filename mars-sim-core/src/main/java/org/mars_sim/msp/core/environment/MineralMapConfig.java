@@ -109,7 +109,7 @@ public class MineralMapConfig implements Serializable {
 		private MineralType(String name, String frequency) {
 			this.name = name;
 			this.frequency = frequency;
-			locales = new ArrayList<String>(3);
+			locales = new ArrayList<>(3);
 		}
 
 		private void addLocale(String localeName) {

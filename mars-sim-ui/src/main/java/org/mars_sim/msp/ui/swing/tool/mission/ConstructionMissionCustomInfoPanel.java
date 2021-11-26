@@ -52,7 +52,7 @@ import com.alee.laf.table.WebTable;
  */
 @SuppressWarnings("serial")
 public class ConstructionMissionCustomInfoPanel
-extends MissionCustomInfoPanel 
+extends MissionCustomInfoPanel
 implements ConstructionListener {
 
     // Data members.
@@ -123,7 +123,7 @@ implements ConstructionListener {
 
         WebPanel lowerContentsPanel = new WebPanel(new BorderLayout(0, 0));
         add(lowerContentsPanel, BorderLayout.CENTER);
-        
+
         // Create remaining construction materials label panel.
         WebPanel remainingMaterialsLabelPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
         lowerContentsPanel.add(remainingMaterialsLabelPane, BorderLayout.NORTH);
@@ -284,13 +284,13 @@ implements ConstructionListener {
                 	Integer part = j.next();
                     int number = stage.getRemainingParts().get(part);
                     result.append(Msg.NBSP).append(Msg.NBSP)
-                    .append(ResourceUtil.findAmountResource(part).getName()).append(": ").append(number).append(Msg.BR);
+                    .append(ItemResourceUtil.findItemResourceName(part)).append(": ").append(number).append(Msg.BR);
                 }
             }
 
             // Add construction vehicles.
             if (info.getVehicles().size() > 0) {
-                result.append(Msg.BR).append("Construction Vehicles:").append(Msg.BR);
+                result.append(Msg.BR).append("Construction Vehicles").append(Msg.BR);
                 Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                 while (k.hasNext()) {
                     ConstructionVehicleType vehicle = k.next();
@@ -299,7 +299,7 @@ implements ConstructionListener {
                     Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
                     while (l.hasNext()) {
                         result.append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP)
-                        .append(ResourceUtil.findAmountResource(l.next()).getName()).append(Msg.BR);
+                        .append("-").append(ItemResourceUtil.findItemResourceName(l.next())).append(Msg.BR);
                     }
                 }
             }
@@ -374,7 +374,7 @@ implements ConstructionListener {
             Object result = Msg.getString("unknown"); //$NON-NLS-1$
 
             if (row < goodsList.size()) {
-                Good good = goodsList.get(row); 
+                Good good = goodsList.get(row);
                 if (column == 0) {
                     result = good.getName();
                 }

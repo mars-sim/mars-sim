@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -61,7 +62,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public ConstructBuilding(Person person) {
@@ -75,9 +76,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         		endTask();
         	return;
 		}
-		
+
 		BuildingConstructionMission mission = getMissionNeedingAssistance(person);
-		
+
 		if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
 
 			// Initialize data members.
@@ -91,8 +92,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 			// Add task phase
 			addPhase(CONSTRUCTION);
-		} 
-		
+		}
+
 		else {
 			endTask();
 		}
@@ -100,7 +101,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person   the person performing the task.
 	 * @param stage    the construction site stage.
 	 * @param vehicles the construction vehicles.
@@ -123,7 +124,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         		endTask();
         	return;
 		}
-		
+
 		// Determine location for construction site.
 		Point2D constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
@@ -134,7 +135,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Checks if a given person can work on construction at this time.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return true if person can construct.
 	 */
@@ -147,17 +148,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 				return false;
 		}
 
-		if (EVAOperation.isGettingDark(person))
-			return false;
-		
-//		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-//			logger.fine(person.getName() + " end constructing building : night time");
-//			if (!surface.inDarkPolarRegion(person.getCoordinates()))
-//				return false;
-//		}
-
 		// Check if person's medical condition will not allow task.
-		if (person.getPerformanceRating() < .5D)
+		if (person.getPerformanceRating() < .3D)
 			return false;
 
 		// Check if there is work that can be done on the construction stage.
@@ -174,58 +166,16 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		return (workAvailable);
 	}
 
-//    public static boolean canConstruct(Robot robot, ConstructionSite site) {
-//
-//        // Check if robot can exit the settlement airlock.
-//        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), site.getYLocation());
-//        if (airlock != null) {
-//            if(!ExitAirlock.canExitAirlock(robot, airlock))
-//            	return false;
-//        }
-//
-//
-//        Mars mars = Simulation.instance().getMars();
-//        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
-//            logger.fine(robot.getName() + " should end EVA: night time.");
-//            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
-//                return false;
-//        }
-//
-//        // Check if robot's medical condition will not allow task.
-//        if (robot.getPerformanceRating() < .5D)
-//        	return false;
-//
-//        // Check if there is work that can be done on the construction stage.
-//        ConstructionStage stage = site.getCurrentConstructionStage();
-//        //boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-//
-//        boolean workAvailable = false;
-//
-//        // 2016-06-08 Checking stage for NullPointerException
-//        if (stage != null)
-//        	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-//
-//        return (workAvailable);
-//    }
-
 	/**
 	 * Gets a random building construction mission that needs assistance.
-	 * 
+	 *
 	 * @return construction mission or null if none found.
 	 */
 	public static BuildingConstructionMission getMissionNeedingAssistance(Person person) {
 
 		BuildingConstructionMission result = null;
 
-		List<BuildingConstructionMission> constructionMissions = null;
-
-//        if (person != null) {
-		constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
-//        }
-//        else if (robot != null) {
-//        	constructionMissions = getAllMissionsNeedingAssistance(
-//                robot.getAssociatedSettlement());
-//        }
+		List<BuildingConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
 
 		if (constructionMissions.size() > 0) {
 			int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
@@ -238,7 +188,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	/**
 	 * Gets a list of all building construction missions that need assistance at a
 	 * settlement.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @return list of building construction missions.
 	 */
@@ -249,7 +199,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
-			if (mission instanceof BuildingConstructionMission) {
+			if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 				result.add((BuildingConstructionMission) mission);
 			}
 		}
@@ -259,7 +209,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Determine location to go to at construction site.
-	 * 
+	 *
 	 * @return location.
 	 */
 	private Point2D determineConstructionLocation() {
@@ -292,13 +242,13 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Perform the construction phase of the task.
-	 * 
+	 *
 	 * @param time amount (millisols) of time to perform the phase.
 	 * @return time (millisols) remaining after performing the phase.
 	 * @throws Exception
 	 */
 	private double constructionPhase(double time) {
-		
+
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			if (person.isOutside())
@@ -322,7 +272,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         	else
         		endTask();
 		}
-		
+
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
 			obtainVehicle();
@@ -366,7 +316,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		// Check if an accident happens during construction.
 		checkForAccident(time);
 
@@ -375,7 +325,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Obtains a construction vehicle from the settlement if possible.
-	 * 
+	 *
 	 * @throws Exception if error obtaining construction vehicle.
 	 */
 	private void obtainVehicle() {
@@ -416,7 +366,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Returns the construction vehicle used to the settlement.
-	 * 
+	 *
 	 * @throws Exception if error returning construction vehicle.
 	 */
 	private void returnVehicle() {
@@ -439,7 +389,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		if ((CONSTRUCTION.equals(getPhase())) && operatingLUV) {
 			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-			
+
 			double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 			double drivingExperience = time / 10D;
 			drivingExperience += drivingExperience * experienceAptitudeModifier;
@@ -472,7 +422,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 	/**
 	 * Gets the construction stage that is being worked on.
-	 * 
+	 *
 	 * @return construction stage.
 	 */
 	public ConstructionStage getConstructionStage() {

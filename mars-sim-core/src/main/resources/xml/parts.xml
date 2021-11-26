@@ -190,7 +190,7 @@
 	<part name="aluminum wire" type="electrical" mass="1.0" />
 
 	<part name="steel pipe" type="metalic" mass="0.882">
-	<description>A density of 7.8 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="manufacture" probability="1" max-number="2" />
@@ -200,7 +200,7 @@
 	</part>
 
 	<part name="iron pipe" type="metalic" mass="0.888">
-		<description>A density of 7.85 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+		<description>A density of 7.85 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="manufacture" probability="1" max-number="2" />
@@ -210,7 +210,7 @@
 	</part>
 
 	<part name="copper pipe" type="metalic" mass="	1.011">
-		<description>A density of 8.94 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+		<description>A density of 8.94 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="living accommodations" probability="2" max-number="1" />
 			<entity name="farming" probability="2" max-number="2" />

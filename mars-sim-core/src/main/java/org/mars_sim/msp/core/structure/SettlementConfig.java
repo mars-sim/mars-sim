@@ -98,7 +98,7 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
-		settlementTemplates = new ArrayList<SettlementTemplate>();
+		settlementTemplates = new ArrayList<>();
 		loadMissionControl(settlementDoc);
 		loadLifeSupportRequirements(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
