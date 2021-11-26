@@ -59,7 +59,7 @@ implements Serializable, LocalBoundedObject {
     private boolean undergoingConstruction;
     private boolean undergoingSalvage;
     private boolean manual, isSitePicked;
-    
+
     private boolean isMousePickedUp;
 
     private transient List<ConstructionListener> listeners;
@@ -77,12 +77,12 @@ implements Serializable, LocalBoundedObject {
     /**
      * Constructor
      */
-    public ConstructionSite(Settlement settlement) {// , ConstructionManager constructionManager) {
+    public ConstructionSite(Settlement settlement) {
     	super("A construction site", settlement.getCoordinates());
 
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
-    	
+
     	width = 0D;
         length = 0D;
         xLocation = 0D;
@@ -480,16 +480,16 @@ implements Serializable, LocalBoundedObject {
 
 	/**
 	 * Gets the associated settlement this unit is with
-	 * 
+	 *
 	 * @return the associated settlement
 	 */
 	public Settlement getAssociatedSettlement() {
 		return settlement;
 	}
-	
+
 	/**
 	 * Gets the settlement this unit is with
-	 * 
+	 *
 	 * @return the settlement
 	 */
     public Settlement getSettlement() {
@@ -557,10 +557,10 @@ implements Serializable, LocalBoundedObject {
 	public UnitType getUnitType() {
 		return UnitType.CONSTRUCTION;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override

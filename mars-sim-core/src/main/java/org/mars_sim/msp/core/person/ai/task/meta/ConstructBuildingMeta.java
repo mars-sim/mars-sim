@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -35,7 +35,7 @@ public class ConstructBuildingMeta extends MetaTask {
             "Task.description.constructBuilding"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 100D;
-	
+
     public ConstructBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
@@ -57,7 +57,7 @@ public class ConstructBuildingMeta extends MetaTask {
         if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500)) {
         	return 0;
         }
-        
+
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
             return 0;
@@ -71,17 +71,17 @@ public class ConstructBuildingMeta extends MetaTask {
 		BuildingConstructionMission mission = ConstructBuilding.getMissionNeedingAssistance(person);
 		if (mission == null)
 			return 0;
-		
+
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
-            
+
             result = getProbability(settlement);
         }
 
         return applyPersonModifier(result, person);
     }
 
-    
+
     public double getProbability(Settlement settlement) {
 
         double result = 0D;
@@ -93,30 +93,30 @@ public class ConstructBuildingMeta extends MetaTask {
             if (associated >= cap) {
                 result = WEIGHT * associated/cap * associated;
             }
-            
+
             // Check all building construction missions occurring at the settlement.
             List<BuildingConstructionMission> missions = ConstructBuilding.
                     getAllMissionsNeedingAssistance(settlement);
-            
+
             int size = missions.size();
-            
+
 //            double factor = 0;
 //            if (size == 0)
 //            	factor = 1;
 //            else if (size == 1)
 //            	factor = Math.pow(1.5, 2);
-//            else 
+//            else
 //            	factor = Math.pow(size, 2);
-//            
+//
 //            result /= factor;
-            
+
             result *= size;
-            
+
         }
         catch (Exception e) {
             logger.severe(settlement, "Error finding building construction missions.", e);
         }
-        
+
         return result;
     }
 }

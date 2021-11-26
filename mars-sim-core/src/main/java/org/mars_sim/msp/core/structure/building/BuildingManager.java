@@ -775,9 +775,11 @@ public class BuildingManager implements Serializable {
 	}
 
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
-		List<Building> list = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-				.collect(Collectors.toList());
-		return list.get(RandomUtil.getRandomInt(list.size()-1));
+//		List<Building> list = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
+//				.collect(Collectors.toList());
+//		return list.get(RandomUtil.getRandomInt(list.size()-1));
+
+		return buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2)).findFirst().get();
 	}
 
 	/**
