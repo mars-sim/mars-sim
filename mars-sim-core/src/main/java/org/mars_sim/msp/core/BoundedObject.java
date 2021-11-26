@@ -11,13 +11,15 @@ public class BoundedObject implements LocalBoundedObject{
 
 	double w;
 	double l;
-	double x;
-	double y;
 	double f;
+	private LocalPosition loc;
 
 	public BoundedObject(double x, double y, double w, double l, double f) {
-		this.x = x;
-		this.y = y;
+		this(new LocalPosition(x, y), w, l, f);
+	}
+
+	public BoundedObject(LocalPosition loc, double w, double l, double f) {
+		this.loc = loc;
 		this.w = w;
 		this.l = l;
 		this.f = f;
@@ -25,12 +27,12 @@ public class BoundedObject implements LocalBoundedObject{
 
 	@Override
 	public double getXLocation() {
-		return x;
+		return loc.getX();
 	}
 
 	@Override
 	public double getYLocation() {
-		return y;
+		return loc.getY();
 	}
 
 	@Override
@@ -48,4 +50,11 @@ public class BoundedObject implements LocalBoundedObject{
 		return f;
 	}
 
+	/**
+	 * Get the local position within the context of an existing Unit.
+	 * @return
+	 */
+	public LocalPosition getPosition() {
+		return loc;
+	}
 }

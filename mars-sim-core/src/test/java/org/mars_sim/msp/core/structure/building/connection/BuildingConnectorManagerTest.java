@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
+import org.mars_sim.msp.core.BoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.Environment;
@@ -60,11 +62,10 @@ public class BuildingConnectorManagerTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D,0D);
         building0.setFacing(0D);
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate(null, 0, "A", "building 0", "building 0", 9D, 9D, 0D, 0D, 0D);
-        buildingTemplate0.addBuildingConnection(2, -4.5D, 0D);
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate(null, 0, "A", "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        buildingTemplate0.addBuildingConnection(2, new LocalPosition(-4.5D, 0D));
         buildingManager.addBuilding(building0, false);
 
         MockBuilding building1 = new MockBuilding(buildingManager, "B1");
@@ -72,11 +73,10 @@ public class BuildingConnectorManagerTest extends TestCase {
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
-        building1.setXLocation(-12D);
-        building1.setYLocation(0D);
+        building1.setLocation(-12D, 0D);
         building1.setFacing(270D);
-        BuildingTemplate buildingTemplate1 = new BuildingTemplate(null, 1, null, "building 1","building 1",  6D, 9D, -12D, 0D, 270D);
-        buildingTemplate1.addBuildingConnection(2, 0D, 4.5D);
+        BuildingTemplate buildingTemplate1 = new BuildingTemplate(null, 1, null, "building 1","building 1", new BoundedObject(-12D, 0D, 6D, 9D, 270D));
+        buildingTemplate1.addBuildingConnection(2, new LocalPosition(0D, 4.5D));
         buildingManager.addBuilding(building1, false);
 
         MockBuilding building2 = new MockBuilding(buildingManager, "B2");
@@ -84,12 +84,11 @@ public class BuildingConnectorManagerTest extends TestCase {
         building2.setName("building 2");
         building2.setWidth(2D);
         building2.setLength(3D);
-        building2.setXLocation(-6D);
-        building2.setYLocation(0D);
+        building2.setLocation(-6D, 0D);
         building2.setFacing(270D);
-        BuildingTemplate buildingTemplate2 = new BuildingTemplate(null, 2, null, "building 2","building 2", 6D, 9D, -6D, 0D, 270D);
-        buildingTemplate2.addBuildingConnection(0, 0D, 1.5D);
-        buildingTemplate2.addBuildingConnection(1, 0D, -1.5D);
+        BuildingTemplate buildingTemplate2 = new BuildingTemplate(null, 2, null, "building 2","building 2", new BoundedObject(-6D, 0D, 6D, 9D, 270D));
+        buildingTemplate2.addBuildingConnection(0, new LocalPosition(0D, 1.5D));
+        buildingTemplate2.addBuildingConnection(1, new LocalPosition(0D, -1.5D));
         buildingManager.addBuilding(building2, false);
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>();
@@ -161,11 +160,10 @@ public class BuildingConnectorManagerTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate(null, 0, null, "building 0", "building 0", 9D, 9D, 0D, 0D, 0D);
-        buildingTemplate0.addBuildingConnection(2, -4.5D, 0D);
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate(null, 0, null, "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        buildingTemplate0.addBuildingConnection(2, new LocalPosition(-4.5D, 0D));
         buildingManager.addBuilding(building0, false);
 
         MockBuilding building1 = new MockBuilding(buildingManager, "B1");
@@ -173,11 +171,10 @@ public class BuildingConnectorManagerTest extends TestCase {
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
-        building1.setXLocation(-12D);
-        building1.setYLocation(0D);
+        building1.setLocation(-12D, 0D);
         building1.setFacing(270D);
-        BuildingTemplate buildingTemplate1 = new BuildingTemplate(null, 1, null, "building 1", "building 1",6D, 9D, -12D, 0D, 270D);
-        buildingTemplate1.addBuildingConnection(2, 0D, 4.5D);
+        BuildingTemplate buildingTemplate1 = new BuildingTemplate(null, 1, null, "building 1", "building 1", new BoundedObject(-12D, 0D, 6D, 9D, 270D));
+        buildingTemplate1.addBuildingConnection(2, new LocalPosition(0D, 4.5D));
         buildingManager.addBuilding(building1, false);
 
         MockBuilding building2 = new MockBuilding(buildingManager, "B2");
@@ -185,12 +182,11 @@ public class BuildingConnectorManagerTest extends TestCase {
         building2.setName("building 2");
         building2.setWidth(2D);
         building2.setLength(3D);
-        building2.setXLocation(-6D);
-        building2.setYLocation(0D);
+        building2.setLocation(-6D, 0D);
         building2.setFacing(270D);
-        BuildingTemplate buildingTemplate2 = new BuildingTemplate(null, 2, null, "building 2", "building 2",6D, 9D, -6D, 0D, 270D);
-        buildingTemplate2.addBuildingConnection(0, 0D, 1.5D);
-        buildingTemplate2.addBuildingConnection(1, 0D, -1.5D);
+        BuildingTemplate buildingTemplate2 = new BuildingTemplate(null, 2, null, "building 2", "building 2", new BoundedObject(-6D, 0D, 6D, 9D, 270D));
+        buildingTemplate2.addBuildingConnection(0, new LocalPosition(0D, 1.5D));
+        buildingTemplate2.addBuildingConnection(1, new LocalPosition(0D, -1.5D));
         buildingManager.addBuilding(building2, false);
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>();

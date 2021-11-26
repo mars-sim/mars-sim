@@ -50,6 +50,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -797,7 +798,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
-						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, -1D, -1D, 0D, 0D, 0D));
+						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, new BoundedObject(0D, 0D, -1D, -1D, 0D)));
 					}
 				}
 			}
@@ -937,7 +938,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
 
-						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, 7D, 9D, 0D, 38D, 270D));
+						newBuildings.add(new BuildingTemplate(null, 0, null, type, type,
+											new BoundedObject(0D, 38D, 7D, 9D, 270D)));
 
 					}
 				} else if (num < existingNum) {

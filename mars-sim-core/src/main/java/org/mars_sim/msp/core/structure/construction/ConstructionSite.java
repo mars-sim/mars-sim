@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
@@ -361,8 +362,9 @@ implements Serializable, LocalBoundedObject {
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
 
-        Building newBuilding = new Building(id, buildingType, uniqueName, width, length,
-                xLocation, yLocation, facing, settlement.getBuildingManager());
+        Building newBuilding = new Building(id, buildingType, uniqueName,
+        		new BoundedObject(xLocation, yLocation, width, length, facing),
+                settlement.getBuildingManager());
         manager.addBuilding(newBuilding, true);
 
         // Record completed building name.

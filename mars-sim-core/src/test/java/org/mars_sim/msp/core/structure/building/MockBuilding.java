@@ -2,6 +2,7 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -54,14 +55,10 @@ public class MockBuilding extends Building {
 	    this.buildingType = type;
 	}
 
-	public void setXLocation(double xLoc) {
-	    this.xLoc = xLoc;
+	public void setLocation(LocalPosition loc) {
+		this.loc = loc;
 	}
-
-	public void setYLocation(double yLoc) {
-	    this.yLoc = yLoc;
-	}
-
+	
 	public void setZLocation(double zLoc) {
 	    this.zLoc = zLoc;
 	}
@@ -85,5 +82,9 @@ public class MockBuilding extends Building {
 	@Override
 	public String toString() {
 		return super.getNickName();
+	}
+
+	public void setLocation(double x, double y) {
+		loc = new LocalPosition(x, y);	
 	}
 }

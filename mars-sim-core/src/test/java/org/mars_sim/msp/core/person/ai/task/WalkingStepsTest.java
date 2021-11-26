@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import org.junit.Before;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -27,6 +28,8 @@ import junit.framework.TestCase;
 public class WalkingStepsTest extends TestCase {
 	
 
+	private static final LocalPosition LOCAL_POSITION2 = new LocalPosition(-7.5D, 0D);
+	private static final LocalPosition LOCAL_POSITION1 = new LocalPosition(-4.5D, 0D);
 	private UnitManager unitManager;
 
 	@Before
@@ -69,8 +72,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -82,8 +84,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
-        building1.setXLocation(-12D);
-        building1.setYLocation(0D);
+        building1.setLocation(-12D, 0D);
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
 
@@ -92,15 +93,14 @@ public class WalkingStepsTest extends TestCase {
         building2.setName("building 2");
         building2.setWidth(2D);
         building2.setLength(3D);
-        building2.setXLocation(-6D);
-        building2.setYLocation(0D);
+        building2.setLocation(-6D, 0D);
         building2.setFacing(270D);
         buildingManager.addMockBuilding(building2);
 
         connectorManager.addBuildingConnection(new BuildingConnector(building0,
-                -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
+                LOCAL_POSITION1, 90D, building2, LOCAL_POSITION1, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1,
-                -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
+                LOCAL_POSITION2, 270D, building2, LOCAL_POSITION2, 90D));
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -141,8 +141,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -154,8 +153,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
-        building1.setXLocation(-12D);
-        building1.setYLocation(0D);
+        building1.setLocation(-12D, 0D);
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
 
@@ -199,8 +197,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -212,8 +209,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
-        building1.setXLocation(-12D);
-        building1.setYLocation(0D);
+        building1.setLocation(-12D, 0D);
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
 
@@ -280,8 +276,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -341,8 +336,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -388,8 +382,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
@@ -460,8 +453,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -534,8 +526,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -603,8 +594,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -650,8 +640,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -726,8 +715,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -794,8 +782,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -859,8 +846,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -922,8 +908,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
@@ -969,8 +954,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
+        building0.setLocation(0D, 0D);
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 

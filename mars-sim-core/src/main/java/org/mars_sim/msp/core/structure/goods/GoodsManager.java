@@ -79,7 +79,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
+import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -2861,8 +2861,9 @@ public class GoodsManager implements Serializable, Temporal {
 		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			String type = i.next().getDescription().toLowerCase();
-			if (vehicleConfig.hasPartAttachments(type)) {
-				Iterator<Part> j = vehicleConfig.getAttachableParts(type).iterator();
+			VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
+			if (spec.hasPartAttachments()) {
+				Iterator<Part> j = spec.getAttachableParts().iterator();
 				while (j.hasNext()) {
 					Part part = j.next();
 					double demand = ATTACHMENT_PARTS_DEMAND;
@@ -3789,7 +3790,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double capacity = 0D;
 
 		// VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-		VehicleDescription v = vehicleConfig.getVehicleDescription(vehicleType);
+		VehicleSpec v = vehicleConfig.getVehicleSpec(vehicleType);
 		int crewCapacity = v.getCrewSize();
 
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
@@ -3949,7 +3950,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param v {@link VehicleDescription}.
 	 * @return range (km)
 	 */
-	private double getVehicleRange(VehicleDescription v) {
+	private double getVehicleRange(VehicleSpec v) {
 		double range = 0D;
 
 		double fuelCapacity = v.getCargoCapacity(METHANE);
@@ -3994,7 +3995,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param v {@link VehicleDescription}.
 	 * @return range (km)
 	 */
-	private double getDroneRange(VehicleDescription v) {
+	private double getDroneRange(VehicleSpec v) {
 		double range = 0D;
 
 		double fuelCapacity = v.getCargoCapacity(METHANE);

@@ -8,11 +8,9 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -154,14 +152,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		// Set crew capacity
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		crewCapacity = vehicleConfig.getCrewSize(type);
+		VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
+		crewCapacity = spec.getCrewSize();
 		robotCrewCapacity = crewCapacity;
 
 		// Gets the estimated cabin compartment air volume.
-		cabinAirVolume = vehicleConfig.getEstimatedAirVolume(type);
-
-		Map<String, Double> capacities = vehicleConfig.getCargoCapacity(type);
-		oxygenCapacity = capacities.get(LifeSupportInterface.OXYGEN);
+		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
+		oxygenCapacity = spec.getCargoCapacity(LifeSupportInterface.OXYGEN);
 
 		min_o2_pressure = SimulationConfig.instance().getPersonConfig().getMinSuitO2Pressure();
 		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS
@@ -169,50 +166,29 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
 		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit*10_000.0)/10_000.0;
 
-//		logger.config(type + " : full tank O2 partial pressure is " + fullO2PartialPressure + " kPa");
-//		logger.config(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
-//		logger.config(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
-
 		// Construct sick bay.
-		if (vehicleConfig.hasSickbay(type)) {
-			sickbay = new SickBay(this, vehicleConfig.getSickbayTechLevel(type),
-					vehicleConfig.getSickbayBeds(type));
+		if (spec.hasSickbay()) {
+			sickbay = new SickBay(this, spec.getSickbayTechLevel(),
+					spec.getSickbayBeds());
 
 			// Initialize sick bay activity spots.
-			sickBayActivitySpots = new ArrayList<Point2D>(vehicleConfig.getSickBayActivitySpots(type));
+			sickBayActivitySpots = spec.getSickBayActivitySpots();
 		}
 
 		// Construct lab.
-		if (vehicleConfig.hasLab(type)) {
-			lab = new MobileLaboratory(1, vehicleConfig.getLabTechLevel(type),
-					vehicleConfig.getLabTechSpecialties(type));
+		if (spec.hasLab()) {
+			lab = new MobileLaboratory(1, spec.getLabTechLevel(),
+					spec.getLabTechSpecialties());
 
 			// Initialize lab activity spots.
-			labActivitySpots = new ArrayList<Point2D>(vehicleConfig.getLabActivitySpots(type));
+			labActivitySpots = spec.getLabActivitySpots();
 		}
 
-		// Set rover terrain modifier
-		if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
-			setTerrainHandlingCapability(2.5);
-		else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
-			setTerrainHandlingCapability(5D);
-		else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
-			setTerrainHandlingCapability(2.5);
-
+		setTerrainHandlingCapability(spec.getTerrainHandling());
+		
 		// Create the rover's airlock.
-		double airlockXLoc = vehicleConfig.getAirlockXLocation(type);
-		double airlockYLoc = vehicleConfig.getAirlockYLocation(type);
-		double airlockInteriorXLoc = vehicleConfig.getAirlockInteriorXLocation(type);
-		double airlockInteriorYLoc = vehicleConfig.getAirlockInteriorYLocation(type);
-		double airlockExteriorXLoc = vehicleConfig.getAirlockExteriorXLocation(type);
-		double airlockExteriorYLoc = vehicleConfig.getAirlockExteriorYLocation(type);
-
-		try {
-			airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc,
-					airlockExteriorXLoc, airlockExteriorYLoc);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Problem instantiating new vehicle air lock: ", e);
-		}
+		airlock = new VehicleAirlock(this, 2, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
+										 spec.getAirlockExteriorLoc());
 	}
 
 	/**

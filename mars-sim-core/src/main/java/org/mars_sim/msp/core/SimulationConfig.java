@@ -67,7 +67,7 @@ public class SimulationConfig implements Serializable {
 
 	private static final long serialVersionUID = -5348007442971644450L;
 
-	private final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
 
 	
 	/** The version.txt denotes the xml build version. */	
@@ -118,12 +118,13 @@ public class SimulationConfig implements Serializable {
 	private static final String ACCURACY_BIAS = "accuracy-bias";
 
 	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
-
+	
 	private transient double tr = 0;
 
 	private transient int[] data = new int[] { 0, 0, 0, 0 };
 
 	private transient String marsStartDate = null;
+
 	private transient String earthStartDate = null;
 
 	/*

@@ -238,8 +238,7 @@ public class TestLocalAreaUtil extends TestCase {
         MockBuilding mb0 = new MockBuilding(settlement.getBuildingManager(), "Mock B0");
         mb0.setWidth(10D);
         mb0.setLength(10D);
-        mb0.setXLocation(0D);
-        mb0.setYLocation(0D);
+        mb0.setLocation(0D, 0D);
         mb0.setFacing(0D);
         
         assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 0D, mb0));

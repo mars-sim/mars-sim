@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
+import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
@@ -462,7 +462,7 @@ public class HelpGenerator {
 		};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
-			VehicleDescription v = config.getVehicleDescription(vehicle);
+			VehicleSpec v = config.getVehicleSpec(vehicle);
 			String description = v.getDescription();
 			if (description == null)
 				description = "No Description is Available";
@@ -478,7 +478,7 @@ public class HelpGenerator {
 
 			if (v.hasPartAttachments()) {
 				StringBuffer parts = new StringBuffer().append("[");
-				Collection<Part> partsCollection = config.getAttachableParts(vehicle);
+				Collection<Part> partsCollection = v.getAttachableParts();
 				if (partsCollection != null) {
 					Iterator<Part> iterator = partsCollection.iterator();
 					while (iterator.hasNext()) {

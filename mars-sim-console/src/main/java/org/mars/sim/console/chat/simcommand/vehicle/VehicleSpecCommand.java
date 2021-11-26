@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
@@ -54,22 +55,19 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
 		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + " kWh/km");
 
-		// Needs reworking as ResourceType is ID not a class !! 
-		String fuel = "Electrical Battery";
-		if (isRover) {
-			int id = ((Rover) source).getFuelType();
-			String fuelName = ResourceUtil.findAmountResourceName(id);
-			fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
+		int id = source.getFuelType();
+		String fuelName = ResourceUtil.findAmountResourceName(id);
+		buffer.appendLabeledString("Power Source",Conversion.capitalize(fuelName));
 
-			buffer.appendLabeledString("Power Source", fuel);
+		if (source instanceof GroundVehicle) {
+			GroundVehicle gv = (GroundVehicle) source;
+
 			buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 			buffer.appendLabeledString("Base Range Est.", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
 			buffer.appendLabeledString("Base Fuel Economy", String.format(KM_KG_FORMAT, source.getBaseFuelEconomy()));
 			buffer.appendLabeledString("Est. Average Economy", String.format(KM_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
 			buffer.appendLabeledString("Actual Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
-		}
-		else {
-			buffer.appendLabeledString("Power Source", fuel);
+			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
 		}
 
 		if (source instanceof Crewable) {
@@ -87,7 +85,6 @@ public class VehicleSpecCommand extends ChatCommand {
 			if (sickbay != null) {
 				buffer.appendLabelledDigit("# Beds (Sick Bay)", sickbay.getSickBedNum());
 				buffer.appendLabelledDigit("Tech Level (Sick Bay)", sickbay.getTreatmentLevel());
-				
 			}
 		}
 		

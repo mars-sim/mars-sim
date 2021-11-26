@@ -97,8 +97,7 @@ extends TestCase {
         b0.setName("B0");
         b0.setWidth(9D);
         b0.setLength(9D);
-        b0.setXLocation(0D);
-        b0.setYLocation(0D);
+        b0.setLocation(0D, 0D);
         b0.setFacing(0D);
 //        buildingManager.addMockBuilding(b0);
 

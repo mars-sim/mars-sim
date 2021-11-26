@@ -7,8 +7,8 @@
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building width CDATA #IMPLIED>
 	<!ATTLIST building length CDATA #IMPLIED>
-	<!ATTLIST building x-location CDATA #REQUIRED>
-	<!ATTLIST building y-location CDATA #REQUIRED>
+	<!ATTLIST building xloc CDATA #REQUIRED>
+	<!ATTLIST building yloc CDATA #REQUIRED>
 	<!ATTLIST building facing CDATA #REQUIRED>
 	<!ELEMENT vehicle EMPTY>
 	<!ATTLIST vehicle type CDATA #REQUIRED>
@@ -38,23 +38,23 @@
 
 		<!-- A new building for the settlement. -->
 		<!-- type: the type of building (see buildings.xml) -->
-		<!-- x-location the preferred East/West placement position of the building in meters from the settlement center.
+		<!-- xloc the preferred East/West placement position of the building in meters from the settlement center.
 		     (positive:West, negative:East) -->
-		<!-- y-location the preferred North/South placement position of the building in meters from the settlement center.
+		<!-- yloc the preferred North/South placement position of the building in meters from the settlement center.
 		     (positive:North, negative:South) -->
 		<!-- The facing of the building in degrees clockwise from North. -->
-		<building type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0" />
+		<building type="Lander Hab" xloc="0.0" yloc="13.0" facing="0.0" />
 		
-		<building type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0" />
+		<building type="Inflatable Greenhouse" xloc="-12.0" yloc="13.0" facing="270.0" />
 
-		<building type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+		<building type="MD1 Nuclear Reactor" xloc="60.0" yloc="-80.0" facing="0.0" />
 
-		<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+		<building type="ERV Base" xloc="40.0" yloc="-15.0" facing="45.0" />
 
-		<building type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0" />
-		<building type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0" />
+		<building type="Hallway" length="4.0" xloc="0.0" yloc="6.5" facing="0.0" />
+		<building type="Hallway" length="3.0" xloc="-6.0" yloc="13.0" facing="270.0" />
 
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+		<building type="Large Sabatier Processor" xloc="0.0" yloc="-45.0" facing="90.0" />
 			
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
@@ -84,17 +84,17 @@
 	</resupply>
 
 	<resupply name="Resupply for Phase 2">
-		<building type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0" />
-		<building type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0" />
+		<building type="Lander Hab" xloc="0.0" yloc="26.0" facing="0.0" />
+		<building type="Inflatable Greenhouse" xloc="-12.0" yloc="26.0" facing="270.0" />
 	
-		<building type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+		<building type="MD4 Nuclear Reactor" xloc="100.0" yloc="-100" facing="0.0" />
 		
-		<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />		
+		<building type="ERV Base" xloc="40.0" yloc="15.0" facing="135.0" />		
 	
-		<building type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0" />
-		<building type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0" />
+		<building type="Hallway" length="4.0" xloc="0.0" yloc="19.5" facing="0.0" />
+		<building type="Hallway" length="3.0" xloc="-6.0" yloc="26.0" facing="270.0" />
 		
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+		<building type="Large Sabatier Processor" xloc="0.0" yloc="-50.0" facing="90.0" />
 					
 		<vehicle type="Explorer Rover" number="1" />
 		<vehicle type="Transport Rover" number="1" />
@@ -119,40 +119,40 @@
 
 	<resupply name="Resupply for Phase 3">
 
-		<building type="Astronomy Observatory" x-location="-55.0" y-location="-20.05" facing="90.0" />
+		<building type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
 		
-		<building type="MD4 Nuclear Reactor" x-location="120.0" y-location="-100" facing="0.0" />
+		<building type="MD4 Nuclear Reactor" xloc="120.0" yloc="-100" facing="0.0" />
 						
-		<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />			
-		<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-		<building type="Large Sabatier Processor" x-location="-30.0" y-location="-20.0" facing="90.0" />
+		<building type="ERV Base" xloc="40.0" yloc="-15.0" facing="45.0" />			
+		<building type="Atmospheric Processor" xloc="0.0" yloc="-20.0" facing="90.0" />
+		<building type="Large Sabatier Processor" xloc="-30.0" yloc="-20.0" facing="90.0" />
 
-		<building type="Command and Control" x-location="0.0" y-location="38" facing="270.0" />
-		<building type="Lounge" x-location="-11.0" y-location="38" facing="270.0" />
-		<building type="Residential Quarters" x-location="-22.0" y-location="38" facing="270.0" />
-		<building type="Infirmary" x-location="-33.0" y-location="38" facing="270.0" />
-		<building type="Laboratory" x-location="-44.0" y-location="38" facing="270.0" />
-		<building type="Workshop" x-location="-55.0" y-location="38" facing="270.0" />
+		<building type="Command and Control" xloc="0.0" yloc="38" facing="270.0" />
+		<building type="Lounge" xloc="-11.0" yloc="38" facing="270.0" />
+		<building type="Residential Quarters" xloc="-22.0" yloc="38" facing="270.0" />
+		<building type="Infirmary" xloc="-33.0" yloc="38" facing="270.0" />
+		<building type="Laboratory" xloc="-44.0" yloc="38" facing="270.0" />
+		<building type="Workshop" xloc="-55.0" yloc="38" facing="270.0" />
 		
-		<building type="Garage" x-location="-55.0" y-location="53.5" facing="0.0" />
+		<building type="Garage" xloc="-55.0" yloc="53.5" facing="0.0" />
 		
-		<building type="Large Greenhouse" x-location="-44.0" y-location="21.0" facing="0.0" />
+		<building type="Large Greenhouse" xloc="-44.0" yloc="21.0" facing="0.0" />
 
-		<building type="Hallway" length="4.0" x-location="0.0" y-location="32.5" facing="0.0" />
-		<building type="Hallway" length="2.0" x-location="-5.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="4.0" xloc="0.0" yloc="32.5" facing="0.0" />
+		<building type="Hallway" length="2.0" xloc="-5.5" yloc="38" facing="270.0" />
 
-		<building type="Hallway" length="2.0" x-location="-16.5" y-location="38" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-27.5" y-location="38" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-38.5" y-location="38" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-49.5" y-location="38" facing="270.0" />
-		<building type="Hallway" length="4.0" x-location="-44.0" y-location="32.0" facing="0.0" />
+		<building type="Hallway" length="2.0" xloc="-16.5" yloc="38" facing="270.0" />
+		<building type="Hallway" length="2.0" xloc="-27.5" yloc="38" facing="270.0" />
+		<building type="Hallway" length="2.0" xloc="-38.5" yloc="38" facing="270.0" />
+		<building type="Hallway" length="2.0" xloc="-49.5" yloc="38" facing="270.0" />
+		<building type="Hallway" length="4.0" xloc="-44.0" yloc="32.0" facing="0.0" />
 
-<!-- 		<building type="Hallway" length="5.0" x-location="-55.0" y-location="43.5" facing="0.0" /> -->
-		<building type="Hallway" length="4.0" x-location="-55.0" y-location="43.5" facing="0.0" />
+<!-- 		<building type="Hallway" length="5.0" xloc="-55.0" yloc="43.5" facing="0.0" /> -->
+		<building type="Hallway" length="4.0" xloc="-55.0" yloc="43.5" facing="0.0" />
 
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="-55.0" facing="90.0" />
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="-60.0" facing="90.0" />
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />	
+		<building type="Large Sabatier Processor" xloc="0.0" yloc="-55.0" facing="90.0" />
+		<building type="Large Sabatier Processor" xloc="0.0" yloc="-60.0" facing="90.0" />
+		<building type="Large Sabatier Processor" xloc="0.0" yloc="-65.0" facing="90.0" />	
 			
 		<vehicle type="Explorer Rover" number="2" />
 		<vehicle type="Transport Rover" number="2" />

@@ -27,7 +27,7 @@ public interface LocalBoundedObject {
 	 *         negative).
 	 */
 	public double getYLocation();
-
+	
 	/**
 	 * Gets the object's width.
 	 * 

@@ -40,7 +40,6 @@ public class GoodsUtil {
     private static final String MID = "Vehicle Mid";
     private static final String SMALL = "Vehicle Small";
 
-    private static final String ATTACHMENT = "Attachment";
     public static final String CHEMICAL = "Chemical";
     public static final String ELEMENT = "Element";
     public static final String COMPOUND = "Compound";
@@ -321,7 +320,7 @@ public class GoodsUtil {
                 || GoodCategory.CONTAINER == good.getCategory())
             result = EquipmentFactory.getEquipmentMass(good.getEquipmentType());
         else if (GoodCategory.VEHICLE == good.getCategory()) {
-            result = vehicleConfig.getEmptyMass(good.getName());
+            result = vehicleConfig.getVehicleSpec(good.getName()).getEmptyMass();
         }
 
         return result;

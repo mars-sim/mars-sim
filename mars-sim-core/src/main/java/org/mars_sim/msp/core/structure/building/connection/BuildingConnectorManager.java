@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -120,8 +121,8 @@ public class BuildingConnectorManager implements Serializable {
 							+ " does not exist for settlement " + settlement.getName());
 				}
 
-				double connectionXLoc = connectionTemplate.getXLocation();
-				double connectionYLoc = connectionTemplate.getYLocation();
+				double connectionXLoc = connectionTemplate.getLocation().getX();
+				double connectionYLoc = connectionTemplate.getLocation().getY();
 				Point2D.Double connectionSettlementLoc = LocalAreaUtil.getLocalRelativeLocation(connectionXLoc,
 						connectionYLoc, building);
 
@@ -145,7 +146,7 @@ public class BuildingConnectorManager implements Serializable {
 				}
 
 				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
-						connectionSettlementLoc.getX(), connectionSettlementLoc.getY(), connectionFacing,
+						new LocalPosition(connectionSettlementLoc), connectionFacing,
 						connectionBuilding);
 				partialBuildingConnectorList.add(partialConnector);
 			}
@@ -154,8 +155,7 @@ public class BuildingConnectorManager implements Serializable {
 		// Match up partial connectors to create building connectors.
 		while (partialBuildingConnectorList.size() > 0) {
 			PartialBuildingConnector partialConnector = partialBuildingConnectorList.get(0);
-			Point2D.Double partialConnectorLoc = new Point2D.Double(partialConnector.xLocation,
-					partialConnector.yLocation);
+			LocalPosition partialConnectorLoc = partialConnector.pos;
 			List<PartialBuildingConnector> validPartialConnectors = new CopyOnWriteArrayList<PartialBuildingConnector>();
 			for (int x = 1; x < partialBuildingConnectorList.size(); x++) {
 				PartialBuildingConnector potentialConnector = partialBuildingConnectorList.get(x);
@@ -171,9 +171,7 @@ public class BuildingConnectorManager implements Serializable {
 				Iterator<PartialBuildingConnector> j = validPartialConnectors.iterator();
 				while (j.hasNext()) {
 					PartialBuildingConnector validConnector = j.next();
-					Point2D.Double validConnectorLoc = new Point2D.Double(validConnector.xLocation,
-							validConnector.yLocation);
-					double distance = LocalAreaUtil.getDistance(partialConnectorLoc, validConnectorLoc);
+					double distance = partialConnectorLoc.getDistanceTo(validConnector.pos);
 					if (distance < closestDistance) {
 						bestFitConnector = validConnector;
 						closestDistance = distance;
@@ -183,8 +181,8 @@ public class BuildingConnectorManager implements Serializable {
 				if (bestFitConnector != null) {
 
 					BuildingConnector buildingConnector = new BuildingConnector(partialConnector.building,
-							partialConnector.xLocation, partialConnector.yLocation, partialConnector.facing,
-							bestFitConnector.building, bestFitConnector.xLocation, bestFitConnector.yLocation,
+							partialConnector.pos, partialConnector.facing,
+							bestFitConnector.building, bestFitConnector.pos, 
 							bestFitConnector.facing);
 					addBuildingConnection(buildingConnector);
 					partialBuildingConnectorList.remove(partialConnector);
@@ -701,9 +699,8 @@ public class BuildingConnectorManager implements Serializable {
 						double hatch2Facing = determineHatchFacing(building, secondBuildingConnectionPt);
 
 						BuildingConnector connector = new BuildingConnector(newBuilding,
-								firstBuildingConnectionPt.getX(), firstBuildingConnectionPt.getY(), hatch1Facing,
-								building, secondBuildingConnectionPt.getX(), secondBuildingConnectionPt.getY(),
-								hatch2Facing);
+								new LocalPosition(firstBuildingConnectionPt), hatch1Facing,
+								building, new LocalPosition(secondBuildingConnectionPt), hatch2Facing);
 						addBuildingConnection(connector);
 
 						goodConnection = true;
@@ -832,8 +829,7 @@ public class BuildingConnectorManager implements Serializable {
 		private static final long serialVersionUID = 1L;
 		// Data members.
 		private Building building;
-		private double xLocation;
-		private double yLocation;
+		private LocalPosition pos;
 		private double facing;
 		private Building connectToBuilding;
 
@@ -841,16 +837,14 @@ public class BuildingConnectorManager implements Serializable {
 		 * Constructor.
 		 * 
 		 * @param building          the building.
-		 * @param xLocation         the X Location relative to the settlement.
-		 * @param yLocation         the Y location relative to the settlement.
+		 * @param pos         		the Position relative to the settlement.
 		 * @param facing            the facing (degrees).
 		 * @param connectToBuilding the building to connect to.
 		 */
-		PartialBuildingConnector(Building building, double xLocation, double yLocation, double facing,
+		PartialBuildingConnector(Building building, LocalPosition pos, double facing,
 				Building connectToBuilding) {
 			this.building = building;
-			this.xLocation = xLocation;
-			this.yLocation = yLocation;
+			this.pos = pos;
 			this.facing = facing;
 			this.connectToBuilding = connectToBuilding;
 		}

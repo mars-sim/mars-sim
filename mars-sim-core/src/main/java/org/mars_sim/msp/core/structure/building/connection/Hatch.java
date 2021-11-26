@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.connection;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -25,8 +26,7 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	// Data members
 	private Building building;
 	private BuildingConnector connector;
-	private double xLoc;
-	private double yLoc;
+	private LocalPosition pos;
 	private double facing;
 
 	/**
@@ -34,15 +34,13 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	 * 
 	 * @param building  the building the hatch is connected to.
 	 * @param connector the building connector for the hatch.
-	 * @param xLoc      The X location of the center point of the hatch.
-	 * @param yLoc      The Y location of the center point of the hatch.
+	 * @param pos       The position of the center point of the hatch.
 	 * @param facing    The facing of the hatch (degrees).
 	 */
-	public Hatch(Building building, BuildingConnector connector, double xLoc, double yLoc, double facing) {
+	public Hatch(Building building, BuildingConnector connector, LocalPosition pos, double facing) {
 		this.building = building;
 		this.connector = connector;
-		this.xLoc = xLoc;
-		this.yLoc = yLoc;
+		this.pos = pos;
 		this.facing = facing;
 	}
 
@@ -65,31 +63,18 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	}
 
 	@Override
-	public double getXLocation() {
-		return xLoc;
+	public LocalPosition getPosition() {
+		return pos;
 	}
-
-	/**
-	 * Sets the X location of the center point of the hatch.
-	 * 
-	 * @param xLoc the X location (meters).
-	 */
-	void setXLocation(double xLoc) {
-		this.xLoc = xLoc;
+	
+	@Override
+	public double getXLocation() {
+		return pos.getX();
 	}
 
 	@Override
 	public double getYLocation() {
-		return yLoc;
-	}
-
-	/**
-	 * Sets the X location of the center point of the hatch.
-	 * 
-	 * @param xLoc the X location (meters).
-	 */
-	void setYLocation(double yLoc) {
-		this.yLoc = yLoc;
+		return pos.getY();
 	}
 
 	@Override
@@ -115,7 +100,7 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 		if (other instanceof Hatch) {
 			Hatch otherHatch = (Hatch) other;
 
-			if ((xLoc == otherHatch.getXLocation()) && (yLoc == otherHatch.getYLocation())
+			if (pos.equals(otherHatch.getPosition())
 					&& (facing == otherHatch.getFacing())) {
 				result = true;
 			}
