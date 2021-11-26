@@ -393,7 +393,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
 
-		if (this instanceof Delivery) {
+		if (getMissionType() == MissionType.DELIVERY) {
 			Collection<Drone> list = settlement.getParkedDrones();
 			if (!list.isEmpty()) {
 				for (Drone v : list) {
@@ -448,7 +448,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// for ALL OTHER REASONS
 			setPhaseEnded(true);
 
-			if (vehicle instanceof Drone) {
+			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 				if (vehicle.getStoredMass() != 0D) {
 					continueToEndMission = false;
 					startDisembarkingPhase();
@@ -664,14 +664,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/**
 	 * Gets the date embarked timestamp of the mission.
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
 	public String getDateEmbarked() {
 		return dateEmbarked;
 	}
-	
+
 	public void flag4Submission() {
 		isMissionPlanReady = true;
 	}
@@ -1665,6 +1665,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/**
 	 * Can the mission vehicle be unloaded at this Settlement
+	 * 
 	 * @param settlement
 	 * @return
 	 */
@@ -1677,6 +1678,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Can the mission vehicle be loaded at a Settlement. Must be in
 	 * the EMBARKING phase at the mission starting point.
+	 * 
 	 * @param settlement
 	 * @return
 	 */

@@ -89,8 +89,12 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_B = "regolith-b";
 	public static final String REGOLITH_C = "regolith-c";
 	public static final String REGOLITH_D = "regolith-d";
+
 	public static final String ROCK_SAMPLES = "rock samples";
+	public static final String CONCRETE = "concrete";
+	public static final String MORTAR = "mortar";
 	public static final String SAND = "sand";
+
 	public static final String METEORITE = "meteorite";
 
 	public static final String ELECTRONIC_WASTE = "electronic waste";
@@ -164,6 +168,9 @@ public class ResourceUtil implements Serializable {
 
 	public static int blackWaterID;
 	public static int greyWaterID;
+
+	public static int mortarID;
+	public static int concreteID;
 
 	public static int compostID;
 	public static int cropWasteID;
@@ -373,10 +380,9 @@ public class ResourceUtil implements Serializable {
 
 		iceID = findIDbyAmountResourceName(ICE); // 13
 
-		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES); //
 		blackWaterID = findIDbyAmountResourceName(BLACK_WATER); //
-
 		greyWaterID = findIDbyAmountResourceName(GREY_WATER); // 20
+
 		cropWasteID = findIDbyAmountResourceName(CROP_WASTE); // 15
 		foodWasteID = findIDbyAmountResourceName(FOOD_WASTE);
 		toxicWasteID = findIDbyAmountResourceName(TOXIC_WASTE);
@@ -392,6 +398,9 @@ public class ResourceUtil implements Serializable {
 
 		soilID = findIDbyAmountResourceName(REGOLITH);  // 12
 		sandID = findIDbyAmountResourceName(SAND);
+		concreteID = findIDbyAmountResourceName(CONCRETE); //
+		mortarID = findIDbyAmountResourceName(MORTAR); // 20
+		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES); //
 
 		soymilkID = findIDbyAmountResourceName(SOYMILK);
 

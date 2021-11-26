@@ -50,17 +50,24 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int POWER = 3;
 
 	private final static int MALFUNCTION = 4;
+
 	private final static int OXYGEN = 5;
 	private final static int HYDROGEN = 6;
 	private final static int CO2 = 7;
 	private final static int METHANE = 8;
 
 	private final static int WATER = 9;
-	private final static int GREY_WATER = 10;
-	private final static int BLACK_WATER = 11;
-	private final static int ROCK_SAMPLES = 12;
-	private final static int REGOLITH = 13;
-	private final static int ICE = 14;
+	private final static int ICE = 10;
+
+//	private final static int GREY_WATER = 10;
+//	private final static int BLACK_WATER = 11;
+
+	private final static int ROCK_SAMPLES = 11;
+	private final static int REGOLITH = 12;
+	private final static int CONCRETE = 13;
+	private final static int MORTAR = 14;
+
+
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
@@ -91,10 +98,14 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes[WATER] = Number.class;
 		columnNames[METHANE] = "Methane";
 		columnTypes[METHANE] = Number.class;
-		columnNames[GREY_WATER] = "Grey Water";
-		columnTypes[GREY_WATER] = Number.class;
-		columnNames[BLACK_WATER] = "Black Water";
-		columnTypes[BLACK_WATER] = Number.class;
+//		columnNames[GREY_WATER] = "Grey Water";
+//		columnTypes[GREY_WATER] = Number.class;
+//		columnNames[BLACK_WATER] = "Black Water";
+//		columnTypes[BLACK_WATER] = Number.class;
+		columnNames[CONCRETE] = "Concrete";
+		columnTypes[CONCRETE] = Number.class;
+		columnNames[MORTAR] = "Mortar";
+		columnTypes[MORTAR] = Number.class;
 		columnNames[ROCK_SAMPLES] = "Rock Samples";
 		columnTypes[ROCK_SAMPLES] = Number.class;
 		columnNames[REGOLITH] = "Regolith";
@@ -112,17 +123,21 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private final static DecimalFormat df = new DecimalFormat("#,###,##0.00");
 
-	private final static int regolithID = ResourceUtil.regolithID;
-	private final static int oxygenID = ResourceUtil.oxygenID;
 	private final static int waterID = ResourceUtil.waterID;
-	private final static int methaneID = ResourceUtil.methaneID;
-	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
 	private final static int iceID = ResourceUtil.iceID;
 
-	private final static int greyWaterID = ResourceUtil.greyWaterID;
-	private final static int blackWaterID = ResourceUtil.blackWaterID;
+//	private final static int greyWaterID = ResourceUtil.greyWaterID;
+//	private final static int blackWaterID = ResourceUtil.blackWaterID;
+
+	private final static int oxygenID = ResourceUtil.oxygenID;
 	private final static int co2ID = ResourceUtil.co2ID;
 	private final static int hydrogenID = ResourceUtil.hydrogenID;
+	private final static int methaneID = ResourceUtil.methaneID;
+
+	private final static int regolithID = ResourceUtil.regolithID;
+	private final static int concreteID = ResourceUtil.concreteID;
+	private final static int mortarID = ResourceUtil.mortarID;
+	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
 
 	static {
 		df.setMinimumFractionDigits(2);
@@ -233,13 +248,23 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
-				case GREY_WATER: {
-					result = df.format(resourceMap.get(greyWaterID));
+//				case GREY_WATER: {
+//					result = df.format(resourceMap.get(greyWaterID));
+//				}
+//					break;
+//
+//				case BLACK_WATER: {
+//					result = df.format(resourceMap.get(blackWaterID));
+//				}
+//					break;
+
+				case CONCRETE: {
+					result = df.format(resourceMap.get(concreteID));
 				}
 					break;
 
-				case BLACK_WATER: {
-					result = df.format(resourceMap.get(blackWaterID));
+				case MORTAR: {
+					result = df.format(resourceMap.get(mortarID));
 				}
 					break;
 
@@ -337,14 +362,26 @@ public class SettlementTableModel extends UnitTableModel {
 					tempColumnNum = WATER;
 					currentValue = resourceMap.get(waterID);
 				}
-				else if (target == greyWaterID) {
-					tempColumnNum = GREY_WATER;
-					currentValue = resourceMap.get(greyWaterID);
+
+
+//				else if (target == greyWaterID) {
+//					tempColumnNum = GREY_WATER;
+//					currentValue = resourceMap.get(greyWaterID);
+//				}
+//				else if (target == blackWaterID) {
+//					tempColumnNum = BLACK_WATER;
+//					currentValue = resourceMap.get(blackWaterID);
+//				}
+
+				else if (target == concreteID) {
+					tempColumnNum = CONCRETE;
+					currentValue = resourceMap.get(concreteID);
 				}
-				else if (target == blackWaterID) {
-					tempColumnNum = BLACK_WATER;
-					currentValue = resourceMap.get(blackWaterID);
+				else if (target == mortarID) {
+					tempColumnNum = MORTAR;
+					currentValue = resourceMap.get(mortarID);
 				}
+
 				else if (target == rockSamplesID) {
 					tempColumnNum = ROCK_SAMPLES;
 					currentValue = resourceMap.get(rockSamplesID);
@@ -400,8 +437,10 @@ public class SettlementTableModel extends UnitTableModel {
 				resourceMap.put(methaneID, getResourceStored(settlement, methaneID));
 				resourceMap.put(rockSamplesID, getResourceStored(settlement, rockSamplesID));
 				resourceMap.put(regolithID, getResourceStored(settlement, regolithID));
-				resourceMap.put(greyWaterID, getResourceStored(settlement, greyWaterID));
-				resourceMap.put(blackWaterID, getResourceStored(settlement, blackWaterID));
+//				resourceMap.put(greyWaterID, getResourceStored(settlement, greyWaterID));
+//				resourceMap.put(blackWaterID, getResourceStored(settlement, blackWaterID));
+				resourceMap.put(concreteID, getResourceStored(settlement, concreteID));
+				resourceMap.put(mortarID, getResourceStored(settlement, mortarID));
 				resourceMap.put(iceID, getResourceStored(settlement, iceID));
 				resourceMap.put(co2ID, getResourceStored(settlement, co2ID));
 

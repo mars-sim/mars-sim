@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * LocalPosition.java
+ * @date 2021-11-26
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core;
 
 import java.awt.geom.Point2D;
@@ -8,12 +15,12 @@ import java.io.Serializable;
  */
 public class LocalPosition implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private double x;
 	private double y;
-	
+
 	public LocalPosition(double x, double y) {
 		super();
 		this.x = x;
@@ -37,7 +44,7 @@ public class LocalPosition implements Serializable {
 	public double getY() {
 		return y;
 	}
- 
+
     /**
      * Returns the distance to another point
      *
@@ -52,7 +59,7 @@ public class LocalPosition implements Serializable {
         double y1 = y - other.y;
         return Math.sqrt(x1 * x1 + y1 * y1);
     }
-    
+
     /**
      * Get the position that is the mid point between two Positions.
      * @param other Other end of the line
@@ -62,7 +69,7 @@ public class LocalPosition implements Serializable {
         return new LocalPosition((x + other.x) / 2D,
         						 (y + other.y) / 2D);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

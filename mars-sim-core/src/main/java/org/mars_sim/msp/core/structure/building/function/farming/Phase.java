@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * PhaseType.java
- * @version 3.2.0 2021-06-20
- * @author Manny Kung
+ * Phase.java
+ * @date 2021-11-26
+ * @author Barry Evans
  */
 
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -16,7 +16,7 @@ public class Phase implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-	
+
 	private PhaseType phaseType;
 	private double workRequired;
 	private double percentGrowth;
@@ -26,7 +26,7 @@ public class Phase implements Serializable {
 		this.workRequired = workRequired;
 		this.percentGrowth = percentGrowth;
 	}
-	
+
 	public double getWorkRequired() {
 		return workRequired;
 	}
@@ -34,11 +34,11 @@ public class Phase implements Serializable {
 	public double getPercentGrowth() {
 		return percentGrowth;
 	}
-	
+
 	public PhaseType getPhaseType() {
 		return phaseType;
 	}
-	
+
 	@Override
 	public String toString() {
 		return phaseType.name();

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhaseType.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-26
  * @author Manny Kung
  */
 
@@ -120,7 +120,7 @@ public enum PhaseType {
 	ROOT_DEVELOPMENT("Root Development"),
 	//HARVESTING("Harvesting");
 	//FINISHED("Finished"),
-	
+
 	/* For Stems */
 	// e.g celery
 	//INCUBATION("Incubation"),
@@ -133,7 +133,7 @@ public enum PhaseType {
 	LATE_BULKING_UP("Late Bulking Up");
 	//INCUBATION("Incubation"),
 	//PLANTING("Planting"),
-	
+
 	/* For Spics */
 	//  e.g. None
 	//INCUBATION("Incubation"),
@@ -143,7 +143,7 @@ public enum PhaseType {
 	//MATURATION("Maturation"),
 	//INCUBATION("Incubation"),
 	//PLANTING("Planting"),
-	
+
 	private String name;
 
 	private PhaseType(String name) {
