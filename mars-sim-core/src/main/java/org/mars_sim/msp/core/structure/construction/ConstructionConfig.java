@@ -178,7 +178,7 @@ public class ConstructionConfig implements Serializable {
                 boolean salvagable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(SALVAGABLE));
 
                 double workTime = Double.parseDouble(stageInfoElement.getAttributeValue(WORK_TIME));
-                // convert work time from Sols to millisols.
+                // convert work time from sols to millisols.
                 workTime *= 1000D;
 
                 int skillRequired = Integer.parseInt(stageInfoElement.getAttributeValue(SKILL_REQUIRED));

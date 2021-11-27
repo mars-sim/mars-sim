@@ -1247,11 +1247,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
 				4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
 				5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
-				6. http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf
+				6. [Construction by Contour Crafting using Sulfur Concrete with Planetary Applications](http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf)
 				7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
 				8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
 				9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
-				-->
+				10. https://www.azom.com/news.aspx?newsID=43710
+				11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
+				12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
+				13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)-->
 				<process name="Mix Sulfur Concrete" power-required="1.0" default="on">
 					<input resource="sulfur" rate="25.0" ambient="false" />
 					<input resource="sand" rate="35.0" ambient="false" />
