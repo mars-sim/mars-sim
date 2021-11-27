@@ -2317,31 +2317,50 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	}
 
 	/**
-	 * Gets all associated vehicles currently on mission
+	 * Gets all associated vehicles currently already embarked on missions out there
+	 * (include vehicles doing building construction/salvage missions in a settlement)
 	 *
 	 * @return collection of vehicles.
 	 */
 	public Collection<Vehicle> getMissionVehicles() {
+		return ownedVehicles.stream()
+				.filter(v -> v.getMission() != null
+					&& (v.getSettlement() == null
+					|| v.getMission().getMissionType() == MissionType.BUILDING_CONSTRUCTION
+					|| v.getMission().getMissionType() == MissionType.BUILDING_SALVAGE))
+				.collect(Collectors.toList());
 
-		Collection<Vehicle> result = new ArrayList<>();
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null)
-						&& !result.contains(vehicle)
-						&& this.equals(vehicle.getAssociatedSettlement()))
-					result.add(vehicle);
-			}
+//		Collection<Vehicle> result = new ArrayList<>();
+//		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
+//		while (i.hasNext()) {
+//			Mission mission = i.next();
+//			if (mission instanceof VehicleMission) {
+//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//				if ((vehicle != null)
+//						&& !result.contains(vehicle)
+//						&& this.equals(vehicle.getAssociatedSettlement()))
+//					result.add(vehicle);
+//			}
+//
+//			else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
+//				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
+//
+//			}
+//		}
+//
+//		return result;
+	}
 
-			else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
-
-			}
-		}
-
-		return result;
+	/**
+	 * Gets numbers vehicles currently on mission
+	 *
+	 * @return numbers of vehicles on mission.
+	 */
+	public int getMissionVehicleNum() {
+		return Math.toIntExact(ownedVehicles
+				.stream()
+				.filter(v -> v.getMission() != null)
+				.collect(Collectors.counting()));
 	}
 
 	/**

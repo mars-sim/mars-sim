@@ -1097,14 +1097,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for fish farm -->
 
-	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
+	<building type="ERV-A" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="30">
-		<description> The Starting ERV Base (SERVB) is sent ahead of the arrival
-			of the human crew. It supplies the settlement with H2 that can be
+		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
+		    of the arrival of the human crew. It supplies the settlement with H2 that can be
 			converted into CH4 and H2O via Sabatier with RWGS. It performs also
-			water electrolysis to generate H2 and O2. Unlike ERV Base, SERVB is
-			NOT fully flight capable. It would require retrofitting to be
-			flight ready.
+			water electrolysis to generate H2 and O2. It is NOT fully flight capable
+			and would require retrofitting to be flight ready.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -1129,11 +1128,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 			</resource-processing>
-			<storage stock-capacity="81000">
+
+			<storage stock-capacity="80000">
 				<resource-storage resource="hydrogen" capacity="20000.0" />
 				<resource-storage resource="methane" capacity="20000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
-				<resource-storage resource="water" capacity="20000.0" />
+				<resource-storage resource="water" capacity="19000.0" />
 				<resource-storage resource="carbon dioxide" capacity="1000.0" />
 
 				<!-- Payload imported from Earth
@@ -1145,36 +1145,34 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Produced on Mars -->
 				<resource-initial resource="oxygen" amount="16080.0" />
 				<resource-initial resource="methane" amount="8400.0" />
-				<resource-initial resource="hydrogen" amount="2100.0" />
+				<resource-initial resource="hydrogen" amount="6300.0" />
 				<resource-initial resource="water" amount="18900.0" />
 
 				<!-- Mars Direct Mission Plan :
+					(1). ERV -
+				 	(a). Payload imported from Earth -
+					 	 Consumables : 3400 kg
+					 	 Hydrogen feedstock : 6300 kg
+					(b). Produced on Mars :
+						 water : 18900 kg
+						 Oxygen : 16080 kg
+						 Methane : 8400 kg
 
-				(1). ERV -
-			 	(a). Payload imported from Earth -
-				 	 Consumables : 3400 kg
-				 	 Hydrogen feedstock : 6300 kg
-				(b). Produced on Mars :
-					 water : 18900 kg
-					 Oxygen : 16080 kg
-					 Methane : 8400 kg
-
-				(2). Hab -
-				(a). Payload imported from Earth -
-				 	 Consumables : 7000 kg
-
+					(2). Hab -
+					(a). Payload imported from Earth -
+					 	 Consumables : 7000 kg
 				 -->
 
 			</storage>
 		</functions>
 	</building>
-<!-- end of Starting ERV Base -->
+<!-- end of ERV-A -->
 
-	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
+	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="20">
-		<description> The Earth Return Vehicle (ERV) Base is a flight-ready space
+		<description> The Earth Return Vehicle Type B (ERV-B) is a flight-ready space
 		vehicle and arrives on Mars with a Lander Hab. It provides regolith processing
-		equipment package not found in Starting ERV Base. It may in principle be
+		equipment package not found in 'ERV-A'. It may in principle be
 		reconfigured to provide for habitation space.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
@@ -1204,15 +1202,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="2.0" ambient="false" />
 				</process>
 
-				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture).
 				<process name="Make Mortar from Regolith" power-required="2.0" default="on">
 					<input resource="regolith" rate="83.0" ambient="false" />
 					<input resource="cement" rate="17.0" ambient="false" />
 
 					<output resource="mortar" rate="100.0" ambient="false" />
 				</process>
+				-->
 
-				<process name="Make Glass from Sand" power-required="2.0" default="on">
+				<!--  Extract various minerals from regolith -->
+				<process name="Extract Minerals from Regolith" power-required="1.0" default="on">
+					<input resource="regolith" rate="80.0" ambient="false" />
+
+					<output resource="aluminum oxide" rate="6.0" ambient="false" />
+					<output resource="silicon" rate="6.0" ambient="false" />
+					<output resource="sulfur" rate="8.0" ambient="false" />
+					<output resource="sand" rate="60.0" ambient="false" />
+				</process>
+
+				<process name="Make Glass from Sand" power-required="1.0" default="on">
 					<input resource="sand" rate="100.0" ambient="false" />
 					<input resource="sodium carbonate" rate="100.0" ambient="false" />
 
@@ -1222,45 +1231,64 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="silicon" rate="4.0" ambient="false"/>
 					<output resource="glass" rate="50.0" ambient="false" />
 				</process>
+
+				<process name="Make Cement" power-required="0.5" default="on">
+					<input resource="regolith" rate="80.0" ambient="false" />
+					<input resource="gypsum" rate="16.0" ambient="false" />
+					<input resource="aluminum oxide" rate="2.0" ambient="false" />
+					<input resource="iron oxide" rate="2.0" ambient="false" />
+
+					<output resource="cement" rate="100.0" ambient="false" />
+				</process>
+
+				<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
+				1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
+				2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
+				3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
+				4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
+				5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
+				6. http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf
+				7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
+				8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
+				9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
+				-->
+				<process name="Mix Sulfur Concrete" power-required="1.0" default="on">
+					<input resource="sulfur" rate="25.0" ambient="false" />
+					<input resource="sand" rate="35.0" ambient="false" />
+					<input resource="cement" rate="60.0" ambient="false" />
+					<input resource="polyethylene" rate="1.0" ambient="false" />
+
+					<output resource="concrete" rate="120.0" ambient="false" />
+				</process>
+
+				<!-- Same as concrete mixing but using lime in place of cement. -->
+				<process name="Mix Limecrete" power-required="1.0" default="on">
+					<input resource="sulfur" rate="10.0" ambient="false" />
+					<input resource="sand" rate="40.0" ambient="false" />
+					<input resource="lime" rate="50.0" ambient="false" />
+					<input resource="polyethylene" rate="1.0" ambient="false" />
+
+					<output resource="concrete" rate="100.0" ambient="false" />
+				</process>
+
 			</resource-processing>
-			<storage stock-capacity="60000">
+
+			<storage stock-capacity="80000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="20000.0" />
-				<resource-storage resource="water" capacity="20000.0" />
+				<resource-storage resource="oxygen" capacity="10000.0" />
+				<resource-storage resource="water" capacity="10000.0" />
 
-				<!-- Payload imported from Earth -->
-				<resource-initial resource="hydrogen" amount="6300.0" />
+				<resource-storage resource="concrete" capacity="10000.0" />
+				<resource-storage resource="cement" capacity="10000.0" />
+				<resource-storage resource="sand" capacity="10000.0" />
+				<resource-storage resource="sulfur" capacity="5000.0" />
+				<resource-storage resource="lime" capacity="5000.0" />
 
-				<!-- To be extracted on Mars -->
-				<!-- resource-initial resource="carbon dioxide" amount="2000.0" /-->
-
-				<!-- To be produced on Mars -->
-				<!-- resource-initial resource="oxygen" amount="16080.0" />
-				<resource-initial resource="methane" amount="8400.0" />
-				<resource-initial resource="hydrogen" amount="2100.0" />
-				<resource-initial resource="water" amount="18900.0" /-->
-
-				<!-- Mars Direct Mission Plan :
-
-				(1). ERV -
-			 	(a). Payload imported from Earth -
-				 	 Consumables : 3400 kg
-				 	 Hydrogen feedstock : 6300 kg
-				(b). To be produced on Mars :
-					 water : 18900 kg
-					 Oxygen : 16080 kg
-					 Methane : 8400 kg
-
-				(2). Hab -
-				(a). Payload imported from Earth -
-				 	 Consumables : 7000 kg
-
-				 -->
 			</storage>
 		</functions>
 	</building>
-<!-- end of ERV Base -->
+<!-- end of ERV-B -->
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="20">

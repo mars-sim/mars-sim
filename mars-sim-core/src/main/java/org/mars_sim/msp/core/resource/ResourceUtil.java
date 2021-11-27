@@ -93,6 +93,8 @@ public class ResourceUtil implements Serializable {
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
 	public static final String MORTAR = "mortar";
+	public static final String CEMENT = "mortar";
+
 	public static final String SAND = "sand";
 
 	public static final String METEORITE = "meteorite";
@@ -171,6 +173,7 @@ public class ResourceUtil implements Serializable {
 
 	public static int mortarID;
 	public static int concreteID;
+	public static int cementID;
 
 	public static int compostID;
 	public static int cropWasteID;
@@ -396,11 +399,13 @@ public class ResourceUtil implements Serializable {
 
 		meteoriteID = findIDbyAmountResourceName(METEORITE);
 
-		soilID = findIDbyAmountResourceName(REGOLITH);  // 12
+		soilID = findIDbyAmountResourceName(REGOLITH);
 		sandID = findIDbyAmountResourceName(SAND);
-		concreteID = findIDbyAmountResourceName(CONCRETE); //
-		mortarID = findIDbyAmountResourceName(MORTAR); // 20
-		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES); //
+		concreteID = findIDbyAmountResourceName(CONCRETE);
+		mortarID = findIDbyAmountResourceName(MORTAR);
+		cementID = findIDbyAmountResourceName(CEMENT);
+
+		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES);
 
 		soymilkID = findIDbyAmountResourceName(SOYMILK);
 

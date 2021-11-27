@@ -47,29 +47,31 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int NAME = 0;
 	private final static int POPULATION = 1;
 	private final static int PARKED = 2;
-	private final static int POWER = 3;
+	private final static int MISSION = 3;
+	private final static int POWER = 4;
 
-	private final static int MALFUNCTION = 4;
+	private final static int MALFUNCTION = 5;
 
-	private final static int OXYGEN = 5;
-	private final static int HYDROGEN = 6;
-	private final static int CO2 = 7;
-	private final static int METHANE = 8;
+	private final static int OXYGEN = 6;
+	private final static int HYDROGEN = 7;
+	private final static int CO2 = 8;
+	private final static int METHANE = 9;
 
-	private final static int WATER = 9;
-	private final static int ICE = 10;
+	private final static int WATER = 10;
+	private final static int ICE = 11;
 
 //	private final static int GREY_WATER = 10;
 //	private final static int BLACK_WATER = 11;
 
-	private final static int ROCK_SAMPLES = 11;
-	private final static int REGOLITH = 12;
-	private final static int CONCRETE = 13;
-	private final static int MORTAR = 14;
+	private final static int ROCK_SAMPLES = 12;
+	private final static int REGOLITH = 13;
+	private final static int CONCRETE = 14;
+//	private final static int MORTAR = 14;
+	private final static int CEMENT = 15;
 
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 15;
+	private final static int COLUMNCOUNT = 16;
 	/** Names of Columns. */
 	private final static String columnNames[];
 	/** Types of columns. */
@@ -80,10 +82,12 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = "Name";
 		columnTypes[NAME] = String.class;
-		columnNames[POPULATION] = "Total Population";
+		columnNames[POPULATION] = "Population";
 		columnTypes[POPULATION] = Integer.class;
 		columnNames[PARKED] = "Parked Vehicles";
 		columnTypes[PARKED] = Integer.class;
+		columnNames[MISSION] = "Mission Vehicles";
+		columnTypes[MISSION] = Integer.class;
 		columnNames[POWER] = "Power (kW)";
 		columnTypes[POWER] = Number.class;
 		columnNames[MALFUNCTION] = "Malfunction";
@@ -104,8 +108,8 @@ public class SettlementTableModel extends UnitTableModel {
 //		columnTypes[BLACK_WATER] = Number.class;
 		columnNames[CONCRETE] = "Concrete";
 		columnTypes[CONCRETE] = Number.class;
-		columnNames[MORTAR] = "Mortar";
-		columnTypes[MORTAR] = Number.class;
+		columnNames[CEMENT] = "Cement";
+		columnTypes[CEMENT] = Number.class;
 		columnNames[ROCK_SAMPLES] = "Rock Samples";
 		columnTypes[ROCK_SAMPLES] = Number.class;
 		columnNames[REGOLITH] = "Regolith";
@@ -136,7 +140,8 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private final static int regolithID = ResourceUtil.regolithID;
 	private final static int concreteID = ResourceUtil.concreteID;
-	private final static int mortarID = ResourceUtil.mortarID;
+//	private final static int mortarID = ResourceUtil.mortarID;
+	private final static int cementID = ResourceUtil.cementID;
 	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
 
 	static {
@@ -239,6 +244,11 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
+				case MISSION: {
+					result = settle.getMissionVehicleNum();
+				}
+					break;
+
 				case POWER: {
 					double power = settle.getPowerGrid().getGeneratedPower();
 					if (power < 0D || Double.isNaN(power) || Double.isInfinite(power))
@@ -263,8 +273,8 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
-				case MORTAR: {
-					result = df.format(resourceMap.get(mortarID));
+				case CEMENT: {
+					result = df.format(resourceMap.get(cementID));
 				}
 					break;
 
@@ -377,9 +387,9 @@ public class SettlementTableModel extends UnitTableModel {
 					tempColumnNum = CONCRETE;
 					currentValue = resourceMap.get(concreteID);
 				}
-				else if (target == mortarID) {
-					tempColumnNum = MORTAR;
-					currentValue = resourceMap.get(mortarID);
+				else if (target == cementID) {
+					tempColumnNum = CEMENT;
+					currentValue = resourceMap.get(cementID);
 				}
 
 				else if (target == rockSamplesID) {
@@ -440,7 +450,7 @@ public class SettlementTableModel extends UnitTableModel {
 //				resourceMap.put(greyWaterID, getResourceStored(settlement, greyWaterID));
 //				resourceMap.put(blackWaterID, getResourceStored(settlement, blackWaterID));
 				resourceMap.put(concreteID, getResourceStored(settlement, concreteID));
-				resourceMap.put(mortarID, getResourceStored(settlement, mortarID));
+				resourceMap.put(cementID, getResourceStored(settlement, cementID));
 				resourceMap.put(iceID, getResourceStored(settlement, iceID));
 				resourceMap.put(co2ID, getResourceStored(settlement, co2ID));
 

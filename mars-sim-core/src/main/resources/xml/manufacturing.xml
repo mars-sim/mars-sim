@@ -560,7 +560,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon dioxide" amount="45.0" />
 			<resource name="calcium carbonate" amount="1.0" />
 			<resource name="sodium carbonate" amount="1.0" />
-
 		</inputs>
 		<outputs>
 			<resource name="quartz" amount="40.0" />
@@ -2707,10 +2706,11 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+<!--
 	<process name="make cement" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">
 		<inputs>
-			<resource name="calcium carbonate" amount="40.0" />
+			<resource name="regolith" amount="40.0" />
 			<resource name="gypsum" amount="8.0" />
 			<resource name="aluminum oxide" amount="1.0" />
 			<resource name="iron oxide" amount="1.0" />
@@ -2723,7 +2723,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="make cement (large batch)" tech="1" skill="3" work-time="250" process-time="0"
 			power-required="0.5">
 		<inputs>
-			<resource name="calcium carbonate" amount="400.0" />
+			<resource name="regolith" amount="400.0" />
 			<resource name="gypsum" amount="80.0" />
 			<resource name="aluminum oxide" amount="10.0" />
 			<resource name="iron oxide" amount="10.0" />
@@ -2732,7 +2732,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="cement" amount="500.0" />
 		</outputs>
 	</process>
-
+-->
 <!--
 	<process name="mix regolith mortar" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
@@ -2784,34 +2784,43 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
  -->
 	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
-	     https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
-	     http://sffsymposium.engr.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf -->
+	1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
+	2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
+	3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
+	4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
+	5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
+	6. http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf
+	7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
+	8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
+	9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
 	<process name="mix sulfur concrete" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">
 		<inputs>
-			<resource name="sulfur" amount="25.0" />
+			<resource name="sulfur" amount="15.0" />
 			<resource name="sand" amount="5.0" />
-			<resource name="regolith" amount="20.0" />
+			<resource name="cement" amount="20.0" />
+			<resource name="polyethylene" amount="0.5" />
 		</inputs>
 		<outputs>
-			<resource name="concrete" amount="50.0" />
+			<resource name="concrete" amount="40.0" />
 		</outputs>
 	</process>
 
-	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.  -->
 	<process name="mix sulfur concrete (large batch)" tech="1" skill="5" work-time="250" process-time="0"
 			power-required="0.5">
 		<inputs>
-			<resource name="sulfur" amount="250.0" />
+			<resource name="sulfur" amount="150.0" />
 			<resource name="sand" amount="50.0" />
-			<resource name="regolith" amount="200.0" />
+			<resource name="cement" amount="200.0" />
+			<resource name="polyethylene" amount="5.0" />
 		</inputs>
 		<outputs>
-			<resource name="concrete" amount="500.0" />
+			<resource name="concrete" amount="400.0" />
 		</outputs>
 	</process>
+-->
 
-	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
+	<!-- Makes dry concrete using cement with sand and regolith as aggregates.
 	<process name="mix concrete" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">
 		<inputs>
@@ -2823,8 +2832,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="concrete" amount="50.0" />
 		</outputs>
 	</process>
-
-	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
+-->
+	<!-- Makes dry concrete using cement with sand and regolith as aggregates.
 	<process name="mix concrete (large batch)" tech="1" skill="5" work-time="250" process-time="0"
 			power-required="0.5">
 		<inputs>
@@ -2836,7 +2845,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="concrete" amount="500.0" />
 		</outputs>
 	</process>
-
+-->
 	<!-- Same as concrete mixing but using lime in place of cement. -->
 	<process name="mix limecrete" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">
