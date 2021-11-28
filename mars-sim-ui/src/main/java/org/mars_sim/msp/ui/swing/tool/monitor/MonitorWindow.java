@@ -54,7 +54,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	private static final int STATUSHEIGHT = 25;
 	private static final int HEIGHT = 512;
-	
+
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// Added an custom icon for each tab
@@ -80,16 +80,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	// Data members
 	private WebTabbedPane tabsSection;
 	// private JideTabbedPane tabsSection;
-	
+
 	private WebLabel rowCount;
-	
+
 	private ArrayList<MonitorTab> tabs = new ArrayList<MonitorTab>();
-	
+
 	/** Tab showing historical events. */
 	private EventTab eventsTab;
-	
+
 	private MonitorTab oldTab = null;
-	
+
 	private WebButton buttonPie;
 	private WebButton buttonBar;
 	private WebButton buttonRemoveTab;
@@ -104,16 +104,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private MainWindow mainWindow;
 
 	private WebPanel statusPanel;
-	
+
 	private JTable table;
 	private JTable rowTable;
-	
+
 //	private Searchable searchable;
 //	private SearchableBar searchBar;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param desktop the desktop pane
 	 */
 	public MonitorWindow(MainDesktopPane desktop) {
@@ -139,7 +139,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				TooltipWay.up);
 
 		buttonPie.addActionListener(this);
-	
+
 		statusPanel.add(buttonPie);
 
 		buttonBar = new WebButton(ImageLoader.getNewIcon(BAR_ICON));
@@ -151,11 +151,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		buttonRemoveTab = new WebButton(ImageLoader.getNewIcon(TRASH_ICON)); // $NON-NLS-1$
 		TooltipManager.setTooltip(buttonRemoveTab, Msg.getString("MonitorWindow.tooltip.tabRemove"), //$NON-NLS-1$
-				TooltipWay.up); 
+				TooltipWay.up);
 		buttonRemoveTab.addActionListener(this);
-	
+
 		statusPanel.add(buttonRemoveTab);
-	
+
 		// Create buttons based on selection
 		buttonMap = new WebButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); // $NON-NLS-1$
 		// buttonMap.setMargin(new Insets(3, 4, 4, 4));
@@ -169,7 +169,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		TooltipManager.setTooltip(buttonDetails, Msg.getString("MonitorWindow.tooltip.showDetails"), TooltipWay.up); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
-		
+
 
 		statusPanel.add(buttonDetails);
 
@@ -181,14 +181,14 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(buttonMissions);
 
 		buttonProps = new WebButton(ImageLoader.getNewIcon(COLUMN_ICON)); // $NON-NLS-1$
-	
+
 		TooltipManager.setTooltip(buttonProps, Msg.getString("MonitorWindow.tooltip.preferences"), TooltipWay.up); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
 
 		statusPanel.add(buttonProps);
 
 		buttonFilter = new WebButton(ImageLoader.getNewIcon(FILTER_ICON)); // $NON-NLS-1$
-	
+
 		TooltipManager.setTooltip(buttonFilter, Msg.getString("MonitorWindow.tooltip.categoryFilter"), TooltipWay.up);
 		buttonFilter.addActionListener(this);
 
@@ -196,10 +196,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		// Create tabbed pane for the table
 		tabsSection = new WebTabbedPane(StyleId.tabbedpane, WebTabbedPane.TOP, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
-		
+
 		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
-		
+
 		// Status item for row
 		rowCount = new WebLabel("  "); //$NON-NLS-1$
 		rowCount.setHorizontalAlignment(SwingConstants.LEFT);
@@ -212,37 +212,42 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Added notifyBox
 //		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
-		addTab(new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON));
-		
-		addTab(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
-		// Added notifyBox
-		eventsTab = new EventTab(this, desktop);
+		try {
+			addTab(new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON));
 
-		addTab(eventsTab);
+			addTab(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
+			// Added notifyBox
+			eventsTab = new EventTab(this, desktop);
 
-		addTab(new FoodInventoryTab(this));
+			addTab(eventsTab);
 
-		addTab(new TradeTab(this));
+			addTab(new FoodInventoryTab(this));
 
-		addTab(new MissionTab(this));
+			addTab(new TradeTab(this));
 
-		addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
+			addTab(new MissionTab(this));
 
-		addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
+			addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
 
-		addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
+			addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
-		if (GameManager.mode == GameMode.COMMAND) {
-			Settlement s = unitManager.getCommanderSettlement();
-			addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
-		}
-		else {
-			// Add a tab for each settlement
-			for (Settlement s : unitManager.getSettlements()) {
+			addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
+
+			if (GameManager.mode == GameMode.COMMAND) {
+				Settlement s = unitManager.getCommanderSettlement();
 				addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
 			}
+			else {
+				// Add a tab for each settlement
+				for (Settlement s : unitManager.getSettlements()) {
+					addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println("Problems in creating tabs in MonitorWindow: " + e.getMessage());
 		}
-		
+
 		// Add a listener for the tab changes
 		tabsSection.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -266,13 +271,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 		setLocation(width, height);
-				
+
 		// Open the people tab at the start of the sim
 		tabsSection.setSelectedIndex(2);
 		table.repaint();
 
 	}
-	
+
 	/**
 	 * This method add the specified Unit table as a new tab in the Monitor. The
 	 * model is displayed as a table by default. The name of the tab is that of the
@@ -289,7 +294,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/**
 	 * Checks if a monitor tab contains this model.
-	 * 
+	 *
 	 * @param model the model to check for.
 	 * @return true if a tab contains the model.
 	 */
@@ -305,7 +310,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/**
 	 * Gets the index of the monitor tab with the model.
-	 * 
+	 *
 	 * @param model the model to check for.
 	 * @return tab index or -1 if none.
 	 */
@@ -443,7 +448,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// SwingUtilities.updateComponentTreeUI(this);
 	}
 
-	
+
 //	public void createSearchableBar(JTable table) {
 //		// Searchable searchable = null;
 //		// SearchableBar _tableSearchableBar = null;
@@ -479,7 +484,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //
 //			// _tableSearchableBar.setVisibleButtons(1);
 //			TooltipManager.setTooltip(searchBar, "Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
-//			
+//
 //			((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
 //			searchBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION | SearchableBar.SHOW_MATCHCASE
 //					| SearchableBar.SHOW_WHOLE_WORDS | SearchableBar.SHOW_STATUS);
@@ -498,32 +503,32 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //	}
 
 //	public void createRadioButton() {
-//		
+//
 //		label1 = new JLabel(new ImageIcon("Grapes1.png"));
 //		radio1 = new JRadioButton("");
 //		radio1.setName("Grapes");
-//		
+//
 //		label2 = new JLabel(new ImageIcon("Mango.jpg"));
 //		radio2 = new JRadioButton("");
 //		radio2.setName("Mango");
-//		
+//
 //		label3 = new JLabel(new ImageIcon("Apple.jpg"));
 //		radio3 = new JRadioButton("");
 //		radio3.setName("Apple");
-//		
+//
 //		label4= new JLabel();
-//		
+//
 //		jf.add(radio1);
 //		jf.add(label1);
 //		jf.add(radio2);
 //		jf.add(label2);
 //		jf.add(radio3);
 //		jf.add(label3);
-//		
+//
 //		radio1.addActionListener(this);
 //		radio2.addActionListener(this);
 //		radio3.addActionListener(this);
-//		
+//
 //		jf.setLayout(new FlowLayout());
 //		jf.setSize(400,200);
 //		jf.setVisible(true);
@@ -532,7 +537,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //
 //	public void actionPerformed(ActionEvent ae) {
 //		JRadioButton rd = (JRadioButton)ae.getSource();
-//		
+//
 //		if (rd.isSelected()) {
 //			label4.setText(rd.getName()+ " is checked");
 //			jf.add(label4);
@@ -543,7 +548,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //			jf.add(label4);
 //			jf.setVisible(true);
 //		}
-//		
+//
 //	}
 
 	@Override
@@ -559,7 +564,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/**
 	 * Adds a new tab to Monitor Tool
-	 * 
+	 *
 	 * @param newTab
 	 */
 	private void addTab(MonitorTab newTab) {
@@ -571,7 +576,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/**
 	 * Removes a tab from Monitor Tool
-	 * 
+	 *
 	 * @param oldTab
 	 */
 	private void removeTab(MonitorTab oldTab) {
@@ -630,7 +635,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			MonitorTab selected = getSelected();
 			if (selected == eventsTab) {
 				rowCount.setText(eventsTab.getCountString());
-			}		
+			}
 		}
 	}
 
@@ -686,10 +691,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		mainWindow = null;
 
 		statusPanel = null;
-		
+
 		table = null;
 		rowTable = null;
-		
+
 //		searchable = null;
 //		searchBar = null;
 

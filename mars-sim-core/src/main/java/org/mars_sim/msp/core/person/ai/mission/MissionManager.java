@@ -223,7 +223,7 @@ public class MissionManager implements Serializable, Temporal {
 		synchronized (onGoingMissions) {
 			if (onGoingMissions.contains(oldMission)) {
 				onGoingMissions.remove(oldMission);
-	
+
 				// Update listeners.
 				if (listeners != null) {
 					synchronized (listeners) {
@@ -232,7 +232,7 @@ public class MissionManager implements Serializable, Temporal {
 						}
 					}
 				}
-	
+
 				logger.config("Removing '" + oldMission.getTypeID() + "' mission.");
 			}
 		}
@@ -325,6 +325,10 @@ public class MissionManager implements Serializable, Temporal {
 
 		if (settlement == null) {
 			throw new IllegalArgumentException("settlement is null");
+		}
+
+		if (onGoingMissions == null || onGoingMissions.isEmpty()) {
+			return Collections.emptyList();
 		}
 
 		return onGoingMissions.stream()
