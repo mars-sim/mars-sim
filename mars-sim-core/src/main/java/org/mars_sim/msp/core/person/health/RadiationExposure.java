@@ -142,7 +142,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	// magnetic fields protect the planet from solar wind erosion.
 	// Source :
 	// https://science.nasa.gov/science-news/science-at-nasa/2001/ast31jan_1/
-	/** 
+	/**
 	public static final double BASELINE_PERCENT = 72.5; // [in %] calculated
 
 	/** Galactic cosmic rays (GCRs) events. Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the event. */
@@ -156,16 +156,16 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** The average GCR dose equivalent rate [mSv] on the Mars, based on DAT. Note: based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars surface is 0.64 ± 0.12 mSv/day. The dose equivalent is 50 μSv. */
 	public static final double GCR_RAD_PER_SOL = .64;
 	/** THe GCR dose modifier[in mSv], based on DAT value. */
-	public static final double GCR_RAD_SWING = .12; // 
+	public static final double GCR_RAD_SWING = .12; //
 
-	/** 
+	/**
 	 * The SEP dose [mSv] per sol.
-	 * Note : frequency and intensity of SEP events is sporadic and difficult to predict. 
-	 * Its flux varies by several orders of magnitude and are typically dominated by protons. 
+	 * Note : frequency and intensity of SEP events is sporadic and difficult to predict.
+	 * Its flux varies by several orders of magnitude and are typically dominated by protons.
 	 */
 	public static final double SEP_RAD_PER_SOL = .21;
 	/** The SEP dose modifier [mSv], assuming 3 orders of magnitude (arbitrary) */
-	public static final double SEP_SWING_FACTOR = 1000; 
+	public static final double SEP_SWING_FACTOR = 1000;
 	// since orders of magnitude are written in powers of 10.
 	// e.g. the order of magnitude of 1500 is 3, since 1500 may be written as 1.5 ×
 	// 10^3.
@@ -211,7 +211,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	// - Hydrogenated boron nitride nanotubes—known as hydrogenated BNNTs
 	// They are tiny, nanotubes made of carbon, boron, and nitrogen, with
 	// hydrogen interspersed throughout the empty spaces left in between the tubes.
-	// Boron is also an excellent absorber secondary neutrons, making hydrogenated 
+	// Boron is also an excellent absorber secondary neutrons, making hydrogenated
 	// BNNTs an ideal shielding material.
 	// Source :
 	// https://www.nasa.gov/feature/goddard/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars
@@ -225,10 +225,10 @@ public class RadiationExposure implements Serializable, Temporal {
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private Person person;
-	
+
 	private static MarsClock marsClock;
 
-	
+
 	public RadiationExposure(Person person) {
 		this.person = person;
 		dose = new double[3][3];
@@ -240,7 +240,7 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	/**
 	 * Adds the dose of radiation exposure. Called by isRadiationDetected.
-	 * 
+	 *
 	 * @param bodyRegion
 	 * @param amount
 	 * @see checkForRadiation() in EVAOperation and WalkOutside
@@ -270,9 +270,9 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	/*
 	 * Reduces the dose
-	 * 
+	 *
 	 * @bodyRegion
-	 * 
+	 *
 	 * @amount
 	 */
 	public void reduceDose(int bodyRegion, double amount) {
@@ -321,7 +321,6 @@ public class RadiationExposure implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		// check for the passing of each day
-//		int solCache = marsClock.getMissionSol();
 		if (pulse.isNewSol()) {
 			counter30++;
 			counter360++;
@@ -397,7 +396,7 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	/*
 	 * Recomputes the values in the radiation dosage chart
-	 * 
+	 *
 	 * @param type of interval
 	 */
 	public void carryOverDosage(int interval) {
@@ -444,7 +443,7 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	/**
 	 * Check for radiation exposure of the person performing this EVA.
-	 * 
+	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 * @return true if radiation is detected
 	 */
@@ -493,7 +492,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				// and INCREASES during solar activity minimum
 				else
 					shield_factor = 1; // arbitrary
-	
+
 				List<RadiationEvent> eventMap = new ArrayList<>();
 				// Compute whether a baseline, GCR, or SEP event has occurred
 				for (int i = 0; i < 3; i++) {
@@ -519,7 +518,7 @@ public class RadiationExposure implements Serializable, Temporal {
 																														// Curiosity
 																														// RAD's
 																														// data
-	
+
 							}
 							// for now, if GCR happens, ignore Baseline
 							else if (exposed[0]) {
@@ -527,11 +526,11 @@ public class RadiationExposure implements Serializable, Temporal {
 								baseline += baselevel
 										+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); // arbitrary
 							}
-	
+
 							exposure = sep + gcr + baseline;
 							RadiationEvent event = addDose(j, exposure);
 							eventMap.add(event);
-	
+
 							totalExposure += exposure;
 						}
 					}
@@ -554,10 +553,10 @@ public class RadiationExposure implements Serializable, Temporal {
 					logger.info(person, str + " while " + activity);
 				}
 
-				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE, 
+				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
 						eventMap,
 						Math.round(totalExposure * 10000.0) / 10000.0 + DOSE,
-						person.getTaskDescription(), 
+						person.getTaskDescription(),
 						person.getName(), person.getLocationTag().getImmediateLocation(),
 						person.getLocationTag().getLocale(),
 						person.getAssociatedSettlement().getName()
@@ -573,19 +572,19 @@ public class RadiationExposure implements Serializable, Temporal {
 
 		return false;
 	}
-	
+
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
 	public static void initializeInstances(MarsClock c1) {
 		marsClock = c1;
 	}
-	
-	
+
+
 	/**
 	 * Prepares object for garbage collection.
 	 */

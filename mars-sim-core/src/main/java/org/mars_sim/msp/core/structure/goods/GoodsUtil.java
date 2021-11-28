@@ -43,7 +43,7 @@ public class GoodsUtil {
     public static final String CHEMICAL = "Chemical";
     public static final String ELEMENT = "Element";
     public static final String COMPOUND = "Compound";
-    public static final String VEHICLE_PART = "Vehicle Part";
+    public static final String VEHICLE_PART = "Vehicle";
     public static final String METALLIC = "Metallic";
     public static final String UTILITY = "Utility";
     public static final String INSTRUMENT = "Instrument";

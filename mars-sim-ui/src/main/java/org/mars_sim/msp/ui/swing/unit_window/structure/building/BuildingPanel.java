@@ -68,8 +68,8 @@ public class BuildingPanel extends JPanel {
 	private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());
 
 	public static final int WIDTH = UnitWindow.WIDTH - 170;
-	public static final int HEIGHT = UnitWindow.HEIGHT - 190;
-	
+	public static final int HEIGHT = UnitWindow.HEIGHT - 190 + 25;
+
 	/** The name of the panel. */
 	private String panelName;
 
@@ -133,7 +133,7 @@ public class BuildingPanel extends JPanel {
 
 		setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-	
+
 		JPanel topPanel = new JPanel(new BorderLayout(0, 0));
 //		topPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		add(topPanel, BorderLayout.NORTH);
@@ -153,13 +153,13 @@ public class BuildingPanel extends JPanel {
 		});
 		btnPanel.add(renameBtn);
 		topPanel.add(btnPanel, BorderLayout.NORTH);
-		
+
 		// Prepare function list panel.
 		JPanel functionListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
 //		functionListPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH - 80, PopUpUnitMenu.HEIGHT)); // This width is very important
 //		add(functionListPanel, BorderLayout.CENTER);
-		
+
 		// Prepare function scroll panel.
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setViewportView(functionListPanel);
@@ -194,11 +194,11 @@ public class BuildingPanel extends JPanel {
 		box.add(Box.createVerticalGlue());
 		functionListPanel.add(box);
 
-		// Prepare the general info panel 
+		// Prepare the general info panel
 		BuildingPanelGeneral buildingPanelGeneral = new BuildingPanelGeneral(building, desktop);
 		functionPanels.add(buildingPanelGeneral);
 		functionListPanel.add(buildingPanelGeneral);
-		
+
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.COOKING)) {
 //			try {
@@ -210,7 +210,7 @@ public class BuildingPanel extends JPanel {
 //			}
 //			catch (BuildingException e) {}
 		}
-		
+
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.COMPUTATION)) {
 //			try {
@@ -222,7 +222,7 @@ public class BuildingPanel extends JPanel {
 //			}
 //			catch (BuildingException e) {}
 		}
-		
+
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.EVA)) {
 //			try {
@@ -234,9 +234,9 @@ public class BuildingPanel extends JPanel {
 //			}
 //			catch (BuildingException e) {}
 		}
-		
+
 //		Simulation.instance().getMasterClock().addClockListener(buildingPanelEVA);
-		
+
 		// Prepare farming panel if building has farming.
 		if (building.hasFunction(FunctionType.FARMING)) {
 //        	try {
@@ -259,7 +259,7 @@ public class BuildingPanel extends JPanel {
 //			}
 //			catch (BuildingException e) {}
 		}
-		
+
 		if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
 			FoodProduction foodFactory = building.getFoodProduction();
@@ -271,7 +271,7 @@ public class BuildingPanel extends JPanel {
 		}
 
 
-		
+
 		// Prepare inhabitable panel if building has lifeSupport.
 		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 //        	try {
@@ -293,7 +293,7 @@ public class BuildingPanel extends JPanel {
 //        	}
 //        	catch (BuildingException e) {}
 		}
-		
+
 		// Prepare manufacture panel if building has manufacturing.
 		if (building.hasFunction(FunctionType.MANUFACTURE)) {
 //        	try {
@@ -436,7 +436,7 @@ public class BuildingPanel extends JPanel {
 		// setPanelStyle(maintenancePanel);
 
 //        setPanelTranslucent();
-		
+
 		JScrollBar verticalScrollBar = scrollPanel.getVerticalScrollBar();
 		verticalScrollBar.setValue(verticalScrollBar.getMinimum());
 	}
@@ -444,7 +444,7 @@ public class BuildingPanel extends JPanel {
 
 	/**
 	 * Ask for a new building name using JOptionPane
-	 * 
+	 *
 	 * @return new name
 	 */
 	// Move askNameDialog() from TabPanelBuilding.java to here
@@ -455,7 +455,7 @@ public class BuildingPanel extends JPanel {
 
 //	/**
 //	 * Ask for a new building name using TextInputDialog in JavaFX/8
-//	 * 
+//	 *
 //	 * @return new name
 //	 */
 //	public String askNameFX(String oldName) {
@@ -478,7 +478,7 @@ public class BuildingPanel extends JPanel {
 
 	/**
 	 * Change and validate the new name of a Building
-	 * 
+	 *
 	 * @return call Dialog popup
 	 */
 	private void renameBuilding() {
@@ -556,7 +556,7 @@ public class BuildingPanel extends JPanel {
 
 	/**
 	 * Gets the panel's name.
-	 * 
+	 *
 	 * @return panel name
 	 */
 	public String getPanelName() {
@@ -565,7 +565,7 @@ public class BuildingPanel extends JPanel {
 
 	/**
 	 * Gets the panel's building.
-	 * 
+	 *
 	 * @return building
 	 */
 	public Building getBuilding() {

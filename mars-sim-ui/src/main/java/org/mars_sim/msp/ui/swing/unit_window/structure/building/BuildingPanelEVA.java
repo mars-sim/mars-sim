@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2021-09-25
+ * @date 2021-11-28
  * @author Manny Kung
  */
 
@@ -29,6 +29,7 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
@@ -88,6 +89,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 	private static Simulation sim;
 	private static MasterClock masterClock;
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -104,7 +106,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		this.airlock = eva.getAirlock();
 		this.buildingAirlock = (BuildingAirlock)eva.getAirlock();
 
-
 		if (sim == null)
 			sim = Simulation.instance();
 
@@ -112,6 +113,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 			masterClock = sim.getMasterClock();
 
 		masterClock.addClockListener(this);
+
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
 
 		// Create occupant list model
 		occupantListModel = new ListModel();
@@ -339,19 +343,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	 */
 	private class ListModel extends AbstractListModel<Person> {
 
-		private List<Person> list;
+
 		private List<Integer> intList;
 
 		private ListModel() {
 
 			intList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
-			list = new ArrayList<>();
-
-			for (int i: intList) {
-				list.add(airlock.getPersonByID(i));
-			}
-
-			Collections.sort(list);
+			Collections.sort(intList);
 		}
 
 		@Override
@@ -359,10 +357,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 			Person result = null;
 
-			int size = buildingAirlock.getAllInsideOccupants().size();
+			int size = getSize(); //buildingAirlock.getAllInsideOccupants().size();
 
-			if (index >= 0 && index < size && size > 0) {
-				result = list.get(index);
+			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
+				result = unitManager.getPersonByID(intList.get(index));
 			}
 
 			return result;
@@ -370,7 +368,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		@Override
 		public int getSize() {
-			return buildingAirlock.getNumOccupants();
+			return buildingAirlock.getAllInsideOccupants().size(); //getNumOccupants();
 		}
 
 		/**
@@ -379,19 +377,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		public void update() {
 
 			List<Integer> newIntList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
+			Collections.sort(newIntList);
 
-			if (!intList.containsAll(newIntList)
+			if (!intList.equals(newIntList)
+					|| !intList.containsAll(newIntList)
 					|| !newIntList.containsAll(intList)) {
 
 				intList = newIntList;
-
-				list = new ArrayList<>();
-
-				for (int i: newIntList) {
-					list.add(airlock.getPersonByID(i));
-				}
-
-				Collections.sort(list);
 
 				fireContentsChanged(this, 0, getSize());
 			}
@@ -403,19 +395,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	 */
 	private class ReservationListModel extends AbstractListModel<Person> {
 
-		private List<Person> list;
 		private List<Integer> intList;
 
 		private ReservationListModel() {
-
 			intList = new ArrayList<>(airlock.getReserved());
-			list = new ArrayList<>();
-
-			for (int i: intList) {
-				list.add(airlock.getPersonByID(i));
-			}
-
-			Collections.sort(list);
+			Collections.sort(intList);
 		}
 
 		@Override
@@ -423,8 +407,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 			Person result = null;
 
-			if ((index >= 0) && (index < getSize())) {
-				result = list.get(index);
+			int size = getSize();
+
+			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
+				result = unitManager.getPersonByID(intList.get(index));
 			}
 
 			return result;
@@ -441,19 +427,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		public void update() {
 
 			List<Integer> newIntList = new ArrayList<>(airlock.getReserved());
+			Collections.sort(newIntList);
 
-			if (!intList.containsAll(newIntList)
+			if (!intList.equals(newIntList)
+					|| !intList.containsAll(newIntList)
 					|| !newIntList.containsAll(intList)) {
 
 				intList = newIntList;
-
-				list = new ArrayList<>();
-
-				for (int i: newIntList) {
-					list.add(airlock.getPersonByID(i));
-				}
-
-				Collections.sort(list);
 
 				fireContentsChanged(this, 0, getSize());
 			}

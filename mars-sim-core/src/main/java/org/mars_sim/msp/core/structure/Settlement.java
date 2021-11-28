@@ -1314,10 +1314,23 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	}
 
 	/**
+	 * Removes all airlock reservations
+	 */
+	public void removeAllReservations() {
+		List<Airlock> airlocks = getAllAirlocks();
+
+		for (Airlock a: airlocks) {
+			a.getReservationMap().clear();
+		}
+	}
+
+	/**
 	 * Provides the daily reports for the settlement
 	 */
 	private void performEndOfDayTasks(MarsClock marsNow) {
 		int solElapsed = marsNow.getMissionSol();
+
+		removeAllReservations();
 
 		reassignWorkShift();
 
@@ -1673,6 +1686,18 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	public GoodsManager getGoodsManager() {
 		return goodsManager;
 	}
+
+	/**
+	 * Gets a list of airlock of this settlement
+	 *
+	 * @return
+	 */
+	public List<Airlock> getAllAirlocks() {
+		return buildingManager.getBuildings(FunctionType.EVA).stream()
+				.map(b -> b.getEVA().getAirlock())
+				.collect(Collectors.toList());
+	}
+
 
 	/**
 	 * Gets the closest available airlock to a person.

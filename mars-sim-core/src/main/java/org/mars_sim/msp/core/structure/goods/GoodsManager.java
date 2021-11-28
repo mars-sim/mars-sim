@@ -108,6 +108,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String BRICK = "brick";
 	private static final String METEORITE = "meteorite";
 	private static final String ROCK = "rock";
+	private static final String VEHICLE = "vehicle";
 
 	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
@@ -164,7 +165,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double LUV_VEHICLE_FACTOR = 4;
 	private static final double DRONE_VEHICLE_FACTOR = 5;
 
-	private static final double VEHICLE_PART_DEMAND = .025;
+	private static final double VEHICLE_PART_DEMAND = .05;
 
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
@@ -209,7 +210,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TOURISM_BASE = 1;
 
 	private static final double GAS_CANISTER_DEMAND = 1;
-	private static final double SPECIMEN_BOX_DEMAND = 5;
+	private static final double SPECIMEN_BOX_DEMAND = 1.2;
 	private static final double LARGE_BAG_DEMAND = .5;
 	private static final double BAG_DEMAND = .1;
 	private static final double BARREL_DEMAND = .2;
@@ -1596,8 +1597,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 		}
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
-			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
+//		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
+//			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
 
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			demand = INSTRUMENT_DEMAND;
@@ -2580,8 +2581,8 @@ public class GoodsManager implements Serializable, Temporal {
 				// Calculate individual attachment part demand.
 				projected += getAttachmentPartsDemand(part);
 
-//				// Calculate vehicle part demand.
-//				projected += getVehiclePartsDemand(resourceGood);
+				// Calculate vehicle part demand.
+				projected = getVehiclePartDemand(part, projected);
 
 				// Calculate kitchen part demand.
 				projected += getKitchenPartDemand(part);
@@ -2960,6 +2961,14 @@ public class GoodsManager implements Serializable, Temporal {
 		return 0;
 	}
 
+	private double getVehiclePartDemand(Part part, double projected) {
+		String type = part.getType();
+		if (type.equalsIgnoreCase(VEHICLE)) {
+			return projected * (1 + tourism_factor/30.0) * VEHICLE_PART_DEMAND;
+		}
+		return 0;
+	}
+
 	/**
 	 * Gets the demand of an input part in a manufacturing process.
 	 *
@@ -3089,7 +3098,6 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand (# of parts).
 	 */
 	private double getPartConstructionSiteDemand(int id) {
-
 		double demand = 0D;
 
 		// Add demand for part required as remaining construction material on

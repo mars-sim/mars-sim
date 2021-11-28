@@ -738,7 +738,7 @@ public class MasterClock implements Serializable {
 		// Identify if it's a new Sol
 		int currentSol = marsClock.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
-		lastSol  = currentSol;
+		lastSol = currentSol;
 
 		// Log the pulse
 		long newPulseId = nextPulseId++;
@@ -746,33 +746,13 @@ public class MasterClock implements Serializable {
 		pulseLog[logIndex] = System.currentTimeMillis();
 
 		ClockPulse pulse = new ClockPulse(sim, newPulseId, time, marsClock, earthClock, this, isNewSol);
-		// Note: for loop may handle checked exceptions better than forEach()
+		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
-//		for (ClockListenerTask s:clockListenerTasks) {
-//			s.setCurrentPulse(pulse);
-//			Future<String> result = listenerExecutor.submit(s);
-//			try {
-//				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-//				result.get();
-//			} catch (ExecutionException ee) {
-//				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
-//			} catch (RejectedExecutionException ree) {
-//				// App shutting down
-//				Thread.currentThread().interrupt();
-//				// Executor is shutdown and cannot complete queued tasks
-//				logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-//			} catch (InterruptedException e) {
-//				// Program closing down
-//				Thread.currentThread().interrupt();
-//				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
-//			}
-//		}
-		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
-		clockListenerTasks.forEach(s -> {
+		for (ClockListenerTask s:clockListenerTasks) {
 			s.setCurrentPulse(pulse);
 			Future<String> result = listenerExecutor.submit(s);
-			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 			try {
+				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();
 			} catch (ExecutionException ee) {
 				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
@@ -786,7 +766,27 @@ public class MasterClock implements Serializable {
 				Thread.currentThread().interrupt();
 				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
 			}
-		});
+		}
+		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
+//		clockListenerTasks.forEach(s -> {
+//			s.setCurrentPulse(pulse);
+//			Future<String> result = listenerExecutor.submit(s);
+//			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+//			try {
+//				result.get();
+//			} catch (ExecutionException ee) {
+//				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
+//			} catch (RejectedExecutionException ree) {
+//				// App shutting down
+//				Thread.currentThread().interrupt();
+//				// Executor is shutdown and cannot complete queued tasks
+//				logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+//			} catch (InterruptedException e) {
+//				// Program closing down
+//				Thread.currentThread().interrupt();
+//				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
+//			}
+//		});
 	}
 
 	/**

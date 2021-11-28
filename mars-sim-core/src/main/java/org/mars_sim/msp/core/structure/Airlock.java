@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -161,16 +162,21 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Removes the id from the reservation map
+	 * Removes the id from all reservation maps
 	 *
 	 * @param personInt
 	 * @return
 	 */
 	public boolean removeReservation(int personInt) {
-		if (reservationMap.containsKey(personInt)) {
-			reservationMap.remove(personInt);
-			return true;
+		List<Airlock> airlocks = ((Building)getEntity()).getSettlement().getAllAirlocks();
+
+		for (Airlock a: airlocks) {
+			if (a.getReservationMap().containsKey(personInt)) {
+				a.getReservationMap().remove(personInt);
+				return true;
+			}
 		}
+
 		return false;
 	}
 
@@ -197,9 +203,13 @@ public abstract class Airlock implements Serializable {
 				diff = msol + 1000 - lastMsol;
 			else
 				diff = msol - lastMsol;
-			// If it has been 30 msols since the reservation was made
+
+			// If it has been 30 msols since the reservation was made,
 			// reserve it again
 			if (diff > 30) {
+				// Remove the name from all reservations
+				removeReservation(personInt);
+				// Add the name and the new msol
 				reservationMap.put(personInt, msol);
 				return true;
 			}
@@ -215,6 +225,15 @@ public abstract class Airlock implements Serializable {
 	 */
 	public Set<Integer> getReserved() {
 		return reservationMap.keySet();
+	}
+
+	/**
+	 * Gets the reservation map
+	 *
+	 * @return
+	 */
+	public Map<Integer, Integer> getReservationMap() {
+		return reservationMap;
 	}
 
 	/**
@@ -357,7 +376,7 @@ public abstract class Airlock implements Serializable {
 	 * @param id the person's id
 	 */
 	public void removeID(Integer id) {
-		if (this instanceof BuildingAirlock) {
+		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			for (int i=0; i<5; i++) {
 				vacate(i, id);
 			}
@@ -370,6 +389,9 @@ public abstract class Airlock implements Serializable {
 		occupantIDs.remove(id);
 		awaitingInnerDoor.remove(id);
 		awaitingOuterDoor.remove(id);
+
+		// remove the reservation
+		removeReservation(id);
 	}
 
 
@@ -1073,14 +1095,6 @@ public abstract class Airlock implements Serializable {
 			return p;
 		}
 		return null;
-//		else {
-//			if (this instanceof BuildingAirlock) {
-//				return ((BuildingAirlock)this).getPerson(id);
-//			}
-//			else {
-//				return ((VehicleAirlock)this).getAssociatedPerson(id);
-//			}
-//		}
 	}
 
 	/**

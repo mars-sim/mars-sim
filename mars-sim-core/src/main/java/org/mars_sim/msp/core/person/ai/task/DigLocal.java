@@ -108,8 +108,7 @@ implements Serializable {
 	        	endTask();
 	     		return;
 	        }
-	        else if (!airlock.hasReservation(person.getIdentifier())
-	        		&& !airlock.addReservation(person.getIdentifier())) {
+	        else if (!airlock.addReservation(person.getIdentifier())) {
 			    endTask();
 			    return;
 	        }

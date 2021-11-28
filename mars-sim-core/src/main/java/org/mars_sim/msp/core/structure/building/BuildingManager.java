@@ -860,10 +860,6 @@ public class BuildingManager implements Serializable {
 
 		if (pulse.isNewSol()) {
 
-//			if (solCache == 0) {
-//				registerBeds();
-//			}
-
 			if (meteorite == null) {
 				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
 			}
