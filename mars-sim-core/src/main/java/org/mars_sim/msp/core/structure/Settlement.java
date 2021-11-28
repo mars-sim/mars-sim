@@ -49,9 +49,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -164,7 +162,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private transient int msolCache = 0;
 
 	/** The settlement sampling resources. */
-	public final static int[] samplingResources;
+	public static final int[] samplingResources;
 
 	/** The definition of static arrays */
 	static {
@@ -335,21 +333,20 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private Set<Integer> availableAirlocks = new HashSet<>();
 
 	/** The settlement's list of citizens. */
-	private Set<Person> citizens;// = new ConcurrentLinkedQueue<Person>();
+	private Set<Person> citizens;
 	/** The settlement's list of owned robots. */
-	private Set<Robot> ownedRobots;// = new ConcurrentLinkedQueue<Robot>();
+	private Set<Robot> ownedRobots;
 	/** The settlement's list of owned vehicles. */
-	private Set<Vehicle> ownedVehicles;// = new ConcurrentLinkedQueue<Vehicle>();
+	private Set<Vehicle> ownedVehicles;
 	/** The settlement's list of parked vehicles. */
-	private Set<Vehicle> parkedVehicles;// = new ConcurrentLinkedQueue<Vehicle>();
+	private Set<Vehicle> parkedVehicles;
 	/** The list of people currently within the settlement. */
-	private Set<Person> peopleWithin;// = new ConcurrentLinkedQueue<Person>();
+	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
-	private Set<Robot> robotsWithin;// = new ConcurrentLinkedQueue<Robot>();
+	private Set<Robot> robotsWithin;
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-
 
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
@@ -448,7 +445,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
 
-		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>();
+		allowTradeMissionSettlements = new ConcurrentHashMap<>();
 	}
 
 
@@ -770,9 +767,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	public int getIndoorRobotsCount() {
 		return ownedRobots.size();
-//		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
-//				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
-//				.collect(Collectors.counting()));
 	}
 
 	/**
@@ -781,7 +775,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @return Collection of robots
 	 */
 	public Collection<Robot> getRobots() {
-		return ownedRobots;//CollectionUtils.getRobot(getInventory().getContainedUnits());
+		return ownedRobots;
 	}
 
 	/**
@@ -892,7 +886,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 	/**
 	 * Computes the average air pressure & temperature of the life support system.
-	 *
 	 */
 	private void computeEnvironmentalAverages() {
 
@@ -914,6 +907,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		// convert from atm to kPascal
 		currentPressure =  totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
 		currentTemperature = totalTArea / totalArea;
+
+		outside_temperature = weather.getTemperature(location);
 	}
 
 	/**
@@ -971,8 +966,40 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		}
 
 		// If settlement is overcrowded, increase inhabitant's stress.
-		// should the number of robots be accounted for here?
+		trackStress(pulse);
 
+		doCropsNeedTending(pulse);
+
+		// what to take into consideration the presence of robots ?
+		// If no current population at settlement for one sol, power down the
+		// building and turn the heat off ?
+
+//		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
+//			powerGrid.setPowerMode(PowerMode.POWER_UP);
+		// check if POWER_UP is necessary
+		// Question: is POWER_UP a prerequisite of FULL_POWER ?
+
+		// Calls other time passings
+		otherTimePassings(pulse);
+
+		if (pulse.isNewSol()) {
+			performEndOfDayTasks(pulse.getMarsTime());
+		}
+
+		// Keeps track of things based on msol
+		trackMsol(pulse);
+
+		// Computes the average air pressure & temperature of the life support system.
+		computeEnvironmentalAverages();
+
+		createBuildingMap();
+		// Check if anyone deceased
+		checkDeceased(pulse);
+
+		return true;
+	}
+
+	private void trackStress(ClockPulse pulse) {
 		double time = pulse.getElapsed();
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
@@ -982,17 +1009,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 				c.setStress(c.getStress() + stressModifier);
 			}
 		}
+	}
 
-		doCropsNeedTending(pulse);
-
-		// what to take into consideration the presence of robots ?
-		// If no current population at settlement for one sol, power down the
-		// building and turn the heat off ?
-
-		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
-			powerGrid.setPowerMode(PowerMode.POWER_UP);
-		// check if POWER_UP is necessary
-		// Question: is POWER_UP a prerequisite of FULL_POWER ?
+	private void otherTimePassings(ClockPulse pulse) {
 
 		powerGrid.timePassing(pulse);
 
@@ -1000,10 +1019,34 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 		buildingManager.timePassing(pulse);
 
-		if (pulse.isNewSol()) {
-			performEndOfDayTasks(pulse.getMarsTime());
-		}
+		compositionOfAir.timePassing(pulse);
 
+		// Update owned vehicles
+		timePassing(pulse, ownedVehicles);
+
+		// Update owned robots
+		timePassing(pulse, ownedRobots);
+	}
+
+	private void createBuildingMap() {
+		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
+			int numConnectors = adjacentBuildingMap.size();
+
+			if (numConnectorsCache != numConnectors) {
+				numConnectorsCache = numConnectors;
+				createAdjacentBuildingMap();
+			}
+		} else {
+			createAdjacentBuildingMap();
+		}
+	}
+
+	/**
+	 * Keeps track of things based on msol
+	 *
+	 * @param pulse
+	 */
+	private void trackMsol(ClockPulse pulse) {
 		// Sample a data point every SAMPLE_FREQ (in msols)
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -1078,7 +1121,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			// Compute whether a baseline, GCR, or SEP event has occurred
 			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == 5) {
-				checkRadiationProbability(time);
+				checkRadiationProbability(pulse.getElapsed());
 			}
 
 			remainder = msol % RESOURCE_UPDATE_FREQ;
@@ -1090,27 +1133,14 @@ public class Settlement extends Structure implements Serializable, Temporal,
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 		}
+	}
 
-		compositionOfAir.timePassing(pulse);
-
-		computeEnvironmentalAverages();
-
-		outside_temperature = weather.getTemperature(location);
-
-		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
-			int numConnectors = adjacentBuildingMap.size();
-
-			if (numConnectorsCache != numConnectors) {
-				numConnectorsCache = numConnectors;
-				createAdjacentBuildingMap();
-			}
-		} else {
-			createAdjacentBuildingMap();
-		}
-
-		// Update owned Units
-		timePassing(pulse, ownedVehicles);
-
+	/**
+	 * Checks if anyone passes away
+	 *
+	 * @param pulse
+	 */
+	private void checkDeceased(ClockPulse pulse) {
 		// Persons can die and leave the Settlement
 		Set<Person> died = new HashSet<>();
 		for (Person p : citizens) {
@@ -1129,9 +1159,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		if (!died.isEmpty()) {
 			citizens.removeAll(died);
 		}
-		timePassing(pulse, ownedRobots);
-
-		return true;
 	}
 
 	/**

@@ -52,7 +52,6 @@ import com.alee.laf.window.WebDialog;
 import com.alee.managers.style.StyleId;
 
 public class PopUpUnitMenu extends WebPopupMenu {
-//implements InternalFrameListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 

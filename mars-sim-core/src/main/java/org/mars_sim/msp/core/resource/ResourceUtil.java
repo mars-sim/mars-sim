@@ -35,37 +35,6 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 3010;
 
-	public static String[] ROCKS  = new String[] {
-	        "rock samples",
-			"columnar basalt",
-			"granite",
-			"mudstone",
-			"sandstone",
-			"shale",
-			"conglomerate",
-			"cross bedding",
-			"meteorite",
-			"scoria"};
-
-	public static String[] MINERAL_CONCENTRATIONS = new String[] {
-	        "chalcopyrite",
-			"goethite",
-			"hematite",
-			"kamacite",
-			"magnesite",
-			"magnetite",
-			"malachite",
-			"olivine",
-			"taenite",
-			"sylvite"};
-
-	public static String[] ORE_DEPOSITS = new String[] {
-			"allophane",
-			"akaganeite",
-			"basaltic",
-			"bassanite",
-			"gypsum",
-			"smectite"};
 
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";
@@ -116,24 +85,48 @@ public class ResourceUtil implements Serializable {
 	public static final String PEANUT_OIL = "peanut oil";
 	public static final String RICE_BRAN_OIL = "rice bran oil";
 	public static final String FISH_OIL = "fish oil";
-
 	public static final String TOILET_TISSUE = "toilet tissue";
-
 	public static final String SOYMILK = "soymilk";
-
 	public static final String LEAVES = "leaves";
-
 	public static final String FISH_MEAT = "fish meat";
 
+	protected static final String[] ROCKS  = new String[] {
+			ROCK_SAMPLES,
+			"columnar basalt",
+			"granite",
+			"mudstone",
+			"sandstone",
+			"shale",
+			"conglomerate",
+			"cross bedding",
+			METEORITE,
+			"scoria"};
+
+	protected static final String[] MINERAL_CONCENTRATIONS = new String[] {
+	        "chalcopyrite",
+			"goethite",
+			"hematite",
+			"kamacite",
+			"magnesite",
+			"magnetite",
+			"malachite",
+			"olivine",
+			"taenite",
+			"sylvite"};
+
+	protected static final String[] ORE_DEPOSITS = new String[] {
+			"allophane",
+			"akaganeite",
+			"basaltic",
+			"bassanite",
+			"gypsum",
+			"smectite"};
 
 	// Data members.
-	// private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
 	private static Map<String, AmountResource> amountResourceMap;
 	private static Map<Integer, AmountResource> amountResourceIDMap;
 	private static Map<Integer, String> arIDNameMap;
-
 	private static Set<AmountResource> resources;
-
 	private static List<AmountResource> sortedResources;
 
 	public static int waterID;

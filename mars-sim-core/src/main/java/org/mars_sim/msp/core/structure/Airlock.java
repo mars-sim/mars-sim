@@ -184,7 +184,7 @@ public abstract class Airlock implements Serializable {
 	 * Adds a person's id to the reservation map
 	 *
 	 * @param personInt
-	 * @return
+	 * @return true if the id can be added or is already in reservation
 	 */
 	public boolean addReservation(int personInt) {
 		if (!reservationMap.containsKey(personInt)) {

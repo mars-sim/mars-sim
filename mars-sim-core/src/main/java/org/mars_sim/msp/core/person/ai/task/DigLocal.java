@@ -106,17 +106,19 @@ implements Serializable {
      	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-	        	endTask();
-	     		return;
-	        }
-	        else if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK && !airlock.addReservation(person.getIdentifier())) {
 			    endTask();
 			    return;
+	        }
+	        else {
+	        	if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK && !airlock.addReservation(person.getIdentifier())) {
+				    endTask();
+				    return;
+	        	}
 	        }
      	}
 
         // Take bags for collecting resource.
-     	Container	aBag = transferContainer();
+     	Container aBag = transferContainer();
 
         // If bags are not available, end task.
         if (aBag == null) {

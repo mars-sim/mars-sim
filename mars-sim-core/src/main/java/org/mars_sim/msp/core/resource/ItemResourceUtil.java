@@ -96,43 +96,37 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
-	public static final List<String> ATTACHMENTS = new ArrayList<>();
+	private static final String[] ATTACHMENTS = new String[] {
+			BACKHOE,
+			BULLDOZER_BLADE,
+			CRANE_BOOM,
+			DRILLING_RIG,
+			PNEUMATIC_DRILL,
+			SOIL_COMPACTOR
+	};
 
 	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
 
-	static {
-		ATTACHMENTS.add(BACKHOE);
-		ATTACHMENTS.add(BULLDOZER_BLADE);
-		ATTACHMENTS.add(CRANE_BOOM);
-		ATTACHMENTS.add(DRILLING_RIG);
-		ATTACHMENTS.add(PNEUMATIC_DRILL);
-		ATTACHMENTS.add(SOIL_COMPACTOR);
-	}
+	private static final String[] EVASUIT_PARTS = new String[] {
+			"eva helmet",
+			"helmet visor",
+			PRESSURE_SUIT,
+			"coveralls",
+			"suit heating unit",
 
-	public static final String[] EVASUIT_PARTS;
+			"eva gloves",
+			"eva boots",
+			"eva pads",
+			"eva backpack",
+			"eva antenna",
+
+			"eva battery",
+			"eva radio",
+	};
 
 	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
 
-	static {
-		EVASUIT_PARTS = new String[] {
-					"eva helmet",
-					"helmet visor",
-					PRESSURE_SUIT,
-					"coveralls",
-					"suit heating unit",
-
-					"eva gloves",
-					"eva boots",
-					"eva pads",
-					"eva backpack",
-					"eva antenna",
-
-					"eva battery",
-					"eva radio",
-			};
-	}
-
-	public static final String[] KITCHEN_WARE = new String[] {
+	private static final String[] KITCHEN_WARE = new String[] {
 			"autoclave",
 			"blender",
 			"microwave",
@@ -193,8 +187,8 @@ public class ItemResourceUtil implements Serializable {
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 
-		for (int i = 0; i < ATTACHMENTS.size(); i++) {
-			int id = findIDbyItemResourceName(ATTACHMENTS.get(i));
+		for (int i = 0; i < ATTACHMENTS.length; i++) {
+			int id = findIDbyItemResourceName(ATTACHMENTS[i]);
 			ATTACHMENTS_ID.add(id);
 		}
 
