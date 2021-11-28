@@ -31,7 +31,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	private static final double VALUE = 1.25D;
 
 	private static final int MAX = 200;
-	
+
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
@@ -39,7 +39,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 		super(MissionType.EXPLORATION, "exploration",
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
 	}
-	
+
 	@Override
 	public Mission constructInstance(Person person) {
 		return new Exploration(person);
@@ -49,47 +49,47 @@ public class ExplorationMeta extends AbstractMetaMission {
 	public double getProbability(Person person) {
 
 		double missionProbability = 0D;
-		
+
 		if (person.isInSettlement()) {
 
 			Settlement settlement = person.getSettlement();
-			
+
             RoleType roleType = person.getRole().getType();
 
  			if (RoleType.CHIEF_OF_SCIENCE == roleType
  					|| RoleType.SCIENCE_SPECIALIST == roleType
  					|| RoleType.MISSION_SPECIALIST == roleType
- 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType	
+ 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
  					|| RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
  					|| RoleType.RESOURCE_SPECIALIST == roleType
  					|| RoleType.COMMANDER == roleType
  					|| RoleType.SUB_COMMANDER == roleType
- 					) {			
-				
+ 					) {
+
 				// 1. Check if there are enough specimen containers at the settlement for
 				// collecting rock samples.
-				if (settlement.findNumContainersOfType(EquipmentType.BAG) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
+				if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
 					return 0;
 				}
-				
+
 				if (!settlement.getMissionBaseProbability(MissionType.EXPLORATION)) {
 	    			return 0;
 				}
-				
+
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
-				
+
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
 	    			return 0;
-	    		}	
-	    		
-	    		if (numThisMission > 1) {
-	    			return 0;	
 	    		}
-	    		
+
+	    		if (numThisMission > 1) {
+	    			return 0;
+	    		}
+
 	    		missionProbability = 0;
-	
+
 				try {
 					// Get available rover.
 					Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.EXPLORATION, settlement, false);
@@ -100,36 +100,36 @@ public class ExplorationMeta extends AbstractMetaMission {
 							missionProbability = 0;
 						}
 					}
-					
+
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Error exploring mineral values.", e);
 					return 0;
 				}
-	
+
 				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
-				
+
 				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
-				
+
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)
 						* (settlement.getGoodsManager().getTourismFactor()
 	               		 + settlement.getGoodsManager().getResearchFactor())/1.5;
-				
+
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
-				
+
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability += extrovert;			
-	
+				missionProbability += extrovert;
+
 				if (missionProbability < 0)
 					missionProbability = 0;
  			}
 		}
-		
+
 		return missionProbability;
 	}
 }
