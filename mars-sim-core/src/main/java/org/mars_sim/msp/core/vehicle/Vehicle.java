@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -612,10 +613,9 @@ public abstract class Vehicle extends Unit
 				Person crewmember = i.next();
 
 				Point2D currentCrewPos = currentCrewPositions.get(crewmember);
-				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(),
-						currentCrewPos.getY(), this);
-				crewmember.setXLocation(settlementLoc.getX());
-				crewmember.setYLocation(settlementLoc.getY());
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(currentCrewPos),
+																		this);
+				crewmember.setPosition(settlementLoc);
 			}
 		}
 	}
@@ -633,10 +633,9 @@ public abstract class Vehicle extends Unit
 				Robot robotCrewmember = i.next();
 
 				Point2D currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
-				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(),
-						currentCrewPos.getY(), this);
-				robotCrewmember.setXLocation(settlementLoc.getX());
-				robotCrewmember.setYLocation(settlementLoc.getY());
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(currentCrewPos),
+														this);
+				robotCrewmember.setPosition(settlementLoc);
 			}
 		}
 	}

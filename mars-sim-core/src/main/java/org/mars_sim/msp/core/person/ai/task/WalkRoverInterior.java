@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -39,20 +39,16 @@ implements Serializable {
 
 	// Static members
 	/** km per hour. */
-	private static final double WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
 	private static final double STRESS_MODIFIER = -.1D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	// Data members
 	private Rover rover;
-	private double destXLoc;
-	private double destYLoc;
-
+	private LocalPosition destLoc;
 	/*
 	 * Constructor 1.
 	 */
-    public WalkRoverInterior(Person person, Rover rover, double destinationXLocation,
-            double destinationYLocation) {
+    public WalkRoverInterior(Person person, Rover rover, LocalPosition destLoc) {
         super("Walking inside a rover", person, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the person is currently inside a rover.
@@ -61,24 +57,10 @@ implements Serializable {
            			+ rover.getName() + "."); 
     	}
         
-//        else if (person.isOutside()) {
-//        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-//        			person + " is outside but is calling WalkRoverInterior task and NOT in rover " 
-//        			+ rover.getName() + "."); 
-//            //throw new IllegalStateException(
-//            //        "WalkRoverInterior task started when " + person + " is not in a rover.");
-//        }
-
-//        else if (person.isInVehicle()) {
-//        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-//        		"WalkRoverInterior task started when " + person + " is not in rover " 
-//        			+ rover.getName() + ".");
-//        }
    
         // Initialize data members.
         this.rover = rover;
-        this.destXLoc = destinationXLocation;
-        this.destYLoc = destinationYLocation;
+        this.destLoc = destLoc;
 
         // Initialize task phase.
         addPhase(WALKING);
@@ -91,8 +73,7 @@ implements Serializable {
 	/*
 	 * Constructor 2.
 	 */
-    public WalkRoverInterior(Robot robot, Rover rover, double destinationXLocation,
-            double destinationYLocation) {
+    public WalkRoverInterior(Robot robot, Rover rover, LocalPosition destLoc) {
         super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the robot is currently inside a rover.
@@ -111,8 +92,7 @@ implements Serializable {
         
         // Initialize data members.
         this.rover = rover;
-        this.destXLoc = destinationXLocation;
-        this.destYLoc = destinationYLocation;
+        this.destLoc = destLoc;
 
         // Initialize task phase.
         addPhase(WALKING);
@@ -146,8 +126,8 @@ implements Serializable {
 		double speed = person.calculateWalkSpeed();
 		double distanceKm = speed * timeHours;
         double distanceMeters = distanceKm * 1000D;
-        double remainingWalkingDistance = Point2D.Double.distance(worker.getXLocation(),
-                    worker.getYLocation(), destXLoc, destYLoc);
+        LocalPosition currentPosition = worker.getPosition(); 
+        double remainingWalkingDistance = currentPosition.getDistanceTo(destLoc);
 
         double timeLeft = 0D;
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
@@ -160,16 +140,15 @@ implements Serializable {
 
             if (distanceMeters < remainingWalkingDistance) {
                 // Determine direction to destination.
-                double direction = determineDirection(destXLoc, destYLoc);
+                double direction = currentPosition.getDirectionTo(destLoc);
                 // Determine person's new location at distance and direction.
-                walkInDirection(direction, distanceMeters);
+                worker.setPosition(currentPosition.getPosition(distanceMeters, direction));
             }
             else {
                 // Set person's location at destination.
-                worker.setXLocation(destXLoc);
-                worker.setYLocation(destYLoc);
+                worker.setPosition(destLoc);
         		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
-        				+ destXLoc + ", " + destYLoc + ") in " + rover.getName() + ".");
+        				+ destLoc + ") in " + rover.getName() + ".");
                 endTask();
             }
         }
@@ -178,51 +157,14 @@ implements Serializable {
             timeLeft = time;
 
             // Set person's location at destination.
-            worker.setXLocation(destXLoc);
-            worker.setYLocation(destYLoc);
+            worker.setPosition(destLoc);
     		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
-    				+ destXLoc + ", " + destYLoc + ") in " + rover.getName() + ".");
+    				+ destLoc + ") in " + rover.getName() + ".");
 
             endTask();
         }
 
         return timeLeft;
-    }
-
-    /**
-     * Determine the direction of travel to a location.
-     * @param destinationXLocation the destination X location.
-     * @param destinationYLocation the destination Y location.
-     * @return direction (radians).
-     */
-    double determineDirection(double destinationXLocation, double destinationYLocation) {
-    	double result = Math.atan2(worker.getXLocation() - destinationXLocation,
-    	                destinationYLocation - worker.getYLocation());
-
-        while (result > (Math.PI * 2D)) {
-            result -= (Math.PI * 2D);
-        }
-
-        while (result < 0D) {
-            result += (Math.PI * 2D);
-        }
-
-        return result;
-    }
-
-    /**
-     * Walk in a given direction for a given distance.
-     * @param direction the direction (radians) of travel.
-     * @param distance the distance (meters) to travel.
-     */
-    void walkInDirection(double direction, double distance) {
-    	double newXLoc = 0 ;
-    	double newYLoc = 0;
-
-		newXLoc = (-1D * Math.sin(direction) * distance) + worker.getXLocation();
-		newYLoc = (Math.cos(direction) * distance) + worker.getYLocation();
-        worker.setXLocation(newXLoc);
-        worker.setYLocation(newYLoc);
     }
 
 	/**

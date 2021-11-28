@@ -62,6 +62,28 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Gets a local relative position from a position relative to this bounded
+	 * object.
+	 *
+	 * @param position          the position relative to this bounded object.
+	 * @param boundedObject the local bounded object.
+	 * @return Point containing the X and Y locations relative to the local area's
+	 *         center point.
+	 */
+	public static LocalPosition getLocalRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
+		double xLoc = position.getX();
+		double yLoc = position.getY();
+		double radianRotation = Math.toRadians(boundedObject.getFacing());
+		double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
+		double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
+
+		double translateX = rotateX + boundedObject.getXLocation();
+		double translateY = rotateY + boundedObject.getYLocation();
+
+		return new LocalPosition(translateX, translateY);
+	}
+		
+	/**
 	 * Gets a local relative location from a location relative to this bounded
 	 * object.
 	 *
@@ -70,6 +92,7 @@ public class LocalAreaUtil {
 	 * @param boundedObject the local bounded object.
 	 * @return Point containing the X and Y locations relative to the local area's
 	 *         center point.
+	 * @deprecated
 	 */
 	public static Point2D.Double getLocalRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 		Point2D.Double result = new Point2D.Double();
@@ -110,13 +133,36 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Gets a random location inside a local bounded object.
+	 * Gets a random position inside a local bounded object.
 	 *
 	 * @param boundedObject the local bounded object.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
+	public static LocalPosition getRandomInteriorPosition(LocalBoundedObject boundedObject) {
+		return getRandomInteriorPosition(boundedObject, true);
+	}
+
+	/**
+	 * Gets a random location inside a local bounded object.
+	 *
+	 * @param boundedObject the local bounded object.
+	 * @return random X/Y location relative to the center of the bounded object.
+	 * @deprecated
+	 */
 	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject) {
-		return getRandomInteriorLocation(boundedObject, true);
+		return getRandomInteriorPosition(boundedObject, true).toPoint();
+	}
+
+	/**
+	 * Gets a random location inside a local bounded object.
+	 *
+	 * @param boundedObject the local bounded object.
+	 * @param useBoundary   true if inner boundary distance should be used.
+	 * @return random X/Y location relative to the center of the bounded object.
+	 * @deprecated
+	 */
+	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject, boolean useBoundary) {
+		return getRandomInteriorPosition(boundedObject, useBoundary).toPoint();
 	}
 
 	/**
@@ -126,33 +172,34 @@ public class LocalAreaUtil {
 	 * @param useBoundary   true if inner boundary distance should be used.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
-	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject, boolean useBoundary) {
-
-		Point2D.Double result = new Point2D.Double(0D, 0D);
+	public static LocalPosition getRandomInteriorPosition(LocalBoundedObject boundedObject, boolean useBoundary) {
 
 		double xRange = boundedObject.getWidth();
 		if (useBoundary) {
 			xRange -= (INNER_BOUNDARY_DISTANCE * 2D);
 		}
+		double x;
 		if (xRange > 0D) {
-			result.x = RandomUtil.getRandomDouble(xRange) - (xRange / 2D);
+			x = RandomUtil.getRandomDouble(xRange) - (xRange / 2D);
 		} else {
-			result.x = 0D;
+			x = 0D;
 		}
 
 		double yRange = boundedObject.getLength();
 		if (useBoundary) {
 			yRange -= (INNER_BOUNDARY_DISTANCE * 2D);
 		}
+		double y;
 		if (yRange > 0D) {
-			result.y = RandomUtil.getRandomDouble(yRange) - (yRange / 2D);
+			y = RandomUtil.getRandomDouble(yRange) - (yRange / 2D);
 		} else {
-			result.y = 0D;
+			y = 0D;
 		}
 
-		return result;
+		return new LocalPosition(x,y);
 	}
 
+	
 	/**
 	 * Gets a random location outside a local bounded object at a given distance
 	 * away.
@@ -473,23 +520,28 @@ public class LocalAreaUtil {
 	 * @param yLoc   the new Y location.
 	 * @param object the local bounded object.
 	 * @return true if location is within object bounds.
+	 * @deprecated
 	 */
 	public static boolean isLocationWithinLocalBoundedObject(double xLoc, double yLoc, LocalBoundedObject object) {
-		boolean result = false;
-		// Below gets java.lang.NullPointerException after resuming from power saving in
-		// windows os
-		// called from ai.task.Walk.walkingRoverInteriorPhase(Walk.java:813)
+		return isPositionWithinLocalBoundedObject(new LocalPosition(xLoc, yLoc), object);
+	}
+
+
+	/**
+	 * Checks if a position is within a local bounded object's bounds.
+	 *
+	 * @param position Position to test
+	 * @param object the local bounded object.
+	 * @return true if position is within object bounds.
+	 */
+	public static boolean isPositionWithinLocalBoundedObject(LocalPosition position, LocalBoundedObject object) {
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
 				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
 		Area area = new Area(path);
-		if (area.contains(xLoc, yLoc)) {
-			result = true;
-		}
-
-		return result;
+		return area.contains(position.getX(), position.getY());
 	}
-
+	
 	/**
 	 * Gets the bounding rectangle around a local bounded object with facing.
 	 *
@@ -882,6 +934,7 @@ public class LocalAreaUtil {
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return true if very close together
+	 * @deprecated
 	 */
 	public static boolean areLocationsClose(Point2D point1, Point2D point2) {
 		return (getDistance(point1, point2) < VERY_SMALL_DISTANCE);
@@ -896,4 +949,5 @@ public class LocalAreaUtil {
 	public static boolean areLocationsClose(double x1, double y1, double x2, double y2) {
 		return (getDistance(x1, y1, x2, y2) < VERY_SMALL_DISTANCE);
 	}
+
 }

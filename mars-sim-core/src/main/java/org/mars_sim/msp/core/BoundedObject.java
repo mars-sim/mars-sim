@@ -7,8 +7,15 @@
 
 package org.mars_sim.msp.core;
 
-public class BoundedObject implements LocalBoundedObject{
+import java.io.Serializable;
 
+public class BoundedObject implements LocalBoundedObject, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	double w;
 	double l;
 	double f;

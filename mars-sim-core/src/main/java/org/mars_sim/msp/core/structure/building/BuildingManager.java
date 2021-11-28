@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -1368,26 +1369,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Check what building a given local settlement position is within.
-	 *
-	 * @param xLoc the local X position.
-	 * @param yLoc the local Y position.
-	 * @return building the position is within, or null if the position is not
-	 *         within any building.
-	 */
-	public Building getBuildingAtPosition(double xLoc, double yLoc) {
-        Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
-                return building;
-            }
-        }
-
-        return null;
-	}
-
-	/**
 	 * Gets a list of uncrowded buildings from a given list of buildings with life
 	 * support.
 	 *
@@ -1635,13 +1616,14 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
+	 * @param posotion Position within the Building
 	 */
-	public static void addPersonOrRobotToBuilding(Unit unit, Building building, double xLocation, double yLocation) {
+	public static void addPersonOrRobotToBuilding(Unit unit, Building building, LocalPosition position) {
 		if (building != null) {
 
-			if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
+			if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(position, building)) {
 				throw new IllegalArgumentException(
-						building.getNickName() + " does not contain location x: " + xLocation + ", y: " + yLocation);
+						building.getNickName() + " does not contain location " + position);
 			}
 
 			try {
@@ -1652,8 +1634,7 @@ public class BuildingManager implements Serializable {
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
 
-						person.setXLocation(xLocation);
-						person.setYLocation(yLocation);
+						person.setPosition(position);
 						person.setCurrentBuilding(building);
 					}
 				}
@@ -1665,8 +1646,7 @@ public class BuildingManager implements Serializable {
 					if (roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
 
-						robot.setXLocation(xLocation);
-						robot.setYLocation(yLocation);
+						robot.setPosition(position);
 						robot.setCurrentBuilding(building);
 					}
 				}
@@ -1689,10 +1669,8 @@ public class BuildingManager implements Serializable {
 		if (building != null) {
 			try {
 				// Add person to random location within building.
-				// TODO: Modify this when implementing active locations in buildings.
-				Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
-				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
-						buildingLoc.getY(), building);
+				LocalPosition buildingLoc = LocalAreaUtil.getRandomInteriorPosition(building);
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(buildingLoc, building);
 
 				if (unit instanceof Person) {
 					Person person = (Person) unit;
@@ -1701,10 +1679,8 @@ public class BuildingManager implements Serializable {
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
 
-						person.setXLocation(settlementLoc.getX());
-						person.setYLocation(settlementLoc.getY());
+						person.setPosition(settlementLoc);
 						person.setCurrentBuilding(building);
-//						logger.config(person + " was being randomly added to " + building.getNickName());
 					}
 				}
 
@@ -1715,8 +1691,7 @@ public class BuildingManager implements Serializable {
 					if (!roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
 
-						robot.setXLocation(settlementLoc.getX());
-						robot.setYLocation(settlementLoc.getY());
+						robot.setPosition(settlementLoc);
 						robot.setCurrentBuilding(building);
 					}
 				}

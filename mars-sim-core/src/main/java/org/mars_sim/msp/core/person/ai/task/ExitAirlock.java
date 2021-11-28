@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.InventoryUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -264,11 +265,8 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		else {
-//			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(),
-//					newPos.getX(),
-//					newPos.getY(), 0));
-			person.setXLocation(newPos.getX());
-			person.setYLocation(newPos.getY());
+
+			person.setPosition(new LocalPosition(newPos));
 		}
 
 		logger.log(person, Level.FINER, 4_000,

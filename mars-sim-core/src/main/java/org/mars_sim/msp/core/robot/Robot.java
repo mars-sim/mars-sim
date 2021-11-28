@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -115,10 +116,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
-	/** Settlement X location (meters) from settlement center. */
-	private double xLoc;
-	/** Settlement Y location (meters) from settlement center. */
-	private double yLoc;
+	/** Settlement position (meters) from settlement center. */
+	private LocalPosition position;
 
 	/** The birthplace of the robot. */
 	private String birthplace;
@@ -157,9 +156,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 		this.robotType = robotType;
-
-		xLoc = 0D;
-		yLoc = 0D;
+		this.position = LocalPosition.DEFAULT_POSITION;
 
 		isSalvaged = false;
 		salvageInfo = null;
@@ -299,39 +296,23 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
     }
 
 	/**
-	 * Gets the robot's X location at a settlement.
+	 * Gets the robot's position at a settlement.
 	 *
-	 * @return X distance (meters) from the settlement's center.
+	 * @return distance (meters) from the settlement's center.
 	 */
-	public double getXLocation() {
-		return xLoc;
+	@Override
+	public LocalPosition getPosition() {
+		return position;
 	}
 
 	/**
-	 * Sets the robot's X location at a settlement.
+	 * Sets the robot's position at a settlement.
 	 *
-	 * @param xLocation the X distance (meters) from the settlement's center.
+	 * @param position the distance (meters) from the settlement's center.
 	 */
-	public void setXLocation(double xLocation) {
-		this.xLoc = xLocation;
-	}
-
-	/**
-	 * Gets the robot's Y location at a settlement.
-	 *
-	 * @return Y distance (meters) from the settlement's center.
-	 */
-	public double getYLocation() {
-		return yLoc;
-	}
-
-	/**
-	 * Sets the robot's Y location at a settlement.
-	 *
-	 * @param yLocation
-	 */
-	public void setYLocation(double yLocation) {
-		this.yLoc = yLocation;
+	@Override
+	public void setPosition(LocalPosition position) {
+		this.position = position;
 	}
 
 	/**
@@ -807,11 +788,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
-	}
-
-	//@Override
-	public void setVehicle(Vehicle vehicle) {
-		// this.vehicle = vehicle;
 	}
 
 	@Override

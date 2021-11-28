@@ -151,7 +151,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 			return id;
 		}
 
-		public LocalPosition getLocation() {
+		public LocalPosition getPosition() {
 			return location;
 		}
 

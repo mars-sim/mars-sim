@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -628,15 +629,12 @@ public class WalkOutside extends Task implements Serializable {
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
-			Point2D location = walkingPath.get(walkingPathIndex);
-			double distanceToLocation = Point2D.distance(worker.getXLocation(), worker.getYLocation(), 
-						location.getX(), location.getY());
-
+			LocalPosition location = new LocalPosition(walkingPath.get(walkingPathIndex));
+			double distanceToLocation = worker.getPosition().getDistanceTo(location); 
 			if (coveredMeters >= distanceToLocation) {
 
 				// Set person at next path location.
-				worker.setXLocation(location.getX());
-				worker.setYLocation(location.getY());
+				worker.setPosition(location);
 
 				coveredMeters -= distanceToLocation;
 				if (walkingPath.size() > (walkingPathIndex + 1)) {
@@ -654,8 +652,7 @@ public class WalkOutside extends Task implements Serializable {
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location.
-				worker.setXLocation(location.getX());
-				worker.setYLocation(location.getY());
+				worker.setPosition(location);
 				
 				coveredMeters = 0D;
 			}
@@ -667,8 +664,7 @@ public class WalkOutside extends Task implements Serializable {
 			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
 			Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
 			
-			worker.setXLocation(finalLocation.getX());
-			worker.setYLocation(finalLocation.getY());
+			worker.setPosition(new LocalPosition(finalLocation));
 
 			endTask();
 		}
@@ -737,11 +733,7 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param distance  the distance (meters) to travel.
 	 */
 	private void walkInDirection(double direction, double distance) {
-		double newXLoc = (-1D * Math.sin(direction) * distance) + worker.getXLocation();
-		double newYLoc = (Math.cos(direction) * distance) + worker.getYLocation();
-
-		worker.setXLocation(newXLoc);
-		worker.setYLocation(newYLoc);
+		worker.setPosition(worker.getPosition().getPosition(distance, direction) );
 	}
 
 	/**
