@@ -83,7 +83,7 @@ public class MissionTableModel extends AbstractTableModel
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
 
-	public MissionTableModel() {
+	public MissionTableModel() throws Exception {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
@@ -128,11 +128,13 @@ public class MissionTableModel extends AbstractTableModel
 
 		missionManager.addListener(this);
 
-		Iterator<Mission> i = missionCache.iterator();
-		while (i.hasNext()) {
-			Mission m = i.next();
-			if (!m.isDone()) {
-				i.next().addMissionListener(this);
+		if (!missionCache.isEmpty()) {
+			Iterator<Mission> i = missionCache.iterator();
+			while (i.hasNext()) {
+				Mission m = i.next();
+				if (!m.isDone()) {
+					m.addMissionListener(this);
+				}
 			}
 		}
 	}

@@ -22,15 +22,16 @@ public class MissionTab extends TableTab {
 
 	/**
 	 * Constructor.
+	 * @throws Exception
 	 */
-	public MissionTab(final MonitorWindow window) {
+	public MissionTab(final MonitorWindow window) throws Exception {
 		// Use TableTab constructor
 		super(window, new MissionTableModel(), true, true, MonitorWindow.MISSION_ICON);
 	}
 
 	/**
 	 * Display selected mission in mission tool.
-	 * 
+	 *
 	 * @param desktop the main desktop.
 	 */
 	public void displayMission(MainDesktopPane desktop) {
@@ -46,7 +47,7 @@ public class MissionTab extends TableTab {
 
 	/**
 	 * Center the map on the first selected row.
-	 * 
+	 *
 	 * @param desktop Main window of application.
 	 */
 	public void centerMap(MainDesktopPane desktop) {
