@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PopUpUnitMenu.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-28
  * @author Manny Kung
  */
 
@@ -51,7 +51,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.window.WebDialog;
 import com.alee.managers.style.StyleId;
 
-public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameListener, ActionListener {
+public class PopUpUnitMenu extends WebPopupMenu {
+//implements InternalFrameListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -226,7 +227,6 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
                             false); //iconifiable);
 
 //	                d.addInternalFrameListener(this);
-
 //					d.addWindowListener(new WindowAdapter() {
 //			            @Override
 //			            public void windowClosing(WindowEvent e) {
@@ -249,11 +249,11 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 //						public void windowGainedFocus(WindowEvent e) {
 //						}
 //					});
+//	        		d.setIconImage(getIconImage());
 
 	                d.setIconifiable(false);
 	                d.setClosable(true);
 	        		d.setFrameIcon(MainWindow.getLanderIcon());
-//	        		d.setIconImage(getIconImage());
 	        		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 	        		WebPanel panel = new WebPanel(new BorderLayout(1, 1));

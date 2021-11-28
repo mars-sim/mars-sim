@@ -391,7 +391,8 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor.remove(id);
 
 		// remove the reservation
-		removeReservation(id);
+		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK)
+			removeReservation(id);
 	}
 
 
