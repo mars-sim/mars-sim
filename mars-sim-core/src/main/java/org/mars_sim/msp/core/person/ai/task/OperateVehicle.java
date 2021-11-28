@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -530,14 +531,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * Determine the vehicle's initial parked location while traveling to settlement.
 	 */
 	private void determineInitialSettlementParkedLocation() {
-	    
-	    Direction oppDir = new Direction(vehicle.getDirection().getDirection() + Math.PI);
-	    double distance = 200D;
-	    double xLoc = 0D - (distance * oppDir.getSinDirection());
-        double yLoc = distance * oppDir.getCosDirection();
+	   
+        // Park 200 meters from the new settlement in teh irection of travel
+        LocalPosition parkingPlace = LocalPosition.DEFAULT_POSITION.getPosition(200D, vehicle.getDirection().getDirection() + Math.PI);
         double degDir = vehicle.getDirection().getDirection() * 180D / Math.PI;
 	    
-        vehicle.setParkedLocation(xLoc, yLoc, degDir);
+        vehicle.setParkedLocation(parkingPlace, degDir);
 	}
 	
 	/**

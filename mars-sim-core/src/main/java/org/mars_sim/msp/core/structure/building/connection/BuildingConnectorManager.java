@@ -94,7 +94,7 @@ public class BuildingConnectorManager implements Serializable {
 		BuildingManager buildingManager = settlement.getBuildingManager();
 
 		// Create partial building connector list from building connection templates.
-		List<PartialBuildingConnector> partialBuildingConnectorList = new CopyOnWriteArrayList<PartialBuildingConnector>();
+		List<PartialBuildingConnector> partialBuildingConnectorList = new CopyOnWriteArrayList<>();
 		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate buildingTemplate = i.next();
@@ -123,8 +123,7 @@ public class BuildingConnectorManager implements Serializable {
 
 				double connectionXLoc = connectionTemplate.getPosition().getX();
 				double connectionYLoc = connectionTemplate.getPosition().getY();
-				Point2D.Double connectionSettlementLoc = LocalAreaUtil.getLocalRelativeLocation(connectionXLoc,
-						connectionYLoc, building);
+				LocalPosition connectionSettlementLoc = LocalAreaUtil.getLocalRelativePosition(connectionTemplate.getPosition(), building);
 
 				double connectionFacing = 0D;
 				if (connectionXLoc == (building.getWidth() / 2D)) {
@@ -146,8 +145,7 @@ public class BuildingConnectorManager implements Serializable {
 				}
 
 				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
-						new LocalPosition(connectionSettlementLoc), connectionFacing,
-						connectionBuilding);
+						connectionSettlementLoc, connectionFacing, connectionBuilding);
 				partialBuildingConnectorList.add(partialConnector);
 			}
 		}

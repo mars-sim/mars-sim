@@ -118,6 +118,16 @@ public class LocalPosition implements Serializable {
 	public boolean isClose(LocalPosition other) {
 		return getDistanceTo(other) < VERY_SMALL_DISTANCE;
 	}
+
+	/**
+	 * Is this position within the boundaries of an X & Y
+	 * @param maxX
+	 * @param maxY
+	 * @return
+	 */
+	public boolean isWithin(double maxX, double maxY) {
+		return (Math.abs(x) < maxX && Math.abs(y) < maxY);
+	}
 	
 	@Override
 	public int hashCode() {
@@ -160,4 +170,5 @@ public class LocalPosition implements Serializable {
 	public java.awt.geom.Point2D.Double toPoint() {
 		return new java.awt.geom.Point2D.Double(x, y);
 	}
+
 }

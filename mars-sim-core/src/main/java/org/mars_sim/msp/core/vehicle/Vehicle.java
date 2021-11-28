@@ -186,10 +186,8 @@ public abstract class Vehicle extends Unit
 	private double width;
 	/** Length of vehicle (meters). */
 	private double length;
-	/** Parked X location (meters) from center of settlement. */
-	private double xLocParked;
-	/** Parked Y location (meters) from center of settlement. */
-	private double yLocParked;
+	/** Parked position (meters) from center of settlement. */
+	private LocalPosition posParked;
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 
@@ -447,8 +445,7 @@ public abstract class Vehicle extends Unit
 		salvageInfo = null;
 		width = 0D;
 		length = 0D;
-		xLocParked = 0D;
-		yLocParked = 0D;
+		posParked = LocalPosition.DEFAULT_POSITION;
 		facingParked = 0D;
 
 		// Create microInventory instance
@@ -490,12 +487,17 @@ public abstract class Vehicle extends Unit
 
 	@Override
 	public double getXLocation() {
-		return xLocParked;
+		return posParked.getX();
 	}
-
+	
 	@Override
 	public double getYLocation() {
-		return yLocParked;
+		return posParked.getY();
+	}
+	
+	@Override
+	public LocalPosition getPosition() {
+		return posParked;
 	}
 
 	@Override
@@ -524,23 +526,19 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the location and facing of the vehicle when parked at a settlement.
 	 *
-	 * @param xLocation the x location (meters from settlement center - West:
-	 *                  positive, East: negative).
-	 * @param yLocation the y location (meters from settlement center - North:
-	 *                  positive, South: negative).
+	 * @param position  Position of the parking relative to the Settlement
 	 * @param facing    (degrees from North clockwise).
 	 */
-	public void setParkedLocation(double xLocation, double yLocation, double facing) {
+	public void setParkedLocation(LocalPosition position, double facing) {
 
 		// Get current human crew positions relative to the vehicle.
-		Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
+		Map<Person, LocalPosition> currentCrewPositions = getCurrentCrewPositions();
 
 		// Get current robot crew positions relative to the vehicle.
-		Map<Robot, Point2D> currentRobotCrewPositions = getCurrentRobotCrewPositions();
+		Map<Robot, LocalPosition> currentRobotCrewPositions = getCurrentRobotCrewPositions();
 
 		// Set new parked location for the vehicle.
-		this.xLocParked = xLocation;
-		this.yLocParked = yLocation;
+		this.posParked = position;
 		this.facingParked = facing;
 
 		// Set the human crew locations to the vehicle's new parked location.
@@ -555,9 +553,9 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return map of crew members and their relative vehicle positions.
 	 */
-	private Map<Person, Point2D> getCurrentCrewPositions() {
+	private Map<Person, LocalPosition> getCurrentCrewPositions() {
 
-		Map<Person, Point2D> result = null;
+		Map<Person, LocalPosition> result = null;
 
 		// Record current object-relative crew positions if vehicle is crewable.
 		if (this instanceof Crewable) {
@@ -566,8 +564,7 @@ public abstract class Vehicle extends Unit
 			Iterator<Person> i = crewable.getCrew().iterator();
 			while (i.hasNext()) {
 				Person crewmember = i.next();
-				Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(crewmember.getXLocation(),
-						crewmember.getYLocation(), this);
+				LocalPosition crewPos = LocalAreaUtil.getObjectRelativePosition(crewmember.getPosition(), this);
 				result.put(crewmember, crewPos);
 			}
 		}
@@ -580,9 +577,9 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return map of crew members and their relative vehicle positions.
 	 */
-	private Map<Robot, Point2D> getCurrentRobotCrewPositions() {
+	private Map<Robot, LocalPosition> getCurrentRobotCrewPositions() {
 
-		Map<Robot, Point2D> result = null;
+		Map<Robot, LocalPosition> result = null;
 
 		// Record current object-relative crew positions if vehicle is crewable.
 		if (this instanceof Crewable) {
@@ -591,8 +588,7 @@ public abstract class Vehicle extends Unit
 			Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
 			while (i.hasNext()) {
 				Robot robotCrewmember = i.next();
-				Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(robotCrewmember.getXLocation(),
-						robotCrewmember.getYLocation(), this);
+				LocalPosition crewPos = LocalAreaUtil.getObjectRelativePosition(robotCrewmember.getPosition(), this);
 				result.put(robotCrewmember, crewPos);
 			}
 		}
@@ -604,7 +600,7 @@ public abstract class Vehicle extends Unit
 	 * Sets the positions of all human crew members (if any) to the vehicle's
 	 * location.
 	 */
-	private void setCrewPositions(Map<Person, Point2D> currentCrewPositions) {
+	private void setCrewPositions(Map<Person, LocalPosition> currentCrewPositions) {
 
 		// Only move crew if vehicle is Crewable.
 		if (this instanceof Crewable) {
@@ -612,8 +608,8 @@ public abstract class Vehicle extends Unit
 			while (i.hasNext()) {
 				Person crewmember = i.next();
 
-				Point2D currentCrewPos = currentCrewPositions.get(crewmember);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(currentCrewPos),
+				LocalPosition currentCrewPos = currentCrewPositions.get(crewmember);
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(currentCrewPos,
 																		this);
 				crewmember.setPosition(settlementLoc);
 			}
@@ -624,7 +620,7 @@ public abstract class Vehicle extends Unit
 	 * Sets the positions of all robot crew members (if any) to the vehicle's
 	 * location.
 	 */
-	private void setRobotCrewPositions(Map<Robot, Point2D> currentRobotCrewPositions) {
+	private void setRobotCrewPositions(Map<Robot, LocalPosition> currentRobotCrewPositions) {
 
 		// Only move crew if vehicle is Crewable.
 		if (this instanceof Crewable) {
@@ -632,8 +628,8 @@ public abstract class Vehicle extends Unit
 			while (i.hasNext()) {
 				Robot robotCrewmember = i.next();
 
-				Point2D currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(currentCrewPos),
+				LocalPosition currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(currentCrewPos,
 														this);
 				robotCrewmember.setPosition(settlementLoc);
 			}

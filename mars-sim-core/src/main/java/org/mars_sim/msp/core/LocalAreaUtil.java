@@ -116,22 +116,42 @@ public class LocalAreaUtil {
 	 * @param yLoc          the Y location relative to the local area.
 	 * @param boundedObject the local bounded object.
 	 * @return Point containing the X and Y locations relative to the object.
+	 * @deprecated
 	 */
 	public static Point2D.Double getObjectRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
-		Point2D.Double result = new Point2D.Double();
-
-		double translateX = xLoc - boundedObject.getXLocation();
-		double translateY = yLoc - boundedObject.getYLocation();
+		return getObjectRelativePosition(new LocalPosition(xLoc, yLoc), boundedObject).toPoint();
+	}
+	
+	/**
+	 * Gets a object relative location for a given location and an object.
+	 *
+	 * @param position          the position relative to the local area.
+	 * @param boundedObject the local bounded object.
+	 * @return Point containing the X and Y locations relative to the object.
+	 */
+	public static LocalPosition getObjectRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
+		double translateX = position.getX() - boundedObject.getXLocation();
+		double translateY = position.getY() - boundedObject.getYLocation();
 
 		double radianRotation = (Math.PI * 2D) - Math.toRadians(boundedObject.getFacing());
 		double rotateX = (translateX * Math.cos(radianRotation)) - (translateY * Math.sin(radianRotation));
 		double rotateY = (translateX * Math.sin(radianRotation)) + (translateY * Math.cos(radianRotation));
 
-		result.setLocation(rotateX, rotateY);
-
-		return result;
+		return new LocalPosition(rotateX, rotateY);
 	}
 
+	/**
+	 * Gets a random position inside relative to the bounded Object
+	 *
+	 * @param boundedObject the local bounded object.
+	 * @return random X/Y location relative to the center of the bounded object.
+	 */
+	public static LocalPosition getRandomLocalRelativePosition(LocalBoundedObject boundedObject) {
+		LocalPosition randomInternal = getRandomInteriorPosition(boundedObject, true);
+		return LocalAreaUtil.getLocalRelativePosition(randomInternal, boundedObject);
+	}
+
+	
 	/**
 	 * Gets a random position inside a local bounded object.
 	 *

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -150,10 +151,8 @@ public abstract class Flyer extends Vehicle implements Serializable {
 		}
 
 		else {
+			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
 			
-			double centerXLoc = 0D;
-			double centerYLoc = 0D;
-
 			// Place the vehicle starting from the settlement center (0,0).
 
 			int oX = 15;
@@ -185,11 +184,9 @@ public abstract class Flyer extends Vehicle implements Serializable {
 					}
 
 					if (hab != null) {
-						centerXLoc = (int) hab.getXLocation();
-						centerYLoc = (int) hab.getYLocation();
+						centerLoc = hab.getPosition();
 					} else if (hub != null) {
-						centerXLoc = (int) hub.getXLocation();
-						centerYLoc = (int) hub.getYLocation();
+						centerLoc = hub.getPosition();
 					}
 				}
 
@@ -197,16 +194,12 @@ public abstract class Flyer extends Vehicle implements Serializable {
 					// Try parking near a garage
 					
 					Building garage = BuildingManager.getAGarage(getSettlement());
-					centerXLoc = (int) garage.getXLocation();
-					centerYLoc = (int) garage.getYLocation();
+					centerLoc = garage.getPosition();
 				}
 			}
 
-			double newXLoc = 0D;
-			double newYLoc = 0D;
-
 			double newFacing = 0D;
-
+			LocalPosition newLoc = null;
 			double step = 10D;
 			boolean foundGoodLocation = false;
 
@@ -216,14 +209,14 @@ public abstract class Flyer extends Vehicle implements Serializable {
 				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
 					double distance = RandomUtil.getRandomDouble(step) + x;
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
-					newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
+					
+					newLoc = centerLoc.getPosition(distance, radianDirection);
 					newFacing = RandomUtil.getRandomDouble(360D);
 
 					// Check if new vehicle location collides with anything.
-					foundGoodLocation = //LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc, newFacing, getCoordinates());
-							LocalAreaUtil.isObjectCollisionFree(this, this.getWidth() * 1.3, this.getLength() * 1.3, newXLoc,
-							newYLoc, newFacing, getCoordinates());
+					foundGoodLocation = 
+							LocalAreaUtil.isObjectCollisionFree(this, this.getWidth() * 1.3, this.getLength() * 1.3, newLoc.getX(),
+							newLoc.getY(), newFacing, getCoordinates());
 					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
 					// surrounded by buildings or hallways.
 					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
@@ -231,8 +224,7 @@ public abstract class Flyer extends Vehicle implements Serializable {
 				}
 			}
 
-			setParkedLocation(newXLoc, newYLoc, newFacing);
-
+			setParkedLocation(newLoc, newFacing);
 		}
 	}
 

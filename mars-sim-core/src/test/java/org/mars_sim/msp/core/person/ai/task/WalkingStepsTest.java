@@ -1,6 +1,5 @@
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import org.junit.Before;
@@ -722,9 +721,9 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-        Point2D parkingLocation = new Point2D.Double(0D, 0D);
+        LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
         GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
-                new Point2D[] { parkingLocation });
+                new LocalPosition[] { parkingLocation });
         building0.addFunction(garage);
 //        garage.addVehicle(rover);
 
@@ -789,9 +788,9 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-        Point2D parkingLocation = new Point2D.Double(0D, 0D);
+        LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
         GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
-                new Point2D[] { parkingLocation });
+                new LocalPosition[] { parkingLocation });
         building0.addFunction(garage);
 //        garage.addVehicle(rover);
 

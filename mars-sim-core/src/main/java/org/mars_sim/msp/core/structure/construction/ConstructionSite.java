@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -53,8 +54,7 @@ implements Serializable, LocalBoundedObject {
 
     private double width;
     private double length;
-    private double xLocation;
-    private double yLocation;
+    private LocalPosition position;
     private double facing;
 
     private boolean undergoingConstruction;
@@ -86,8 +86,7 @@ implements Serializable, LocalBoundedObject {
 
     	width = 0D;
         length = 0D;
-        xLocation = 0D;
-        yLocation = 0D;
+        position = LocalPosition.DEFAULT_POSITION;
         facing = 0D;
         foundationStage = null;
         frameStage = null;
@@ -125,30 +124,23 @@ implements Serializable, LocalBoundedObject {
 
     @Override
     public double getXLocation() {
-        return xLocation;
-    }
-
-    /**
-     * Sets the X location of the construction site.
-     * @param xLocation x location in meters from center of settlement (West: positive, East: negative).
-     */
-    public void setXLocation(double xLocation) {
-        this.xLocation = xLocation;
+        return position.getX();
     }
 
     @Override
     public double getYLocation() {
-        return yLocation;
+        return position.getY();
     }
 
-    /**
-     * Sets the Y location of the construction site.
-     * @param yLocation y location in meters from center of settlement (North: positive, South: negative).
-     */
-    public void setYLocation(double yLocation) {
-        this.yLocation = yLocation;
+    @Override
+    public LocalPosition getPosition() {
+    	return position;
     }
-
+    
+	public void setPosition(LocalPosition position2) {
+		this.position = position2;
+	}
+	
     @Override
     public double getFacing() {
         return facing;
@@ -363,7 +355,7 @@ implements Serializable, LocalBoundedObject {
         String uniqueName = manager.getBuildingNickName(buildingType);
 
         Building newBuilding = new Building(id, buildingType, uniqueName,
-        		new BoundedObject(xLocation, yLocation, width, length, facing),
+        		new BoundedObject(position, width, length, facing),
                 settlement.getBuildingManager());
         manager.addBuilding(newBuilding, true);
 
@@ -569,4 +561,5 @@ implements Serializable, LocalBoundedObject {
 	public boolean isInSettlement() {
 		return false;
 	}
+
 }
