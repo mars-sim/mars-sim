@@ -245,7 +245,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			InsidePathLocation location = walkingPath.getNextPathLocation();
-			double distanceToLocation = worker.getPosition().getDirectionTo(location.getPosition());
+			double distanceToLocation = worker.getPosition().getDistanceTo(location.getPosition());
 
 			if (coveredMeters >= distanceToLocation) {
 
@@ -363,7 +363,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
 		while (i.hasNext()) {
 			InsidePathLocation nextLoc = i.next();
-			nextLoc.getPosition().getDirectionTo(prevPosition);
+			result += nextLoc.getPosition().getDistanceTo(prevPosition);
 			prevPosition = nextLoc.getPosition();
 		}
 
