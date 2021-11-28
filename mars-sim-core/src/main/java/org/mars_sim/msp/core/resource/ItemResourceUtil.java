@@ -86,7 +86,6 @@ public class ItemResourceUtil implements Serializable {
 	public static int steelIngotID;
 	public static int steelSheetID;
 
-
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
 	private static Map<Integer, String> partIDNameMap;
@@ -97,7 +96,9 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
-	public static List<String> ATTACHMENTS = new ArrayList<>();
+	public static final List<String> ATTACHMENTS = new ArrayList<>();
+
+	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
 
 	static {
 		ATTACHMENTS.add(BACKHOE);
@@ -108,7 +109,9 @@ public class ItemResourceUtil implements Serializable {
 		ATTACHMENTS.add(SOIL_COMPACTOR);
 	}
 
-	public static String[] EVASUIT_PARTS;
+	public static final String[] EVASUIT_PARTS;
+
+	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
 
 	static {
 		EVASUIT_PARTS = new String[] {
@@ -129,15 +132,22 @@ public class ItemResourceUtil implements Serializable {
 			};
 	}
 
+	public static final String[] KITCHEN_WARE = new String[] {
+			"autoclave",
+			"blender",
+			"microwave",
+			"oven",
+			"refrigerator",
+			"stove" };
+
+	public static final List<Integer> KITCHEN_WARE_ID = new ArrayList<>();
+
 	/**
 	 * Constructor
 	 */
 	public ItemResourceUtil() {
-
 		partSet = getItemResources();
-
 		createMaps();
-
 		createIDs();
 	}
 
@@ -183,6 +193,20 @@ public class ItemResourceUtil implements Serializable {
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 
+		for (int i = 0; i < ATTACHMENTS.size(); i++) {
+			int id = findIDbyItemResourceName(ATTACHMENTS.get(i));
+			ATTACHMENTS_ID.add(id);
+		}
+
+		for (int i = 0; i < EVASUIT_PARTS.length; i++) {
+			int id = findIDbyItemResourceName(EVASUIT_PARTS[i]);
+			EVASUIT_PARTS_ID.add(id);
+		}
+
+		for (int i = 0; i < KITCHEN_WARE.length; i++) {
+			int id = findIDbyItemResourceName(KITCHEN_WARE[i]);
+			KITCHEN_WARE_ID.add(id);
+		}
 	}
 
 	/**

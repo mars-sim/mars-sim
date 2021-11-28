@@ -35,14 +35,6 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 3010;
 
-	public static final String[] KITCHEN_WARE = new String[] {
-			"autoclave",
-			"blender",
-			"microwave",
-			"oven",
-			"refrigerator",
-			"stove" };
-
 	public static String[] ROCKS  = new String[] {
 	        "rock samples",
 			"columnar basalt",
