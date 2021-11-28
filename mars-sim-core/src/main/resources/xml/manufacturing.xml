@@ -533,7 +533,7 @@ Note: 1 kg of H2 is 14.13 liter
      (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
      serves as a flux to lower the temperature at which the silica melts.
      https://en.wikipedia.org/wiki/Sodium_oxide -->
-<!--
+
 	<process name="make glass from sand"
 	tech="1" skill="0"
 			work-time="50"
@@ -549,7 +549,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon dioxide" amount="10.0" />
 		</outputs>
 	</process>
--->
+
 
 	<process name="make quartz from silicon dioxide"
 	tech="1" skill="0"

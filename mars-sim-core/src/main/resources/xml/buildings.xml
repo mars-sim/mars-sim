@@ -1221,6 +1221,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="sand" rate="60.0" ambient="false" />
 				</process>
 
+<!--
 				<process name="Make Glass from Sand" power-required="1.0" default="on">
 					<input resource="sand" rate="100.0" ambient="false" />
 					<input resource="sodium carbonate" rate="100.0" ambient="false" />
@@ -1231,7 +1232,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="silicon" rate="4.0" ambient="false"/>
 					<output resource="glass" rate="50.0" ambient="false" />
 				</process>
-
+-->
 				<process name="Make Cement" power-required="0.5" default="on">
 					<input resource="regolith" rate="80.0" ambient="false" />
 					<input resource="gypsum" rate="16.0" ambient="false" />
@@ -1272,6 +1273,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="polyethylene" rate="1.0" ambient="false" />
 
 					<output resource="concrete" rate="100.0" ambient="false" />
+				</process>
+
+				<!-- Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, which in terms
+					 produce water
+					 Decarbonation : MgCO3 at 670 C gives CO2 and MgO. Use Mg silica hydrate as binder
+
+					 63 kg of [(Mg Fe)2 SiO4] + 9 kg of H2O -> 1 kg of H2 + 71 kg * [2 MgO + 2 FeO + SiO2]
+
+					 SiO2 - amorphous silica
+					 MgO:Si paste - Mg Silicate Hydrate (MSH) binder
+					 1. https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
+				<process name="Make MgO concrete" power-required="1.0" default="on">
+					<input resource="olivine" rate="63.0" ambient="false" />
+					<input resource="water" rate="9.0" ambient="false" />
+
+					<output resource="hydrogen" rate="1.0" ambient="false" />
+					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
 			</resource-processing>
