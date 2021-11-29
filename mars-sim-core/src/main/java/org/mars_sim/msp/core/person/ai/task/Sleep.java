@@ -71,8 +71,6 @@ public class Sleep extends Task implements Serializable {
 	
 	// Data members
 	private boolean arrived = false;
-	/** The previous time (millisols). */
-	private double previousTime;
 	
 	/**
 	 * Constructor.
@@ -86,12 +84,6 @@ public class Sleep extends Task implements Serializable {
 		if (person.isOutside()) {
 			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
 
-			// if a person is outside and is in high fatigue, he ought
-			// to do an EVA ingress to come back in and sleep. 
-//			walkBackInside();
-			
-			// Initialize phase
-//			addPhase(SLEEPING);
 			endTask();
 		}
 		
@@ -100,13 +92,26 @@ public class Sleep extends Task implements Serializable {
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
+
+			// Adjust the duration so the person does not oversleep
+			double alarmTime = getAlarmTime();
+			double maxSleep = alarmTime - marsClock.getMillisol();
+			if (maxSleep < 0D) {
+				// Roll over midnight
+				maxSleep += 1000D;
+			}
+
+			// Is schedule sleep longer than allowed ?
+			if (maxSleep < getDuration()) {
+				logger.info(person, "Sleep adjusted for shift start @ " + alarmTime + " : " + maxSleep);
+				setDuration(maxSleep);
+			}
 		}
 	}
 
 	public Sleep(Robot robot) {
 		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
 
-		previousTime = marsClock.getMillisol();
 		
 		// Initialize phase
 		addPhase(SLEEPING_MODE);
@@ -212,29 +217,12 @@ public class Sleep extends Task implements Serializable {
 				// Reduce the probability if it's not the right time to sleep
 				refreshSleepHabit(person, circadian);
 			}
-			
-			double newTime = marsClock.getMillisol();
-			
+						
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");// ending at " + (int)newTime + " millisols.");
-				circadian.setAwake(true);
+				logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
 				endTask();
 			}
-			
-			double alarmTime = getAlarmTime();
-
-			// Check if alarm went off
-			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				circadian.setNumSleep(circadian.getNumSleep() + 1);
-				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.log(person, Level.FINE, 1000, "Awakened with the alarm going off.");// + (int)alarmTime + " millisols.");
-				circadian.setAwake(true);
-				endTask();
-			} else {
-				previousTime = newTime;
-			}
-
 		}
 
 		else if (robot != null) {
@@ -282,17 +270,6 @@ public class Sleep extends Task implements Serializable {
 					}
 				}
 			}
-			
-			double newTime = marsClock.getMillisol();
-			double alarmTime = getAlarmTime();
-			
-			// Check if alarm went off
-			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-//				logger.log(robot, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
-				endTask();
-			} else {
-				previousTime = newTime;
-			}
 		}
 
 		return 0D;
@@ -308,7 +285,6 @@ public class Sleep extends Task implements Serializable {
 			// If person is in rover, walk to passenger activity spot.
 			if (person.getVehicle() instanceof Rover) {	
 //				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);		
-				previousTime = marsClock.getMillisol();
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
 	
@@ -449,7 +425,6 @@ public class Sleep extends Task implements Serializable {
 						
 						if (q1 == null) {	
 							walkToRandomLocation(true);
-							previousTime = marsClock.getMillisol();
 							arrived = true;
 							return;
 						}
@@ -491,10 +466,6 @@ public class Sleep extends Task implements Serializable {
 						}
 					}
 				}
-	
-				previousTime = marsClock.getMillisol();
-
-	//			logger.info(person + " will sleep at " + person.getSettlement());
 			}
 			
 			arrived = true;
@@ -507,12 +478,16 @@ public class Sleep extends Task implements Serializable {
 	@Override
 	protected void clearDown() {
 		if (person != null) {
-//	    	logger.info(person.getNickName() + " called endTask() in " + this);
-			// Remove person from living accommodations bed so others can use it.
-//			if (accommodations != null && accommodations.getRegisteredSleepers() > 0) {
-//				accommodations.removeSleeper(person);
-//			}
-
+			if (person.getPhysicalCondition().getFatigue() > 0) {
+				logger.fine(person, "Still fatigued after Sleep " + (int)person.getPhysicalCondition().getFatigue());
+			}
+			
+	    	// Update sleep times once ending
+	    	CircadianClock circadian = person.getCircadianClock();
+			circadian.setNumSleep(circadian.getNumSleep() + 1);
+			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
+			circadian.setAwake(true);
+			
 		} else if (robot != null) {
 			// Remove robot from stations so other robots can use it.
 //			if (station != null && station.getSleepers() > 0) {
@@ -665,19 +640,12 @@ public class Sleep extends Task implements Serializable {
 				// the sun rises at ~250 milisols at 0 longitude
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				time = BASE_ALARM_TIME - timeDiff;
-				if (time < 0D) {
-					time += 1000D;
-				}
-			}
 
-		} else if (robot != null) {
-			timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
-			time = BASE_ALARM_TIME - timeDiff;
+			}
 			if (time < 0D) {
 				time += 1000D;
 			}
-		}
-
+		} 
 		return time;
 	}
 
