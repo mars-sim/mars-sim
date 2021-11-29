@@ -1674,8 +1674,7 @@ public class BuildingManager implements Serializable {
 		if (building != null) {
 			try {
 				// Add person to random location within building.
-				LocalPosition buildingLoc = LocalAreaUtil.getRandomInteriorPosition(building);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(buildingLoc, building);
+				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
 				if (unit instanceof Person) {
 					Person person = (Person) unit;

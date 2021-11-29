@@ -199,9 +199,7 @@ public class MineSite extends EVAOperation implements Serializable {
 
 			if (luv.addPerson(person)) {
 				
-				LocalPosition vehicleLoc = LocalAreaUtil.getRandomInteriorPosition(luv);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(vehicleLoc,
-														luv);
+				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(luv);
 
 				person.setPosition(settlementLoc);
 				luv.setOperator(person);

@@ -77,8 +77,8 @@ public class LocalAreaUtil {
 		double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
 		double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
 
-		double translateX = rotateX + boundedObject.getXLocation();
-		double translateY = rotateY + boundedObject.getYLocation();
+		double translateX = rotateX + boundedObject.getPosition().getX();
+		double translateY = rotateY + boundedObject.getPosition().getY();
 
 		return new LocalPosition(translateX, translateY);
 	}
@@ -130,8 +130,8 @@ public class LocalAreaUtil {
 	 * @return Point containing the X and Y locations relative to the object.
 	 */
 	public static LocalPosition getObjectRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
-		double translateX = position.getX() - boundedObject.getXLocation();
-		double translateY = position.getY() - boundedObject.getYLocation();
+		double translateX = position.getX() - boundedObject.getPosition().getX();
+		double translateY = position.getY() - boundedObject.getPosition().getY();
 
 		double radianRotation = (Math.PI * 2D) - Math.toRadians(boundedObject.getFacing());
 		double rotateX = (translateX * Math.cos(radianRotation)) - (translateY * Math.sin(radianRotation));
@@ -148,18 +148,7 @@ public class LocalAreaUtil {
 	 */
 	public static LocalPosition getRandomLocalRelativePosition(LocalBoundedObject boundedObject) {
 		LocalPosition randomInternal = getRandomInteriorPosition(boundedObject, true);
-		return LocalAreaUtil.getLocalRelativePosition(randomInternal, boundedObject);
-	}
-
-	
-	/**
-	 * Gets a random position inside a local bounded object.
-	 *
-	 * @param boundedObject the local bounded object.
-	 * @return random X/Y location relative to the center of the bounded object.
-	 */
-	public static LocalPosition getRandomInteriorPosition(LocalBoundedObject boundedObject) {
-		return getRandomInteriorPosition(boundedObject, true);
+		return getLocalRelativePosition(randomInternal, boundedObject);
 	}
 
 	/**
@@ -171,18 +160,6 @@ public class LocalAreaUtil {
 	 */
 	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject) {
 		return getRandomInteriorPosition(boundedObject, true).toPoint();
-	}
-
-	/**
-	 * Gets a random location inside a local bounded object.
-	 *
-	 * @param boundedObject the local bounded object.
-	 * @param useBoundary   true if inner boundary distance should be used.
-	 * @return random X/Y location relative to the center of the bounded object.
-	 * @deprecated
-	 */
-	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject, boolean useBoundary) {
-		return getRandomInteriorPosition(boundedObject, useBoundary).toPoint();
 	}
 
 	/**

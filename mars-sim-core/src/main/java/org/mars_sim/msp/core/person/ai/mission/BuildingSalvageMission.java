@@ -564,8 +564,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					luvTemp.setReservedForMission(true);
 
 					// Place light utility vehicles at random location in construction site.
-					LocalPosition relativeLocSite = LocalAreaUtil.getRandomInteriorPosition(constructionSite);
-					LocalPosition settlementLocSite = LocalAreaUtil.getLocalRelativePosition(relativeLocSite, constructionSite);
+					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(constructionSite);
 					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 					if (!settlement.removeParkedVehicle(luvTemp)) {
