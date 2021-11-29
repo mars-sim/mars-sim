@@ -1703,8 +1703,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Start the disembarking phase
 	 */
 	protected void startDisembarkingPhase() {
-		setPhase(DISEMBARKING,
-				getCurrentNavpoint().getDescription());
+		NavPoint np = getCurrentNavpoint();
+	
+		setPhase(DISEMBARKING, (np != null ? np.getDescription() : "Unknown"));
 	}
 
 	/**

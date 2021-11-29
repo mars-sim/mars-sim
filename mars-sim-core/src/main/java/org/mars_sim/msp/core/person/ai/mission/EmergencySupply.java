@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -337,9 +337,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			// Get random inhabitable building at emergency settlement.
 			Building destinationBuilding = emergencySettlement.getBuildingManager().getRandomAirlockBuilding();
 			if (destinationBuilding != null) {
-				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-						destinationLoc.getY(), destinationBuilding);
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
 				if (member instanceof Person) {
 					Person person = (Person) member;
@@ -454,9 +452,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		if (member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), vehicleLoc.getY(),
-					getVehicle());
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(getVehicle());
 			// TODO Refactor
 			if (member instanceof Person) {
 				Person person = (Person) member;

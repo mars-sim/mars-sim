@@ -101,9 +101,7 @@ public class Walk extends Task implements Serializable {
 			if (buildingList.size() > 0) {
 				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 				Building destinationBuilding = buildingList.get(buildingIndex);
-				Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-						interiorPos.getY(), destinationBuilding);
+				LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 				walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
 						destinationBuilding);
 			}
@@ -122,10 +120,7 @@ public class Walk extends Task implements Serializable {
 				// person.isInVehicleInGarage()
 				Building garageBuilding = BuildingManager.getBuilding(vehicle);
 				if (garageBuilding != null) {
-
-					Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
-					Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-							interiorPos.getY(), garageBuilding);
+					LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(garageBuilding);
 					walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
 							garageBuilding);
 					walkToSettlement = true;
@@ -145,9 +140,7 @@ public class Walk extends Task implements Serializable {
 						Airlock airlock = settlement.getClosestAvailableAirlock(person);
 						if (airlock != null) {
 							LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
-							Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
-							Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-									interiorPos.getY(), entity);
+							LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(entity);
 							walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
 									adjustedInteriorPos.getY(), 0, entity);
 							walkToSettlement = true;
@@ -170,9 +163,7 @@ public class Walk extends Task implements Serializable {
 				// Walk to random location within rover.
 				if (vehicle instanceof Rover) {
 					Rover rover = (Rover) person.getVehicle();
-					Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
-					Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-							interiorPos.getY(), rover);
+					LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(rover);
 					walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
 							rover);
 				}
@@ -185,9 +176,7 @@ public class Walk extends Task implements Serializable {
 			Airlock airlock = findEmergencyAirlock(person);
 			if (airlock != null) {
 				LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
-				Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
-				Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-						interiorPos.getY(), entity);
+				LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(entity);
 				walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0, entity);
 			}
 		}
@@ -242,9 +231,7 @@ public class Walk extends Task implements Serializable {
 			if (buildingList.size() > 0) {
 				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 				Building destinationBuilding = buildingList.get(buildingIndex);
-				Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
-						interiorPos.getY(), destinationBuilding);
+				LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 				walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
 						destinationBuilding);
 			}
@@ -790,10 +777,7 @@ public class Walk extends Task implements Serializable {
 				// longer within rover.
 				if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
 					// Determine new destination location within rover.
-					// TODO: Determine location based on activity spot?
-					Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-					Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
-							newRoverLoc.getY(), rover);
+					LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
 					step.xLoc = relativeRoverLoc.getX();
 					step.yLoc = relativeRoverLoc.getY();
 				}
@@ -846,9 +830,7 @@ public class Walk extends Task implements Serializable {
 			if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
 				// Determine new destination location within rover.
 				// TODO: Determine location based on activity spot?
-				Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-				Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
-						newRoverLoc.getY(), rover);
+				LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
 				step.xLoc = relativeRoverLoc.getX();
 				step.yLoc = relativeRoverLoc.getY();
 			}

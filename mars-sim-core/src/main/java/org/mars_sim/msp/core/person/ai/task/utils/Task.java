@@ -18,6 +18,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -1127,12 +1128,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void walkToRandomLocInBuilding(Building building, boolean allowFail) {
 
-		Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(building);
-		Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(), interiorPos.getY(),
-				building);
+		LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
 		// Create subtask for walking to destination.
-		createWalkingSubtask(building, adjustedInteriorPos, allowFail);
+		createWalkingSubtask(building, adjustedInteriorPos.toPoint(), allowFail);
 	}
 
 	/**
@@ -1269,12 +1268,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void walkToRandomLocInRover(Rover rover, boolean allowFail) {
 
-		Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
-		Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(), interiorPos.getY(),
-				rover);
+		LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(rover);
 
 		// Create subtask for walking to destination.
-		createWalkingSubtask(rover, adjustedInteriorPos, allowFail);
+		createWalkingSubtask(rover, adjustedInteriorPos.toPoint(), allowFail);
 	}
 
 	/**

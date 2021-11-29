@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -200,9 +200,7 @@ implements Serializable {
 
         // Determine location within power source building.
         // Note: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
-                buildingLoc.getY(), powerBuilding);
+        LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(powerBuilding);
 
         if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 0,
                 powerBuilding)) {

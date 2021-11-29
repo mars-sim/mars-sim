@@ -155,17 +155,6 @@ public class LocalAreaUtil {
 	 * Gets a random location inside a local bounded object.
 	 *
 	 * @param boundedObject the local bounded object.
-	 * @return random X/Y location relative to the center of the bounded object.
-	 * @deprecated
-	 */
-	public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject) {
-		return getRandomInteriorPosition(boundedObject, true).toPoint();
-	}
-
-	/**
-	 * Gets a random location inside a local bounded object.
-	 *
-	 * @param boundedObject the local bounded object.
 	 * @param useBoundary   true if inner boundary distance should be used.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
@@ -198,49 +187,50 @@ public class LocalAreaUtil {
 
 	
 	/**
-	 * Gets a random location outside a local bounded object at a given distance
+	 * Gets a random position outside a local bounded object at a given distance
 	 * away.
 	 *
 	 * @param boundedObject the local bounded object.
 	 * @param distance      the distance away from the object.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
-	public static Point2D.Double getRandomExteriorLocation(LocalBoundedObject boundedObject, double distance) {
-
-		Point2D.Double result = new Point2D.Double(0D, 0D);
+	public static LocalPosition getRandomExteriorPosition(LocalBoundedObject boundedObject, double distance) {
 
 		int side = RandomUtil.getRandomInt(3);
 
+		double x = 0;
+		double y = 0;
 		switch (side) {
 		// Front side.
 		case 0:
-			result.x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
+			x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
 					- ((boundedObject.getWidth() / 2D) + distance);
-			result.y = (boundedObject.getLength() / 2D) + distance;
+			y = (boundedObject.getLength() / 2D) + distance;
 			break;
 
 		// Back side.
 		case 1:
-			result.x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
+			x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
 					- (boundedObject.getWidth() + distance);
-			result.y = (boundedObject.getLength() / -2D) - distance;
+			y = (boundedObject.getLength() / -2D) - distance;
 			break;
 
 		// Left side.
 		case 2:
-			result.x = (boundedObject.getWidth() / 2D) + distance;
-			result.y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
+			x = (boundedObject.getWidth() / 2D) + distance;
+			y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
 					- ((boundedObject.getLength() / 2D) + distance);
 			break;
 
 		// Right side.
 		case 3:
-			result.x = (boundedObject.getWidth() / -2D) - distance;
-			result.y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
+			x = (boundedObject.getWidth() / -2D) - distance;
+			y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
 					- ((boundedObject.getLength() / 2D) + distance);
+			break;
 		}
 
-		return result;
+		return new LocalPosition(x, y);
 	}
 
 	/**
