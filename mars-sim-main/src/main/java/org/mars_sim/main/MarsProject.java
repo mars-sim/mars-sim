@@ -59,28 +59,28 @@ public class MarsProject {
 	private Simulation sim = Simulation.instance();
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
-	
+
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
 	private boolean useSiteEditor;
 
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public MarsProject() {
 		logger.config("Starting " + Simulation.title);
 	};
-	
+
 	/**
 	 * Parse the argument and start the simulation.
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
 		logger.config("List of input args : " + Arrays.toString(args));
-		
+
 		SimulationBuilder builder = new SimulationBuilder();
-		
+
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
@@ -96,13 +96,13 @@ public class MarsProject {
 				.desc("Generate HTML help").build());
 		options.addOption(Option.builder(SITEEDITOR)
 				.desc("Start the Scenario Editor").build());
-		
+
 		CommandLineParser commandline = new DefaultParser();
 		try {
 			CommandLine line = commandline.parse(options, args);
-			
+
 			builder.parseCommandLine(line);
-			
+
 			if (line.hasOption(NOAUDIO)) {
 				// Disable all audio not just the volume
 				AudioPlayer.disableVolume();
@@ -131,7 +131,7 @@ public class MarsProject {
 				if (!useSiteEditor) {
 					MainWindow.startSplash();
 				}
-				
+
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
 				// SplashWindow and SimulationConfigEditor
 				if (!MainWindow.OS.contains("linux")) {
@@ -142,19 +142,19 @@ public class MarsProject {
 
 			// Preload the Config
 			simulationConfig.loadConfig();
-			
+
 			if (useSiteEditor) {
 				startScenarioEditor(builder);
 			}
 			// Get user choices if there is no template defined or a preload
 			else if (!builder.isFullyDefined()) {
 				logger.config("Please go to the console's Main Menu to choose an option.");
-				
+
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
 					startScenarioEditor(builder);
 				}
-			
+
 				else if (type == 2) {
 					// Load simulation
 					String filePath = selectSimFile(false);
@@ -166,18 +166,18 @@ public class MarsProject {
 					// Check out crew flag
 					builder.setUseCrews(interactiveTerm.getUseCrew());
 				}
-				
+
 			}
-			
+
 			// Build and run the simulator
 			builder.start();
-			
+
 			// Start the wait layer
 			InteractiveTerm.startLayer();
-			
+
 			// Start beryx console
 			startConsoleThread();
-			
+
 			if (useGUI) {
 				setupMainWindow(false);
 			}
@@ -194,13 +194,13 @@ public class MarsProject {
 		SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
 		logger.config("Start the Site Editor...");
 		editor.waitForCompletion();
-		
+
 		UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
 		if (crew != null) {
 			// Set the actual CrewConfig as it has editted entries
 			builder.setCrewConfig(crew);
 		}
-		
+
 		Scenario scenario = editor.getScenario();
 		if (scenario != null) {
 			builder.setScenario(scenario);
@@ -212,13 +212,13 @@ public class MarsProject {
 		HelpFormatter format = new HelpFormatter();
 		System.out.println();
 		System.out.println(message);
-		format.printHelp(" [for mars-sim Swing dition]", options);
+		format.printHelp(" [for mars-sim Swing edition]", options);
 		System.exit(1);
 	}
 
 	/**
 	 * Performs the process of loading a simulation.
-	 * 
+	 *
 	 * @param autosave
 	 */
 	private String selectSimFile(boolean autosave) {
@@ -240,10 +240,10 @@ public class MarsProject {
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
-		
+
 		return null;
 	}
-	
+
 	private void generateHelp() {
 		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
 
@@ -261,7 +261,7 @@ public class MarsProject {
 
 	/**
 	 * Exit the simulation with an error message.
-	 * 
+	 *
 	 * @param message the error message.
 	 * @param e       the thrown exception or null if none.
 	 */
@@ -293,7 +293,7 @@ public class MarsProject {
 	        }
 		}
 	}
-	
+
 
 	/**
 	 * Start the simulation instance.
@@ -303,26 +303,24 @@ public class MarsProject {
 		consoleThread.setName("ConsoleThread");
 		consoleThread.start();
 	}
-	
+
 	class ConsoleTask implements Runnable {
 
 		ConsoleTask() {
 		}
-		
+
 		public void run() {
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();
 		}
 	}
-	
+
 	/**
 	 * The starting method for the application
 	 *
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-
-//		Logger.getLogger("").setLevel(Level.FINE);
 
 		/*
 		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so

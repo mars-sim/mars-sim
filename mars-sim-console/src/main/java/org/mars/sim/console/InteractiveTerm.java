@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InteractiveTerm.java
- * @date 2021-10-02
+ * @date 2021-11-29
  * @author Manny Kung
  */
 
@@ -61,7 +61,10 @@ public class InteractiveTerm {
 
 	private static CommanderProfile profile;
 
+	private static InteractiveTerm interactiveTerm;
+
 	public InteractiveTerm(boolean restart) {
+		interactiveTerm = this;
 
         marsTerminal.init();
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
@@ -79,10 +82,10 @@ public class InteractiveTerm {
 	/**
 	 * Asks players what to choose in beryx console main menu.
 	 */
-	public int startConsoleMainMenu() {
+	public static int startConsoleMainMenu() {
 		logger.config("Staring startConsoleMainMenu()");
 
-		profile = new CommanderProfile(this);
+		profile = new CommanderProfile(interactiveTerm);
 
 		return selectMenu();
 	}
@@ -548,7 +551,7 @@ public class InteractiveTerm {
 			}
 
 			else {
-				System.out.println("Can't find the 'commander.txt' file.");
+				logger.severe("Can't find the 'commander.txt' file.");
     			marsTerminal.print(System.lineSeparator()
     					+ "Can't find the 'commander.txt' file."
     					+ System.lineSeparator()

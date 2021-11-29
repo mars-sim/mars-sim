@@ -2,11 +2,13 @@ package org.mars_sim.fxgl.data;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import org.mars_sim.fxgl.main.SoftknkioApp;
+import org.mars_sim.msp.core.logging.SimLogger;
 
 public class SaveGameData {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(SaveGameData.class.getName());
 
 	private SaveGameData() {
 	}
@@ -14,9 +16,9 @@ public class SaveGameData {
     public static void saveData() {
     	boolean result = DataFile.dataFile().setWritable(true);
     	if (result)
-    		System.out.println("writable");
+    		logger.info(null, "writable");
     	else
-    		System.out.println("Not writable");
+    		logger.info(null, "Not writable");
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DataFile.dataFile()))) {
 
@@ -35,10 +37,12 @@ public class SaveGameData {
 
             boolean result1 = DataFile.dataFile().setWritable(false);
             if (result1)
-            	writer.close();
+        		logger.info(null, "writable");
+        	else
+        		logger.info(null, "Not writable");
 
-        } catch (IOException e) {
-
+        } catch (Exception e) {
+        	logger.severe(null, "Exception: ", e);
         } finally {
             // Multiple streams were opened. Only the last is closed.
         }

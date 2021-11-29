@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * AppUtil.java
- * @version 3.1.0 2018-09-24
+ * CommanderInfo.java
+ * @date 2021-11-29
  * @author Manny Kung
  */
 
@@ -47,7 +47,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
     }
 
     private final Contact contact = new Contact();
-    
+
     private final List<Runnable> operations = new ArrayList<>();
 
     public static void main(String[] args) {

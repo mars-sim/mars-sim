@@ -40,8 +40,6 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 
-//import org.mars_sim.msp.core.Simulation;
-
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 
@@ -62,18 +60,18 @@ public class MarsProjectFXGL extends GameApplication {
 	private Simulation sim = Simulation.instance();
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
-	
+
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
 	private First first = new First();
-	
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public MarsProjectFXGL() {
 		logger.config("Starting " + Simulation.title);
-	};
-	
+	}
+
 	@Override
 	protected void initSettings(GameSettings settings) {
 		first.initSettings(settings);
@@ -83,41 +81,118 @@ public class MarsProjectFXGL extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
     	first.initGameVars(vars);
     }
-    
+
 	 @Override
 	 protected void initGame() {
 		 first.initGame();
 	}
-	  
+
 	 @Override
 	 protected void initInput() {
 		 first.initInput();
 	 }
-	 
+
 	 @Override
 	 protected void initUI() {
 		 first.initUI();
 	 }
-	 
+
 	 @Override
 	 protected void initPhysics() {
 		 first.initPhysics();
 	 }
-	 
+
 	 @Override
 	 protected void onUpdate(double tpf) {
 		 first.onUpdate(tpf);
 	 }
-	 
+
 	/**
 	 * Parse the argument and start the simulation.
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
 		logger.config("List of input args : " + Arrays.toString(args));
-		
+
 		SimulationBuilder builder = new SimulationBuilder();
-		
+
+		checkOptions(builder, args);
+
+		// Do it
+		try {
+			if (useGUI) {
+				// Start the splash window
+				MainWindow.startSplash();
+				// Use opengl
+				// Question: How compatible are linux and macos with opengl ?
+				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
+				if (!MainWindow.OS.contains("linux")) {
+					System.setProperty("sun.java2d.ddforcevram", "true");
+				}
+			}
+
+			// Preload the Config
+			SimulationConfig.instance().loadConfig();
+
+			// Get user choices if there is no template defined or a preload
+			if (!builder.isFullyDefined()) {
+				logger.config("Please go to the console's Main Menu to choose an option.");
+
+				int type = interactiveTerm.startConsoleMainMenu();
+				if (type == 1) {
+					// Start sim config editor
+					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
+					logger.config("Start the Site Editor...");
+					editor.waitForCompletion();
+
+					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
+					if (crew != null) {
+						// Set the actual CrewConfig as it has editted entries
+						builder.setCrewConfig(crew);
+					}
+
+					Scenario scenario = editor.getScenario();
+					if (scenario != null) {
+						builder.setScenario(scenario);
+					}
+				}
+
+				else if (type == 2) {
+					// Load simulation
+					String filePath = selectSimFile(false);
+					if (filePath != null) {
+						builder.setSimFile(filePath);
+					}
+				}
+				else {
+					// Check out crew flag
+					builder.setUseCrews(interactiveTerm.getUseCrew());
+				}
+
+			}
+
+			// Build and run the simulator
+			builder.start();
+
+			// Start the wait layer
+			InteractiveTerm.startLayer();
+
+			// Start beryx console
+			startConsoleThread();
+
+			if (useGUI) {
+//				setupMainWindow(false);
+				launch(args);
+			}
+		}
+		catch(Exception e) {
+			// Catch everything
+			exitWithError("Problem starting " + e.getMessage(), e);
+
+		}
+	}
+
+	private void checkOptions(SimulationBuilder builder, String[] args) {
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
@@ -131,13 +206,13 @@ public class MarsProjectFXGL extends GameApplication {
 				.desc("Disable the main UI").build());
 		options.addOption(Option.builder(GENERATEHELP)
 				.desc("Generate HTML help").build());
-		
+
 		CommandLineParser commandline = new DefaultParser();
 		try {
 			CommandLine line = commandline.parse(options, args);
-			
+
 			builder.parseCommandLine(line);
-			
+
 			if (line.hasOption(NOAUDIO)) {
 				// Disable all audio not just the volume
 				AudioPlayer.disableVolume();
@@ -156,80 +231,7 @@ public class MarsProjectFXGL extends GameApplication {
 		catch (Exception e1) {
 			usage("Problem with arguments: " + e1.getMessage(), options);
 		}
-
-		// Do it
-		try {
-			if (useGUI) {
-				MainWindow.startSplash();
-				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
-				// SplashWindow and SimulationConfigEditor
-				if (!MainWindow.OS.contains("linux")) {
-					System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in
-																		// linux and macos ?
-				}
-			}
-
-			// Preload the Config
-			SimulationConfig.instance().loadConfig();
-			
-			// Get user choices if there is no template defined or a preload
-			if (!builder.isFullyDefined()) {
-				logger.config("Please go to the console's Main Menu to choose an option.");
-				
-				int type = interactiveTerm.startConsoleMainMenu();
-				if (type == 1) {
-					// Start sim config editor
-					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
-					logger.config("Start the Site Editor...");
-					editor.waitForCompletion();
-					
-					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
-					if (crew != null) {
-						// Set the actual CrewConfig as it has editted entries
-						builder.setCrewConfig(crew);
-					}
-					
-					Scenario scenario = editor.getScenario();
-					if (scenario != null) {
-						builder.setScenario(scenario);
-					}
-				}
-			
-				else if (type == 2) {
-					// Load simulation
-					String filePath = selectSimFile(false);
-					if (filePath != null) {
-						builder.setSimFile(filePath);
-					}
-				}
-				else {
-					// Check out crew flag
-					builder.setUseCrews(interactiveTerm.getUseCrew());
-				}
-				
-			}
-			
-			// Build and run the simulator
-			builder.start();
-			
-			// Start the wait layer
-			InteractiveTerm.startLayer();
-			
-			// Start beryx console
-			startConsoleThread();
-			
-			if (useGUI) {
-//				setupMainWindow(false);				
-				launch(args);
-			} 
-		}
-		catch(Exception e) {
-			// Catch everything
-			exitWithError("Problem starting " + e.getMessage(), e);
-
-		}
 	}
-
 
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
@@ -241,7 +243,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 	/**
 	 * Performs the process of loading a simulation.
-	 * 
+	 *
 	 * @param autosave
 	 */
 	private String selectSimFile(boolean autosave) {
@@ -263,10 +265,10 @@ public class MarsProjectFXGL extends GameApplication {
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
-		
+
 		return null;
 	}
-	
+
 	private void generateHelp() {
 		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
 
@@ -284,7 +286,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 	/**
 	 * Exit the simulation with an error message.
-	 * 
+	 *
 	 * @param message the error message.
 	 * @param e       the thrown exception or null if none.
 	 */
@@ -301,23 +303,6 @@ public class MarsProjectFXGL extends GameApplication {
 		System.exit(1);
 	}
 
-
-//	public void setupMainWindow(boolean cleanUI) {
-//		while (true) {
-//	        try {
-//				TimeUnit.MILLISECONDS.sleep(250);
-//				if (!sim.isUpdating()) {
-//					logger.config("Starting GUI");
-//					new MainWindow(cleanUI).stopLayerUI();
-//					break;
-//				}
-//	        } catch (InterruptedException e) {
-//				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); //$NON-NLS-1$
-//	        }
-//		}
-//	}
-	
-
 	/**
 	 * Start the simulation instance.
 	 */
@@ -326,27 +311,24 @@ public class MarsProjectFXGL extends GameApplication {
 		consoleThread.setName("ConsoleThread");
 		consoleThread.start();
 	}
-	
+
 	class ConsoleTask implements Runnable {
 
 		ConsoleTask() {
 		}
-		
+
 		public void run() {
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();
 		}
 	}
-	
+
 	/**
 	 * The starting method for the application
 	 *
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-
-//		Logger.getLogger("").setLevel(Level.FINE);
-
+	public static void main(String[] args) {
 		/*
 		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so
 		 * that this gets webstart compatible. Also create the logs dir in user.home

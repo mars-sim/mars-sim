@@ -455,19 +455,16 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				if (e.getValueIsAdjusting()) {
 					// Open window for selected person.
 					int index = memberTable.getSelectedRow();
+					if (index > -1) {
+						MissionMember member = memberTableModel.getMemberAtIndex(index);
+	//					if (member != null) {
+							if (member.getUnitType() == UnitType.PERSON) {
+								getDesktop().openUnitWindow((Person) member, false);
 
-					MissionMember member = memberTableModel.getMemberAtIndex(index);
-					if (member != null) {
-						if (member.getUnitType() == UnitType.PERSON) {
-							Person person = (Person) member;
-							if (person != null)
-								getDesktop().openUnitWindow(person, false);
-
-						} else {
-							Robot robot = (Robot) member;
-							if (robot != null)
-								getDesktop().openUnitWindow(robot, false);
-						}
+							} else {
+								getDesktop().openUnitWindow((Robot) member, false);
+							}
+	//					}
 					}
 				}
 			}
