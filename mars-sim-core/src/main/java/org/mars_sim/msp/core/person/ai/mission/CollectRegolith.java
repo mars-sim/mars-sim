@@ -44,7 +44,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
@@ -56,14 +56,14 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	/**
 	 * Constructor with explicit data.
-	 * 
+	 *
 	 * @param members                 collection of mission members.
 	 * @param regolithCollectionSites the sites to collect regolith.
 	 * @param rover                   the rover to use.
 	 * @param description             the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith(Collection<MissionMember> members, 
+	public CollectRegolith(Collection<MissionMember> members,
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
@@ -88,21 +88,21 @@ public class CollectRegolith extends CollectResourcesMission {
 	}
 
 	/**
-	 * THis implementatino can refine the resource being collected according to what is at the site.
+	 * This implementation can refine the resource being collected according to what is at the site.
 	 */
 	@Override
 	protected double calculateRate(Worker worker) {
-		
-		// Look for the regolith type that has the highest vp
+
+		// Look for one of the 3 regolith types that has the highest vp
 		double highest = 0;
-		for (int type: ResourceUtil.REGOLITH_TYPES) {
+		for (int type: getCollectibleResources()) {
 			double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
 			if (highest < vp) {
 				highest = vp;
 				setResourceID(type);
 			}
 		}
-			
+
 		return terrainElevation.getRegolithCollectionRate(null, worker.getCoordinates());
 	}
 }

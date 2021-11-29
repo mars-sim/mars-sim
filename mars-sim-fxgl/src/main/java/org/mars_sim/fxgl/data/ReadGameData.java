@@ -26,20 +26,25 @@ public class ReadGameData {
                 initFile(DataFile.dataFile());
             }
 
-            BufferedReader reader = new BufferedReader(new FileReader(DataFile.dataFile()));
-            return Optional.of(reader.lines().collect(Collectors.toList()));
+            try (BufferedReader reader = new BufferedReader(new FileReader(DataFile.dataFile()))) {
+            	return Optional.of(reader.lines().collect(Collectors.toList()));
+            } catch (Exception e) {
+                // ...
+            } finally {
+            	// Multiple streams were opened. Only the last is closed.
+            }
 
         } catch (IOException e) {
-//            e.printStackTrace();
         }
 
         return Optional.empty();
     }
 
     private static void initFile(File file) throws IOException {
-        PrintStream _writer = new PrintStream(new FileOutputStream(file, true));
-        _writer.append("<nickname>\n" + "0\n" + "1\n" + "0\n" + "0\n" + "0\n" + "0");
-        file.setWritable(false);
-        _writer.close();
+        PrintStream writer = new PrintStream(new FileOutputStream(file, true));
+        writer.append("<nickname>\n" + "0\n" + "1\n" + "0\n" + "0\n" + "0\n" + "0");
+        boolean result = file.setWritable(false);
+        if (result)
+        	writer.close();
     }
 }

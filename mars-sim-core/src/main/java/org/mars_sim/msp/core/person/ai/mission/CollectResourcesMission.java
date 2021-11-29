@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -46,7 +47,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CollectResourcesMission.class.getName());
-	
+
 	/** Mission phase. */
 	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase("Mission.phase.collectResources");
 
@@ -59,10 +60,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
-	
+
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
-	
+
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
@@ -87,7 +88,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param missionName            The name of the mission.
 	 * @param startingPerson         The person starting the mission.
 	 * @param resourceID           The type of resource.
@@ -106,12 +107,12 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		// Use RoverMission constructor
 		super(missionName, missionType, startingPerson);
-		
+
 		// Problem starting mission
 		if (isDone()) {
 			return;
 		}
-		
+
 		Settlement s = startingPerson.getSettlement();
 
 		if (s != null) {
@@ -130,7 +131,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				Coordinates startingLocation = s.getCoordinates();
 				double range = getVehicle().getRange(missionType);
 				double timeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				
+
 				// Determining the actual traveling range.
 				double timeRange = getTripTimeRange(timeLimit, numSites, true);
 				if (timeRange < range)
@@ -140,37 +141,39 @@ public abstract class CollectResourcesMission extends RoverMission
 					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 					return;
 				}
-				
+
 				if (terrainElevation == null)
 					terrainElevation = surfaceFeatures.getTerrainElevation();
-				
+
 				// Find some sites
 				List<Coordinates> unorderedSites = null;
 				while (unorderedSites == null) {
 					unorderedSites= determineCollectionSites(startingLocation,
 							range,
 							numSites);
-				
+
 					if (!isValidScore(totalSiteScore)) {
 						totalSiteScore = 0;
 						unorderedSites = null;
 						logger.warning(startingPerson, missionName + " attempt another collection site find");
 					}
-					
+
 					// Mission might be aborted at determine site step
 					if (isDone()) {
 						logger.warning(startingPerson, missionName + " site searched & mission aborted");
 						return;
 					}
 				}
-				
+
 				// Reorder sites for shortest distance and load
 				List<Coordinates> orderSites = Exploration.getMinimalPath(startingLocation, unorderedSites);
 				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 				double containerCap = ContainerUtil.getContainerCapacity(containerID);
 				this.siteResourceGoal = (containerCap * (containerNum - 2)) / orderSites.size();
-				logger.info(getVehicle(), "Target per site " + siteResourceGoal);
+				logger.info(getVehicle(), "Target mount of resource per site: "
+						+ siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
+						+ ".");
 			}
 
 			// Add home settlement for return
@@ -191,7 +194,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Constructor with explicit data
-	 * 
+	 *
 	 * @param missionName            The name of the mission.
 	 * @param members                collection of mission members
 	 * @param resourceID           The type of resource.
@@ -213,7 +216,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		super(missionName, missionType, (MissionMember) members.toArray()[0], rover);
 
 		this.resourceID = resourceID;
-		
+
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = (containerCap * (containerNum - 2))/ collectionSites.size();
 		this.resourceCollectionRate = resourceCollectionRate;
@@ -252,10 +255,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	protected void setResourceID(int newResource) {
 		this.resourceID = newResource;
 	}
-	
+
 	/**
 	 * Gets the total amount of resources collected so far in the mission.
-	 * 
+	 *
 	 * @return resource amount (kg).
 	 */
 	public double getTotalCollectedResources() {
@@ -264,7 +267,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
-	 * 
+	 *
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	@Override
@@ -272,22 +275,22 @@ public abstract class CollectResourcesMission extends RoverMission
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-	
+
 				if (getCurrentNavpoint() == null)
 					// go back home
 					returnHome();
 				else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 					startDisembarkingPhase();
 				}
-	
+
 				else if (canStartEVA()) {
 					setPhase(COLLECT_RESOURCES,
 							getCurrentNavpoint().getDescription());
-				}	
+				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
 				setPhase(COLLECT_RESOURCES,
-						getCurrentNavpoint().getDescription());	
+						getCurrentNavpoint().getDescription());
 			}
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
 				startTravellingPhase();
@@ -327,7 +330,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Updates the resources collected
-	 * 
+	 *
 	 * @param inv
 	 * @return
 	 */
@@ -335,28 +338,28 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		double resourcesCollected = 0;
 		double resourcesCapacity = 0;
-		
+
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
 		for (Integer type : getCollectibleResources()) {
 			resourcesCollected += inv.getAmountResourceStored(type);
 			resourcesCapacity += inv.getAmountResourceCapacity(type);
 		}
-		
+
 		// Set total collected resources.
 		totalResourceCollected = resourcesCollected;
 
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourcesCollected - collectingStart;
-		
+
 		// Check if rover capacity for resources is met, then end this phase.
 		if (resourcesCollected >= resourcesCapacity) {
 			setPhaseEnded(true);
 		}
-		
+
 		return resourcesCapacity;
 	}
-	
+
 	/**
 	 * what resources can be collected once on site. By default this is just
 	 * the main resource but could be others.
@@ -368,21 +371,21 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Performs the collecting phase of the mission.
-	 * 
+	 *
 	 * @param member the mission member currently performing the mission
 	 */
 	private void collectingPhase(MissionMember member) {
-		
+
 		Rover rover = getRover();
 		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
-		
+
 		double weight = ((Person)member).getMass();
 
 		if (roverRemainingCap < weight + 5) {
 			endCollectingSite = false;
 			setPhaseEnded(true);
 		}
-		
+
 		double resourcesCapacity = updateResources(rover);
 
 		// Check if end collecting flag is set.
@@ -402,7 +405,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			// Determine if no one can start the collect resources task.
 			boolean nobodyCollect = true;
 			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext() && nobodyCollect) {				
+			while (j.hasNext() && nobodyCollect) {
 				MissionMember m = j.next();
 				for (Integer type : getCollectibleResources()) {
 					if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
@@ -431,36 +434,39 @@ public abstract class CollectResourcesMission extends RoverMission
 			}
 		}
 
-		if (!getPhaseEnded()) {
-			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
-				
-				if (member instanceof Person) {
-					Person person = (Person) member;
+		if (!getPhaseEnded()
+				&& (siteCollectedResources < siteResourceGoal)
+				&& !endCollectingSite
+				&& member instanceof Person) {
 
-					double rate = calculateRate(person); 
-					
-					// Randomize the rate of collection upon arrival
-					rate = rate 
-							* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
-					
-					// Note: Add how areologists and some scientific study may come up with better technique 
-					// to obtain better estimation of the collection rate. Go to a prospective site, rather 
-					// than going to a site coordinate in the blind.
-					
-					if (rate > 0)
-						resourceCollectionRate = rate;
-					
-					// If person can collect resources, start him/her on that task.
-					if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
-						EVAOperation collectResources = new CollectResources("Collecting Resources", person,
-								getRover(), resourceID, resourceCollectionRate,
-								siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
-								containerID);
-						assignTask(person, collectResources);
-					}
-				}
+			Person person = (Person) member;
+
+			double rate = calculateRate(person);
+
+			// Randomize the rate of collection upon arrival
+			rate = rate
+					* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
+
+			// Note: Add how areologists and some scientific study may come up with better technique
+			// to obtain better estimation of the collection rate. Go to a prospective site, rather
+			// than going to a site coordinate in the blind.
+
+			if (rate <= 0)
+				rate = .1;
+
+			resourceCollectionRate = rate;
+
+			// If person can collect resources, start him/her on that task.
+			if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
+				EVAOperation collectResources = new CollectResources("Collecting Resources", person,
+						getRover(), resourceID, resourceCollectionRate,
+						siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
+						containerID);
+				assignTask(person, collectResources);
 			}
-		} else {
+		}
+
+		else {
 			// If the rover is full of resources, head home.
 			if (siteCollectedResources >= resourcesCapacity) {
 				setNextNavpointIndex(getNumberOfNavpoints() - 2);
@@ -468,7 +474,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				siteCollectedResources = 0D;
 			}
 		}
-		
+
 		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
 		updateResources(rover);
 	}
@@ -482,19 +488,18 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Determine the locations of the sample collection sites.
-	 * @param startingLocation 
-	 * 
+	 *
 	 * @parma startingLocation Where to start from
-	 * @param roverRange the rover's driving range.
-	 * @param tripTimeLimit the time limit of trip (millisols).
+	 * @param range the rover's driving range.
 	 * @param numSites   the number of collection sites.
 	 * @return List of fund sites to visit
 	 * @throws MissionException of collection sites can not be determined.
 	 */
 	private List<Coordinates> determineCollectionSites(Coordinates startingLocation,
 		double range, int numSites) {
+
 		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
-		
+
 		List<Coordinates> unorderedSites = new ArrayList<>();
 
 		double limit = 0;
@@ -502,9 +507,9 @@ public abstract class CollectResourcesMission extends RoverMission
 		Coordinates newLocation = null;
 		Coordinates currentLocation = null;
 		int siteDistance = 0;
-		
+
 		/////////////////////////////////////////
-		
+
 		// Determine the first collection site.
 		double bestScore = 0;
 		Coordinates bestLocation = null;
@@ -514,9 +519,9 @@ public abstract class CollectResourcesMission extends RoverMission
 			limit = range / 4D;
 			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			newLocation = startingLocation.getNewLocation(direction, siteDistance);
-				
+
 			double score = scoreLocation(newLocation);
-			
+
 			if (score > bestScore) {
 				bestScore = score;
 				bestLocation = newLocation;
@@ -529,12 +534,12 @@ public abstract class CollectResourcesMission extends RoverMission
 
 		unorderedSites.add(bestLocation);
 		currentLocation = bestLocation;
-		
+
 		// Determine remaining collection sites.
 		double remainingRange = RandomUtil.getRandomDouble(range/2 - siteDistance);
-		
+
 		/////////////////////////////////////////
-		
+
 		for (int x = 1; x < numSites; x++) {
 			double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 			if (remainingRange > currentDistanceToSettlement) {
@@ -543,15 +548,15 @@ public abstract class CollectResourcesMission extends RoverMission
 				count = 0;
 				while (count++ <= MAX_NUM_SECONDARY_SITES || bestScore == 0) {
 					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-					
+
 					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
 					double tempLimit2 = (2D * remainingRange)
 							- (2D * currentDistanceToSettlement * direction.getCosDirection());
 					limit = tempLimit1 / tempLimit2;
-					
+
 					siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 					newLocation = currentLocation.getNewLocation(direction, siteDistance);
-					
+
 					double score = scoreLocation(newLocation);
 
 					if (score > bestScore) {
@@ -559,13 +564,13 @@ public abstract class CollectResourcesMission extends RoverMission
 						bestLocation = newLocation;
 					}
 				}
-				
+
 				totalSiteScore += bestScore;
-				logger.log(Level.INFO, getMissionType().getName() + " totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+				logger.log(Level.INFO, getMissionType().getName() + " totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0
 						+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
 				unorderedSites.add(bestLocation);
 				currentLocation = bestLocation;
-			
+
 				remainingRange -= siteDistance;
 			}
 		}
@@ -576,7 +581,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the range of a trip based on its time limit and collection sites.
-	 * 
+	 *
 	 * @param tripTimeLimit time (millisols) limit of trip.
 	 * @param numSites      the number of collection sites.
 	 * @param useBuffer     Use time buffer in estimations if true.
@@ -592,7 +597,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the settlement associated with the mission.
-	 * 
+	 *
 	 * @return settlement or null if none.
 	 */
 	@Override
@@ -602,7 +607,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the estimated time remaining for the mission.
-	 * 
+	 *
 	 * @param useBuffer use time buffer in estimations if true.
 	 * @return time (millisols)
 	 * @throws MissionException
@@ -618,7 +623,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the estimated time remaining for collection sites in the mission.
-	 * 
+	 *
 	 * @param useBuffer use time buffer in estimations if true.
 	 * @return time (millisols)
 	 * @throws MissionException if error estimating time.
@@ -675,7 +680,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the total number of collection sites for this mission.
-	 * 
+	 *
 	 * @return number of sites.
 	 */
 	public final int getNumCollectionSites() {
@@ -685,7 +690,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	/**
 	 * Gets the number of collection sites that have been currently visited by the
 	 * mission.
-	 * 
+	 *
 	 * @return number of sites.
 	 */
 	public final int getNumCollectionSitesVisited() {
@@ -697,7 +702,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 	/**
 	 * Gets the estimated time spent at a collection site.
-	 * 
+	 *
 	 * @param useBuffer Use time buffer in estimation if true.
 	 * @return time (millisols)
 	 */

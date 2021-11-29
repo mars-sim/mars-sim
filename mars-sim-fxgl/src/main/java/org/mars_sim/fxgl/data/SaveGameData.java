@@ -8,11 +8,17 @@ import org.mars_sim.fxgl.main.SoftknkioApp;
 
 public class SaveGameData {
 
-    public static void saveData() {
-        try {
-            DataFile.dataFile().setWritable(true);
+	private SaveGameData() {
+	}
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(DataFile.dataFile()));
+    public static void saveData() {
+    	boolean result = DataFile.dataFile().setWritable(true);
+    	if (result)
+    		System.out.println("writable");
+    	else
+    		System.out.println("Not writable");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DataFile.dataFile()))) {
 
             //delete old data
             writer.write("");
@@ -27,11 +33,14 @@ public class SaveGameData {
                 writer.write(String.valueOf(SoftknkioApp.matchfield.getDashboard().getOperations()[i].getLevel()));
             }
 
-            DataFile.dataFile().setWritable(false);
-            writer.close();
+            boolean result1 = DataFile.dataFile().setWritable(false);
+            if (result1)
+            	writer.close();
 
         } catch (IOException e) {
-//            e.printStackTrace();
+
+        } finally {
+            // Multiple streams were opened. Only the last is closed.
         }
     }
 }
