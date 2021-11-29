@@ -60,7 +60,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public AssistScientificStudyResearcher(Person person) {
@@ -72,7 +72,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 //			logger.log(person, Level.FINE, 10_000, "Ended assisting scientific study researcher. Not feeling well.");
 //			endTask();
 //		}
-		
+
 		// Determine researcher
 		researcher = determineResearcher();
 		if (researcher != null) {
@@ -86,7 +86,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				// If in settlement, move assistant to building researcher is in.
 				if (person.isInSettlement()) {
 
-					Building researcherBuilding = BuildingManager.getAvailableBuilding(null, person);
+					Building researcherBuilding = BuildingManager.getAvailableBuilding(person.getStudy(), person);
 					if (researcherBuilding != null) {
 						// Walk to researcher
 						walkToResearchSpotInBuilding(researcherBuilding, false);
@@ -116,7 +116,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Determines a researcher to assist.
-	 * 
+	 *
 	 * @return researcher or null if none found.
 	 */
 	private Person determineResearcher() {
@@ -133,7 +133,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Gets a list of the most preferred researchers to assist.
-	 * 
+	 *
 	 * @return collection of preferred researchers, empty of none available.
 	 */
 	public static Collection<Person> getBestResearchers(Person assistant) {
@@ -145,7 +145,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		// If assistant is in a settlement, best researchers are in least crowded
 		// buildings.
 		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
-		
+
 		if (assistant.isInSettlement()) {
 			// Find the least crowded buildings that researchers are in.
 			int crowding = Integer.MAX_VALUE;
@@ -210,7 +210,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Get a list of all available researchers to assist.
-	 * 
+	 *
 	 * @param assistant the research assistant.
 	 * @return list of researchers.
 	 */
@@ -239,7 +239,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	/**
 	 * Gets a collection of people in a person's settlement or rover. The resulting
 	 * collection doesn't include the given person.
-	 * 
+	 *
 	 * @param person the person checking
 	 * @return collection of people
 	 */
@@ -279,7 +279,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Perform the assisting phase of the task.
-	 * 
+	 *
 	 * @param time the amount (millisols) of time to perform the phase.
 	 * @return the amount (millisols) of time remaining after performing the phase.
 	 * @throws Exception
@@ -290,12 +290,12 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         if (person.getPerformanceRating() <= .2) {
             endTask();
         }
-		
+
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended assisting researcher. Not feeling well.");
 			endTask();
 		}
-		
+
 	      // Check if task is finished.
         if (((Task) researchTask).isDone()) {
             endTask();
@@ -306,7 +306,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 //		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
 //			endTask();
 //		}
-		
+
 		// Add experience
 		addExperience(time);
 
@@ -318,7 +318,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	/**
 	 * Adds a relationship modifier for the researcher's opinion of the assistant.
-	 * 
+	 *
 	 * @param time the time assisting.
 	 */
 	private void addRelationshipModifier(double time) {

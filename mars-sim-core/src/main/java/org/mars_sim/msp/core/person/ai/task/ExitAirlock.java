@@ -1029,11 +1029,15 @@ public class ExitAirlock extends Task implements Serializable {
 		airlock.removeID(person.getIdentifier());
 
 		// This doesn't make sense. The endTask call will be for the current task
-		// and if 'person' is the same then the walk subTask  will be immediately
+		// and if 'person' is the same then the walk subTask will be immediately
 		// cancelled by the endTask
 //		person.getTaskManager().getTask().walkToRandomLocation(false);
 //		endTask();
-//		person.getTaskManager().clearAllTasks(reason);
+
+		// Note: For person in a vehicle with high fatigue or hunger,
+		// need to call clearAllTasks() to cause a person to quit the task
+		// or else it gets stuck forever in the vehicle airlock
+		person.getTaskManager().clearAllTasks(reason);
 	}
 
 	/**

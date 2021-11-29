@@ -122,7 +122,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 	        	return 0;
 
 	        // Crowding modifier
-            Building b = BuildingManager.getAvailableBuilding(null, person);
+            Building b = BuildingManager.getAvailableBuilding(primaryStudy, person);
             if (b != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, b);

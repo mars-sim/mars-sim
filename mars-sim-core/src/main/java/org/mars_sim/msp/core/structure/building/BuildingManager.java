@@ -110,9 +110,9 @@ public class BuildingManager implements Serializable {
 	private transient List<Building> buildings;
 	private transient List<Building> garages;
 
-	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<String, Double>();
-	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<String, Double>();
-	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new HashMap<FunctionType, List<Building>>();
+	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<>();
+	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<>();
+	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new HashMap<>();
 	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
 
 	// Data members
@@ -133,10 +133,10 @@ public class BuildingManager implements Serializable {
 
 	private transient Settlement settlement;
 
+	private transient Meteorite meteorite;
+
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-
-	private static Meteorite meteorite;
 
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
@@ -235,7 +235,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public void setupBuildingFunctionsMap() {
 		for (FunctionType f : FunctionType.values()) {
-			List<Building> list = new CopyOnWriteArrayList<Building>();
+			List<Building> list = new CopyOnWriteArrayList<>();
 			for (Building b : buildings) {
 				if (b.hasFunction(f)) {
 					list.add(b);
@@ -641,7 +641,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildings(FunctionType bf) {
 		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			buildingFunctionsMap = new ConcurrentHashMap<>();
 			setupBuildingFunctionsMap();
 		}
 
@@ -716,10 +716,19 @@ public class BuildingManager implements Serializable {
 		return b;
 	}
 
+	/**
+	 * Gets a list of non-malfunctioned buildings with a particular function type
+	 *
+	 * @param person
+	 * @param functionType
+	 * @return
+	 */
 	public static List<Building> getBuildings(Person person, FunctionType functionType) {
-		List<Building> buildings = person.getSettlement().getBuildingManager().getBuildings(functionType);
-		buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
-		return BuildingManager.getLeastCrowdedBuildings(buildings);
+		return person.getSettlement().getBuildingManager().getBuildings()
+				.stream()
+				.filter(b -> b.hasFunction(functionType)
+						&& !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -730,7 +739,9 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings.
 	 */
 	public List<Building> getBuildings(FunctionType f1, FunctionType f2) {
-		return buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2)).collect(Collectors.toList());
+		return buildings.stream()
+				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -742,7 +753,8 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsOfSameType(String buildingType) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
-		return buildings.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
+		return buildings.stream()
+				.filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
 				.collect(Collectors.toList());
 	}
 
@@ -754,7 +766,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building getABuilding(FunctionType bf) {
 		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			buildingFunctionsMap = new ConcurrentHashMap<>();
 			setupBuildingFunctionsMap();
 		}
 
@@ -764,23 +776,20 @@ public class BuildingManager implements Serializable {
 			return b;
 		}
 
-		else {
-			return null;
-//			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
-//
-//			buildingFunctionsMap.put(bf, list);
-//			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
-//
-//			return list.get(RandomUtil.getRandomInt(list.size()-1));
-		}
+		return null;
 	}
 
+	/**
+	 * Gets a random building having these two functions.
+	 *
+	 * @param f1
+	 * @param f2
+	 * @return a building.
+	 */
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
-//		List<Building> list = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-//				.collect(Collectors.toList());
-//		return list.get(RandomUtil.getRandomInt(list.size()-1));
-
-		return buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2)).findFirst().get();
+		return buildings.stream()
+				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
+				.findFirst().get();
 	}
 
 	/**
@@ -790,7 +799,8 @@ public class BuildingManager implements Serializable {
 	 * @return a number
 	 */
 	public Long getNumBuildingsOfSameType(String buildingType) {
-		return buildings.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
+		return buildings.stream()
+				.filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
 				.collect(Collectors.counting());
 	}
 
@@ -853,7 +863,7 @@ public class BuildingManager implements Serializable {
 		}
 
 		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			buildingFunctionsMap = new ConcurrentHashMap<>();
 			setupBuildingFunctionsMap();
 		}
 
