@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2021-10-21
+ * @date 2021-11-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -60,7 +59,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** True if process is to be turned on, false if turned off. */
 	private boolean toBeToggledOn;
 	/** True if the finished phase of the process has been completed. */
-	private boolean finished = false;
+	private boolean isFinished = false;
 
 	/** The resource process to toggle. */
 	private ResourceProcess process;
@@ -78,6 +77,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 5D + RandomUtil.getRandomInt(5));
 
         if (person.isInSettlement()) {
+
 			process = selectResourceProcess(person);
 			if (process != null) {
 				// Copy the current state of this process running
@@ -91,55 +91,49 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					setDescription(NAME_ON);
 				}
 
-            	Management m = resourceProcessBuilding.getManagement();
-    			if (m != null) {
+				ResourceProcessing rp = resourceProcessBuilding.getResourceProcessing();
+    			if (rp != null) {
     				destination = resourceProcessBuilding;
-    				walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.MANAGEMENT, false);
+    				walkToResourceBldg(destination);
     			}
 
 				else {
 					boolean done = false;
 					// Pick an administrative building for remote access to the resource building
-					List<Building> admins = person.getSettlement().getBuildingManager()
-							.getBuildings(FunctionType.ADMINISTRATION);
+					List<Building> mgtBuildings = person.getSettlement().getBuildingManager()
+							.getBuildings(FunctionType.MANAGEMENT);
 
-					if (!admins.isEmpty()) {
+					if (!mgtBuildings.isEmpty()) {
 
-						List<Building> adminsNotFull = new ArrayList<>();
+						List<Building> notFull = new ArrayList<>();
 
-						for (Building b : admins) {
+						for (Building b : mgtBuildings) {
 							if (b.getBuildingType().toLowerCase().equals(C2)) {
 								destination = b;
-								walkToTaskSpecificActivitySpotInBuilding(b, FunctionType.RESOURCE_PROCESSING, false);
+								walkToMgtBldg(b);
 								done = true;
 								break;
 							}
 							else if (b.getAdministration() != null && !b.getAdministration().isFull()) {
-								adminsNotFull.add(b);
+								notFull.add(b);
 							}
 						}
 
 						if (!done) {
-							if (!adminsNotFull.isEmpty()) {
-								int rand = RandomUtil.getRandomInt(admins.size()-1);
-								destination = admins.get(rand);
-								walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.RESOURCE_PROCESSING,
-																		 false);
+							if (!notFull.isEmpty()) {
+								int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
+								destination = mgtBuildings.get(rand);
+								walkToMgtBldg(destination);
 							}
 							else {
-								endTask();
-								logger.log(person, Level.WARNING, 20_000, process.getProcessName()
-											+ ": Adminstration space unavailable.");
+								end(process.getProcessName() + ": Management space unavailable.");
 							}
 						}
 					}
 					else {
-						endTask();
-						logger.log(person, Level.WARNING, 20_000, process.getProcessName()
-									+ ": Adminstration space unavailable.");
+						end(process.getProcessName() + ": Management space unavailable.");
 					}
 				}
-
 
 				addPhase(TOGGLING);
 				addPhase(FINISHED);
@@ -147,16 +141,46 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				setPhase(TOGGLING);
 	        }
 	        else {
-	        	endTask();
-	        	logger.log(person, Level.WARNING, 20_000, "No ResourceProcess available.");
+	        	end(process.getProcessName() + ": No Resource Process space available.");
 	        }
         }
         else {
-        	endTask();
-        	logger.log(person, Level.WARNING, 20_000, "Not in Settlement.");
-
+        	end(process.getProcessName() + ": Not in Settlement.");
         }
 	}
+
+	/**
+	 * Ends the task
+	 *
+	 * @param s
+	 */
+	private void end(String s) {
+		logger.log(person, Level.WARNING, 20_000, s);
+		endTask();
+	}
+
+	/**
+     * Walks to the building with resource processing function
+     *
+     * @param b the building
+     */
+	private void walkToResourceBldg(Building b) {
+		walkToTaskSpecificActivitySpotInBuilding(b,
+				FunctionType.RESOURCE_PROCESSING,
+				false);
+	}
+
+	/**
+     * Walks to the building with management function
+     *
+     * @param b the building
+     */
+	private void walkToMgtBldg(Building b) {
+		walkToTaskSpecificActivitySpotInBuilding(b,
+				FunctionType.MANAGEMENT,
+				false);
+	}
+
 
 	/**
 	 * Gets the building at a person's settlement with the resource process that
@@ -408,7 +432,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (perf == 0D) {
 			// reset it to 10% so that he can walk inside
 			person.getPhysicalCondition().setPerformanceFactor(.1);
-			endTask();
+			end(": poor performance in " + process.getProcessName());
 		}
 
 		if (isDone()) {
@@ -455,7 +479,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	protected double finishedPhase(double time) {
 
-		if (!finished) {
+		if (!isFinished) {
 			String toggle = OFF;
 			if (toBeToggledOn) {
 				toggle = ON;
@@ -478,7 +502,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					       + ".");
 			}
 			// Only need to run the finished phase once and for all
-			finished = true;
+			isFinished = true;
 		}
 
 		return 0D;

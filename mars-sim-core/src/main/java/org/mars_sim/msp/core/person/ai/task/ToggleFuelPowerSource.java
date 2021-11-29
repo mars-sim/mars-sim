@@ -28,10 +28,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -46,7 +46,7 @@ implements Serializable {
 
     /** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ToggleFuelPowerSource.class.getName());
-	
+
     /** Task name */
     private static final String NAME_ON = Msg.getString(
             "Task.description.toggleFuelPowerSource.on"); //$NON-NLS-1$
@@ -56,9 +56,11 @@ implements Serializable {
     private static final TaskPhase TOGGLE_POWER_SOURCE = new TaskPhase(Msg.getString(
             "Task.phase.togglePowerSource")); //$NON-NLS-1$
 
+	private static final String C2 = "command and control";
+
     // Data members
-//    /** True if toggling process is EVA operation. */
-    private boolean isEVA;
+	/** True if the building with the fuel power source is inhabitable. */
+    private boolean isInhabitable;
     /** The fuel power source to toggle. */
     private FuelPowerSource powerSource;
     /** The building the resource process is in. */
@@ -83,62 +85,109 @@ implements Serializable {
         		endTask();
         	return;
 		}
-		
+
         building = getFuelPowerSourceBuilding(person);
+
         if (building != null) {
             powerSource = getFuelPowerSource(building);
-            
+
             //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
             //double millisols = clock.getMillisol();
             boolean isOn = powerSource.isToggleON();
-            
+
             if (orbitInfo == null)
             	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
-            
+
             boolean isSunRising = orbitInfo.isSunRising(person.getSettlement().getCoordinates());
-            
+
             if (!isSunRising && isOn)
                 // if the sky is getting dark soon, should let it STAY ON since solar panel will no longer be supplying power soon.
             	endTask();
-            	
+
             toggleOn = !isOn;
-            
+
             if (!toggleOn) {
                 setName(NAME_OFF);
                 setDescription(NAME_OFF);
             }
-            
-            isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 
-            // If habitable building, add person to building.
-            if (!isEVA) {
+            isInhabitable = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+
+            // If habitable building, send person there.
+            if (!isInhabitable) {
                 // Walk to power source building.
                 walkToPowerSourceBuilding(building);
             }
-            
+
             else {
                 // Determine location for toggling power source.
-//                Point2D toggleLoc = determineToggleLocation();
-//                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
-            	
-            	Management m = building.getManagement();
-    			if (m != null) {
-    				destination = building;
-    				walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.MANAGEMENT, false);
-    			}
+				boolean done = false;
+
+				// Pick a management building for remote access to the resource building
+				List<Building> mgtBuildings = person.getSettlement().getBuildingManager()
+						.getBuildings(FunctionType.MANAGEMENT);
+
+				if (!mgtBuildings.isEmpty()) {
+
+					List<Building> notFull = new ArrayList<>();
+
+					for (Building b : mgtBuildings) {
+						if (b.getBuildingType().toLowerCase().equals(C2)) {
+							destination = b;
+							walkToMgtBldg(b);
+							done = true;
+							break;
+						}
+						else if (b.getAdministration() != null && !b.getAdministration().isFull()) {
+							notFull.add(b);
+						}
+					}
+
+					if (!done) {
+						if (!notFull.isEmpty()) {
+							int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
+							destination = mgtBuildings.get(rand);
+							walkToMgtBldg(destination);
+						}
+						else {
+							end(powerSource.getType().getName() + ": Management space unavailable.");
+						}
+					}
+				}
+				else {
+					end(powerSource.getType().getName() + ": Management space unavailable.");
+				}
             }
-           
+
         }
         else {
             endTask();
         }
 
         addPhase(TOGGLE_POWER_SOURCE);
-
-//        if (!isEVA) {
-            setPhase(TOGGLE_POWER_SOURCE);
-//        }
+        setPhase(TOGGLE_POWER_SOURCE);
     }
+
+    /**
+     * Walks to the building with management function
+     *
+     * @param b the building
+     */
+	private void walkToMgtBldg(Building b) {
+		walkToTaskSpecificActivitySpotInBuilding(b,
+				FunctionType.MANAGEMENT,
+				false);
+	}
+
+	/**
+	 * Ends the task
+	 *
+	 * @param s
+	 */
+	private void end(String s) {
+		logger.log(person, Level.WARNING, 20_000, s);
+		endTask();
+	}
 
     /**
      * Walk to power source building.
@@ -160,7 +209,7 @@ implements Serializable {
                     powerBuilding));
         }
         else {
-            logger.log(person, Level.WARNING, 3_000, 
+            logger.log(person, Level.WARNING, 3_000,
             		"Unable to walk to power building " +
                     powerBuilding.getNickName() + ".");
             endTask();
@@ -308,7 +357,7 @@ implements Serializable {
         int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 
-        if (isEVA) {
+        if (isInhabitable) {
             // Add experience to "EVA Operations" skill.
             // (1 base experience point per 100 millisols of time spent)
             double evaExperience = time / 100D;
@@ -331,7 +380,7 @@ implements Serializable {
     public List<SkillType> getAssociatedSkills() {
         List<SkillType> result = new ArrayList<>(2);
         result.add(SkillType.MECHANICS);
-        if (isEVA) {
+        if (isInhabitable) {
             result.add(SkillType.EVA_OPERATIONS);
         }
         return result;
@@ -342,7 +391,7 @@ implements Serializable {
         SkillManager manager = person.getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (isEVA) {
+        if (isInhabitable) {
             return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
         }
         else {
@@ -384,7 +433,7 @@ implements Serializable {
         	else
         		endTask();
         }
-	
+
         // Check if there is a reason to cut short and return.
         if (shouldEndEVAOperation() || addTimeOnSite(time)){
 			if (person.isOutside())
@@ -392,17 +441,17 @@ implements Serializable {
         	else
         		endTask();
         }
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 		}
-		
+
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
-            if (isEVA) {
+            if (isInhabitable) {
                 setPhase(WALK_BACK_INSIDE);
             }
             else {
@@ -412,7 +461,7 @@ implements Serializable {
 
         // Check if toggle has already been completed.
         if (powerSource.isToggleON() == toggleOn) {
-            if (isEVA) {
+            if (isInhabitable) {
                 setPhase(WALK_BACK_INSIDE);
             }
             else {
@@ -443,7 +492,7 @@ implements Serializable {
 
         String toggle = "off";
         if (toggleOn) toggle = "on";
-        
+
         logger.log(person, Level.INFO, 3_000,
 				"Turning " + toggle + " " + powerSource.getType()
                 + " in " + building.getNickName() + ".");
@@ -461,7 +510,7 @@ implements Serializable {
     protected void checkForAccident(double time) {
 
         // Use EVAOperation checkForAccident() method.
-        if (isEVA) {
+        if (isInhabitable) {
             super.checkForAccident(time);
         }
 

@@ -258,7 +258,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- The building provides command and control for the population. -->
 			<!-- capacity: the number of population managed. -->
-			<management capacity="4">
+			<management capacity="1">
 				<activity>
 					<activity-spot xloc="3.4" yloc="0.53" />
 				</activity>
