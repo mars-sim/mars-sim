@@ -80,7 +80,7 @@ implements Serializable {
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
             if (person.isInSettlement()) {
-                Building b = BuildingManager.getAvailableBuilding(null, person);
+                Building b = BuildingManager.getAvailableBuilding(study, person);
                 if (b != null) {
                 	// Walk to that building.
                 	walkToResearchSpotInBuilding(b, false);

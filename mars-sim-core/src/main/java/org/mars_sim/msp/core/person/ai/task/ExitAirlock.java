@@ -307,13 +307,12 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
-		if (!airlock.hasReservation(person.getIdentifier())
-				&& !airlock.addReservation(person.getIdentifier())) {
+		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, "Reservation not found");
 			return 0;
 		}
 
-		if (!isFit()) {
+		if (inSettlement && !isFit()) {
 			walkAway(person, "Not fit for egress");
 			return 0;
 		}
@@ -590,7 +589,8 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (canProceed) {
 			// Remove person from reservation map
-			airlock.removeReservation(person.getIdentifier());
+			if (inSettlement)
+				airlock.removeReservation(person.getIdentifier());
 
 			logger.log(person, Level.FINE, 4_000,
 					"Just entered through the inner door into "
@@ -1027,10 +1027,14 @@ public class ExitAirlock extends Task implements Serializable {
 		airlock.removeID(person.getIdentifier());
 
 		// This doesn't make sense. The endTask call will be for the current task
-		// and if 'person' is the same then the walk subTask  will be immediately
+		// and if 'person' is the same then the walk subTask will be immediately
 		// cancelled by the endTask
-		person.getTaskManager().getTask().walkToRandomLocation(false);
-		endTask();
+//		person.getTaskManager().getTask().walkToRandomLocation(false);
+//		endTask();
+
+		// Note: For person in a vehicle with high fatigue or hunger,
+		// need to call clearAllTasks() to cause a person to quit the task
+		// or else it gets stuck forever in the vehicle airlock
 		person.getTaskManager().clearAllTasks(reason);
 	}
 

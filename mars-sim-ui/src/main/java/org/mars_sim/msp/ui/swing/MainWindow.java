@@ -101,31 +101,31 @@ import com.jthemedetecor.OsThemeDetector;
  * The MainWindow class is the primary UI frame for the project. It contains the
  * main desktop pane window are, status bar and tool bars.
  */
-public class MainWindow 
+public class MainWindow
 extends JComponent implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
-	
+
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "landerhab16.png";//"/images/LanderHab.png";
 	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
-	
+
 	public static final String INFO_RED_SVG = "/svg/icons/info_red.svg";
 	public static final String PAUSE_ORANGE_SVG = "/svg/icons/pause_orange.svg";
 	public static final String MARS_CALENDAR_SVG = "/svg/icons/calendar_mars.svg";
-		
+
 	public static final String INFO_SVG = "/svg/icons/info.svg";
 	public static final String EDIT_SVG = "/svg/icons/edit.svg";
 	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
 	public static final String RIGHT_SVG = "/svg/icons/right_rotate.svg";
 	public static final String CENTER_SVG = "/svg/icons/center.svg";
 	public static final String STACK_SVG = "/svg/icons/stack.svg";
-	
+
 	public static final String SAND_SVG = Msg.getString("img.svg.sand");//$NON-NLS-1$
 	public static final String HAZY_SVG = Msg.getString("img.svg.hazy");//$NON-NLS-1$
-	
+
 	public static final String SANDSTORM_SVG = Msg.getString("img.svg.sandstorm"); //$NON-NLS-1$
 	public static final String DUST_DEVIL_SVG = Msg.getString("img.svg.dust_devil");//$NON-NLS-1$
 
@@ -140,25 +140,25 @@ extends JComponent implements ClockListener {
 
 	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
 	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
-	
+
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-	
+
 	private static final String SOL = "   Sol ";
 	private static final String WHITESPACES = "   ";
 	private static final String UMT = " (UMT)";
 //	private static final String SLEEP_TIME = "   Sleep Time : ";
 //	private static final String MS = " ms   ";
-	
+
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
 	/** The timer for update the status bar labels. */
 	private static final int TIME_DELAY = 2_000;
 	/** Keeps track of whether icons have been added to the IconManager . */
 	private static boolean iconsConfigured = false;
-	
+
 	private boolean isIconified = false;
-	
-	/** The main window frame. */	
+
+	/** The main window frame. */
 	private static JFrame frame;
 	/** The lander hab icon. */
 	private static Icon landerIcon;
@@ -166,12 +166,12 @@ extends JComponent implements ClockListener {
 	private static Icon marsIcon;
 	/** The Telescope icon. */
 	private static Icon telescopeIcon;
-	
-	/** The four types of theme types. */	
+
+	/** The four types of theme types. */
 	public enum ThemeType {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
 	}
-	/** The default ThemeType enum. */	
+	/** The default ThemeType enum. */
 	public ThemeType defaultThemeType = ThemeType.NIMBUS;
 
 	// Data members
@@ -194,61 +194,61 @@ extends JComponent implements ClockListener {
 
 	private Timer delayTimer;
 	private Timer delayTimer1;
-	
+
 	private OrbitViewer orbitViewer;
-	
+
 	private javax.swing.Timer earthTimer;
 
 	private JStatusBar statusBar;
 
 	/** WebSwitch for the control of play or pause the simulation*/
 	private WebSwitch pauseSwitch;
-	
+
 	private WebButton increaseSpeed;
 
 	private WebButton decreaseSpeed;
 
 	private WebButton starMap;
-	
+
 	private JCheckBox overlayCheckBox;
-	
+
 	private WebOverlay overlay;
-		
-	private WebStyledLabel blockingOverlay; 
-    
+
+	private WebStyledLabel blockingOverlay;
+
 	private WebStyledLabel solLabel;
 
 	private WebTextField marsTimeTF;
-	
+
 	private WebDateField earthDateField;
-	
+
 	private WebMemoryBar memoryBar;
-	
+
 	private JPanel bottomPane;
 	private JPanel mainPane;
 
 //	private Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
-	
-	/** Arial font. */ 
+
+	/** Arial font. */
 	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
-	
+
 	private JLayer<JPanel> jlayer;
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private Dimension selectedSize;
 
 	private static SplashWindow splashWindow;
-	
+
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
-	private static MasterClock masterClock; 
+	private static MasterClock masterClock;
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
 
 	/**
 	 * Constructor 1.
-	 * 
+	 *
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
@@ -275,22 +275,22 @@ extends JComponent implements ClockListener {
 		        }
 		    });
 		});
-		
+
 		// Start the wait layer
 		layerUI.start();
-		
+
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
-		
+
 		// Set up the frame
 		frame = new JFrame();
 		frame.setResizable(true);
-				
+
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
-		
+
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			graphicsDevice = gs[0];
@@ -305,22 +305,22 @@ extends JComponent implements ClockListener {
 			int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 			int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 			selectedSize = new Dimension(screenWidth, screenHeight);
-			
+
 			// Set frame size
 			frame.setSize(selectedSize);
 			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 		}
-		
+
 		else {
 			UIConfig.INSTANCE.parseFile();
-			
+
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
 			selectedSize = calculatedScreenSize();
-			
+
 			// Set frame size
 			frame.setSize(selectedSize);
-			
+
 			// Set frame location.
 			if (useDefault) {
 				// Center frame on screen
@@ -334,20 +334,20 @@ extends JComponent implements ClockListener {
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 			}
 		}
-	
+
 		try {
 			// Set up MainDesktopPane
 			desktop = new MainDesktopPane(this);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
 		}
-		
+
 		// Set up timers for use on the status bar
 		setupDelayTimer();
-		  	  
+
 		try {
 			// Set up other elements
-			init(); 
+			init();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
 		}
@@ -356,11 +356,11 @@ extends JComponent implements ClockListener {
 		frame.setVisible(true);
 
 		// Stop the wait indicator layer
-		layerUI.stop();	
+		layerUI.stop();
 
 		// Dispose the Splash Window
 		disposeSplash();
-		
+
 		// Open all initial windows.
 		desktop.openInitialWindows();
 	}
@@ -370,23 +370,23 @@ extends JComponent implements ClockListener {
 	 * @return
 	 */
 	private Dimension calculatedScreenSize() {
-		
+
 		Dimension frameSize = InteractiveTerm.getSelectedScreen();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		
+
 		logger.config("Screen size " + screenSize.width + " x " + screenSize.height);
 		if ((frameSize == null) && !useDefault) {
 			// Use any stored size
 			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
 		}
-		
+
 		// Check selected is not bigger than the screen
 		if ((frameSize != null) && ((frameSize.width > screenSize.width)
 					|| (frameSize.height > screenSize.height))) {
 			logger.warning("Selected screen size larger than physical screen");
 			frameSize = null;
 		}
-		
+
 		// If no size then screen size
 		if (frameSize == null) {
 			// Make frame size 80% of screen size.
@@ -401,7 +401,7 @@ extends JComponent implements ClockListener {
 			}
 		}
 		logger.config("Window size " + frameSize.width + " x " + frameSize.height);
-		
+
 		return frameSize;
 	}
 
@@ -413,18 +413,18 @@ extends JComponent implements ClockListener {
 	public Dimension getSelectedSize() {
 		return selectedSize;
 	}
-	
+
 	public void stopLayerUI() {
 		layerUI.stop();
 	}
-	
+
 	public static void initIconManager() {
 		iconsConfigured = true;
 		// Set up an icon set for use throughout mars-sim
 		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
-	
+
 		int size = 24;
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "info_red",
 		        new ClassResource(MainWindow.class, INFO_RED_SVG),
@@ -439,68 +439,68 @@ extends JComponent implements ClockListener {
 		        "calendar_mars",
 		        new ClassResource(MainWindow.class, MARS_CALENDAR_SVG),
 		        new Dimension(16, 16)));
-			
+
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",
 		        new ClassResource(MainWindow.class, LANDER_SVG),
 		        new Dimension(16, 16)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "info",
 		        new ClassResource(MainWindow.class, INFO_SVG),
 		        new Dimension(size, size)));
-				
+
 		iconSet.addIcon(new SvgIconSource (
 		        "edit",
 		        new ClassResource(MainWindow.class, EDIT_SVG),
 		        new Dimension(size, size)));
-			
+
 		iconSet.addIcon(new SvgIconSource (
 		        "left",
 		        new ClassResource(MainWindow.class, LEFT_SVG),
 		        new Dimension(size, size)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "right",
 		        new ClassResource(MainWindow.class, RIGHT_SVG),
 		        new Dimension(size, size)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "center",
 		        new ClassResource(MainWindow.class, CENTER_SVG),
 		        new Dimension(size, size)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "stack",
 		        new ClassResource(MainWindow.class, STACK_SVG),
 		        new Dimension(size, size)));
 
 		/////////////////////////////////////////////////////////
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "sandstorm",
 		        new ClassResource(MainWindow.class, SANDSTORM_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "dustDevil",
 		        new ClassResource(MainWindow.class, DUST_DEVIL_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		////////////////////
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "frost_wind",
 		        new ClassResource(MainWindow.class, FROST_WIND_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "cold_wind",
 		        new ClassResource(MainWindow.class, COLD_WIND_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-				
+
 		////////////////////
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "sun",
 		        new ClassResource(MainWindow.class, SUN_SVG),
@@ -510,36 +510,36 @@ extends JComponent implements ClockListener {
 		        "desert_sun",
 		        new ClassResource(MainWindow.class, DESERT_SUN_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "cloudy",
 		        new ClassResource(MainWindow.class, CLOUDY_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "snowflake",
 		        new ClassResource(MainWindow.class, SNOWFLAKE_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "ice",
 		        new ClassResource(MainWindow.class, ICE_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		////////////////////
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "sand",
 		        new ClassResource(MainWindow.class, SAND_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		iconSet.addIcon(new SvgIconSource (
 		        "hazy",
 		        new ClassResource(MainWindow.class, HAZY_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
+
 		////////////////////
-				
+
 		iconSet.addIcon(new SvgIconSource (
 		      "mars",
 		      new ClassResource(MainWindow.class, MARS_SVG),
@@ -549,25 +549,25 @@ extends JComponent implements ClockListener {
 			      "telescope",
 			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
 			      new Dimension(18, 18)));
-		
+
 		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
-			
-		landerIcon = new LazyIcon("lander").getIcon(); 
+
+		landerIcon = new LazyIcon("lander").getIcon();
 	}
-	
+
 	/**
 	 * Initializes UI elements for the frame
 	 */
 	@SuppressWarnings("serial")
 	private void init() {
-			
+
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
 				exitSimulation();
-			}	
+			}
 		});
 
 		frame.addWindowStateListener(new WindowStateListener() {
@@ -581,20 +581,20 @@ extends JComponent implements ClockListener {
 					repaint();
 			   }
 		});
-		
+
     	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    	
+
 		changeTitle(false);
-		
+
 		frame.setIconImage(getIconImage());
 
 		// Set up the main pane
 		mainPane = new JPanel(new BorderLayout());
 		frame.add(mainPane);
-		
+
 		// Set up the jlayer pane
 		JPanel jlayerPane = new JPanel(new BorderLayout());
-		jlayerPane.add(desktop);		
+		jlayerPane.add(desktop);
 		// Set up the glassy wait layer for pausing
 		jlayer = new JLayer<>(jlayerPane, layerUI);
 
@@ -603,13 +603,13 @@ extends JComponent implements ClockListener {
 
 		// Create a pause overlay
 		createOverlay(overlayPane);
-						
+
 		// Add desktop to the overlay pane
 		overlayPane.add(jlayer, BorderLayout.CENTER);
-		
+
 		// Add overlay
 		mainPane.add(overlay, BorderLayout.CENTER);
-		
+
 		// Initialize data members
 		if (earthClock == null) {
 			if (masterClock == null)
@@ -617,25 +617,25 @@ extends JComponent implements ClockListener {
 			earthClock = masterClock.getEarthClock();
 			marsClock = masterClock.getMarsClock();
 		}
-		
+
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this);
-		
+
 		// Create Earth date text field
-		createEarthDate();	
-		
+		createEarthDate();
+
 		// Create sol label
 		createSolLabel();
-		
+
 		// Create Mars date text field
 		createMarsDate();
-	
+
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
-		
+
 		// Add toolToolbar to mainPane
 		overlayPane.add(toolToolbar, BorderLayout.NORTH);
-	
+
 		// Add bottomPane for holding unitToolbar and statusBar
 		bottomPane = new JPanel(new BorderLayout());
 
@@ -664,7 +664,7 @@ extends JComponent implements ClockListener {
 
 		// Close the unit bar when starting up
 		unitToolbar.setVisible(false);
-		
+
 		// Create the status bar
 		statusBar = new JStatusBar(1, 1, 28);
 
@@ -676,29 +676,29 @@ extends JComponent implements ClockListener {
 		// Create pause switch
 		createPauseSwitch();
 		statusBar.addLeftComponent(pauseSwitch, false);
-		
+
 		// Add the increase speed button
 		statusBar.addLeftComponent(increaseSpeed, false);
 
 		// Create overlay button
 		createOverlayCheckBox();
 		statusBar.addLeftComponent(overlayCheckBox, false);
-		
+
 		createStarMapButton();
 		statusBar.addRightComponent(starMap, true);
-		
+
 		// Create memory bar
 		createMemoryBar();
 		statusBar.addRightComponent(memoryBar, true);
-		
+
 		statusBar.addRightCorner();
-		
+
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 	}
 
 	/**
 	 * Sets up the pause overlay
-	 * 
+	 *
 	 * @param overlayPane
 	 */
 	public void createOverlay(JPanel overlayPane) {
@@ -706,7 +706,7 @@ extends JComponent implements ClockListener {
 		overlay = new WebOverlay(StyleId.overlay, overlayPane);
 
 		Icon pauseIcon = new LazyIcon("pause_orange").getIcon();
-				
+
         blockingOverlay = new WebStyledLabel(
         		pauseIcon,
                 SwingConstants.CENTER
@@ -714,12 +714,12 @@ extends JComponent implements ClockListener {
         NoOpMouseListener.install(blockingOverlay);
         NoOpKeyListener.install(blockingOverlay);
 	}
-	
+
 	public void createOverlayCheckBox() {
 		overlayCheckBox = new JCheckBox("{Pause Overlay On/Off:b}", false);
 		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
 		TooltipManager.setTooltip(overlayCheckBox, "Turn on/off pause overlay in desktop", TooltipWay.up);
-		
+
 		overlayCheckBox.addItemListener(new ItemListener() {
 		    @Override
 		    public void itemStateChanged(ItemEvent e) {
@@ -737,21 +737,21 @@ extends JComponent implements ClockListener {
 		// Disable the overlay check box at start of the sim
 		overlayCheckBox.setEnabled(false);
 	}
-	
+
 	public void createPauseSwitch() {
 		pauseSwitch = new WebSwitch(true);
 		pauseSwitch.setSwitchComponents(
-				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
+				ImageLoader.getIcon(Msg.getString("img.speed.play")),
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
 		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.up);
-		
+
 		pauseSwitch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
                 masterClock.setPaused(!pauseSwitch.isSelected(), false);
 			};
 		});
 	}
-	
+
 	/**
 	 * Open orbit viewer
 	 */
@@ -762,41 +762,41 @@ extends JComponent implements ClockListener {
 		}
 
         orbitViewer.setVisible(!orbitViewer.isVisible());
-		
+
 	}
-	
+
 
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
 	}
-	
+
 	public Icon getMarsIcon() {
 		return marsIcon;
 	}
-	
+
 	public Icon getTelescopeIcon() {
 		return telescopeIcon;
 	}
-	
-	
+
+
 	public void createStarMapButton() {
 		starMap = new WebButton();
-		marsIcon = new LazyIcon("telescope").getIcon(); 
+		marsIcon = new LazyIcon("telescope").getIcon();
 		starMap.setIcon(marsIcon);
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
-		
+
 		starMap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openOrbitViewer();
 			};
 		});
 	}
-	
+
 	public void createSpeedButtons() {
 		increaseSpeed = new WebButton();
 		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
 		TooltipManager.setTooltip(increaseSpeed, "Increase the sim speed (aka time ratio)", TooltipWay.up);
-		
+
 		increaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
@@ -805,26 +805,26 @@ extends JComponent implements ClockListener {
 				}
 			};
 		});
-		
+
 		decreaseSpeed = new WebButton();
 		decreaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.decrease"))); //$NON-NLS-1$
 		TooltipManager.setTooltip(decreaseSpeed, "Decrease the sim speed (aka time ratio)", TooltipWay.up);
-		
+
 		decreaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
 					masterClock.decreaseSpeed();
-					updateTimeLabel();	
+					updateTimeLabel();
 				}
 			};
 		});
-		
+
 	}
-	
+
 	public void updateTimeLabel() {
 		((TimeWindow) desktop.getToolWindow(TimeWindow.NAME)).updateSlowLabels();
 	}
-	
+
 	public void createSolLabel() {
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		solLabel.setFont(FONT_SANS_SERIF_1);
@@ -834,11 +834,11 @@ extends JComponent implements ClockListener {
 		solLabel.setVerticalAlignment(JLabel.CENTER);
 		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
 	}
-	
+
 	public WebStyledLabel getSolLabel() {
 		return solLabel;
 	}
-		
+
 	public void createMemoryBar() {
 		memoryBar = new WebMemoryBar();
 		memoryBar.setPreferredWidth(180);
@@ -846,11 +846,11 @@ extends JComponent implements ClockListener {
 		memoryBar.setFont(ARIAL_FONT);
 		memoryBar.setForeground(Color.DARK_GRAY);
 	}
-	
+
 	public WebMemoryBar getMemoryBar() {
 		return memoryBar;
 	}
-	
+
 	public void createEarthDate() {
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
 		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
@@ -864,18 +864,18 @@ extends JComponent implements ClockListener {
 		earthDateField.setMargin(0, 0, 0, 0);
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
 		d.setTimeZone(TimeZone.getTimeZone("GMT"));
-		earthDateField.setDateFormat(d); 
-		
+		earthDateField.setDateFormat(d);
+
 		if (earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
 	}
-	
+
 	public WebDateField getEarthDate() {
 		return earthDateField;
 	}
-	
-	public void createMarsDate() {	
+
+	public void createMarsDate() {
 		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus);
 		marsTimeTF.setEditable(false);
 		marsTimeTF.setFont(ARIAL_FONT);
@@ -887,11 +887,11 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setMargin(0, 0, 0, 0);
 		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mars Time (UMT)", TooltipWay.up);
 	}
-	
+
 	public WebTextField getMarsTime() {
 		return marsTimeTF;
 	}
-	 
+
 	/**
 	 * Set up the timer for status bar
 	 */
@@ -950,7 +950,7 @@ extends JComponent implements ClockListener {
 
 				// Increment both the earth and mars clocks
 				incrementClocks();
-				
+
 				if (solLabel != null) {
 					// Track mission sol
 					int sol = marsClock.getMissionSol();
@@ -969,7 +969,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Get the window's frame.
-	 * 
+	 *
 	 * @return the frame.
 	 */
 	public JFrame getFrame() {
@@ -978,7 +978,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Gets the main desktop panel.
-	 * 
+	 *
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
@@ -987,7 +987,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Gets the Main Window Menu.
-	 * 
+	 *
 	 * @return mainWindowMenu
 	 */
 	public MainWindowMenu getMainWindowMenu() {
@@ -998,7 +998,7 @@ extends JComponent implements ClockListener {
 	 * Performs the process of saving a simulation.
 	 * Note: if defaultFile is false, displays a FileChooser to select the
 	 * location and new filename to save the simulation.
-	 * 
+	 *
 	 * @param defaultFile is the default.sim file be used
 	 * @param isAutosave
 	 */
@@ -1038,10 +1038,10 @@ extends JComponent implements ClockListener {
 			}
 			// do something here
 		}
-		
+
 		// Save the current main window ui config
 		UIConfig.INSTANCE.saveFile(this);
-		
+
 		// Note: may use SwingUtilities.invokeLater(() -> layerUI.stop());
 	}
 
@@ -1067,7 +1067,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Create a new unit button in toolbar.
-	 * 
+	 *
 	 * @param unit the unit the button is for.
 	 */
 	public void createUnitButton(Unit unit) {
@@ -1076,7 +1076,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Disposes a unit button in toolbar.
-	 * 
+	 *
 	 * @param unit the unit to dispose.
 	 */
 	public void disposeUnitButton(Unit unit) {
@@ -1088,21 +1088,21 @@ extends JComponent implements ClockListener {
 	 */
 	public void exitSimulation() {
 		if (!masterClock.isPaused() && !masterClock.isSavingSimulation()) {
-			int reply = JOptionPane.showConfirmDialog(frame, 
+			int reply = JOptionPane.showConfirmDialog(frame,
 					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
 	        if (reply == JOptionPane.YES_OPTION) {
-	        	
+
 	        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-	        	
-	        	endSimulation();		
+
+	        	endSimulation();
 	    		// Save the UI configuration.
 	    		UIConfig.INSTANCE.saveFile(this);
 	    		masterClock.exitProgram();
-	    		frame.dispose();	
+	    		frame.dispose();
 	    		destroy();
 	    		System.exit(0);
-	        } 
-	        
+	        }
+
 	        else {
 	        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 	        }
@@ -1144,7 +1144,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Sets the look and feel of the UI
-	 * 
+	 *
 	 * @param choice
 	 */
 	public void setLookAndFeel(ThemeType choice1) {
@@ -1165,7 +1165,7 @@ extends JComponent implements ClockListener {
 
 		else if (choice1 == ThemeType.SYSTEM) {
 			try {
-				
+
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 				changed = true;
@@ -1179,7 +1179,7 @@ extends JComponent implements ClockListener {
 		else if (choice1 == ThemeType.NIMBUS) {
 
 			try {
-				boolean foundNimbus = false;			    
+				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 					if (info.getName().equals("Nimbus")) {
 						// Set Nimbus look & feel if found in JVM.
@@ -1215,7 +1215,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Gets the unit toolbar.
-	 * 
+	 *
 	 * @return unit toolbar.
 	 */
 	public UnitToolBar getUnitToolBar() {
@@ -1224,7 +1224,7 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Gets the tool toolbar.
-	 * 
+	 *
 	 * @return tool toolbar.
 	 */
 	public ToolToolBar getToolToolBar() {
@@ -1237,26 +1237,26 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Gets the main pane instance
-	 * 
+	 *
 	 * @return
 	 */
 	public JPanel getMainPane() {
 		return mainPane;
 	}
-	
+
 	/**
 	 * Gets the lander hab icon instance
-	 * 
+	 *
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
 		return landerIcon;
 	}
-	
+
 	public static Image getIconImage() {
 		return ((ImageIcon)landerIcon).getImage();
 	}
-	
+
 	/**
 	 * Increment the label of both the earth and mars clocks
 	 */
@@ -1264,13 +1264,13 @@ extends JComponent implements ClockListener {
 		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
-		
+
 		if (marsTimeTF != null && marsClock != null) {
 			marsTimeTF.setText(marsClock.getTrucatedDateTimeStamp() + UMT);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Starts the splash window frame
 	 */
@@ -1279,12 +1279,12 @@ extends JComponent implements ClockListener {
 		if (splashWindow == null) {
 			splashWindow = new SplashWindow();
 		}
-		
+
 		splashWindow.setIconImage();
         splashWindow.display();
         splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
 	}
-	
+
 	/**
 	 * Disposes the splash window frame
 	 */
@@ -1310,11 +1310,11 @@ extends JComponent implements ClockListener {
 			}
 		}
 	}
-	
+
 	public boolean isIconified() {
 		return isIconified;
 	}
-	
+
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
@@ -1330,14 +1330,14 @@ extends JComponent implements ClockListener {
 	/**
 	 * Change the pause status. Called by Masterclock's firePauseChange() since
 	 * TimeWindow is on clocklistener.
-	 * 
+	 *
 	 * @param isPaused true if set to pause
 	 * @param showPane true if the pane will show up
 	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
-		// Update pause/resume webswitch buttons, based on masterclock's pause state.	
+		// Update pause/resume webswitch buttons, based on masterclock's pause state.
 		if (isPaused) { // if it needs to pause
 			// if the web switch is at the play position
 			if (pauseSwitch.isSelected()) {
@@ -1347,8 +1347,8 @@ extends JComponent implements ClockListener {
 			// Enable the overlay check box
 			overlayCheckBox.setEnabled(true);
 			overlayCheckBox.setSelected(true);
-		} 
-		
+		}
+
 		else { // if it needs to resume playing
 			// if the web switch is at the pause position
 			if (!pauseSwitch.isSelected()) {
@@ -1360,7 +1360,7 @@ extends JComponent implements ClockListener {
 			overlayCheckBox.setEnabled(false);
 		}
 	}
-	
+
 	/**
 	 * Prepares the panel for deletion.
 	 */

@@ -21,7 +21,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(FieldStudyMeta.class.getName());
-    
+
     private static final double WEIGHT = 10D;
 	private ScienceType science;
 
@@ -33,20 +33,20 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 	@Override
 	public double getProbability(Person person) {
-	
+
 		if (FieldStudyMission.determineStudy(science, person) == null) {
 			return 0;
 		}
-		
+
 	    double missionProbability = 0D;
 	    MissionType mType = getType();
-	    
+
 	    if (person.isInSettlement()) {
 	    	Settlement settlement = person.getSettlement();
-	      
+
 	        RoleType roleType = person.getRole().getType();
 			JobType jobType = person.getMind().getJob();
-			
+
 			if (getPreferredLeaderJob().contains(jobType)
 					|| RoleType.CHIEF_OF_SCIENCE == roleType
 					|| RoleType.MISSION_SPECIALIST == roleType
@@ -55,28 +55,28 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-			
+
 				if (settlement.getMissionBaseProbability(mType)) {
 	            	missionProbability = 1;
 				}
 	            else {
 	    			return 0;
 	            }
-				
+
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(mType, settlement);
-		
+
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
 	    			return 0;
 	    		}
-	    		
+
 	            try {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(mType, settlement, false);
 	                if (rover != null) {
-	
-	
+
+
 	                    // Add probability for researcher's primary study (if any).
 	                    ScientificStudy primaryStudy = person.getStudy();
 	                    if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
@@ -84,7 +84,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	                            && (science == primaryStudy.getScience())) {
 	                    	missionProbability += WEIGHT;
 	                    }
-	
+
 	                    // Add probability for each study researcher is collaborating on.
 	                    Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 	                    while (i.hasNext()) {
@@ -101,36 +101,36 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	                logger.log(Level.SEVERE, "Error determining rover gpt mission " + mType.getName(), e);
 	                return 0;
 	            }
-	
-				int f1 = 2*numEmbarked + 1;
+
+				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
-				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D
+
+				missionProbability *= settlement.getNumCitizens() / f1 / f2
 						* ( 1 + settlement.getMissionDirectiveModifier(mType));
-				
+
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 	            if (crowding > 0) missionProbability *= (crowding + 1);
-	
+
 	            // Job modifier.
 	            missionProbability *= getLeaderSuitability(person)
 	                	* (settlement.getGoodsManager().getTourismFactor()
 	                    + settlement.getGoodsManager().getResearchFactor())/1.5;
-	            
+
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
 				missionProbability += extrovert;
-				
+
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
-							
+
 				if (missionProbability < 0)
 					missionProbability = 0;
 	        }
 	    }
-		
+
 	    return missionProbability;
 	}
 }

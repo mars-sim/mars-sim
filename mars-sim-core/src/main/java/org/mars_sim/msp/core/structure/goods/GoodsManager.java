@@ -104,10 +104,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String BOTTLE = "bottle";
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String FIBERGLASS_CLOTH = "fiberglass cloth";
-
 	private static final String METHANE = "methane";
-
 	private static final String BRICK = "brick";
+	private static final String METEORITE = "meteorite";
+	private static final String ROCK = "rock";
+	private static final String VEHICLE = "vehicle";
 
 	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
@@ -164,7 +165,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double LUV_VEHICLE_FACTOR = 4;
 	private static final double DRONE_VEHICLE_FACTOR = 5;
 
-	private static final double VEHICLE_PART_DEMAND = .025;
+	private static final double VEHICLE_PART_DEMAND = .05;
 
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
@@ -209,7 +210,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TOURISM_BASE = 1;
 
 	private static final double GAS_CANISTER_DEMAND = 1;
-	private static final double SPECIMEN_BOX_DEMAND = 5;
+	private static final double SPECIMEN_BOX_DEMAND = 1.2;
 	private static final double LARGE_BAG_DEMAND = .5;
 	private static final double BAG_DEMAND = .1;
 	private static final double BARREL_DEMAND = .2;
@@ -228,12 +229,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double COMPOUND_DEMAND = .01;
 	private static final double ELEMENT_DEMAND = .1;
 
-	private static final double ELECTRICAL_DEMAND = .1;
-	private static final double INSTRUMENT_DEMAND = .25;
-	private static final double METALLIC_DEMAND = .02;
-	private static final double UTILITY_DEMAND = .005;
-	private static final double KITCHEN_DEMAND = .5;
-	private static final double CONSTRUCTION_DEMAND = .01;
+	private static final double ELECTRICAL_DEMAND = .999;
+	private static final double INSTRUMENT_DEMAND = .999;
+	private static final double METALLIC_DEMAND = .999;
+	private static final double UTILITY_DEMAND = .999;
+	private static final double KITCHEN_DEMAND = .999;
+	private static final double CONSTRUCTION_DEMAND = .999;
 
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
@@ -311,6 +312,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+
+	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName(METEORITE);
 
 	/**
 	 * Constructor.
@@ -1065,7 +1068,6 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		else {
-			// loses 10% by default
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
 			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 
@@ -1086,6 +1088,7 @@ public class GoodsManager implements Serializable, Temporal {
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
+					// loses 10% by default
 					return demand * (.3 * regolithVP + .6 * vp) / vp * ORE_VALUE;
 				}
 			}
@@ -1097,10 +1100,10 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			String type = ResourceUtil.findAmountResource(resource).getType();
-			if (type != null && type.equalsIgnoreCase("rock")) {
+			if (type != null && type.equalsIgnoreCase(ROCK)) {
 				double vp = goodsValues.get(resource);
 
-				if (resource == ResourceUtil.findIDbyAmountResourceName("meteorite"))
+				if (resource == METEORITE_ID)
 					return demand * (.4 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
 				else
 					return demand * (.2 * sandVP + .7 * vp) / vp * ROCK_MODIFIER;
@@ -1594,8 +1597,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 		}
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
-			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
+//		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
+//			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
 
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			demand = INSTRUMENT_DEMAND;
@@ -1629,8 +1632,8 @@ public class GoodsManager implements Serializable, Temporal {
 				demand *= .1;
 		}
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
-			demand = KITCHEN_DEMAND;
+//		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
+//			demand = KITCHEN_DEMAND;
 
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
 			demand = CONSTRUCTION_DEMAND;
@@ -2578,8 +2581,8 @@ public class GoodsManager implements Serializable, Temporal {
 				// Calculate individual attachment part demand.
 				projected += getAttachmentPartsDemand(part);
 
-//				// Calculate vehicle part demand.
-//				projected += getVehiclePartsDemand(resourceGood);
+				// Calculate vehicle part demand.
+				projected = getVehiclePartDemand(part, projected);
 
 				// Calculate kitchen part demand.
 				projected += getKitchenPartDemand(part);
@@ -2884,9 +2887,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand
 	 */
 	private double getAttachmentPartsDemand(Part part) {
-		for (String s : ItemResourceUtil.ATTACHMENTS) {
-			if (part.getName().equalsIgnoreCase(s)) {
-				int id = ItemResourceUtil.findIDbyItemResourceName(s);
+		for (int id : ItemResourceUtil.ATTACHMENTS_ID) {
+			if (part.getID() == id) {
 				return ATTACHMENT_PARTS_DEMAND * getPartDemandValue(id);
 			}
 		}
@@ -2900,9 +2902,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand
 	 */
 	private double getEVASuitPartsDemand(Part part) {
-		for (String s : ItemResourceUtil.EVASUIT_PARTS) {
-			if (part.getName().equalsIgnoreCase(s)) {
-				int id = ItemResourceUtil.findIDbyItemResourceName(s);
+		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
+			if (part.getID() == id) {
 				return eVASuitMod * EVA_PARTS_VALUE * getPartDemandValue(id);
 			}
 		}
@@ -2917,8 +2918,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getWholeEVASuitDemand() {
 		double demand = 0;
-		for (String s : ItemResourceUtil.EVASUIT_PARTS) {
-			int id = ItemResourceUtil.findIDbyItemResourceName(s);
+		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
 			demand += getPartDemandValue(id);
 		}
 		return demand;
@@ -2954,9 +2954,17 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return the flattened demand
 	 */
 	private double getKitchenPartDemand(Part part) {
-		for (String s : ResourceUtil.KITCHEN_WARE) {
-			if (part.getName().equalsIgnoreCase(s))
-				return KITCHEN_DEMAND;
+		for (int id : ItemResourceUtil.KITCHEN_WARE_ID) {
+			if (part.getID() == id)
+				return getPartDemandValue(id) * KITCHEN_DEMAND;
+		}
+		return 0;
+	}
+
+	private double getVehiclePartDemand(Part part, double projected) {
+		String type = part.getType();
+		if (type.equalsIgnoreCase(VEHICLE)) {
+			return projected * (1 + tourism_factor/30.0) * VEHICLE_PART_DEMAND;
 		}
 		return 0;
 	}
@@ -3090,7 +3098,6 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand (# of parts).
 	 */
 	private double getPartConstructionSiteDemand(int id) {
-
 		double demand = 0D;
 
 		// Add demand for part required as remaining construction material on

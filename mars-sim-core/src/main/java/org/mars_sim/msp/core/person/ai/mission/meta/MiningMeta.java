@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A meta mission for the Mining mission.
  */
-public class MiningMeta extends AbstractMetaMission { 
+public class MiningMeta extends AbstractMetaMission {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
@@ -35,7 +35,7 @@ public class MiningMeta extends AbstractMetaMission {
     	super(MissionType.MINING, "mining",
     			Set.of(JobType.AREOLOGIST));
     }
-    
+
     @Override
     public Mission constructInstance(Person person) {
         return new Mining(person);
@@ -47,7 +47,7 @@ public class MiningMeta extends AbstractMetaMission {
         double missionProbability = 0D;
 
         if (person.isInSettlement()) {
-        	
+
         	Settlement settlement = person.getSettlement();
 
             RoleType roleType = person.getRole().getType();
@@ -61,44 +61,44 @@ public class MiningMeta extends AbstractMetaMission {
  					|| RoleType.COMMANDER == roleType
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
-        	
+
 	            if (settlement.getMissionBaseProbability(MissionType.MINING))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
-	       		
+
 	            // Check if there are enough bags at the settlement for collecting minerals.
-	            if (settlement.findNumContainersOfType(EquipmentType.BAG) < Mining.NUMBER_OF_LARGE_BAGS)
+	            if (settlement.findNumContainersOfType(EquipmentType.LARGE_BAG) < Mining.NUMBER_OF_LARGE_BAGS)
 	            	return 0;
-	
+
 	            // Check if available light utility vehicles.
 	            //boolean reservableLUV =
 	            if (!Mining.isLUVAvailable(settlement))
 	            	return 0;
-	
+
 	            // Check if LUV attachment parts available.
 	            //boolean availableAttachmentParts =
 	            if (!Mining.areAvailableAttachmentParts(settlement))
 	            	return 0;
-	
+
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.MINING, settlement);
-		
+
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
 	    			return 0;
-	    		}	
-	    		
+	    		}
+
 	    		if (numThisMission > 1)
 	    			return 0;
-	    		
+
 	    		missionProbability = 0;
-	    		
+
 	            try {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.MINING,
 	                        settlement, false);
-	
+
 	                if (rover != null) {
 	                    // Find best mining site.
 	                    ExploredLocation miningSite = Mining.determineBestMiningSite(
@@ -115,33 +115,33 @@ public class MiningMeta extends AbstractMetaMission {
 	                logger.log(Level.SEVERE, "Error getting mining site.", e);
 	                return 0;
 	            }
-	
+
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount()
 	                    - settlement.getPopulationCapacity();
 	            if (crowding > 0) {
 	                missionProbability *= (crowding + 1);
 	            }
-	
-				int f1 = 2*numEmbarked + 1;
+
+				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
-				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
-				
+
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
+
 	            // Job modifier.
 				missionProbability *= getLeaderSuitability(person)
 	                		* (settlement.getGoodsManager().getTourismFactor()
 	                  		 + settlement.getGoodsManager().getResearchFactor())/1.5;
-	
+
 				if (missionProbability > LIMIT)
 					missionProbability = LIMIT;
-				
+
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
 				missionProbability += extrovert;
-				
+
 				if (missionProbability < 0)
 					missionProbability = 0;
  			}

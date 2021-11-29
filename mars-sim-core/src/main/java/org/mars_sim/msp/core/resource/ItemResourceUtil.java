@@ -86,7 +86,6 @@ public class ItemResourceUtil implements Serializable {
 	public static int steelIngotID;
 	public static int steelSheetID;
 
-
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
 	private static Map<Integer, String> partIDNameMap;
@@ -97,47 +96,52 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
-	public static List<String> ATTACHMENTS = new ArrayList<>();
+	private static final String[] ATTACHMENTS = new String[] {
+			BACKHOE,
+			BULLDOZER_BLADE,
+			CRANE_BOOM,
+			DRILLING_RIG,
+			PNEUMATIC_DRILL,
+			SOIL_COMPACTOR
+	};
 
-	static {
-		ATTACHMENTS.add(BACKHOE);
-		ATTACHMENTS.add(BULLDOZER_BLADE);
-		ATTACHMENTS.add(CRANE_BOOM);
-		ATTACHMENTS.add(DRILLING_RIG);
-		ATTACHMENTS.add(PNEUMATIC_DRILL);
-		ATTACHMENTS.add(SOIL_COMPACTOR);
-	}
+	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
 
-	public static String[] EVASUIT_PARTS;
+	private static final String[] EVASUIT_PARTS = new String[] {
+			"eva helmet",
+			"helmet visor",
+			PRESSURE_SUIT,
+			"coveralls",
+			"suit heating unit",
 
-	static {
-		EVASUIT_PARTS = new String[] {
-					"eva helmet",
-					"helmet visor",
-					PRESSURE_SUIT,
-					"coveralls",
-					"suit heating unit",
+			"eva gloves",
+			"eva boots",
+			"eva pads",
+			"eva backpack",
+			"eva antenna",
 
-					"eva gloves",
-					"eva boots",
-					"eva pads",
-					"eva backpack",
-					"eva antenna",
+			"eva battery",
+			"eva radio",
+	};
 
-					"eva battery",
-					"eva radio",
-			};
-	}
+	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
+
+	private static final String[] KITCHEN_WARE = new String[] {
+			"autoclave",
+			"blender",
+			"microwave",
+			"oven",
+			"refrigerator",
+			"stove" };
+
+	public static final List<Integer> KITCHEN_WARE_ID = new ArrayList<>();
 
 	/**
 	 * Constructor
 	 */
 	public ItemResourceUtil() {
-
 		partSet = getItemResources();
-
 		createMaps();
-
 		createIDs();
 	}
 
@@ -183,6 +187,20 @@ public class ItemResourceUtil implements Serializable {
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 
+		for (int i = 0; i < ATTACHMENTS.length; i++) {
+			int id = findIDbyItemResourceName(ATTACHMENTS[i]);
+			ATTACHMENTS_ID.add(id);
+		}
+
+		for (int i = 0; i < EVASUIT_PARTS.length; i++) {
+			int id = findIDbyItemResourceName(EVASUIT_PARTS[i]);
+			EVASUIT_PARTS_ID.add(id);
+		}
+
+		for (int i = 0; i < KITCHEN_WARE.length; i++) {
+			int id = findIDbyItemResourceName(KITCHEN_WARE[i]);
+			KITCHEN_WARE_ID.add(id);
+		}
 	}
 
 	/**

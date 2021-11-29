@@ -124,13 +124,15 @@ public class EVASuit extends Equipment
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 
+	private static final PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+
 	static {
 
-		 for (String p: ItemResourceUtil.EVASUIT_PARTS) {
-			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
+		 for (int id: ItemResourceUtil.EVASUIT_PARTS_ID) {
+			 emptyMass += ItemResourceUtil.findItemResource(id).getMassPerItem();
 		 }
 
-		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+//		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		 o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D;
 		 co2Expelled = personConfig.getCO2ExpelledRate() / 1000D;
 		 ratioCO2ToO2 = co2Expelled / o2Consumed;

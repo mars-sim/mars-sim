@@ -63,24 +63,24 @@ implements Serializable {
         super(NAME, person, true, false,
                 STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        
+
 //		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 //			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
 //			endTask();
 //		}
-		
+
         // Determine study.
         study = determineStudy();
         if (study != null) {
         	addAdditionSkill(study.getScience().getSkill());
-        	
+
             setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail",
                     study.toString())); //$NON-NLS-1$
 
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
             if (person.isInSettlement()) {
-                Building b = BuildingManager.getAvailableBuilding(null, person);
+                Building b = BuildingManager.getAvailableBuilding(study, person);
                 if (b != null) {
                     // Walk to that building.
                 	walkToResearchSpotInBuilding(b, true);
@@ -182,7 +182,7 @@ implements Serializable {
     public ScienceType getScience() {
         if (study == null)
         	return null;
-        
+
         return study.getContribution(person);
     }
 
@@ -236,12 +236,12 @@ implements Serializable {
 			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
 			endTask();
 		}
-		
+
         if (isDone()) {
         	endTask();
             return time;
         }
-        
+
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
@@ -256,19 +256,19 @@ implements Serializable {
 
         if (isPrimary) {
             if (study.isPrimaryPaperCompleted()) {
-    			logger.log(worker, Level.INFO, 0, "Spent " 
+    			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in compiling data for primary research study " 
-    					+ study.getName() + ".");	
+    					+ " millisols in compiling data for primary research study "
+    					+ study.getName() + ".");
             	endTask();
             }
         }
         else {
             if (study.isCollaborativePaperCompleted(person)) {
-    			logger.log(worker, Level.INFO, 0, "Spent " 
+    			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments for collaborative research study "
-    					+ study.getName() + ".");	
+    					+ study.getName() + ".");
             	endTask();
             }
         }

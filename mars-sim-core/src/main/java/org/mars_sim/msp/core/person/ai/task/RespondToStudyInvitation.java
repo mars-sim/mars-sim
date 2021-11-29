@@ -59,27 +59,27 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 	private ScientificStudy study;
 
 //	private static Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public RespondToStudyInvitation(Person person) {
 		// Skill determined based on person job type
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		
+
 //		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 //			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
 //			endTask();
 //		}
-		
+
 		ScienceType scienceType = ScienceType.getJobScience(person.getMind().getJob());
 		if (scienceType != null) {
 			addAdditionSkill(scienceType.getSkill());
 		}
-		
+
 		List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
 		if (invitedStudies.size() > 0) {
 			study = invitedStudies.get(0);
@@ -87,7 +87,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 			// If person is in a settlement, try to find an administration building.
 			boolean adminWalk = false;
 			if (person.isInSettlement()) {
-				Building b = BuildingManager.getAvailableBuilding(null, person);
+				Building b = BuildingManager.getAvailableBuilding(study, person);
 				if (b != null) {
 					// Walk to that building.
                 	walkToResearchSpotInBuilding(b, false);
@@ -119,7 +119,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 	/**
 	 * Gets an available administration building that the person can use.
-	 * 
+	 *
 	 * @param person the person
 	 * @return available administration building or null if none.
 	 */
@@ -145,7 +145,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 	/**
 	 * Performs the responding to invitation phase.
-	 * 
+	 *
 	 * @param time the time (millisols) to perform the phase.
 	 * @return the remaining time (millisols) after performing the phase.
 	 */
@@ -156,7 +156,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 			endTask();
 			return time;
 		}
-		
+
 		if (isDone()) {
 			endTask();
 			return time;
@@ -166,7 +166,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			study.respondingInvitedResearcher(person);
-			
+
 			// LImit how many studies a person can do
 			int studyCount = (person.getStudy() != null ? 1 : 0);
 			studyCount += person.getCollabStudies().size();
@@ -175,7 +175,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				endTask();
 				return time;
 			}
-			
+
 			JobType job = person.getMind().getJob();
 
 			// Get relationship between invitee and primary researcher.
@@ -216,7 +216,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 	/**
 	 * Decides is the researcher accepts or rejects invitation.
-	 * 
+	 *
 	 * @return true if accepts, false if rejects.
 	 */
 	private boolean decideResponse() {
@@ -243,7 +243,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 						acceptChance += (partner.getKey().getScientificAchievement(collaborativeScience) / 2D);
 
 				}
-				
+
 				// Modify if researcher's job science is collaborative.
 				if (isCollaborativeScience) {
 					acceptChance /= 2D;

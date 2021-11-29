@@ -282,7 +282,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
-		unitManager.originalBuild = Simulation.BUILD;
+		unitManager.setOriginalBuild(Simulation.BUILD);
 	}
 
 
@@ -567,7 +567,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Deserialize the file
 		deserialize(file);
 
-		String loadBuild = unitManager.originalBuild;
+		String loadBuild = unitManager.getOriginalBuild();
 		if (loadBuild == null)
 			loadBuild = "unknown";
 
@@ -706,7 +706,7 @@ public class Simulation implements ClockListener, Serializable {
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
-		unitManager.reinit(marsClock);
+		unitManager.reinit();
 
 		doneInitializing = true;
 

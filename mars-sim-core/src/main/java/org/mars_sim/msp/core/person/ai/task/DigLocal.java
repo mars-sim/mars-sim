@@ -102,21 +102,22 @@ implements Serializable {
      	}
 
         // Get an available airlock in a settlement
-     	if (person.isInside()) {
+     	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-	        	endTask();
-	     		return;
-	        }
-	        else if (!airlock.hasReservation(person.getIdentifier())
-	        		&& !airlock.addReservation(person.getIdentifier())) {
 			    endTask();
 			    return;
+	        }
+	        else {
+	        	if (!airlock.addReservation(person.getIdentifier())) {
+				    endTask();
+				    return;
+	        	}
 	        }
      	}
 
         // Take bags for collecting resource.
-     	Container	aBag = transferContainer();
+     	Container aBag = transferContainer();
 
         // If bags are not available, end task.
         if (aBag == null) {
