@@ -108,7 +108,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						List<Building> notFull = new ArrayList<>();
 
 						for (Building b : mgtBuildings) {
-							if (b.getBuildingType().toLowerCase().equals(C2)) {
+							if (b.getBuildingType().equalsIgnoreCase(C2)) {
 								destination = b;
 								walkToMgtBldg(b);
 								done = true;
@@ -131,7 +131,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						}
 					}
 					else {
-						end(process.getProcessName() + ": Management space unavailable.");
+						end("Management space unavailable.");
 					}
 				}
 
@@ -141,11 +141,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				setPhase(TOGGLING);
 	        }
 	        else {
-	        	end(process.getProcessName() + ": No Resource Process space available.");
+	        	end("No Resource Process space available.");
 	        }
         }
         else {
-        	end(process.getProcessName() + ": Not in Settlement.");
+        	end("Not in Settlement.");
         }
 	}
 

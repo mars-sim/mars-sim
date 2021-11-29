@@ -60,26 +60,23 @@ public class UnitManager implements Serializable, Temporal {
 	private static final int TYPE_MASK = (1 << (TYPE_BITS)) - 1;
 	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1;
 
-	/** Flag true if the class has just been loaded */
-	public static boolean justLoaded = true;
-	/** Flag true if the class has just been reloaded/deserialized */
-	public static boolean justReloaded = false;
-
+	/** Flag true if the class has just been loaded. */
+	public boolean justLoaded = true;
 	/** List of unit manager listeners. */
-	private static CopyOnWriteArrayList<UnitManagerListener> listeners;
+	private List<UnitManagerListener> listeners;
 
-	private static ExecutorService executor;
+	private ExecutorService executor;
 
-	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
+	private List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
 
 	// Data members
 	/** The commander's unique id . */
-    public int commanderID = -1;
+	private int commanderID = -1;
 	/** The core engine's original build. */
-	public String originalBuild;
+	private String originalBuild;
 
 	/** A map of all map display units (settlements and vehicles). */
 	private volatile List<Unit> displayUnits;
@@ -101,7 +98,7 @@ public class UnitManager implements Serializable, Temporal {
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 
-	private static MalfunctionFactory factory;
+	private static MalfunctionFactory factory = sim.getMalfunctionFactory();
 
 	private static ThreadLocal<Settlement> activeSettlement = new ThreadLocal<>();
 
@@ -127,8 +124,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupBuilding   = new ConcurrentHashMap<>();
 
 		listeners = new CopyOnWriteArrayList<>();
-
-		factory = sim.getMalfunctionFactory();
 	}
 
 	/**
@@ -340,13 +335,12 @@ public class UnitManager implements Serializable, Temporal {
 	public void setupShift(Settlement settlement, int pop) {
 
 		int numShift = 0;
-		// ShiftType shiftType = ShiftType.OFF;
 
 		if (pop == 1) {
 			numShift = 1;
 		} else if (pop < THREE_SHIFTS_MIN_POPULATION) {
 			numShift = 2;
-		} else {// if pop >= 6
+		} else {
 			numShift = 3;
 		}
 
@@ -355,8 +349,6 @@ public class UnitManager implements Serializable, Temporal {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			// keep pop as a param just
-			// to speed up processing
 			p.setShiftType(settlement.getAnEmptyWorkShift(pop));
 		}
 
@@ -432,7 +424,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param owner
 	 */
 	public static void validateActiveSettlement(String operation, Unit owner) {
-		Settlement currentSettlement = activeSettlement .get();
+		Settlement currentSettlement = activeSettlement.get();
 		Settlement owningSettlement;
 		if (owner instanceof Settlement) {
 			owningSettlement = (Settlement) owner;
@@ -456,9 +448,7 @@ public class UnitManager implements Serializable, Temporal {
 	private void runExecutor(ClockPulse pulse) {
 		setupExecutor();
 		setupTasks();
-		settlementTaskList.forEach(s -> {
-			s.setCurrentPulse(pulse);
-		});
+		settlementTaskList.forEach(s -> s.setCurrentPulse(pulse));
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
@@ -466,11 +456,11 @@ public class UnitManager implements Serializable, Temporal {
 			List<Future<String>> results = executor.invokeAll(settlementTaskList);
 			for (Future<String> future : results) {
 				future.get();
-			};
+			}
 		}
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-			logger.log(Level.SEVERE, "Problem running the pulse : " + ee.getMessage(), ee);
+			logger.log(Level.SEVERE, "Problem running the pulse : ", ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting
@@ -608,7 +598,7 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @param clock
 	 */
-	public void reinit(MarsClock clock) {
+	public void reinit() {
 
 		for (Person p: lookupPerson.values()) {
 			p.reinit();
@@ -639,9 +629,52 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * Extracts the UnitType from an identifier
+	 * @param id
+	 * @return
+	 */
+	public static UnitType getTypeFromIdentifier(int id) {
+		// Extract the bottom 4 bit
+		int typeId = (id & TYPE_MASK);
+
+		return UnitType.values()[typeId];
+	}
+
+	/**
+	 * Generate a new unique UnitId for a certain type. This will be used later
+	 * for lookups.
+	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits
+	 * are a unique increasing number.
+	 * This guarantees
+	 * uniqueness PLUS a quick means to identify the UnitType from only the
+	 * identifier.
+	 * @param unitType
+	 * @return
+	 */
+	public synchronized int generateNewId(UnitType unitType) {
+		int baseId = uniqueId++;
+		if (baseId >= MAX_BASE_ID) {
+			throw new IllegalStateException("Too many Unit created " + MAX_BASE_ID);
+		}
+		int typeId = unitType.ordinal();
+
+		return (baseId << TYPE_BITS) + typeId;
+	}
+
+	public void setOriginalBuild(String build) {
+		originalBuild = build;
+	}
+
+	public String getOriginalBuild() {
+		return originalBuild;
+	}
+
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+		activeSettlement.remove();
+
 		Iterator<Settlement> i1 = lookupSettlement.values().iterator();
 		while (i1.hasNext()) {
 			i1.next().destroy();
@@ -687,14 +720,10 @@ public class UnitManager implements Serializable, Temporal {
 		lookupRobot = null;
 		lookupEquipment = null;
 
-		sim = null;
-		simulationConfig = SimulationConfig.instance();
 		marsSurface = null;
 
 		listeners.clear();
 		listeners = null;
-
-		factory = null;
 	}
 
 	/**
@@ -732,38 +761,4 @@ public class UnitManager implements Serializable, Temporal {
 			return settlement.getName() + " completed pulse #" + currentPulse.getId();
 		}
 	}
-
-	/**
-	 * Extracts the UnitType from an identifier
-	 * @param id
-	 * @return
-	 */
-	public static UnitType getTypeFromIdentifier(int id) {
-		// Extract the bottom 4 bit
-		int typeId = (id & TYPE_MASK);
-
-		return UnitType.values()[typeId];
-	}
-
-	/**
-	 * Generate a new unique UnitId for a certain type. This will be used later
-	 * for lookups.
-	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits
-	 * are a unique increasing number.
-	 * This guarantees
-	 * uniqueness PLUS a quick means to identify the UnitType from only the
-	 * identifier.
-	 * @param unitType
-	 * @return
-	 */
-	public synchronized int generateNewId(UnitType unitType) {
-		int baseId = uniqueId++;
-		if (baseId >= MAX_BASE_ID) {
-			throw new IllegalStateException("Too many Unit created " + MAX_BASE_ID);
-		}
-		int typeId = unitType.ordinal();
-
-		return (baseId << TYPE_BITS) + typeId;
-	}
-
 }

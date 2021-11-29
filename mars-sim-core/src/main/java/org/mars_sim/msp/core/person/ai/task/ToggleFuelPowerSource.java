@@ -132,7 +132,7 @@ implements Serializable {
 					List<Building> notFull = new ArrayList<>();
 
 					for (Building b : mgtBuildings) {
-						if (b.getBuildingType().toLowerCase().equals(C2)) {
+						if (b.getBuildingType().equalsIgnoreCase(C2)) {
 							destination = b;
 							walkToMgtBldg(b);
 							done = true;
