@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -63,11 +62,11 @@ public class UnitManager implements Serializable, Temporal {
 	/** Flag true if the class has just been loaded. */
 	public boolean justLoaded = true;
 	/** List of unit manager listeners. */
-	private List<UnitManagerListener> listeners;
+	private transient List<UnitManagerListener> listeners;
 
-	private ExecutorService executor;
+	private transient ExecutorService executor;
 
-	private List<SettlementTask> settlementTaskList = new ArrayList<>();
+	private transient List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();

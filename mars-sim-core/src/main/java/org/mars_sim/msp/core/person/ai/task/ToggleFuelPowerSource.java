@@ -120,43 +120,8 @@ implements Serializable {
             }
 
             else {
-                // Determine location for toggling power source.
-				boolean done = false;
-
-				// Pick a management building for remote access to the resource building
-				List<Building> mgtBuildings = person.getSettlement().getBuildingManager()
-						.getBuildings(FunctionType.MANAGEMENT);
-
-				if (!mgtBuildings.isEmpty()) {
-
-					List<Building> notFull = new ArrayList<>();
-
-					for (Building b : mgtBuildings) {
-						if (b.getBuildingType().equalsIgnoreCase(C2)) {
-							destination = b;
-							walkToMgtBldg(b);
-							done = true;
-							break;
-						}
-						else if (b.getAdministration() != null && !b.getAdministration().isFull()) {
-							notFull.add(b);
-						}
-					}
-
-					if (!done) {
-						if (!notFull.isEmpty()) {
-							int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
-							destination = mgtBuildings.get(rand);
-							walkToMgtBldg(destination);
-						}
-						else {
-							end(powerSource.getType().getName() + ": Management space unavailable.");
-						}
-					}
-				}
-				else {
-					end(powerSource.getType().getName() + ": Management space unavailable.");
-				}
+                // Looks for management function for toggling power source.
+            	checkManagement();
             }
 
         }
@@ -167,6 +132,48 @@ implements Serializable {
         addPhase(TOGGLE_POWER_SOURCE);
         setPhase(TOGGLE_POWER_SOURCE);
     }
+
+	/**
+	 * Check if any management function is available
+	 */
+	private void checkManagement() {
+
+		boolean done = false;
+		// Pick an administrative building for remote access to the resource building
+		List<Building> mgtBuildings = person.getSettlement().getBuildingManager()
+				.getBuildings(FunctionType.MANAGEMENT);
+
+		if (!mgtBuildings.isEmpty()) {
+
+			List<Building> notFull = new ArrayList<>();
+
+			for (Building b : mgtBuildings) {
+				if (b.getBuildingType().equalsIgnoreCase(C2)) {
+					destination = b;
+					walkToMgtBldg(b);
+					done = true;
+					break;
+				}
+				else if (b.getManagement() != null && !b.getManagement().isFull()) {
+					notFull.add(b);
+				}
+			}
+
+			if (!done) {
+				if (!notFull.isEmpty()) {
+					int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
+					destination = mgtBuildings.get(rand);
+					walkToMgtBldg(destination);
+				}
+				else {
+					end(powerSource.getType().getName() + ": Management space unavailable.");
+				}
+			}
+		}
+		else {
+			end("Management space unavailable.");
+		}
+	}
 
     /**
      * Walks to the building with management function
