@@ -61,14 +61,14 @@ implements Serializable {
     // Data members
 	/** True if the building with the fuel power source is inhabitable. */
     private boolean isInhabitable;
+    /** True if power source is to be turned on, false if turned off. */
+    private boolean toggleOn;
+
     /** The fuel power source to toggle. */
     private FuelPowerSource powerSource;
     /** The building the resource process is in. */
     private Building building;
-	/** The building the person can go to remotely control the resource process. */
-	private Building destination;
-    /** True if power source is to be turned on, false if turned off. */
-    private boolean toggleOn;
+
 
     /**
      * Constructor
@@ -91,8 +91,6 @@ implements Serializable {
         if (building != null) {
             powerSource = getFuelPowerSource(building);
 
-            //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-            //double millisols = clock.getMillisol();
             boolean isOn = powerSource.isToggleON();
 
             if (orbitInfo == null)
@@ -149,7 +147,6 @@ implements Serializable {
 
 			for (Building b : mgtBuildings) {
 				if (b.getBuildingType().equalsIgnoreCase(C2)) {
-					destination = b;
 					walkToMgtBldg(b);
 					done = true;
 					break;
@@ -162,8 +159,7 @@ implements Serializable {
 			if (!done) {
 				if (!notFull.isEmpty()) {
 					int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
-					destination = mgtBuildings.get(rand);
-					walkToMgtBldg(destination);
+					walkToMgtBldg(mgtBuildings.get(rand));
 				}
 				else {
 					end(powerSource.getType().getName() + ": Management space unavailable.");
@@ -203,7 +199,7 @@ implements Serializable {
     private void walkToPowerSourceBuilding(Building powerBuilding) {
 
         // Determine location within power source building.
-        // TODO: Use action point rather than random internal location.
+        // Note: Use action point rather than random internal location.
         Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
                 buildingLoc.getY(), powerBuilding);
@@ -362,7 +358,7 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+        double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
 
         if (isInhabitable) {
             // Add experience to "EVA Operations" skill.
@@ -396,10 +392,10 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int evaOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
         if (isInhabitable) {
-            return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
+            return (int) Math.round((evaOperationsSkill + mechanicsSkill) / 2D);
         }
         else {
             return (mechanicsSkill);
@@ -432,49 +428,8 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double togglePowerSourcePhase(double time) {
-
-        // Check for radiation exposure during the EVA operation.
-        if (isDone() || isRadiationDetected(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-
-        // Check if there is a reason to cut short and return.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
-        // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-            if (isInhabitable) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-        }
-
-        // Check if toggle has already been completed.
-        if (powerSource.isToggleON() == toggleOn) {
-            if (isInhabitable) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-        }
+    	// Check for end task conditions
+    	checkEndTask(time);
 
         if (isDone()) {
 			endTask();
@@ -511,9 +466,61 @@ implements Serializable {
     }
 
     /**
+     * Checks if it fits any end task conditions
+     *
+     * @param time
+     */
+    private void checkEndTask(double time) {
+        // Check for radiation exposure during the EVA operation.
+        if (isDone() || isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() == 0D) {
+            if (person.isOutside()) {
+                setPhase(WALK_BACK_INSIDE);
+            }
+            else {
+                endTask();
+            }
+        }
+
+        // Check if toggle has already been completed.
+        if (powerSource.isToggleON() == toggleOn) {
+            if (person.isOutside()) {
+                setPhase(WALK_BACK_INSIDE);
+            }
+            else {
+                endTask();
+            }
+        }
+    }
+
+    /**
      * Check for accident with entity during toggle resource phase.
+     *
      * @param time the amount of time (in millisols)
      */
+    @Override
     protected void checkForAccident(double time) {
 
         // Use EVAOperation checkForAccident() method.

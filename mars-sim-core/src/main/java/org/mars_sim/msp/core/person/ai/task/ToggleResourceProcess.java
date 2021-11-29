@@ -65,8 +65,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private ResourceProcess process;
 	/** The building the resource process is in. */
 	private Building resourceProcessBuilding;
-	/** The building the person can go to remotely control the resource process. */
-	private Building destination;
 
 	/**
 	 * Constructor.
@@ -93,8 +91,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 				ResourceProcessing rp = resourceProcessBuilding.getResourceProcessing();
     			if (rp != null) {
-    				destination = resourceProcessBuilding;
-    				walkToResourceBldg(destination);
+    				walkToResourceBldg(resourceProcessBuilding);
     			}
 
 				else {
@@ -132,7 +129,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 			for (Building b : mgtBuildings) {
 				if (b.getBuildingType().equalsIgnoreCase(C2)) {
-					destination = b;
 					walkToMgtBldg(b);
 					done = true;
 					break;
@@ -145,8 +141,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			if (!done) {
 				if (!notFull.isEmpty()) {
 					int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
-					destination = mgtBuildings.get(rand);
-					walkToMgtBldg(destination);
+					walkToMgtBldg(mgtBuildings.get(rand));
 				}
 				else {
 					end(process.getProcessName() + ": Management space unavailable.");
@@ -269,12 +264,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			while (i.hasNext()) {
 				Building building = i.next();
 				// In this building, select the best resource to compete
-				ResourceProcess process = getResourceProcess(building);
-				if (process != null && process.isToggleAvailable()) {
-					double diff = getResourcesValueDiff(settlement, process);
+				ResourceProcess process0 = getResourceProcess(building);
+				if (process0 != null && process0.isToggleAvailable()) {
+					double diff = getResourcesValueDiff(settlement, process0);
 					if (diff > bestDiff) {
 						bestDiff = diff;
-						result = process;
+						result = process0;
 						resourceProcessBuilding = building;
 					}
 				}
@@ -296,7 +291,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public static double getResourcesValueDiff(Settlement settlement, ResourceProcess process) {
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);
-		double diff = (outputValue - inputValue) / inputValue;
+		double diff = 0;
+
+		if (inputValue != 0)
+			diff = (outputValue - inputValue) / inputValue;
 
 		// Subtract power required per millisol.
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
@@ -350,13 +348,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			if (useResource) {
 				// Gets the demand for this resource
 				double demand = settlement.getGoodsManager().getAmountDemandValue(resource);
-				double rate = 0D;
-//				double cap = settlement.getInventory().getAmountResourceCapacity(resource, false);
 				double remain = settlement.getAmountResourceRemainingCapacity(resource);
-//				double stored = cap - remain;
 
 				if (input) {
-					rate = process.getMaxInputResourceRate(resource);
+					double rate = process.getMaxInputResourceRate(resource);
 
 					// For input value, the higher the stored,
 					if (rate > remain) {
@@ -365,14 +360,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					result += (rate / demand);
 
 				} else {
-					rate = process.getMaxOutputResourceRate(resource);
+					double rate = process.getMaxOutputResourceRate(resource);
 
 					// For output value, the
 					if (rate > remain) {
 						rate = remain;
 					}
 					result += (rate * demand);
-
 				}
 			}
 		}
@@ -473,7 +467,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during the manual toggling.
-		if (destination == resourceProcessBuilding) {
+		if (resourceProcessBuilding != null) {
 			checkForAccident(resourceProcessBuilding, time, 0.005D);
 		}
 
@@ -498,16 +492,16 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				process.setProcessRunning(false);
 			}
 
-			if (destination == resourceProcessBuilding) {
-				logger.log(destination, person, Level.FINE, 0,
+			if (resourceProcessBuilding != null) {
+				logger.log(person.getSettlement(), person, Level.FINE, 0,
 						   "Manually turned " + toggle + " " + process.getProcessName()
 						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
 			}
 			else {
-				logger.log(destination, person, Level.FINE, 0,
+				logger.log(person.getSettlement(), person, Level.FINE, 0,
 							"Turned " + toggle + " remotely " + process.getProcessName()
-					       + " in " + resourceProcessBuilding.getNickName()
+					       + " in " + person.getBuildingLocation().getNickName()
 					       + ".");
 			}
 			// Only need to run the finished phase once and for all
@@ -519,7 +513,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	@Override
 	protected double performMappedPhase(double time) {
-//		time = super.performMappedPhase(time);
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (TOGGLING.equals(getPhase())) {
