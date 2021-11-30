@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -856,11 +857,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					luvTemp.setReservedForMission(true);
 
 					// Place light utility vehicles at random location in construction site.
-					Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
-					Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
-							relativeLocSite.getY(), site);
-					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
-							RandomUtil.getRandomDouble(360D));
+					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe("Unable to retrieve " + luvTemp.getName() + " cannot be retrieved from "
@@ -1071,8 +1069,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			} else {
 				// If no buildings at settlement, position new construction site at 0,0 with
 				// random facing.
-				site.setXLocation(0D);
-				site.setYLocation(0D);
+				site.setPosition(LocalPosition.DEFAULT_POSITION);
 				site.setFacing(RandomUtil.getRandomDouble(360D));
 			}
 		}
@@ -1315,8 +1312,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			double newLength = p1.distance(p2);
 			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 
-			site.setXLocation(centerX);
-			site.setYLocation(centerY);
+			site.setPosition(new LocalPosition(centerX, centerY));
 			site.setFacing(facingDegrees);
 			site.setLength(newLength);
 			result = true;
@@ -1465,17 +1461,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			double distance = structureDistance + separationDistance;
 			double radianDirection = Math.PI * direction / 180D;
-			double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
-			double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
+			LocalPosition rectCenter = building.getPosition().getPosition(distance, radianDirection);
 
 			// Check to see if proposed new site position intersects with any existing
 			// buildings
 			// or construction sites.
-			BoundedObject sitePosition = new BoundedObject(rectCenterX, rectCenterY, site.getWidth(), site.getLength(), rectRotation);
+			BoundedObject sitePosition = new BoundedObject(rectCenter, site.getWidth(), site.getLength(), rectRotation);
 			if (settlement.getBuildingManager().isBuildingLocationOpen(sitePosition, site)) {
 				// Set the new site here.
-				site.setXLocation(rectCenterX);
-				site.setYLocation(rectCenterY);
+				site.setPosition(rectCenter);
 				site.setFacing(rectRotation);
 				goodPosition = true;
 				break;

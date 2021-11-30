@@ -260,8 +260,7 @@ implements Serializable {
 
 		// Add construction site.
 		ConstructionSite site = createNewConstructionSite();
-		site.setXLocation(salvagedBuilding.getXLocation());
-		site.setYLocation(salvagedBuilding.getYLocation());
+		site.setPosition(salvagedBuilding.getPosition());
 		site.setFacing(salvagedBuilding.getFacing());
 		ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getBuildingType());
 		if (buildingStageInfo != null) {

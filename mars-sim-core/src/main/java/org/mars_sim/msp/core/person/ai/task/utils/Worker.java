@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
@@ -145,39 +146,38 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 */
 	public void setMission(Mission newMission);
 
-
-	// These methods below should be moved to separate Walker interface
-	// Also should be converted into a single LocalCoordinate class
-	// instead of 2DPoint which is a UI AWT class
-
-
 	/**
 	 * Gets the worker X location at a settlement.
 	 *
 	 * @return X distance (meters) from the settlement's center.
+	 * @deprecated
 	 */
-	public double getXLocation();
-
-	/**
-	 * Sets the worker's X location at a settlement.
-	 *
-	 * @param xLocation the X distance (meters) from the settlement's center.
-	 */
-	public void setXLocation(double xLocation);
+	default double getXLocation() {
+		return getPosition().getX();
+	}
 
 	/**
 	 * Gets the worker's Y location at a settlement.
 	 *
 	 * @return Y distance (meters) from the settlement's center.
+	 * @deprecated
 	 */
-	public double getYLocation();
+	default double getYLocation() {
+		return getPosition().getY();
+	}
 
 	/**
-	 * Sets the worker's Y location at a settlement.
-	 *
-	 * @param yLocation
+	 * Get the Worker's position within the Settlement/Vehicle
+	 * @return
 	 */
-	public void setYLocation(double yLocation);
+	public LocalPosition getPosition();
+	
+	/**
+	 * Sets the worker's position at a settlement.
+	 *
+	 * @param position
+	 */
+	public void setPosition(LocalPosition position);
 
 	/**
 	 * Gets the manager of the Worker's Tasks

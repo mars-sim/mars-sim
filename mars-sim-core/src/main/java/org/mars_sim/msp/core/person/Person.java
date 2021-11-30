@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -146,10 +147,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private double height;
 	/** The height of the person (in kg). */
 	private double weight;
-	/** Settlement X location (meters) from settlement center. */
-	private double xLoc;
-	/** Settlement Y location (meters) from settlement center. */
-	private double yLoc;
+	/** Settlement position (meters) from settlement center. */
+	private LocalPosition position;
 	/** Settlement Z location (meters) from settlement center. */
 	private double zLoc;
 
@@ -235,8 +234,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 */
 	public Person(Settlement settlement) {
 		super("Mock Person", settlement.getCoordinates());
-		this.xLoc = 0D;
-		this.yLoc = 0D;
+		this.position = LocalPosition.DEFAULT_POSITION;
 		this.associatedSettlementID = settlement.getIdentifier();
 		super.setDescription(EARTHLING);
 
@@ -249,7 +247,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
-
 	}
 
 	/**
@@ -265,8 +262,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		super.setDescription(EARTHLING);
 
 		// Initialize data members
-		this.xLoc = 0D;
-		this.yLoc = 0D;
+		this.position = LocalPosition.DEFAULT_POSITION;
 		this.associatedSettlementID = settlement.getIdentifier();
 
 		// create a prior training profile
@@ -702,39 +698,23 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the person's X location at a settlement.
+	 * Gets the person's position at a settlement.
 	 *
-	 * @return X distance (meters) from the settlement's center.
+	 * @return distance (meters) from the settlement's center.
 	 */
-	public double getXLocation() {
-		return xLoc;
+	@Override
+	public LocalPosition getPosition() {
+		return position;
 	}
 
 	/**
-	 * Sets the person's X location at a settlement.
+	 * Sets the person's position at a settlement.
 	 *
-	 * @param xLocation the X distance (meters) from the settlement's center.
+	 * @param position
 	 */
-	public void setXLocation(double xLocation) {
-		this.xLoc = xLocation;
-	}
-
-	/**
-	 * Gets the person's Y location at a settlement.
-	 *
-	 * @return Y distance (meters) from the settlement's center.
-	 */
-	public double getYLocation() {
-		return yLoc;
-	}
-
-	/**
-	 * Sets the person's Y location at a settlement.
-	 *
-	 * @param yLocation
-	 */
-	public void setYLocation(double yLocation) {
-		this.yLoc = yLocation;
+	@Override
+	public void setPosition(LocalPosition position) {
+		this.position = position;
 	}
 
 	/**

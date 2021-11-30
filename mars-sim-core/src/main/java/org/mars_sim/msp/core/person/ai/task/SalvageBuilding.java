@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -93,7 +94,7 @@ implements Serializable {
             this.vehicles = mission.getConstructionVehicles();
 
             // Determine location for salvage site.
-            Point2D salvageSiteLoc = determineSalvageLocation();
+            LocalPosition salvageSiteLoc = determineSalvageLocation();
             setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
 
             // Add task phase
@@ -130,7 +131,7 @@ implements Serializable {
 	public void init() {
 
         // Determine location for salvage site.
-        Point2D salvageSiteLoc = determineSalvageLocation();
+        LocalPosition salvageSiteLoc = determineSalvageLocation();
         setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
 
         // Add task phase
@@ -206,13 +207,8 @@ implements Serializable {
      * Determine location to go to at salvage site.
      * @return location.
      */
-    private Point2D determineSalvageLocation() {
-
-        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site, false);
-        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
-                relativeLocSite.getY(), site);
-
-        return settlementLocSite;
+    private LocalPosition determineSalvageLocation() {
+    	return LocalAreaUtil.getRandomLocalRelativePosition(site);
     }
 
     @Override
@@ -380,11 +376,8 @@ implements Serializable {
                         operatingLUV = true;
 
                         // Place light utility vehicles at random location in construction site.
-                        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
-                        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(
-                                relativeLocSite.getX(), relativeLocSite.getY(), site);
-                        luv.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
-                                RandomUtil.getRandomDouble(360D));
+                        LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+                        luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
                         break;
                     }

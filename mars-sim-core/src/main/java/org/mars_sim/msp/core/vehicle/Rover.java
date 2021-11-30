@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -982,8 +983,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	@Override
-	public void setParkedLocation(double xLocation, double yLocation, double facing) {
-		super.setParkedLocation(xLocation, yLocation, facing);
+	public void setParkedLocation(LocalPosition position, double facing) {
+		super.setParkedLocation(position, facing);
 
 		// Update towed vehicle locations.
 		updatedTowedVehicleSettlementLocation();
@@ -999,18 +1000,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			if (towedVehicle instanceof Rover) {
 				// Towed rovers should be located behind this rover with same facing.
 				double distance = (getLength() + towedVehicle.getLength()) / 2D;
-				double towedX = 0D;
-				double towedY = 0D - distance;
-				Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
-				towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing());
+				LocalPosition towingPosition = new LocalPosition(0D, - distance);
+				LocalPosition towedLoc = LocalAreaUtil.getLocalRelativePosition(towingPosition, this);
+				towedVehicle.setParkedLocation(towedLoc, getFacing());
 			} else if (towedVehicle instanceof LightUtilityVehicle) {
 				// Towed light utility vehicles should be attached to back of the rover
 				// sideways and facing to the right.
 				double distance = (getLength() + towedVehicle.getWidth()) / 2D;
-				double towedX = 0D;
-				double towedY = 0D - distance;
-				Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
-				towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing() + 90D);
+				LocalPosition towingPosition = new LocalPosition(0D, - distance);
+				LocalPosition towedLoc = LocalAreaUtil.getLocalRelativePosition(towingPosition, this);
+				towedVehicle.setParkedLocation(towedLoc, getFacing() + 90D);
 			}
 		}
 	}

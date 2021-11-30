@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -149,7 +150,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		if (isStuck) {
 			addStatus(StatusType.STUCK);
 			setSpeed(0D);
-			setParkedLocation(0D, 0D, getDirection().getDirection());
+			setParkedLocation(LocalPosition.DEFAULT_POSITION, getDirection().getDirection());
 		}
 	}
 
@@ -165,9 +166,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		}
 
 		else {
-			
-			double centerXLoc = 0D;
-			double centerYLoc = 0D;
+			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
 
 			// Place the vehicle starting from near the settlement map center (0,0).
 
@@ -193,9 +192,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
 					
 					if (hab != null) {
-						centerXLoc = (int) hab.getXLocation();
-						centerYLoc = (int) hab.getYLocation();
-						
+						centerLoc = hab.getPosition();
 					} else  { //if (hub != null) {
 						
 						int r1 = 0;
@@ -204,8 +201,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 							r1 = RandomUtil.getRandomInt((int)numHub - 1);
 							hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
 									
-							centerXLoc = (int) hub.getXLocation();
-							centerYLoc = (int) hub.getYLocation();
+							centerLoc = hub.getPosition();
 						}
 					}
 				}
@@ -213,14 +209,11 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 				else {
 					// Try parking near a garage
 					Building garage = BuildingManager.getAGarage(getSettlement());
-					centerXLoc = (int) garage.getXLocation();
-					centerYLoc = (int) garage.getYLocation();
+					centerLoc = garage.getPosition();
 				}
 			}
 
-			double newXLoc = 0D;
-			double newYLoc = 0D;
-
+			LocalPosition newLoc = LocalPosition.DEFAULT_POSITION;
 			double newFacing = 0D;
 
 			double step = 10D;
@@ -242,13 +235,12 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
 					double distance = RandomUtil.getRandomDouble(step) + x;
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
-					newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
+					newLoc = centerLoc.getPosition(distance, radianDirection);
 					newFacing = RandomUtil.getRandomDouble(360D);
 			
 					// Check if new vehicle location collides with anything.
 					foundGoodLocation =	LocalAreaUtil.isObjectCollisionFree(this, w, l, 
-							newXLoc, newYLoc, newFacing, getCoordinates());
+							newLoc.getX(), newLoc.getY(), newFacing, getCoordinates());
 					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
 					// surrounded by buildings or hallways.
 					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
@@ -256,8 +248,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 				}
 			}
 
-			setParkedLocation(newXLoc, newYLoc, newFacing);
-
+			setParkedLocation(newLoc, newFacing);
 		}
 	}
 

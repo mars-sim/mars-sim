@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -87,7 +87,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 			this.vehicles = mission.getConstructionVehicles();
 
 			// Determine location for construction site.
-			Point2D constructionSiteLoc = determineConstructionLocation();
+			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
 
 			// Add task phase
@@ -126,7 +126,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		}
 
 		// Determine location for construction site.
-		Point2D constructionSiteLoc = determineConstructionLocation();
+		LocalPosition constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
 
 		// Add task phase
@@ -212,13 +212,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 *
 	 * @return location.
 	 */
-	private Point2D determineConstructionLocation() {
-
-		Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site, false);
-		Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
-				relativeLocSite.getY(), site);
-
-		return settlementLocSite;
+	private LocalPosition determineConstructionLocation() {
+		return LocalAreaUtil.getRandomLocalRelativePosition(site);
 	}
 
 	@Override
@@ -351,11 +346,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 						operatingLUV = true;
 
 						// Place light utility vehicles at random location in construction site.
-						Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
-						Point2D.Double settlementLocSite = LocalAreaUtil
-								.getLocalRelativeLocation(relativeLocSite.getX(), relativeLocSite.getY(), site);
-						luv.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
-								RandomUtil.getRandomDouble(360D));
+						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+						luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 						break;
 					}

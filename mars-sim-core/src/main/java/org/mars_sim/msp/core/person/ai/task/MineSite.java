@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -198,12 +199,9 @@ public class MineSite extends EVAOperation implements Serializable {
 
 			if (luv.addPerson(person)) {
 				
-				Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-						vehicleLoc.getY(), luv);
+				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(luv);
 
-				person.setXLocation(settlementLoc.getX());
-				person.setYLocation(settlementLoc.getY());
+				person.setPosition(settlementLoc);
 				luv.setOperator(person);
 
 				operatingLUV = true;

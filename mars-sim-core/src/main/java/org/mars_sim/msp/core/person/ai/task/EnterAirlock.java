@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -237,11 +238,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		else {
-//			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(),
-//					newPos.getX(),
-//					newPos.getY(), 0));
-			person.setXLocation(newPos.getX());
-			person.setYLocation(newPos.getY());
+			person.setPosition(new LocalPosition(newPos));
 		}
 
 		logger.log(person, Level.FINE, 4000, "Arrived at ("
@@ -575,7 +572,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 				// Walk to interior airlock position.
 				addSubTask(new WalkRoverInterior(person, airlockRover,
-						insideAirlockPos.getX(), insideAirlockPos.getY()));
+										new LocalPosition(insideAirlockPos)));
 			}
 		}
 
@@ -841,7 +838,7 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log(person, Level.FINE, 4_000,
 						"Attempted to step closer to " + airlockRover.getNickName() + "'s inner door.");
 
-				addSubTask(new WalkRoverInterior(person, airlockRover, interiorDoorPos.getX(), interiorDoorPos.getY()));
+				addSubTask(new WalkRoverInterior(person, airlockRover, new LocalPosition(interiorDoorPos)));
 			}
 		}
 

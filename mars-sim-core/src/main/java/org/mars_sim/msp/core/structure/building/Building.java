@@ -848,26 +848,25 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return floorArea * HEIGHT * 1000; // 1 Cubic Meter = 1,000 Liters
 	}
 
-
-	public LocalPosition getPosition() {
-		return loc;
-	}
-	
 	@Override
 	public double getXLocation() {
 		return loc.getX();
 	}
-
+	
 	@Override
 	public double getYLocation() {
 		return loc.getY();
 	}
 	
 	@Override
+	public LocalPosition getPosition() {
+		return loc;
+	}
+
+	@Override
 	public double getFacing() {
 		return facing;
 	}
-
 
 	public boolean getInTransport() {
 		return inTransportMode;

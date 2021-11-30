@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -84,7 +85,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private double binYLoc;
 
 	private LocalBoundedObject interiorObject;
-	private Point2D returnInsideLoc;
+	private LocalPosition returnInsideLoc;
 
 	private SkillType outsideSkill;
 	
@@ -346,13 +347,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 			
 			else {
 				// Set return location.
-				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
-						rawReturnInsideLoc.getY(), interiorObject);
+				returnInsideLoc = LocalAreaUtil.getRandomLocalRelativePosition(interiorObject);
 				
 				if (returnInsideLoc != null && 
-						!LocalAreaUtil.isLocationWithinLocalBoundedObject(
-								returnInsideLoc.getX(),	returnInsideLoc.getY(), interiorObject)) {
+						!LocalAreaUtil.isPositionWithinLocalBoundedObject(
+								returnInsideLoc, interiorObject)) {
 					
 					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. returnInsideLoc failed.");
 					addSubTask(new Walk(person));
@@ -360,11 +359,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 	
 			// If not at return inside location, create walk inside subtask.
-	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-	        
 			// If not inside, create walk inside subtask.
-			if (interiorObject != null && !closeToLocation) {
+			if (interiorObject != null && !person.getPosition().isClose(returnInsideLoc)) {
 				String name = "";
 				if (interiorObject instanceof Building) {
 					name = ((Building)interiorObject).getNickName();
@@ -375,8 +371,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 						
 				logger.log(person, Level.FINE, 4_000, 
 							"Near " +  name 
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
+							+ " at (" + returnInsideLoc 
 							+ "). Attempting to enter the airlock.");
 				
 				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
@@ -671,12 +666,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
 
-		Point2D.Double newLocation = null;
+		LocalPosition newLocation = null;
 		boolean goodLocation = false;
 		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(basePoint, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					basePoint);
+			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(basePoint, 1D);
+			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	basePoint);
 			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 					worker.getCoordinates());
 		}

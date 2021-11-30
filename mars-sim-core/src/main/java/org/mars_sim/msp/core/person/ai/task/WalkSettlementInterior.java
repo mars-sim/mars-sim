@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -51,17 +51,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private static final double PERSON_WALKING_SPEED = Walk.PERSON_WALKING_SPEED; // [km per hr].
 	private static final double ROBOT_WALKING_SPEED = Walk.ROBOT_WALKING_SPEED; // [km per hr].
 
-//	private static final double VERY_SMALL = .00001D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
 
 	// Data members
-	private double destXLoc;
-	private double destYLoc;
+	private LocalPosition destPosition;
 	private double destZLoc;
 	
 	private Settlement settlement;
-	// private Building startBuilding;
 	private Building destBuilding;
 	private InsideBuildingPath walkingPath;
 
@@ -71,11 +68,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @param person               the person performing the task.
 	 * @param destinationBuilding  the building that is walked to. (Can be same as
 	 *                             current building).
-	 * @param destinationXLocation the destination X location at the settlement.
-	 * @param destinationYLocation the destination Y location at the settlement.
+	 * @param destinationPosition the destination position at the settlement.
+	 * @param destinationYLocation the destination Z location at the settlement.
 	 */
-	public WalkSettlementInterior(Person person, Building destinationBuilding, double destinationXLocation,
-			double destinationYLocation, double destinationZLocation) {
+	public WalkSettlementInterior(Person person, Building destinationBuilding, LocalPosition destinationPosition,
+								  double destinationZLocation) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check that the person is currently inside the settlement.
@@ -88,12 +85,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Initialize data members.
 		this.settlement = person.getSettlement();
 		this.destBuilding = destinationBuilding;
-		this.destXLoc = destinationXLocation;
-		this.destYLoc = destinationYLocation;
+		this.destPosition = destinationPosition;
 		this.destZLoc = destinationZLocation;
 		
 		// Check if (destXLoc, destYLoc) is within destination building.
-		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
+		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
 			logger.warning(person, "Was unable to walk to the destination in " + destBuilding);
 			person.getMind().getTaskManager().clearAllTasks("Destination not reachable");
 			return;
@@ -111,8 +107,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			// Determine the walking path to the destination.
 			if (settlement != null)
 				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-					person.getXLocation(), person.getYLocation(), destinationBuilding, destinationXLocation,
-					destinationYLocation);
+					person.getPosition(), destinationBuilding, destPosition);
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
@@ -144,8 +139,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @param destinationXLocation
 	 * @param destinationYLocation
 	 */
-	public WalkSettlementInterior(Robot robot, Building destinationBuilding, double destinationXLocation,
-			double destinationYLocation) {
+	public WalkSettlementInterior(Robot robot, Building destinationBuilding, LocalPosition destinationPosition) {
 		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check that the robot is currently inside the settlement.
@@ -156,11 +150,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Initialize data members.
 		this.settlement = robot.getSettlement();
 		this.destBuilding = destinationBuilding;
-		this.destXLoc = destinationXLocation;
-		this.destYLoc = destinationYLocation;
+		this.destPosition = destinationPosition;
 		
 		// Check that destination location is within destination building.
-		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
+		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
 			logger.warning(robot, "Was unable to walk to the destination in " + robot.getBuildingLocation());
 			// "Given destination walking location not within destination building.");
 			endTask();
@@ -177,8 +170,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Determine the walking path to the destination.
 		walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-				robot.getXLocation(), robot.getYLocation(), destinationBuilding, destinationXLocation,
-				destinationYLocation);
+				robot.getPosition(), destinationBuilding, destPosition);
 
 		// If no valid walking path is found, end task.
 		if (walkingPath == null) {
@@ -253,14 +245,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			InsidePathLocation location = walkingPath.getNextPathLocation();
-			double distanceToLocation = Point2D.distance(worker.getXLocation(), worker.getYLocation(),
-						location.getXLocation(), location.getYLocation());
+			double distanceToLocation = worker.getPosition().getDistanceTo(location.getPosition());
 
 			if (coveredMeters >= distanceToLocation) {
 
 				// Set person at next path location, changing buildings if necessary.
-				worker.setXLocation(location.getXLocation());
-				worker.setYLocation(location.getYLocation());
+				worker.setPosition(location.getPosition());
 
 				coveredMeters -= distanceToLocation;
 				
@@ -280,14 +270,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// Walk in direction of next path location.
 				
 				// Determine direction
-				double direction = determineDirection(location.getXLocation(), location.getYLocation());
+				double direction = worker.getPosition().getDirectionTo(location.getPosition());
 				
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location, changing buildings if necessary.
-				worker.setXLocation(location.getXLocation());
-				worker.setYLocation(location.getYLocation());
+				// TODO Is this right becausw the walk in direiiton also updates 
+				worker.setPosition(location.getPosition());
 
 				coveredMeters = 0D;
 			}
@@ -298,38 +288,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 
 			logger.log(worker, Level.FINEST, 0, "Close enough to final destination ("
-					+ location.getXLocation() + ", "
-					+ location.getYLocation());
+					+ location.getPosition());
 			
-			worker.setXLocation(location.getXLocation());
-			worker.setYLocation(location.getYLocation());
+			worker.setPosition(location.getPosition());
 
 			endTask();
 		}
 		
 		return timeLeft;
-	}
-
-	/**
-	 * Determine the direction of travel to a location.
-	 * 
-	 * @param destinationXLocation the destination X location.
-	 * @param destinationYLocation the destination Y location.
-	 * @return direction (radians).
-	 */
-	double determineDirection(double destinationXLocation, double destinationYLocation) {
-		double result = Math.atan2(worker.getXLocation() - destinationXLocation,
-					destinationYLocation - worker.getYLocation());
-
-		while (result > (Math.PI * 2D)) {
-			result -= (Math.PI * 2D);
-		}
-
-		while (result < 0D) {
-			result += (Math.PI * 2D);
-		}
-
-		return result;
 	}
 
 	/**
@@ -339,12 +305,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @param distance  the distance (meters) to travel.
 	 */
 	void walkInDirection(double direction, double distance) {
-
-		double newXLoc = (-1D * Math.sin(direction) * distance) + worker.getXLocation();
-		double newYLoc = (Math.cos(direction) * distance) + worker.getYLocation();
-
-		worker.setXLocation(newXLoc);
-		worker.setYLocation(newYLoc);
+		worker.setPosition(worker.getPosition().getPosition(distance, direction));
 	}
 
 	/**
@@ -397,15 +358,13 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private double getRemainingPathDistance() {
 
 		double result = 0D;
-		double prevXLoc = worker.getXLocation();
-		double prevYLoc = worker.getYLocation();
+		LocalPosition prevPosition = worker.getPosition();
 
 		Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
 		while (i.hasNext()) {
 			InsidePathLocation nextLoc = i.next();
-			result += Point2D.Double.distance(prevXLoc, prevYLoc, nextLoc.getXLocation(), nextLoc.getYLocation());
-			prevXLoc = nextLoc.getXLocation();
-			prevYLoc = nextLoc.getYLocation();
+			result += nextLoc.getPosition().getDistanceTo(prevPosition);
+			prevPosition = nextLoc.getPosition();
 		}
 
 		return result;

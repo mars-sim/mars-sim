@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.BuildingSpec.FunctionSpec;
@@ -248,7 +250,7 @@ public class BuildingConfig implements Serializable {
 
 		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
-			List<Point2D> parking = parseLocations(vehicleElement, "parking", PARKING_LOCATION,
+			List<LocalPosition> parking = parsePositions(vehicleElement, "parking", PARKING_LOCATION,
 												   width, length);
 			newSpec.setParking(parking);
 		}
@@ -459,6 +461,50 @@ public class BuildingConfig implements Serializable {
 				}
 
 				result.add(new Point2D.Double(xLocation, yLocation));
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Parse an list of position for a building's function. These have a <xloc> & <yloc> structure.
+	 *
+	 * @param functionElement Element holding locations
+	 * @param locations Name of the location elements
+	 * @param pointName Nmae of the point item
+	 * @return list of activity spots as Point2D objects.
+	 */
+	private List<LocalPosition> parsePositions(Element functionElement, String locations, String pointName,
+										 double buildingWidth, double buildingLength) {
+		List<LocalPosition> result = new ArrayList<>();
+
+		// Maximum coord is half the width or length
+		double maxX = buildingWidth/2D;
+		double maxY = buildingLength/2D;
+		boolean hasMax = (maxX > 0 && maxY > 0);
+		
+		Element activityElement = functionElement.getChild(locations);
+		if (activityElement != null) {
+			for(Element activitySpot : activityElement.getChildren(pointName)) {
+				LocalPosition point = ConfigHelper.parseLocalPosition(activitySpot);
+
+				// Check location is within the building. Check as long as the maximum
+				// is defined
+				if (hasMax && !point.isWithin(maxX, maxY)) {
+					// Roughly walk back over the XPath
+					StringBuilder name = new StringBuilder();
+					do {
+						name.append(functionElement.getName()).append(' ');
+						functionElement = functionElement.getParentElement();
+					} while (!functionElement.getName().equals(BUILDING));
+					name.append(" in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
+
+					throw new IllegalArgumentException("Locations '" + locations
+							+ "' of " + name.toString()
+							+ " are outside building");
+				}
+
+				result.add(point);
 			}
 		}
 		return result;
@@ -868,17 +914,11 @@ public class BuildingConfig implements Serializable {
 	 * Gets the relative location in the building of a parking location.
 	 *
 	 * @param buildingType the type of the building.
-	 * @param parkingIndex the parking location index.
-	 * @return Point object containing the relative X & Y position from the building
+	 * @return Positions containing the relative X & Y position from the building
 	 *         center.
 	 */
-	public Point2D getParkingLocation(String buildingType, int parkingIndex) {
-		List<Point2D> parking = getBuildingSpec(buildingType).getParking();
-		Point2D result = null;
-		if ((parking != null) && (parkingIndex < parking.size())) {
-			result  = parking.get(parkingIndex);
-		}
-		return result;
+	public List<LocalPosition> getParkingLocations(String buildingType) {
+		return getBuildingSpec(buildingType).getParking();
 	}
 
 	/**

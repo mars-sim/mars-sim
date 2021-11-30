@@ -18,8 +18,18 @@ public class LocalPosition implements Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Default position of the center
+	 */
+    public static final LocalPosition DEFAULT_POSITION = new LocalPosition(0D, 0D);
+
+	/** A very small distance (meters) for measuring how close two positions are. */
+	private static final double VERY_SMALL_DISTANCE = .00001D;
+	
 	private double x;
 	private double y;
+
 
 	public LocalPosition(double x, double y) {
 		super();
@@ -69,7 +79,56 @@ public class LocalPosition implements Serializable {
         return new LocalPosition((x + other.x) / 2D,
         						 (y + other.y) / 2D);
 	}
+	/**
+	 * Get the rotation direction to another Position.
+	 * @param other
+	 * @return
+	 */
+	public double getDirectionTo(LocalPosition other) {
+    	double result = Math.atan2(x - other.x,
+                				   other.y - y);
 
+		while (result > (Math.PI * 2D)) {
+		    result -= (Math.PI * 2D);
+		}
+		
+		while (result < 0D) {
+		    result += (Math.PI * 2D);
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the Position a distacne and rotatino direction from this one.
+	 * @param distance
+	 * @param direction
+	 * @return New position
+	 */
+	public LocalPosition getPosition(double distance, double direction) {
+		double newXLoc = (-1D * Math.sin(direction) * distance) + x;
+		double newYLoc = (Math.cos(direction) * distance) + y;
+        return new LocalPosition(newXLoc, newYLoc);
+	}
+	
+	/**
+	 * Is another position close to this one?
+	 * @param other
+	 * @return
+	 */
+	public boolean isClose(LocalPosition other) {
+		return getDistanceTo(other) < VERY_SMALL_DISTANCE;
+	}
+
+	/**
+	 * Is this position within the boundaries of an X & Y
+	 * @param maxX
+	 * @param maxY
+	 * @return
+	 */
+	public boolean isWithin(double maxX, double maxY) {
+		return (Math.abs(x) < maxX && Math.abs(y) < maxY);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -101,6 +160,15 @@ public class LocalPosition implements Serializable {
 	@Override
 	public String toString() {
 		return "[x=" + x + ", y=" + y + "]";
+	}
+
+	/**
+	 * Bridging method for transition
+	 * @deprecated
+	 * @return
+	 */
+	public java.awt.geom.Point2D.Double toPoint() {
+		return new java.awt.geom.Point2D.Double(x, y);
 	}
 
 }

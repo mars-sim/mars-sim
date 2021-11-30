@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +15,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -341,9 +341,7 @@ public abstract class RoverMission extends VehicleMission {
 		else {
 
 			// Gets a random location within rover.
-			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(v);
-			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-					vehicleLoc.getY(), v);
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
 			if (member instanceof Person) {
 				Person person = (Person) member;
@@ -674,9 +672,7 @@ public abstract class RoverMission extends VehicleMission {
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
 			if (destinationBuilding != null) {
-				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-						destinationLoc.getY(), destinationBuilding);
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
 				boolean hasStrength = p.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
@@ -697,8 +693,7 @@ public abstract class RoverMission extends VehicleMission {
 					rescueOperation(rover, p, disembarkSettlement);
 
 					logger.info(p, "Transported to ("
-							+ Math.round(p.getXLocation()*10.0)/10.0 + ", "
-							+ Math.round(p.getYLocation()*10.0)/10.0 + ") in "
+							+ p.getPosition() + ") in "
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?

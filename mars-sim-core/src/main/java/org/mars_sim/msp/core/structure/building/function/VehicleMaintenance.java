@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -125,22 +125,17 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		
 			// Put vehicle in assigned parking location within building.
 			ParkingLocation location = getEmptyParkingLocation();
-			double newXLoc = 0D;
-			double newYLoc = 0D;
+			LocalPosition newLoc;
 			if (location != null) {
-				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(location.getXLocation(),
-						location.getYLocation(), getBuilding());
-				newXLoc = settlementLoc.getX();
-				newYLoc = settlementLoc.getY();
+				newLoc = LocalAreaUtil.getLocalRelativePosition(location.getPosition(), getBuilding());
 				location.parkVehicle(vehicle);
 			} else {
 				// Park vehicle in center point of building.
-				newXLoc = getBuilding().getXLocation();
-				newYLoc = getBuilding().getYLocation();
+				newLoc = getBuilding().getPosition();
 			}
 	
 			double newFacing = getBuilding().getFacing();
-			vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
+			vehicle.setParkedLocation(newLoc, newFacing);
 	
 			logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
 			
@@ -250,11 +245,10 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	/**
 	 * Add a new parking location in the building.
 	 * 
-	 * @param xLocation the relative X location of the parking spot.
-	 * @param yLocation the relative Y location of the parking spot.
+	 * @param position the relative position of the parking spot.
 	 */
-	protected void addParkingLocation(double xLocation, double yLocation) {
-		parkingLocations.add(new ParkingLocation(xLocation, yLocation));
+	protected void addParkingLocation(LocalPosition position) {
+		parkingLocations.add(new ParkingLocation(position));
 	}
 
 	/**
@@ -327,22 +321,16 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		private static final long serialVersionUID = 1L;
 		
 		// Data members
-		private double xLocation;
-		private double yLocation;
+		private LocalPosition pos;
 		private Vehicle parkedVehicle;
 
-		protected ParkingLocation(double xLocation, double yLocation) {
-			this.xLocation = xLocation;
-			this.yLocation = yLocation;
+		protected ParkingLocation(LocalPosition pos) {
+			this.pos = pos;
 			parkedVehicle = null;
 		}
 
-		public double getXLocation() {
-			return xLocation;
-		}
-
-		public double getYLocation() {
-			return yLocation;
+		public LocalPosition getPosition() {
+			return pos;
 		}
 
 		public Vehicle getParkedVehicle() {

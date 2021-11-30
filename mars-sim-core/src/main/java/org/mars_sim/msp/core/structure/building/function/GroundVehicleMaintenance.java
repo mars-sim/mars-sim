@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
+
+import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * The GroundVehicleMaintenance class is a building function for a building
@@ -35,10 +35,8 @@ implements Serializable {
 		vehicleCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(),
 															 FunctionType.GROUND_VEHICLE_MAINTENANCE);
 
-		int parkingLocationNum = buildingConfig.getParkingLocationNumber(building.getBuildingType());
-		for (int x = 0; x < parkingLocationNum; x++) {
-			Point2D parkingLocationPoint = buildingConfig.getParkingLocation(building.getBuildingType(), x);
-			addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
+		for (LocalPosition parkingLocationPoint : buildingConfig.getParkingLocations(building.getBuildingType())) {
+			addParkingLocation(parkingLocationPoint);
 		}
 	}
 
@@ -49,14 +47,14 @@ implements Serializable {
 	 * @param parkingLocations the parking locations.
 	 */
 	public GroundVehicleMaintenance(Building building, int vehicleCapacity, 
-			Point2D[] parkingLocations) {
+			LocalPosition[] parkingLocations) {
 		// Call VehicleMaintenance constructor.
 		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
 
 		this.vehicleCapacity = vehicleCapacity;
 		
-		for (int x = 0; x < parkingLocations.length; x++) {
-			addParkingLocation(parkingLocations[x].getX(), parkingLocations[x].getY());
+		for (LocalPosition parkingLocation : parkingLocations) {
+			addParkingLocation(parkingLocation);
 		}
 	}
 

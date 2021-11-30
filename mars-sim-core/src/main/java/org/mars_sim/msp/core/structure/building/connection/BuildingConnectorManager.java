@@ -94,7 +94,7 @@ public class BuildingConnectorManager implements Serializable {
 		BuildingManager buildingManager = settlement.getBuildingManager();
 
 		// Create partial building connector list from building connection templates.
-		List<PartialBuildingConnector> partialBuildingConnectorList = new CopyOnWriteArrayList<PartialBuildingConnector>();
+		List<PartialBuildingConnector> partialBuildingConnectorList = new CopyOnWriteArrayList<>();
 		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate buildingTemplate = i.next();
@@ -121,10 +121,9 @@ public class BuildingConnectorManager implements Serializable {
 							+ " does not exist for settlement " + settlement.getName());
 				}
 
-				double connectionXLoc = connectionTemplate.getLocation().getX();
-				double connectionYLoc = connectionTemplate.getLocation().getY();
-				Point2D.Double connectionSettlementLoc = LocalAreaUtil.getLocalRelativeLocation(connectionXLoc,
-						connectionYLoc, building);
+				double connectionXLoc = connectionTemplate.getPosition().getX();
+				double connectionYLoc = connectionTemplate.getPosition().getY();
+				LocalPosition connectionSettlementLoc = LocalAreaUtil.getLocalRelativePosition(connectionTemplate.getPosition(), building);
 
 				double connectionFacing = 0D;
 				if (connectionXLoc == (building.getWidth() / 2D)) {
@@ -146,8 +145,7 @@ public class BuildingConnectorManager implements Serializable {
 				}
 
 				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
-						new LocalPosition(connectionSettlementLoc), connectionFacing,
-						connectionBuilding);
+						connectionSettlementLoc, connectionFacing, connectionBuilding);
 				partialBuildingConnectorList.add(partialConnector);
 			}
 		}
@@ -351,35 +349,29 @@ public class BuildingConnectorManager implements Serializable {
 	/**
 	 * Determines the shortest building path between two locations in buildings.
 	 * 
-	 * @param building1     the first building.
-	 * @param building1XLoc the starting X location in the first building.
-	 * @param building1YLoc the starting Y location in the first building.
-	 * @param building2     the second building.
-	 * @param building2XLoc the ending X location in the second building.
-	 * @param building2YLoc the ending Y location in the second building.
+	 * @param startBuilding     the first building.
+	 * @param startPositionc the starting position in the first building.
+	 * @param endBuilding     the second building.
+	 * @param endPosition the ending position in the second building.
 	 * @return shortest path or null if no path found.
 	 */
-	public InsideBuildingPath determineShortestPath(Building building1, double building1XLoc, double building1YLoc,
-			Building building2, double building2XLoc, double building2YLoc) {
+	public InsideBuildingPath determineShortestPath(Building startBuilding, LocalPosition startPosition,
+			Building endBuilding, LocalPosition endPosition) {
 
-//		if ((building1 == null) || (building2 == null)) {
-//			throw new IllegalArgumentException("Building arguments cannot be null");
-//		}
 
-		BuildingLocation startingLocation = new BuildingLocation(building1, building1XLoc, building1YLoc);
-		BuildingLocation endingLocation = new BuildingLocation(building2, building2XLoc, building2YLoc);
+		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
+		BuildingLocation end = new BuildingLocation(endBuilding, endPosition);
 
 		InsideBuildingPath startingPath = new InsideBuildingPath();
-		startingPath.addPathLocation(startingLocation);
+		startingPath.addPathLocation(start);
 
 		InsideBuildingPath finalPath = null;
-		if (!building1.equals(building2)) {
+		if (!startBuilding.equals(endBuilding)) {
 			// Check shortest path to target building from this building.
-//			logger.config(building1.getNickName() + " " + building2.getNickName());
-			finalPath = determineShortestPath(startingPath, building1, building2, endingLocation);
+			finalPath = determineShortestPath(startingPath, startBuilding, endBuilding, end);
 		} else {
 			finalPath = startingPath;
-			finalPath.addPathLocation(endingLocation);
+			finalPath.addPathLocation(end);
 		}
 
 		// Iterate path index.
@@ -388,6 +380,25 @@ public class BuildingConnectorManager implements Serializable {
 		}
 
 		return finalPath;
+	}
+	
+	/**
+	 * Determines the shortest building path between two locations in buildings.
+	 * 
+	 * @param building1     the first building.
+	 * @param building1XLoc the starting X location in the first building.
+	 * @param building1YLoc the starting Y location in the first building.
+	 * @param building2     the second building.
+	 * @param building2XLoc the ending X location in the second building.
+	 * @param building2YLoc the ending Y location in the second building.
+	 * @return shortest path or null if no path found.
+	 * @deprecated
+	 */
+	public InsideBuildingPath determineShortestPath(Building building1, double building1XLoc, double building1YLoc,
+			Building building2, double building2XLoc, double building2YLoc) {
+
+		return determineShortestPath(building1, new LocalPosition(building1XLoc, building1YLoc),
+									 building2, new LocalPosition(building2XLoc, building2YLoc));
 	}
 
 	/**
@@ -849,4 +860,5 @@ public class BuildingConnectorManager implements Serializable {
 			this.connectToBuilding = connectToBuilding;
 		}
 	}
+
 }

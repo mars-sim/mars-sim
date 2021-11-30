@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -564,11 +564,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					luvTemp.setReservedForMission(true);
 
 					// Place light utility vehicles at random location in construction site.
-					Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(constructionSite);
-					Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
-							relativeLocSite.getY(), constructionSite);
-					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
-							RandomUtil.getRandomDouble(360D));
+					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(constructionSite);
+					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 					if (!settlement.removeParkedVehicle(luvTemp)) {
 						logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$

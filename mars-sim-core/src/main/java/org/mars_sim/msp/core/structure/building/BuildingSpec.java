@@ -9,11 +9,13 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
@@ -92,7 +94,7 @@ public class BuildingSpec {
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
 
 	private List<Point2D> beds;
-	private List<Point2D> parking;
+	private List<LocalPosition> parking;
 
 	private List<ScienceType> wasteSpecialties;
 	
@@ -254,16 +256,16 @@ public class BuildingSpec {
 		return beds;
 	}
 
-	public void setBeds(List<Point2D> beds) {
+	void setBeds(List<Point2D> beds) {
 		this.beds = beds;
 	}
 	
-	public List<Point2D> getParking() {
+	public List<LocalPosition> getParking() {
 		return parking;
 	}
 
-	public void setParking(List<Point2D> parking) {
-		this.parking = parking;
+	void setParking(List<LocalPosition> parking) {
+		this.parking = Collections.unmodifiableList(parking);
 	}
 
 	public List<ScienceType> getWasteSpecialties() {
