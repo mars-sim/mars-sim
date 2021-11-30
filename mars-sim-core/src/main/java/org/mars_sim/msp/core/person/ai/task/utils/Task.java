@@ -1385,12 +1385,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
 
 		if (person != null) {
-			if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 0, interiorObject)) {
-
+			Walk result = Walk.createWalkingTask(person, new LocalPosition(settlementPos), 0, interiorObject);
+			if (result != null) {
 				// Add subtask for walking to destination.
-				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
-			} else {
-
+				addSubTask(result);
+			}
+			else {
 				if (!allowFail) {
 					logger.log(person, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
 					endTask();

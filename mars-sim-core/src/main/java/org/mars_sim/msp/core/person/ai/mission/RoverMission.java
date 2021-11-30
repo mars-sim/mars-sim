@@ -349,11 +349,11 @@ public abstract class RoverMission extends VehicleMission {
 				// If person is not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
-
-						boolean canDo = assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
+					if (walk != null) {
+						boolean canDo = assignTask(person, walk);
 						if (!canDo) {
-							logger.warning(person, "Unable to walk to " + v + ".");
+							logger.warning(person, "Unable to start walk to " + v + ".");
 						}
 
 						if (!isDone() && isRoverInAGarage) {
@@ -676,9 +676,10 @@ public abstract class RoverMission extends VehicleMission {
 
 				boolean hasStrength = p.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
+				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
+				if (walk != null) {
 					// walk back home
-					assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
+					assignTask(p,walk);
 				}
 
 				else if (!hasStrength) {
