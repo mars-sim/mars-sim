@@ -37,6 +37,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																	ProfileCommand.PROFILE,
 																	EvaCommand.EVA,
 																	FriendCommand.FRIEND,
+																	PersonReviveCommand.REVIVE,
 																	JobProspectCommand.JOB_PROSPECT,
 																	new EquipmentCommand(PERSON_GROUP),
 																	new UnitLocationCommand(PERSON_GROUP),

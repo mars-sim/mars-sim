@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -221,11 +222,28 @@ public class CommandHelper {
 		response.appendLabeledString("Waiting", "Inner-" + airlock.getNumAwaitingInnerDoor()
 												+ " Outer-" + airlock.getNumAwaitingOuterDoor());
 		
-		response.appendTableHeading("Occupant", PERSON_WIDTH, "Has Suit");
+		response.appendTableHeading("Occupant", PERSON_WIDTH, "<->", "Has Suit");
 		for (int pID : airlock.getOccupants()) {
 			Person p = airlock.getPersonByID(pID);
 			if (p != null) {
-				response.appendTableRow(p.getName(), p.getSuit() != null ? "Yes" : "No");
+				String direction = null;
+				
+				// Not nice code. Step through the Task stack looking for a Airlock tack
+				Task active = p.getTaskManager().getTask();
+				while ((active != null) && (direction == null)) {
+					if (active.getTaskName().equalsIgnoreCase("EnterAirlock")) {
+						direction = "In";
+					}
+					else if (active.getTaskName().equalsIgnoreCase("Exitairlock")) {
+						direction = "Out";
+					}
+					else {
+						active = active.getSubTask();
+					}
+				}
+				
+				response.appendTableRow(p.getName(), (direction != null ? direction : "?"),
+									    p.getSuit() != null ? "Yes" : "No");
 			}
 		}
 	}
