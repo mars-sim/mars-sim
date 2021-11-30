@@ -1,13 +1,17 @@
-/**
+/*
  * Mars Simulation Project
  * CollectResourcesMissionCustomInfoPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
@@ -20,6 +24,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -34,13 +39,14 @@ implements UnitListener {
 
 	// Data members.
 	private double resourceAmountCache;
-	
+
 	private CollectResourcesMission mission;
 	private AmountResource resource;
 	private AmountResource[] REGOLITH_TYPES;
-	
+
 	private Rover missionRover;
 	private WebLabel collectionValueLabel;
+	private WebLabel[] regolithLabels = new WebLabel[4];
 
 	/**
 	 * Constructor.
@@ -51,40 +57,106 @@ implements UnitListener {
 
 		// Initialize data members.
 		this.resource = resource;
-		
-		if (resource == ResourceUtil.regolithAR) {
-			REGOLITH_TYPES = new AmountResource[] {
-					ResourceUtil.regolithBAR,
-					ResourceUtil.regolithCAR,
-					ResourceUtil.regolithDAR
-			};
-		}
 
 		// Set layout.
 		setLayout(new BorderLayout());
 
-		// Create content panel.
-		WebPanel contentPanel = new WebPanel(new GridLayout(1, 2));
-		add(contentPanel, BorderLayout.NORTH);
+		// Create title panel.
+//		WebPanel titlePanel = new WebPanel(new BorderLayout());
+//		add(titlePanel, BorderLayout.NORTH);
+//
+//		WebLabel titleLabel = new WebLabel("Resources Collected", JLabel.LEFT);
+//		titlePanel.add(titleLabel);
 
-		// Create collection title label.
-		String resourceString = resource.getName().substring(0, 1).toUpperCase() + 
-				resource.getName().substring(1);
-		WebLabel collectionTitleLabel = new WebLabel(
-				Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", 
-						Conversion.capitalize(resourceString))); //$NON-NLS-1$
-		contentPanel.add(collectionTitleLabel);
+		if (resource == ResourceUtil.regolithAR) {
+			REGOLITH_TYPES = new AmountResource[] {
+					ResourceUtil.regolithAR,
+					ResourceUtil.regolithBAR,
+					ResourceUtil.regolithCAR,
+					ResourceUtil.regolithDAR
+			};
 
-		// Create collection value label.
-		collectionValueLabel = new WebLabel(
-			Msg.getString(
-				"CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
-				Integer.toString(0)
-			),
-			WebLabel.LEFT
-		);
-		contentPanel.add(collectionValueLabel);
+			// Create content panel.
+			WebPanel regolithPanel = new WebPanel(new SpringLayout());
+			add(regolithPanel, BorderLayout.CENTER);
+
+			for (int i=0; i<4; i++) {
+				if (i == 0) {
+					WebLabel label0 = new WebLabel("  Regolith:    ", JLabel.LEFT); //$NON-NLS-1$
+					label0.setAlignmentX(Component.LEFT_ALIGNMENT);
+					regolithPanel.add(label0);
+
+					WebLabel l = new WebLabel(0.0 + " kg", JLabel.LEFT);
+					regolithLabels[i] = l;
+					regolithPanel.add(l);
+				}
+				else if (i == 1) {
+					WebLabel label1 = new WebLabel("  Regolith-B:  ", JLabel.LEFT); //$NON-NLS-1$
+					label1.setAlignmentX(Component.LEFT_ALIGNMENT);
+					regolithPanel.add(label1);
+
+					WebLabel l = new WebLabel(0.0 + " kg", JLabel.LEFT);
+					regolithLabels[i] = l;
+					regolithPanel.add(l);
+				}
+				else if (i == 2) {
+					WebLabel label2 = new WebLabel("  Regolith-C:  ", JLabel.LEFT); //$NON-NLS-1$
+					label2.setAlignmentX(Component.LEFT_ALIGNMENT);
+					regolithPanel.add(label2);
+
+					WebLabel l = new WebLabel(0.0 + " kg", JLabel.LEFT);
+					regolithLabels[i] = l;
+					regolithPanel.add(l);
+				}
+				else if (i == 3) {
+					WebLabel label3 = new WebLabel("  Regolith-D:  ", JLabel.LEFT); //$NON-NLS-1$
+					label3.setAlignmentX(Component.LEFT_ALIGNMENT);
+					regolithPanel.add(label3);
+
+					WebLabel l = new WebLabel(0.0 + " kg", JLabel.LEFT);
+					regolithLabels[i] = l;
+					regolithPanel.add(l);
+				}
+			}
+
+			// Prepare SpringLayout.
+			SpringUtilities.makeCompactGrid(regolithPanel,
+					4, 2, // rows, cols
+					100, 5, // initX, initY
+					30, 4); // xPad, yPad
+
+		}
+		else {
+			// Create content panel.
+			WebPanel contentPanel = new WebPanel(new SpringLayout());
+			add(contentPanel, BorderLayout.CENTER);
+
+			// Create collection title label.
+			String resourceString = resource.getName().substring(0, 1).toUpperCase() +
+					resource.getName().substring(1);
+			WebLabel collectionTitleLabel = new WebLabel(
+					Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected",
+							Conversion.capitalize(resourceString))); //$NON-NLS-1$
+			contentPanel.add(collectionTitleLabel);
+
+			// Create collection value label.
+			collectionValueLabel = new WebLabel(
+				Msg.getString(
+					"CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
+					Double.toString(0.0)
+				),
+				JLabel.LEFT
+			);
+			contentPanel.add(collectionValueLabel);
+
+			// Prepare SpringLayout.
+			SpringUtilities.makeCompactGrid(contentPanel,
+					1, 2, // rows, cols
+					100, 5, // initX, initY
+					30, 4); // xPad, yPad
+		}
 	}
+
 
 	@Override
 	public void updateMission(Mission mission) {
@@ -102,8 +174,6 @@ implements UnitListener {
 				missionRover.addUnitListener(this);
 			}
 
-//			resourceAmountCache = this.mission.getTotalCollectedResources();
-
 			// Update the collection value label.
 			updateCollectionValueLabel();
 		}
@@ -120,22 +190,14 @@ implements UnitListener {
 			Object source = event.getTarget();
 			if (source instanceof AmountResource) {
 				if (resource.equals(event.getTarget())){
-					updateCollectionValueLabel(); 
+					updateCollectionValueLabel();
 				}
 				for (AmountResource ar : REGOLITH_TYPES) {
 					if (ar.equals(event.getTarget())) {
-						updateCollectionValueLabel(); 
+						updateCollectionValueLabel();
 					}
 				}
 			}
-				
-//			else if (source instanceof Integer) {
-//				if ((Integer)source < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-//					updateCollectionValueLabel();
-//			}
-//			if (resource.equals(event.getTarget())) {
-//				updateCollectionValueLabel();   
-//			}
 		}
 	}
 
@@ -143,25 +205,46 @@ implements UnitListener {
 	 * Updates the collection value label.
 	 */
 	private void updateCollectionValueLabel() {
-		double resourceAmount = mission.getTotalCollectedResources();
-		if (missionRover != null) {
-//			resourceAmount = missionRover.getInventory().getAmountResourceStored(resource, true);
-			if (resourceAmountCache < resourceAmount) {
-				resourceAmountCache = resourceAmount;
+
+		if (collectionValueLabel != null) {
+			double resourceAmount = mission.getTotalCollectedResources();
+
+			if (missionRover != null) {
+
+				if (resourceAmountCache < resourceAmount) {
+					resourceAmountCache = resourceAmount;
+				}
+				else {
+					resourceAmount = resourceAmountCache;
+				}
 			}
 			else {
 				resourceAmount = resourceAmountCache;
 			}
-		}
-		else {
-			resourceAmount = resourceAmountCache;
+
+			// Update collection value label.
+			collectionValueLabel.setText(
+				Msg.getString("CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
+						Math.round(resourceAmount*10D)/10D));
 		}
 
-		// Update collection value label.
-		collectionValueLabel.setText(
-			Msg.getString("CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
-				Integer.toString((int) resourceAmount)
-			)
-		);
+		else {
+			double[] resourcesAmount = mission.getRegolithCollected();
+
+			for (int i=0; i<4; i++) {
+				if (i == 0) {
+					regolithLabels[i].setText(Math.round(resourcesAmount[i]*10D)/10D + " kg");
+				}
+				else if (i == 1) {
+					regolithLabels[i].setText(Math.round(resourcesAmount[i]*10D)/10D + " kg");
+				}
+				else if (i == 2) {
+					regolithLabels[i].setText(Math.round(resourcesAmount[i]*10D)/10D + " kg");
+				}
+				else if (i == 3) {
+					regolithLabels[i].setText(Math.round(resourcesAmount[i]*10D)/10D + " kg");
+				}
+			}
+		}
 	}
 }

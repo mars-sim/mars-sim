@@ -39,7 +39,6 @@ public class InteractiveTerm {
 	private static final String PROCEED_TO_START_THE_SIM = "Proceed to start the sim";
 
     private static boolean consoleEdition = false;
-    private static boolean useCrew = true;
 
 	// Screen sizes presented to user
 	private static final Dimension[] screenSizes = {
@@ -57,7 +56,9 @@ public class InteractiveTerm {
 
 	private static final Simulation sim = Simulation.instance();
 
-	private static int selectedScreen = -1;
+    private boolean useCrew = true;
+
+	private int selectedScreen = -1;
 
 	private CommanderProfile profile;
 
@@ -623,7 +624,7 @@ public class InteractiveTerm {
 	 * Get the dimension of the screen size selected by the user.
 	 * This is null if none has been selected.
 	 */
-	public static Dimension getSelectedScreen() {
+	public Dimension getSelectedScreen() {
 		if (selectedScreen >= 0) {
 			return screenSizes[selectedScreen];
 		}

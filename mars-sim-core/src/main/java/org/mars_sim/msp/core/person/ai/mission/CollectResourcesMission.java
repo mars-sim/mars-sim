@@ -81,10 +81,12 @@ public abstract class CollectResourcesMission extends RoverMission
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
+	/** The total amount (kg) of resources collected. */
+	private double[] regolithCollected = {0, 0, 0, 0};
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 	/** The type of resource to collect. */
-	private int resourceID;
+	protected int resourceID;
 
 	/**
 	 * Constructor
@@ -251,7 +253,6 @@ public abstract class CollectResourcesMission extends RoverMission
 		return true;
 	}
 
-
 	protected void setResourceID(int newResource) {
 		this.resourceID = newResource;
 	}
@@ -263,6 +264,15 @@ public abstract class CollectResourcesMission extends RoverMission
 	 */
 	public double getTotalCollectedResources() {
 		return totalResourceCollected;
+	}
+
+	/**
+	 * Gets an array of regolith collected
+	 *
+	 * @return an array of regolith amount (kg).
+	 */
+	public double[] getRegolithCollected() {
+		return regolithCollected;
 	}
 
 	/**
@@ -335,25 +345,32 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return
 	 */
 	private double updateResources(ResourceHolder inv) {
-
-		double resourcesCollected = 0;
+		double[] regolithCollected = {0, 0, 0, 0};
+		double resourceCollected = 0;
 		double resourcesCapacity = 0;
+
 
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
-		for (Integer type : getCollectibleResources()) {
-			resourcesCollected += inv.getAmountResourceStored(type);
-			resourcesCapacity += inv.getAmountResourceCapacity(type);
+		int size = getCollectibleResources().length;
+		for (int i=0; i<size; i++) {
+			int id = getCollectibleResources()[i];
+			regolithCollected[i] = inv.getAmountResourceStored(id);
+			resourceCollected += regolithCollected[i];
+			resourcesCapacity += inv.getAmountResourceCapacity(id);
 		}
 
+		// Set the array of regolith collected.
+		this.regolithCollected = regolithCollected;
+
 		// Set total collected resources.
-		totalResourceCollected = resourcesCollected;
+		totalResourceCollected = resourceCollected;
 
 		// Calculate resources collected at the site so far.
-		siteCollectedResources = resourcesCollected - collectingStart;
+		siteCollectedResources = resourceCollected - collectingStart;
 
 		// Check if rover capacity for resources is met, then end this phase.
-		if (resourcesCollected >= resourcesCapacity) {
+		if (resourceCollected >= resourcesCapacity) {
 			setPhaseEnded(true);
 		}
 
@@ -365,9 +382,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * the main resource but could be others.
 	 * @return
 	 */
-	protected int [] getCollectibleResources() {
-		return new int[] {resourceID};
-	}
+	protected abstract int [] getCollectibleResources();
 
 	/**
 	 * Performs the collecting phase of the mission.
@@ -450,9 +465,6 @@ public abstract class CollectResourcesMission extends RoverMission
 			// Note: Add how areologists and some scientific study may come up with better technique
 			// to obtain better estimation of the collection rate. Go to a prospective site, rather
 			// than going to a site coordinate in the blind.
-
-			if (rate <= 0)
-				rate = .1;
 
 			resourceCollectionRate = rate;
 

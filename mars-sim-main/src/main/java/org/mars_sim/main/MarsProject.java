@@ -130,6 +130,7 @@ public class MarsProject {
 			if (useGUI) {
 				if (!useSiteEditor) {
 					MainWindow.startSplash();
+					MainWindow.setInteractiveTerm(interactiveTerm);
 				}
 
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
@@ -285,7 +286,8 @@ public class MarsProject {
 				TimeUnit.MILLISECONDS.sleep(250);
 				if (!sim.isUpdating()) {
 					logger.config("Starting GUI");
-					new MainWindow(cleanUI).stopLayerUI();
+					MainWindow mainWindow = new MainWindow(cleanUI);
+					mainWindow.stopLayerUI();
 					break;
 				}
 	        } catch (InterruptedException e) {

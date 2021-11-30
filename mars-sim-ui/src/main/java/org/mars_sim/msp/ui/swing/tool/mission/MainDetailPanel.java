@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -98,6 +99,8 @@ import com.alee.managers.style.StyleId;
  */
 @SuppressWarnings("serial")
 public class MainDetailPanel extends WebPanel implements MissionListener, UnitListener { // ListSelectionListener
+	/** initialized logger for this class. */
+	private static final Logger logger = Logger.getLogger(MainDetailPanel.class.getName());
 
 	// Custom mission panel IDs.
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
@@ -140,9 +143,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 
-//	private static int iceID = ResourceUtil.iceID;
-//	private static int regolithID = ResourceUtil.regolithID;
-
 	private static AmountResource iceAR = ResourceUtil.iceAR;
 	private static AmountResource regolithAR = ResourceUtil.regolithAR;
 
@@ -168,22 +168,22 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		add(scrollPane, BorderLayout.CENTER);
 
 		// Create the main panel.
-		WebPanel mainBox = new WebPanel(new BorderLayout());
+		WebPanel mainBox = new WebPanel(new BorderLayout(1, 1));
 		mainBox.setBorder(new MarsPanelBorder());
 		scrollPane.setViewportView(mainBox);
 
 		// Create the top box.
-		WebPanel topBox = new WebPanel(new BorderLayout());
+		WebPanel topBox = new WebPanel(new BorderLayout(1, 1));
 		topBox.setBorder(new MarsPanelBorder());
 		mainBox.add(topBox, BorderLayout.NORTH);
 
 		// Create the center box.
-		WebPanel centerBox = new WebPanel(new BorderLayout());
+		WebPanel centerBox = new WebPanel(new BorderLayout(1, 1));
 		centerBox.setBorder(new MarsPanelBorder());
 		mainBox.add(centerBox, BorderLayout.CENTER);
 
 		// Create the member panel.
-		WebPanel bottomBox = new WebPanel(new BorderLayout(5, 5));
+		WebPanel bottomBox = new WebPanel(new BorderLayout(1, 1));
 		mainBox.add(bottomBox, BorderLayout.SOUTH);
 
 		initDescriptionPane(topBox);
@@ -547,11 +547,15 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
 
-		// Create custom collect regolith mission panel.
-		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
-		String collectRegolithMissionName = CollectRegolith.class.getName();
-		customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
-		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
+		try {
+			// Create custom collect regolith mission panel.
+			MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
+			String collectRegolithMissionName = CollectRegolith.class.getName();
+			customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
+			missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
+	    } catch (Exception e) {
+        	logger.severe("Problem with collectRegolithPanel: " + e.getMessage());
+	    }
 
 		// Create custom collect ice mission panel.
 		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(iceAR);

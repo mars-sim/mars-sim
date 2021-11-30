@@ -227,7 +227,6 @@ extends JComponent implements ClockListener {
 	private JPanel bottomPane;
 	private JPanel mainPane;
 
-//	private Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
 
 	/** Arial font. */
@@ -245,6 +244,8 @@ extends JComponent implements ClockListener {
 	private static MasterClock masterClock;
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
+
+	private static InteractiveTerm interactiveTerm;
 
 	/**
 	 * Constructor 1.
@@ -371,7 +372,7 @@ extends JComponent implements ClockListener {
 	 */
 	private Dimension calculatedScreenSize() {
 
-		Dimension frameSize = InteractiveTerm.getSelectedScreen();
+		Dimension frameSize = interactiveTerm.getSelectedScreen();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 		logger.config("Screen size " + screenSize.width + " x " + screenSize.height);
@@ -1359,6 +1360,10 @@ extends JComponent implements ClockListener {
 			overlayCheckBox.setSelected(false);
 			overlayCheckBox.setEnabled(false);
 		}
+	}
+
+	public static void setInteractiveTerm(InteractiveTerm i) {
+		interactiveTerm = i;
 	}
 
 	/**

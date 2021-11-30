@@ -193,7 +193,7 @@ public class ResourceUtil implements Serializable {
 	public static int[] rockIDs = new int[ROCKS.length];
 	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
-	public static int[] REGOLITH_TYPES = new int[3];
+	public static int[] REGOLITH_TYPES = new int[4];
 
 	public static int fishMeatID;
 
@@ -384,7 +384,7 @@ public class ResourceUtil implements Serializable {
 
 		meteoriteID = findIDbyAmountResourceName(METEORITE);
 
-		soilID = findIDbyAmountResourceName(REGOLITH);
+		soilID = findIDbyAmountResourceName(SOIL);
 		sandID = findIDbyAmountResourceName(SAND);
 		concreteID = findIDbyAmountResourceName(CONCRETE);
 		mortarID = findIDbyAmountResourceName(MORTAR);
@@ -431,9 +431,10 @@ public class ResourceUtil implements Serializable {
 		regolithCID = findIDbyAmountResourceName(REGOLITH_C); //
 		regolithDID = findIDbyAmountResourceName(REGOLITH_D); //
 		REGOLITH_TYPES = new int[] {
-				ResourceUtil.regolithBID,
-				ResourceUtil.regolithCID,
-				ResourceUtil.regolithDID};
+				regolithID,
+				regolithBID,
+				regolithCID,
+				regolithDID};
 
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT); //
 

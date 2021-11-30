@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -39,7 +40,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	private static final double BASE_COLLECTION_RATE = 10D;
 
 	/** Number of collection sites. */
-	private static final int NUM_SITES = 1;
+	private static final int NUM_SITES = 2;
 
 
 	/**
@@ -93,15 +94,21 @@ public class CollectRegolith extends CollectResourcesMission {
 	@Override
 	protected double calculateRate(Worker worker) {
 
-		// Look for one of the 3 regolith types that has the highest vp
-		double highest = 0;
-		for (int type: getCollectibleResources()) {
-			double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
-			if (highest < vp) {
-				highest = vp;
-				setResourceID(type);
+		// Randomly pick one of the 4 regolith types
+		int rand = RandomUtil.getRandomInt(4);
+		if (rand == 4) {
+			// Pick the one that has the highest vp
+			double highest = 0;
+			for (int type: getCollectibleResources()) {
+				double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
+				if (highest < vp) {
+					highest = vp;
+					setResourceID(type);
+				}
 			}
 		}
+		else
+			setResourceID(getCollectibleResources()[rand]);
 
 		return terrainElevation.getRegolithCollectionRate(null, worker.getCoordinates());
 	}

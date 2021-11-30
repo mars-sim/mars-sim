@@ -38,7 +38,7 @@ public class CollectIce extends CollectResourcesMission {
 
 	/** Collection rate of ice during EVA (kg/millisol). */
 	private static final double BASE_COLLECTION_RATE = 5D;
-	
+
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 2;
 
@@ -46,7 +46,7 @@ public class CollectIce extends CollectResourcesMission {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
@@ -58,7 +58,7 @@ public class CollectIce extends CollectResourcesMission {
 
 	/**
 	 * Constructor with explicit data.
-	 * 
+	 *
 	 * @param members            collection of mission members.
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @param rover              the rover to use.
@@ -77,11 +77,11 @@ public class CollectIce extends CollectResourcesMission {
 	public static double computeAverageCollectionRate(Collection<Coordinates> locations) {
 		double totalRate = 0;
 		int size = locations.size();
-		
+
 		for (Coordinates location : locations) {
 			totalRate += terrainElevation.getIceCollectionRate(location);
 		}
-	
+
 		return totalRate / size;
 	}
 
@@ -89,7 +89,7 @@ public class CollectIce extends CollectResourcesMission {
 	protected double scoreLocation(Coordinates newLocation) {
 		return terrainElevation.getIceCollectionRate(newLocation);
 	}
-	
+
 
 	@Override
 	protected boolean isValidScore(double score) {
@@ -97,12 +97,22 @@ public class CollectIce extends CollectResourcesMission {
 		if (!accept && (searchCount++ >= 10)) {
 			endMission(MissionStatus.NO_ICE_COLLECTION_SITES);
 		}
-	
+
 		return accept;
 	}
 
 	@Override
 	protected double calculateRate(Worker worker) {
 		return terrainElevation.getIceCollectionRate(worker.getCoordinates());
+	}
+
+	/**
+	 * what resources can be collected once on site. By default this is just
+	 * the main resource but could be others.
+	 * @return
+	 */
+	@Override
+	protected int [] getCollectibleResources() {
+		return new int [] {resourceID};
 	}
 }
