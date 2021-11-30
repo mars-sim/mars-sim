@@ -481,7 +481,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 
-		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
+		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
 
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance

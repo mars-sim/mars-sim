@@ -103,7 +103,7 @@ public class Sleep extends Task implements Serializable {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, "Sleep adjusted for shift start @ " + alarmTime + " : " + maxSleep);
+				logger.info(person, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 		}

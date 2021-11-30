@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
@@ -38,8 +37,6 @@ extends MissionCustomInfoPanel
 implements UnitListener {
 
 	// Data members.
-	private double resourceAmountCache;
-
 	private CollectResourcesMission mission;
 	private AmountResource resource;
 	private AmountResource[] REGOLITH_TYPES;
@@ -206,21 +203,8 @@ implements UnitListener {
 	 */
 	private void updateCollectionValueLabel() {
 
-		if (collectionValueLabel != null) {
-			double resourceAmount = mission.getTotalCollectedResources();
-
-			if (missionRover != null) {
-
-				if (resourceAmountCache < resourceAmount) {
-					resourceAmountCache = resourceAmount;
-				}
-				else {
-					resourceAmount = resourceAmountCache;
-				}
-			}
-			else {
-				resourceAmount = resourceAmountCache;
-			}
+		if (resource == ResourceUtil.iceAR) {
+			double resourceAmount = mission.getIceCollected();
 
 			// Update collection value label.
 			collectionValueLabel.setText(

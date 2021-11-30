@@ -41,7 +41,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
-	
+
 	/** Task phases. */
 	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources")); //$NON-NLS-1$
 
@@ -54,9 +54,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double targettedAmount;
 	/** Amount of resource already in rover cargo at start of task. (kg) */
 	protected double startingCargo;
-	/** The composite rate of collection. */	
+	/** The composite rate of collection. */
 	private double compositeRate;
-	
+
 	/** The resource type. */
 	protected Integer resourceType;
 	/** The container type to use to collect resource. */
@@ -64,7 +64,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param taskName        The name of the task.
 	 * @param person          The person performing the task.
 	 * @param rover           The rover used in the task.
@@ -81,7 +81,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Use EVAOperation parent constructor.
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
 				SkillType.AREOLOGY);
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -89,7 +89,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         		endTask();
 	      	return;
 		}
-		
+
 		// Initialize data members.
 		this.rover = rover;
 		this.collectionRate = collectionRate;
@@ -106,8 +106,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			boolean hasIt = takeContainer();
 
 			// If container is not available, end task.
-			if (!hasIt) {        
-				logger.log(person, Level.WARNING, 5000, 
+			if (!hasIt) {
+				logger.log(person, Level.WARNING, 5000,
 						"Unable to find containers to collect resources.", null);
 				endTask();
 			}
@@ -117,9 +117,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 		int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
 		int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
 		int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-	        
-		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
-	        
+
+		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1) ;
+
 		// Add task phases
 		addPhase(COLLECT_RESOURCES);
 	}
@@ -132,7 +132,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/**
 	 * Performs the method mapped to the task's current phase.
-	 * 
+	 *
 	 * @param time the amount of time the phase is to be performed.
 	 * @return the remaining time after the phase has been performed.
 	 */
@@ -147,15 +147,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 			}
 		}
 		return time;
-		
+
 	}
 
 
 	/**
 	 * Checks if the person is carrying a container of this type.
-	 * 
+	 *
 	 * @return true if carrying a container of this type.
-	 * 
+	 *
 	 */
 	private boolean hasAContainer() {
 		return person.containsEquipment(containerType);
@@ -163,7 +163,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/**
 	 * Takes the least full container from the rover.
-	 * 
+	 *
 	 * @throws Exception if error taking container.
 	 */
 	private boolean takeContainer() {
@@ -177,13 +177,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/**
 	 * Perform the collect resources phase of the task.
-	 * 
+	 *
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error collecting resources.
 	 */
 	private double collectResources(double time) {
-		
+
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
@@ -192,7 +192,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			if (person.isOutside())
@@ -201,7 +201,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -228,7 +228,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Modify collection rate by polar region if ice collecting.
 		if (resourceType == ResourceUtil.iceID) {
 			if (surfaceFeatures.inPolarRegion(person.getCoordinates())) {
-				samplesCollected *= 3D;
+				samplesCollected *= 10D;
 			}
 		}
 
@@ -237,7 +237,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-		
+
 		// Collect resources.
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (samplesCollected <= sampleLimit) {
@@ -254,7 +254,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Release workers inventory 
+	 * Release workers inventory
 	 */
 	@Override
 	protected void clearDown() {
@@ -266,7 +266,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	/**
 	 * Checks if a person can perform an CollectResources task.
-	 * 
+	 *
 	 * @param member        the member to perform the task
 	 * @param rover         the rover the person will EVA from
 	 * @param containerType the container class to collect resources in.
@@ -288,7 +288,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (EVAOperation.isGettingDark(person)) {
 				return false;
 			}
-			
+
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;
