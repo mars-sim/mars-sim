@@ -1,9 +1,10 @@
-/**
+/*
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-29
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
@@ -28,6 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -97,19 +100,18 @@ import com.alee.managers.style.StyleId;
 public class MainDetailPanel extends WebPanel implements MissionListener, UnitListener { // ListSelectionListener
 
 	// Custom mission panel IDs.
-	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
+	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
-	private final static int HEIGHT_0 = 35;
-	private final static int HEIGHT_1 = 150;
-	private final static int HEIGHT_2 = 100;
-	private final static int HEIGHT_3 = 125;
+	private static final int HEIGHT_0 = 35;
+	private static final int HEIGHT_1 = 150;
+	private static final int HEIGHT_2 = 100;
+	private static final int HEIGHT_3 = 125;
 
 	// Private members
 	private String descriptionText;
 
 	private WebTextField descriptionTF;
 
-//	private WebLabel descriptionLabel;
 	private WebLabel designationLabel;
 	private WebLabel typeLabel;
 	private WebLabel startingLabel;
@@ -162,7 +164,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		WebScrollPane scrollPane = new WebScrollPane();
 		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
 
 		// Create the main panel.
@@ -175,34 +177,53 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		topBox.setBorder(new MarsPanelBorder());
 		mainBox.add(topBox, BorderLayout.NORTH);
 
+		// Create the center box.
+		WebPanel centerBox = new WebPanel(new BorderLayout());
+		centerBox.setBorder(new MarsPanelBorder());
+		mainBox.add(centerBox, BorderLayout.CENTER);
+
+		// Create the member panel.
+		WebPanel bottomBox = new WebPanel(new BorderLayout(5, 5));
+		mainBox.add(bottomBox, BorderLayout.SOUTH);
+
+		initDescriptionPane(topBox);
+
+		initMissionPane(topBox);
+
+		initVehiclePane(centerBox);
+
+		initMemberPane(bottomBox);
+
+		initCustomMissionPane(bottomBox);
+
+	}
+
+	private void initDescriptionPane(WebPanel topBox) {
+
 		// Create the des spring layout.
 		WebPanel descLayout = new WebPanel(new SpringLayout());
 		descLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
 		topBox.add(descLayout, BorderLayout.NORTH);
 
 		// Create the description label.
-		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.title.description", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.title.description", JLabel.LEFT)); //$NON-NLS-1$
 		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descLayout.add(descriptionLabel0);
-//		desBox.add(Box.createHorizontalGlue());
 
 		descriptionTF = new WebTextField(" ");
 		descriptionTF.setEditable(true);
 		descriptionTF.setColumns(20);
 		descriptionTF.setAlignmentX(Component.CENTER_ALIGNMENT);
-		// descriptionTF.setOpaque(false);
-		// descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
 		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
 
 		// Listen for changes in the text
 		addChangeListener(descriptionTF, e -> {
-			  descriptionText = descriptionTF.getText();
-//			  System.out.println("descriptionText: " + descriptionText);
+			descriptionText = descriptionTF.getText();
 		});
 
 		// Prepare description textfield.
 		if (missionWindow.getCreateMissionWizard() != null) {
-			String s = Conversion.capitalize(currentMission.getDescription());//missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());// getDescription());
+			String s = Conversion.capitalize(currentMission.getDescription());
 			descriptionTF.setText(s);
 		}
 
@@ -215,6 +236,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				1, 2, // rows, cols
 				3, 2, // initX, initY
 				35, 2); // xPad, yPad
+	}
+
+	private void initMissionPane(WebPanel topBox) {
 
 		// Create the mission pane spring layout.
 		WebPanel missionPane = new WebPanel(new SpringLayout());
@@ -222,7 +246,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		topBox.add(missionPane, BorderLayout.CENTER);
 
 		// Create the designation label.
-		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", JLabel.LEFT)); //$NON-NLS-1$
 		designationLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		missionPane.add(designationLabel0);
 
@@ -232,47 +256,40 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		missionPane.add(wrapper1a);
 
 		// Create the phase label.
-		WebLabel settlementLabel0 = new WebLabel(Msg.getString("MainDetailPanel.settlement", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel settlementLabel0 = new WebLabel(Msg.getString("MainDetailPanel.settlement", JLabel.LEFT)); //$NON-NLS-1$
 		settlementLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		missionPane.add(settlementLabel0);
 
 		settlementLabel = new WebLabel(" ", WebLabel.LEFT);
-		// phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper4.add(settlementLabel);
 		missionPane.add(wrapper4);
 
 		// Create the type label.
-		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", JLabel.LEFT)); //$NON-NLS-1$
 		startingLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		missionPane.add(startingLabel0);
-		// startingLabel0.setToolTipText(Msg.getString("MainDetailPanel.starting"));//$NON-NLS-1$
-
 		startingLabel = new WebLabel(" ", WebLabel.LEFT);
-		// typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper1.add(startingLabel);
 		missionPane.add(wrapper1);
 
 		// Create the type label.
-		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", JLabel.LEFT)); //$NON-NLS-1$
 		typeLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		missionPane.add(typeLabel0);
-		// typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
 
 		typeLabel = new WebLabel(" ", WebLabel.LEFT);
-		// typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper2.add(typeLabel);
 		missionPane.add(wrapper2);
 
 		// Create the phase label.
-		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", JLabel.LEFT)); //$NON-NLS-1$
 		phaseLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		missionPane.add(phaseLabel0);
 
 		phaseLabel = new WebLabel(" ", WebLabel.LEFT);
-		// phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper3.add(phaseLabel);
 		missionPane.add(wrapper3);
@@ -282,11 +299,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				5, 2, // rows, cols
 				3, 2, // initX, initY
 				25, 2); // xPad, yPad
+	}
 
-		// Create the center box.
-		WebPanel centerBox = new WebPanel(new BorderLayout());
-		centerBox.setBorder(new MarsPanelBorder());
-		mainBox.add(centerBox, BorderLayout.CENTER);
+	private void initVehiclePane(WebPanel centerBox) {
 
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new SpringLayout());
@@ -314,7 +329,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		vehiclePane.add(centerMapButton);
 
 		// Create the vehicle label.
-		WebLabel vehicleLabel = new WebLabel(" " + Msg.getString("MainDetailPanel.vehicle"), WebLabel.RIGHT); //$NON-NLS-1$
+		WebLabel vehicleLabel = new WebLabel(" " + Msg.getString("MainDetailPanel.vehicle"), JLabel.RIGHT); //$NON-NLS-1$
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
@@ -366,7 +381,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		centerBox.add(travelPane, BorderLayout.CENTER);
 
 		// Create the vehicle status label.
-		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", WebLabel.LEFT)); //$NON-NLS-2$
+		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", JLabel.LEFT)); //$NON-NLS-2$
 		// vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel0);
 
@@ -377,7 +392,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		travelPane.add(wrapper01);
 
 		// Create the speed label.
-		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", JLabel.LEFT)); //$NON-NLS-1$
 		// speedLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel0);
 
@@ -389,23 +404,20 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Create the distance next navpoint label.
 		WebLabel distanceNextNavLabel0 = new WebLabel(
-				Msg.getString("MainDetailPanel.distanceNextNavPoint", WebLabel.LEFT)); //$NON-NLS-1$
+				Msg.getString("MainDetailPanel.distanceNextNavPoint", JLabel.LEFT)); //$NON-NLS-1$
 		// distanceNextNavLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel0);
 
-		distanceNextNavLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$
-		// distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		distanceNextNavLabel = new WebLabel(" ", JLabel.LEFT); //$NON-NLS-1$
 		WebPanel wrapper03 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper03.add(distanceNextNavLabel);
 		travelPane.add(wrapper03);
 
 		// Create the traveled distance label.
-		WebLabel traveledLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceTraveled", WebLabel.LEFT)); //$NON-NLS-1$
-		// traveledLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		WebLabel traveledLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceTraveled", JLabel.LEFT)); //$NON-NLS-1$
 		travelPane.add(traveledLabel0);
 
 		traveledLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$
-		// traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper04 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper04.add(traveledLabel);
 		travelPane.add(wrapper04);
@@ -416,9 +428,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				3, 2, // initX, initY
 				25, 1); // xPad, yPad
 
-		// Create the member panel.
-		WebPanel bottomBox = new WebPanel(new BorderLayout(5, 5));
-		mainBox.add(bottomBox, BorderLayout.SOUTH);
+	}
+
+	private void initMemberPane(WebPanel bottomBox) {
 
 		// Create the member panel.
 		WebPanel memberPane = new WebPanel(new BorderLayout());
@@ -437,7 +449,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Create scroll panel for member list.
 		WebScrollPane memberScrollPane = new WebScrollPane();
-		// memberScrollPane.setPreferredSize(new Dimension(300, 250));
 		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
 
 		// Create member table model.
@@ -445,7 +456,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Create member table.
 		memberTable = new ZebraJTable(memberTableModel);
-		// memberTable.setPreferredSize(new Dimension(300, 250));
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 		memberTable.setRowSelectionAllowed(true);
@@ -457,32 +467,31 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 					int index = memberTable.getSelectedRow();
 					if (index > -1) {
 						MissionMember member = memberTableModel.getMemberAtIndex(index);
-	//					if (member != null) {
-							if (member.getUnitType() == UnitType.PERSON) {
-								getDesktop().openUnitWindow((Person) member, false);
-
-							} else {
-								getDesktop().openUnitWindow((Robot) member, false);
-							}
-	//					}
+						if (member.getUnitType() == UnitType.PERSON) {
+							getDesktop().openUnitWindow((Person) member, false);
+						} else {
+							getDesktop().openUnitWindow((Robot) member, false);
+						}
 					}
 				}
 			}
 		});
 		memberScrollPane.setViewportView(memberTable);
 
+	}
+
+	private void initCustomMissionPane(WebPanel bottomBox) {
+
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
-//		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		bottomBox.add(missionCustomPane, BorderLayout.SOUTH);
 
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
-
-		customInfoPanels = new HashMap<String, MissionCustomInfoPanel>();
+		customInfoPanels = new HashMap<>();
 
 		// Create custom areology field mission panel.
 		MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
@@ -563,6 +572,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
 	}
 
+
 	public void setCurrentMission(Mission mission) {
 		if (currentMission != null) {
 			if (!currentMission.equals(mission)) {
@@ -627,21 +637,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	}
 
 	/**
-//	 * Implemented from ListSelectionListener. Note: this is called when a mission
-//	 * is selected on MissionWindow's mission list.
-//	 */
-//	@Override
-//	public void valueChanged(ListSelectionEvent e) {
-//		if ((JList<?>) e.getSource() == missionWindow.getMissionList()) {
-
-	/**
 	 * Sets to the given mission
 	 *
 	 * @param newMission
 	 */
 	public void setMission(Mission selected) {
-		// Get the selected mission.
-//		Mission selected = missionWindow.getMissionList().getSelectedValue(); //(Mission) ((JList<?>) e.getSource()).getSelectedValue();
 
 		if (selected != null) {
 			if (currentMission == null) {
@@ -650,7 +650,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				updateInfo(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
-//				System.out.println("MainDetailPanel 0");
 			}
 
 			else if (!selected.equals(currentMission)) {
@@ -659,15 +658,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				updateInfo(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
-//				System.out.println("MainDetailPanel 1");
 			}
 			else { // selected is the same as newMission
-//				System.out.println("MainDetailPanel 2");
 			}
 		}
 		else {
 			clearInfo();
-//			System.out.println("MainDetailPanel 3");
 		}
 	}
 
@@ -678,7 +674,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * @param mission
 	 */
 	public void updateInfo(Mission mission) {
-//		System.out.println("updateInfo");
 		// Update mission info in UI.
 		String oldDes = mission.getDescription();
 		String newDes = descriptionTF.getText();
@@ -688,58 +683,40 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			if (currentMission == null) {
 				// If first time opening the Mission Tool
 				if (descriptionText == null) {
-//						System.out.println("1");
 					// if descriptionText is null (first time loading MainDetailPanel
 					// Use the default description
 					descriptionTF.setText(Conversion.capitalize(oldDes));
 				}
 				else if (descriptionText != null && currentMission != null
 						&& currentMission.getDescription().equals(descriptionText)){
-//						System.out.println("2");
 					// Update the previous mission to the new descriptionText
 					currentMission.setDescription(descriptionText);
 				}
-//					else {
-//						System.out.println("2.5");
-//					}
-
+				else {
+				}
 			}
 			else if (newDes == null || newDes.trim().equalsIgnoreCase("")) {
-//					 System.out.println("3");//. newDes: " + newDes
-//							 + "   oldDes: " + oldDes
-//							 + "  descriptionText: " + descriptionText);
 				// If blank, use the default one
 				descriptionTF.setText(Conversion.capitalize(oldDes));
 			}
 			else if (!newDes.equalsIgnoreCase(oldDes)) {
-//					 System.out.println("4");//. newDes: " + newDes
-//							 + "   oldDes: " + oldDes
-//							 + "  descriptionText: " + descriptionText);
 				if (currentMission != null && descriptionText != null
 						&& !currentMission.getDescription().equals(descriptionText)){
-//						System.out.println("4.5");
 					// Update the previous mission to the new descriptionText
 					currentMission.setDescription(descriptionText);
 				}
 
 				descriptionTF.setText(Conversion.capitalize(oldDes));
-//				mission.setDescription(newDes);
 			}
-//				else
-//					System.out.println("5");
 		}
 
 		else { // mission is no different from currentMission
 			if (!newDes.equalsIgnoreCase(oldDes)) {
 				// if player already typed up something in descriptionTF
-//					 System.out.println("6");//. newDes: " + newDes
-//							 + "   oldDes: " + oldDes
-//							 + "  descriptionText: " + descriptionText);
+
 				descriptionTF.setText(oldDes);
 				mission.setDescription(oldDes);
 			}
-//				else
-//					System.out.println("7");
 		}
 
 		String d = mission.getFullMissionDesignation();
@@ -764,16 +741,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		centerMapButton.setEnabled(true);
 
 		// Update mission vehicle info in UI.
-//			boolean isVehicle = false;
 		if (MissionType.isVehicleMission(mission.getMissionType())) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			Vehicle vehicle = vehicleMission.getVehicle();
 			if (vehicle != null) {
-//					isVehicle = true;
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
-//					List<StatusType> types = vehicle.getStatusTypes();
-
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 				try {
@@ -818,7 +791,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			if (constVehicles != null)
 				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
 					Vehicle vehicle = constVehicles.get(0);
-//						isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
@@ -836,7 +808,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			if (constVehicles != null)
 				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
 					Vehicle vehicle = constVehicles.get(0);
-//						isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
@@ -871,30 +842,23 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * Clears the mission content on the info tab
 	 */
 	public void clearInfo() {
-//		System.out.println("clearInfo");
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
-
-//		if (currentMission != null) {
-//			descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
-//		}
-//		else {
-			// Clear mission info in UI.
-			descriptionTF.setText("");
-			designationLabel.setText("[TBD]");
-			typeLabel.setText(" ");
-			phaseLabel.setText(" ");
-			settlementLabel.setText(" ");
-			memberTableModel.setMission(null);
-			centerMapButton.setEnabled(false);
-			vehicleButton.setVisible(false);
-			vehicleStatusLabel.setText(" ");
-			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			currentMission = null;
-			currentVehicle = null;
-			customPanelLayout.show(missionCustomPane, EMPTY);
-//		}
+		// Clear mission info in UI.
+		descriptionTF.setText("");
+		designationLabel.setText("[TBD]");
+		typeLabel.setText(" ");
+		phaseLabel.setText(" ");
+		settlementLabel.setText(" ");
+		memberTableModel.setMission(null);
+		centerMapButton.setEnabled(false);
+		vehicleButton.setVisible(false);
+		vehicleStatusLabel.setText(" ");
+		speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		currentMission = null;
+		currentVehicle = null;
+		customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 
 	/**
@@ -979,34 +943,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 			// Update UI based on mission event type.
 			if (type == MissionEventType.TYPE_EVENT || type == MissionEventType.NAME_EVENT)
-				typeLabel.setText(mission.getMissionType().getName()); // $NON-NLS-1$
+				typeLabel.setText(mission.getMissionType().getName());
 			else if (type == MissionEventType.DESCRIPTION_EVENT) {
 				// Implement the missing descriptionLabel
-//				if (missionWindow.getCreateMissionWizard() != null) {
-//					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription().trim();
-//					if (s == null || s.equals("")) {
-//						s = "[TBA]";
-//					} else {
-//						s = Conversion.capitalize(s);
-//					}
-//					descriptionTF.setText(s);
-//				} else {
-//					String s = mission.getDescription().trim();
-//					if (s == null || s.equals("")) {
-//						s = "[TBA]";
-//					}
-//					descriptionTF.setText(s);
-//				}
-//				descriptionTF.setText(mission.getDescription());
-//				 logger.info("MissionEventUpdater");
-//				 -  newDes: " + descriptionTF.getText()
-//						 + "   oldDes: " + mission.getDescription()
-//						 + "   descriptionText: " + descriptionText);
 			}
 			else if (type == MissionEventType.DESIGNATION_EVENT) {
 				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
-//					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation().trim();
 					String s = mission.getFullMissionDesignation();
 					if (s == null || s.equals("")) {
 						s = "[TBA]";
@@ -1014,18 +957,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 					designationLabel.setText(Conversion.capitalize(s));
 				}
-//				else {
-//					String s = mission.getDescription().trim();
-//					if (s == null || s.equals("")) {
-//						s = "[TBA]";
-//					}
-//					designationLabel.setText(s);
-//				}
 			} else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 				String phaseText = mission.getPhaseDescription();
 				if (phaseText.length() > 45)
 					phaseText = phaseText.substring(0, 45) + "...";
-				phaseLabel.setText(phaseText); // $NON-NLS-1$
+				phaseLabel.setText(phaseText);
 			} else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT
 					|| type == MissionEventType.MIN_MEMBERS_EVENT || type == MissionEventType.CAPACITY_EVENT) {
 				memberTableModel.updateMembers();

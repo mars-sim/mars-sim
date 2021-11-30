@@ -72,7 +72,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
     private final JPopupMenu popup = new JPopupMenu();
 
-	private static MasterClock masterClock;
+	private MasterClock masterClock;
 
     private static class PopupListener extends MouseAdapter {
         private final JPopupMenu popup;
@@ -101,8 +101,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         configureMainMenu();
 
         JTextPane textPane = getTextPane();
-        addAction("ctrl C", "Copy", () -> textPane.copy());
-        addAction("ctrl V", "Paste", () -> textPane.paste());
+        addAction("ctrl C", "Copy", textPane::copy);
+        addAction("ctrl V", "Paste", textPane::paste);
         MouseListener popupListener = new PopupListener(popup);
         textPane.addMouseListener(popupListener);
 
@@ -192,9 +192,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         frame.setResizable(false);
-//        Note1: frame.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//        Note2: TerminalProperties<SwingTextTerminal> props = getProperties();
-//        Note3: props.setPaneDimension(WIDTH, HEIGHT);
 
 		ImageIcon icon = new ImageIcon(MarsTerminal.class.getResource(ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
@@ -261,9 +258,10 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         widthMenu.add(w6);
 
         JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
+
         pauseItem.addActionListener(e -> {
 
-        	if (masterClock == null) {
+           	if (masterClock == null) {
         		masterClock = Simulation.instance().getMasterClock();
         	}
 
@@ -352,11 +350,13 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
+		// not needed
 	}
 
 
 	@Override
 	public void uiPulse(double time) {
+		// not needed
 	}
 
 

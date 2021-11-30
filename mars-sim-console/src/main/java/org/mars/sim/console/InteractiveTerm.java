@@ -59,12 +59,9 @@ public class InteractiveTerm {
 
 	private static int selectedScreen = -1;
 
-	private static CommanderProfile profile;
-
-	private static InteractiveTerm interactiveTerm;
+	private CommanderProfile profile;
 
 	public InteractiveTerm(boolean restart) {
-		interactiveTerm = this;
 
         marsTerminal.init();
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
@@ -82,10 +79,10 @@ public class InteractiveTerm {
 	/**
 	 * Asks players what to choose in beryx console main menu.
 	 */
-	public static int startConsoleMainMenu() {
+	public int startConsoleMainMenu() {
 		logger.config("Staring startConsoleMainMenu()");
 
-		profile = new CommanderProfile(interactiveTerm);
+		profile = new CommanderProfile(this);
 
 		return selectMenu();
 	}
@@ -95,7 +92,7 @@ public class InteractiveTerm {
 	 *
 	 * @return
 	 */
-	private static int selectMenu() {
+	private int selectMenu() {
 		int menuChoice = 0;
 
 		try {
@@ -106,7 +103,7 @@ public class InteractiveTerm {
 					+ "                          * * *   Main Menu   * * *\n"
 					+ System.lineSeparator()
 					+ System.lineSeparator()
-					+ "0. Exit "
+					+ EXIT_OPTION
 					+ System.lineSeparator()
 					+ "1. Start a new Sim"
 					+ System.lineSeparator()
@@ -212,7 +209,7 @@ public class InteractiveTerm {
 	 *
 	 * @return
 	 */
-	private static int selectMode() {
+	private int selectMode() {
 		int modeChoice = 0;
 
 		marsTerminal.print(System.lineSeparator()
@@ -265,7 +262,7 @@ public class InteractiveTerm {
 	 *
 	 * @return
 	 */
-	private static int selectSite() {
+	private int selectSite() {
 		int siteChoice = 0;
 		marsTerminal.println(System.lineSeparator());
 
@@ -341,7 +338,7 @@ public class InteractiveTerm {
 	 *
 	 * @return
 	 */
-	private static int configureCommandMode() {
+	private int configureCommandMode() {
 		int commandCfg = 0;
 
 		// Set the Game Mode to Command Mode in GameManager
@@ -431,7 +428,7 @@ public class InteractiveTerm {
 	 *
 	 * @return
 	 */
-	private static int configureSandoxMode() {
+	private int configureSandoxMode() {
 		int sandboxCfg = 0;
 
 		GameManager.mode = GameMode.SANDBOX;
@@ -524,7 +521,7 @@ public class InteractiveTerm {
 	/**
 	 * Loads the previously saved commander profile
 	 */
-	private static void loadPreviousProfile() {
+	private void loadPreviousProfile() {
 
 		try {
 			boolean canLoad = CommanderProfile.loadProfile();

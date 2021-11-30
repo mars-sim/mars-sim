@@ -11,7 +11,7 @@ import org.beryx.textio.TextTerminal;
 
 public class AppUtil {
 
-	public AppUtil() {}
+	private AppUtil() {}
 
     public static void printGsonMessage(TextTerminal<?> terminal, String initData) {
         if (initData != null && !initData.isEmpty()) {

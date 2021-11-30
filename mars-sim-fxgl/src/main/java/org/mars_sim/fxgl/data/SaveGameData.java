@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * SaveGameData.java
+ * @date 2021-11-29
+ * @author Manny Kung
+ */
+
 package org.mars_sim.fxgl.data;
 
 import java.io.BufferedWriter;
@@ -42,7 +49,7 @@ public class SaveGameData {
         		logger.info(null, "Not writable");
 
         } catch (Exception e) {
-        	logger.severe(null, "Exception: ", e);
+        	logger.severe(null, "Problem with BufferedWriter: ", e);
         } finally {
             // Multiple streams were opened. Only the last is closed.
         }

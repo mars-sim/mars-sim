@@ -14,5 +14,6 @@ package org.mars_sim.base;
 public class MarsProjectFXGLStarter {
 
 	public static void main(String[] args) {
+		// for future
 	}
 }

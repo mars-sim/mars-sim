@@ -1,6 +1,12 @@
+/*
+ * Mars Simulation Project
+ * App.java
+ * @date 2021-11-29
+ * @author Manny Kung
+ */
+
 package org.mars_sim.base;
 
-import org.mars_sim.fxgl.data.ReadGameData;
 import org.mars_sim.msp.core.logging.SimLogger;
 
 /**

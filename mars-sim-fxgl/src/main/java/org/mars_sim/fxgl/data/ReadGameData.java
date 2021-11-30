@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * ReadGameData.java
+ * @date 2021-11-29
+ * @author Manny Kung
+ */
+
 package org.mars_sim.fxgl.data;
 
 import java.io.BufferedReader;
@@ -41,13 +48,13 @@ public class ReadGameData {
             }
 
         } catch (IOException e) {
-        	logger.severe(null, "Exception: ", e);
+        	logger.severe(null, "Problem with data file: ", e);
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(DataFile.dataFile()))) {
             return Optional.of(reader.lines().collect(Collectors.toList()));
         } catch (Exception e) {
-        	logger.severe(null, "Exception: ", e);
+        	logger.severe(null, "Problem with BufferedReader: ", e);
         } finally {
             	// Multiple streams were opened. Only the last is closed.
         }
@@ -64,7 +71,7 @@ public class ReadGameData {
         	else
         		logger.info(null, "Not writable");
 	    } catch (Exception e) {
-        	logger.severe(null, "Exception: ", e);
+        	logger.severe(null, "Problem with PrintStream: ", e);
 	    } finally {
 	        	// Multiple streams were opened. Only the last is closed.
 	    }

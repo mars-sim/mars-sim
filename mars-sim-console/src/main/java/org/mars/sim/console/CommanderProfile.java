@@ -29,9 +29,7 @@ import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.person.Commander;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
@@ -73,7 +71,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private final List<Runnable> operations = new ArrayList<>();
 
 	private List<String> countryList;
-
 	private List<String> authorities;
 
 
@@ -82,12 +79,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal = term.getTerminal();
 
     	// Get Country list from known PersonConfig
-    	PersonConfig pc = config.getPersonConfig();
-    	countryList = new ArrayList<>(pc.getKnownCountries());
+    	countryList = new ArrayList<>(config.getPersonConfig().getKnownCountries());
     	Collections.sort(countryList);
 
-    	ReportingAuthorityFactory raFactory = config.getReportingAuthorityFactory();
-        authorities = new ArrayList<>(raFactory.getItemNames());
+        authorities = new ArrayList<>(config.getReportingAuthorityFactory().getItemNames());
 	}
 
     private void setChoices(String... choices) {
