@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 * @param site   the explored site to mine.
 	 * @param rover  the rover used for the EVA operation.
@@ -83,7 +82,7 @@ public class MineSite extends EVAOperation implements Serializable {
         		endTask();
         	return;
         }
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -91,7 +90,7 @@ public class MineSite extends EVAOperation implements Serializable {
         		endTask();
         	return;
 		}
-		
+
 		// Determine location for mining site.
 		setRandomOutsideLocation(rover);
 
@@ -101,7 +100,7 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Checks if a person can mine a site.
-	 * 
+	 *
 	 * @param member the member
 	 * @param rover  the rover
 	 * @return true if person can mine a site.
@@ -147,7 +146,7 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Perform the mining phase of the task.
-	 * 
+	 *
 	 * @param time the time available (millisols).
 	 * @return remaining time after performing phase (millisols).
 	 * @throws Exception if error performing phase.
@@ -161,14 +160,14 @@ public class MineSite extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 		}
-		
+
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
@@ -194,11 +193,11 @@ public class MineSite extends EVAOperation implements Serializable {
 		}
 
 		// Operate light utility vehicle if no one else is operating it.
-		if (!luv.getMalfunctionManager().hasMalfunction() 
+		if (!luv.getMalfunctionManager().hasMalfunction()
 				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
 
 			if (luv.addPerson(person)) {
-				
+
 				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(luv);
 
 				person.setPosition(settlementLoc);
@@ -220,13 +219,13 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-		
+
 		return 0D;
 	}
 
 	/**
 	 * Excavating minerals from the mining site.
-	 * 
+	 *
 	 * @param time the time to excavate minerals.
 	 * @throws Exception if error excavating minerals.
 	 */

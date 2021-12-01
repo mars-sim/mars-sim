@@ -186,8 +186,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		});
 
-
-        changeTitle(false);
+		setPaneTitle(Simulation.title);
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -341,6 +340,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	}
 
 	public void startLayer() {
+        changeTitle(false);
 		layerUI.start();
 	}
 
