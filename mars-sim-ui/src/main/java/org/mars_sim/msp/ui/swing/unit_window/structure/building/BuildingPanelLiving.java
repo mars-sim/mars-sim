@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 
@@ -26,18 +25,18 @@ import com.alee.laf.panel.WebPanel;
  */
 @SuppressWarnings("serial")
 public class BuildingPanelLiving extends BuildingFunctionPanel {
-	
+
 	private int bedCapCache;
 	private int bedAssignedCache;
 	private int bedOccupiedCache;
 	private int bedEmptyCache;
-	
+
 	private WebLabel bedCapLabel;
 	private WebLabel bedAssignsLabel;
 	private WebLabel bedOccupiedLabel;
 	private WebLabel bedEmptyLabel;
-	
-	private LivingAccommodations living; 
+
+	private LivingAccommodations living;
 
 	/**
 	 * Constructor.
@@ -79,12 +78,12 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		bedOccupiedLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.occupied",
 				living.getNumOccupiedActivitySpots()), WebLabel.CENTER);
 		labelPanel.add(bedOccupiedLabel);
-		
+
 		// Create bedEmptyLabel
 		bedEmptyLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.empty",
 				living.getNumEmptyActivitySpots()), WebLabel.CENTER);
 		labelPanel.add(bedEmptyLabel);
-		
+
 	}
 
 	@Override
@@ -100,18 +99,18 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 			bedAssignedCache = living.getNumAssignedBeds();
 			bedAssignsLabel.setText(Msg.getString("BuildingPanelLiving.beds.assigned", bedAssignedCache));
 		}
-		
+
 		// Update bedOccupiedLabel
 		if (bedOccupiedCache != living.getNumOccupiedActivitySpots()) {
 			bedOccupiedCache = living.getNumOccupiedActivitySpots();
 			bedOccupiedLabel.setText(Msg.getString("BuildingPanelLiving.beds.occupied", bedOccupiedCache));
-		}	
-		
+		}
+
 		// Update bedEmptyLabel
 		if (bedEmptyCache != living.getNumEmptyActivitySpots()) {
 			bedEmptyCache = living.getNumEmptyActivitySpots();
 			bedEmptyLabel.setText(Msg.getString("BuildingPanelLiving.beds.empty", bedEmptyCache));
-		}	
+		}
 	}
 }
-	
+

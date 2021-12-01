@@ -7,7 +7,6 @@ setPowerDemand * Mars Simulation Project
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Map;
@@ -57,16 +56,16 @@ extends BuildingFunctionPanel {
 		titlePanel.add(maxCapLabel);
 
 		Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
-	
+
 		// Create resource storage panel.
 		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
 		add(resourceStoragePanel, BorderLayout.CENTER);
 
 		SortedSet<Integer> keys = new TreeSet<Integer>(resourceStorage.keySet());
-		for (Integer resource : keys) { 
+		for (Integer resource : keys) {
 			// Create resource label.
 			WebLabel resourceLabel = new WebLabel(
-					Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
+					Conversion.capitalize(ResourceUtil.findAmountResourceName(resource))
 					+ ":", WebLabel.LEFT);
 			resourceStoragePanel.add(resourceLabel);
 
@@ -80,7 +79,7 @@ extends BuildingFunctionPanel {
 	public void update() {
 		// Storage capacity doesn't change so nothing to update.
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

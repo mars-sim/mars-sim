@@ -81,6 +81,76 @@ public class MarsProject {
 
 		SimulationBuilder builder = new SimulationBuilder();
 
+		checkOptions(builder, args);
+
+		// Do it
+		try {
+			if (useGUI) {
+				// Start the splash window
+				if (!useSiteEditor) {
+					MainWindow.startSplash();
+					MainWindow.setInteractiveTerm(interactiveTerm);
+				}
+				// Use opengl
+				// Question: How compatible are linux and macos with opengl ?
+				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
+				if (!MainWindow.OS.contains("linux")) {
+					System.setProperty("sun.java2d.ddforcevram", "true");
+				}
+			}
+
+			// Preload the Config
+			simulationConfig.loadConfig();
+
+			if (useSiteEditor) {
+				logger.config("Start the Scenario Editor...");
+				startScenarioEditor(builder);
+			}
+			// Get user choices if there is no template defined or a preload
+			else if (!builder.isFullyDefined()) {
+				logger.config("Please go to the console's Main Menu to choose an option.");
+
+				int type = interactiveTerm.startConsoleMainMenu();
+				if (type == 1) {
+					logger.config("Start the Scenario Editor...");
+					startScenarioEditor(builder);
+				}
+
+				else if (type == 2) {
+					// Load simulation
+					logger.config("Load the sim...");
+					String filePath = selectSimFile(false);
+					if (filePath != null) {
+						builder.setSimFile(filePath);
+					}
+				}
+				else {
+					// Check out crew flag
+					builder.setUseCrews(interactiveTerm.getUseCrew());
+				}
+			}
+
+			// Build and run the simulator
+			builder.start();
+
+			// Start the wait layer
+			InteractiveTerm.startLayer();
+
+			// Start beryx console
+			startConsoleThread();
+
+			if (useGUI) {
+				setupMainWindow(false);
+			}
+		}
+		catch(Exception e) {
+			// Catch everything
+			exitWithError("Problem starting " + e.getMessage(), e);
+		}
+	}
+
+	private void checkOptions(SimulationBuilder builder, String[] args) {
+
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
@@ -123,70 +193,6 @@ public class MarsProject {
 		}
 		catch (Exception e1) {
 			usage("Problem with arguments: " + e1.getMessage(), options);
-		}
-
-		// Do it
-		try {
-			if (useGUI) {
-				if (!useSiteEditor) {
-					MainWindow.startSplash();
-					MainWindow.setInteractiveTerm(interactiveTerm);
-				}
-
-				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
-				// SplashWindow and SimulationConfigEditor
-				if (!MainWindow.OS.contains("linux")) {
-					System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in
-																		// linux and macos ?
-				}
-			}
-
-			// Preload the Config
-			simulationConfig.loadConfig();
-
-			if (useSiteEditor) {
-				startScenarioEditor(builder);
-			}
-			// Get user choices if there is no template defined or a preload
-			else if (!builder.isFullyDefined()) {
-				logger.config("Please go to the console's Main Menu to choose an option.");
-
-				int type = interactiveTerm.startConsoleMainMenu();
-				if (type == 1) {
-					startScenarioEditor(builder);
-				}
-
-				else if (type == 2) {
-					// Load simulation
-					String filePath = selectSimFile(false);
-					if (filePath != null) {
-						builder.setSimFile(filePath);
-					}
-				}
-				else {
-					// Check out crew flag
-					builder.setUseCrews(interactiveTerm.getUseCrew());
-				}
-
-			}
-
-			// Build and run the simulator
-			builder.start();
-
-			// Start the wait layer
-			InteractiveTerm.startLayer();
-
-			// Start beryx console
-			startConsoleThread();
-
-			if (useGUI) {
-				setupMainWindow(false);
-			}
-		}
-		catch(Exception e) {
-			// Catch everything
-			exitWithError("Problem starting " + e.getMessage(), e);
-
 		}
 	}
 
@@ -286,8 +292,7 @@ public class MarsProject {
 				TimeUnit.MILLISECONDS.sleep(250);
 				if (!sim.isUpdating()) {
 					logger.config("Starting GUI");
-					MainWindow mainWindow = new MainWindow(cleanUI);
-					mainWindow.stopLayerUI();
+					new MainWindow(cleanUI).stopLayerUI();
 					break;
 				}
 	        } catch (InterruptedException e) {

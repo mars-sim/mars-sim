@@ -307,7 +307,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-       			.withDefaultValue(5)
+       			.withDefaultValue(2)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -318,7 +318,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-        		.withDefaultValue(6)
+        		.withDefaultValue(7)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -329,7 +329,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-        		.withDefaultValue(5)
+        		.withDefaultValue(28)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -345,7 +345,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
        	List<String> newList = new ArrayList<>();
 
         for (int i=0; i< list.size(); i++) {
-        	newList.add(String.format("%2d %s", i, list.get(i)));
+        	newList.add(String.format("(%2d). %s", (i+1), list.get(i)));
         }
 
         return newList;
@@ -454,6 +454,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		}
     }
 
+    public static void cancelLoadingProfile() {
+    	// Question: should the commander instance be set to null ?
+    	commander = null;
+    }
 
     private static Commander loadProperties(Properties p, Commander cc) {
         cc.setLastName(p.getProperty("commander.lastname"));

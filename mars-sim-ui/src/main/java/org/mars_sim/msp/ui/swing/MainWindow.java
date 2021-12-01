@@ -253,7 +253,11 @@ extends JComponent implements ClockListener {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-
+		if (GameManager.mode == GameMode.COMMAND) {
+			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
+		} else {
+			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
+		}
 		logger.log(Level.CONFIG, "Checking OS color scheme.");
     	// Detect if OS dark theme is in use
 		final OsThemeDetector detector = OsThemeDetector.getDetector();

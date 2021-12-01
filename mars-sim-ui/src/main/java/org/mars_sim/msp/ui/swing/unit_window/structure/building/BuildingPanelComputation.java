@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -53,7 +52,7 @@ extends BuildingFunctionPanel {
 
 		WebPanel springPanel = new WebPanel(new SpringLayout());
 		add(springPanel, BorderLayout.CENTER);
-		
+
 		// Power Demand
 		WebLabel label0 = new WebLabel(Msg.getString("BuildingPanelComputation.powerDemand"), WebLabel.RIGHT);
 		label0.setToolTipText(Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
@@ -67,7 +66,7 @@ extends BuildingFunctionPanel {
 		tf0.setPreferredSize(new Dimension(120, 25));
 		wrapper0.add(tf0);
 		springPanel.add(wrapper0);
-			
+
 		// Cooling Demand
 		WebLabel label1 = new WebLabel(Msg.getString("BuildingPanelComputation.coolingDemand"), WebLabel.RIGHT);
 		label1.setToolTipText(Msg.getString("BuildingPanelComputation.coolingDemand.tooltip"));
@@ -82,7 +81,7 @@ extends BuildingFunctionPanel {
 		wrapper1.add(tf1);
 		springPanel.add(wrapper1);
 
-		// Capability 
+		// Capability
 		WebLabel label2 = new WebLabel(Msg.getString("BuildingPanelComputation.computingUnit"), WebLabel.RIGHT);
 		label2.setToolTipText(Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 		springPanel.add(label2);
@@ -95,7 +94,7 @@ extends BuildingFunctionPanel {
 		tf2.setPreferredSize(new Dimension(120, 25));
 		wrapper2.add(tf2);
 		springPanel.add(wrapper2);
-		
+
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                3, 2, //rows, cols
@@ -107,7 +106,7 @@ extends BuildingFunctionPanel {
 	public void update() {
 		// doesn't change so nothing to update.
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
