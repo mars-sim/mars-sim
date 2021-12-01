@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -172,9 +171,8 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	 * the Phase Type
 	 */
 	private boolean canStore(int resourceId) {
-		PhaseType supported = ContainerUtil.getContainerPhase(getEquipmentType());
 		AmountResource required = ResourceUtil.findAmountResource(resourceId);
-		return (supported == required.getPhase());
+		return ContainerUtil.isPhaseSupported(getEquipmentType(), required.getPhase());
 	}
 
 	/**

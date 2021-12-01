@@ -85,7 +85,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * @return
 	 */
 	@Override
-	protected int [] getCollectibleResources() {
+	public int [] getCollectibleResources() {
 		return ResourceUtil.REGOLITH_TYPES;
 	}
 

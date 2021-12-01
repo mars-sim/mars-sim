@@ -112,7 +112,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @return
 	 */
 	@Override
-	protected int [] getCollectibleResources() {
+	public int [] getCollectibleResources() {
 		return new int [] {resourceID};
 	}
 }

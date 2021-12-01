@@ -79,10 +79,8 @@ public abstract class CollectResourcesMission extends RoverMission
 	private int containerNum;
 	/** External flag for ending collection at the current site. */
 	private boolean endCollectingSite;
-	/** The amount (kg) of ice collected. */
-	private double iceCollected;
-	/** The total amount (kg) of regolith collected. */
-	private double[] regolithCollected = {0, 0, 0, 0};
+	/** The total amount (kg) of resources collected. */
+	private Map<Integer,Double> collected;
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 	/** The type of resource to collect. */
@@ -122,7 +120,8 @@ public abstract class CollectResourcesMission extends RoverMission
 			this.resourceCollectionRate = resourceCollectionRate;
 			this.containerID = containerID;
 			this.containerNum = containerNum;
-
+			this.collected = new HashMap<>();
+			
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
 				return;
@@ -258,21 +257,12 @@ public abstract class CollectResourcesMission extends RoverMission
 	}
 
 	/**
-	 * Gets the total amount of ice collected so far in the mission.
+	 * Gets the total amount of resources collected so far in the mission.
 	 *
 	 * @return resource amount (kg).
 	 */
-	public double getIceCollected() {
-		return iceCollected;
-	}
-
-	/**
-	 * Gets an array of regolith collected
-	 *
-	 * @return an array of regolith amount (kg).
-	 */
-	public double[] getRegolithCollected() {
-		return regolithCollected;
+	public Map<Integer,Double> getResourcesCollected() {
+		return collected;
 	}
 
 	/**
@@ -303,6 +293,8 @@ public abstract class CollectResourcesMission extends RoverMission
 						getCurrentNavpoint().getDescription());
 			}
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
+				// Update the resource collected
+				updateResources(getVehicle());
 				startTravellingPhase();
 			}
 			else {
@@ -345,25 +337,18 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return
 	 */
 	private double updateResources(ResourceHolder inv) {
-		double[] collected = {0, 0, 0, 0};
 		double resourceCollected = 0;
 		double resourcesCapacity = 0;
 
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
-		int size = getCollectibleResources().length;
-		for (int i=0; i<size; i++) {
-			int id = getCollectibleResources()[i];
-			collected[i] = inv.getAmountResourceStored(id);
-			resourceCollected += collected[i];
-			resourcesCapacity += inv.getAmountResourceCapacity(id);
+		for(int resourceId : getCollectibleResources()) {
+			double amount = inv.getAmountResourceStored(resourceId);
+			resourceCollected += amount;
+			resourcesCapacity += inv.getAmountResourceCapacity(resourceId);
+			
+			collected.put(resourceId, amount);
 		}
-
-		// Set the array of resource collected.
-		this.regolithCollected = collected;
-
-		// Set total collected resources.
-		iceCollected = resourceCollected;
 
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourceCollected - collectingStart;
@@ -381,7 +366,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * the main resource but could be others.
 	 * @return
 	 */
-	protected abstract int [] getCollectibleResources();
+	public abstract int [] getCollectibleResources();
 
 	/**
 	 * Performs the collecting phase of the mission.

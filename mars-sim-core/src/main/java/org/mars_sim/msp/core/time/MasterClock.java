@@ -404,8 +404,8 @@ public class MasterClock implements Serializable {
 				int max = (int)Math.pow(2, MAX_SPEED);
 
 				if (ratio <= max) {
-					targetTR = ratio;
 					logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
+					targetTR = ratio;
 				}
 				else {
 					ratio = max;
