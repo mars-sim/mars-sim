@@ -392,7 +392,7 @@ public class TerrainElevation implements Serializable {
 		float brightness = hsb[2];
 
 		// Determine elevation in meters.
-		// TODO This code (calculate terrain elevation) needs updating.
+		// NOTE: This code (calculate terrain elevation) needs updating.
 		double elevation = 0;
 
 

@@ -1,16 +1,17 @@
 /*
  * Mars Simulation Project
  * RandomUtil.java
- * @date 2021-09-05
+ * @date 2021-12-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.tool;
 
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.mars_sim.msp.core.Msg;
+
 
 // Note : may consider using it.unimi.dsi.util.XorShift1024StarRandom;
 
@@ -27,52 +28,61 @@ public final class RandomUtil {
 
 	// Add XORSHIFT maven artifact
 	// May try XorShift1024StarRandom
-	
+
 	// Add two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
 	// Note 1: they are not compatible with standard java.util.Random's methods,
 	// require seeding and re-mapping of methods
 	// Note 2: other PRNG in the MT family can be found at
 	// https://github.com/zwxadz/SFMT-for-Java
 
+	private static SecureRandom sr = new SecureRandom();
+	// Note : if okay to block the thread during re-seeding,
+	// may use SecureRandom sr = SecureRandom.getInstanceStrong()
+
+	private RandomUtil() {}
+
+	public static String getAlgorithm() {
+		return sr.getAlgorithm();
+	}
 
 	/**
 	 * Returns true if given number is less than a random percentage.
-	 * 
+	 *
 	 * @param randomLimit the random percentage limit
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(int randomLimit) {
-		int rand = ThreadLocalRandom.current().nextInt(100) + 1;
+		int rand = sr.nextInt(100) + 1;
 		return rand < randomLimit;
 	}
 
 	/**
 	 * Returns true if given number is less than a random percentage.
-	 * 
+	 *
 	 * @param randomLimit the random percentage limit
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(double randomLimit) {
-		double rand = ThreadLocalRandom.current().nextDouble() * 100D;
+		double rand = sr.nextDouble() * 100D;
 		return rand < randomLimit;
 	}
 
 	/**
 	 * Returns a random int number from 0 to (and including) the number given.
-	 * 
+	 *
 	 * @param ceiling the int limit for the random number
 	 * @return the random number
 	 */
 	public static int getRandomInt(int ceiling) {
 		if (ceiling < 0)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustBePositive") + ceiling); //$NON-NLS-1$
-		return ThreadLocalRandom.current().nextInt(ceiling + 1);
+		return sr.nextInt(ceiling + 1);
 	}
 
 	/**
 	 * Returns a random int number from a given base number to (and including) the
 	 * ceiling number given.
-	 * 
+	 *
 	 * @param base    the minimum number result (can be +ve or -ve)
 	 * @param ceiling the maximum number result (can be +ve or -ve)
 	 * @return the random number
@@ -80,46 +90,47 @@ public final class RandomUtil {
 	public static int getRandomInt(int base, int ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		return ThreadLocalRandom.current().nextInt(ceiling - base + 1) + base;
+		return sr.nextInt(ceiling - base + 1) + base;
 	}
 
 	/**
 	 * Returns a random double number from 0 to the ceiling number given.
-	 * 
+	 *
 	 * @param ceiling the maximum number result
 	 * @return the random number
 	 */
 	public static double getRandomDouble(double ceiling) {
-		return ThreadLocalRandom.current().nextDouble() * ceiling;
+		return sr.nextDouble() * ceiling;
 	}
 
 	/**
 	 * Returns a random double number from base to the ceiling number given.
-	 * 
+	 *
 	 * @param ceiling the maximum number result
 	 * @return the random number
 	 */
 	public static double getRandomDouble(double base, double ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		return ThreadLocalRandom.current().nextDouble(ceiling - base) + base;
+		// Note: return ThreadLocalRandom.current().nextDouble(base, ceiling);
+		return sr.nextDouble() * (ceiling - base) + base;
 	}
-	
+
 	/**
 	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
 	 * mean 0.0 and standard deviation 1.0 from this random number generator's
 	 * sequence
-	 * 
+	 *
 	 * @return the random number
 	 */
 	public static double getGaussianDouble() {
-		return ThreadLocalRandom.current().nextGaussian();
+		return sr.nextGaussian();
 	}
 
 	/**
 	 * Returns a random integer from 1 to the given integer. 1 has twice the chance
 	 * of being chosen than 2 and so forth to the given integer.
-	 * 
+	 *
 	 * @param ceiling the maximum integer result, ( ceiling > 0 )
 	 * @return the random integer
 	 */
@@ -155,7 +166,7 @@ public final class RandomUtil {
 	 * Returns a random integer from the base to the ceiling. Note: the [base] has
 	 * twice the chance of being chosen than [the base + 1] and so forth to the
 	 * given integer.
-	 * 
+	 *
 	 * @param base    the minimum number result
 	 * @param ceiling the maximum integer result, ( ceiling > 0 )
 	 * @return the random integer
@@ -189,7 +200,7 @@ public final class RandomUtil {
 
 	/**
 	 * Gets the average value returned from the getRandomRegressionInteger method.
-	 * 
+	 *
 	 * @param ceiling the maximum integer result, (ceiling > 0)
 	 * @return average value.
 	 */
@@ -215,7 +226,7 @@ public final class RandomUtil {
 
 	/**
 	 * Gets a random weighted object from a map.
-	 * 
+	 *
 	 * @param weightedMap a map of objects and their weights as Double values.
 	 * @return randomly selected object from the list (or null if empty map).
 	 */

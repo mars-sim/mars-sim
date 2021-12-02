@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -122,7 +123,7 @@ public class MasterClock implements Serializable {
 
 	private double accuracyBias;
 
-	private double pausingMillisols;
+//	private double pausingMillisols;
 
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
@@ -205,6 +206,8 @@ public class MasterClock implements Serializable {
 		logger.config("              Max msol per pulse : " + maxMilliSolPerPulse);
 		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + " ms");
 		logger.config("                   Accuracy bias : " + accuracyBias);
+
+		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
 
 		logger.config("-----------------------------------------------------");
 	}
@@ -542,7 +545,7 @@ public class MasterClock implements Serializable {
 	public void setCommandPause(boolean value0, double value1) {
 		// Check GameManager.mode == GameMode.COMMAND ?
 		canPauseTime = value0;
-		pausingMillisols = value1;
+//		pausingMillisols = value1;
 	}
 
 	/*

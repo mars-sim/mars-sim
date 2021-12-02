@@ -121,7 +121,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			this.containerID = containerID;
 			this.containerNum = containerNum;
 			this.collected = new HashMap<>();
-			
+
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
 				return;
@@ -346,7 +346,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			double amount = inv.getAmountResourceStored(resourceId);
 			resourceCollected += amount;
 			resourcesCapacity += inv.getAmountResourceCapacity(resourceId);
-			
+
 			collected.put(resourceId, amount);
 		}
 
@@ -444,7 +444,7 @@ public abstract class CollectResourcesMission extends RoverMission
 
 			// Randomize the rate of collection upon arrival
 			rate = rate
-					* (1 + RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+					* (1 + RandomUtil.getRandomDouble(-.2, .2));
 
 			// Note: Add how areologists and some scientific study may come up with better technique
 			// to obtain better estimation of the collection rate. Go to a prospective site, rather
