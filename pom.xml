@@ -15,7 +15,7 @@
 		<release>11</release>
 		<project.version>3.4.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
-		<junit-jupiter.version>5.8.1</junit-jupiter.version>
+		<junit-jupiter.version>5.8.2</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
         <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -27,10 +27,10 @@
 		<!-- mapstruct.version>1.1.0.Final</mapstruct.version -->
 		<libgdx.version>1.10.0</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<kotlin.version>1.5.31</kotlin.version>
+		<kotlin.version>1.6.0</kotlin.version>
 		<!--  TextIO needs 1.8 -->
 		<slf4j.version>1.8.0-beta4</slf4j.version>
-		
+
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>11</sonar.java.source>
 	</properties>
@@ -96,9 +96,9 @@
 				<role>developer</role>
 			</roles>
 			<timezone>0</timezone>
-		</developer>		
+		</developer>
 	</developers>
-	
+
 	<!-- ************************************************************************************************* -->
 	<!-- * Module Section * -->
 	<!-- ************************************************************************************************* -->
@@ -106,12 +106,12 @@
 		<module>mars-sim-mapdata</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-		<module>mars-sim-fxgl</module>			
+		<module>mars-sim-fxgl</module>
 		<module>mars-sim-console</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-headless</module>
 		<module>mars-sim-base</module>
-		<!--module>mars-sim-android</module -->		
+		<!--module>mars-sim-android</module -->
 		<!-- module>mars-sim-network</module-->
 		<!--module>mars-sim-service</module-->
 		<!--module>mars-sim-javafx</module-->
@@ -127,7 +127,7 @@
 	            <plugin>
 	                <artifactId>maven-surefire-plugin</artifactId>
 	                <version>3.0.0-M5</version>
-	            </plugin>						
+	            </plugin>
 				<plugin>
 					<!-- https://github.com/graalvm/native-build-tools -->
 					<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
@@ -170,7 +170,7 @@
 				</plugin>
 				<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-maven-plugin -->
 				<plugin>
-					<groupId>org.jetbrains.kotlin</groupId>				
+					<groupId>org.jetbrains.kotlin</groupId>
 					<artifactId>kotlin-maven-plugin</artifactId>
 					<version>${kotlin.version}</version>
 					<executions>
@@ -209,7 +209,7 @@
 						    <groupId>org.jetbrains.kotlin</groupId>
 						    <artifactId>kotlin-stdlib-common</artifactId>
 						    <version>${kotlin.version}</version>
-						</dependency-->					
+						</dependency-->
 						<dependency>
 							<groupId>org.jetbrains.kotlin</groupId>
 							<artifactId>kotlin-stdlib</artifactId>
@@ -220,14 +220,14 @@
 						    <groupId>org.jetbrains.kotlin</groupId>
 						    <artifactId>kotlin-compiler</artifactId>
 						    <version>${kotlin.version}</version>
-						</dependency>							
+						</dependency>
 						<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-scripting-compiler -->
 						<dependency>
 						    <groupId>org.jetbrains.kotlin</groupId>
 						    <artifactId>kotlin-scripting-compiler</artifactId>
 						    <version>${kotlin.version}</version>
-						</dependency>						
-					</dependencies>					
+						</dependency>
+					</dependencies>
 					<!--dependencies>
 						<dependency>
 							<groupId>org.jetbrains.kotlin</groupId>
@@ -249,7 +249,7 @@
 				      <version>4.3.0</version>
 				    </dependency>
 				  </dependencies>
-				</plugin>			
+				</plugin>
 				<!--  https://mvnrepository.com/artifact/org.codehaus.mojo/versions-maven-plugin -->
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
@@ -295,7 +295,7 @@
 						</compilerArgs>
 						<showWarnings>false</showWarnings>
                         <showDeprecation>false</showDeprecation>
-						<verbose>false</verbose>			          
+						<verbose>false</verbose>
 					</configuration>
 					<!-- see https://www.baeldung.com/kotlin-maven-java-project -->
 					<!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
@@ -320,7 +320,7 @@
 		                    <phase>test-compile</phase>
 		                    <goals> <goal>testCompile</goal> </goals>
 		                </execution>
-	            	</executions>				
+	            	</executions>
 				</plugin>
 
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin : 33KB-->
@@ -357,7 +357,7 @@
 							</manifest>
 						</archive>
 			        </configuration>
-				</plugin>     
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

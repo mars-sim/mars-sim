@@ -33,21 +33,21 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- https://github.com/Dansoftowner/jSystemThemeDetector -->
 		<dependency>
 			<groupId>com.github.Dansoftowner</groupId>
 			<artifactId>jSystemThemeDetector</artifactId>
 			<version>3.7</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
-		     can jfreesvg potentially replace batik ? 
-		     see http://object-refinery.com/blog/blog-20140423.html 
+		     can jfreesvg potentially replace batik ?
+		     see http://object-refinery.com/blog/blog-20140423.html
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
-			<version>3.4</version>
+			<version>3.4.2</version>
 		</dependency-->
 
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
@@ -57,6 +57,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.5.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.jfree/org.jfree.chart3d -->
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>org.jfree.chart3d</artifactId>
+		    <version>2.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.bidib.jbidib.eu.hansolo/SteelSeries -->
 		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
@@ -64,8 +71,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>3.9.31.2</version>
 		</dependency>
 
-		<!-- trident is required by steelseries.extras in mars-sim-ui		
-		https://mvnrepository.com/artifact/com.github.insubstantial/trident : (106 KB) 
+		<!-- trident is required by steelseries.extras in mars-sim-ui
+		https://mvnrepository.com/artifact/com.github.insubstantial/trident : (106 KB)
 			https://github.com/Insubstantial/insubstantial/tree/master/trident
 			Use radiance-trident instead
 		<dependency>
@@ -73,8 +80,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>trident</artifactId>
 			<version>7.3</version>
 		</dependency>
-		-->	
-		<!-- trident animation library is required by steelseries.extras in mars-sim-ui	
+		-->
+		<!-- trident animation library is required by steelseries.extras in mars-sim-ui
 		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident
 		     https://mvnrepository.com/artifact/org.pushing-pixels/radiance-trident/1.0.2 : 78KB
 		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md 79KB -->
@@ -84,7 +91,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <artifactId>radiance-trident</artifactId>
 		  <version>1.0.2</version>
 		</dependency>
-	
+
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
@@ -95,8 +102,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.14</version>
 		</dependency>
-	
-		<!-- http://www.jcraft.com/jorbis/ 
+
+		<!-- http://www.jcraft.com/jorbis/
 		https://github.com/Trilarion/java-vorbis-support
 		https://github.com/Gagravarr/VorbisJava
 		https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
@@ -111,22 +118,22 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		https://oss.sonatype.org/content/repositories/snapshots/com/weblookandfeel/ -->
         <dependency>
             <groupId>com.weblookandfeel</groupId>
-            <artifactId>weblaf-ui</artifactId>        
+            <artifactId>weblaf-ui</artifactId>
             <version>1.2.13</version>
-        </dependency>	
+        </dependency>
 		<dependency>
 		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-core</artifactId>       
+		    <artifactId>weblaf-core</artifactId>
             <version>1.2.13</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-plugin</artifactId>        
+		    <artifactId>weblaf-plugin</artifactId>
             <version>1.2.13</version>
 		</dependency>
 		<!--dependency>
 		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-demo</artifactId>        
+		    <artifactId>weblaf-demo</artifactId>
             <version>1.2.13</version>
 		</dependency-->
 		<!--dependency>
@@ -134,10 +141,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>xstream</artifactId>
 			<version>1.4.13</version>
 		</dependency-->
-                        						
+
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			 https://github.com/jidesoft/jide-oss-->
-		<!--dependency>				
+		<!--dependency>
      		<groupId>net.janklab.opp</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>3.7.4</version>
@@ -148,7 +155,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jide-oss</artifactId>
 			<version>3.7.12</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 124 KB
 			 https://github.com/jIconFont/jiconfont-font_awesome -->
 		<dependency>
@@ -157,9 +164,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>4.7.0.1</version>
 		    <!-- version>4.5.0.3</version-->
 		</dependency>
-	
+
   </dependencies>
- 
+
 	<repositories>
 	    <repository>
 	        <id>maven-central-repo</id>
@@ -170,7 +177,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>true</enabled>
 	        </snapshots>
-	    </repository>   
+	    </repository>
 	    <repository>
             <id>oss-sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/</url>
@@ -194,7 +201,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
   		<repository>
 	        <id>jerady</id>
 	        <url>https://dl.bintray.com/jerady/maven/</url>
-	    </repository>     
+	    </repository>
 	    <repository>
 	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>
@@ -236,7 +243,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
-	    </repository>		
+	    </repository>
 		<repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
@@ -248,6 +255,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>true</enabled>
 	        </snapshots>
-	    </repository>        
+	    </repository>
 	</repositories>
 </project>
