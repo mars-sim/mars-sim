@@ -148,8 +148,8 @@
 		</maintenance-entity-list>
 	</part>
 
-
-	<part name="steel canister" type="utility" mass="10.0" />
+	<!-- one steel sheet can make two steel canisters -->
+	<part name="steel canister" type="utility" mass="3.9" />
 
 	<part name="bottle" type="utility" mass=".1" />
 

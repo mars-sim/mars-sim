@@ -267,8 +267,9 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	        		panel.add(ownerPanel, BorderLayout.NORTH);
 	        		panel.add(buildingPanel, BorderLayout.CENTER);
 
-	                d.add(panel);
-	                desktop.add(d);
+	        		buildingPanel.add(panel);
+	        		d.add(buildingPanel);
+	        		desktop.add(d);
 
 	    			d.setMaximumSize(new Dimension(WIDTH_2, HEIGHT_2));
 	    			d.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));

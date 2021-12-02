@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.SwingUtilities;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 

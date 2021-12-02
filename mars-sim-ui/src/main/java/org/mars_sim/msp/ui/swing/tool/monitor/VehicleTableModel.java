@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -60,11 +59,11 @@ public class VehicleTableModel extends UnitTableModel {
 	private static final Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
 	private final static String AT = "At ";
-	private static String ON = "On";	
+	private static String ON = "On";
 	private static String OFF = "Off";
-	private static String TRUE = "True";	
+	private static String TRUE = "True";
 	private static String FALSE = "False";
-	
+
 	// Column indexes
 	private final static int NAME = 0;
 	private final static int TYPE = 1;
@@ -92,10 +91,10 @@ public class VehicleTableModel extends UnitTableModel {
 	private final static int COLUMNCOUNT = 21;
 	/** Names of Columns. */
 	private static String columnNames[];
-		
+
 	/** Names of Columns. */
 	private static Class<?> columnTypes[];
-	
+
 	/**
 	 * Class initialiser creates the static names and classes.
 	 */
@@ -161,20 +160,20 @@ public class VehicleTableModel extends UnitTableModel {
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
-	
+
 	// Data members
 	private int mapSizeCache = 0;
-	
+
 	private UnitManagerListener unitManagerListener;
 	private LocalMissionManagerListener missionManagerListener;
-	
+
 	private Map<Vehicle, Map<Integer, Double>> resourceCache;
 
 	private GameMode mode;
-	
+
 	private Settlement commanderSettlement;
 
-	
+
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
 	 * Vehicles from the Unit manager.
@@ -196,7 +195,7 @@ public class VehicleTableModel extends UnitTableModel {
 		}
 		else
 			setSource(unitManager.getVehicles());
-		
+
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -236,7 +235,7 @@ public class VehicleTableModel extends UnitTableModel {
 						result = vehicle.getCoordinates().getFormattedString();
 					}
 				} break;
-				
+
 				case LOCATION : {
 					Settlement settle = vehicle.getSettlement();
 					if (settle != null) {
@@ -255,8 +254,8 @@ public class VehicleTableModel extends UnitTableModel {
 						String status = vehicleMission.getTravelStatus();
 						if (status != null) {
 							if (status.equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-								NavPoint destination = vehicleMission.getNextNavpoint();	
-								if (destination.isSettlementAtNavpoint()) 
+								NavPoint destination = vehicleMission.getNextNavpoint();
+								if (destination.isSettlementAtNavpoint())
 									result = destination.getSettlement().getName();
 								else
 									result = Conversion.capitalize(destination.getDescription()) + " - " + destination.getLocation().getFormattedString();
@@ -265,8 +264,8 @@ public class VehicleTableModel extends UnitTableModel {
 								NavPoint destination = vehicleMission.getCurrentNavpoint();
 //								result = destination.getLocation().getFormattedString();
 								result = Conversion.capitalize(destination.getDescription());
-							}					
-						}			
+							}
+						}
 					}
 				} break;
 
@@ -292,7 +291,7 @@ public class VehicleTableModel extends UnitTableModel {
 					}
 					else result = null;
 				} break;
-				
+
 				case CREW : {
 					if (vehicle instanceof Crewable)
 						result = ((Crewable) vehicle).getCrewNum();
@@ -313,7 +312,7 @@ public class VehicleTableModel extends UnitTableModel {
 						result = null;
 					}
 				} break;
-				
+
 				case SPEED : {
 					result = Math.round(vehicle.getSpeed()*10.0)/10.0;
 				} break;
@@ -431,13 +430,13 @@ public class VehicleTableModel extends UnitTableModel {
 	 */
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
-		
+
 		if (unit.getUnitType() == UnitType.VEHICLE) {
 			Vehicle vehicle = (Vehicle) unit;
 			int unitIndex = -1;
 			Object source = event.getTarget();
 			UnitEventType eventType = event.getType();
-			
+
 			if (mode == GameMode.COMMAND) {
 				if (vehicle.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
 					unitIndex = 0;
@@ -445,9 +444,9 @@ public class VehicleTableModel extends UnitTableModel {
 			else {
 				unitIndex = getUnitIndex(vehicle);
 			}
-			
+
 			if (unitIndex > -1) {
-		
+
 				int columnNum = -1;
 				if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
 				else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
@@ -463,11 +462,11 @@ public class VehicleTableModel extends UnitTableModel {
 				else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
 				else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
 				else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
-					int target = -1;	
+					int target = -1;
 					if (source instanceof AmountResource) {
 						target = ((AmountResource)source).getID();
 					}
-						
+
 					else if (source instanceof Integer) {
 						target = (Integer)source;
 //						if (target < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
@@ -476,18 +475,18 @@ public class VehicleTableModel extends UnitTableModel {
 							// if it's an item resource, quit
 							return;
 					}
-						
+
 					try {
 						int tempColumnNum = -1;
 						double currentValue = 0.0;
 						Map<Integer, Double> resourceMap = resourceCache.get(vehicle);
-						
+
 						if (target == oxygenID) {
 							tempColumnNum = OXYGEN;
 							currentValue = resourceMap.get(oxygenID);
 						}
 						else if (target == methaneID) {
-							tempColumnNum = METHANE;		
+							tempColumnNum = METHANE;
 							currentValue = resourceMap.get(methaneID);
 						}
 						else if (target == foodID) {
@@ -515,7 +514,7 @@ public class VehicleTableModel extends UnitTableModel {
 					        	}
 					        }
 						}
-		
+
 						if (tempColumnNum > -1 && unitIndex > -1) {
 							currentValue = Math.round (currentValue * 10.0 ) / 10.0;
 							double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
@@ -529,7 +528,7 @@ public class VehicleTableModel extends UnitTableModel {
 						logger.log(Level.SEVERE, "Issues with unitUpdate()", e);
 					}
 				}
-		
+
 				if (columnNum > -1 && unitIndex > -1) {
 					SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
 				}
@@ -632,7 +631,7 @@ public class VehicleTableModel extends UnitTableModel {
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
-			
+
 			if (unit.getUnitType() == UnitType.VEHICLE) {
 				boolean change = false;
 				if (mode == GameMode.COMMAND) {
@@ -642,7 +641,7 @@ public class VehicleTableModel extends UnitTableModel {
 				else {
 					change = true;
 				}
-				
+
 				if (change) {
 					if (eventType == UnitManagerEventType.ADD_UNIT) {
 						if (!containsUnit(unit)) addUnit(unit);
@@ -667,10 +666,10 @@ public class VehicleTableModel extends UnitTableModel {
 				missions = missionManager.getMissionsForSettlement(commanderSettlement);
 			}
 			else {
-				missions = missionManager.getMissions();	
+				missions = missionManager.getMissions();
 			}
-			
-			for (Mission m : missions) 
+
+			for (Mission m : missions)
 				addMission(m);
 		}
 

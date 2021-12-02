@@ -65,7 +65,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			Msg.getString("Task.phase.dropOffResource")); //$NON-NLS-1$
 	protected static final TaskPhase WALK_TO_BIN = new TaskPhase(
 			Msg.getString("Task.phase.walkToBin")); //$NON-NLS-1$
-	
+
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
@@ -88,10 +88,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private LocalPosition returnInsideLoc;
 
 	private SkillType outsideSkill;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
 	 */
@@ -113,8 +113,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (interiorObject == null) {
 				logger.warning(person, "Is supposed to be in a building but interiorObject is null.");
 				endTask();
-			} 
-			
+			}
+
 			else {
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
@@ -124,14 +124,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
 		}
-		
+
 		else if (person.isInVehicleInGarage()) {
 			interiorObject = person.getVehicle();
 			if (interiorObject == null) {
 				logger.warning(person, "Is supposed to be in a vehicle inside a garage but interiorObject is null.");
 				endTask();
-			} 
-			
+			}
+
 			else {
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
@@ -162,7 +162,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	protected EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
 		super(name, robot, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
-		
+
 		this.hasSiteDuration = hasSiteDuration;
 		this.siteDuration = siteDuration;
 		this.outsideSkill = outsideSkill;
@@ -180,7 +180,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Add time at EVA site.
-	 * 
+	 *
 	 * @param time the time to add (millisols).
 	 * @return true if site phase should end.
 	 */
@@ -199,14 +199,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Gets the outside site phase.
-	 * 
+	 *
 	 * @return task phase.
 	 */
 	protected abstract TaskPhase getOutsideSitePhase();
 
 	/**
 	 * Set the outside side local location.
-	 * 
+	 *
 	 * @param xLoc the X location.
 	 * @param yLoc the Y location.
 	 */
@@ -214,10 +214,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 		outsideSiteXLoc = xLoc;
 		outsideSiteYLoc = yLoc;
 	}
-	
+
 	/**
 	 * Set the outside side local location.
-	 * 
+	 *
 	 * @param xLoc the X location.
 	 * @param yLoc the Y location.
 	 */
@@ -235,7 +235,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			else
 				person.addEVATime(getTaskName(), time);
 		}
-			
+
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("EVAOoperation's task phase is null");
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
@@ -246,14 +246,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 //			return walkToBin(time);
 //		} else if (DROP_OFF_RESOURCE.equals(getPhase())) {
 //			return dropOffResource(time);
-		} 
-	
+		}
+
 		return time;
 	}
 
 	/**
 	 * Perform the walk to outside site phase.
-	 * 
+	 *
 	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
 	 */
@@ -261,8 +261,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	      // If not at field work site location, create walk outside subtask.
 //        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
 //        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
-//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation); 
-       
+//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
+
         if (person.isInside()) {// || !closeToLocation) {
         	// A person is walking toward an airlock or inside an airlock
 //        	System.out.println(person + " is still inside " + person.getBuildingLocation() + ".");
@@ -272,7 +272,7 @@ public abstract class EVAOperation extends Task implements Serializable {
                 addSubTask(walkingTask);
             }
             else {
-				logger.severe(person, "Cannot walk to outside site.");			
+				logger.severe(person, "Cannot walk to outside site.");
                 endTask();
             }
         }
@@ -281,9 +281,9 @@ public abstract class EVAOperation extends Task implements Serializable {
         	// In case of DigLocalRegolith, set to task phase COLLECT_REGOLITH
             setPhase(getOutsideSitePhase());
         }
-        
+
         return time;
-    }		
+    }
 
     private double walkToBin(double time) {
     	// Go to the drop off location
@@ -293,37 +293,38 @@ public abstract class EVAOperation extends Task implements Serializable {
                 addSubTask(walkingTask);
             }
             else {
-				logger.severe(person, "Cannot walk to the storage bin location.");			
+				logger.severe(person, "Cannot walk to the storage bin location.");
                 endTask();
             }
         }
         else {
             setPhase(WALK_TO_BIN);
         }
-        
+
         return time;
     }
-    
+
     private double dropOffResource(double time) {
+    	// Note: Do not delete. will use this to drop off resources at a shed
     	// Go to the drop off location
     	return 0;
     }
-    
+
 	/**
 	 * Perform the walk back inside phase.
-	 * 
+	 *
 	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
 	 */
 	private double walkBackInsidePhase(double time) {
-		    
+
 		if (person.isOutside()) {
-						
+
 			if (interiorObject == null) {
 				// Get closest airlock building at settlement.
 				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
 				if (s != null) {
-					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
+					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity());
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 					logger.log(person, Level.FINE, 4_000,
@@ -339,25 +340,25 @@ public abstract class EVAOperation extends Task implements Serializable {
 							+ ". Had to walk back inside the vehicle.");
 				}
 			}
-			
+
 			if (interiorObject == null) {
 				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null.");
 				addSubTask(new Walk(person));
 			}
-			
+
 			else {
 				// Set return location.
 				returnInsideLoc = LocalAreaUtil.getRandomLocalRelativePosition(interiorObject);
-				
-				if (returnInsideLoc != null && 
+
+				if (returnInsideLoc != null &&
 						!LocalAreaUtil.isPositionWithinLocalBoundedObject(
 								returnInsideLoc, interiorObject)) {
-					
+
 					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. returnInsideLoc failed.");
 					addSubTask(new Walk(person));
 				}
 			}
-	
+
 			// If not at return inside location, create walk inside subtask.
 			// If not inside, create walk inside subtask.
 			if (interiorObject != null && !person.getPosition().isClose(returnInsideLoc)) {
@@ -368,35 +369,35 @@ public abstract class EVAOperation extends Task implements Serializable {
 				else if (interiorObject instanceof Vehicle) {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
-						
-				logger.log(person, Level.FINE, 4_000, 
-							"Near " +  name 
-							+ " at (" + returnInsideLoc 
+
+				logger.log(person, Level.FINE, 4_000,
+							"Near " +  name
+							+ " at (" + returnInsideLoc
 							+ "). Attempting to enter the airlock.");
-				
+
 				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
 					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
 					addSubTask(walkingTask);
-				} 
-				
+				}
+
 				else {
 					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. cannot walk all steps.");
 					addSubTask(new Walk(person));
 				}
 			}
-			
+
 			else {
 				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
 				addSubTask(new Walk(person));
 			}
 		}
-		
+
 		else { // if a person is already inside, end the task gracefully here
-			logger.log(person, Level.FINE, 4_000, 
-					"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");	
+			logger.log(person, Level.FINE, 4_000,
+					"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");
 			endTask();
 		}
-		
+
 
 		return time;
 	}
@@ -404,7 +405,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	/**
 	 * Checks if situation requires the EVA operation to end prematurely and the
 	 * person should return to the airlock.
-	 * 
+	 *
 	 * @return true if EVA operation should end
 	 */
 	protected boolean shouldEndEVAOperation() {
@@ -418,26 +419,26 @@ public abstract class EVAOperation extends Task implements Serializable {
 		// Check for sunlight
 		if (isGettingDark(person))
 			return true;
-				
+
 		// Check for any EVA problems.
 		if (hasEVAProblem(person))
 			return true;
 
 		// Check if it is at meal time and the person is hungry
-		if (isHungryAtMealTime(person)) 
+		if (isHungryAtMealTime(person))
 			return true;
-		
+
         // Checks if the person is physically drained
 		if (isExhausted(person))
 			return true;
-	
-	
+
+
 		return result;
 	}
 
 	/**
 	 * Checks if the sky is dimming and is at dusk
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -446,11 +447,11 @@ public abstract class EVAOperation extends Task implements Serializable {
         return surfaceFeatures.getTrend(person.getCoordinates()) < 0 &&
                 hasLittleSunlight(person);
     }
-	
-	
+
+
 	/**
 	 * Checks if there is any sunlight
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -460,10 +461,10 @@ public abstract class EVAOperation extends Task implements Serializable {
         return !(surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 12D)
                 || surfaceFeatures.inDarkPolarRegion(person.getCoordinates());
     }
-	
+
 	/**
 	 * Checks if there is an EVA problem for a person.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return false if having EVA problem.
 	 */
@@ -491,7 +492,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double waterCap = suit.getAmountResourceCapacity(ResourceUtil.waterID);
 			double water = suit.getAmountResourceStored(ResourceUtil.waterID);
 			if (water <= (waterCap * .10D)) {
-				logger.log(person, Level.WARNING, 20_000, 
+				logger.log(person, Level.WARNING, 20_000,
 						suit.getName() + " reported less than 10% water left when "
 										+ person.getTaskDescription() + ".");
 				// Running out of water should not stop a person from doing EVA
@@ -512,7 +513,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			logger.log(person, Level.WARNING, 20_000, 
+			logger.log(person, Level.WARNING, 20_000,
 					person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
 			result = true;
 		}
@@ -536,7 +537,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Checks if the person's settlement is at meal time and is hungry
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -544,10 +545,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 
         return CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry();
     }
-	
+
 	/**
 	 * Checks if the person's settlement is physically drained
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -556,11 +557,11 @@ public abstract class EVAOperation extends Task implements Serializable {
         return person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
                 || person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
     }
-	
+
 	/**
 	 * Add experience for this EVA task. The EVA_OPERATIONS skill is updated.
 	 * If the {@link #getPhase()} matches the value of {@link #getOutsideSitePhase()} then experience is also added
-	 * to the outsideSkill property defined for this task. 
+	 * to the outsideSkill property defined for this task.
 	 * If the phase is not outside; then only EVA_OPERATIONS is updated.
 	 * @param time
 	 */
@@ -577,7 +578,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
 		worker.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		
+
 
 		// If phase is outside, add experience to outside skill.
 		if (getOutsideSitePhase().equals(getPhase()) && (outsideSkill != null)) {
@@ -588,10 +589,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 			worker.getSkillManager().addExperience(outsideSkill, outsideExperience, time);
 		}
 	}
-	
+
 	/**
 	 * Check for accident with EVA suit.
-	 * 
+	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 */
 	protected void checkForAccident(double time) {
@@ -609,7 +610,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Check for radiation exposure of the person performing this EVA.
-	 * 
+	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 * @result true if detected
 	 */
@@ -624,7 +625,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * Determine a random location for for working outside a Rover for the
 	 * assigned Worker.
 	 * If no site is found then the Task is ended
-	 * 
+	 *
 	 * @param rover Base rover hosting EVA
 	 * @return Was a site found
 	 */
@@ -657,11 +658,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 		return goodLocation;
 	}
-	
+
 	/**
 	 * Set the outside location near a BoundedObject
-	 * @param basePoint 
-	 * 
+	 * @param basePoint
+	 *
 	 * @return A locaiton has been choosen.
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
@@ -684,11 +685,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 		return goodLocation;
 	}
-	
+
 	/**
 	 * Gets the closest available airlock to a given location that has a walkable
 	 * path from the person's current location.
-	 * 
+	 *
 	 * @param person the person.
 	 * @param        double xLocation the destination's X location.
 	 * @param        double yLocation the destination's Y location.
@@ -696,19 +697,19 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
 		Airlock result = null;
-		
+
 		Settlement s = person.getSettlement();
 		if (s != null) {
 			result = s.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
-		} 
-		
+		}
+
 		else if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -718,8 +719,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 		Settlement s = robot.getSettlement();
 		if (s != null) {
 			result = s.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
-		} 
-		
+		}
+
 		else if (robot.isInVehicle()) {
 			Vehicle vehicle = robot.getVehicle();
 			if (vehicle instanceof Airlockable) {
@@ -733,7 +734,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	/**
 	 * Gets an available airlock to a given location that has a walkable path from
 	 * the person's current location.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return airlock or null if none available
 	 */
@@ -744,7 +745,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	/**
 	 * Gets an available airlock to a given location that has a walkable path from
 	 * the robot's current location.
-	 * 
+	 *
 	 * @param robot the robot.
 	 * @return airlock or null if none available
 	 */
@@ -767,7 +768,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Rescue the person from the rover
-	 * 
+	 *
 	 * @param r the rover
 	 * @param p the person
 	 * @param s the settlement
@@ -784,13 +785,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 		else if (p.isOutside()) {
 			result = p.transfer(s);
 		}
-		
+
 		if (result) {
 			// Gets the settlement id
 			int id = s.getIdentifier();
 			// Store the person into a medical building
 			BuildingManager.addToMedicalBuilding(p, id);
-	
+
 			Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
 			Complaint complaint = p.getPhysicalCondition().getMostSerious();
 			HealthProblem problem = null;
@@ -800,12 +801,12 @@ public abstract class EVAOperation extends Task implements Serializable {
 					break;
 				}
 			}
-			
+
 			// Register the historical event
 			HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
 			registerNewEvent(rescueEvent);
 		}
-		
+
 		return result;
 	}
 }

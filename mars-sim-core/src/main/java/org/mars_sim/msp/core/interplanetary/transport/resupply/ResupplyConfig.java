@@ -17,7 +17,6 @@ import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -90,7 +89,7 @@ public class ResupplyConfig implements Serializable {
             for (Element buildingElement : buildingNodes) {
                 String buildingType = buildingElement.getAttributeValue(TYPE);
                 BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
-                
+
                 String scenario = "A";
                 //if (NAME.toLowerCase().equals("Mars Direct Base Resupply 3".toLowerCase()))
                 //	scenario = "A";
