@@ -390,10 +390,12 @@ public class BuildingConstructionMission extends Mission implements Serializable
 //			} else { // if GUI is NOT in use
 
 				site = manager.createNewConstructionSite();
-				site.setStageInfo(stageInfo);
 
 				if (site != null) {
+
+					site.setStageInfo(stageInfo);
 					// Set construction site size.
+
 					if (stageInfo.getWidth() > 0D)
 						site.setWidth(stageInfo.getWidth());
 					else

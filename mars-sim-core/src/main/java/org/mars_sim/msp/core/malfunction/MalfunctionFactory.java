@@ -126,12 +126,12 @@ public final class MalfunctionFactory implements Serializable {
 
 		if (source instanceof EquipmentOwner) {
 			inventoryUnits = ((EquipmentOwner)source).getEquipmentSet();
-		}
 
-		if (!inventoryUnits.isEmpty()) {
-			for (Unit unit : inventoryUnits) {
-				if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
-					entities.add((Malfunctionable) unit);
+			if (inventoryUnits != null && !inventoryUnits.isEmpty()) {
+				for (Unit unit : inventoryUnits) {
+					if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
+						entities.add((Malfunctionable) unit);
+					}
 				}
 			}
 		}

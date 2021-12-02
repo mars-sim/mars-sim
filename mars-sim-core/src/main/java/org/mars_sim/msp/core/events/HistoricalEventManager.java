@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-02
  * @author Barry Evans
  */
 
@@ -42,7 +42,7 @@ public class HistoricalEventManager implements Serializable {
 	private transient List<HistoricalEventListener> listeners;
 
 	// Static list - don't want to be serialized
-	private volatile static List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
+	private static List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
 
 	// The following list cannot be static since it needs to be serialized
 	private List<SimpleEvent> eventsRegistry;
@@ -76,7 +76,7 @@ public class HistoricalEventManager implements Serializable {
 
 	/**
 	 * Add a historical event listener
-	 * 
+	 *
 	 * @param newListener listener to add.
 	 */
 	public void addListener(HistoricalEventListener newListener) {
@@ -88,7 +88,7 @@ public class HistoricalEventManager implements Serializable {
 
 	/**
 	 * Removes a historical event listener.
-	 * 
+	 *
 	 * @param oldListener listener to remove.
 	 */
 	public void removeListener(HistoricalEventListener oldListener) {
@@ -101,27 +101,27 @@ public class HistoricalEventManager implements Serializable {
 //	 * @param index Index of event to retrieve.
 //	 * @return Historical event.
 //	 */
-//	public HistoricalEvent getEvent(int index) {		
+//	public HistoricalEvent getEvent(int index) {
 //		return events.get(index);
 //	}
 
 	/**
 	 * Get the event at a specified index.
-	 * 
+	 *
 	 * @param index Index of event to retrieve.
 	 * @return Historical event.
 	 */
 	public SimpleEvent getEvent(int index) {
 		return eventsRegistry.get(index);
 	}
-	
+
 	public boolean isSameEvent(HistoricalEvent newEvent) {
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
-				if (e.getType() == newEvent.getType() 
+				if (e.getType() == newEvent.getType()
 						&& e.getCategory() == newEvent.getCategory()
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
-						&& e.getWhileDoing().equals(newEvent.getWhileDoing()) 
+						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
 						&& e.getWho().equals(newEvent.getWho())
 						&& e.getLocation0().equals(newEvent.getLocation0())
 						&& e.getLocation1().equals(newEvent.getLocation1())) {
@@ -135,15 +135,15 @@ public class HistoricalEventManager implements Serializable {
 	/**
 	 * An new event needs registering with the manager. The event will be time
 	 * stamped with the current clock time and inserted at position zero.
-	 * 
+	 *
 	 * @param newEvent The event to register.
 	 */
 	public void registerNewEvent(HistoricalEvent newEvent) {
 		if (newEvent.getCategory() == HistoricalEventCategory.TASK)
 			return;
-		
+
 		EventType type = newEvent.getType();
-		
+
 		if (type == EventType.MISSION_START)
 			return;
 		else if (type == EventType.MISSION_JOINING)
@@ -169,7 +169,7 @@ public class HistoricalEventManager implements Serializable {
 //				int excess = events.size() - (TRANSIENT_EVENTS - 1);
 //				removeEvents(events.size() - excess, excess);
 //			}
-		
+
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -204,7 +204,7 @@ public class HistoricalEventManager implements Serializable {
 		short loc0 = (short) (getID(loc0List, event.getLocation0()));
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
 		short id = (short) CollectionUtils.findSettlementID(event.getAssociatedSettlement());
-		
+
 		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1, id);
 		eventsRegistry.add(0, se);
 		return se;
@@ -219,7 +219,7 @@ public class HistoricalEventManager implements Serializable {
 			return size;
 		}
 	}
-	
+
 	public String getWhat(int id) {
 		return whatList.get(id);
 	}
@@ -250,7 +250,7 @@ public class HistoricalEventManager implements Serializable {
 				.filter(e -> e.getSettlementID() == settlementID)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

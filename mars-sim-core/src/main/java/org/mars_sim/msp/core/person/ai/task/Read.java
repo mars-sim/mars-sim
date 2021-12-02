@@ -46,7 +46,7 @@ public class Read extends Task implements Serializable {
 
 	/**
 	 * Constructor. This is an effort-driven task.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public Read(Person person) {
@@ -56,7 +56,7 @@ public class Read extends Task implements Serializable {
 		if (person.isInSettlement() || person.isInVehicle()) {
 
 			int score = person.getPreference().getPreferenceScore(new ReadMeta());
-			super.setDuration(5 + score);
+			super.setDuration(5.0 + score);
 			// Factor in a person's preference for the new stress modifier
 			super.setStressModifier(score / 10D + STRESS_MODIFIER);
 
@@ -64,9 +64,9 @@ public class Read extends Task implements Serializable {
 			// person.getPreference().setTaskStatus(this, false);
 
 			if (person.isInSettlement()) {
-				
+
 				int rand = RandomUtil.getRandomInt(2);
-				
+
 				if (rand == 0) {
 					// Find a dining place
 					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
@@ -81,7 +81,7 @@ public class Read extends Task implements Serializable {
 						}
 					}
 				}
-				
+
 				else if (rand == 1) {
 					Building rec = getAvailableRecreationBuilding(person);
 					if (rec != null) {
@@ -95,7 +95,7 @@ public class Read extends Task implements Serializable {
 						}
 					}
 				}
-				
+
 				else {
 					// Go back to his quarters
 					Building quarters = person.getQuarters();
@@ -128,7 +128,7 @@ public class Read extends Task implements Serializable {
 
 	/**
 	 * Performs reading phase.
-	 * 
+	 *
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
@@ -141,7 +141,7 @@ public class Read extends Task implements Serializable {
 	/**
 	 * Gets an available recreation building that the person can use. Returns null
 	 * if no recreation building is currently available.
-	 * 
+	 *
 	 * @param person the person
 	 * @return available recreation building
 	 */
@@ -181,20 +181,20 @@ public class Read extends Task implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        
+
     	// Pick one skill to improve upon
     	SkillType taskSkill = person.getSkillManager().getARandomSkillType();
 //		int points = person.getSkillManager().getSkillLevel(taskSkill);
 //		double exp = person.getSkillManager().getCumuativeExperience(taskSkill);
 		double learned = 2  * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
-		
-//				logger.info(taskSkill.getName() 
+
+//				logger.info(taskSkill.getName()
 //					+ " - diff: " + diff + "   "
 //					+ "  mod: " + mod + "   "
-//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0
 //					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
-		
-		person.getSkillManager().addExperience(taskSkill, learned, time);       
+
+		person.getSkillManager().addExperience(taskSkill, learned, time);
 
 	}
 }

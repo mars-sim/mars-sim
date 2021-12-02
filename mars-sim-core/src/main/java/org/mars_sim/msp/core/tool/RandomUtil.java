@@ -112,7 +112,7 @@ public final class RandomUtil {
 	public static double getRandomDouble(double base, double ceiling) {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
-		// Note: return ThreadLocalRandom.current().nextDouble(base, ceiling);
+		// Note: switch from using ThreadLocalRandom.current().nextDouble(base, ceiling)
 		return sr.nextDouble() * (ceiling - base) + base;
 	}
 

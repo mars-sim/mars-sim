@@ -58,12 +58,12 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	// Data members
 	/** Entity being repaired. */
 	private Malfunctionable entity;
-	
+
 	private Malfunction malfunction;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param person the person to perform the task
 	 */
 	public RepairInsideMalfunction(Person person) {
@@ -71,7 +71,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			  25D, 100D + RandomUtil.getRandomDouble(10D));
 		initRepair();
 	}
-	
+
 
 	public RepairInsideMalfunction(Robot robot) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
@@ -87,7 +87,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			endTask();
 			return;
 		}
-		
+
 		// Get the malfunctioning entity.
 		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
 			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
@@ -101,11 +101,11 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		if (entity != null) {
 			// Add person to location of malfunction if possible.
 			addPersonOrRobotToMalfunctionLocation(entity);
-			
+
 			// Possible the Task could be aborted due to walking problems
 			if (!isDone()) {
 				RepairHelper.startRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
-				
+
 				// Initialize phase
 				addPhase(REPAIRING);
 				setPhase(REPAIRING);
@@ -120,7 +120,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return 0;			
+			return 0;
 //			throw new IllegalArgumentException("Task phase is null");
 		} else if (REPAIRING.equals(getPhase())) {
 			return repairingPhase(time);
@@ -131,13 +131,18 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 
 	/**
 	 * Performs the repairing phase of the task.
-	 * 
+	 *
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double repairingPhase(double time) {
-		
+
 		if (isDone()) {
+			return time;
+		}
+
+		if (malfunction == null) {
+			endTask();
 			return time;
 		}
 
@@ -146,7 +151,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			endTask();
 			return time;
 		}
-		
+
 		double workTime = time;
 		if (worker instanceof Robot) {
 			// A robot moves slower than a person and incurs penalty on workTime
@@ -161,23 +166,16 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		} else if (mechanicSkill > 1) {
 			workTime += workTime * (.2D * mechanicSkill);
 		}
-		
-		if (malfunction != null) {
-			// Add repair parts if necessary.
-			if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
-				setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-						entity.getNickName())); // $NON-NLS-1$
-				
-				Unit containerUnit = worker.getTopContainerUnit();
-				if (!worker.isOutside()) {
-					RepairHelper.claimRepairParts(containerUnit, malfunction);
-				}
-			}
-		}
 
-		else {
-			endTask();
-			return time;
+		// Add repair parts if necessary.
+		if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
+			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+					entity.getNickName())); // $NON-NLS-1$
+
+			Unit containerUnit = worker.getTopContainerUnit();
+			if (!worker.isOutside()) {
+				RepairHelper.claimRepairParts(containerUnit, malfunction);
+			}
 		}
 
 		// Add work to malfunction.
@@ -188,7 +186,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 
 		// Check if an accident happens during repair.
 		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getNickName());
-		
+
 		// Is the whole malfunction completed
 		if (malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
 			logger.log(worker, Level.INFO, 1_000, "Wrapped up the inside work for '"
@@ -197,14 +195,14 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 								malfunction.getCompletedWorkTime(MalfunctionRepairWork.INSIDE)));
 			endTask();
 		}
-		
+
 		return 0; // Used all available time repairing
 	}
 
-	
+
 	/**
 	 * Gets a malfunctionable entity with a normal malfunction for a user.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return malfunctionable entity.
 	 */
@@ -218,13 +216,13 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 					result = entity;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets a reparable malfunction requiring an EVA for a given entity.
-	 * 
+	 *
 	 * @param person the person to repair.
 	 * @param entity the entity with a malfunction.
 	 * @return malfunction requiring an EVA repair or null if none found.
@@ -264,10 +262,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		return null;
 	}
 
-	
+
 	/**
 	 * Check if a malfunctionable entity requires an EVA to repair.
-	 * 
+	 *
 	 * @param person the person doing the repair.
 	 * @param entity the entity with a malfunction.
 	 * @return true if entity requires an EVA repair.
@@ -310,11 +308,11 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			malfunction.leaveWork(MalfunctionRepairWork.INSIDE, worker.getName());
 		}
 	}
-	
+
 	/**
 	 * Adds the person to building if malfunctionable is a building with life
 	 * support. Otherwise walk to random location.
-	 * 
+	 *
 	 * @param malfunctionable the malfunctionable the person is repairing.
 	 */
 	private void addPersonOrRobotToMalfunctionLocation(Malfunctionable malfunctionable) {

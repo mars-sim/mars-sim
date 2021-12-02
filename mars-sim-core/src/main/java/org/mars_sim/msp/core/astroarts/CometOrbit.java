@@ -27,10 +27,10 @@ public class CometOrbit {
 		double ft = Math.sqrt(1.0 - comet.getE() * comet.getE());
 		if (fAxis * (1.0 + comet.getE()) > fMaxOrbit) {
 			double fdE = Math.acos((1.0 - fMaxOrbit / fAxis) / comet.getE())
-				/ ((this.nDivision / 2) * (this.nDivision / 2));
+				/ (this.nDivision * this.nDivision / 4.0);
 			int nIdx1, nIdx2;
 			nIdx1 = nIdx2 = this.nDivision / 2;
-			for (int i = 0; i <= (this.nDivision / 2); i++) {
+			for (int i = 0; i <= nIdx1; i++) {
 				double fE = fdE * i * i;
 				double fRCosV = fAxis * (Math.cos(fE) - comet.getE());
 				double fRSinV = fAxis * ft * Math.sin(fE);
@@ -64,9 +64,9 @@ public class CometOrbit {
 		double ft = Math.sqrt(comet.getE() * comet.getE() - 1.0);
 		double fAxis = comet.getQ() / (comet.getE() - 1.0);
 		double fdF = UdMath.arccosh((fMaxOrbit + fAxis)
-					 / (fAxis * comet.getE())) / (this.nDivision / 2);
+					 / (fAxis * comet.getE())) / (this.nDivision / 2.0);
 		double fF = 0.0;
-		for (int i = 0; i <= (this.nDivision / 2); i++, fF += fdF) {
+		for (int i = 0; i <= nIdx1; i++, fF += fdF) {
 			double fRCosV = fAxis * (comet.getE() - UdMath.cosh(fF));
 			double fRSinV = fAxis * ft * UdMath.sinh(fF);
 			orbit[nIdx1++] = new Xyz(fRCosV,  fRSinV, 0.0);
@@ -91,7 +91,7 @@ public class CometOrbit {
 			orbit[nIdx2--] = new Xyz(fRCosV, -fRSinV, 0.0);
 		}
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -105,7 +105,7 @@ public class CometOrbit {
 		} else {
 			GetOrbitPara(comet);
 		}
-		
+
 		Matrix vec = comet.getVectorConstant();
 		Matrix prec = Matrix.PrecMatrix(comet.getEquinoxJd(), Astro.JD2000);
 		for (int i = 0; i <= nDivision; i++) {

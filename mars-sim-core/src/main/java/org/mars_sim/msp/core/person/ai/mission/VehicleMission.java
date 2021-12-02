@@ -719,8 +719,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
 		boolean hasEmergency = hasEmergency();
 
-		if (vehicle != null
-				&& destination != null
+		if (vehicle == null) {
+			throw new IllegalStateException(getPhase().getName() + ": vehicle is null.");
+		}
+
+		if (destination != null
 				&& vehicle.getCoordinates() != null
 				&& destination.getLocation() != null) {
 
@@ -1665,7 +1668,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/**
 	 * Can the mission vehicle be unloaded at this Settlement
-	 * 
+	 *
 	 * @param settlement
 	 * @return
 	 */
@@ -1678,7 +1681,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Can the mission vehicle be loaded at a Settlement. Must be in
 	 * the EMBARKING phase at the mission starting point.
-	 * 
+	 *
 	 * @param settlement
 	 * @return
 	 */
@@ -1704,7 +1707,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected void startDisembarkingPhase() {
 		NavPoint np = getCurrentNavpoint();
-	
+
 		setPhase(DISEMBARKING, (np != null ? np.getDescription() : "Unknown"));
 	}
 

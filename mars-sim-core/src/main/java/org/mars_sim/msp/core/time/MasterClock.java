@@ -56,6 +56,7 @@ public class MasterClock implements Serializable {
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
+	/** The frequency of updating the ui. */
 	private static final int UI_COUNT = 4;
 	/** The base value of time ratio from simulation.xml. */
 	private static int BASE_TR;
@@ -70,28 +71,23 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean isPaused = false;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
-	/** Flag for getting ready for autosaving. */
-//	private transient volatile boolean autosave;
+	/** The cache for accumulating millisols up to a limit before sending out an clock pulse. */
+	private transient double timeCache;
+	/** The last uptime in terms of number of pulses. */
+	private transient long tLast;
+	/** The counts for ui pulses. */
+	private transient int count;
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 
 	/** The current simulation time ratio. */
 	private volatile double actualTR = 0;
-	/** The user's desire simulation time ratio. */
-	private volatile int userTR = 0;
 	/** The time taken to execute one frame in the game loop */
 	private volatile long executionTime;
 	/** The target simulation time ratio. */
 	private volatile int targetTR = 0;
-
-	/** The counts for ui pulses. */
-	private transient int count;
-	/** The last uptime in terms of number of pulses. */
-	private transient long tLast;
-	/** The cache for accumulating millisols up to a limit before sending out an clock pulse. */
-	private transient double timeCache;
-//	/** The cache for accumulating millisols up to a limit before adjusting the time ratio. */
-//	private transient double timeRatioCache;
+	/** The user's desire simulation time ratio. */
+	private volatile int userTR = 0;
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -122,9 +118,6 @@ public class MasterClock implements Serializable {
 	private double maxMilliSolPerPulse;
 
 	private double accuracyBias;
-
-//	private double pausingMillisols;
-
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
 
@@ -135,7 +128,6 @@ public class MasterClock implements Serializable {
 
 	// Records the real milli time when a pulse is execited
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
-
 
 	// A list of recent TPS for computing average value of TPS
 	private List<Double> aveTPSList;
@@ -545,7 +537,8 @@ public class MasterClock implements Serializable {
 	public void setCommandPause(boolean value0, double value1) {
 		// Check GameManager.mode == GameMode.COMMAND ?
 		canPauseTime = value0;
-//		pausingMillisols = value1;
+		// Note: will need to re-implement the auto pause time for command mode
+		logger.info(null, "Auto pause time: " + value1);
 	}
 
 	/*

@@ -877,7 +877,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		else if (airlock.isChamberFull() || !airlock.hasSpace()) {
 			logger.log(person, Level.INFO, 4_000,
-					"Could not enter " + airlock.getEntityName() 
+					"Could not enter " + airlock.getEntityName()
 					+ ". Already full.");
 			result = false;
 		}
@@ -917,9 +917,10 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
-		}
 
-		airlock.removeID(id);
+
+			airlock.removeID(id);
+		}
 
 		// Ends the sub task 2 within the EnterAirlock task
 		// TODO: when is calling endSubTask2() needed ?

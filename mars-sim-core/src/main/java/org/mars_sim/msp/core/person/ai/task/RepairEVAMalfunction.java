@@ -62,7 +62,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         		endTask();
         	return;
 		}
-		
+
 		containerUnit = person.getTopContainerUnit();
 
 		if (!(containerUnit instanceof MarsSurface)) {
@@ -77,7 +77,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 		}
 
-			
+
 		// Start if found
 		if (entity != null) {
 			setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
@@ -85,15 +85,15 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 			// Determine location for repairing malfunction.
 			setOutsideLocation((LocalBoundedObject) entity);
-			
+
 			// Can fail to get a path and Task will be Done
 			if (!isDone()) {
 	            if (person.isInside()) {
 	            	setPhase(WALK_TO_OUTSIDE_SITE);
-	            }				
-	
+	            }
+
 				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
-				
+
 				// Initialize phase
 				addPhase(REPAIRING);
 			}
@@ -116,7 +116,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 			MalfunctionManager manager = entity.getMalfunctionManager();
 			Unit container = person.getTopContainerUnit();
-			
+
 			// Check if entity has any EVA malfunctions.
 			for(Malfunction malfunction : manager.getAllEVAMalfunctions()) {
 				try {
@@ -131,10 +131,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets a reparable malfunction requiring an EVA for a given entity.
-	 * 
+	 *
 	 * @param person the person to repair.
 	 * @param entity the entity with a malfunction.
 	 * @return malfunction requiring an EVA repair or null if none found.
@@ -153,7 +153,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
 			}
 		}
-		
+
 		if (manager.hasMalfunction()) {
 			logger.log(entity, Level.WARNING, 2000, "No parts available for any malfunction");
 		}
@@ -183,7 +183,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 	/**
 	 * Perform the repair malfunction phase of the task.
-	 * 
+	 *
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
@@ -192,7 +192,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Check for radiation exposure during the EVA operation.
 		endTask |= (isRadiationDetected(time)
-					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));	
+					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
 		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
 		endTask |= (!person.isFit());
@@ -201,16 +201,16 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	        if (worker.isOutside()) {
 	        	setPhase(WALK_BACK_INSIDE);
 	        }
-	        else if (person.isInside()) {
+	        else {
 	    		endTask();
 	        }
     		return time;
         }
-	        
+
 		double workTime = 0;
 		if (person != null) {
 			workTime = time;
-		} else if (robot != null) {
+		} else {
 			// A robot moves slower than a person and incurs penalty on workTime
 			workTime = time / 2;
 		}
@@ -222,18 +222,15 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			workTime /= 2;
 		if (mechanicSkill > 1)
 			workTime += workTime * (.2D * mechanicSkill);
-		
-		if (person != null) {
-			if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
-				RepairHelper.claimRepairParts(containerUnit, malfunction);
-			} else {
-	            if (person.isOutside())
-	            	setPhase(WALK_BACK_INSIDE);
-	            else //if (person.isInside())
-	        		endTask();
-	            return time;
-			}
 
+		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
+			RepairHelper.claimRepairParts(containerUnit, malfunction);
+		} else {
+            if (worker.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
+            else
+        		endTask();
+            return time;
 		}
 
 		// Add EVA work to malfunction.
@@ -241,7 +238,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
-		
+
 		// Add experience points
 		addExperience(time);
 
@@ -250,13 +247,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Check if there are no more malfunctions.
 		if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			logger.info(person, "Wrapped up the EVA of " + malfunction.getName() 
+			logger.info(worker, "Wrapped up the EVA of " + malfunction.getName()
 					+ " in "+ entity + " ("
 					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
             if (worker.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             }
-            else if (person.isInside()) {
+            else {
         		endTask();
             }
 		}

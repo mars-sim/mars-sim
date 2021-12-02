@@ -93,24 +93,18 @@ public class PopUpUnitMenu extends WebPopupMenu {
             buildItemTwo(unit);
             buildItemThree(unit);
         }
-
-        else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
+        // Note: for buildings and construction sites
+        else { // if (unit.getUnitType() == UnitType.CONSTRUCTION) {
         	add(itemOne); // Description
         	add(itemTwo); // Details
-//        	add(itemThree); // Relocate
+//        	// Note : how to implement itemFour in such a way as to
+        	// enable the use of arrow to move the construction site ?
         	buildItemOne(unit);
             buildItemTwo(unit);
-//            buildItemThree(unit);
+//          // Implement buildItemFour(unit);
         }
 
-        else { // for buildings
-            add(itemOne); // Description
-        	add(itemTwo); // Details
-        	buildItemOne(unit);
-            buildItemTwo(unit);
-        }
-
-     // Determine what the GraphicsDevice can support.
+     // Note: for JavaFX, determine what the GraphicsDevice can support.
 //        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 //        GraphicsDevice gd = ge.getDefaultScreenDevice();
 //        boolean isPerPixelTranslucencySupported =
@@ -126,6 +120,11 @@ public class PopUpUnitMenu extends WebPopupMenu {
     }
 
 
+    /**
+     * Builds item one
+     *
+     * @param unit
+     */
     public void buildItemOne(final Unit unit) {
 
         itemOne.addActionListener(new ActionListener() {
@@ -192,7 +191,12 @@ public class PopUpUnitMenu extends WebPopupMenu {
         });
     }
 
-    // Details
+
+    /**
+     * Builds item two
+     *
+     * @param unit
+     */
     public void buildItemTwo(final Unit unit) {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -230,6 +234,7 @@ public class PopUpUnitMenu extends WebPopupMenu {
 //	                final WebDialog<?> d = new WebDialog<>(StyleId.dialogDecorated);
 //	                d.setModalityType(ModalityType.DOCUMENT_MODAL);//setModal(true);
 //	                d.setAlwaysOnTop(true);
+
 	                WebInternalFrame d = new WebInternalFrame(StyleId.internalframe,
 	                		unit.getSettlement().getName() + " - " + building,
 	                		true,  //resizable
@@ -271,12 +276,6 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	        		panel.setBorder(new MarsPanelBorder());
 	        		panel.setBorder(new EmptyBorder(1, 1, 1, 1));
 
-//	        		WebPanel namePanel = new WebPanel(new BorderLayout(1, 1));
-//	        		WebLabel label = new WebLabel(unit.getName(), JLabel.CENTER);
-//	        		label.setFont(new Font("Serif", Font.ITALIC, 14));
-//	        		namePanel.add(label, BorderLayout.NORTH);
-//	        		panel.add(namePanel, BorderLayout.NORTH);
-
 	        		panel.add(buildingPanel, BorderLayout.CENTER);
 
 	        		d.add(panel);
@@ -310,14 +309,19 @@ public class PopUpUnitMenu extends WebPopupMenu {
 
     }
 
+    /**
+     * Builds item three
+     *
+     * @param unit
+     */
 	public void buildItemThree(final Unit unit) {
-	        itemThree.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-		            Vehicle vehicle = (Vehicle) unit;
-		            vehicle.relocateVehicle();
-		    		repaint();
-	            }
-	        });
+        itemThree.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+	            Vehicle vehicle = (Vehicle) unit;
+	            vehicle.relocateVehicle();
+	    		repaint();
+            }
+        });
 	}
 
 	/**
@@ -325,15 +329,6 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	 */
 	public Image getIconImage() {
 		return MainWindow.getIconImage();
-//		return ImageLoader.getImage(MainWindow.LANDER_PNG);
-
-//		String fullImageName = MainWindow.LANDER_PNG;
-//		URL resource = ImageLoader.class.getResource(fullImageName);
-//		Toolkit kit = Toolkit.getDefaultToolkit();
-//		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
-////		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
-////		ImageIcon icon = new ImageIcon(img);
-//		return img;
 	}
 
 	public void destroy() {
@@ -345,6 +340,7 @@ public class PopUpUnitMenu extends WebPopupMenu {
 		unit.destroy();
 		itemOne = null;
 		itemTwo = null;
+		itemThree = null;
 	}
 
 }

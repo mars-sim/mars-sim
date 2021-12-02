@@ -35,7 +35,7 @@ public class ListenToMusicMeta extends MetaTask {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
- 
+
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.RELAXATION);
@@ -50,47 +50,16 @@ public class ListenToMusicMeta extends MetaTask {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-        
-        if (person.isInSettlement()) {
-            
-            try {
-            	// Check if a person has a designated bed
-                Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-            
-            // Modify probability if during person's work shift.
-            int millisols = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
-                result*= WORK_SHIFT_MODIFIER;
-            }
-            
-            if (result < 0) result = 0;
-            
-        }
-            
-        else if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-	        	result += 20D;
-	        }
-        }
-        
-        if (person.isInside() && result > 0) {
+
+        if (person.isInside()) {
 	        double pref = person.getPreference().getPreferenceScore(this);
-	        
+
 	     	result = pref * 2.5D;
-	     	
+
 	        // Probability affected by the person's stress and fatigue.
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double stress = condition.getStress();
-	        
+
 	        if (pref > 0) {
 	         	if (stress > 45D)
 	         		result*=1.5;
@@ -101,10 +70,38 @@ public class ListenToMusicMeta extends MetaTask {
 	         	else
 	         		result*=4D;
 	        }
+
+	        if (person.isInSettlement()) {
+
+	            try {
+	            	// Check if a person has a designated bed
+	                Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
+	                if (recBuilding != null) {
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+	                }
+	            } catch (Exception e) {
+	                logger.log(Level.SEVERE, e.getMessage());
+	            }
+
+	            // Modify probability if during person's work shift.
+	            int millisols = marsClock.getMillisolInt();
+	            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+	            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
+	                result*= WORK_SHIFT_MODIFIER;
+	            }
+	        }
+
+	        else if (person.isInVehicle()) {
+		        // Check if person is in a moving rover.
+		        if (Vehicle.inMovingRover(person)) {
+		        	result += 20D;
+		        }
+	        }
         }
-        
+
         if (result < 0) result = 0;
-        
+
         return result;
     }
 }

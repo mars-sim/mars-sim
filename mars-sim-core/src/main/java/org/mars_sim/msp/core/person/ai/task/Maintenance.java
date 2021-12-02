@@ -62,7 +62,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person to perform the task
 	 */
 	public Maintenance(Person person) {
@@ -73,16 +73,16 @@ public class Maintenance extends Task implements Serializable {
 			endTask();
 			return;
 		}
-		
+
 		try {
 			entity = getMaintenanceMalfunctionable();
-			
+
 			if (entity != null) {
-				
+
 				if (isInhabitableBuilding(entity)) {
 					// Walk to random location in building.
 					walkToRandomLocInBuilding((Building) entity, false);
-					
+
 				} else if (isVehicleMalfunction(entity)) {
 
 					if (person.isInVehicle()) {
@@ -95,17 +95,17 @@ public class Maintenance extends Task implements Serializable {
 						walkToRandomLocation(true);
 					}
 				}
-				
+
 				// Initialize phase.
 				addPhase(MAINTAIN);
-				setPhase(MAINTAIN);			
+				setPhase(MAINTAIN);
 			}
-			
+
 			else {
 				endTask();
 				return;
 			}
-			
+
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, person + " was unable to perform maintenance.", e);
 			endTask();
@@ -121,27 +121,27 @@ public class Maintenance extends Task implements Serializable {
 			endTask();
 			return;
 		}
-		
+
 		try {
 			entity = getMaintenanceMalfunctionable();
 			if (entity != null) {
-				
+
 				if (isInhabitableBuilding(entity)) {
 					// Walk to random location in building.
 					walkToRandomLocInBuilding((Building) entity, false);
-					
+
 				} else if (isVehicleMalfunction(entity)) {
-					
+
 					if (!robot.isInVehicle()) {
 						// Walk to random location.
 						walkToRandomLocation(false);
 					}
 				}
-				
+
 				// Initialize phase.
 				addPhase(MAINTAIN);
 				setPhase(MAINTAIN);
-				
+
 			} else {
 				endTask();
 				return;
@@ -166,7 +166,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Performs the maintain phase.
-	 * 
+	 *
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
@@ -213,15 +213,15 @@ public class Maintenance extends Task implements Serializable {
 				repairParts = true;
 				Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 				Iterator<Integer> j = parts.keySet().iterator();
-				
+
 				if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
-					
+
 					while (j.hasNext()) {
 						Integer part = j.next();
 						int number = parts.get(part);
 						((Settlement)containerUnit).retrieveItemResource(part, number);
 						manager.maintainWithParts(part, number);
-						
+
 						// Add tracking item demand
 //						containerUnit.getInventory().addItemDemandTotalRequest(part, number);
 //						containerUnit.getInventory().addItemDemand(part, number);
@@ -233,16 +233,16 @@ public class Maintenance extends Task implements Serializable {
 						int number = parts.get(part);
 						((Vehicle)containerUnit).retrieveItemResource(part, number);
 						manager.maintainWithParts(part, number);
-						
+
 						// Add tracking item demand
 //						inv.addItemDemandTotalRequest(part, number);
 //						inv.addItemDemand(part, number);
 					}
 				}
-				
+
 			}
 		}
-		
+
 		if (!repairParts) {
 			endTask();
 			return time;
@@ -260,14 +260,14 @@ public class Maintenance extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(entity, time, 0.005D); 
+		checkForAccident(entity, time, 0.005D);
 
 		return 0D;
 	}
 
 	/**
 	 * Gets the entity the person is maintaining. Returns null if none.
-	 * 
+	 *
 	 * @return entity
 	 */
 	public Malfunctionable getEntity() {
@@ -276,7 +276,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Gets a random malfunctionable to perform maintenance on.
-	 * 
+	 *
 	 * @return malfunctionable or null.
 	 */
 	private Malfunctionable getMaintenanceMalfunctionable() {
@@ -306,7 +306,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Checks if a malfunctionable is an inhabitable building.
-	 * 
+	 *
 	 * @param malfunctionable the malfunctionable.
 	 * @return true if inhabitable building.
 	 */
@@ -323,7 +323,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Checks if a malfunctionable is a vehicle.
-	 * 
+	 *
 	 * @param malfunctionable the malfunctionable.
 	 * @return true if it's a vehicle.
 	 */
@@ -337,28 +337,28 @@ public class Maintenance extends Task implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Gets the probability weight for a malfunctionable.
-	 * 
+	 *
 	 * @param malfunctionable the malfunctionable
 	 * @return the probability weight.
 	 * @throws Exception if error determining probability weight.
 	 */
 	private double getProbabilityWeight(Malfunctionable malfunctionable) {
 		double result = 0D;
-		
+
 		boolean isVehicle = (entity instanceof Vehicle);
 		if (isVehicle)
 			return 0;
-		
+
 		boolean uninhabitableBuilding = false;
 		if (entity instanceof Building) {
 			uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
 		}
 		if (uninhabitableBuilding)
 			return 0;
-		
+
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();
 		if (hasMalfunction) {
@@ -369,14 +369,14 @@ public class Maintenance extends Task implements Serializable {
 		if (!hasParts) {
 			return 0;
 		}
-		
+
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D);
-		
+
 		if (minTime) {
 			result = effectiveTime;
 		}
-		
+
 		if (malfunctionable instanceof Building) {
 			Building building = (Building) malfunctionable;
 			if (isInhabitableBuilding(malfunctionable)) {
@@ -395,7 +395,7 @@ public class Maintenance extends Task implements Serializable {
 
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
-	 * 
+	 *
 	 * @param worker          the person performing the maintenance.
 	 * @param malfunctionable the entity needing maintenance.
 	 * @return true if enough parts.
@@ -403,29 +403,32 @@ public class Maintenance extends Task implements Serializable {
 	 */
 	public static boolean hasMaintenanceParts(Worker worker, Malfunctionable malfunctionable) {
 		Unit unit = null;
-		
-		if (worker.isInSettlement()) 
+
+		if (worker.isInSettlement())
 			// This is also the case when the person is in a garage
 			unit = worker.getSettlement();
-		
+
 		else if (worker.isRightOutsideSettlement())
 			unit = worker.getNearbySettlement();
 		else if (worker.isInVehicle())
 			unit = worker.getVehicle();
-			
-		return hasMaintenanceParts(unit, malfunctionable);
+
+		if (unit != null)
+			return hasMaintenanceParts(unit, malfunctionable);
+
+		return false;
 	}
 
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
-	 * 
+	 *
 	 * @param settlement the settlement holding the needed parts.
 	 * @param malfunctionable the entity needing maintenance.
 	 * @return true if enough parts.
 	 */
 	public static boolean hasMaintenanceParts(Settlement settlement, Malfunctionable malfunctionable) {
 		boolean result = true;
-		
+
 		Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
 		Iterator<Integer> i = parts.keySet().iterator();
 		while (i.hasNext()) {
@@ -437,13 +440,13 @@ public class Maintenance extends Task implements Serializable {
 //				unit.getInventory().addItemDemand(part, number);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
-	 * 
+	 *
 	 * @param unit the unit holding the needed parts.
 	 * @param malfunctionable the entity needing maintenance.
 	 * @return true if enough parts.
@@ -468,7 +471,7 @@ public class Maintenance extends Task implements Serializable {
 				}
 			}
 		}
-		
+
 
 		return result;
 	}

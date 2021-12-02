@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
@@ -40,7 +39,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+//	private static final Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
@@ -293,16 +292,13 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 		// Check if site duration has ended or there is reason to cut the construction
 		// phase short and return to the rover.
-		if (stage.isComplete() || !availableWork) {
+		if (person != null
+			&& (stage.isComplete() || !availableWork)) {
 
 			// End operating light utility vehicle.
-			if (luv != null) {
-				if ((person != null) && ((Crewable)luv).isCrewmember(person)) {
-					returnVehicle();
-				}
-//                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
-//                    returnVehicle();
-//                }
+			if (luv != null
+				&& ((Crewable)luv).isCrewmember(person)) {
+				returnVehicle();
 			}
 
 			if (person.isOutside())

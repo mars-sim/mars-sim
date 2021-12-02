@@ -361,7 +361,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 			// If not at return inside location, create walk inside subtask.
 			// If not inside, create walk inside subtask.
-			if (interiorObject != null && !person.getPosition().isClose(returnInsideLoc)) {
+			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
 				String name = "";
 				if (interiorObject instanceof Building) {
 					name = ((Building)interiorObject).getNickName();

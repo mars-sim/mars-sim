@@ -43,15 +43,15 @@ import org.mars_sim.msp.core.tool.Conversion;
  * to file system
  */
 public abstract class UserConfigurableConfig<T extends UserConfigurable> {
-	
+
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
-	
+
 	private static final String BACKUP = ".bak";
-	
+
 	// Location in the bundles JAR of the default UserConfigurable items
 	private static final String DEFAULT_DIR = "defaults";
-	
+
 	/**
 	 * Save an attribute to a Element if it is defined
 	 * @param node
@@ -74,7 +74,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	protected UserConfigurableConfig(String itemPrefix) {
 		this.itemPrefix = itemPrefix + "_";
 	}
-	
+
 	/**
 	 * Load the user defined configuration items.
 	 */
@@ -108,9 +108,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			loadItem(file, true);
 		}
 	}
-	
+
 	/**
-	 * Load a c0nfiguration from external or bundled XML.
+	 * Load a configuration from external or bundled XML.
 	 * @param name
 	 * @return
 	 */
@@ -119,19 +119,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		if (contents == null) {
 			throw new IllegalStateException("Can not find " + file);
 		}
-		
+
 		Document doc;
         try {
     		SAXBuilder builder = new SAXBuilder();
-    		
-    		if (predefined) { // For bundled
-    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-    		}
-    		else { // for user
-    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-    		}
+    		// Note: Setting them to "" is to avoid sonar cloud from flagging
+    		// them as a security hotspot
+    		// For both bundled and user
+    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
 	        doc = builder.build(contents);
 	    }
 	    catch (JDOMException | IOException e) {
@@ -139,11 +136,11 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			throw new IllegalStateException("Problem parsing " + file);
 
 	    }
-		
+
 		T result = parseItemXML(doc, predefined);
 		knownItems.put(result.getName(), result);
 	}
-	
+
 	/**
 	 * Get a item by it's name
 	 * @param name
@@ -152,7 +149,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	public T getItem(String name) {
 		return knownItems.get(name);
 	}
-	
+
 	/**
 	 * Add an items that has been explicitly created to the control list.
 	 * @param newItem
@@ -160,7 +157,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	protected void addItem(T newItem) {
 		knownItems.put(newItem.getName(), newItem);
 	}
-	
+
 	/**
 	 * Delete the item.
 	 * @param name
@@ -174,7 +171,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			logger.info("Deleted file " + oldFile.getAbsolutePath());
 		}
 	}
-	
+
 
 	/**
 	 * Gte teh filename for an item based on it's name
@@ -182,10 +179,10 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @return
 	 */
 	protected String getItemFilename(String name) {
-		// Replace spaces 
+		// Replace spaces
 		return itemPrefix + name.toLowerCase().replace(' ', '_') + SimulationConfig.XML_EXTENSION;
 	}
-	
+
 	/**
 	 * Estimate the configurable name from the file name
 	 * @param configFile
@@ -195,19 +192,19 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		return Conversion.capitalize(configFile.replace('_', ' ')
 						 .substring(0, configFile.length() - SimulationConfig.XML_EXTENSION.length()));
 	}
-	
+
 	/**
 	 * Location and stream the contents of the required configuration item
 	 * @param filename Name of the item to locate
 	 * @param bundled Is it bundled with the application
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	protected InputStream getRawConfigContents(String filename, boolean bundled) {
 		String path = "";
-		
+
 		if (bundled) { // For bundled
 			path = SimulationFiles.getXMLDir() + File.separator + DEFAULT_DIR;
-			
+
 			// Bundled XML files need to be copied out of the CONF sub folder.
 			// Must use the '/' for paths in the classpath.
 			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + "/" + filename );
@@ -215,7 +212,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		else { // for user
 			path = SimulationFiles.getUserConfigDir();
 		}
-	    
+
 		File f = new File(path, filename);
 		if (!f.exists()) {
 			return null;
@@ -228,77 +225,77 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				logger.warning("Problem reading file " + f.getAbsolutePath() + ":" + e);
 			}
 		}
-		
+
 	    return null;
 	}
 
-	
+
 	/**
 	 * Save the XML document for this item.
-	 * 
+	 *
 	 * @param item The details to save
 	 */
 	public void saveItem(T item) {
 		String storagePath = SimulationFiles.getUserConfigDir();
-		
+
 		String filename = getItemFilename(item.getName());
 		File itemFile = new File(storagePath, filename);
-		
+
 		// Create save directory if it doesn't exist.
 		if (!itemFile.getParentFile().exists()) {
 			itemFile.getParentFile().mkdirs();
-			logger.config(itemFile.getParentFile().getAbsolutePath() + " created successfully."); 
+			logger.config(itemFile.getParentFile().getAbsolutePath() + " created successfully.");
 		}
-		
+
 		if (itemFile.exists()) {
 			File itemBackup = new File(storagePath, filename + BACKUP);
 			try {
 				if (Files.deleteIfExists(itemBackup.toPath())) {
 					// Delete the beta_crew.bak
-				    logger.config("Old " + itemBackup.getName() + " deleted."); 
-				} 
+				    logger.config("Old " + itemBackup.getName() + " deleted.");
+				}
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName()  + ": " + e.getMessage());
 			}
-			
-			
+
+
 			try {
 				// Back up the previous version of beta_crew.xml as beta_crew.bak
 				FileUtils.moveFile(itemFile, itemBackup);
-			    logger.config(itemFile.getName() + " --> " + itemBackup.getName()); 
+			    logger.config(itemFile.getName() + " --> " + itemBackup.getName());
 			} catch (IOException e1) {
 	          	logger.log(Level.SEVERE, "Cannot move " + itemBackup.getName()  + ": "  + e1.getMessage());
 			}
-			
+
 			try {
 				if (Files.deleteIfExists(itemFile.toPath())) {
-				    logger.config("Old " + itemFile.getName() + " deleted."); 
-				} 
+				    logger.config("Old " + itemFile.getName() + " deleted.");
+				}
 
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName() + ": " + e.getMessage());
 			}
 		}
-		
+
 		if (!itemFile.exists()) {
 			Document outputDoc = createItemDoc(item);
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
-				
+
 			try (FileOutputStream stream = new FileOutputStream(itemFile);
-				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {						 
+				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {
 				fmt.output(outputDoc, writer);
-			    logger.config("New " + itemFile.getName() + " created and saved."); 
+			    logger.config("New " + itemFile.getName() + " created and saved.");
 			    stream.close();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot create " + itemFile.getName() + e.getMessage());
 			}
 		}
-		
+
 		// Update or register new crew
 		knownItems.put(item.getName(), item);
 	}
-	
+
 	/**
 	 * Get the names of the known items.
 	 * @return Alphabetically sorted names.
@@ -308,7 +305,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		Collections.sort(names);
 		return names;
 	}
-	
+
 	/**
 	 * Convert an Item into am XML representation
 	 * @param item Item to parse.

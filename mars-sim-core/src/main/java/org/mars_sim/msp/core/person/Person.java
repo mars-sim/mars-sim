@@ -386,7 +386,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (age > 14 && age <= 18)
 			load = (int)(baseCap/2.5 + age * 1.5);
 		else if (age > 18 && age <= 25)
-			load = (int)(baseCap/2 + 35 - age / 7.5);
+			load = (int)(baseCap/2.0 + 35 - age / 7.5);
 		else if (age > 25 && age <= 35)
 			load = (int)(baseCap + 30 - age / 12.5);
 		else if (age > 35 && age <= 45)

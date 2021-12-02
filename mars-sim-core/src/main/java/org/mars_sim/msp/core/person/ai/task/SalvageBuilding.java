@@ -315,7 +315,7 @@ implements Serializable {
 				}
 			}
 
-			if (person.isOutside())
+			if (worker.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
