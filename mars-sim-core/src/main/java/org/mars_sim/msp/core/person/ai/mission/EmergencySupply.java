@@ -351,8 +351,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				}
 				else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
+					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
+					if (walkingTask != null) {
+						assignTask(robot, walkingTask);
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -485,9 +486,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
 				// If robot is not aboard the rover, board rover.
-				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
-					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
-				} else {
+				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, getVehicle());
+				if (walkingTask != null) {
+					assignTask(robot, walkingTask);
+				}
+				else {
 					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
 					endMission(MissionStatus.CANNOT_ENTER_ROVER);
 				}

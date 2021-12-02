@@ -379,12 +379,14 @@ public abstract class RoverMission extends VehicleMission {
 
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
-				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
-					boolean canDo = assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
+				if (walkingTask != null) {
+					boolean canDo = assignTask(robot, walkingTask);
 					if (!canDo) {
 						logger.warning(robot, "Unable to walk to " + v + ".");
 					}
-				} else {
+				}
+				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 							v.getName()));
 				}

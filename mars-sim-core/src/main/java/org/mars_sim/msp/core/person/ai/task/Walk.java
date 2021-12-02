@@ -183,55 +183,6 @@ public class Walk extends Task implements Serializable {
 		setupPersonWalk();
 	}
 
-	/**
-	 * Constructor 2.
-	 *
-	 * @param robot the robot performing the task.
-	 */
-	public Walk(Robot robot) {
-		super(null, robot, false, false, 0D, null, 100D);
-		// this.robot = robot;
-		// logger.finer(robot + " starting new walk task.");
-
-		// Initialize data members.
-		walkingStepIndex = 0;
-
-		if (robot.isInSettlement()) {// || robot.isInVehicleInGarage()) {
-
-			// Walk to random building at settlement.
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			List<Building> buildingList = currentBuilding.getBuildingManager()
-					.getBuildings(FunctionType.ROBOTIC_STATION);
-			if (buildingList.size() > 0) {
-				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-				Building destinationBuilding = buildingList.get(buildingIndex);
-				LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
-				walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
-						destinationBuilding);
-			}
-
-		}
-
-		if (walkingSteps == null) {
-			logger.log(robot, Level.WARNING, 0,
-				"Walking steps could not be determined");
-			endTask();
-			return;
-		}
-
-		else if (!canWalkAllSteps(robot, walkingSteps)) {
-			logger.log(robot, Level.WARNING, 0,
-					"Could not walk all steps.");
-			endTask();
-			return;
-		}
-
-		// Initialize task phase.
-		// Temporarily disabled the possibility of exiting airlock for bots
-		addPhase(WALKING_SETTLEMENT_INTERIOR);
-
-		setPhase(getWalkingStepPhase());
-	}
 
 	/**
 	 * Constructor for factory method with preprocessed walking steps
@@ -264,24 +215,13 @@ public class Walk extends Task implements Serializable {
 		setPhase(getWalkingStepPhase());
 	}
 
-	public Walk(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
+	private Walk(Robot robot, WalkingSteps walkingSteps) {
 		super("Walk", robot, false, false, 0D, null, 100D);
-
-		// logger.finer(robot + " starting new walk task to a location in " +
-		// interiorObject);
 
 		// Initialize data members.
 		walkingStepIndex = 0;
 
-		walkingSteps = new WalkingSteps(robot, xLoc, yLoc, zLoc, interiorObject);
-
-		// End task if all steps cannot be walked.
-		if (!canWalkAllSteps(robot, walkingSteps)) {
-			logger.log(robot, Level.WARNING, 0,
-					"Could not walk all steps to " + interiorObject);
-			endTask();
-			return;
-		}
+		this.walkingSteps = walkingSteps;
 
 		// Initialize task phase.
 		addPhase(WALKING_SETTLEMENT_INTERIOR);
@@ -310,6 +250,24 @@ public class Walk extends Task implements Serializable {
 		return null;
 	}
 
+
+	/**
+	 * This is a factory method to create a Walk task if there is a valid path.
+	 * @param robot Robot doing the walking
+	 * @param destPosition FInal destination within an interior object
+	 * @param destObject Destination 
+	 * @return
+	 */
+	public static Walk createWalkingTask(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition.getX(), destPosition.getY(), 0D, destObject);
+		boolean canWalk = walkingSteps.canWalkAllSteps();
+		
+		if (canWalk) {
+			return new Walk(robot, walkingSteps);
+		}
+		return null;
+	}
+	
 	/**
 	 * Find an emergency airlock at a person's location.
 	 *

@@ -1384,31 +1384,24 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
 
+		Walk walkingTask = null;
 		if (person != null) {
-			Walk result = Walk.createWalkingTask(person, new LocalPosition(settlementPos), 0, interiorObject);
-			if (result != null) {
-				// Add subtask for walking to destination.
-				addSubTask(result);
-			}
-			else {
-				if (!allowFail) {
-					logger.log(person, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
-					endTask();
-				} else {
-					logger.log(person, Level.INFO, 4_000, "Unable to walk to " + interiorObject);
-				}
-			}
-		} else if (robot != null) {
-			if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject)) {
-				// Add subtask for walking to destination.
-				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
+			walkingTask = Walk.createWalkingTask(person, new LocalPosition(settlementPos), 0, interiorObject);
+		}
+		else if (robot != null) {
+			walkingTask = Walk.createWalkingTask(robot, new LocalPosition(settlementPos.getX(), settlementPos.getY()), interiorObject);
+		}
+		
+		if (walkingTask != null) {
+			// Add subtask for walking to destination.
+			addSubTask(walkingTask);
+		}
+		else {
+			if (!allowFail) {
+				logger.log(worker, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
+				endTask();
 			} else {
-				if (!allowFail) {
-					logger.log(robot, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
-					endTask();
-				} else {
-					logger.log(robot, Level.INFO, 4_000, "Was unable to walk to " + interiorObject);
-				}
+				logger.log(worker, Level.INFO, 4_000, "Was unable to walk to " + interiorObject);
 			}
 		}
 	}

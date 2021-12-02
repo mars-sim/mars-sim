@@ -312,8 +312,9 @@ public class Trade extends RoverMission implements Serializable {
 				}
 				else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
+					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
+					if (walkingTask != null) {
+						assignTask(robot, walkingTask);
 					}
 					else {
 						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
