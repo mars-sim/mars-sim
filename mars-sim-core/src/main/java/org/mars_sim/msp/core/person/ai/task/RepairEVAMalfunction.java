@@ -225,11 +225,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
 			RepairHelper.claimRepairParts(containerUnit, malfunction);
-		} else {
-            if (worker.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            else
+		}
+
+		else {
+			logger.info(worker, "Repair parts not available for "
+					+ malfunction + " from " + containerUnit.getName() + ".");
+
+        	if (worker.isOutside()) {
+        		setPhase(WALK_BACK_INSIDE);
+        	}
+        	else {
         		endTask();
+        	}
             return time;
 		}
 

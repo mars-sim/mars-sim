@@ -154,18 +154,22 @@ public class MineSite extends EVAOperation implements Serializable {
 	private double miningPhase(double time) {
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
-			if (person.isOutside())
+        	if (worker.isOutside()) {
         		setPhase(WALK_BACK_INSIDE);
-        	else
+        	}
+        	else {
         		endTask();
+        	}
 			return time;
 		}
 
 		if (!person.isFit()) {
-			if (person.isOutside())
+        	if (worker.isOutside()) {
         		setPhase(WALK_BACK_INSIDE);
-        	else
+        	}
+        	else {
         		endTask();
+        	}
 		}
 
 		// Check if there is reason to cut the mining phase short and return
@@ -179,28 +183,24 @@ public class MineSite extends EVAOperation implements Serializable {
 					operatingLUV = false;
 				}
 
-
-	        	if (person.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
-
 			} else if (robot != null) {
 				if (((Crewable)luv).isRobotCrewmember(robot)) {
 					luv.removeRobot(robot);
 					luv.setOperator(null);
 					operatingLUV = false;
 				}
-
-	        	if (robot.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
 			}
+
+        	if (worker.isOutside()) {
+        		setPhase(WALK_BACK_INSIDE);
+        	}
+        	else {
+        		endTask();
+        	}
 		}
 
 		// Operate light utility vehicle if no one else is operating it.
-		if (!luv.getMalfunctionManager().hasMalfunction()
+		if (person != null && !luv.getMalfunctionManager().hasMalfunction()
 				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
 
 			if (luv.addPerson(person)) {
