@@ -74,10 +74,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String AVE_TPS = "Average TPS : ";
 	/** the execution time unit */
 	public static final String MS = " ms";
-	/** the upper limit of the slider bar. */
-	public static final int MAX = MasterClock.MAX_SPEED;
-	/** the lower limit of the slider bar. */
-	public static final int MIN = 0;
 
 	// Data members
 	private int solElapsedCache = 0;

@@ -52,8 +52,8 @@
 		 <!-- Default: 0.0112644016 millisols ~ 1 earth seconds -->
 		 <min-simulated-pulse value="0.0112644016"/>
 
-		 <!-- Default: 2.276 hours or 2 hr 16 min 32s or 136.53 minutes -->
-		 <max-simulated-pulse value="92.2779779072"/>
+		 <!-- Default: 3.37932048 millisols ~ 5 earth minutes or 300 earth seconds -->
+		 <max-simulated-pulse value="3.37932048"/>
 
 		 <!-- The simulation creates a pulse periodically to execution the simulation. This value defines the
 		  maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more

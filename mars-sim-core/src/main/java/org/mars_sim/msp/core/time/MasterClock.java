@@ -46,7 +46,7 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 
-	public static final int MAX_SPEED = 13;
+	public static final int MAX_SPEED = 14;
 
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
@@ -63,7 +63,7 @@ public class MasterClock implements Serializable {
 	/** The multiplier value that relates TPS to upper TR. */
 	private static final double MULTIPLIER  = 128.0;
 	/** The time ratio int array. */
-	private static final int[] TR_ARRAY = new int[] {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
+	private static int[] TR_ARRAY = new int[MAX_SPEED + 1];
 
 	// Data members
 	/** Runnable flag. */
@@ -105,17 +105,15 @@ public class MasterClock implements Serializable {
 
 	/** Is pausing millisol in use. */
 	public boolean canPauseTime = false;
-
-	/** Sol day on the last fireEvent */
+	/** Sol day on the last fireEvent. */
 	private int lastSol = -1;
-
-	private int maxMilliSecPerPulse;
-
-	// Number of millisols covered in the last pulse
-	private double marsMSol;
-
+	/** The maximum wait time between pulses in terms of milli-seconds. */
+	private int maxWaitTimeBetweenPulses;
+	/** Number of millisols covered in the last pulse. */
+	private double lastPulseTime;
+	/** The minimum time span covered by each simulation pulse in millisols. */
 	private double minMilliSolPerPulse;
-
+	/** The maximum time span covered by each simulation pulse in millisols. */
 	private double maxMilliSolPerPulse;
 
 	private double accuracyBias;
@@ -156,6 +154,11 @@ public class MasterClock implements Serializable {
 	public MasterClock(int userTimeRatio) {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
+		for (int i=0; i<MAX_SPEED + 1; i++) {
+			int ratio = (int) Math.pow(2, i);
+			TR_ARRAY[i] = ratio;
+		}
+
 		// Gets an instance of the SimulationConfig singleton
 		SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -185,21 +188,21 @@ public class MasterClock implements Serializable {
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
 		accuracyBias = simulationConfig.getAccuracyBias();
-		maxMilliSecPerPulse = simulationConfig.getDefaultPulsePeriod();
+		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
 		BASE_TR = (int)simulationConfig.getTimeRatio();
 		targetTR = BASE_TR;
 		userTR = BASE_TR;
 
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
-			logger.severe("The min pulse msol is higher than the max.");
-			throw new IllegalStateException("The min MilliSol per pulse cannot be higher than the max");
+			logger.severe("The min pulse millisol is higher than the max pule.");
+			throw new IllegalStateException("The min millisol per pulse cannot be higher than the max.");
 		}
 
 		logger.config("                 Base time-ratio : " + BASE_TR + "x");
-		logger.config("              Min msol per pulse : " + minMilliSolPerPulse);
-		logger.config("              Max msol per pulse : " + maxMilliSolPerPulse);
-		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + " ms");
+		logger.config("          Min millisol per pulse : " + minMilliSolPerPulse);
+		logger.config("          Max millisol per pulse : " + maxMilliSolPerPulse);
+		logger.config(" Max elapsed time between pulses : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config("                   Accuracy bias : " + accuracyBias);
 
 		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
@@ -462,15 +465,15 @@ public class MasterClock implements Serializable {
 					}
 					else {
 						// If on pause or acceptablePulse is false
-						sleepTime = maxMilliSecPerPulse;
+						sleepTime = maxWaitTimeBetweenPulses;
 					}
 
 					// If still going then wait
 					if (keepRunning) {
 						if (sleepTime > MAX_ELAPSED) {
 							// This should not happen
-							logger.warning("Sleep too long: clipped to " + maxMilliSecPerPulse);
-							sleepTime = maxMilliSecPerPulse;
+							logger.warning("Sleep too long: clipped to " + maxWaitTimeBetweenPulses);
+							sleepTime = maxWaitTimeBetweenPulses;
 						}
 						if (sleepTime > 3000) {
 							if (userTR > targetTR) {
@@ -506,10 +509,10 @@ public class MasterClock implements Serializable {
 
 		private void calculateSleepTime() {
 			// Max number of pulses this environment can handle
-			double predictedMaxPulses = (double)maxMilliSecPerPulse/executionTime;
+			double predictedMaxPulses = (double)maxWaitTimeBetweenPulses/executionTime;
 
 			// The Desired simulation period
-			double desiredMSol = (maxMilliSecPerPulse * targetTR) / MILLISECONDS_PER_MILLISOL;
+			double desiredMSol = (maxWaitTimeBetweenPulses * targetTR) / MILLISECONDS_PER_MILLISOL;
 
 			// Most accurate simulation is with the pulse duration; will be highest rate
 			double mostAccurateRate = desiredMSol/minMilliSolPerPulse;
@@ -527,7 +530,7 @@ public class MasterClock implements Serializable {
 			double newRate = lowestPulseRate + ((highestPulseRate - lowestPulseRate) * accuracyBias);
 
 			// Sleep time allows for the execution time
-			sleepTime = (long)(maxMilliSecPerPulse/newRate) - executionTime;
+			sleepTime = (long)(maxWaitTimeBetweenPulses/newRate) - executionTime;
 
 			// What has happened?
 //			String msg = String.format("Sleep calcs d=%.2f msol, p=%.3f, l=%.3f, m=%.3f, r=%.3f, s=%d ms, e=%d ms",
@@ -568,20 +571,20 @@ public class MasterClock implements Serializable {
 			}
 			else {
 				// Get the time pulse length in millisols.
-				marsMSol = (realElaspedMilliSec * targetTR) / MILLISECONDS_PER_MILLISOL;
+				lastPulseTime = (realElaspedMilliSec * targetTR) / MILLISECONDS_PER_MILLISOL;
 
 				// Pulse must be less than the max and positive
-				if (marsMSol > 0) {
+				if (lastPulseTime > 0) {
 					acceptablePulse = true;
-					if (marsMSol > maxMilliSecPerPulse) {
-						logger.config(20_000, "Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0
-								+ " clipped to a max of " + maxMilliSecPerPulse + ".");
-						marsMSol = maxMilliSecPerPulse;
+					if (lastPulseTime > maxMilliSolPerPulse) {
+						logger.config(20_000, "Proposed pulse " + Math.round(lastPulseTime*100_000.0)/100_000.0
+								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
+						lastPulseTime = maxMilliSolPerPulse;
 					}
-					else if (marsMSol < minMilliSolPerPulse) {
-						logger.config(20_000, "Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0
+					else if (lastPulseTime < minMilliSolPerPulse) {
+						logger.config(20_000, "Proposed pulse " + Math.round(lastPulseTime*100_000.0)/100_000.0
 								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
-						marsMSol = minMilliSolPerPulse;
+						lastPulseTime = minMilliSolPerPulse;
 					}
 				}
 			}
@@ -590,7 +593,7 @@ public class MasterClock implements Serializable {
 			if (acceptablePulse && keepRunning) {
 				// Elapsed time is acceptable
 				// The time elapsed for the EarthClock aligned to adjusted Mars time
-				long earthMillisec = (long)(marsMSol * MILLISECONDS_PER_MILLISOL);
+				long earthMillisec = (long)(lastPulseTime * MILLISECONDS_PER_MILLISOL);
 
 				// Calculate the actual rate for feedback
 				actualTR = earthMillisec / realElaspedMilliSec;
@@ -606,10 +609,10 @@ public class MasterClock implements Serializable {
 					earthClock.addTime(earthMillisec);
 
 					// Add time pulse to Mars clock.
-					marsClock.addTime(marsMSol);
+					marsClock.addTime(lastPulseTime);
 
 					// Run the clock listener tasks that are in other package
-					fireClockPulse(marsMSol);
+					fireClockPulse(lastPulseTime);
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero
@@ -1053,7 +1056,7 @@ public class MasterClock implements Serializable {
 	 * @return
 	 */
 	public double getMarsPulseTime() {
-		return marsMSol;
+		return lastPulseTime;
 	}
 
 	/**
