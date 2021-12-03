@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.mars_sim.msp.core.LocalPosition;
@@ -26,10 +25,10 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 public class BuildingSpec {
 
 	static class FunctionSpec {
-		private Properties props;
+		private Map<String, Object> props;
 		private List<Point2D> spots;
 
-		public FunctionSpec(Properties props, List<Point2D> spots) {
+		public FunctionSpec(Map<String, Object> props, List<Point2D> spots) {
 			this.props = props;
 			this.spots = spots;
 		}
@@ -43,8 +42,8 @@ public class BuildingSpec {
 		 * @param name
 		 * @return
 		 */
-		public String getProperty(String name) {
-			return props.getProperty(name);
+		public Object getProperty(String name) {
+			return props.get(name);
 		}
 	}
 	

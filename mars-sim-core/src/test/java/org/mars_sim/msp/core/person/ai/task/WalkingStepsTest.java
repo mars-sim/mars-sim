@@ -75,7 +75,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
+        											   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         MockBuilding building1 = new MockBuilding(buildingManager, "B1");
@@ -144,7 +145,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         MockBuilding building1 = new MockBuilding(buildingManager, "B1");
@@ -200,7 +202,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         MockBuilding building1 = new MockBuilding(buildingManager, "B1");
@@ -212,7 +215,8 @@ public class WalkingStepsTest extends TestCase {
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
 
-        BuildingAirlock airlock1 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock1 = new BuildingAirlock(building1, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building1.addFunction(new EVA(building1, airlock1));
 
         buildingManager.setupBuildingFunctionsMap();
@@ -279,7 +283,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         buildingManager.setupBuildingFunctionsMap();
@@ -339,7 +344,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
 
@@ -384,7 +390,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setLocation(0D, 0D);
         building0.setFacing(0D);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
 
@@ -456,7 +463,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         buildingManager.setupBuildingFunctionsMap();
@@ -529,7 +537,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         buildingManager.setupBuildingFunctionsMap();
@@ -597,7 +606,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
 
@@ -643,7 +653,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
@@ -718,7 +729,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
@@ -785,7 +797,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
@@ -849,7 +862,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
 
         buildingManager.setupBuildingFunctionsMap();
@@ -911,7 +925,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
 
@@ -957,7 +972,8 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addMockBuilding(building0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
 
