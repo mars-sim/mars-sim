@@ -126,27 +126,21 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel sleepTimeLabel;
 	/** label for mars simulation time. */
 	private WebLabel marsPulseLabel;
-	/** label for time compression. */	
+	/** label for time compression. */
 	private WebLabel timeCompressionLabel;
-	/** slider for pulse. */
-//	private JSliderMW pulseSlider;
-//	/** button for pause. */
-//	private WebButton pauseButton;
-//	/** button for play. */
-//	private WebButton playButton;
-	
+
 	/** Icon for play. */
-	private Icon playIcon; 
+	private Icon playIcon;
 	/** Icon for pause. */
 	private Icon pauseIcon;
-	
+
 	/** MainWindow instance . */
 	private MainWindow mainWindow;
 
 	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
 	private final DecimalFormat formatter3 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
-	/** Simulation instance */	
+	/** Simulation instance */
 	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
@@ -155,9 +149,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Earth Clock. */
 	private EarthClock earthTime;
 
-	/** Arial font. */ 
+	/** Arial font. */
 	private final Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
-	/** Sans serif font. */ 
+	/** Sans serif font. */
 	private final Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 	private final Font SANS_SERIF_FONT0 = new Font(Font.MONOSPACED, Font.ITALIC, 12);
 	private final Font SANS_SERIF_FONT1 = new Font(Font.DIALOG, Font.ITALIC, 12);
@@ -183,7 +177,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this);
-		
+
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -353,7 +347,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		sleepTimeHeader = new WebLabel(SLEEP_TIME, WebLabel.RIGHT);
 		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel = new WebLabel(sleepTime + MS, WebLabel.LEFT);
-		
+
 		// Create pulse time label
 		marsPulseHeader = new WebLabel(MARS_PULSE_TIME, WebLabel.RIGHT);
 		double pulseTime = masterClock.getMarsPulseTime();
@@ -365,29 +359,29 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		int prefTR = (int)masterClock.getUserTR();
 		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
 		preferredTRLabel.setFont(SANS_SERIF_FONT0);
-		
+
 		// Create the actual time ratio label
 		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(actualTRHeader, "The master clock's actual time ratio", TooltipWay.right);
 		double actualTR = masterClock.getActualRatio();
 		actuallTRLabel = new WebLabel(Math.round(actualTR*10.0)/10.0 + "", WebLabel.LEFT); //$NON-NLS-1$
 		actuallTRLabel.setFont(SANS_SERIF_FONT1);
-		
+
 		paramPane.add(aveTPSHeader);
 		paramPane.add(aveTPSLabel);
 		paramPane.add(execTimeHeader);
 		paramPane.add(execTimeLabel);
-		
+
 		paramPane.add(sleepTimeHeader);
 		paramPane.add(sleepTimeLabel);
 		paramPane.add(marsPulseHeader);
 		paramPane.add(marsPulseLabel);
-		
+
 		paramPane.add(prefTRHeader);
 		paramPane.add(preferredTRLabel);
 		paramPane.add(actualTRHeader);
 		paramPane.add(actuallTRLabel);
-		
+
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(paramPane,
 				6, 2, //rows, cols
@@ -400,18 +394,18 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		southPane.add(pulsePane, BorderLayout.SOUTH);
 
 
-		// Create the speed panel 
+		// Create the speed panel
 		WebPanel speedPanel = new WebPanel(new GridLayout(2, 1));
 		pulsePane.add(speedPanel, BorderLayout.NORTH);
 
-		
+
 		// Create the time compression header label
 		WebLabel compressionLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
 		compressionLabel.setFont(SANS_SERIF_FONT);
-	
+
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-		
+
 //		speedPanel.add(TRHeader);
 //		speedPanel.add(timeRatioLabel);
 		speedPanel.add(compressionLabel);
@@ -421,27 +415,27 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				// Check the sim speed 
+				// Check the sim speed
 				masterClock.checkSpeed();
 				// Update the two time labels
 				updateSlowLabels();
 			}
 		});
-		
+
 		// Pack window
 		pack();
 
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
 		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
-		
-		
+
+
 		// Update the two time labels
 		updateTimeLabels();
 	}
 
 	public void updateTimeLabels() {
-		
+
 		if (marsTime != null) {
 			int solElapsed = marsTime.getMissionSol();
 			if (solElapsedCache != solElapsed) {
@@ -452,7 +446,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				setSeason();
 			}
 		}
-		
+
 		// Create average TPS label
 		double ave = masterClock.updateAverageTPS();
 		aveTPSLabel.setText(formatter2.format(ave));
@@ -460,7 +454,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create execution time label
 		long execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
-		
+
 		// Create sleep time label
 		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel.setText(sleepTime + MS);
@@ -472,13 +466,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		double actualTR = masterClock.getActualRatio();
 
 		actuallTRLabel.setText((int)actualTR + "x");
-	
-		int prefTR = (int)masterClock.getUserTR();	
+
+		int prefTR = (int)masterClock.getUserTR();
 		preferredTRLabel.setText(prefTR + "x");
-		
+
 		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));
 	}
-	
+
 	/**
 	 * Set and update the season labels
 	 */
@@ -546,8 +540,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (marsTime != null && martianTimeLabel != null) {
 			String ts = marsTime.getDateTimeStamp();
 			if (ts != null && !ts.equals(":") && !ts.equals("") )
-				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));			
-			
+				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
+
 //			int solElapsed = marsTime.getMissionSol();
 //			if (solElapsedCache != solElapsed) {
 //				solElapsedCache = solElapsed;
@@ -577,7 +571,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Change the pause status. Called by Masterclock's firePauseChange() since
 	 * TimeWindow is on clocklistener.
-	 * 
+	 *
 	 * @param isPaused true if set to pause
 	 * @param showPane true if the pane will show up
 	 */

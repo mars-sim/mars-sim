@@ -60,9 +60,10 @@ public class MasterClock implements Serializable {
 	private static final int UI_COUNT = 4;
 	/** The base value of time ratio from simulation.xml. */
 	private static int BASE_TR;
-
-	/** The instance of Simulation. */
-	private static Simulation sim = Simulation.instance();
+	/** The multiplier value that relates TPS to upper TR. */
+	private static final double MULTIPLIER  = 128.0;
+	/** The time ratio int array. */
+	private static final int[] TR_ARRAY = new int[] {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
 
 	// Data members
 	/** Runnable flag. */
@@ -143,6 +144,8 @@ public class MasterClock implements Serializable {
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
+	/** The instance of Simulation. */
+	private static Simulation sim = Simulation.instance();
 
 	/**
 	 * Constructor
@@ -442,11 +445,11 @@ public class MasterClock implements Serializable {
 
 		@Override
 		public void run() {
-
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
 			if (sim.isDoneInitializing() && !isPaused) {
+
 				while (keepRunning) {
 					long startTime = System.currentTimeMillis();
 
@@ -830,10 +833,10 @@ public class MasterClock implements Serializable {
 		if (targetTR < 1)
 			targetTR = 1;
 		int newTR = targetTR * 2;
-		if (newTR < 2)
-			newTR = 2;
+		if (newTR > TR_ARRAY[TR_ARRAY.length - 1])
+			newTR = TR_ARRAY[TR_ARRAY.length - 1];
 		userTR = newTR;
-//		System.out.println("newTR: " + newTR + "  targetTR: " + targetTR + "  userTR: " + userTR);
+
 		compareTPS(newTR, true);
 	}
 
@@ -846,7 +849,7 @@ public class MasterClock implements Serializable {
 		if (newTR < 1)
 			newTR = 1;
 		userTR = newTR;
-//		System.out.println("newTR: " + newTR + "  targetTR: " + targetTR + "  userTR: " + userTR);
+
 		compareTPS(newTR, false);
 	}
 
@@ -859,25 +862,6 @@ public class MasterClock implements Serializable {
 			targetTR = targetTR << 1;
 			logger.config("Attempting to increase targetTR to " + targetTR + ".");
 		}
-//
-//		// if this is a new sim
-//		if (Simulation.MISSION_SOL == 0) {
-//			if (marsClock.getMillisolInt() < 50)
-//				return;
-//		}
-//
-//		// if this is a saved sim just loaded
-//		if (Simulation.MISSION_SOL == marsClock.getMissionSol()) {
-//			int mSol = marsClock.getMillisolInt();
-//			if (Simulation.MSOL_CACHE + 50 > 1000) {
-//				// if mSolCache is near 1000 millisols
-//				if (mSol + 1000 > Simulation.MSOL_CACHE + 50)
-//					return;
-//			}
-//
-//			else if (mSol > Simulation.MSOL_CACHE + 50)
-//				return;
-//		}
 
 		compareTPS(targetTR, true);
 	}
@@ -892,35 +876,30 @@ public class MasterClock implements Serializable {
 		double tps = getPulsesPerSecond();
 
 		if (increase) {
-//			if (tps <= 1.25) return;
-
 			double aveTPS = getAverageTPS(tps);
-			int upperTR = BASE_TR;
-
-			if (aveTPS < 0.625)
-				upperTR = 16;
-			else if (aveTPS < 1.25)
-				upperTR = 32;
-			else if (aveTPS < 2.5)
-				upperTR = 64;
-			else if (aveTPS < 5)
-				upperTR = 128;
-			else if (aveTPS < 10)
-				upperTR = 256;
-			else if (aveTPS < 15)
-				upperTR = 512;
-			else if (aveTPS < 22.5)
-				upperTR = 1024;
-			else if (aveTPS < 32.5)
-				upperTR = 2048;
-			else
-				upperTR = 4096;
-//			System.out.println("upperTR: " + upperTR + "  aveTPS: " + aveTPS);
+			double value = aveTPS * MULTIPLIER;
+			int upperTR = findUpperTR(value);
             setTargetTR(Math.min(newTR, upperTR));
 		}
 		else {
 			setTargetTR(newTR);
 		}
+	}
+
+	/**
+	 * Find the upper TR limit
+	 *
+	 * @param value
+	 * @return
+	 */
+	public int findUpperTR(double value) {
+		int size = TR_ARRAY.length;
+		for (int i=0; i<size; i++) {
+			if (value < TR_ARRAY[i]) {
+				return TR_ARRAY[i];
+			}
+		}
+		return TR_ARRAY[size-1];
 	}
 
 	/**
@@ -954,7 +933,7 @@ public class MasterClock implements Serializable {
 			aveTPSList.clear();
 			ave = tps;
 		}
-//		System.out.println("ave: " + ave + "  tps: " + tps + "  #: " + aveTPSList.size());
+
 		return ave;
 	}
 

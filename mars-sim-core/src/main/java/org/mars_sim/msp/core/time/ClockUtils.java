@@ -65,18 +65,20 @@ public class ClockUtils implements Serializable {
 
 	public static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400, SEC_PER_YR = 31536000;
 
-	/** the real second label string */	
+	/** the real second label string */
 	public static final String ONE_REAL_SEC = "1s (real-time) = ";
-	
+	/** the sim time label string */
+	public static final String SIM_TIME = " (sim time)";
+
 	private static final String HOURS = "h ";
 	private static final String MINUTES = "m ";
 	private static final String ZERO_MINUTES = "00m ";
 	private static final String SECONDS = "s";
 
 	private static Map<Integer, String> map = new HashMap<>();
-	
+
 	private static DecimalFormat fmt = new DecimalFormat("##.###");
-	
+
 	/**
 	 * Constructor
 	 */
@@ -108,7 +110,7 @@ public class ClockUtils implements Serializable {
 //		double r = earthDays % 364;
 //		double month = (int)(r/12);
 //		double rr = r % 12;
-//		double day = (int)(r/30);	
+//		double day = (int)(r/30);
 
 		// convert 2043 Sep 30 00:00 (UTC) to millis
 		long s_since_1970 = EarthClock.getDateOfFirstLanding().toEpochSecond();
@@ -134,11 +136,11 @@ public class ClockUtils implements Serializable {
 //		earthClock = sim.getMasterClock().getEarthClock();
 //
 //		double jdut = getJulianDateUT(earthClock);
-//		logger.info("jdut at 0015-Adir-01 is " + jdut);       
+//		logger.info("jdut at 0015-Adir-01 is " + jdut);
 //		double M = getMarsMeanAnomaly(earthClock);
 //		logger.info("M at 0015-Adir-01 is " + M);
 //		double EOC = getEOC(earthClock);
-//		logger.info("EOC at 0015-Adir-01 is " + EOC);	
+//		logger.info("EOC at 0015-Adir-01 is " + EOC);
 //		double v = getTrueAnomaly(earthClock);
 //		logger.info("v at 0015-Adir-01 is " + v);
 //		double L_s = getLs(earthClock);
@@ -148,7 +150,7 @@ public class ClockUtils implements Serializable {
 
 	/**
 	 * Convert from the number of seconds since 1970 Jan 1
-	 * 
+	 *
 	 * @return String the Mars date in standard format yy-month-dd
 	 */
 	public static String convertSecs2MarsDate(long s) {
@@ -169,7 +171,7 @@ public class ClockUtils implements Serializable {
 
 	/**
 	 * Returns a date time string in orbit-month-sol format
-	 * 
+	 *
 	 * @param missionSol the sol since the start of the sim
 	 * @return a date time string
 	 */
@@ -179,12 +181,12 @@ public class ClockUtils implements Serializable {
 
 	public static void getLocalDate(int year, int atDay) {
 	      LocalDate date = Year.of(year).atDay(atDay);
-	      System.out.println(date);  
+	      System.out.println(date);
 	}
-	
+
 	/**
 	 * Returns a date time string in HHh MMm SS.SSs format
-	 * 
+	 *
 	 * @param ratio The time ratio
 	 * @return a date time string
 	 */
@@ -192,7 +194,7 @@ public class ClockUtils implements Serializable {
 		if (map.containsKey(ratio)) {
 			return map.get(ratio);
 		}
-		
+
 		int hours = (int) ((ratio % SEC_PER_DAY) / SEC_PER_HR);
 		int minutes = (int) ((ratio % SEC_PER_HR) / SEC_PER_MIN);
 		double secs = (ratio % SEC_PER_MIN);
@@ -200,7 +202,7 @@ public class ClockUtils implements Serializable {
 		StringBuilder b = new StringBuilder();
 
 		b.append(ONE_REAL_SEC);
-		
+
 		if (hours > 0) {
 			b.append(String.format("%02d", hours)).append(HOURS);
 		}
@@ -211,18 +213,18 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%02d", (int)secs) + SECONDS);
+		b.append(String.format("%02d", (int)secs) + SECONDS).append(SIM_TIME);
 
 		String s = b.toString();
-		
+
 		map.put(ratio, s);
-		
+
 		return s;
 	}
 
 	/**
 	 * Returns a truncated string in HHh MMm SSs format
-	 * 
+	 *
 	 * @param ratio
 	 * @return a date time string
 	 */
@@ -251,7 +253,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Gets Julian Date (UT), the number of days (rather than milliseconds) since
 	 * the unix epoch Note: the Julian Date UT at the Unix epoch is 2,440,587.5.
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getJulianDateUT(EarthClock clock) {
@@ -263,7 +265,7 @@ public class ClockUtils implements Serializable {
 	 * Determine time offset from J2000 epoch (UT). This step is optional; we only
 	 * need to make this calculation if the date is before Jan. 1, 1972. Determine
 	 * the elapsed time in Julian centuries since 12:00 on Jan. 1, 2000 (UT).
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getT(EarthClock clock) {
@@ -273,14 +275,14 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine UTC to TT conversion. (Replaces AM2000, eq. 27)
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getDeltaUTC_TT(EarthClock clock) {
 		double T = getT(clock);
 		double T2 = T * T;
-//		double T3 = getT(clock) * getT(clock) * getT(clock);		
-//		double T4 = getT(clock) * getT(clock) * getT(clock) * getT(clock);	
+//		double T3 = getT(clock) * getT(clock) * getT(clock);
+//		double T4 = getT(clock) * getT(clock) * getT(clock) * getT(clock);
 //		long result = (long) (64.184 + 59L * T - 51.2 * T2 - 67.1 * T3 - 16.4 * T4);
 		double result = 64.184 + 59L * T - 51.2 * T2 - 67.1 * T * T2 - 16.4 * T2 * T2;
 		return result;
@@ -290,7 +292,7 @@ public class ClockUtils implements Serializable {
 	 * Gets Julian Date Terrestrial Time (TT), the number of days (rather than
 	 * milliseconds) since the unix epoch Note: add the leap seconds which, since 1
 	 * July 2012
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getJulianDateTT(EarthClock clock) {
@@ -301,7 +303,7 @@ public class ClockUtils implements Serializable {
 	 * Gets the days since J2000 Epoch, the number of (fractional) days since 12:00
 	 * on 1 January 2000 in Terrestrial Time (TT). Note: JD TT was 2,451,545.0 at
 	 * the J2000 epoch
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getDaysSinceJ2kEpoch(EarthClock clock) {
@@ -312,7 +314,7 @@ public class ClockUtils implements Serializable {
 	 * Gets Mars Mean Anomaly, a measure of where Mars is in its orbit, namely how
 	 * far into the full orbit the body is since its last periapsis (the point in
 	 * the ellipse closest to the focus).
-	 * 
+	 *
 	 * @return degree
 	 */
 	public static double getMarsMeanAnomaly(EarthClock clock) {
@@ -322,7 +324,7 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine angle of Fiction Mean Sun. (AM2000, eq. 17)
-	 * 
+	 *
 	 * @return degree AlphaFMS
 	 */
 	public static double getAlphaFMS(EarthClock clock) {
@@ -332,7 +334,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Determine perturbers. (AM2000, eq. 18). PBS = Σ(i=1,7) Ai cos [ (0.985626°
 	 * ΔtJ2000 / τi) + φi] where 0.985626° = 360° / 365.25, and
-	 * 
+	 *
 	 * @return deg PBS
 	 */
 	public static double getPBS(EarthClock clock) {
@@ -351,7 +353,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Determine Equation of Center, namely, v - M. (Bracketed term in AM2000, eqs.
 	 * 19 and 20) The equation of center is the true anomaly minus mean anomaly.
-	 * 
+	 *
 	 * @return degree EOC
 	 */
 	public static double getEOC(EarthClock clock) {
@@ -374,7 +376,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Determine the true anomaly. The equation of center is the true anomaly minus
 	 * mean anomaly.
-	 * 
+	 *
 	 * @return degree true anomaly
 	 */
 	public static double getTrueAnomaly0(EarthClock clock) {
@@ -389,7 +391,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Determine the true anomaly. The equation of center is the true anomaly minus
 	 * mean anomaly.
-	 * 
+	 *
 	 * @return degree true anomaly
 	 */
 	public static double getTrueAnomaly(EarthClock clock) {
@@ -412,7 +414,7 @@ public class ClockUtils implements Serializable {
 
 	/**
 	 * Determine areocentric solar longitude. (AM2000, eq. 19)
-	 * 
+	 *
 	 * @return degree L_s
 	 */
 	public static double getLs(EarthClock clock) {
@@ -434,7 +436,7 @@ public class ClockUtils implements Serializable {
 
 	/**
 	 * Determine areocentric solar longitude. (AM2000, eq. 19)
-	 * 
+	 *
 	 * @return degree L_s
 	 */
 	public static double getLs0(EarthClock clock) {
@@ -443,7 +445,7 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
-	 * 
+	 *
 	 * @return in degrees
 	 */
 	public static double getEOTDegree0(EarthClock clock) {
@@ -454,7 +456,7 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
-	 * 
+	 *
 	 * @return in degrees
 	 */
 	public static double getEOTDegree(EarthClock clock) {
@@ -478,7 +480,7 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
-	 * 
+	 *
 	 * @return in hour
 	 */
 	public static double getEOTHour0(EarthClock clock) {
@@ -488,7 +490,7 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
-	 * 
+	 *
 	 * @return in hour
 	 */
 	public static double getEOTHour(EarthClock clock) {
@@ -514,7 +516,7 @@ public class ClockUtils implements Serializable {
 	 * Gets Mars Sol Date (MSD), starting at midnight on 6th January 2000 (when
 	 * time_J2000 = 4.5), at the Martian prime meridian, Note: by convention, to
 	 * keep the MSD positive going back to midday December 29th 1873, we add 44,796.
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getMarsSolDate0(EarthClock clock) {
@@ -528,7 +530,7 @@ public class ClockUtils implements Serializable {
 	 * midnight on 6th January 2000 (when time_J2000 = 4.5), at the Martian prime
 	 * meridian, Note: by convention, to keep the MSD positive going back to midday
 	 * December 29th 1873, we add 44,796.
-	 * 
+	 *
 	 * @return days
 	 */
 	public static double getMarsSolDateAdj(EarthClock clock) {
@@ -540,7 +542,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Gets Coordinated Mars Time (MTC), a mean time for Mars, like Earth's UTC
 	 * Note: Calculated directly from the Mars Sol Date
-	 * 
+	 *
 	 * @return hours
 	 */
 	public static double getMTC0(EarthClock clock) {
@@ -551,7 +553,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Gets Coordinated Mars Time (MTC), a mean time for Mars, like Earth's UTC
 	 * Note: Calculated directly from the Mars Sol Date
-	 * 
+	 *
 	 * @return hours
 	 */
 	public static double getMTC1(EarthClock clock) {
@@ -563,11 +565,11 @@ public class ClockUtils implements Serializable {
 	 * Determine Local Mean Solar Time for a given planetographic longitude, Λ, in
 	 * degrees west, is easily determined by offsetting from the mean solar time on
 	 * the prime meridian.
-	 * 
+	 *
 	 * @param clock Earth clock
-	 * 
+	 *
 	 * @param degW longitude in degree west
-	 * 
+	 *
 	 * @return hours
 	 */
 	public static double getLMST(EarthClock clock, double degW) {
@@ -577,11 +579,11 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Determine Local True Solar Time (AM2000, eq. 23) for a given planetographic
 	 * longitude, Λ,
-	 * 
+	 *
 	 * @param clock Earth clock
-	 * 
+	 *
 	 * @param degW longitude in degree west
-	 * 
+	 *
 	 * @return hours
 	 */
 	public static double getLTST(EarthClock clock, double degW) {
@@ -590,9 +592,9 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Subsolar Longitude
-	 * 
+	 *
 	 * @param clock Earth clock
-	 * 
+	 *
 	 * @return longitude in deg
 	 */
 	public static double getSubsolarLongitude(EarthClock clock) {
@@ -601,9 +603,9 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine heliocentric distance. (AM2000, eq. 25, corrected)
-	 * 
+	 *
 	 * @param clock Earth clock
-	 * 
+	 *
 	 * @return distance in A.U.
 	 */
 	public static double getHeliocentricDistance(EarthClock clock) {
@@ -615,7 +617,7 @@ public class ClockUtils implements Serializable {
 	/*
 	 * Gets Coordinated Mars Time (MTC) string Note: Calculated directly from the
 	 * Mars Sol Date
-	 * 
+	 *
 	 * @return String in hour:min:second
 	 */
 	public static String getFormattedTimeString(double s) {
@@ -656,8 +658,8 @@ public class ClockUtils implements Serializable {
 
 
 	/*
-	 * Gets Universal Mars Time (UMT) in millisols 
-	 * 
+	 * Gets Universal Mars Time (UMT) in millisols
+	 *
 	 * @return String in "###.###"
 	 */
 	public static String getFormattedMillisolString(double s) {
@@ -668,7 +670,7 @@ public class ClockUtils implements Serializable {
 		return new DecimalFormat("###.###").format(s);
 
 	}
-	
+
 	public void destroy() {
 
 	}

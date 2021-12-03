@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE simulation-configuration [
 	<!ELEMENT simulation-configuration (time-configuration)>
-	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse, 
+	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse,
 	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time,
 	unused-cores)>
 	<!ELEMENT base-time-ratio EMPTY>
@@ -32,36 +32,36 @@
 	<time-configuration>
 
 		<!-- The base time ratio (TR) is the default simulation time ratio : the ratio of real time to sim time prior to modification
-			Note 1 : It denotes the speed of the simulation
-			     2 : Value must be positive number between 16 and 2048 and cannot be zero
-			     3 : the calculated TR is dependent upon the # of cpu threads available on user's machine. 
-			         The base TR value below will be overridden by the calculated TR at the start of the sim..
+			Note 1 : It denotes the initial speed of the simulation.
+			     2 : Value must be a positive number between 16 and 2048 and cannot be zero.
+			     3 : The calculated TR is dependent upon the # of cpu threads available on user's machine.
+			     4 : The base TR value below will be overridden by the calculated TR at the start of the sim.
 		-->
 		<!-- Default: 128.0 -->
 		<base-time-ratio value="128" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
-			 4. Minimum is 64, maximum is 4096
+			 4. Minimum: 1, maximum: 8192
 		-->
 
 		<!-- The time span covered by each simulation pulse is defined below. These are defined in terms of
 		     milliSols. The lower the value, the more accurate the simulation but the more pulses & more expensive
 		     to calculate. Note both values can be adjusted if the processing becomes too excessive.
 		 -->
-		 <!-- Default: 0.02 ~ 1 earth seconds -->
-		 <min-simulated-pulse value="0.02"/>
-		 
-		 <!-- Default: 2 ~ 5 earth minutes -->
-		 <max-simulated-pulse value="2"/>
-		 
+		 <!-- Default: 0.0112644016 millisols ~ 1 earth seconds -->
+		 <min-simulated-pulse value="0.0112644016"/>
+
+		 <!-- Default: 2.276 hours or 2 hr 16 min 32s or 136.53 minutes -->
+		 <max-simulated-pulse value="92.2779779072"/>
+
 		 <!-- The simulation creates a pulse periodically to execution the simulation. This value defines the
 		  maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
 		  frequently depending on the time ratio and the accuracy as well as the machine power. -->
 		 <!-- Default is 1000 : 1 second -->
-		 <default-time-pulse value="1000"/> 
-		 
-		 <!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate 
+		 <default-time-pulse value="1000"/>
+
+		 <!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate
 		 simulation but more costly or larger timespans to reduce the processing load. This values chooses the actual
 		pulse rate between the calculated min & max pulse durations.
 		This value must be between 0 & 1 with 1 being most accurate. -->
@@ -71,14 +71,14 @@
 		<!-- Earth start date/time -->
 		<!-- "yyyy-MM-dd hh:mm:ss" format -->
 		<!-- Default: 2028-08-17 15:23:13.740 -->
-		<!-- Note that iso8601 String is "2043-09-30T00:0:00.000Z". 
-		     see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME --> 
+		<!-- Note that iso8601 String is "2043-09-30T00:0:00.000Z".
+		     see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME -->
 		<!-- It was previously designated as "2043-09-30 00:00:00.000" -->
-		<earth-start-date-time value="2028-08-17 15:23:13.740"/> 
+		<earth-start-date-time value="2028-08-17 15:23:13.740"/>
 
 		<!-- Mars start date/time -->
 		<!-- "orbit-month-sol:millisol" format -->
-		<!-- Default: 0015-Adir-01:000.000 -->
+		<!-- Default: 00-Adir-01:000.000 -->
 		<!-- It was previously designated as "0015-Adir-01:000.000" -->
 		<mars-start-date-time value="00-Adir-01:000.000" />
 

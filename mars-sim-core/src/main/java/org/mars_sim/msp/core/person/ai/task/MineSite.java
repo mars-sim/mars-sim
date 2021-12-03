@@ -176,19 +176,15 @@ public class MineSite extends EVAOperation implements Serializable {
 		// to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			// End operating light utility vehicle.
-			if (person != null) {
-				if (((Crewable)luv).isCrewmember(person)) {
-					luv.removePerson(person);
-					luv.setOperator(null);
-					operatingLUV = false;
-				}
+			if (person != null && ((Crewable)luv).isCrewmember(person)) {
+				luv.removePerson(person);
+				luv.setOperator(null);
+				operatingLUV = false;
 
-			} else if (robot != null) {
-				if (((Crewable)luv).isRobotCrewmember(robot)) {
-					luv.removeRobot(robot);
-					luv.setOperator(null);
-					operatingLUV = false;
-				}
+			} else if (robot != null && ((Crewable)luv).isRobotCrewmember(robot)) {
+				luv.removeRobot(robot);
+				luv.setOperator(null);
+				operatingLUV = false;
 			}
 
         	if (worker.isOutside()) {

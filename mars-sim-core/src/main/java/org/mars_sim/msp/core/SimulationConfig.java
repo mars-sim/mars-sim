@@ -69,12 +69,12 @@ public class SimulationConfig implements Serializable {
 
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
 
-	
-	/** The version.txt denotes the xml build version. */	
+
+	/** The version.txt denotes the xml build version. */
 	public static final String VERSION_FILE = "version.txt";
-	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
+	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */
 	public static final String EXCEPTION_FILE = "exception.txt";
-			
+
 	public static final String XML_FOLDER = "xml";
 	public static final String XML_EXTENSION = ".xml";
 	private static final String SIMULATION_FILE = "simulation";
@@ -100,7 +100,7 @@ public class SimulationConfig implements Serializable {
 	private static final String VALUE = "value";
 
     public static final String EXPERIMENTS_FILE = "/" + "json" + "/" + "experiments.json";
-    
+
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 
@@ -108,7 +108,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
 	private static final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
 	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
-	
+
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 
@@ -118,7 +118,7 @@ public class SimulationConfig implements Serializable {
 	private static final String ACCURACY_BIAS = "accuracy-bias";
 
 	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
-	
+
 	private transient double tr = 0;
 
 	private transient int[] data = new int[] { 0, 0, 0, 0 };
@@ -157,13 +157,13 @@ public class SimulationConfig implements Serializable {
 	private transient MealConfig mealConfig;
 	private transient RobotConfig robotConfig;
 	private transient QuotationConfig quotationConfig;
-	
+
 	//private transient ExperimentConfig experimentConfig;
 	private transient ScienceConfig scienceConfig;
 
 	private transient List<String> excludedList;
 
-	private transient ReportingAuthorityFactory raFactory;	
+	private transient ReportingAuthorityFactory raFactory;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -174,11 +174,11 @@ public class SimulationConfig implements Serializable {
 	/** hidden constructor. */
 	private SimulationConfig() {
 	}
-	
+
 	/**
 	 * Prevents the singleton pattern from being destroyed at the time of
 	 * serialization
-	 * 
+	 *
 	 * @return SimulationConfig instance
 	 */
 	protected Object readResolve() throws ObjectStreamException {
@@ -198,24 +198,24 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets a Bill Pugh Singleton instance of the SimulationConfig.
-	 * 
+	 *
 	 * @return SimulationConfig instance
 	 */
 	public static SimulationConfig instance() {
 		// NOTE: SimulationConfig.instance() is accessible on any threads or by any threads
 		return SingletonHelper.INSTANCE;
 	}
-	
+
 	/**
 	 * Loads all of the configuration files.
-	 * 
+	 *
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public void loadConfig() {
 		if (simulationDoc != null) {
 			return;
 		}
-		
+
 		checkXMLFileVersion();
 
 		try {
@@ -224,7 +224,7 @@ public class SimulationConfig implements Serializable {
           	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * Reloads the configurations from the XML files including
 	 * re-checking the XML versions.
@@ -235,20 +235,20 @@ public class SimulationConfig implements Serializable {
 		simulationDoc = null;
 		loadConfig();
 	}
-	
+
 	/**
 	 * Checks if the xml files are of the same version of the core engine.
 	 */
 	private void checkXMLFileVersion() {
 		boolean sameBuild = false;
-		
+
 		String backupDir = SimulationFiles.getBackupDir();
-	
-        File xmlLoc = new File(SimulationFiles.getXMLDir());		
+
+        File xmlLoc = new File(SimulationFiles.getXMLDir());
 		File versionLoc = new File(SimulationFiles.getXMLDir() + File.separator + VERSION_FILE);
 		File exceptionLoc = new File(SimulationFiles.getXMLDir() + File.separator + EXCEPTION_FILE);
 		File backupLoc = new File(backupDir);
-			
+
         FileSystem fileSys = FileSystems.getDefault();
 		Path xmlPath = fileSys.getPath(xmlLoc.getPath());
         Path versionPath = fileSys.getPath(versionLoc.getPath());
@@ -259,10 +259,10 @@ public class SimulationConfig implements Serializable {
 		// If not, copy all xml over
 
         boolean xmlDirExist = xmlPath.toFile().exists();
-		
+
 		// Note: if "xml" exits as a file, delete it
 		if (xmlDirExist && xmlLoc.isFile()) {
-			logger.config("'" + xmlLoc +  "'" 
+			logger.config("'" + xmlLoc +  "'"
 					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(xmlLoc);
@@ -270,29 +270,29 @@ public class SimulationConfig implements Serializable {
 	          	logger.log(Level.SEVERE, "Cannot access xml folder: " + e.getMessage());
 			}
 		}
-		
+
 		// Check again xmlDirExist
 		xmlDirExist = xmlLoc.exists();
-			
+
 		boolean versionFileExist = versionLoc.exists();
 		boolean exceptionFileExist = exceptionLoc.exists();
-		
+
 		boolean xmlDirDeleted = false;
 		boolean invalid = false;
 
 		String buildText = "";
-		
+
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (xmlDirExist && xmlLoc.isDirectory()) {
-			logger.config("The xml folder already existed.");		
+			logger.config("The xml folder already existed.");
 
 			if (versionFileExist) {
-				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {   
+				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {
 				    if ((buildText = buffer.readLine()) != null) {
 				    	// If the version.txt's build version tag is the same as the core engine's
 					    if (buildText.equals(Simulation.BUILD)) {
 					    	sameBuild = true;
-					    }				    
+					    }
 				    }
 				} catch (FileNotFoundException e) {
 		          	logger.log(Level.SEVERE, "Cannot find version.txt : " + e.getMessage());
@@ -300,10 +300,10 @@ public class SimulationConfig implements Serializable {
 		          	logger.log(Level.SEVERE, "Cannot access version.txt : " + e.getMessage());
 				}
 			}
-			
+
 			if (exceptionFileExist) {
-				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionLoc))) {  
-					// Need to figure out how to make use of 
+				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionLoc))) {
+					// Need to figure out how to make use of
 					// exception.txt for tracking user's made changes in xml
 				} catch (FileNotFoundException e) {
 		          	logger.log(Level.SEVERE, "Cannot find exception.txt : " + e.getMessage());
@@ -312,26 +312,26 @@ public class SimulationConfig implements Serializable {
 				}
 			}
 		}
-		
+
 		if (!xmlDirExist)
-			logger.config("The xml folder does not exist in user home.");	
+			logger.config("The xml folder does not exist in user home.");
 		else if (!versionFileExist)
-			logger.config("The version.txt does not exist.");	
+			logger.config("The version.txt does not exist.");
 		else if (sameBuild)
 			logger.config("The version.txt has the same BUILD " + buildText
 					+ " as the core engine's.");
 		else if (!hasNonDigit(buildText))
-			logger.config("The version.txt in your home xml folder shows BUILD " + buildText 
+			logger.config("The version.txt in your home xml folder shows BUILD " + buildText
 					+ ". The core engine uses BUILD " + Simulation.BUILD + ".");
 		else {
 			logger.config("The version.txt is invalid.");
 			invalid = true;
 		}
-		
+
 		if (xmlDirExist) {
 			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {
 				try {
-					if (versionFileExist && !buildText.equals("") && !invalid) {		
+					if (versionFileExist && !buildText.equals("") && !invalid) {
 						String s0 = backupDir + File.separator + buildText;
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
@@ -339,7 +339,7 @@ public class SimulationConfig implements Serializable {
 				        	logger.config("Case A1 : The build folder doesn't exist yet. " +
 									"Back up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);   	
+							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
 				        }
 				        else {
 				        	// Case A2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
@@ -348,7 +348,7 @@ public class SimulationConfig implements Serializable {
 //				            Instant timestamp = Instant.now();
 				            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
 				            int lastIndxDot = timestamp.lastIndexOf('.');
-				            timestamp = timestamp.substring(0, lastIndxDot);				            
+				            timestamp = timestamp.substring(0, lastIndxDot);
 				            String s1 = s0 + File.separator + timestamp;
 				            dir = new File(s1.trim());
 							logger.config("Case A2 : The build folder " +
@@ -357,39 +357,39 @@ public class SimulationConfig implements Serializable {
 							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
 				        }
 					}
-					else {		
+					else {
 						if (!backupLoc.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
 							logger.config("Case B1 : The backup folder doesn't exist. " +
 									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
-				        }		
+				        }
 						else {
 							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
 //				            Instant timestamp = Instant.now();
 				            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
 				            int lastIndxDot = timestamp.lastIndexOf('.');
-				            timestamp = timestamp.substring(0, lastIndxDot);			            
+				            timestamp = timestamp.substring(0, lastIndxDot);
 				            String s2 = backupDir + File.separator + "unknown" + File.separator + timestamp;
-				            
+
 				            backupLoc = new File(s2);
 				            logger.config("Case B2 : The backup folder " +
-									backupDir + " already exists. Back up to " + s2);	
+									backupDir + " already exists. Back up to " + s2);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
 						}
-					}		
+					}
 
 					// delete everything in the xml folder
 					xmlDirDeleted = deleteDirectory(xmlLoc);
-	
+
 				} catch (IOException e) {
 		          	logger.log(Level.SEVERE, "Issues with build folder or backup folder: " + e.getMessage());
 				}
 			}
 		}
-		
+
 		xmlDirExist = xmlLoc.exists();
 
 		// if the "xml" folder does NOT exist
@@ -397,7 +397,7 @@ public class SimulationConfig implements Serializable {
 			// Create the xml folder
 			versionLoc.getParentFile().mkdirs();
 			logger.config("A new xml folder was just created.");
-			
+
 			List<String> lines = Arrays.asList(Simulation.BUILD);
 			try {
 				// Create the version.txt file
@@ -406,7 +406,7 @@ public class SimulationConfig implements Serializable {
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
-			
+
 			lines = new ArrayList<>();
 			try {
 				// Create the exception.txt file
@@ -416,7 +416,7 @@ public class SimulationConfig implements Serializable {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
 		}
-		
+
 		if (!versionLoc.exists()) {
 			List<String> lines = Arrays.asList(Simulation.BUILD);
 			try {
@@ -427,7 +427,7 @@ public class SimulationConfig implements Serializable {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
 		}
-		if (!exceptionLoc.exists()) {	
+		if (!exceptionLoc.exists()) {
 			List<String> lines = new CopyOnWriteArrayList<>();
 			try {
 				// Create the exception.txt file
@@ -441,14 +441,14 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Checks if the string contains non-digits
-	 * 
+	 *
 	 * @param name
 	 * @return true if it contains non-digits
 	 */
 	private boolean hasNonDigit(String name) {
 		if (name != null) {
 		    char[] chars = name.toCharArray();
-	
+
 		    for (char c : chars) {
 		        if(!Character.isDigit(c)) {
 		            return true;
@@ -457,10 +457,10 @@ public class SimulationConfig implements Serializable {
 		}
 	    return false;
 	}
-	
-	/* 
-	* Delete a non empty directory 
-	*/ 
+
+	/*
+	* Delete a non empty directory
+	*/
 	public static boolean deleteDirectory(File dir) {
 		if (dir.isDirectory()) {
 			File[] children = dir.listFiles();
@@ -471,9 +471,9 @@ public class SimulationConfig implements Serializable {
 				}
 			}
 		}
-		return true; 
+		return true;
 	}
-    
+
 	/**
 	 * Find a string value.
 	 * @param parent Parent element
@@ -485,13 +485,13 @@ public class SimulationConfig implements Serializable {
 		Element timeConfig = root.getChild(parent);
 		Element timeRatioEL = timeConfig.getChild(child);
 		String str = timeRatioEL.getAttributeValue(VALUE);
-	
-	
+
+
 		if ((str == null) || str.trim().length() == 0)
 			throw new IllegalStateException(parent + "->" + child + " must be greater than zero and cannot be blank.");
 		return str;
 	}
-	
+
 	private int loadIntValue(String parent, String child) {
 		String str = findValue(parent, child);
 		int i = 0;
@@ -519,16 +519,16 @@ public class SimulationConfig implements Serializable {
 		}
 		return d;
 	}
-	
+
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Getter
 	 * -----------------------------------------------------------------------------
 	 */
-	
+
 	/**
 	 * Gets the ratio of simulation time to real time in simulation.xml
-	 * 
+	 *
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
@@ -539,22 +539,22 @@ public class SimulationConfig implements Serializable {
 
 		else {
 			double d = loadDoubleValue(TIME_CONFIGURATION, BASE_TIME_RATIO);
-			if (d < 16 && d > 2048)
+			if (d <= 16 && d >= 2048)
 				throw new IllegalStateException("time_ratio must be between 16.0 and 2048.0");
 			tr = d;
 			return d;
 		}
 	}
-	
+
 	/**
 	 * Gets the minimum simulation pulse size in terms of MilliSol in simulation.xml
-	 * 
+	 *
 	 * @return minimum
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getMinSimulatedPulse() {
 		double result = loadDoubleValue(TIME_CONFIGURATION, MIN_SIMULATED_PULSE);
-						
+
 		if (result <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MIN_SIMULATED_PULSE
 					                        + " must be greater then zero");
@@ -563,13 +563,13 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the maximum simulation pulse size in terms of MilliSol in simulation.xml
-	 * 
+	 *
 	 * @return minimum
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getMaxSimulatedPulse() {
 		double result = loadDoubleValue(TIME_CONFIGURATION, MAX_SIMULATED_PULSE);
-		
+
 		if (result <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MAX_SIMULATED_PULSE
 					                        + " must be greater then zero");
@@ -582,7 +582,7 @@ public class SimulationConfig implements Serializable {
 	 */
 	public double getAccuracyBias() {
 		double result = loadDoubleValue(TIME_CONFIGURATION, ACCURACY_BIAS);
-		
+
 		if ((result < 0) || (result > 10)) {
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + ACCURACY_BIAS
 					                        + " must be between 0 & 10");
@@ -596,13 +596,13 @@ public class SimulationConfig implements Serializable {
 	 */
 	public int getDefaultPulsePeriod() {
 		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_TIME_PULSE);
-		
+
 		if (result <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_TIME_PULSE
 					                        + " must be greater then zero");
 		return result;
 	}
-	
+
 
 	/**
 	 * The difference between number of cores and Simulation threads created, i.e. unused cores. Must be positive.
@@ -610,7 +610,7 @@ public class SimulationConfig implements Serializable {
 	 */
 	public int getUnusedCores() {
 		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_UNUSEDCORES);
-		
+
 		if (result < 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_UNUSEDCORES
 					                        + " cannot be negative");
@@ -619,7 +619,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the Earth date/time when the simulation starts.
-	 * 
+	 *
 	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -637,7 +637,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the Mars date/time when the simulation starts.
-	 * 
+	 *
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -656,16 +656,16 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Manually sets the autosave interval.
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setAutosaveInterval(int value) {
 		data[2] = value;
 	}
-	
+
 	/**
 	 * Gets the autosave interval when the simulation starts.
-	 * 
+	 *
 	 * @return number of minutes.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -685,7 +685,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the AverageTransitTime when the simulation starts.
-	 * 
+	 *
 	 * @return number of sols.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -705,7 +705,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the part config subset.
-	 * 
+	 *
 	 * @return part config
 	 */
 	public PartConfig getPartConfiguration() {
@@ -714,7 +714,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the part package configuration.
-	 * 
+	 *
 	 * @return part package config
 	 */
 	public PartPackageConfig getPartPackageConfiguration() {
@@ -723,7 +723,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the resource config subset.
-	 * 
+	 *
 	 * @return resource config
 	 */
 	public AmountResourceConfig getResourceConfiguration() {
@@ -732,7 +732,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the person config subset.
-	 * 
+	 *
 	 * @return person config
 	 */
 	public PersonConfig getPersonConfig() {
@@ -741,7 +741,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the robot config subset.
-	 * 
+	 *
 	 * @return robot config
 	 */
 	public RobotConfig getRobotConfiguration() {
@@ -750,7 +750,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the medical config subset.
-	 * 
+	 *
 	 * @return medical config
 	 */
 	public MedicalConfig getMedicalConfiguration() {
@@ -759,7 +759,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the landmark config subset.
-	 * 
+	 *
 	 * @return landmark config
 	 */
 	public LandmarkConfig getLandmarkConfiguration() {
@@ -768,7 +768,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the mineral map config subset.
-	 * 
+	 *
 	 * @return mineral map config
 	 */
 	public MineralMapConfig getMineralMapConfiguration() {
@@ -777,7 +777,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the malfunction config subset.
-	 * 
+	 *
 	 * @return malfunction config
 	 */
 	public MalfunctionConfig getMalfunctionConfiguration() {
@@ -786,7 +786,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the crop config subset.
-	 * 
+	 *
 	 * @return crop config
 	 */
 	public CropConfig getCropConfiguration() {
@@ -795,7 +795,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the vehicle config subset.
-	 * 
+	 *
 	 * @return vehicle config
 	 */
 	public VehicleConfig getVehicleConfiguration() {
@@ -804,7 +804,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the building config subset.
-	 * 
+	 *
 	 * @return building config
 	 */
 	public BuildingConfig getBuildingConfiguration() {
@@ -813,7 +813,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the resupply configuration.
-	 * 
+	 *
 	 * @return resupply config
 	 */
 	public ResupplyConfig getResupplyConfiguration() {
@@ -822,7 +822,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the settlement config subset.
-	 * 
+	 *
 	 * @return settlement config
 	 */
 	public SettlementConfig getSettlementConfiguration() {
@@ -831,7 +831,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the manufacture config subset.
-	 * 
+	 *
 	 * @return manufacture config
 	 */
 	public ManufactureConfig getManufactureConfiguration() {
@@ -840,7 +840,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the foodProduction config subset.
-	 * 
+	 *
 	 * @return foodProduction config
 	 */
 	public FoodProductionConfig getFoodProductionConfiguration() {
@@ -849,7 +849,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the meal config subset.
-	 * 
+	 *
 	 * @return meal config
 	 */
 	public MealConfig getMealConfiguration() {
@@ -858,7 +858,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the construction config subset.
-	 * 
+	 *
 	 * @return construction config
 	 */
 	public ConstructionConfig getConstructionConfiguration() {
@@ -867,7 +867,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the quotation config subset.
-	 * 
+	 *
 	 * @return quotation config
 	 */
 	public QuotationConfig getQuotationConfiguration() {
@@ -876,13 +876,13 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the science config subset.
-	 * 
+	 *
 	 * @return science config
 	 */
 	public ScienceConfig getScienceConfig() {
 		return scienceConfig;
 	}
-			
+
 
 	/**
 	 * Get teh manager to the ReportingAuthority
@@ -891,7 +891,7 @@ public class SimulationConfig implements Serializable {
 	public ReportingAuthorityFactory getReportingAuthorityFactory() {
 		return raFactory;
 	}
-	
+
 	/**
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
@@ -900,13 +900,13 @@ public class SimulationConfig implements Serializable {
 			filename = filename + XML_EXTENSION;
 		}
 		String fullPathName = "/" + XML_FOLDER + "/" + filename;
-		
+
 		File f = new File(SimulationFiles.getXMLDir(), filename);
 		String checksumOldFile = null;
-		
-		File testf = new File(SimulationFiles.getXMLDir(), filename + ".tst"); 
+
+		File testf = new File(SimulationFiles.getXMLDir(), filename + ".tst");
 		String checksumTestFile = null;
-				
+
 		// Since the xml file does NOT exist in the home directory, start the input stream for copying
 		try (InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName)) {
 			if (stream == null) {
@@ -914,18 +914,18 @@ public class SimulationConfig implements Serializable {
 				return null;
 			}
 			int bytes = stream.available();
-			
+
 			if (bytes != 0) {
 				Path testPath = testf.getAbsoluteFile().toPath();
 				testf.mkdirs();
-	
+
 				// Copy the xml files from within the jar to user home's xml directory
 				Files.copy(stream, testPath, StandardCopyOption.REPLACE_EXISTING);
-				
+
 				// Obtain the checksum of this file
 				checksumTestFile = Hash.MD5.getChecksumString(testf);
 			}
-						
+
 			if (f.exists()) {
 				checksumOldFile = Hash.MD5.getChecksumString(f);
 			}
@@ -935,44 +935,44 @@ public class SimulationConfig implements Serializable {
 					logger.config(f.getName() + " didn't exist localy. Just got created.");
 				} else {
 					logger.config("Error in renaming the test xml file " + testf.getName());
-				}  
+				}
 			}
-				
-			if (f.exists() && f.canRead()) {        
+
+			if (f.exists() && f.canRead()) {
 				if (checksumOldFile != null && !checksumOldFile.equals(checksumTestFile)) {
 					// need to back it up.
 					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
-	
+
 					if (!excludeXMLFile(filename)) {
-						String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;		
+						String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;
 				        File dir = null;//new File(s0.trim());
-				        
+
 						// Case C2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
 			        	// if that buildText directory already exists
 			        	// Get timestamp in UTC
 	//				            Instant timestamp = Instant.now();
 			            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
 			            int lastIndxDot = timestamp.lastIndexOf('.');
-			            timestamp = timestamp.substring(0, lastIndxDot);		            
+			            timestamp = timestamp.substring(0, lastIndxDot);
 			            String s1 = s0 + File.separator + timestamp;
-	
+
 			            dir = new File(s1.trim());
-				            
+
 						logger.config(
 								"Checksum mismatched on " + f.getName() + ". "
-								+ s0 + " folder already exists. Back up " 
+								+ s0 + " folder already exists. Back up "
 								+ f.toString() + " to " + s1);
-						
+
 						// Backup this old (checksum failed) xml file
 						FileUtils.copyFileToDirectory(f, dir, true);
 						FileUtils.deleteQuietly(f);
-						
+
 						if(testf.renameTo(f)) {
 							logger.config("A new version of " + f.getName() + " just got created.");
 						}
 						else {
 							logger.config("Error in renaming the test xml file " + testf.getName());
-						}		  	
+						}
 					}
 					else {
 				    	// The xml file is found
@@ -1010,14 +1010,14 @@ public class SimulationConfig implements Serializable {
 				}
 			}
 		}
-		
+
 		return excludedList.contains(filename);
 	}
 
 
 	/**
 	 * Parses an XML file into a DOM document.
-	 * 
+	 *
 	 * @param filename the path of the file.
 	 * @param useDTD   true if the XML DTD should be used.
 	 * @return DOM document
@@ -1045,7 +1045,7 @@ public class SimulationConfig implements Serializable {
 		return null;
 	}
 
-	
+
 	/**
 	 * load the default config files
 	 */
@@ -1055,7 +1055,7 @@ public class SimulationConfig implements Serializable {
 		// Load simulation document
 		simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 		// Load subset configuration classes.
-		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));	
+		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
@@ -1074,11 +1074,11 @@ public class SimulationConfig implements Serializable {
 		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-		
+
 //		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 		scienceConfig = new ScienceConfig();
-		
-		
+
+
 		logger.config("Done loading all xml config files.");
 	}
 
