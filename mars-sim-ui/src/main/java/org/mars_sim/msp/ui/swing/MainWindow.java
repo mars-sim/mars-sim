@@ -1273,7 +1273,6 @@ extends JComponent implements ClockListener {
 		if (marsTimeTF != null && marsClock != null) {
 			marsTimeTF.setText(marsClock.getTrucatedDateTimeStamp() + UMT);
 		}
-
 	}
 
 	/**

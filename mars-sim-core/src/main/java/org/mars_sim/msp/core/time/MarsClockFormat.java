@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MarsClockFormat.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-03
  * @author Barry Evans
  */
 
@@ -11,7 +11,7 @@ package org.mars_sim.msp.core.time;
  * Provides string formatting for MarsClock.
  */
 public class MarsClockFormat {
-	
+
 	// Formatting styles
 	private static final String DASH = "-";
 	private static final char COLON = ':';
@@ -25,7 +25,7 @@ public class MarsClockFormat {
 	private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri", "Edal", "Flo", "Geor", "Heliba",
 			"Idanon", "Jowani", "Kireal", "Larno", "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo",
 			"Tiunor", "Ulasja", "Vadeun", "Wakumi", "Xetual", "Zungo" };
-	
+
 	private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol",
 	"Venusol", "Jovisol" };
 
@@ -70,13 +70,13 @@ public class MarsClockFormat {
 			throw new IllegalStateException("Invalid millisol number: " + millisol);
 
 		int missionSol = 1; // the sol since the start of the sim
-		
+
 		return new MarsClock(orbit, month, sol, millisol, missionSol);
 	}
-	
+
 	/**
 	 * Returns the time string in the format of e.g. "056"
-	 * 
+	 *
 	 * @param time {@link MarsClock} instance
 	 * @return String in millisols
 	 */
@@ -86,7 +86,7 @@ public class MarsClockFormat {
 
 	/**
 	 * Returns the time string in the format of e.g. "00000056"
-	 * 
+	 *
 	 * @param time {@link MarsClock} instance
 	 * @return String in millisols
 	 */
@@ -96,7 +96,7 @@ public class MarsClockFormat {
 
 	/**
 	 * Returns formatted time stamp string in the format of "03-Adir-05:056.434"
-	 * 
+	 *
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
 	 */
@@ -107,7 +107,7 @@ public class MarsClockFormat {
 
 	/**
 	 * Returns a truncated time stamp string in the format of "03-Adir-05:056"
-	 * 
+	 *
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
 	 */
@@ -118,7 +118,7 @@ public class MarsClockFormat {
 
 	/**
 	 * Gets the date string in the format of e.g. "03-Adir-05"
-	 * 
+	 *
 	 * @param time {@link MarsClock} instance
 	 * @return date string
 	 */
@@ -126,7 +126,7 @@ public class MarsClockFormat {
 		int orbit = time.getOrbit();
 		int sol = time.getSolOfMonth();
 		String month = getMonthName(time.getMonth());
-		
+
 		return String.format(DATE_FORMAT, orbit, month, sol);
 	}
 
@@ -150,17 +150,17 @@ public class MarsClockFormat {
 	 */
 	static boolean isLeapOrbit(int orbit) {
 		boolean result = (orbit % 10) == 0;
-	
+
 		// If an orbit is divisible by 10 it is a leap orbit
 
         // If an orbit is divisible by 100, it is not a leap orbit
 		if ((orbit % 100) == 0)
 			result = false;
-	
+
 		// If an orbit is divisible by 500, it is a leap orbit
 		if ((orbit % 500) == 0)
 			result = true;
-	
+
 		return result;
 	}
 
@@ -171,18 +171,18 @@ public class MarsClockFormat {
 	 * @param orbit the orbit number
 	 */
 	public static int getSolsInMonth(int month, int orbit) {
-	
+
 		// Standard month has 28 sols.
 		int result = MarsClock.SOLS_PER_MONTH_LONG;
-	
+
 		// If month number is divisible by 6, month has 27 sols
 		if ((month % 6) == 0)
 			result = MarsClock.SOLS_PER_MONTH_SHORT;
-	
+
 		// If leap orbit and month number is 24, month has 28 sols
 		if ((month == 24) && MarsClockFormat.isLeapOrbit(orbit))
 			result = MarsClock.SOLS_PER_MONTH_LONG;
-	
+
 		return result;
 	}
 

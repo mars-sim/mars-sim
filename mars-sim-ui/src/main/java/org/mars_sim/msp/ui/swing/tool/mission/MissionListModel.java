@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionListModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-03
  * @author Scott Davis
  */
 
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
  * List model for the mission list.
  */
 @SuppressWarnings("serial")
-public class MissionListModel extends AbstractListModel<Mission> 
+public class MissionListModel extends AbstractListModel<Mission>
 implements MissionManagerListener, MissionListener {
 
 	// Private members.
@@ -35,60 +35,57 @@ implements MissionManagerListener, MissionListener {
 	private MissionWindow missionWindow;
 	private static MissionManager missionManager;
 
-	
+
 	/**
 	 * Constructor.
 	 */
 	public MissionListModel(MissionWindow missionWindow) {
 		this.missionWindow = missionWindow;
-		
+
 		missions = new CopyOnWriteArrayList<Mission>();
 
 		missionManager = Simulation.instance().getMissionManager();
-	
+
 		// Add list as mission manager listener.
 		missionManager.addListener(this);
-		
+
 	}
 
 
 	/**
 	 * Populates the mission list
-	 * 
+	 *
 	 * @param settlement
 	 */
 	public void populateMissions() {
-//		System.out.println("populateMissions()");
 		// Check for null, needed when exiting the sim while Mission Tool is still open.
 		if (missions == null)
 			return;
-		
+
 		Iterator<Mission> i = missions.iterator();
 		while (i.hasNext()) {
 			removeMission(i.next());
-		}			
+		}
 
 		// Add all current missions.
 		Iterator<Mission> ii = missionManager.getMissions().iterator();
 		while (ii.hasNext()) {
 			Mission mission = ii.next();
-			if (!missions.contains(mission)) { 
+			if (!missions.contains(mission)) {
 				addMission(mission);
 			}
 		}
-		
-//		missionWindow.selectFirstIndex();
 	}
 
 	/**
 	 * Adds a mission to this list.
-	 * 
+	 *
 	 * @param mission {@link Mission} the mission to add.
 	 */
 	@Override
 	public void addMission(Mission mission) {
-		if (!missions.contains(mission) 
-				&& missionWindow.getSettlement() != null 
+		if (!missions.contains(mission)
+				&& missionWindow.getSettlement() != null
 				&& missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
 			missions.add(mission);
 			mission.addMissionListener(this);
@@ -98,30 +95,31 @@ implements MissionManagerListener, MissionListener {
 
 	/**
 	 * Removes a mission from this list.
-	 * 
+	 *
 	 * @param mission {@link Mission} mission to remove.
 	 */
 	@Override
 	public void removeMission(Mission mission) {
-		if (missions.contains(mission)) {
-//				&& missionWindow.getSettlement() != null 
-//				&& missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
+		if (missions.contains(mission)
+				&& missionWindow.getSettlement() != null
+				// Make sure the mission of this settlement will NOT be deleted
+				&& !missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
 			int index = missions.indexOf(mission);
 			missions.remove(mission);
 			mission.removeMissionListener(this);
 			SwingUtilities.invokeLater(new MissionListUpdater(MissionListUpdater.REMOVE, this, index));
 		}
 	}
-	
+
 	/**
 	 * Catch mission update event.
-	 * 
+	 *
 	 * @param event the mission event.
 	 */
 	@Override
 	public void missionUpdate(MissionEvent event) {
 		MissionEventType eventType = event.getType();
-		if (eventType == MissionEventType.DESIGNATION_EVENT 
+		if (eventType == MissionEventType.DESIGNATION_EVENT
 				|| eventType == MissionEventType.PHASE_EVENT
 				|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 			int index = missions.indexOf(event.getSource());
@@ -133,7 +131,7 @@ implements MissionManagerListener, MissionListener {
 
 	/**
 	 * Gets the list size.
-	 * 
+	 *
 	 * @return size.
 	 */
 	@Override
@@ -141,15 +139,9 @@ implements MissionManagerListener, MissionListener {
 		return missions.size();
 	}
 
-	public Mission getSingleMission() {
-		if (getSize() == 1)
-			return missions.get(0);
-		return null;
-	}
-	
 	/**
 	 * Gets the list element at a given index.
-	 * 
+	 *
 	 * @param index the index.
 	 * @return the object at the index or null if one.
 	 */
@@ -164,7 +156,7 @@ implements MissionManagerListener, MissionListener {
 
 	/**
 	 * Checks if the list contains a given mission.
-	 * 
+	 *
 	 * @param mission the mission to check for.
 	 * @return true if list contains the mission.
 	 */
@@ -174,7 +166,7 @@ implements MissionManagerListener, MissionListener {
 
 	/**
 	 * Gets the index a given mission is at.
-	 * 
+	 *
 	 * @param mission the mission to check for.
 	 * @return the index for the mission or -1 if not in list.
 	 */

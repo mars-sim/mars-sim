@@ -63,7 +63,7 @@ public class MasterClock implements Serializable {
 	/** The multiplier value that relates TPS to upper TR. */
 	private static final double MULTIPLIER  = 128.0;
 	/** The time ratio int array. */
-	private static int[] TR_ARRAY = new int[MAX_SPEED + 1];
+	private static int[] trArray = new int[MAX_SPEED + 1];
 
 	// Data members
 	/** Runnable flag. */
@@ -145,6 +145,13 @@ public class MasterClock implements Serializable {
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
 
+	static {
+		for (int i=0; i<MAX_SPEED + 1; i++) {
+			int ratio = (int) Math.pow(2, i);
+			trArray[i] = ratio;
+		}
+	}
+
 	/**
 	 * Constructor
 	 *
@@ -154,11 +161,6 @@ public class MasterClock implements Serializable {
 	public MasterClock(int userTimeRatio) {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
-		for (int i=0; i<MAX_SPEED + 1; i++) {
-			int ratio = (int) Math.pow(2, i);
-			TR_ARRAY[i] = ratio;
-		}
-
 		// Gets an instance of the SimulationConfig singleton
 		SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -166,7 +168,6 @@ public class MasterClock implements Serializable {
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 		// Save a copy of the initial mars time
 		initialMarsTime = (MarsClock) marsClock.clone();
-
 
 		// Create an Earth clock
 		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
@@ -204,9 +205,7 @@ public class MasterClock implements Serializable {
 		logger.config("          Max millisol per pulse : " + maxMilliSolPerPulse);
 		logger.config(" Max elapsed time between pulses : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config("                   Accuracy bias : " + accuracyBias);
-
 		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
-
 		logger.config("-----------------------------------------------------");
 	}
 
@@ -836,8 +835,8 @@ public class MasterClock implements Serializable {
 		if (targetTR < 1)
 			targetTR = 1;
 		int newTR = targetTR * 2;
-		if (newTR > TR_ARRAY[TR_ARRAY.length - 1])
-			newTR = TR_ARRAY[TR_ARRAY.length - 1];
+		if (newTR > trArray[trArray.length - 1])
+			newTR = trArray[trArray.length - 1];
 		userTR = newTR;
 
 		compareTPS(newTR, true);
@@ -896,13 +895,13 @@ public class MasterClock implements Serializable {
 	 * @return
 	 */
 	public int findUpperTR(double value) {
-		int size = TR_ARRAY.length;
+		int size = trArray.length;
 		for (int i=0; i<size; i++) {
-			if (value < TR_ARRAY[i]) {
-				return TR_ARRAY[i];
+			if (value < trArray[i]) {
+				return trArray[i];
 			}
 		}
-		return TR_ARRAY[size-1];
+		return trArray[size-1];
 	}
 
 	/**

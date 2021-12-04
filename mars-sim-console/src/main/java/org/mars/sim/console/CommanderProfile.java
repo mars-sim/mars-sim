@@ -399,11 +399,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             // if this is the last column
             if (column == 2 || i == list.size()-1) {
                 newList.add(s.toString());
-                //++;
                 s = new StringBuilder();
             }
-
-            logger.fine("num: " + num);
         }
 
         return newList;
