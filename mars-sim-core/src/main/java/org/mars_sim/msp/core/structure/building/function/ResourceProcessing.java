@@ -30,12 +30,12 @@ public class ResourceProcessing extends Function implements Serializable {
 	public static final double PROCESS_MAX_VALUE = 100D;
 
 	private double powerDownProcessingLevel;
-	
+
 	private List<ResourceProcess> resourceProcesses;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param building the building the function is for.
 	 * @throws BuildingException if function cannot be constructed.
 	 */
@@ -52,7 +52,7 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/**
 	 * Gets the value of the function for a named building.
-	 * 
+	 *
 	 * @param buildingName the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
@@ -61,14 +61,14 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		double result = 0D;		
+		double result = 0D;
 		Iterator<ResourceProcessSpec> i = buildingConfig.getResourceProcesses(buildingName).iterator();
 		while (i.hasNext()) {
-			ResourceProcessSpec process = i.next();	
+			ResourceProcessSpec process = i.next();
 			double processValue = 0D;
 			Iterator<Integer> ii = process.getOutputResources().iterator();
 			while (ii.hasNext()) {
-				int resource = ii.next();	
+				int resource = ii.next();
 				if (!process.isWasteOutputResource(resource)) {
 					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
@@ -119,7 +119,7 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/**
 	 * Gets the resource processes in this building.
-	 * 
+	 *
 	 * @return list of processes.
 	 */
 	public List<ResourceProcess> getProcesses() {
@@ -128,16 +128,16 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/**
 	 * Gets the power down mode resource processing level.
-	 * 
+	 *
 	 * @return proportion of max processing rate (0D - 1D)
 	 */
 	public double getPowerDownResourceProcessingLevel() {
 		return powerDownProcessingLevel;
 	}
-	
+
 	/**
 	 * Time passing for the building.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
@@ -150,7 +150,7 @@ public class ResourceProcessing extends Function implements Serializable {
 				productionLevel = 1D;
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
-	
+
 			// Run each resource process.
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
@@ -163,7 +163,7 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/**
 	 * Gets the amount of power required when function is at full power.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
@@ -180,7 +180,7 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/**
 	 * Gets the amount of power required when function is at power down level.
-	 * 
+	 *
 	 * @return power (kW)
 	 */
 	public double getPoweredDownPowerRequired() {

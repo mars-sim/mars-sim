@@ -397,6 +397,8 @@ public class Simulation implements ClockListener, Serializable {
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
+        // Initialize RoleUtil
+        new RoleUtil();
         RoleUtil.initialize();
 
 		// Initialize instances prior to UnitManager initiatiation

@@ -43,7 +43,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	public static final double C_TO_K = 273.15;
 
-	private static final double AIRLOCK_VOLUME_IN_LITER = 
+	private static final double AIRLOCK_VOLUME_IN_LITER =
 			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
 //	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
@@ -53,13 +53,13 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
 	// Astronauts aboard the International Space Station preparing for
-	// extra-vehicular activity (EVA) "camp out" at low atmospheric pressure, 
-	// 10.2 psi (0.70 bar), spending 8 sleeping hours in the Quest airlock 
-	// chamber before their spacewalk. 
+	// extra-vehicular activity (EVA) "camp out" at low atmospheric pressure,
+	// 10.2 psi (0.70 bar), spending 8 sleeping hours in the Quest airlock
+	// chamber before their spacewalk.
 	//
-	// During the EVA, they breathe 100% oxygen in their spacesuits, 
+	// During the EVA, they breathe 100% oxygen in their spacesuits,
 	// which operate at 4.3 psi (0.30 bar), although
-	// research has examined the possibility of using 100% O2 at 
+	// research has examined the possibility of using 100% O2 at
 	// 9.5 psi (0.66 bar) in the suits to lessen the pressure
 	// reduction, and hence the risk of DCS.
 	//
@@ -80,8 +80,8 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_ATM = 340D;
 	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_MB = 340D;
-	public static final double SKYLAB_TOTAL_AIR_PRESSURE_kPA = 34D; 
-	
+	public static final double SKYLAB_TOTAL_AIR_PRESSURE_kPA = 34D;
+
 	public static final double PSI_PER_ATM = 14.696;
 	public static final double MMHG_PER_ATM = 760;
 	public static final double KPA_PER_ATM = 101.32501;
@@ -129,12 +129,12 @@ public class CompositionOfAir implements Serializable, Temporal {
 	// see https://en.wikipedia.org/wiki/Gas_constant
 
 	public static final int numGases = 5;
-	
+
 	// Data members
 	private int sizeCache;
 	/** The settlement ID */
 	private int settlementID;
-	
+
 	/** Oxygen consumed by a person [kg/millisol] */
 	private double o2Consumed;
 	/** CO2 expelled by a person [kg/millisol] */
@@ -187,21 +187,21 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private double[][] standardMoles;
 
 //	private BuildingManager buildingManager;
-	
+
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static PersonConfig personConfig;
 	private static UnitManager unitManager = sim.getUnitManager();
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
 	public CompositionOfAir(Settlement settlement) {
 
-		settlementID = settlement.getIdentifier();		
+		settlementID = settlement.getIdentifier();
 //		System.out.println("1. CompositionOfAir for " + settlement + " " + settlementID);
 		personConfig = simulationConfig.getPersonConfig();
 
@@ -267,49 +267,49 @@ public class CompositionOfAir implements Serializable, Temporal {
 		List<Building> buildings = settlement.getBuildingManager().getBuildingsWithLifeSupport();
 //		System.out.println("buildings size : " + buildings.size());
 		for (Building b : buildings) {
-			
+
 			int id = b.getInhabitableID();
 			if (id != -1) {
 				double t = C_TO_K + b.getCurrentTemperature();
 				double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
-	
+
 //				System.out.println(size + " : " + buildings.size() + " : " + b + " : " + id);
-				
+
 				fixedVolume[id] = vol;
-	
+
 				double sum1 = 0, sum2 = 0, sum3 = 0;// , sum4 = 0;
-	
+
 				for (int gas = 0; gas < numGases; gas++) {
-	
+
 					double molecularMass = getMolecularMass(gas);
-	
+
 // 					p = nm * R_GAS_CONSTANT * t / fixedVolume[id];
-	
+
 					double p = partialPressure[gas][id];
 					double nm = p * vol / R_GAS_CONSTANT / t;
 					double m = molecularMass * nm;
-	
+
 					temperature[gas][id] = t;
 					numMoles[gas][id] = nm;
 					standardMoles[gas][id] = nm;
 					mass[gas][id] = m;
-	
-//					System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : mass[][] : " 
+
+//					System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : mass[][] : "
 //							+ mass[gas][0] + " is " + mass.length + " x " + mass[0].length);
-					
+
 					sum1 += nm;
 					sum2 += m;
 					sum3 += p;
 					// sum4 += t;
-	
+
 				}
-	
-				// The quantity for each gas 
+
+				// The quantity for each gas
 				totalMoles[id] = sum1;
 				totalMass[id] = sum2;
 				totalPressure[id] = sum3;
 				// buildingTemperature[id] = sum4/numGases;
-	
+
 				// System.out.println(b.getNickName() + " has a total " +
 				// Math.round(totalMass[id]*100D)/100D + " kg of gas");
 			}
@@ -323,25 +323,25 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 			}
 		}
-		
-//		System.out.println(//size + " : " + 
-//		buildings.size() + " : " + buildings.get(size-1) + "   id: " 
+
+//		System.out.println(//size + " : " +
+//		buildings.size() + " : " + buildings.get(size-1) + "   id: "
 //				+ buildings.get(size-1).getInhabitableID() + ":    mass[0][last]: " + mass[0][buildings.get(size-1).getInhabitableID()]);
 	}
-	
+
 	/**
 	 * Time passing for the building.
-	 * 
+	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-//		System.out.println("2. CompositionOfAir for " + unitManager.getSettlementByID(settlementID) + " " + settlementID);
-//		System.out.println("3. CompositionOfAir for " + unitManager.getSettlementByID(2)  + " 2");
+
+		// NOTE: use a boolean to check if the building configuration have changed
 		List<Building> newList = unitManager.getSettlementByID(settlementID).getBuildingManager().getBuildingsWithLifeSupport();
-		int num = newList.size();// unitManager.getSettlementByID(settlementID).getBuildingManager().getLargestInhabitableID() + 1;
-		
+		int num = newList.size();
+
 		// For each time interval
 		calculateGasExchange(pulse.getElapsed(), newList, num);
 
@@ -350,7 +350,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		if (msol % MILLISOLS_PER_UPDATE == 0) {
 			monitorAir(newList, num);
 		}
-		
+
 		return true;
 	}
 
@@ -371,14 +371,14 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Calculate the gas exchange that happens in an given interval of time
-	 * 
+	 *
 	 * @param time      interval in millisols
 	 * @param buildings a list of buildings
 	 * @param size       numbers of buildings
 	 */
 	private void calculateGasExchange(double time, List<Building> buildings, int size) {
 //		int size = buildings.size();
-		
+
 		double o2 = o2Consumed * time;
 		double cO2 = cO2Expelled * time;
 		double moisture = moistureExpelled * time;
@@ -386,23 +386,23 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 		// Part 1 : calculate for each gas the partial pressure and # of moles
 		for (Building b : buildings) {
-			
+
 			double tt = b.getCurrentTemperature();
 			int id = b.getInhabitableID();
-			
+
 //			for (int id = 0; id < size; id++) {
-					
+
 				if (tt > -40 && tt < 40 && id != -1) {
-					
+
 					int numPeople = b.getInhabitants().size();
-		
+
 					double t = C_TO_K + tt;
-		
+
 					o2 = numPeople * -o2; // consumed
 					cO2 = numPeople * cO2; // generated
 					moisture = numPeople * moisture; // generated
 					// h2o = numPeople * h2o;
-		
+
 					// Extract the air moisture generated, O2 generated and CO2 consumed if it's a
 					// greenhouse
 	//				if (b.getBuildingType().toLowerCase().contains(GREENHOUSE)) {
@@ -416,11 +416,11 @@ public class CompositionOfAir implements Serializable, Temporal {
 	//					if (_cO2 > 0)
 	//						cO2 = cO2 - b.getFarming().retrieveCO2(_cO2); // consumed by crops
 	//				}
-					
+
 //					System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : "
-//							+ "mass[2][" + (size-1) + "] is " + mass[2][size-1] 
+//							+ "mass[2][" + (size-1) + "] is " + mass[2][size-1]
 //							+ "  " + mass.length + " x " + mass[0].length);
-					
+
 					for (int gas = 0; gas < numGases; gas++) {
 //						System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : gas (" + gas  + ")   out of " + buildings.size());
 
@@ -429,7 +429,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 						double m = mass[gas][id];
 						double nm = numMoles[gas][id];
 						double p = 0;
-						
+
 						if (gas == 0) {
 							m += cO2;
 						} else if (gas == 3) {
@@ -437,25 +437,25 @@ public class CompositionOfAir implements Serializable, Temporal {
 						} else if (gas == 4) {
 							m += moisture;
 						}
-		
+
 						// Divide by molecular mass to convert mass to # of moles
 						// note the kg/mole are as indicated as each gas have different amu
-		
+
 						nm = m / molecularMass;
 						p = nm * R_GAS_CONSTANT * t / fixedVolume[id];
-						
+
 						if (p < 0)
 							p = 0;
 						if (nm < 0)
 							nm = 0;
 						if (m < 0)
 							m = 0;
-						
+
 						temperature[gas][id] = t;
 						partialPressure[gas][id] = p;
 						mass[gas][id] = m;
 						numMoles[gas][id] = nm;
-		
+
 					}
 				}
 //			}
@@ -466,9 +466,9 @@ public class CompositionOfAir implements Serializable, Temporal {
 		// percentage of composition
 //		for (Building b : buildings) {
 //			int id = b.getInhabitableID();
-			
+
 			for (int id = 0; id < size; id++) {
-	
+
 				double sum_p = 0, sum_nm = 0, sum_m = 0;// , sum_t = 0;
 				// calculate for each gas the total pressure and moles
 				for (int gas = 0; gas < numGases; gas++) {
@@ -478,12 +478,12 @@ public class CompositionOfAir implements Serializable, Temporal {
 					sum_m += mass[gas][id];
 					// sum_t += temperature[gas][id];
 				}
-	
+
 				totalPressure[id] = sum_p;
 				totalMoles[id] = sum_nm;
 				totalMass[id] = sum_m;
 				// buildingTemperature[id] = sum_t/numGases;
-	
+
 				// System.out.println(buildingManager.getBuilding(id).getNickName() + " has a
 				// total " + Math.round(totalMass[id]*100D)/100D + " kg of gas");
 			}
@@ -505,7 +505,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Monitors air and add mass of gases below the threshold
-	 * 
+	 *
 	 * @param buildings a list of buildings
 	 * @param size       numbers of buildings
 	 */
@@ -517,42 +517,42 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 		for (Building b : buildings) {
 			int id = b.getInhabitableID();
-			
+
 			if (id != -1) {
 				double tt = b.getCurrentTemperature();
-	
+
 				if (tt > -40 && tt < 40) {
-	
+
 					double t = C_TO_K + tt;
-					
+
 					for (int gas = 0; gas < numGases; gas++) {
-	
+
 						// [0] = CO2
 						// [1] = ARGON
 						// [2] = N2
 						// [3] = O2
 						// [4] = H2O
-	
+
 						// double diff = delta/standard_moles;
 						double PP = PARTIAL_PRESSURES[gas];
 						double p = partialPressure[gas][id];
 	//					double diff = (PP - p) / PP;
 						double tolerance = p / PP;
-						
+
 						// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
 						// composition
-	//					if (Math.abs(diff) > UPPER_THRESHOLD_GAS_COMPOSITION || 
+	//					if (Math.abs(diff) > UPPER_THRESHOLD_GAS_COMPOSITION ||
 						// if this gas has BELOW 90% or ABOVE 110% the standard percentage of air
-						// composition					
+						// composition
 						if (tolerance > 1.1 || tolerance < .9) {
-	
+
 							double d_new_moles = standardMoles[gas][id] - numMoles[gas][id];;
 							double molecularMass = getMolecularMass(gas);
 							double d_mass = d_new_moles * molecularMass; // d_mass can be -ve;
 							// if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to
 							// save the future effort
 							int ar = getGasID(gas);
-	
+
 							if (d_mass > 0)
 								Storage.retrieveAnResource(d_mass, ar, b.getSettlement(), true);
 							else { // too much gas, need to recapture it; d_mass is less than 0
@@ -560,10 +560,10 @@ public class CompositionOfAir implements Serializable, Temporal {
 								if (recaptured > 0)
 									Storage.storeAnResource(recaptured, ar, b.getSettlement(), sourceName + "::monitorAir");
 							}
-	
+
 							double new_m = mass[gas][id] + d_mass;
 							double new_moles = 0;
-							
+
 							if (new_m < 0) {
 	//							logger.info("[" + settlement + "] no more " + ResourceUtil.findAmountResource(ar).getName()
 	//									+ " in ");
@@ -572,7 +572,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 							else {
 								new_moles = new_m / molecularMass;
 							}
-	
+
 							temperature[gas][id] = t;
 							partialPressure[gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume[id];
 							mass[gas][id] = new_m;
@@ -617,7 +617,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Obtain the Amount Resource id of a given gas
-	 * 
+	 *
 	 * @param gas id
 	 * @return AmountResource id of this gas
 	 */
@@ -637,14 +637,14 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Expands the array to keep track of the gases in the newly added buildings
-	 * 
+	 *
 	 * @param buildings a list of {@link Building}
 	 * @param numID     numbers of buildings
 	 */
 	public void addAirNew(Building building) {
 //		int size = building.getBuildingManager().getNumInhabitables();
 		int id = building.getBuildingManager().obtainNextInhabitableID();//getInhabitableID();
-		
+
 		int diff = 1;//numID - numIDsCache;
 
 		double[] new_volume = Arrays.copyOf(fixedVolume, fixedVolume.length + diff);
@@ -669,7 +669,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		new_partialPressure[3][id] = O2_PARTIAL_PRESSURE;
 		new_partialPressure[4][id] = H2O_PARTIAL_PRESSURE;
 
-		Building b = building;	
+		Building b = building;
 //		int id = b.getInhabitableID();
 
 		double t = C_TO_K + b.getCurrentTemperature();
@@ -693,7 +693,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 				nm = 0;
 			if (m < 0)
 				m = 0;
-			
+
 			new_temperature[gas][id] = t;
 			new_numMoles[gas][id] = nm;
 			new_standard_moles[gas][id] = nm;
@@ -731,7 +731,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Creates a new array for gases and pad it with zero for the new building
-	 * 
+	 *
 	 * @param oldArray
 	 * @param numBuildings
 	 * @return new array
@@ -752,7 +752,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Release or recapture air from a given building
-	 * 
+	 *
 	 * @param id       inhabitable id of a building
 	 * @param isReleasing positive if releasing, negative if recapturing
 	 * @param b        the building
@@ -775,7 +775,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Release or recapture numbers of moles of a certain gas to a given building
-	 * 
+	 *
 	 * @param gas      the type of gas
 	 * @param id       inhabitable id of a building
 	 * @param d_moles  numbers of moles
@@ -814,7 +814,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 			new_moles = 0;
 		if (new_mass < 0)
 			new_mass = 0;
-		
+
 		numMoles[gas][id] = new_moles;
 		mass[gas][id] = new_mass;
 
@@ -855,7 +855,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 	/**
 	 * Calculates the partial pressure of water vapor at a given temperature using
 	 * Buck equation
-	 * 
+	 *
 	 * @param t_C temperature in deg celsius
 	 * @return partial pressure in kPa Note : see
 	 *         https://en.wikipedia.org/wiki/Vapour_pressure_of_water
@@ -866,7 +866,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
@@ -876,7 +876,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		personConfig = pc;
 		unitManager = u;
 	}
-	
+
 	public void destroy() {
 //		buildingManager = null;
 		personConfig = null;

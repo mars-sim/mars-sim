@@ -98,7 +98,6 @@ public class BuildingSpec {
 
 	private List<ScienceType> wasteSpecialties;
 	
-	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,

@@ -56,7 +56,8 @@ public class MissionWindow extends ToolWindow {
 	private NavpointPanel navpointPane;
 
 	private CreateMissionWizard createMissionWizard;
-//	private EditMissionDialog editMissionDialog;
+
+//	Future: may add back EditMissionDialog
 
 	/**
 	 * Constructor.
@@ -92,21 +93,17 @@ public class MissionWindow extends ToolWindow {
 		settlementList = new JList<Settlement>(settlementListModel);
 		settlementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		settlementListPane.add(new WebScrollPane(settlementList), BorderLayout.CENTER);
-//		settlementList.addListSelectionListener(this);
 		settlementList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
-//				if (me.getClickCount() == 1) {
-					JList<Settlement> target = (JList<Settlement>)me.getSource();
-					int index = target.locationToIndex(me.getPoint());
-					if (index >= 0) {
-						Settlement settlement = (Settlement)target.getModel().getElementAt(index);
-						selectSettlement(settlement);
-
-						// Update Nav tab's map
-						navpointPane.updateCoords(settlement.getCoordinates());
-					}
-//	            }
+				JList<Settlement> target = (JList<Settlement>)me.getSource();
+				int index = target.locationToIndex(me.getPoint());
+				if (index >= 0) {
+					Settlement settlement = (Settlement)target.getModel().getElementAt(index);
+					selectSettlement(settlement);
+					// Update Nav tab's map
+					navpointPane.updateCoords(settlement.getCoordinates());
+				}
 	         }
 		});
 
@@ -118,16 +115,12 @@ public class MissionWindow extends ToolWindow {
 		missionList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
-//				if (me.getClickCount() == 1) {
-					JList<Mission> target = (JList<Mission>)me.getSource();
-					int index = target.locationToIndex(me.getPoint());
-					if (index >= 0) {
-						Mission mission = (Mission)target.getModel().getElementAt(index);
-//						target.setSelectedIndex(index);
-//						target.ensureIndexIsVisible(index);
-						selectMission(mission);
-	               }
-//	            }
+				JList<Mission> target = (JList<Mission>)me.getSource();
+				int index = target.locationToIndex(me.getPoint());
+				if (index >= 0) {
+					Mission mission = (Mission)target.getModel().getElementAt(index);
+					selectMission(mission);
+               }
 	         }
 		});
 
@@ -346,7 +339,6 @@ public class MissionWindow extends ToolWindow {
 //
 //			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 //	}
-
 
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;

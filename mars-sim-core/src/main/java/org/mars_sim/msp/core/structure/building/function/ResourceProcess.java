@@ -28,22 +28,24 @@ public class ResourceProcess implements Serializable {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ResourceProcess.class.getName());
-	
+
+	private static final double SMALL_AMOUNT = 0.000001;
+
 	private String name;
 
 	private boolean runningProcess;
 	private int[] timeLimit = new int[] {1, 0};
-	
+
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 
 	private ResourceProcessSpec definition;
 
 	private static MarsClock marsClock;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name          the name of the process.
 	 * @param powerRequired the amount of power required to run the process (kW).
 	 * @param defaultOn     true of process is on by default, false if off by
@@ -54,14 +56,14 @@ public class ResourceProcess implements Serializable {
 		runningProcess = definition.getDefaultOn();
 		currentProductionLevel = 1D;
 		this.definition = definition;
-		
+
 		// Assume it is the start of time
 		resetToggleTime(1, 0);
 	}
 
 	/**
 	 * Gets the process name.
-	 * 
+	 *
 	 * @return process name as string.
 	 */
 	public String getProcessName() {
@@ -70,7 +72,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the current production level of the process.
-	 * 
+	 *
 	 * @return proportion of full production (0D - 1D)
 	 */
 	public double getCurrentProductionLevel() {
@@ -79,7 +81,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Checks if the process is running or not.
-	 * 
+	 *
 	 * @return true if process is running.
 	 */
 	public boolean isProcessRunning() {
@@ -88,7 +90,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Sets if the process is running or not.
-	 * 
+	 *
 	 * @param runningProcess true if process is running.
 	 */
 	public void setProcessRunning(boolean runningProcess) {
@@ -97,7 +99,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Adds work time to toggling the process on or off.
-	 * 
+	 *
 	 * @param time the amount (millisols) of time to add.
 	 */
 	public void addToggleWorkTime(double time) {
@@ -118,7 +120,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the set of input resources.
-	 * 
+	 *
 	 * @return set of resources.
 	 */
 	public Set<Integer> getInputResources() {
@@ -127,7 +129,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the max input resource rate for a given resource.
-	 * 
+	 *
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxInputResourceRate(Integer resource) {
@@ -136,17 +138,17 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Checks if resource is an ambient input.
-	 * 
+	 *
 	 * @param resource the resource to check.
 	 * @return true if ambient resource.
 	 */
 	public boolean isAmbientInputResource(Integer resource) {
 		return definition.isAmbientInputResource(resource);
 	}
-	
+
 	/**
 	 * Gets the set of output resources.
-	 * 
+	 *
 	 * @return set of resources.
 	 */
 	public Set<Integer> getOutputResources() {
@@ -155,7 +157,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the max output resource rate for a given resource.
-	 * 
+	 *
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxOutputResourceRate(Integer resource) {
@@ -164,7 +166,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Checks if resource is a waste output.
-	 * 
+	 *
 	 * @param resource the resource to check.
 	 * @return true if waste output.
 	 */
@@ -174,7 +176,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Processes resources for a given amount of time.
-	 * 
+	 *
 	 * @param time            (millisols)
 	 * @param productionLevel proportion of max process rate (0.0D - 1.0D)
 	 * @param inventory       the inventory pool to use for processes.
@@ -183,10 +185,9 @@ public class ResourceProcess implements Serializable {
 	public void processResources(double time, double productionLevel, Settlement settlement) {
 
 		double level = productionLevel;
-		
+
 		if ((level < 0D) || (level > 1D) || (time < 0D))
 			throw new IllegalArgumentException();
-
 
 		if (runningProcess) {
 
@@ -198,33 +199,55 @@ public class ResourceProcess implements Serializable {
 			// logger.info(name + " production level: " + productionLevel);
 
 			// Input resources from inventory.
-			Map<Integer,Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+			Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
 			for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
 				Integer resource = input.getKey();
 				double maxRate = input.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = settlement.getAmountResourceStored(resource);
-
-				if (resourceAmount > remainingAmount)
+				if (remainingAmount > SMALL_AMOUNT && resourceAmount > remainingAmount) {
 					resourceAmount = remainingAmount;
-
-				settlement.retrieveAmountResource(resource, resourceAmount);
+					double missing = settlement.retrieveAmountResource(resource, resourceAmount);
+					if (missing > 0) {
+						// Refund the amount
+						settlement.storeAmountResource(resource, missing);
+						setProcessRunning(false);
+						break;
+						// Note: create flag to indicate if which the input resource is missing
+					}
+				}
+				else {
+					setProcessRunning(false);
+					break;
+				}
 			}
 
 			// Output resources to inventory.
-			Map<Integer,Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
+			Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
 			for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
 				Integer resource = output.getKey();
 				double maxRate = output.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
-				if (resourceAmount > remainingCapacity)
+				if (resourceAmount > SMALL_AMOUNT && resourceAmount > remainingCapacity) {
 					resourceAmount = remainingCapacity;
-		
-				settlement.storeAmountResource(resource, resourceAmount);
-//				inventory.addAmountSupply(resource, resourceAmount);
+					double excess = settlement.storeAmountResource(resource, resourceAmount);
+					if (excess > 0) {
+						// Refund the amount
+						settlement.retrieveAmountResource(resource, excess);
+						setProcessRunning(false);
+						break;
+						// Note: create flag to indicate if which the output resource capacity is missing
+						// and increase container's vp in order to trigger manufacturing processes
+						// to make more containers if possible
+					}
+				}
+				else {
+					setProcessRunning(false);
+					break;
+				}
 			}
 		} else
 			level = 0D;
@@ -235,7 +258,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Finds the bottleneck of input resources from inventory pool.
-	 * 
+	 *
 	 * @param time      (millisols)
 	 * @param inventory the inventory pool the process uses.
 	 * @return bottleneck (0.0D - 1.0D)
@@ -266,7 +289,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the string value for this object.
-	 * 
+	 *
 	 * @return string
 	 */
 	public String toString() {
@@ -275,16 +298,16 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Gets the amount of power required to run the process.
-	 * 
+	 *
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
 		return definition.getPowerRequired();
 	}
-	
+
 	/**
 	 * Checks if it has exceeded the time limit
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isToggleAvailable() {
@@ -309,7 +332,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
+	 *
 	 * @param clock
 	 */
 	public static void initializeInstances(MarsClock clock) {
@@ -321,14 +344,14 @@ public class ResourceProcess implements Serializable {
 	 * @param sol Baseline mission sol
 	 * @param millisols
 	 */
-	private void resetToggleTime(int sol, int millisols) {	
+	private void resetToggleTime(int sol, int millisols) {
 		// Compute the time limit
 		millisols += definition.getTogglePeriodicity();
 		if (millisols >= 1000) {
 			millisols = millisols - 1000;
 			sol = sol + 1;
 		}
-		
+
 		// Tag this particular process for toggling
 		timeLimit[0] = sol;
 		timeLimit[1] = millisols;

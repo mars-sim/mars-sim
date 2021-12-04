@@ -365,7 +365,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	int column = 0;
 
         	String c = "";
-        	int num = 0;
 
         	// Find out what column
         	if ((i - 1) % 3 == 0)
@@ -376,12 +375,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	// Look at how many whitespaces needed before printing each column
 			if (column == 0) {
 				c = list.get(i);
-				num = SPACES - c.length();
 			}
 
 			else if (column == 1 || column == 2) {
 	        	c = list.get(i);
-	        	num = SPACES - list.get(i-1).length();
+	        	int num = SPACES - list.get(i-1).length();
 
 	        	// Handle the extra space before the parenthesis
 	            for (int j=0; j < num; j++) {

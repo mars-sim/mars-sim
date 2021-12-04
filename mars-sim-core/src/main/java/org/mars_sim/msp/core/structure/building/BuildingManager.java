@@ -560,8 +560,8 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsNoHallwayTunnel(FunctionType functionType) {
 		// Filter off hallways and tunnels
 		return getBuildings(functionType).stream().filter(b ->
-				!b.getBuildingType().equalsIgnoreCase("hallway")
-				&& !b.getBuildingType().equalsIgnoreCase("tunnel")
+				!b.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
+				&& !b.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
 				).collect(Collectors.toList());
 	}
 
@@ -980,9 +980,9 @@ public class BuildingManager implements Serializable {
 		if (unit instanceof Person) {
 			person = (Person) unit;
 
-			List<Building> list = getLeastCrowdedBuildings(manager.getBuildings(FunctionType.LIFE_SUPPORT)
+			List<Building> list = manager.getBuildingsWithLifeSupport()
 					.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-					.collect(Collectors.toList()));
+					.collect(Collectors.toList());
 
 			if (list.size() == 0)
 				return;
@@ -1035,9 +1035,9 @@ public class BuildingManager implements Serializable {
 				RoboticStation roboticStation = bldg.getRoboticStation();
 				// remove hallway, tunnel, observatory
 				if (roboticStation != null) {
-					if (bldg.getBuildingType().equalsIgnoreCase("hallway")
-							|| bldg.getBuildingType().equalsIgnoreCase("tunnel")
-							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
+					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 						// functionBuildings.remove(bldg); // will cause ConcurrentModificationException
 					} else if (function == FunctionType.FARMING) {
 						if (bldg.getBuildingType().toLowerCase().contains("greenhouse")) {
@@ -1083,8 +1083,8 @@ public class BuildingManager implements Serializable {
 				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
 				for (Building bldg : stations) {
 					// remove hallway, tunnel, observatory
-					if (bldg.getBuildingType().equalsIgnoreCase("hallway")
-							|| bldg.getBuildingType().equalsIgnoreCase("tunnel")
+					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
 							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
 						// stations.remove(bldg);// will cause ConcurrentModificationException
 					} else {
@@ -1374,13 +1374,11 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of uncrowded buildings from a given list of buildings with life
-	 * support.
+	 * Gets a list of uncrowded buildings from a given list of buildings with both life
+	 * support and robotic station.
 	 *
-	 * @param buildingList list of buildings with the life support function.
+	 * @param buildingList list of buildings with both life support and robotic station
 	 * @return list of buildings that are not at or above maximum occupant capacity.
-	 * @throws BuildingException if building in list does not have the life support
-	 *                           function.
 	 */
 	public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
 		return buildingList.stream()
