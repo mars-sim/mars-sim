@@ -124,9 +124,9 @@ public class Simulation implements ClockListener, Serializable {
 	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
-	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
+	public final static String VERSION = Version.getVersion();
 	/** Build string. */
-	public final static String BUILD = Msg.getString("Simulation.build").trim(); //$NON-NLS-1$
+	public final static String BUILD = Version.getBuild();
 	/** Java version string. */
 	private final static String JAVA_TAG = System.getProperty("java.version");
 	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";

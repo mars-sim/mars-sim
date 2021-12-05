@@ -159,6 +159,31 @@
 
    <build>
         <plugins>   
+			<plugin>
+				<groupId>io.github.git-commit-id</groupId>
+				<artifactId>git-commit-id-maven-plugin</artifactId>
+			    <version>5.0.0</version>
+			    <executions>
+			        <execution>
+			            <phase>validate</phase>
+			            <goals>
+			                <goal>revision</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <configuration>
+			        <verbose>false</verbose>
+			        <failOnNoGitDirectory>true</failOnNoGitDirectory>
+			        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+			        <generateGitPropertiesFilename>${project.build.outputDirectory}/version.properties</generateGitPropertiesFilename>
+			        <includeOnlyProperties>
+                      <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+                      <includeOnlyProperty>^git.build.version$</includeOnlyProperty>
+                      <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                      <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+                    </includeOnlyProperties>
+			    </configuration>
+			</plugin>
        		<plugin>
        		<!-- see intro at https://www.baeldung.com/kotlin/maven-java-project -->
 				<groupId>org.jetbrains.kotlin</groupId>
