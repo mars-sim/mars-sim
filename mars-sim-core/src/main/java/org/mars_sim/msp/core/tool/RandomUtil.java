@@ -35,11 +35,15 @@ public final class RandomUtil {
 	// Note 2: other PRNG in the MT family can be found at
 	// https://github.com/zwxadz/SFMT-for-Java
 
-	private static SecureRandom sr = new SecureRandom();
+	private static final SecureRandom sr = new SecureRandom();
 	// Note : if okay to block the thread during re-seeding,
 	// may use SecureRandom sr = SecureRandom.getInstanceStrong()
 
 	private RandomUtil() {}
+
+	public static SecureRandom getSecureRandom() {
+		return sr;
+	}
 
 	public static String getAlgorithm() {
 		return sr.getAlgorithm();
@@ -91,6 +95,16 @@ public final class RandomUtil {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
 		return sr.nextInt(ceiling - base + 1) + base;
+	}
+
+	/**
+	 * Returns a random double number from 0 to 1.0.
+	 *
+	 * @param ceiling the maximum number result
+	 * @return the random number
+	 */
+	public static double getRandomDouble() {
+		return sr.nextDouble();
 	}
 
 	/**

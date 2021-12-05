@@ -1,11 +1,13 @@
 package org.mars_sim.fxgl.model.util;
 
+import org.mars_sim.msp.core.tool.RandomUtil;
+
 import javafx.scene.paint.Color;
 
 public interface PointColor {
 
     static javafx.scene.paint.Color random() {
-        int random = (int) (Math.random() * 9);
+        int random = RandomUtil.getRandomInt(9);
 
         switch (random) {
             case 0:
