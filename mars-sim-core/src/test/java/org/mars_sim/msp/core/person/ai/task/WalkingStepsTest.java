@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import org.junit.Before;
@@ -8,8 +9,12 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
@@ -18,6 +23,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 import junit.framework.TestCase;
 
@@ -30,6 +36,7 @@ public class WalkingStepsTest extends TestCase {
 	private static final LocalPosition LOCAL_POSITION2 = new LocalPosition(-7.5D, 0D);
 	private static final LocalPosition LOCAL_POSITION1 = new LocalPosition(-4.5D, 0D);
 	private UnitManager unitManager;
+	private MarsSurface surface;
 
 	@Before
 	public void setUp() {
@@ -51,6 +58,8 @@ public class WalkingStepsTest extends TestCase {
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
         							 mars.getWeather(), unitManager);
+        
+        surface = unitManager.getMarsSurface();
 	}
 	
     /**
@@ -66,36 +75,11 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
-        											   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
+        Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
 
-        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
-        building1.setTemplateID(1);
-        building1.setName("building 1");
-        building1.setWidth(6D);
-        building1.setLength(9D);
-        building1.setLocation(-12D, 0D);
-        building1.setFacing(270D);
-        buildingManager.addMockBuilding(building1);
-
-        MockBuilding building2 = new MockBuilding(buildingManager, "B2");
-        building2.setTemplateID(2);
-        building2.setName("building 2");
-        building2.setWidth(2D);
-        building2.setLength(3D);
-        building2.setLocation(-6D, 0D);
-        building2.setFacing(270D);
-        buildingManager.addMockBuilding(building2);
+        Building building2 = buildBuilding(buildingManager, new LocalPosition(-6D, 6D), 270D, 2);
 
         connectorManager.addBuildingConnection(new BuildingConnector(building0,
                 LOCAL_POSITION1, 90D, building2, LOCAL_POSITION1, 270D));
@@ -104,23 +88,20 @@ public class WalkingStepsTest extends TestCase {
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-//		// settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, -6D, .5D, building2);
-//        assertNotNull(walkingSteps);
-//        assertTrue(walkingSteps.canWalkAllSteps());
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//        assertEquals(1, walkingSteps.getWalkingStepsNumber());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-//        assertEquals(-6D, walkStep1.xLoc);
-//        assertEquals(.5D, walkStep1.yLoc);
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        LocalPosition target = new LocalPosition(-6D, 0.5D);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, building2);
+        assertNotNull(walkingSteps);
+        assertTrue(walkingSteps.canWalkAllSteps());
+        assertNotNull(walkingSteps.getWalkingStepsList());
+        assertEquals(1, walkingSteps.getWalkingStepsNumber());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
+        assertEquals(target, new LocalPosition(walkStep1.loc));
     }
 
     /**
@@ -133,50 +114,26 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
-
-        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
-        building1.setTemplateID(1);
-        building1.setName("building 1");
-        building1.setWidth(6D);
-        building1.setLength(9D);
-        building1.setLocation(-12D, 0D);
-        building1.setFacing(270D);
-        buildingManager.addMockBuilding(building1);
+        Building building0 = buildEVA(buildingManager, LOCAL_POSITION1, 0D, 0);
+        Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-        
-////		settlement.getInventory().storeUnit(person);		
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
-//        assertNotNull(walkingSteps);
-//
-//        assertFalse(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsNumber()); // junit.framework.AssertionFailedError: expected:<2> but was:<0>
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsList().size()); // junit.framework.AssertionFailedError: expected:<2> but was:<0>
+		Person person = new Person(settlement);
+
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, 0D, building1);
+        assertNotNull(walkingSteps);
+
+        assertFalse(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(2, walkingSteps.getWalkingStepsNumber()); 
+
+        assertEquals(2, walkingSteps.getWalkingStepsList().size()); 
     }
     
 
@@ -190,74 +147,45 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 	
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
-
-        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
-        building1.setTemplateID(1);
-        building1.setName("building 1");
-        building1.setWidth(6D);
-        building1.setLength(9D);
-        building1.setLocation(-12D, 0D);
-        building1.setFacing(270D);
-        buildingManager.addMockBuilding(building1);
-
-        BuildingAirlock airlock1 = new BuildingAirlock(building1, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building1.addFunction(new EVA(building1, airlock1));
-
+        Building building1 = buildEVA(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
-//        assertNotNull(walkingSteps);
-//
-//        // testWalkingStepsBuildingToBuildingNoPathAirlocks(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)  Time elapsed: 0.559 sec  <<< FAILURE!
-//        assertTrue(walkingSteps.canWalkAllSteps());          // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
-//
-//        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, 0D, building1);
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(5, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(5, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
+
+        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
     }
 
     /**
@@ -269,58 +197,39 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        assertNotNull(buildingManager);
-        
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         buildingManager.setupBuildingFunctionsMap();
         
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        assertEquals(10D, walkStep3.xLoc);
-//
-//        assertEquals(15D, walkStep3.yLoc);
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        LocalPosition target = new LocalPosition(10D, 15D);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, null);
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(3, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(3, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        assertEquals(target, new LocalPosition(walkStep3.loc));
     }
 
     /**
@@ -332,44 +241,25 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
+        Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        building0.removeFunction(eva);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
-//
-//        assertNotNull(walkingSteps);
-//
-//        assertFalse(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsList().size());
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, 0D, null);
+
+        assertNotNull(walkingSteps);
+
+        assertFalse(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(0, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(0, walkingSteps.getWalkingStepsList().size());
     }
 
     /**
@@ -382,61 +272,42 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
-//
-//        person.setXLocation(15D);
-//        person.setYLocation(-10D);
-//        settlement.getInventory().retrieveUnit(person);
-//        rover.getInventory().storeUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 20D, 15D, null);
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        assertEquals(20D, walkStep3.xLoc);
-//
-//        assertEquals(15D, walkStep3.yLoc);
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
+
+        person.transfer(rover);
+
+        LocalPosition target = new LocalPosition(20D, 15D);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, null);
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(3, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(3, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        assertEquals(target, new LocalPosition(walkStep3.loc));
     }
 
     /**
@@ -448,64 +319,46 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
                 
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
-
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
+        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
+        
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(15D);
-//        person.setYLocation(-10D);
-//        settlement.getInventory().retrieveUnit(person);
-//        rover.getInventory().storeUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, building0);
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps());  // maven test won't pass : junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsNumber()); // maven test : junit.framework.AssertionFailedError: expected:<5> but was:<2>
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
-//
-//        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
+		Person person = new Person(settlement);
+        person.transfer(rover);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, 0D, building0);
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(5, walkingSteps.getWalkingStepsNumber()); 
+
+        assertEquals(5, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
+
+        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
     }
 
     /**
@@ -522,64 +375,48 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
-
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
-
+        LocalPosition parked = new LocalPosition(15D, -10D);
+        Rover rover = buildRover(settlement, "Test Rover", parked);
+        
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        		new MockBuilding(buildingManager, "B0");
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
-//
-//        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep5.stepType);
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked.getX(), parked.getY(), 0D, rover);
+        
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(5, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(5, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
+
+        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep5.stepType);
     }
 
     /**
@@ -591,47 +428,27 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
+        LocalPosition parked = new LocalPosition(15D, -10D);
+        Rover rover = buildRover(settlement, "Test Rover", parked);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
-
+        Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
         
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        building0.removeFunction(eva);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertFalse(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsList().size());
+		Person person = new Person(settlement);
+        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked.getX(), parked.getY(), 0D, rover);
+        
+        assertNotNull(walkingSteps);
+
+        assertFalse(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(0, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(0, walkingSteps.getWalkingStepsList().size());
     }
 
     /**
@@ -642,69 +459,97 @@ public class WalkingStepsTest extends TestCase {
         Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 		
-        BuildingManager buildingManager = settlement.getBuildingManager();
+		LocalPosition parked1 = new LocalPosition(15D, -10D);
+		Rover rover1 = buildRover(settlement, "test Rover 1", parked1);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
+		LocalPosition parked2 = new LocalPosition(-50D, 20D);
+        Rover rover2 = buildRover(settlement, "Test Rover 2", parked2);
+        
+		Person person = new Person(settlement);
+		person.transfer(rover1);
+		
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked2.getX(), parked2.getY(), 0D, rover2);
+        
+        assertNotNull(walkingSteps);
 
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(5, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(5, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
+
+        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep5.stepType);
+    }
+
+    private Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
+        Rover rover1 = new Rover(name, "Explorer Rover", settlement);
+        rover1.setParkedLocation(parked, 0D);
+        unitManager.addUnit(rover1);
+        return rover1;
+	}
+
+	private GroundVehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+
+    	MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
+        
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
 				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         building0.addFunction(new EVA(building0, airlock0));
-        // 2016-10-28 Added setupBuildingFunctionsMap()
-        buildingManager.setupBuildingFunctionsMap();
 
-//        Rover rover1 = new Rover("Test Rover 1", "Explorer Rover", settlement);
-//        rover1.setParkedLocation(15D, -10D, 0D);
-//
-//        Rover rover2 = new Rover("Test Rover 2", "Explorer Rover", settlement);
-//        rover2.setParkedLocation(-50D, 20D, 15D);
-
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(15D);
-//        person.setYLocation(-10D);
-//        settlement.getInventory().retrieveUnit(person);
-//        rover1.getInventory().storeUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, -50D, 20D, rover2);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
-//
-//        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep5.stepType);
+        LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
+        GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
+                new LocalPosition[] { parkingLocation });
+        building0.addFunction(garage);
+        
+        return garage;
     }
 
+    private MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    	String name = "B" + id;
+    	
+        MockBuilding building0 = new MockBuilding(buildingManager, name);
+        building0.setTemplateID(id);
+        building0.setName(name);
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setLocation(pos);
+        building0.setFacing(facing);
+        buildingManager.addMockBuilding(building0);	
+        
+        unitManager.addUnit(building0);
+
+        return building0;
+    }
+    
+    private Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    	MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
+
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
+        building0.addFunction(new EVA(building0, airlock0));
+        return building0;
+	}
+    
     /**
      * Test constructing walking steps from a building to a rover in a garage.
      */
@@ -714,131 +559,82 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(0D, 0D, 0D);
-
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
-
-        LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-        GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
-                new LocalPosition[] { parkingLocation });
-        building0.addFunction(garage);
-//        garage.addVehicle(rover);
+        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        GroundVehicleMaintenance garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
+        garage.addVehicle(rover);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(4D);
-//        person.setYLocation(4D);
-//        BuildingManager.addPersonOrRobotToBuilding(person, building0);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, rover);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.ENTER_GARAGE_ROVER, walkStep2.stepType);
-//
-//        assertEquals(0D, walkStep2.xLoc);
-//
-//        assertEquals(0D, walkStep2.yLoc);
+		Person person = new Person(settlement);
+        person.setPosition(new LocalPosition(4D, 4D));
+        BuildingManager.addPersonOrRobotToBuilding(person, garage.getBuilding());
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, 0D, rover);
+        
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps()); 
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(2, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(2, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.ENTER_GARAGE_ROVER, walkStep2.stepType);
+
+        assertEquals(new Point2D.Double(0,0), walkStep2.loc);
     }
 
     /**
      * Test constructing walking steps from a rover in a garage to a building.
      */
     public void testWalkingStepsRoverToBuildingInGarage() {
-
         
         Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(0D, 0D, 0D);
-
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
-
-        LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-        GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
-                new LocalPosition[] { parkingLocation });
-        building0.addFunction(garage);
-//        garage.addVehicle(rover);
-
+        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        rover.transfer(settlement);
+        
+        GroundVehicleMaintenance garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        garage.addVehicle(rover);
         buildingManager.setupBuildingFunctionsMap();
+        
+		Person person = new Person(settlement);
+        person.setPosition(LocalPosition.DEFAULT_POSITION);
+        person.transfer(rover);
+        
+        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, 0D, garage.getBuilding());
+        
+        assertNotNull(walkingSteps);
+        
+        assertTrue(walkingSteps.canWalkAllSteps()); 
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        settlement.getInventory().retrieveUnit(person);
-//        rover.getInventory().storeUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(2, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.EXIT_GARAGE_ROVER, walkStep1.stepType); // junit.framework.AssertionFailedError: expected:<6> but was:<1>
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep2.stepType);
-//
-//        assertEquals(4D, walkStep2.xLoc);
-//
-//        assertEquals(4D, walkStep2.yLoc);
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(2, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(2, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.EXIT_GARAGE_ROVER, walkStep1.stepType); // junit.framework.AssertionFailedError: expected:<6> but was:<1>
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep2.stepType);
+
+        assertEquals(new Point2D.Double(4D, 4D), walkStep2.loc);
     }
 
     /**
@@ -850,107 +646,72 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        building0.addFunction(new EVA(building0, airlock0));
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         buildingManager.setupBuildingFunctionsMap();
 
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(50D);
-//        person.setYLocation(50D);
-//        settlement.getInventory().retrieveUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep3.stepType);
-//
-//        assertEquals(4D, walkStep3.xLoc);
-//
-//        assertEquals(4D, walkStep3.yLoc);
+		Person person = new Person(settlement);
+		person.transfer(surface);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, 0D, building0);
+        
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(3, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(3, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep3.stepType);
+
+        assertEquals(4D, walkStep3.loc.getX());
+
+        assertEquals(4D, walkStep3.loc.getY());
     }
 
-    /**
+
+
+	/**
      * Test constructing walking steps from exterior to building interior with no airlock.
      */
     public void testWalkingStepsExteriorToBuildingNoAirlock() {
-
         
         Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
-
+        Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
 
-//       //	Person person = new Person(settlement);
-//		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(0D);
-//        person.setYLocation(0D);
-//        settlement.getInventory().retrieveUnit(person);
-//
-//        building0.removeFunction(eva);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, building0);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertFalse(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(0, walkingSteps.getWalkingStepsList().size());
+        Person person = new Person(settlement);
+        person.transfer(surface);
+        
+        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, 0D, building0);
+        
+        assertNotNull(walkingSteps);
+
+        assertFalse(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(0, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(0, walkingSteps.getWalkingStepsList().size());
     }
 
     /**
@@ -960,60 +721,39 @@ public class WalkingStepsTest extends TestCase {
 
         Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
-		
-        BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setLocation(0D, 0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
-
-        buildingManager.setupBuildingFunctionsMap();
-
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
+		LocalPosition parkedPosition = new LocalPosition(15D, -10D);
+        Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
+        rover.transfer(surface);
         
-//		Person person = new Person(settlement);
-////		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(20D);
-//        person.setYLocation(15D);
-//        settlement.getInventory().retrieveUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
-//        
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps());
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsNumber());
-//
-//        assertEquals(3, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep3.stepType);
-//
-//        assertEquals(15D, walkStep3.xLoc);
-//
-//        assertEquals(-10D, walkStep3.yLoc);
+		Person person = new Person(settlement);
+        person.setPosition(new LocalPosition(20D,15D));
+        person.transfer(surface);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, 0D, rover);
+        
+        assertNotNull(walkingSteps);
+        
+        assertTrue(walkingSteps.canWalkAllSteps());
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(3, walkingSteps.getWalkingStepsNumber());
+
+        assertEquals(3, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep3.stepType);
+
+        assertEquals(parkedPosition, new LocalPosition(walkStep3.loc));
     }
 }

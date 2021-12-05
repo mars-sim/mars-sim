@@ -38,7 +38,6 @@ implements Serializable {
 
 	// Data members.
 	private List<WalkStep> walkingSteps;
-	private List<RobotWalkStep> robotWalkingSteps;
 	private boolean canWalkAllSteps;
 
 	private Person person;
@@ -78,7 +77,7 @@ implements Serializable {
 
         // Initialize data members.
         canWalkAllSteps = true;
-        robotWalkingSteps = new CopyOnWriteArrayList<>();
+        walkingSteps = new CopyOnWriteArrayList<>();
 
         // Determine initial walk state.
         RobotWalkState initialWalkState = determineInitialRobotWalkState(robot);
@@ -99,15 +98,6 @@ implements Serializable {
     }
 
     /**
-     * Gets a list of robot walking steps to the destination.
-     * @return list of robot walk steps.  Returns empty list if a valid path isn't found.
-     */
-    public List<RobotWalkStep> getRobotWalkingStepsList() {
-        return robotWalkingSteps;
-    }
-
-    
-    /**
      * Gets the number of walking steps to the destination.
      * @return number of walking steps.  Returns 0 if a valid path isn't found.
      */
@@ -116,20 +106,6 @@ implements Serializable {
 
         if (walkingSteps != null) {
             result = walkingSteps.size();
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the number of robot walking steps to the destination.
-     * @return number of robot walking steps.  Returns 0 if a valid path isn't found.
-     */
-    public int getRobotWalkingStepsNumber() {
-        int result = 0;
-
-        if (robotWalkingSteps != null) {
-            result = robotWalkingSteps.size();
         }
 
         return result;
@@ -1343,17 +1319,10 @@ implements Serializable {
         else {
 
             // Cannot walk to destination building.
-            canWalkAllSteps = false;
-//            logger.severe("Cannot find walkable airlock from outside to building interior.");
-            
-            if (person != null)
-            	logger.log(person, Level.WARNING, 10_000, 
-            			"No walkable airlock from outside to building interior in "
-                		 + person.getBuildingLocation().getNickName());
-            else if (robot != null)
-            	logger.log(robot, Level.WARNING, 10_000,
-            			"No walkable airlock from outside to building interior in "
-                		 + robot.getBuildingLocation().getNickName());    
+            canWalkAllSteps = false;            
+        	logger.log(person, Level.WARNING, 10_000, 
+        			"No walkable airlock from outside to building interior in "
+            		 + destinationBuilding.getNickName());
         }
     }
 
@@ -1475,19 +1444,10 @@ implements Serializable {
      */
     private void createWalkSettlementInteriorStep(Point2D destLoc,
             Building destinationBuilding) {
-       if (person != null) {
-           WalkStep walkStep = new WalkStep(WalkStep.SETTLEMENT_INTERIOR_WALK);
-           walkStep.loc = destLoc;
-           walkStep.building = destinationBuilding;
-           walkingSteps.add(walkStep);        	
-        }
-        else if (robot != null ){
-            RobotWalkStep walkStep = new RobotWalkStep(RobotWalkStep.SETTLEMENT_INTERIOR_WALK);
-            walkStep.loc = destLoc;
-            walkStep.building = destinationBuilding;
-            robotWalkingSteps.add(walkStep);       	
-        }
-
+       WalkStep walkStep = new WalkStep(WalkStep.SETTLEMENT_INTERIOR_WALK);
+       walkStep.loc = destLoc;
+       walkStep.building = destinationBuilding;
+       walkingSteps.add(walkStep);        	
     }
 
     /**
@@ -1565,7 +1525,27 @@ implements Serializable {
         walkingSteps.add(enterAirlockStep);
     }
 
-    
+    public String generateRoute() {
+    	var route = new StringBuilder();
+		for(WalkStep step : walkingSteps) {
+			route.append("Type=").append(step.stepType).append(",");
+			if (step.loc != null) {
+				route.append(" loc=").append(step.loc);
+			}
+			if (step.building != null) {
+				route.append(" building=").append(step.building.getNickName()).append(',');
+			}
+			if (step.rover != null) {
+				route.append(" rover=").append(step.rover.getNickName()).append(',');
+			}
+			if (step.airlock != null) {
+				route.append(" airlock=").append(step.airlock.getEntityName()).append(',');
+			}
+			route.append("\n");
+		}
+    	
+    	return route.toString();
+    }
     /**
      * Inner class for representing a walking state.
      */
@@ -1649,32 +1629,6 @@ implements Serializable {
             this.stateType = stateType;
         }
     }
-
-    /**
-     * Inner class for representing a walking step.
-     */
-    class RobotWalkStep implements Serializable {
-
-        /** default serial id. */
-        private static final long serialVersionUID = 1L;
-
-        // Step types.
-        static final int SETTLEMENT_INTERIOR_WALK = 0;
-
-        // Data members
-        int stepType;
-        Point2D loc;
-        Building building;
-
-        private RobotWalkStep(int stepType) {
-            this.stepType = stepType;
-        }
-        
-    	public void destroy() {
-            building = null;
-    	}
-    }
-
     
 	public void destroy() {
 		walkingSteps = null;

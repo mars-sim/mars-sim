@@ -399,8 +399,8 @@ public class Walk extends Task implements Serializable {
 
 		}
 		else if (robot != null) {
-			if (walkingStepIndex < walkingSteps.getRobotWalkingStepsNumber()) {
-				WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
+			if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
+				WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 				result = walkingStepPhaseMap.get(step.stepType);
 			}
 			else {
@@ -550,14 +550,14 @@ public class Walk extends Task implements Serializable {
 			logger.log(robot, Level.FINER, 4000, "Walking inside a settlement.");
 
 			// Check if robot has reached destination location.
-			WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
+			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Building building = BuildingManager.getBuilding(robot);
 			LocalPosition robotLocation = robot.getPosition();
 			double x = Math.round(step.loc.getX() * 100.0) / 100.0;
 			double y = Math.round(step.loc.getY() * 100.0) / 100.0;
 			LocalPosition stepLocation = new LocalPosition(x, y);
 			if (step.building.equals(building) && robotLocation.isClose(stepLocation)) {
-				if (walkingStepIndex < (walkingSteps.getRobotWalkingStepsNumber() - 1)) {
+				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Almost arriving at (" + x + ", " + y + ") in " +
 					// building.getNickName());

@@ -187,9 +187,9 @@ public class BuildingConfig implements Serializable {
 
 			// Any complex properties
 			for (Element complexProperty : element.getChildren()) {
-				if (element.getName().endsWith(POSITION)) {
+				if (complexProperty.getName().endsWith(POSITION)) {
 					LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
-					props.put(element.getName(), pos);
+					props.put(complexProperty.getName(), pos);
 				}
 			}
 
