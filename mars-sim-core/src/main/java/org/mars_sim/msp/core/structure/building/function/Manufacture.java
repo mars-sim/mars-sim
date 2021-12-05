@@ -266,19 +266,15 @@ public class Manufacture extends Function implements Serializable {
 		// Consume inputs.
 		for (ManufactureProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-//				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				building.getSettlement().retrieveAmountResource(id, item.getAmount());
 				// Add tracking demand
-//				building.getSettlement().addAmountDemand(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
-//				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				building.getSettlement().retrieveItemResource(id, (int) item.getAmount());
 				// Add tracking demand
-//				building.getSettlement().addItemDemand(id, (int) item.getAmount());
 			} else
-				// in future, add equipment here as the requirement for this process
+				// Future: add equipment here as the requirement for this process
 				logger.log(getBuilding().getSettlement(), Level.SEVERE, 20_000,
 						getBuilding()
 						+ " Manufacture process input: " + item.getType() + " not a valid type.");
@@ -317,8 +313,7 @@ public class Manufacture extends Function implements Serializable {
 
 		salvages.add(process);
 
-		// Retrieve salvaged unit from inventory and remove from unit manager.
-		// Inventory inv = getBuilding().getSettlementInventory();
+		// Retrieve salvaged unit and remove from unit manager.
 		Unit salvagedUnit = process.getSalvagedUnit();
 		if (salvagedUnit != null) {
 			if (salvagedUnit.getUnitType() == UnitType.EQUIPMENT) {
@@ -732,20 +727,20 @@ public class Manufacture extends Function implements Serializable {
 		// Check only once a day for # of processes that are needed.
 		if (pulse.isNewSol()) {
 			// Gets the available number of printers in storage
-			int numAvailable = building.getSettlement().getItemResourceStored(printerID); // b_inv
+			int numAvailable = building.getSettlement().getItemResourceStored(printerID);
 
-//			System.out.println(building.getSettlement()
+//			logger.info(building.getSettlement()
 //					+ "'s supportingProcesses: " + supportingProcesses
 //					+ "   maxProcesses: " + maxProcesses);
 
-			// TODO: create a settler's task to replace printer manually
+			// NOTE: it's reasonable to create a settler's task to install a 3-D printer manually over a period of time
 
 			if (numPrintersInUse < numMaxConcurrentProcesses) {
 				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
 				logger.info(getBuilding().getSettlement(), 20_000,
 						getBuilding() + " - "
 						+ numAvailable
-						+ " 3D-printer(s) in stock.");
+						+ " 3D-printer(s) in storage.");
 				logger.info(getBuilding().getSettlement(), 20_000,
 						getBuilding() + " - "
 						+ numPrintersInUse
@@ -756,17 +751,22 @@ public class Manufacture extends Function implements Serializable {
 					for (int i=0; i<size; i++) {
 						numPrintersInUse++;
 						numAvailable--;
-						building.getSettlement().retrieveItemResource(printerID, 1);
+						int lacking = building.getSettlement().retrieveItemResource(printerID, 1);
+						if (lacking > 0) {
+							logger.info(getBuilding().getSettlement(), 20_000,
+									"No 3D-printer available for " + getBuilding() + ".");
+						}
 					}
 
 					logger.info(getBuilding().getSettlement(), 20_000,
 							getBuilding() + " - "
 							+ size
 							+ " 3D-printer(s) just installed.");
-
 				}
 			}
-            //TODO: determine when to push for building new 3D printers
+
+            // NOTE: if not having enough printers,
+			// determine how to use GoodsManager to push for making new 3D printers
 		}
 	}
 

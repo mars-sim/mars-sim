@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.MicroInventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -323,18 +322,22 @@ public final class ManufactureUtil {
 	 * @throws Exception if error determining if process can be started.
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
-		Settlement settlement = workshop.getBuilding().getSettlement();
-
-		// Check to see if the numbers of 3D printers are available for the processes.
-		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse()) {
+		// Check to see if this workshop can accommodate another process.
+		if (workshop.getMaxProcesses() <= workshop.getCurrentProcesses()) {
 			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}
+
+		// Q: Are the numbers of 3D printers available for another processes ?
+		// Check for workshop.getNumPrintersInUse()
+		// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
 		// Check to see if process tech level is above workshop tech level.
 		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
 			return false;
 		}
+
+		Settlement settlement = workshop.getBuilding().getSettlement();
 
 		// Check to see if process input items are available at settlement.
         if (!areProcessInputsAvailable(process, settlement)) {
@@ -349,48 +352,6 @@ public final class ManufactureUtil {
 		return true;
     }
 
-//	/**
-//	 * Check to see if there is an available printer in this building
-//	 *
-//	 * @param workshop
-//	 * @return true if there is an available 3D Printer.
-//	 */
-//	public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
-//
-//		if (workshop.getMaxProcesses() > 0)
-//			return true;
-//		else
-//			return false;
-//
-//		// Rework checking for the printer ?
-//    	boolean result = false;
-//    	int inBldg = 0;
-//    	Building building = workshop.getBuilding();
-//        //System.out.println("ManufactureUtil : starting isAn3DPrinterAvailable()");
-//
-//        //if (workshop.getNumPrinterInUse() == 0)
-//        //	workshop.set3DPrinterLocation(building);
-//
-//    	if (building.getBuildingInventory() != null) {
-//	        Inventory b_inv = building.getBuildingInventory();
-//
-//	        if (b_inv.hasItemResource(printerItem))
-//		        if (b_inv.getItemResourceNum(printerItem)>0) {
-//		        	inBldg = b_inv.getItemResourceNum(printerItem);
-//
-//			        int inUse = workshop.getNumPrinterInUse();
-//			        //System.out.println("ManufactureUtil.  " + inBldg + " : inBldg    " + inUse + " : inUse ");
-//
-//			        if (inBldg > inUse) {
-//			        	result = true;
-//			        	//System.out.println("ManufactureUtil.java isAn3DPrinterAvailable() : Yes");
-//			        }
-//		        }
-//	        //  check if one of them is not malfunction or down for maintenance
-//    	}
-//        //System.out.println("ManufactureUtil : isAn3DPrinterAvailable() : "+ result);
-//        return result;
-//	}
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
@@ -402,18 +363,18 @@ public final class ManufactureUtil {
 	 * @throws Exception if error determining if salvage process can be started.
 	 */
 	public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process, Manufacture workshop) {
-		boolean result = false;
 
         // Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired())
-			result = false;
+		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+			return false;
+		}
 
 		// Check to see if a salvagable unit is available at the settlement.
-		Settlement settlement = workshop.getBuilding().getSettlement();
-		if (findUnitForSalvage(process, settlement) == null)
-			result = false;
+		if (findUnitForSalvage(process, workshop.getBuilding().getSettlement()) == null) {
+			return false;
+		}
 
-		return result;
+		return true;
 	}
 
 	/**
@@ -447,6 +408,7 @@ public final class ManufactureUtil {
 
     /**
      * Checks if enough storage room for process outputs in an inventory.
+     *
      * @param process the manufacturing process.
      * @param inv the inventory.
      * @return true if storage room.
@@ -458,24 +420,21 @@ public final class ManufactureUtil {
 		while (j.hasNext()) {
 			ManufactureProcessItem item = j.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-				double capacity = settlement.getAmountResourceRemainingCapacity(resource.getID());
+				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
 					return false;
 			}
 
 			else if (ItemType.PART == item.getType()) {
-				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-				double mass = item.getAmount() * part.getMassPerItem();
+				double mass = item.getAmount() * ((Part) ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
 				double capacity = settlement.getCargoCapacity();
 				if (mass > capacity)
 					return false;
 			}
 
 			else if (ItemType.EQUIPMENT == item.getType()) {
-				String name = item.getName();
 				int number = (int) item.getAmount();
-				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(name)) * number;
+				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
 				double capacity = settlement.getCargoCapacity();
 				if (mass > capacity)
 					return false;
@@ -501,7 +460,6 @@ public final class ManufactureUtil {
 	 * @throws BuildingException if error checking for manufacturing buildings.
 	 */
 	public static boolean doesSettlementHaveManufacturing(Settlement settlement) {
-//		BuildingManager manager = settlement.getBuildingManager();
 		return (settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).size() > 0);
 	}
 
