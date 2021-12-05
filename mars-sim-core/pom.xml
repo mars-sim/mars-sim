@@ -165,6 +165,13 @@
 			    <version>5.0.0</version>
 			    <executions>
 			        <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+			        <execution>
 			            <phase>validate</phase>
 			            <goals>
 			                <goal>revision</goal>
