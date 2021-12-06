@@ -31,17 +31,17 @@ public class RoleUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Map<JobType, Map<RoleType,Double>> roleWeights
 							= new EnumMap<>(JobType.class);
 
 	private static List<RoleType> specalistsRoles;
-	
+
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;
 	}
-	
-	
+
+
 	public RoleUtil() {
 	}
 
@@ -55,18 +55,18 @@ public class RoleUtil implements Serializable {
 				roleWeights.put(id, j.getRoleProspects());
 			}
 		}
-		
+
 		// Cache the specialists
 		specalistsRoles = Collections.unmodifiableList(
 							Arrays.stream(RoleType.values())
 								.filter(RoleType::isSpecialist)
 								.collect(Collectors.toList()));
 	}
-	
+
 	public static boolean isRoleWeightsInitialized() {
         return !roleWeights.isEmpty();
 	}
-	
+
 	/**
 	 * Return the specialist roles.
 	 * @return
@@ -74,22 +74,22 @@ public class RoleUtil implements Serializable {
 	public static List<RoleType> getSpecialists() {
 		return specalistsRoles;
 	}
-	
+
 	/**
 	 * Find the best role for a given person in a settlement
-	 * 
+	 *
 	 * @param settlement
 	 * @param p
 	 * @return
 	 */
 	public static RoleType findBestRole(Person p) {
-		RoleType selectedRole = null; 
+		RoleType selectedRole = null;
 		double highestWeight = 0;
-		
+
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
 		JobType job = p.getMind().getJob();
 		Map<RoleType, Double> weights = roleWeights.get(job);
-		
+
 		// Use a Tree map so entries sorting in increasing order.
 		List<RoleType> roles = new ArrayList<>();
 		int leastNum = 0;
@@ -108,31 +108,31 @@ public class RoleUtil implements Serializable {
 		roles.remove(leastFilledRole);
 		// Add that role back to the first position
 		roles.add(0, leastFilledRole);
-				
+
 		for (RoleType rt : roles) {
-			boolean isRoleAvailable = chain.isRoleAvailable(rt);		
-			
-			if (isRoleAvailable) {			
-				double jobScore = weights.get(rt);			
-				double trainingScore = getTrainingScore(p, rt);			
+			boolean isRoleAvailable = chain.isRoleAvailable(rt);
+
+			if (isRoleAvailable) {
+				double jobScore = weights.get(rt);
+				double trainingScore = getTrainingScore(p, rt);
 				double totalScore = jobScore + trainingScore;
-				
+
 				if (highestWeight < totalScore) {
 					highestWeight = totalScore;
 					// Pick the role based on the highest weight
 					selectedRole = rt;
 				}
-			}	
+			}
 		}
-		
+
 		return selectedRole;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Find the person who is the best fit for a given role from a pool of candidates
-	 * 
+	 *
 	 * @param role
 	 * @param candidates
 	 * @return
@@ -142,12 +142,12 @@ public class RoleUtil implements Serializable {
 		double bestScore = 0;
 
 		for (Person p : candidates) {
-			
+
 			JobType job = p.getMind().getJob();
 			Map<RoleType, Double> weights = roleWeights.get(job);
-			
+
 			double score = getRolePropectScore(p, role, weights);
-			
+
 			if ((bestPerson == null) || (score > bestScore)) {
 				bestScore = score;
 				bestPerson = p;
@@ -159,44 +159,44 @@ public class RoleUtil implements Serializable {
 
 	/**
 	 * Gets the role prospect score of a person on a particular role
-	 * 
+	 *
 	 * @param person
 	 * @param role
-	 * @return the role prospect score 
+	 * @return the role prospect score
 	 */
 	public static double getRolePropectScore(Person person, RoleType role, Map<RoleType, Double> weights) {
-		
+
 		double jobScore = Math.round(weights.get(role) * 10.0)/10.0;
-		
+
 		double trainingScore = getTrainingScore(person, role);
 
 		return jobScore + trainingScore;
-		
+
 	}
 
 	/**
 	 * Gets the training score of a person on a particular role
-	 * 
+	 *
 	 * @param person
 	 * @param role
-	 * @return the training score 
+	 * @return the training score
 	 */
 	public static double getTrainingScore(Person person, RoleType role) {
-		
+
 		List<TrainingType> trainings = person.getTrainings();
-		
+
 		int trainingScore = 0;
 		for (TrainingType tt : trainings) {
 			trainingScore += TrainingUtils.getModifier(role, tt);
 		}
-		
+
 		return trainingScore;
-		
+
 	}
 
 	/**
 	 * Records the role change and fire the unit update
-	 * 
+	 *
 	 * @param person
 	 * @param roleType
 	 */
@@ -205,7 +205,7 @@ public class RoleUtil implements Serializable {
 		person.getRole().addRoleHistory(roleType);
 		// Fire the role event
 		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
-		
+
 		//logger.info(person, "New Role " + roleType.getName());
 	}
 
@@ -221,37 +221,79 @@ public class RoleUtil implements Serializable {
 	        case CHIEF_OF_AGRICULTURE:
 	            candidateType = RoleType.AGRICULTURE_SPECIALIST;
 	            break;
-	            
+
 	        case CHIEF_OF_COMPUTING:
 	        	candidateType = RoleType.COMPUTING_SPECIALIST;
 	        	break;
-	
+
 	        case CHIEF_OF_ENGINEERING:
 	        	candidateType = RoleType.ENGINEERING_SPECIALIST;
 	        	break;
-	        	
+
 	        case CHIEF_OF_LOGISTICS_N_OPERATIONS:
 	        	candidateType = RoleType.LOGISTIC_SPECIALIST;
 	        	break;
-	    	
+
 	        case CHIEF_OF_MISSION_PLANNING:
 	        	candidateType = RoleType.MISSION_SPECIALIST;
 	        	break;
-	        	
+
 	        case CHIEF_OF_SAFETY_N_HEALTH:
 	        	candidateType = RoleType.SAFETY_SPECIALIST;
 	        	break;
-	        	
+
 	        case CHIEF_OF_SCIENCE:
 	        	candidateType = RoleType.SCIENCE_SPECIALIST;
 	        	break;
-	        	
+
 	        case CHIEF_OF_SUPPLY_N_RESOURCES:
 	        	candidateType = RoleType.RESOURCE_SPECIALIST;
 	        	break;
-	        
+
 	        default:
 	    }
 		return candidateType;
+	}
+
+	/**
+	 * Gets a list of role type name strings
+	 *
+	 * @return
+	 */
+	public static List<String> getRoleNames(int pop) {
+
+		List<String> roleNames = new ArrayList<String>();
+
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
+			roleNames.add(RoleType.COMMANDER.getName());
+			for (RoleType r : RoleUtil.getSpecialists()) {
+				roleNames.add(r.getName());
+			}
+		}
+
+		else if (pop <= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
+			roleNames.add(RoleType.COMMANDER.getName());
+			roleNames.add(RoleType.SUB_COMMANDER.getName());
+			for (RoleType r : RoleUtil.getSpecialists()) {
+				roleNames.add(r.getName());
+			}
+		}
+
+		else if (pop <= ChainOfCommand.POPULATION_WITH_CHIEFS) {
+			for (RoleType r : RoleType.values()) {
+				if (r != RoleType.MAYOR || r != RoleType.PRESIDENT)
+					roleNames.add(r.getName());
+			}
+		}
+
+		else if (pop > ChainOfCommand.POPULATION_WITH_MAYOR) {
+			for (RoleType r : RoleType.values()) {
+				if (r != RoleType.PRESIDENT)
+					roleNames.add(r.getName());
+			}
+		}
+
+		Collections.sort(roleNames);
+		return roleNames;
 	}
 }

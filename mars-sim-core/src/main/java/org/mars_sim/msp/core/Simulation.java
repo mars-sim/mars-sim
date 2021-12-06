@@ -846,9 +846,9 @@ public class Simulation implements ClockListener, Serializable {
 		long heapFreeSize = Runtime.getRuntime().freeMemory();
 
 		logger.config(
-		"heapSize: " + formatSize(heapSize)
-		+ "    heapMaxSize: " + formatSize(heapMaxSize)
-		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
+		"Current Heap Size: " + formatSize(heapSize)
+		+ "    Heap Max Size: " + formatSize(heapMaxSize)
+		+ "    Heap Free Size: " + formatSize(heapFreeSize) + "");
 
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
@@ -858,7 +858,7 @@ public class Simulation implements ClockListener, Serializable {
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
-			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
+			logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
 		}
 
 		// Restarts the master clock and adds back the Simulation clock listener

@@ -71,7 +71,7 @@ public class UIConfig {
 	private static final String Z_ORDER = "z-order";
 
 	private Element root;
-	
+
 	private MainDesktopPane desktop;
 
 	/**
@@ -103,44 +103,44 @@ public class UIConfig {
 		    }
 		}
 	}
-	
+
 	/**
 	 * Creates an XML document for the UI configuration and saves it to a file.
-	 * 
+	 *
 	 * @param mainWindow the main window.
 	 */
 	public void saveFile(MainWindow mainWindow) {
 		desktop = mainWindow.getDesktop();
-		
+
 		File configFile = new File(SimulationFiles.getSaveDir(), FILE_NAME);
 
 		// Create save directory if it doesn't exist.
 		if (!configFile.getParentFile().exists()) {
 			configFile.getParentFile().mkdirs();
-			logger.config(SimulationFiles.getSaveDir() + " created successfully"); 
+			logger.config(SimulationFiles.getSaveDir() + " created successfully");
 		}
-		
+
 		else {
 
 			try {
 				if (Files.deleteIfExists(configFile.toPath())) {
-				    logger.config("previous ui_settings.xml deleted."); 
-				} 
-				else { 
-					logger.config("Can't delete ui_settings.xml since it's not found."); 
+				    logger.config("Previous ui_settings.xml deleted.");
+				}
+				else {
+					logger.config("Can't delete ui_settings.xml since it's not found.");
 				}
 			} catch (IOException e) {
-				logger.config("Can't delete ui_settings.xml: " + e.getMessage()); 
+				logger.config("Can't delete ui_settings.xml: " + e.getMessage());
 			}
 
 		}
-					
+
 		Document outputDoc = new Document();
-		
+
 		Element uiElement = new Element(UI);
 		outputDoc.setRootElement(uiElement);
 
-		uiElement.setAttribute(USE_DEFAULT, "false"); 
+		uiElement.setAttribute(USE_DEFAULT, "false");
 		uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
 		uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
@@ -150,7 +150,7 @@ public class UIConfig {
 		JFrame realWindow = mainWindow.getFrame();
 		mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
 		mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
-		
+
 		// Get the real display size
 		mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
 		mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
@@ -193,21 +193,21 @@ public class UIConfig {
 				}
 			}
 		}
-		
+
 		// Load the DTD scheme from the ui_settings.dtd file
 		try (
 
 			OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME));
 			OutputStream stream = new FileOutputStream(configFile)) {
-			
+
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 
 			OutputStreamWriter writer = new OutputStreamWriter(stream, Charsets.UTF_8);
-	    
+
 			fmt.output(outputDoc, writer);
 
-		    logger.config("Saving the ui_settings.xml."); 
+		    logger.config("Current window settings saved.");
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
@@ -272,7 +272,7 @@ public class UIConfig {
 		if (root == null) {
 			return new Point(0, 0);
 		}
-		
+
 		try {
 			Element mainWindow = root.getChild(MAIN_WINDOW);
 			int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
