@@ -1,4 +1,11 @@
 /*
+ * Mars Simulation Project
+ * RandomStringUtils.java
+ * @date 2021-12-05
+ * @author Manny Kung
+ */
+
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,7 +26,6 @@ package org.mars_sim.msp.core.tool;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -113,7 +119,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomAscii(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomAscii(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomAscii(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**
@@ -142,7 +148,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomAlphabetic(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomAlphabetic(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomAlphabetic(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**
@@ -172,7 +178,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomAlphanumeric(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomAlphanumeric(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomAlphanumeric(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**
@@ -202,7 +208,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomGraph(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomGraph(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomGraph(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**
@@ -231,7 +237,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomNumeric(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomNumeric(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomNumeric(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**
@@ -261,7 +267,7 @@ public class RandomStringUtils {
      * @since 3.5
      */
     public static String randomPrint(final int minLengthInclusive, final int maxLengthExclusive) {
-        return randomPrint(RandomUtils.nextInt(minLengthInclusive, maxLengthExclusive));
+        return randomPrint(RandomUtil.getRandomInt(minLengthInclusive, maxLengthExclusive));
     }
 
     /**

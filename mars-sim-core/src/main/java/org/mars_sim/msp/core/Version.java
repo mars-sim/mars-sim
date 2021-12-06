@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-
 /**
  * This class will read the properties file automatically created by the Maven build.
  * See the pom.xml plugin git-commit-id-maven-plugin for details.
@@ -54,7 +52,6 @@ public final class Version {
 				versionTag = props.getProperty(VERSION_PROPERTY, "Not Specified");
 			} catch (IOException e) {
 				logger.severe("Version file found but not read.");
-				e.printStackTrace();
 			}
 		}
 	}

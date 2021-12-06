@@ -96,12 +96,14 @@ public class SpotlightLayerUI extends LayerUI<WebPanel> {
 	    g2.dispose();
 	  }
 
+	  @SuppressWarnings("rawtypes")
 	  @Override
 	  protected void processMouseEvent(MouseEvent e, JLayer l) {
 	    if (e.getID() == MouseEvent.MOUSE_ENTERED) mActive = true;
 	    if (e.getID() == MouseEvent.MOUSE_EXITED) mActive = false;
 	  }
 
+	  @SuppressWarnings("rawtypes")
 	  @Override
 	  protected void processMouseMotionEvent(MouseEvent e, JLayer l) {
 	    Point p = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), l);

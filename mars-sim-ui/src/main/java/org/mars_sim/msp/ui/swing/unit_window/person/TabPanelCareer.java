@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -109,8 +108,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private Person person;
 	private Settlement settlement;
 
-	private final Font SANS_SERIF = new Font("SansSerif", Font.ITALIC, 12);
-	private final Font COURIER_12 = new Font("Courier New", Font.ITALIC, 12);
+	private final Font sansSerif12 = new Font("SansSerif", Font.ITALIC, 12);
+	private final Font courierNew12 = new Font("Courier New", Font.ITALIC, 12);
 
 	private static MarsClock marsClock;
 
@@ -226,14 +225,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		jobChangeLabel = new WebLabel("");
 		jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		jobChangeLabel.setFont(COURIER_12);
+		jobChangeLabel.setFont(courierNew12);
 		jobChangeLabel.setForeground(Color.blue);
 		firstPanel.add(jobChangeLabel, BorderLayout.CENTER);
 		TooltipManager.setTooltip(jobChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
 
 		roleChangeLabel = new WebLabel("");
 		roleChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		roleChangeLabel.setFont(COURIER_12);
+		roleChangeLabel.setFont(courierNew12);
 		roleChangeLabel.setForeground(Color.blue);
 		firstPanel.add(roleChangeLabel, BorderLayout.SOUTH);
 		TooltipManager.setTooltip(roleChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
@@ -307,7 +306,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		ratingLabel = new WebLabel("");
 		// ratingLabel.setSize(300, 30);
 		ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		ratingLabel.setFont(COURIER_12);
+		ratingLabel.setFont(courierNew12);
 		ratingLabel.setForeground(Color.blue);
 		ratingPanel.add(ratingLabel, BorderLayout.SOUTH);
 
@@ -336,7 +335,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Prepare job title label
 		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
 		// historyLabel.setBounds(0, 0, width, height);
-		historyLabel.setFont(SANS_SERIF);
+		historyLabel.setFont(sansSerif12);
 		historyLabel.setPadding(7, 0, 1, 0);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
@@ -431,12 +430,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						printLog2 = true;
 					}
 				}
-//				else {
-//					s = "Job Rating last submitted on sol " + solRatingSubmitted;
-//					ratingLabel.setText(s);
-//					logger.info(person, s);
-//				}
 			}
+
 			if (solCache != solElapsed) {
 				dateTimeRatingSubmitted = null;
 			}
@@ -556,7 +551,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			}
 			else {
-				; // do nothing. at the start of sim
+				// do nothing. It's at the start of sim
 			}
 		}
 		else {
@@ -627,8 +622,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		if (source == roleComboBox) {
 			RoleType selectedRole = RoleType.getType((String) roleComboBox.getSelectedItem());
-			Role rt = person.getRole();
-			RoleType roleCache = rt.getType();
 			int box = -1;
 
 			if (selectedRole != roleCache) {

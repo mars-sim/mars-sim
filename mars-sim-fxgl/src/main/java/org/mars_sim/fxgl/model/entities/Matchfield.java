@@ -1,19 +1,23 @@
 package org.mars_sim.fxgl.model.entities;
 
-import com.almasb.fxgl.entity.Entity;
-import org.mars_sim.fxgl.main.AppSettings;
-import org.mars_sim.fxgl.main.SoftknkioApp;
-import org.mars_sim.fxgl.gui.Dashboard;
-import org.mars_sim.fxgl.model.util.EntityType;
-import org.mars_sim.fxgl.model.util.Moveable;
-import javafx.geometry.Insets;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mars_sim.fxgl.gui.Dashboard;
+import org.mars_sim.fxgl.main.AppSettings;
+import org.mars_sim.fxgl.main.SoftknkioApp;
+import org.mars_sim.fxgl.model.util.EntityType;
+import org.mars_sim.fxgl.model.util.Moveable;
+
+import com.almasb.fxgl.entity.Entity;
+
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 public class Matchfield extends Entity implements Moveable {
 

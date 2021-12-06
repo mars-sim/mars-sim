@@ -3,6 +3,7 @@ package org.mars_sim.fxgl.gui;
 import org.mars_sim.fxgl.main.AppSettings;
 import org.mars_sim.fxgl.model.operations.Operation;
 import org.mars_sim.fxgl.model.util.Loader;
+
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -12,8 +13,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 
+@SuppressWarnings("rawtypes")
 public class OperationData extends Button implements EventHandler {
 
     private Operation operation;

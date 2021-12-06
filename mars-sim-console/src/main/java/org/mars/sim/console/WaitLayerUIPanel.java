@@ -110,6 +110,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 		mIsFadingOut = true;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
 		if ("tick".equals(pce.getPropertyName())) {

@@ -1,10 +1,6 @@
 package org.mars_sim.fxgl.model.operations;
 
-import org.mars_sim.fxgl.main.SoftknkioApp;
 import org.mars_sim.fxgl.model.util.Loader;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 
 public class MineOperation extends Operation {
 

@@ -262,7 +262,7 @@ public class RoleUtil implements Serializable {
 	 */
 	public static List<String> getRoleNames(int pop) {
 
-		List<String> roleNames = new ArrayList<String>();
+		List<String> roleNames = new ArrayList<>();
 
 		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
@@ -286,10 +286,16 @@ public class RoleUtil implements Serializable {
 			}
 		}
 
-		else if (pop > ChainOfCommand.POPULATION_WITH_MAYOR) {
+		else if (pop <= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			for (RoleType r : RoleType.values()) {
 				if (r != RoleType.PRESIDENT)
 					roleNames.add(r.getName());
+			}
+		}
+
+		else {
+			for (RoleType r : RoleType.values()) {
+				roleNames.add(r.getName());
 			}
 		}
 

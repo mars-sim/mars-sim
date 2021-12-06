@@ -30,9 +30,9 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 	private boolean mIsRunning;
 	private boolean mIsFadingOut;
 	private boolean done;
-	
+
 	private Timer mTimer;
-	
+
 	private int mAngle;
 	private int mFadeCount;
 	private int mFadeLimit = 5;//15;
@@ -94,14 +94,14 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 				mFadeCount++;
 			}
 		}
-		
+
 		done = true;
 	}
 
 	public boolean isRunning() {
 		return mIsRunning;
 	}
-	
+
 	public void start() {
 		if (mIsRunning) {
 			return;
@@ -130,7 +130,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 	}
 
 	@Override
-	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
+	public void applyPropertyChange(PropertyChangeEvent pce, @SuppressWarnings("rawtypes") JLayer l) {
 		if ("tick".equals(pce.getPropertyName())) {
 			l.repaint();
 		}
