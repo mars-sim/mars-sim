@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @date 2021-08-28
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -195,7 +196,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
 		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
-		endTask |= (!person.isFit());
+		endTask |= (person != null && !person.isFit());
 		if (endTask) {
 			// Return all the time
 	        if (worker.isOutside()) {
@@ -208,7 +209,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         }
 
 		double workTime = 0;
-		if (person != null) {
+		if (worker.getUnitType() == UnitType.PERSON) {
 			workTime = time;
 		} else {
 			// A robot moves slower than a person and incurs penalty on workTime

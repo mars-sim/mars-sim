@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SalvageGoodMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * Meta task for the SalvageGood task.
  */
 public class SalvageGoodMeta extends MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.salvageGood"); //$NON-NLS-1$
@@ -54,47 +54,42 @@ public class SalvageGoodMeta extends MetaTask {
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
-            
+
 	        // No salvaging goods until after the first month of the simulation.
 	        MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
 	        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	        double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
 	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 	        if (totalTimeOrbits < MarsClock.SOLS_PER_MONTH_LONG) {
-	            result = 0D;
 	            return 0;
 	        }
 
-	        if (result != 0) {
-	            // See if there is an available manufacturing building.
-	            Building manufacturingBuilding = SalvageGood.getAvailableManufacturingBuilding(person);
-	            if (manufacturingBuilding != null) {
-	                result = 1D;
+            // See if there is an available manufacturing building.
+            Building manufacturingBuilding = SalvageGood.getAvailableManufacturingBuilding(person);
+            if (manufacturingBuilding != null) {
+                result = 1D;
 
-	                // Crowding modifier.
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
 
-	                // Salvaging good value modifier.
-	                result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
+                // Salvaging good value modifier.
+                result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
 
-	                if (result > 100D) {
-	                    result = 100D;
-	                }
+                if (result > 100D) {
+                    result = 100D;
+                }
 
-	                // If manufacturing building has salvage process requiring work, add
-	                // modifier.
-	                SkillManager skillManager = person.getSkillManager();
-	                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-	                if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
-	                    result += 10D;
-	                }
+                // If manufacturing building has salvage process requiring work, add
+                // modifier.
+                SkillManager skillManager = person.getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
+                    result += 10D;
+                }
 
-	                result = applyPersonModifier(result, person);
-	            }
-	        }
-
-
+                result = applyPersonModifier(result, person);
+            }
         }
 
         return result;

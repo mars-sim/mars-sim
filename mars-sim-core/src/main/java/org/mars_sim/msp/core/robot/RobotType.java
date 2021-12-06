@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.robot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
@@ -33,7 +34,7 @@ public enum RobotType {
 
 	/**
 	 * an internationalized translation for display in user interface.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	public String getName() {
@@ -60,5 +61,4 @@ public enum RobotType {
 		Collections.sort(list);
 		return list.toArray(new String[] {});
 	}
-
 }

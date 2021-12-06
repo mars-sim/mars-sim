@@ -1,13 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * AmountResource.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The AmountResource class represents a type of resource measured in mass kg.
@@ -47,7 +49,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param name        the resource's name
 	 * @param description {@link String}
 	 * @param phase       the material phase of the resource.
@@ -65,7 +67,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	/**
 	 * Gets the resource's type.
-	 * 
+	 *
 	 * @return type of resource.
 	 */
 	// @Override
@@ -76,7 +78,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	/**
 	 * Gets the resources material phase.
-	 * 
+	 *
 	 * @return phase value
 	 */
 	public PhaseType getPhase() {
@@ -85,7 +87,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	/**
 	 * Checks if life support resource.
-	 * 
+	 *
 	 * @return true if life support resource.
 	 */
 	public boolean isLifeSupport() {
@@ -94,18 +96,28 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	/**
 	 * Checks if edible resource.
-	 * 
+	 *
 	 * @return true if edible resource.
 	 */
 	public boolean isEdible() {
 		return edible;
 	}
-	
+
 	/**
 	 * Gets the hash code value.
 	 */
+	@Override
 	public int hashCode() {
 		return hashcode;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		AmountResource ar = (AmountResource) obj;
+		return this.getName().equalsIgnoreCase(ar.getName());
 	}
 
 	public void destroy() {

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonTaskManager.java
- * @date 2021-08-28
+ * @date 2021-12-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -37,26 +37,26 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	private static final int MAX_TASK_PROBABILITY = 35_000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
 //	private static final double SMALL_AMOUNT = 0.001;
-	
-	// Data members	
+
+	// Data members
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
-	
+
 	private transient Person person;
 
-	/** The CircadianClock reference */ 
+	/** The CircadianClock reference */
 	private transient CircadianClock circadian = null;
 
 	private List<String> pendingTasks;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param mind the mind that uses this task manager.
 	 */
 	public PersonTaskManager(Mind mind) {
 		super(mind.getPerson());
-		
+
 		// Initialize data members
 		this.mind = mind;
 
@@ -68,7 +68,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/**
 	 * Reduce the person's caloric energy over time.
-	 * 
+	 *
 	 * @param time the passing time (
 	 */
 	private void reduceEnergy(double time) {
@@ -77,7 +77,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/**
 	 * Perform the current task for a given amount of time.
-	 * 
+	 *
 	 * @param time       amount of time to perform the action
 	 * @param efficiency The performance rating of person performance task.
 	 * @return remaining time.
@@ -95,7 +95,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
-			
+
 			try {
 				remainingTime = currentTask.performTask(time);
 
@@ -103,7 +103,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 				logger.severe(person, "Trouble calling performTask(): ", e);
 				return remainingTime;
 			}
-			
+
 			// Expend energy based on activity.
 			double energyTime = time - remainingTime;
 
@@ -134,7 +134,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/**
 	 * Calculates and caches the probabilities.
-	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
+	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used.
 	 */
 	@Override
 	protected synchronized void rebuildTaskCache() {
@@ -159,14 +159,14 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		// Create new taskProbCache
 		taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 		totalProbCache = 0D;
-		
+
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(person);
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				if (probability > MAX_TASK_PROBABILITY) {
 					if (!mt.getName().toLowerCase().contains("sleep")) {
-						logger.log(person, Level.WARNING, 10_000, 
+						logger.log(person, Level.WARNING, 10_000,
 							mt.getName() + "'s probability is at all time high ("
 							+ Math.round(probability * 10.0) / 10.0 + ").");
 					}
@@ -177,7 +177,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 				totalProbCache += probability;
 			}
 		}
-		
+
 		// Output shift
 		if (diagnosticFile != null) {
             Role role = person.getRole();
@@ -193,54 +193,55 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (!pendingTasks.isEmpty()) {
-			Task newTask = getAPendingMetaTask().constructInstance(person);
+			MetaTask metaTask = getAPendingMetaTask();
+			if (metaTask != null) {
+				Task newTask = getAPendingMetaTask().constructInstance(person);
+				logger.info(person, "Starting a task order of '" + newTask.getName() + "'.");
+				startTask(newTask);
+			}
 
-			logger.info(person, "Starting a task order of '" + newTask.getName() + "'.");
-			
-			startTask(newTask);
-			
 			return;
 		}
 
 		super.startNewTask();
 	}
-	
+
 	/**
-	 * Gets all pending tasks 
-	 * 
+	 * Gets all pending tasks
+	 *
 	 * @return
 	 */
 	public List<String> getPendingTasks() {
 		return pendingTasks;
 	}
-	
+
 //	public boolean hasPendingTask() {
 //		return !pendingTasks.isEmpty();
 //	}
-	
+
 	/**
 	 * Adds a pending task
-	 * 
+	 *
 	 * @param task
 	 */
 	public void addAPendingTask(String task) {
 		pendingTasks.add(task);
 		logger.info(person, "Given the new task order of '" + task + "'.");
 	}
-	
+
 	/**
 	 * Deletes a pending task
-	 * 
+	 *
 	 * @param task
 	 */
 	public void deleteAPendingTask(String task) {
 		pendingTasks.remove(task);
 		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
-	
+
 	/**
 	 * Gets the first pending meta task in the queue
-	 * 
+	 *
 	 * @return
 	 */
 	private MetaTask getAPendingMetaTask() {
@@ -251,10 +252,10 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Converts a task to its corresponding meta task
-	 * 
+	 *
 	 * @param a task
 	 */
 	private static MetaTask convertTask2MetaTask(String task) {
@@ -263,13 +264,13 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	public void reinit() {
 		super.reinit();
-		
+
 		person = mind.getPerson();
 		circadian = person.getCircadianClock();
-		
+
 		worker = person;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -269,7 +269,7 @@ public final class SettlementBuilder {
 	 */
 	private void createRobots(Settlement settlement) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
-		int initial = settlement.getProjectedNumOfRobots();
+		int initial = settlement.getInitialNumOfRobots();
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
 		while (settlement.getIndoorRobotsCount() < initial) {
 			// Get a robotType randomly
@@ -583,7 +583,7 @@ public final class SettlementBuilder {
 		for (int x = 0; x < size; x++) {
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			if (settlement.getName().equals(preConfigSettlementName)
-					&& (settlement.getNumBots() <= settlement.getProjectedNumOfRobots())) {
+					&& (settlement.getNumBots() <= settlement.getInitialNumOfRobots())) {
 				// Get robot's name (required)
 				String name = robotConfig.getConfiguredRobotName(x);
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2021-10-21
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -168,9 +168,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null && settlement != null) {
 			initLoad(person);
-
 			logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 		}
+		else
+			endTask();
 	}
 
 	/**
@@ -193,9 +194,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null && settlement != null) {
 			initLoad(robot);
+			logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
 		}
+		else
+			endTask();
 
-		logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
 	}
 
 	/**
@@ -203,16 +206,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param starter
 	 */
 	private void initLoad(Worker starter) {
-//		Building garageBuilding = BuildingManager.getBuilding(vehicle);
-//		if (garageBuilding != null) {
-//		// If vehicle is in a garage, add walk there to the garage.
-//			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
-//		}
-
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-
-//		System.out.println("garage is " + garage);
 
 		// End task if vehicle or garage not available
 		if (garage == null) {
@@ -385,19 +380,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			return 0;
 		}
 
-//		if (person != null)
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
-//							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
-//							+ vehicle.getName() + ".",
-//					null);
-//		else
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
-//							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
-//							+ vehicle.getName() + ".",
-//					null);
-
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			// Take own copy as the equipment list changes as we remove items. ??
@@ -444,7 +426,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
 
-//					settlementInv.addAmountSupply(id, amount);
 					// Add to the daily output
 					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.

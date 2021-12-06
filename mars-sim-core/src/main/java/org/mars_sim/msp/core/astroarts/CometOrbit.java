@@ -64,7 +64,7 @@ public class CometOrbit {
 		double ft = Math.sqrt(comet.getE() * comet.getE() - 1.0);
 		double fAxis = comet.getQ() / (comet.getE() - 1.0);
 		double fdF = UdMath.arccosh((fMaxOrbit + fAxis)
-					 / (fAxis * comet.getE())) / (this.nDivision / 2.0);
+					 / (fAxis * comet.getE())) / (nDivision / 2.0);
 		double fF = 0.0;
 		for (int i = 0; i <= nIdx1; i++, fF += fdF) {
 			double fRCosV = fAxis * (comet.getE() - UdMath.cosh(fF));
@@ -81,9 +81,9 @@ public class CometOrbit {
 		int nIdx1, nIdx2;
 		nIdx1 = nIdx2 = nDivision / 2;
 		double fdV = (Math.atan(Math.sqrt(fMaxOrbit / comet.getQ() - 1.0))
-					  * 2.0) / (nDivision / 2);
+					  * 2.0) / (nDivision / 2.0);
 		double fV = 0.0;
-		for (int i = 0; i <= (nDivision / 2); i++, fV += fdV) {
+		for (int i = 0; i <= nIdx1; i++, fV += fdV) {
 			double fTanV2 = Math.sin(fV / 2.0) / Math.cos(fV / 2.0);
 			double fRCosV = comet.getQ() * (1.0 - fTanV2 * fTanV2);
 			double fRSinV = 2.0 * comet.getQ() * fTanV2;

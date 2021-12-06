@@ -1212,9 +1212,9 @@ public class ExitAirlock extends Task implements Serializable {
 				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
-		}
 
-		airlock.removeID(id);
+			airlock.removeID(id);
+		}
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SelfTreatMedicalProblemMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.vehicle.SickBay;
  */
 public class SelfTreatHealthProblemMeta extends MetaTask {
 
-	private static final int VALUE = 1000;
-	
+	private static final double VALUE = 1000.0;
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.selfTreatHealthProblem"); //$NON-NLS-1$
@@ -38,7 +38,7 @@ public class SelfTreatHealthProblemMeta extends MetaTask {
     public SelfTreatHealthProblemMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 	}
-    
+
 
     @Override
     public Task constructInstance(Person person) {
@@ -53,29 +53,29 @@ public class SelfTreatHealthProblemMeta extends MetaTask {
         if (person.isInside()) {
 	        // Check if person has health problems that can be self-treated.
         	int size = getSelfTreatableHealthProblems(person).size();
-        	
+
 	        boolean hasSelfTreatableProblems = (size > 0);
-	
+
 	        // Check if person has available medical aids.
 	        boolean hasAvailableMedicalAids = hasAvailableMedicalAids(person);
-	
-	
+
+
 	        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
 	            result = VALUE * size;
 	        }
-	
+
 	        double pref = person.getPreference().getPreferenceScore(this);
-	        
+
 	        if (pref > 0)
 	        	result = result * 3D;
-        	
+
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
-	
+
 	        if (result < 0) result = 0;
 
         }
-        
+
         return result;
     }
 
