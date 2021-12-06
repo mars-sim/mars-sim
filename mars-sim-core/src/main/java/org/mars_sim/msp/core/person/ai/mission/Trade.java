@@ -302,21 +302,26 @@ public class Trade extends RoverMission implements Serializable {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-						assignTask(person,
-								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
-					} else {
-							logger.severe(person, "Is unable to walk to building " + destinationBuilding);
+					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
+					if (walk != null) {
+						assignTask(person, walk);
 					}
-				} else if (member instanceof Robot) {
+					else {
+						logger.severe(person, "Is unable to walk to building " + destinationBuilding);
+					}
+				}
+				else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
-					} else {
+					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
+					if (walkingTask != null) {
+						assignTask(robot, walkingTask);
+					}
+					else {
 						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
 					}
 				}
-			} else {
+			}
+			else {
 				logger.severe(tradingSettlement, "No inhabitable buildings");
 				endMission(MissionStatus.NO_INHABITABLE_BUILDING);
 			}
@@ -507,9 +512,11 @@ public class Trade extends RoverMission implements Serializable {
 						}
 
 						// Walk back to the vehicle and be ready to embark and go home
-						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
-							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
-						} else {
+						Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, getVehicle());
+						if (walk != null) {
+							assignTask(person, walk);
+						}
+						else {
 							logger.severe(person, "Unable to enter rover " + getVehicle().getName());
 							endMission(MissionStatus.CANNOT_ENTER_ROVER);
 						}

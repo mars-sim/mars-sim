@@ -210,12 +210,10 @@ implements Serializable {
         // Note: Use action point rather than random internal location.
         LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(powerBuilding);
 
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 0,
-                powerBuilding)) {
-
+        Walk walk = Walk.createWalkingTask(person, settlementLoc, 0, powerBuilding);
+        if (walk != null) {
             // Add subtask for walking to power building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 0,
-                    powerBuilding));
+            addSubTask(walk);
         }
         else {
             logger.log(person, Level.WARNING, 3_000,

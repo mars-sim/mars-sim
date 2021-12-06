@@ -294,7 +294,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
-		else return person.getPhysicalCondition().computeFitnessLevel() > 2;
+		else return person.getPhysicalCondition().computeFitnessLevel() >= 2;
 	}
 
 	/**

@@ -81,8 +81,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private double timeOnSite;
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
-	private double binXLoc;
-	private double binYLoc;
+	private LocalPosition binPosition;
 
 	private LocalBoundedObject interiorObject;
 	private LocalPosition returnInsideLoc;
@@ -217,15 +216,19 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Set the outside side local location.
+<<<<<<< HEAD
+	 * 
+	 * @param pos Position of the Bin
+=======
 	 *
 	 * @param xLoc the X location.
 	 * @param yLoc the Y location.
+>>>>>>> refs/remotes/upstream/master
 	 */
-	protected void setBinLocation(double xLoc, double yLoc) {
-		binXLoc = xLoc;
-		binYLoc = yLoc;
+	protected void setBinLocation(LocalPosition pos) {
+		binPosition = pos;
 	}
-
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
@@ -258,17 +261,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return remaining time after performing the phase.
 	 */
 	private double walkToOutsideSitePhase(double time) {
-	      // If not at field work site location, create walk outside subtask.
-//        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-//        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
-//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
-
+	    // If not at field work site location, create walk outside subtask.
         if (person.isInside()) {// || !closeToLocation) {
         	// A person is walking toward an airlock or inside an airlock
-//        	System.out.println(person + " is still inside " + person.getBuildingLocation() + ".");
-            if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
-                Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
-//                System.out.println(person + " added a walking task.");
+            Walk walkingTask = Walk.createWalkingTask(person, new LocalPosition(outsideSiteXLoc, outsideSiteYLoc), 0, null);
+            if (walkingTask != null) {
                 addSubTask(walkingTask);
             }
             else {
@@ -277,7 +274,6 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
         }
         else {
-//        	System.out.println(person + " is outside.");
         	// In case of DigLocalRegolith, set to task phase COLLECT_REGOLITH
             setPhase(getOutsideSitePhase());
         }
@@ -288,9 +284,9 @@ public abstract class EVAOperation extends Task implements Serializable {
     private double walkToBin(double time) {
     	// Go to the drop off location
         if (!person.isOutside()) {
-            if (Walk.canWalkAllSteps(person, binXLoc, binYLoc, 0, null)) {
-                Task walkingTask = new Walk(person, binXLoc, binYLoc, 0, null);
-                addSubTask(walkingTask);
+            Walk walkingTask = Walk.createWalkingTask(person, binPosition, 0, null);
+            if (walkingTask != null) {
+            	addSubTask(walkingTask);
             }
             else {
 				logger.severe(person, "Cannot walk to the storage bin location.");
@@ -375,11 +371,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 							+ " at (" + returnInsideLoc
 							+ "). Attempting to enter the airlock.");
 
-				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
-					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
+				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, 0, interiorObject);
+				if (walkingTask != null) {
 					addSubTask(walkingTask);
 				}
-
 				else {
 					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. cannot walk all steps.");
 					addSubTask(new Walk(person));

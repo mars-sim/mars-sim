@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.junit.Before;
 import org.mars_sim.msp.core.LifeSupportInterface;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -101,7 +102,8 @@ extends TestCase {
         b0.setFacing(0D);
 //        buildingManager.addMockBuilding(b0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(b0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        BuildingAirlock airlock0 = new BuildingAirlock(b0, 1,  LocalPosition.DEFAULT_POSITION,
+				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
         b0.addFunction(new EVA(b0, airlock0));
 
 //		Person person = new Person(settlement);

@@ -1902,11 +1902,10 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * building's current location.
 	 *
 	 * @param building  the building in the walkable interior path.
-	 * @param xLocation the X location.
-	 * @param yLocation the Y location.
+	 * @param location  Starting position.
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Building building, double xLocation, double yLocation) {
+	public Airlock getClosestWalkableAvailableAirlock(Building building, Point2D location) {
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
@@ -1923,8 +1922,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			if ((!chamberFull || !reservationFull)
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
-				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), xLocation,
-						yLocation);
+				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), location.getX(),
+						location.getY());
 				if (distance < leastDistance) {
 					EVA eva = nextBuilding.getEVA();
 					if (eva != null) {
@@ -1945,7 +1944,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @return true if an airlock is walkable from the building.
 	 */
 	public boolean hasWalkableAvailableAirlock(Building building) {
-		return (getClosestWalkableAvailableAirlock(building, 0D, 0D) != null);
+		return (getClosestWalkableAvailableAirlock(building, new Point2D.Double(0D, 0D)) != null);
 	}
 
 	/**

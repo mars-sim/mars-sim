@@ -61,10 +61,6 @@ public class BuildingConfig implements Serializable {
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
-	private static final String INTERIOR_X_LOCATION = "interior-xloc";
-	private static final String INTERIOR_Y_LOCATION = "interior-yloc";
-	private static final String EXTERIOR_X_LOCATION = "exterior-xloc";
-	private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
 
 	private static final String RESOURCE_PROCESSING = "resource-processing";
 
@@ -120,6 +116,8 @@ public class BuildingConfig implements Serializable {
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
 	private static final String COOLING_DEMAND = "cooling-demand";
+
+	private static final String POSITION = "-position";
 
 	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
@@ -181,12 +179,21 @@ public class BuildingConfig implements Serializable {
 			List<Point2D> spots = parseLocations(element, ACTIVITY, ACTIVITY_SPOT,
 													width, length);
 
-			// Get attributes
-			Properties props = new Properties();
+			// Get attributes as basic properties
+			Map<String,Object> props = new HashMap<>();
 			for(Attribute attr : element.getAttributes()) {
-				props.setProperty(attr.getName(), attr.getValue());
+				props.put(attr.getName(), attr.getValue());
 			}
 
+			// Any complex properties
+			for (Element complexProperty : element.getChildren()) {
+				if (complexProperty.getName().endsWith(POSITION)) {
+					LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
+					props.put(complexProperty.getName(), pos);
+				}
+			}
+
+			
 			BuildingSpec.FunctionSpec fspec = new BuildingSpec.FunctionSpec(props, spots);
 
 			supportedFunctions.put(function, fspec);
@@ -335,13 +342,8 @@ public class BuildingConfig implements Serializable {
 	 */
 	private void parseComputation(BuildingSpec newSpec, Element computationElement) {
 		double computingPower = Double.parseDouble(computationElement.getAttributeValue(COMPUTING_UNIT));
-//		newSpec.setComputingPower(computingPower);
-
 		double powerDemand = Double.parseDouble(computationElement.getAttributeValue(POWER_DEMAND));
-//		newSpec.setPowerDemand(powerDemand);
-
 		double coolingDemand = Double.parseDouble(computationElement.getAttributeValue(COOLING_DEMAND));
-//		newSpec.setCoolingDemand(coolingDemand);
 
 		newSpec.setComputation(computingPower, powerDemand, coolingDemand);
 	}
@@ -576,8 +578,8 @@ public class BuildingConfig implements Serializable {
 	 * @param name Property name
 	 * @return
 	 */
-	public int getFunctionIntProperty(String buildingType, FunctionType function, String name) {
-		return Integer.parseInt(getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
+	private int getFunctionIntProperty(String buildingType, FunctionType function, String name) {
+		return Integer.parseInt((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
 	}
 
 	/**
@@ -587,8 +589,8 @@ public class BuildingConfig implements Serializable {
 	 * @param name Property name
 	 * @return
 	 */
-	public double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
-		return Double.parseDouble(getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
+	private double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
+		return Double.parseDouble((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
 	}
 
 	/**
@@ -725,63 +727,14 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the relative X location of the airlock.
+	 * Gets the relative position of airlock position.
 	 *
 	 * @param buildingType the type of the building.
+	 * @param positionName The type of positions of the airlock
 	 * @return relative X location.
 	 */
-	public double getAirlockXLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, X_LOCATION);
-	}
-
-	/**
-	 * Gets the relative Y location of the airlock.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return relative Y location.
-	 */
-	public double getAirlockYLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, Y_LOCATION);
-	}
-
-	/**
-	 * Gets the relative X location of the interior side of the airlock.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return relative X location.
-	 */
-	public double getAirlockInteriorXLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, INTERIOR_X_LOCATION);
-	}
-
-	/**
-	 * Gets the relative Y location of the interior side of the airlock.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return relative Y location.
-	 */
-	public double getAirlockInteriorYLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, INTERIOR_Y_LOCATION);
-	}
-
-	/**
-	 * Gets the relative X location of the exterior side of the airlock.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return relative X location.
-	 */
-	public double getAirlockExteriorXLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, EXTERIOR_X_LOCATION);
-	}
-
-	/**
-	 * Gets the relative Y location of the exterior side of the airlock.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return relative Y location.
-	 */
-	public double getAirlockExteriorYLoc(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.EVA, EXTERIOR_Y_LOCATION);
+	public LocalPosition getAirlockPosition(String buildingType, String positionName) {
+		return (LocalPosition) getBuildingSpec(buildingType).getFunctionSpec(FunctionType.EVA).getProperty(positionName);
 	}
 
 	/**

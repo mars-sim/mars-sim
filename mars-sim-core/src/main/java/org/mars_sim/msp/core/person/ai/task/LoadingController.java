@@ -363,7 +363,8 @@ public class LoadingController implements Serializable {
 
 		Part p = ItemResourceUtil.findItemResource(id);
 		boolean usedSupply = false;
-
+		boolean noCapacity = false;
+		
 		// Determine number to load. Could load at least one
 		// Part if needed
 		int amountNeeded = (int)manifest.get(id).doubleValue();
@@ -403,6 +404,7 @@ public class LoadingController implements Serializable {
 							+ Math.round(remainingMassCapacity * 100D) / 100D + " kg.");
 				}
 				amountToLoad = (int) Math.floor(remainingMassCapacity/p.getMassPerItem());
+				noCapacity = (amountToLoad == 0);
 			}
 
 			// Load item from settlement inventory to vehicle inventory.
@@ -424,8 +426,8 @@ public class LoadingController implements Serializable {
 			manifest.remove(id);
 		}
 		// If it's optional and attempted to load something then remove it.
-		else if (!mandatory && usedSupply) {
-			logger.fine(vehicle, loader + " optional item " + p.getName()
+		else if ((!mandatory && usedSupply) || noCapacity) {
+			logger.warning(vehicle, loader + " item " + p.getName()
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(id);
 		}

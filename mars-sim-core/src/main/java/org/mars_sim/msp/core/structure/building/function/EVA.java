@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,7 +28,12 @@ implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.EVA;
 
-	private static final double MAINTENANCE_FACTOR = 5D; 
+	private static final double MAINTENANCE_FACTOR = 5D;
+
+	// Nmaes of the different Positions of an Airlock; must match the buildings.xml
+	private static final String CENTER_POSITION = "center-position";
+	private static final String INTERIOR_POSITION = "interior-position";
+	private static final String EXTERIOR_POSITION = "exterior-position"; 
 	
 	private int airlockCapacity;
 	
@@ -45,15 +51,12 @@ implements Serializable {
 		String buildingType = building.getBuildingType();
 		// Add a building airlock.
 		airlockCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.EVA);
-		double airlockXLoc = buildingConfig.getAirlockXLoc(buildingType);
-		double airlockYLoc = buildingConfig.getAirlockYLoc(buildingType);
-		double interiorXLoc = buildingConfig.getAirlockInteriorXLoc(buildingType);
-		double interiorYLoc = buildingConfig.getAirlockInteriorYLoc(buildingType);
-		double exteriorXLoc = buildingConfig.getAirlockExteriorXLoc(buildingType);
-		double exteriorYLoc = buildingConfig.getAirlockExteriorYLoc(buildingType);
+		LocalPosition airlockLoc = buildingConfig.getAirlockPosition(buildingType, CENTER_POSITION);
+		LocalPosition airlockInteriorLoc = buildingConfig.getAirlockPosition(buildingType, INTERIOR_POSITION);
+		LocalPosition airlockExteriorLoc = buildingConfig.getAirlockPosition(buildingType, EXTERIOR_POSITION);
 
-		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
-				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
+		airlock = new BuildingAirlock(building, airlockCapacity, airlockLoc, 
+											airlockInteriorLoc, airlockExteriorLoc);
 	}
 
 	/**
