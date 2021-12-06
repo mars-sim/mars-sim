@@ -37,7 +37,7 @@ public class SimLogger {
 			this.count = 1;
 		}
 	}
-	
+
 	private static Map<String, SimLogger> loggers = new HashMap<>();
 	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
@@ -60,11 +60,11 @@ public class SimLogger {
 		SimLogger result = null;
 		synchronized (loggers) {
 			result = loggers.computeIfAbsent(name, k -> new SimLogger(name));
-			
+
 		}
 		return result;
 	}
-	
+
 	private SimLogger(String name) {
 		rootLogger = Logger.getLogger(name);
 
@@ -74,7 +74,7 @@ public class SimLogger {
 	public String getSourceName() {
 		return sourceName;
 	}
-	
+
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -86,7 +86,7 @@ public class SimLogger {
 	 * Note: If messages are skipped, they are counted. When
 	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
 	 * count will be displayed.
-	 * 
+	 *
 	 * @param actor           Unit that is the Actor in the message.
 	 * @param level           Level to log.
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
@@ -95,7 +95,7 @@ public class SimLogger {
 	public void log(Loggable actor, Level level, long timeBetweenLogs, String message) {
 		baseLog(null, actor, level, timeBetweenLogs, message, null);
 	}
-	 
+
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -107,7 +107,7 @@ public class SimLogger {
 	 * Note: If messages are skipped, they are counted. When
 	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
 	 * count will be displayed.
-	 * 
+	 *
 	 * @param actor           Unit that is the Actor in the message.
 	 * @param level           Level to log.
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
@@ -117,7 +117,7 @@ public class SimLogger {
 	public void log(Loggable actor, Level level, long timeBetweenLogs, String message, Throwable t) {
 		baseLog(null, actor, level, timeBetweenLogs, message, t);
 	}
-	 
+
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -129,7 +129,7 @@ public class SimLogger {
 	 * Note: If messages are skipped, they are counted. When
 	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
 	 * count will be displayed.
-	 * 
+	 *
 	 * @param location		  Where does the message occur? If Null actor settlement is used.
 	 * @param actor           Unit that is the Actor in the message.
 	 * @param level           Level to log.
@@ -139,7 +139,7 @@ public class SimLogger {
 	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message) {
 		baseLog(location, actor, level, timeBetweenLogs, message, null);
 	}
-	
+
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -151,7 +151,7 @@ public class SimLogger {
 	 * Note: If messages are skipped, they are counted. When
 	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
 	 * count will be displayed.
-	 * 
+	 *
 	 * @param location		  Where does the message occur? If Null actor settlement is used.
 	 * @param actor           Unit that is the Actor in the message.
 	 * @param level           Level to log.
@@ -163,7 +163,7 @@ public class SimLogger {
 			Throwable t) {
 		baseLog(location, actor, level, timeBetweenLogs, message, t);
 	}
-	
+
 	/**
 	 * Does the actual logging to the logger.
 	 * @param location
@@ -178,9 +178,9 @@ public class SimLogger {
 		if (!rootLogger.isLoggable(level)) {
 			return;
 		}
-		
+
 		long dTime = timeBetweenLogs;
-	
+
 		String uniqueIdentifier = getUniqueIdentifer(actor);
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
 		StringBuilder outputMessage = null;
@@ -191,8 +191,8 @@ public class SimLogger {
 					// Increment count only since the message in the same and is within the time prescribed
 					lastTimeAndCount.count++;
 					return;
-				} 
-				
+				}
+
 				// Print the log statement with counts
 				outputMessage = new StringBuilder(sourceName);
 				outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
@@ -253,7 +253,7 @@ public class SimLogger {
 		else {
 			next = location.getContainerUnit();
 		}
-		
+
 		// Go up the chain if not surface
 		if (next != null && (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID)) {
 			locationDescription(next, outputMessage);
@@ -265,14 +265,14 @@ public class SimLogger {
 
 	/**
 	 * Returns the line
-	 * 
+	 *
 	 * @return
 	 */
 	private static String getUniqueIdentifer(Loggable actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		String loggerClass = SimLogger.class.getName();
 		String nickName = (actor != null ? actor.getNickName() : "unknown");
-		
+
 		// Skip the first frame as it is the "getStackTrace" call
 		for (int idx = 1; idx < stackTrace.length; idx++) {
 			StackTraceElement ste = stackTrace[idx];
@@ -286,7 +286,6 @@ public class SimLogger {
 		return QUESTION;
 	}
 
-	
 	/**
 	 * log directly without formatting
 	 * @param level
@@ -307,6 +306,14 @@ public class SimLogger {
 	}
 
 	/**
+	 * log directly without formatting
+	 * @param message
+	 */
+	public void fine(String message) {
+		log(Level.FINE, message);
+	}
+
+	/**
 	 * Helper method just to log a fine message. Message timeout is predefined.
 	 * @param actor
 	 * @param string
@@ -314,7 +321,15 @@ public class SimLogger {
 	public void fine(Loggable actor, String string) {
 		log(null, actor, Level.FINE, DEFAULT_INFO_TIME, string, null);
 	}
-	
+
+	/**
+	 * log directly without formatting
+	 * @param message
+	 */
+	public void info(String message) {
+		log(Level.INFO, message);
+	}
+
 	/**
 	 * Helper method just to log an info message.
 	 * @param actor
@@ -324,7 +339,7 @@ public class SimLogger {
 	public void info(Loggable actor, long timeBetweenLogs, String string) {
 		log(null, actor, Level.INFO, timeBetweenLogs, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log an info message.
 	 * @param actor
@@ -334,7 +349,7 @@ public class SimLogger {
 	public void info(long timeBetweenLogs, String string) {
 		log(null, null, Level.INFO, timeBetweenLogs, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
 	 * @param actor
@@ -343,7 +358,7 @@ public class SimLogger {
 	public void info(Loggable actor, String string) {
 		log(null, actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
 	 * @param location
@@ -353,7 +368,15 @@ public class SimLogger {
 	public void info(Unit location, Loggable actor, String string) {
 		log(location, actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
 	}
-	
+
+	/**
+	 * log directly without formatting
+	 * @param message
+	 */
+	public void warning(String message) {
+		log(Level.WARNING, message);
+	}
+
 	/**
 	 * Helper method just to log a warning message.
 	 * @param actor
@@ -363,7 +386,7 @@ public class SimLogger {
 	public void warning(Loggable actor, long timeBetweenLogs, String string) {
 		log(null, actor, Level.WARNING, timeBetweenLogs, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a warning message. Message  timeout is predefined.
 	 * @param actor
@@ -372,7 +395,7 @@ public class SimLogger {
 	public void warning(Loggable actor, String string) {
 		log(null, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a warning message. Message timeout is predefined.
 	 * @param location
@@ -382,17 +405,19 @@ public class SimLogger {
 	public void warning(Unit location, Loggable actor, String string) {
 		log(location, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
-	
-	
-	public void warning(String message) {
-		log(Level.WARNING, message);
-	}
-	
-	
+
 	public void warning(long timeBetweenLogs, String message) {
-		log(null, null, Level.WARNING, timeBetweenLogs, sourceName + " : " + message, null);		
+		log(null, null, Level.WARNING, timeBetweenLogs, sourceName + " : " + message, null);
 	}
-	
+
+	/**
+	 * log directly without formatting
+	 * @param message
+	 */
+	public void severe(String message) {
+		log(Level.SEVERE, message);
+	}
+
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param actor
@@ -412,7 +437,7 @@ public class SimLogger {
 	public void severe(Loggable actor, long timeBetweenLogs, String string, Exception e) {
 		log(null, actor, Level.SEVERE, timeBetweenLogs, string, e);
 	}
-	
+
 	/**
 	 * Helper method just to log a severe message.
 	 * @param actor
@@ -422,7 +447,7 @@ public class SimLogger {
 	public void severe(Loggable actor, long timeBetweenLogs, String string) {
 		log(null, actor, Level.SEVERE, timeBetweenLogs, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param location
@@ -432,7 +457,7 @@ public class SimLogger {
 	public void severe(Unit location, Loggable actor, String string) {
 		log(location, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
 	}
-	
+
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param actor
@@ -440,30 +465,31 @@ public class SimLogger {
 	 * @param reason
 	 */
 	public void severe(Loggable actor, String message, Throwable reason) {
-		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);		
+		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);
 	}
-	
-	public void severe(String message) {
-		log(Level.SEVERE, message);
+
+	/**
+	 * log directly without formatting
+	 * @param message
+	 */
+	public void config(String message) {
+		log(Level.CONFIG, message);
 	}
-	
+
+	public void config(Loggable actor, String message, Throwable reason) {
+		log(null, actor, Level.CONFIG, 0, message, reason);
+	}
+
+	public void config(Loggable actor, String message) {
+		log(null, actor, Level.CONFIG, 0, message, null);
+	}
+
+	public void config(long timeBetweenLogs, String message) {
+		log(null, null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);
+	}
+
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
 
-	public void config(Loggable actor, String message, Throwable reason) {
-		log(null, actor, Level.CONFIG, 0, message, reason);		
-	}
-
-	public void config(Loggable actor, String message) {
-		log(null, actor, Level.CONFIG, 0, message, null);		
-	}
-	
-	public void config(long timeBetweenLogs, String message) {
-		log(null, null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);		
-	}
-	
-	public void config(String message) {
-		log(Level.CONFIG, message);
-	}
 }

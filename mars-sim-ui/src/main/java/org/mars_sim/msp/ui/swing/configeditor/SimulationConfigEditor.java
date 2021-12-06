@@ -240,7 +240,7 @@ public class SimulationConfigEditor {
 
 		JPanel topPanel = null;
 
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			topPanel = new JPanel(new GridLayout(2, 1));
 			f.add(topPanel, BorderLayout.NORTH);

@@ -97,7 +97,7 @@ public final class SettlementBuilder {
 		}
 
 		// If loading full default and game mode then place the Commander
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			GameManager.placeInitialCommander(unitManager);
 		}
 	}

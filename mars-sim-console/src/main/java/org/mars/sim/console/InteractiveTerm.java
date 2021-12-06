@@ -271,7 +271,7 @@ public class InteractiveTerm {
 		boolean loaded = isLoaded;
 
 		// Set the Game Mode to Command Mode in GameManager
-		GameManager.mode = GameMode.COMMAND;
+		GameManager.setGameMode(GameMode.COMMAND);
 
         marsTerminal.println(System.lineSeparator()
         		+ System.lineSeparator()
@@ -405,7 +405,7 @@ public class InteractiveTerm {
 	private int configureSandoxMode() {
 		int sandboxCfg = 0;
 
-		GameManager.mode = GameMode.SANDBOX;
+		GameManager.setGameMode(GameMode.SANDBOX);
 
         marsTerminal.println(System.lineSeparator()
         		+ System.lineSeparator()

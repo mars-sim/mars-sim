@@ -188,7 +188,7 @@ public class VehicleTableModel extends UnitTableModel {
 			columnTypes
 		);
 
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderSettlement = unitManager.getCommanderSettlement();
 			setSource(commanderSettlement.getAllAssociatedVehicles());

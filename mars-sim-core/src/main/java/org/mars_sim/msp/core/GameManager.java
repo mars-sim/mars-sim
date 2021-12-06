@@ -25,7 +25,7 @@ public class GameManager {
     }
 
     /** An instance of GameMode. */
-    public static GameMode mode = GameMode.COMMAND;
+    private static GameMode gameMode = GameMode.COMMAND;
 
     /** The menu variable captures the first menu choice in the console main menu. */
     public static String menu = "";
@@ -62,12 +62,12 @@ public class GameManager {
     public static void initializeInstances(UnitManager u) {
 
 		if (u.getCommanderID() > 0) {
-			mode = GameMode.COMMAND;
+			gameMode = GameMode.COMMAND;
 	    	int id = u.getCommanderID();
 	    	commanderPerson = u.getPersonByID(id);
 		}
 		else {
-			mode = GameMode.SANDBOX;
+			gameMode = GameMode.SANDBOX;
 		}
 
     }
@@ -102,6 +102,24 @@ public class GameManager {
 		// Found the commander home
 		commanderPerson = selected.setDesignatedCommander(commander);
 	}
+
+	/**
+	 * Gets the game mode
+	 *
+	 * @return GameMode
+	 */
+    public static GameMode getGameMode() {
+    	return gameMode;
+    }
+
+	/**
+	 * Gets the game mode
+	 *
+	 * @return GameMode
+	 */
+    public static void setGameMode(GameMode mode) {
+    	gameMode = mode;
+    }
 
     @Override
     public String toString() {

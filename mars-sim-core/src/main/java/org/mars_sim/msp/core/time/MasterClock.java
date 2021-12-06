@@ -543,7 +543,7 @@ public class MasterClock implements Serializable {
 		// Check GameManager.mode == GameMode.COMMAND ?
 		canPauseTime = value0;
 		// Note: will need to re-implement the auto pause time for command mode
-		logger.info(null, "Auto pause time: " + value1);
+		logger.info("Auto pause time: " + value1);
 	}
 
 	/*

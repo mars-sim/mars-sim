@@ -86,7 +86,7 @@ implements Serializable, Comparable<Treatment> {
 		double result = duration;
 		if ((result > 0D) && (skill < requiredSkill)) {
 			// Increase the time by the percentage skill lacking
-			result = duration * (1 + 1.0 * ((requiredSkill - skill)/requiredSkill));
+			result = duration * (1 + (1.0 * requiredSkill - skill)/requiredSkill);
 		}
 		return result;
 	}

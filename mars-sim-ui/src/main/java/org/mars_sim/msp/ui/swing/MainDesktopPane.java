@@ -87,7 +87,7 @@ public class MainDesktopPane extends JDesktopPane
 	public final static String BLUE_CSS = BLUE_CSS_THEME;
 
 	public GameMode mode;
-	
+
 	// Data members
 //	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
@@ -110,7 +110,7 @@ public class MainDesktopPane extends JDesktopPane
 	private SettlementWindow settlementWindow;
 	private NavigatorWindow navWindow;
 	private TimeWindow timeWindow;
-	private CommanderWindow commanderWindow;	
+	private CommanderWindow commanderWindow;
 
 	private MainWindow mainWindow;
 	private EventTableModel eventTableModel;
@@ -120,14 +120,14 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Constructor 1.
-	 * 
+	 *
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		super();
 
 		this.mainWindow = mainWindow;
-		
+
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
 		// Play music
@@ -139,12 +139,12 @@ public class MainDesktopPane extends JDesktopPane
 		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
-		
+
 		prepareListeners();
-		
+
 		SwingUtilities.invokeLater(() -> init());
-	}		
-		
+	}
+
 	private void init() {
 		// Set background color to black
 		setBackground(Color.black);
@@ -176,7 +176,7 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (Exception e) {
           	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e.getMessage());
 		}
-		
+
 		// Setup announcement window
 		prepareAnnouncementWindow();
 	}
@@ -185,7 +185,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * Create background tile when MainDesktopPane is first displayed. Recenter
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
 	 * MainDesktopPane.
-	 * 
+	 *
 	 * @param e the component event
 	 */
 	@Override
@@ -260,7 +260,7 @@ public class MainDesktopPane extends JDesktopPane
 			Settlement settlement = (Settlement) unit;
 			UnitManagerEventType eventType = event.getEventType();
 
-			if (eventType == UnitManagerEventType.ADD_UNIT) { 
+			if (eventType == UnitManagerEventType.ADD_UNIT) {
 				settlement.addUnitListener(this);
 			}
 
@@ -292,7 +292,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Returns the MainWindow instance
-	 * 
+	 *
 	 * @return MainWindow instance
 	 */
 	public MainWindow getMainWindow() {
@@ -307,7 +307,7 @@ public class MainDesktopPane extends JDesktopPane
 			toolWindows.clear();
 
 		// Prepare Commander Window
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderWindow = new CommanderWindow(this);
 			try {
@@ -409,7 +409,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Returns a tool window for a given tool name
-	 * 
+	 *
 	 * @param toolName the name of the tool window
 	 * @return the tool window
 	 */
@@ -423,7 +423,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Displays a new Unit model in the monitor window.
-	 * 
+	 *
 	 * @param model the new model to display
 	 */
 	public void addModel(UnitTableModel model) {
@@ -434,7 +434,7 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Centers the map and the globe on given coordinates. Also opens the map tool
 	 * if it's closed.
-	 * 
+	 *
 	 * @param targetLocation the new center location
 	 */
 	public void centerMapGlobe(Coordinates targetLocation) {
@@ -444,7 +444,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Return true if an unit window is open.
-	 * 
+	 *
 	 * @param unit window
 	 * @return true true if the unit window is open
 	 */
@@ -458,7 +458,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Return true if tool window is open.
-	 * 
+	 *
 	 * @param toolName the name of the tool window
 	 * @return true true if tool window is open
 	 */
@@ -518,15 +518,15 @@ public class MainDesktopPane extends JDesktopPane
 		window.getContentPane().repaint();
 		validate();
 		repaint();
-		
+
 		if (toolName.equals(MissionWindow.NAME)) {
 			((MissionWindow)window).selectMission(mission);
 		}
 	}
-	
+
 	/**
 	 * Opens a tool window if necessary.
-	 * 
+	 *
 	 * @param toolName the name of the tool window
 	 */
 	public void openToolWindow(String toolName) {
@@ -548,7 +548,7 @@ public class MainDesktopPane extends JDesktopPane
 						location = computeLocation(window, 1, 0);
 					else
 						location = getCenterLocation(window);
-					
+
 					// Check is visible
 					if ((location.x < 0) || (location.y < 0)) {
 						location = new Point(1,1);
@@ -585,7 +585,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Closes a tool window if it is open
-	 * 
+	 *
 	 * @param toolName the name of the tool window
 	 */
 	public void closeToolWindow(String toolName) {
@@ -604,7 +604,7 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Creates and opens a window for a unit if it isn't already in existence and
 	 * open.
-	 * 
+	 *
 	 * @param unit          the unit the window is for.
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
@@ -638,7 +638,7 @@ public class MainDesktopPane extends JDesktopPane
 				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
 			} else {
 				// Put window in random position on desktop.
-				tempWindow.setLocation(0, 0);//getRandomLocation(tempWindow)); 
+				tempWindow.setLocation(0, 0);//getRandomLocation(tempWindow));
 			}
 
 			// Add unit window to unit windows
@@ -669,7 +669,7 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Creates and opens a window for a unit if it isn't already in existence and
 	 * open.
-	 * 
+	 *
 	 * @param unit          the unit the window is for.
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
@@ -736,7 +736,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Finds an existing unit window for a unit.
-	 * 
+	 *
 	 * @param unit the unit to search for.
 	 * @return existing unit window or null if none.
 	 */
@@ -819,7 +819,7 @@ public class MainDesktopPane extends JDesktopPane
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
 		toolWindows.clear();
-		
+
 		for (UnitWindow window : unitWindows) {
 			window.dispose();
 			if (mainWindow != null)
@@ -870,7 +870,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Gets a random location on the desktop for a given {@link JInternalFrame}.
-	 * 
+	 *
 	 * @param tempWindow an internal window
 	 * @return random point on the desktop
 	 */
@@ -884,13 +884,13 @@ public class MainDesktopPane extends JDesktopPane
 		int rX = RandomUtil.getRandomInt(w / 20) * 20;
 
 		int rY = RandomUtil.getRandomInt(5) * 20;
-	
+
 		return new Point(rX, rY);
 	}
 
 	/**
 	 * Gets a particular location on the desktop for a given {@link JInternalFrame}.
-	 * 
+	 *
 	 * @param f
 	 * @param position
 	 * @return a specific point on the desktop
@@ -904,27 +904,27 @@ public class MainDesktopPane extends JDesktopPane
 		int h = desktop_size.height - window_size.height;
 		int rX = 0;
 		int rY = 0;
-		
+
 		if (positionX == 0)
 			rX = 0;
 		else if (positionX == 1)
 			rX = w/2;
 		else if (positionX == 2)
 			rX = w;
-		
+
 		if (positionY == 0)
 			rY = 0;
 		else if (positionY == 1)
 			rY = h/2;
 		else if (positionY == 2)
 			rY = h;
-		
+
 		return new Point(rX, rY);
 	}
 
 	/**
 	 * Gets the sound player used by the desktop.
-	 * 
+	 *
 	 * @return sound player.
 	 */
 	public AudioPlayer getSoundPlayer() {
@@ -933,7 +933,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Opens a popup announcement window on the desktop.
-	 * 
+	 *
 	 * @param announcement the announcement text to display.
 	 */
 	public void openAnnouncementWindow(String announcement) {
@@ -1013,16 +1013,16 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
-	public void openInitialWindows() {	
+	public void openInitialWindows() {
 		// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 		// centered for javaFX mode in Windows PC (but not in other platform)
-		
+
 		if (mode == GameMode.COMMAND) {
 			// Open the time window for the Commander Mode
 			openToolWindow(TimeWindow.NAME);
 			openToolWindow(CommanderWindow.NAME);
 		}
-		
+
 		else {
 			openToolWindow(GuideWindow.NAME);
 		}
@@ -1091,7 +1091,7 @@ public class MainDesktopPane extends JDesktopPane
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
- 
+
 	public void setEventTableModel(EventTableModel eventTableModel) {
 		this.eventTableModel = eventTableModel;
 	}
@@ -1109,7 +1109,7 @@ public class MainDesktopPane extends JDesktopPane
 		if (time > 0 && !mainWindow.isIconified()) {
 			updateWindows();
 		}
-		
+
 		// hasFocus() is always false
 		// isFocusable() is always true
 		// isEnabled() is always true
@@ -1138,14 +1138,14 @@ public class MainDesktopPane extends JDesktopPane
 				u.destroy();
 				u = null;
 			}
-			unitWindows = null;			
+			unitWindows = null;
 		}
 		if (toolWindows != null) {
 			for (ToolWindow w : toolWindows) {
 				w.destroy();
 				w = null;
 			}
-			toolWindows = null;			
+			toolWindows = null;
 		}
 		backgroundImageIcon = null;
 		backgroundLabel = null;

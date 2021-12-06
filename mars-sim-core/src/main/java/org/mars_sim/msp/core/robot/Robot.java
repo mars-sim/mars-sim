@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2021-10-20
+ * @date 2021-12-05
  * @author Manny Kung
  */
 
@@ -206,7 +206,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set carry capacity
-		carryingCapacity = (int) (BASE_CAPACITY + strength);
+		carryingCapacity = (int)BASE_CAPACITY + strength;
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 	}
@@ -871,6 +871,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// 5 MEDICBOT
 		// 6 REPAIRBOT
 
+		// 3 things that determine which robot type to make:
+		// A. Based on # of settlers in a settlement (related to B.)
+		// B. Based on # of bots allowed in a settlement (implemented in this method)
+		// C. Based on sponsor/country's preference (to be implemented in future)
+
 		int[] numBots = new int[7];
 
 		RobotType robotType = null;
@@ -1090,22 +1095,22 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		else {
-			if (numBots[4] < (int)(max/9 + RandomUtil.getRandomInt(-2, 2)))
+			if (numBots[4] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < (int)(max/9 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[6] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < (int)(max/12 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[0] < (max/12 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.CHEFBOT;
-			else if (numBots[3] < (int)(max/9 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[3] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.GARDENBOT;
 			else {
 				int rand = RandomUtil.getRandomInt(6);
 				if (rand == 1) {
-					if (numBots[2] < (int)(max/24 + RandomUtil.getRandomInt(-2, 2)))
+					if (numBots[2] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < (int)(max/24 + RandomUtil.getRandomInt(-2, 2)))
+					else if (numBots[1] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.CONSTRUCTIONBOT;
-					else if (numBots[5] < (int)(max/24 + RandomUtil.getRandomInt(-2, 2)))
+					else if (numBots[5] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.MEDICBOT;
 					else {
 						robotType = RobotType.values()[rand];
