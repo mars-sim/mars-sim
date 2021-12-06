@@ -48,12 +48,12 @@ public class BarDrawer extends TexturedPanel {
 		Color.decode("#973ADE"),
 		Color.decode("#DE3A3A")
     };
-    
+
     public LinkedHashMap<FileCollectionPanel, Double> collectionMap;
 
     public BarDrawer(LinkedHashMap<FileCollectionPanel, Double> collectionMap) throws IOException {
 		this.collectionMap = collectionMap;
-	
+
 		this.collectionMap = new LinkedHashMap<FileCollectionPanel, Double>();
 	//	collectionMap.put("Pictures", 13d);
 	//	collectionMap.put("Music", 12d);
@@ -63,13 +63,13 @@ public class BarDrawer extends TexturedPanel {
 	//	collectionMap.put("Compressed Files", 10d);
 	//	collectionMap.put("Downloads Folder", 1d);
 	//	collectionMap.put("Another collection", 22d);
-	
-	
+
+
 	//	collectionMap.put("Pictures", 66d);
 	//	collectionMap.put("Music", 1d);
 	//	collectionMap.put("Videos", 33d);
-	
-	
+
+
 		FileCollectionPanel fcp1 = new FileCollectionPanel();
 		fcp1.setTitle("Pictures");
 		FileCollectionPanel fcp2 = new FileCollectionPanel();
@@ -87,23 +87,23 @@ public class BarDrawer extends TexturedPanel {
 		super.paintComponent(gr);
 		Graphics2D g = (Graphics2D) gr;
 		setPreferredSize(new Dimension(getWidth(), 150));
-	
-		Map desktopHints = (Map) (Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints"));
+
+		Map<?, ?> desktopHints = (Map<?, ?>) (Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints"));
 		if (desktopHints != null) {
 		    g.addRenderingHints(desktopHints);
 		}
-	
+
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 			RenderingHints.VALUE_ANTIALIAS_ON);
-	
+
 		colorIndex = 0;
 		int realWidth = getWidth() - 1;
 		int heightOfBar = (int) (getHeight() - 50);
-	
+
 	//	g.setColor(Color.decode("#cccccc"));
 		double radius = getHeight() / 3;
 		RoundRectangle2D r = new RoundRectangle2D.Double(0, 0, realWidth, heightOfBar, radius, radius * 2);
-	
+
 		g.setClip(getBounds());
 		g.setColor(Color.black);
 		double barSegment = realWidth / collectionMap.size();
@@ -111,18 +111,18 @@ public class BarDrawer extends TexturedPanel {
 		    barSegment = 120;
 		}
 		int collectionNameX = 0;
-	
+
 		int x = 0;
 //		for (FileCollectionPanel fcp : collectionMap.keySet()) {
-//	
+//
 //		    g.setColor(getNextColor());
-//	
+//
 //		    double percentage = collectionMap.get(fcp) + adjustmentNeeded(collectionMap, fcp);
 //		    double width = (((double) percentage / 100) * realWidth);
-//	
+//
 //		    g.setClip(r);
 //		    g.fillRect(x, 0, (int) width, heightOfBar);
-//	
+//
 //		    g.setFont(g.getFont().deriveFont(14f));
 //		    String titleShortened = fcp.getTitle();
 //		    int lettersToRemove = 1;
@@ -131,7 +131,7 @@ public class BarDrawer extends TexturedPanel {
 //			lettersToRemove++;
 //			titleShortened += "...";
 //		    }
-//	
+//
 //		    g.setClip(getBounds());
 //		    g.setClip(0, 0, getWidth(), getHeight());
 //		    g.fillRect(collectionNameX + 15, heightOfBar + 10, 10, 10);
@@ -141,47 +141,47 @@ public class BarDrawer extends TexturedPanel {
 //		    System.out.println("collectionNameX = " + collectionNameX);
 //		    g.setFont(g.getFont().deriveFont(11f));
 //		    g.drawString(Double.toString(collectionMap.get(fcp)) + "%", collectionNameX + 30, heightOfBar + 20 + g.getFontMetrics().getHeight());
-//	
+//
 //		    collectionNameX += barSegment;
 //		    x = x + (int) width;
 //		}
-	
+
 		// draw lines
 		g.setClip(r);
 		for (int lineX = 15; lineX < realWidth - 1; lineX += 25) {
 		    g.setColor(new Color(255, 255, 255, 75));
 		    g.drawLine(lineX, 0, lineX - 15, heightOfBar - 1);
-	
+
 		    int gray = 128;
 		    Color grayTransparent = new Color(gray, gray, gray, 75);
 		    g.setColor(grayTransparent);
 		    g.drawLine(lineX - 1, 0, lineX - 16, heightOfBar - 1);
 		}
-	
-	
+
+
 		// adding gradient
-		Paint p = new GradientPaint(0.0f, 0.0f, new Color(255, 255, 255, 255), 0.0f, getHeight(), 
+		Paint p = new GradientPaint(0.0f, 0.0f, new Color(255, 255, 255, 255), 0.0f, getHeight(),
 				new Color(255, 255, 255, 0));
 
 //		Paint p2 = new LinearGradientPaint(
-//				0.0f, 0.0f, getWidth(), getHeight(), new float[]{0.5f, 1.0f}, 
+//				0.0f, 0.0f, getWidth(), getHeight(), new float[]{0.5f, 1.0f},
 //			    new Color[] {
 //			        new Color(255, 255, 255, 0),
 //			        new Color(255, 255, 255, 128),
 //			        new Color(255, 255, 255, 0),
 //			    });
-		
-//		Paint p2 = new LinearGradientPaint(0.0f, 0.0f, getWidth(), getHeight()/8, 
-//			new float[]{0.5f, .75f}, 
+
+//		Paint p2 = new LinearGradientPaint(0.0f, 0.0f, getWidth(), getHeight()/8,
+//			new float[]{0.5f, .75f},
 //			new Color[]{
-//					new Color(255, 255, 255, 128), 
+//					new Color(255, 255, 255, 128),
 //					new Color(255, 255, 255, 0)
 //			});
-				
+
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
-		
+
 		g.setPaint(p);
-		
+
 		g.fillRect(0, 0, getWidth(), getHeight());
     }
 
@@ -193,7 +193,7 @@ public class BarDrawer extends TexturedPanel {
 		for (int i = 0; i < cArr.length; i++) {
 		    cArr[i] = s.charAt(i);
 		}
-	
+
 		return new String(cArr);
     }
 

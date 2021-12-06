@@ -115,7 +115,7 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
 
 			// Must take a copy
@@ -159,7 +159,7 @@ public class MissionTableModel extends AbstractTableModel
 			return;
 
 		boolean goodToGo = false;
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
 				goodToGo = true;
 			}

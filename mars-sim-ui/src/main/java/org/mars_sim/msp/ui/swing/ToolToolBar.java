@@ -66,20 +66,20 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //	private static final int ICON_W = 16;
 //	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
 //	private static final int EMPTY_H = 32;
-	
+
 	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$
-    
+
 	// Data members
 	/** List of tool buttons. */
 	private Vector<ToolButton> toolButtons;
 
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
-	
-	/** Sans serif font. */ 
+
+	/** Sans serif font. */
 	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-	
+
 	/**
 	 * Constructs a ToolToolBar object
 	 * @param parentMainWindow the main window pane
@@ -94,7 +94,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
-		
+
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
 		// Fix tool bar
@@ -103,16 +103,16 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		setPreferredSize(new Dimension(0, 32));
 
 		setOpaque(false);
-		
+
 		setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare tool buttons
 		prepareToolButtons();
 
 		// Set border around toolbar
 		setBorder(new BevelBorder(BevelBorder.RAISED));
 	}
-          
+
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
@@ -123,7 +123,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //			};
 //		});
 //		add(openButton);
-//		
+//
 //		ToolButton openAutosaveButton = new ToolButton(Msg.getString("mainMenu.openAutosave"), Msg.getString("img.openAutosave")); //$NON-NLS-1$ //$NON-NLS-2$
 //		openAutosaveButton.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent e) {
@@ -207,7 +207,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(resupplyButton);
 
 		// Add the command dashboard button
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			// Add commander dashboard button
 			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
 			dashboardButton.addActionListener(this);
@@ -216,30 +216,30 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		}
 
 //		addSeparator();
-		
+
 		addToEnd(parentMainWindow.getEarthDate());
-	
+
 		addToEnd(parentMainWindow.getSolLabel());
-		
+
 		addToEnd(parentMainWindow.getMarsTime());
 
 		Icon calendarIcon = new LazyIcon("calendar_mars").getIcon();
-	
+
 		WebPanel innerPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
 
 		MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		MarsCalendarDisplay calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
 		innerPane.add(calendarDisplay);
-		
-		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));		
+
+		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));
 //		calendarPane.setPreferredSize(new Dimension(140, 80));
-		
+
 		midPane.add(innerPane, BorderLayout.CENTER);
 		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
 
-		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));		
+		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));
 		outerPane.add(midPane, BorderLayout.CENTER);
-		
+
 		// Create martian month label
 //		WebLabel monthLabel = new WebLabel("Month of " + marsClock.getMonthName(), WebLabel.CENTER);
     	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
@@ -260,10 +260,10 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		WebPanel linkPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.RIGHT, 2, 2));
 		linkPane.add(link);
 		outerPane.add(linkPane, BorderLayout.SOUTH);
-		
+
     	WebStyledLabel headerLabel = new WebStyledLabel(StyleId.styledlabelShadow, "Mars Calendar", WebLabel.CENTER);
     	headerLabel.setFont(SANS_SERIF_FONT);
-    	
+
     	outerPane.add(headerLabel, BorderLayout.NORTH);
 
 		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
@@ -271,30 +271,30 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
             @Override
             public void actionPerformed(final ActionEvent e){
             	calendarDisplay.update();
-            	
+
             	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
             	monthLabel.setText(mn);
-     		
+
             	final Window parent = CoreSwingUtils.getNonNullWindowAncestor(calendarButton);
                 final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
                 popOver.setIconImages(WebLookAndFeel.getImages());
                 popOver.setCloseOnFocusLoss(true);
                 popOver.setPadding(5);
                 popOver.add(outerPane);
-                popOver.show(calendarButton, PopOverDirection.down); 
+                popOver.show(calendarButton, PopOverDirection.down);
             }
         } );
-		
+
 		addToEnd(calendarButton);
-		
+
 		addSeparatorToEnd();
-		
+
 //		addSeparatorToMiddle();
 
 //		addSeparator(new Dimension(20, 20));
-		
+
 //		addSeparator();
-		
+
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
 		guideButton.addActionListener(this);
@@ -306,11 +306,11 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //		JPanel emptyPanel = new JPanel();
 //		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
 //		add(emptyPanel);
-		 
+
 //		add(Box.createGlue());
-//		
+//
 //		addSeparator();
-		
+
 //		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
 ////		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 //		slowDownButton.addActionListener(new ActionListener() {
@@ -331,8 +331,8 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //			};
 //		});
 //		add(pauseButton);
-//		
-//		
+//
+//
 //		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
 ////		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 //		resumeButton.addActionListener(new ActionListener() {
@@ -342,7 +342,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //			};
 //		});
 //		add(resumeButton);
-//		
+//
 //		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
 ////		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 //		speedUpButton.addActionListener(new ActionListener() {
@@ -353,7 +353,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //			};
 //		});
 //		add(speedUpButton);
-		
+
 //		addToEnd(new MagnifierToggleTool(parentMainWindow.getFrame()) );
 	}
 

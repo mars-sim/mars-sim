@@ -60,6 +60,8 @@ public class MultisortTableHeaderCellRenderer extends DefaultTableHeaderCellRend
             return new AlphaIcon(UIManager.getIcon("Table.ascendingSortIcon"), computedAlpha);
           case DESCENDING:
             return new AlphaIcon(UIManager.getIcon("Table.descendingSortIcon"), computedAlpha);
+		default:
+			break;
         }
       }
       computedAlpha *= alpha;

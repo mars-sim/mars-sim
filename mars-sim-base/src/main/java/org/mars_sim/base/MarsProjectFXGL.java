@@ -9,7 +9,6 @@ package org.mars_sim.base;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
@@ -141,8 +140,8 @@ public class MarsProjectFXGL extends GameApplication {
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
 					// Start sim config editor
-					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
 					logger.config("Start the Site Editor...");
+					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
 					editor.waitForCompletion();
 
 					UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
@@ -159,6 +158,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 				else if (type == 2) {
 					// Load simulation
+					logger.config("Load sim...");
 					String filePath = selectSimFile(false);
 					if (filePath != null) {
 						builder.setSimFile(filePath);
@@ -168,7 +168,6 @@ public class MarsProjectFXGL extends GameApplication {
 					// Check out crew flag
 					builder.setUseCrews(interactiveTerm.getUseCrew());
 				}
-
 			}
 
 			// Build and run the simulator
@@ -188,11 +187,11 @@ public class MarsProjectFXGL extends GameApplication {
 		catch(Exception e) {
 			// Catch everything
 			exitWithError("Problem starting " + e.getMessage(), e);
-
 		}
 	}
 
 	private void checkOptions(SimulationBuilder builder, String[] args) {
+
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);

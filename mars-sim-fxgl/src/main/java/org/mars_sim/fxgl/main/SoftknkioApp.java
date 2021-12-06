@@ -1,12 +1,12 @@
 package org.mars_sim.fxgl.main;
 
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.entity.GameWorld;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
-import de.codecentric.centerdevice.javafxsvg.dimension.PrimitiveDimensionProvider;
+import static com.almasb.fxgl.dsl.FXGL.getGameScene;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.getInput;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.mars_sim.fxgl.data.ReadGameData;
 import org.mars_sim.fxgl.data.SaveGameData;
 import org.mars_sim.fxgl.gui.Dashboard;
@@ -14,6 +14,13 @@ import org.mars_sim.fxgl.model.entities.Matchfield;
 import org.mars_sim.fxgl.model.entities.Player;
 import org.mars_sim.fxgl.model.entities.Point;
 import org.mars_sim.fxgl.model.util.Loader;
+
+import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.UserAction;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.TextInputDialog;
@@ -21,13 +28,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.*;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class SoftknkioApp extends GameApplication {
 

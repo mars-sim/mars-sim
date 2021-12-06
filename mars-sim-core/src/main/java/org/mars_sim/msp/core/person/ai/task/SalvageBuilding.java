@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,13 +59,13 @@ implements Serializable {
 
 	// Data members.
 	private boolean operatingLUV;
-	
+
 	private ConstructionStage stage;
 	private ConstructionSite site;
 	private LightUtilityVehicle luv;
-	
+
 	private List<GroundVehicle> vehicles;
-	
+
 
 
 	/**
@@ -84,7 +83,7 @@ implements Serializable {
         		endTask();
 			return;
 		}
-        		
+
         BuildingSalvageMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canSalvage(person)) {
 
@@ -106,7 +105,7 @@ implements Serializable {
             endTask();
         }
     }
-    
+
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -157,7 +156,7 @@ implements Serializable {
             logger.fine(person.getName() + " end salvaging building : night time");
             return false;
 		}
-		
+
         // Check if person's medical condition will not allow task.
         return !(person.getPerformanceRating() < .5D);
     }
@@ -214,7 +213,7 @@ implements Serializable {
     @Override
     protected void addExperience(double time) {
     	super.addExperience(time);
-        
+
         // If person is driving the light utility vehicle, add experience to driving skill.
         // 1 base experience point per 10 millisols of mining time spent.
         // Experience points adjusted by person's "Experience Aptitude" attribute.
@@ -228,7 +227,7 @@ implements Serializable {
         }
     }
 
- 
+
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return SALVAGE;
@@ -302,7 +301,7 @@ implements Serializable {
         	else
         		endTask();
 		}
-		
+
         if (stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
             if (person != null) {
@@ -316,7 +315,7 @@ implements Serializable {
 				}
 			}
 
-			if (person.isOutside())
+			if (worker.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();

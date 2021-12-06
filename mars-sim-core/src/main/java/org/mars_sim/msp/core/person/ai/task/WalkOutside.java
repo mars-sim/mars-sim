@@ -48,13 +48,13 @@ public class WalkOutside extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	/** The speed factor due to walking in EVA suit. */	
+	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
 	/** The base walking speed [km / hr] */
 	private static final double BASE_WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
 	/** The max walking speed [km / hr] */
 	private static final double MAX_WALKING_SPEED = 3 * BASE_WALKING_SPEED;
-	/** The greater than zero distance [km] */	
+	/** The greater than zero distance [km] */
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .3D;
@@ -76,7 +76,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person               the person performing the task.
 	 * @param startXLocation       the starting local X location.
 	 * @param startYLocation       the starting local Y location.
@@ -151,7 +151,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Determine the outside walking path, avoiding obstacles as necessary.
-	 * 
+	 *
 	 * @return walking path as list of X,Y locations.
 	 */
 	List<Point2D> determineWalkingPath() {
@@ -169,8 +169,8 @@ public class WalkOutside extends Task implements Serializable {
 
 		if (freePath) {
 			result.add(destinationLoc);
-		} 
-		
+		}
+
 		else {
 			// Determine path around obstacles using A* path planning algorithm.
 			List<Point2D> obstacleAvoidancePath = determineObstacleAvoidancePath();
@@ -178,8 +178,8 @@ public class WalkOutside extends Task implements Serializable {
 			if (obstacleAvoidancePath != null) {
 				// Set to obstacle avoidance path.
 				result = obstacleAvoidancePath;
-			} 
-			
+			}
+
 			else {
 				// Accept obstacle-blocked path as last resort.
 				result.add(destinationLoc);
@@ -192,7 +192,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Determine obstacle avoidance path.
-	 * 
+	 *
 	 * @return path as list of points or null if no path found.
 	 */
 	List<Point2D> determineObstacleAvoidancePath() {
@@ -238,6 +238,9 @@ public class WalkOutside extends Task implements Serializable {
 			// Find loc in openSet with lowest fScore value.
 			// FScore is distance (m) from start through currentLoc to destination.
 			Point2D currentLoc = getLowestFScore(openSet);
+
+			if (currentLoc == null)
+				break;
 
 			// Check if clear path to destination.
 			if (checkClearPathToDestination(currentLoc, endLoc)) {
@@ -288,7 +291,7 @@ public class WalkOutside extends Task implements Serializable {
 	/**
 	 * Find location in openSet with lowest fScore value. The fScore value is the
 	 * distance (m) from start through location to destination.
-	 * 
+	 *
 	 * @param openSet a set of locations.
 	 * @return location with lowest fScore value.
 	 */
@@ -311,7 +314,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Checks if path between two locations is free of obstacles.
-	 * 
+	 *
 	 * @param currentLoc the first location.
 	 * @param endLoc     the second location.
 	 * @return true if path free of obstacles.
@@ -323,7 +326,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Recreate a path from the cameFromMap.
-	 * 
+	 *
 	 * @param cameFromMap a map of locations and their previous locations.
 	 * @param endLocation the last location in a path (not destination location).
 	 * @return path as list of points.
@@ -356,7 +359,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Optimizes a path by removing unnecessary locations.
-	 * 
+	 *
 	 * @param initialPath the initial path to optimize.
 	 * @return optimized path.
 	 */
@@ -388,7 +391,7 @@ public class WalkOutside extends Task implements Serializable {
 	/**
 	 * Gets the gScore value for a location. The gScore value is the distance (m)
 	 * from the starting location to this location.
-	 * 
+	 *
 	 * @param loc the location.
 	 * @return gScore value.
 	 */
@@ -400,7 +403,7 @@ public class WalkOutside extends Task implements Serializable {
 	 * Gets the fScore value for a location. The fScore value is the total distance
 	 * (m) from the starting location to this location and then to the destination
 	 * location.
-	 * 
+	 *
 	 * @param loc the location.
 	 * @return the fScore value.
 	 */
@@ -414,7 +417,7 @@ public class WalkOutside extends Task implements Serializable {
 	 * Get search location neighbors to a given location. This method gets a set of
 	 * four locations at 1m distance North, South, East and West of the current
 	 * location.
-	 * 
+	 *
 	 * @param currentLoc the current location.
 	 * @return set of neighbor locations.
 	 */
@@ -458,7 +461,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Gets the local obstacle path search limits for a coordinate location.
-	 * 
+	 *
 	 * @param location the coordinate location.
 	 * @return array of four double values representing X max, X min, Y max, and Y
 	 *         min.
@@ -537,7 +540,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Check if point location is within the obstacle search limits.
-	 * 
+	 *
 	 * @param location the location.
 	 * @return true if location is within search limits.
 	 */
@@ -571,7 +574,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Check if there are any obstacles in the walking path.
-	 * 
+	 *
 	 * @return true if any obstacles in walking path.
 	 */
 	public boolean areObstaclesInPath() {
@@ -580,7 +583,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Performs the walking phase of the task.
-	 * 
+	 *
 	 * @param time the amount of time (millisol) to perform the walking phase.
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
@@ -588,7 +591,7 @@ public class WalkOutside extends Task implements Serializable {
 	private double walkingPhase(double time) {
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = 0;
-		
+
 		if (person != null) {
 			// Check for accident.
 			EVASuit suit = person.getSuit();
@@ -598,7 +601,7 @@ public class WalkOutside extends Task implements Serializable {
 				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA");
 			}
-			
+
 			// Check for radiation exposure during the EVA operation.
 			// checkForRadiation(time);
 			// If there are any EVA problems, end walking outside task.
@@ -608,12 +611,12 @@ public class WalkOutside extends Task implements Serializable {
 			}
 			else
 				speed = person.calculateWalkSpeed() * EVA_MOD;
-		} 
-		
+		}
+
 		else if (robot != null) {
 			speed = robot.calculateWalkSpeed() * EVA_MOD;
 		}
-		
+
 		// Determine walking distance.
 		double coveredKm = speed * timeHours;
 		double coveredMeters = coveredKm * 1000D;
@@ -624,13 +627,13 @@ public class WalkOutside extends Task implements Serializable {
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);	
+			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			LocalPosition location = new LocalPosition(walkingPath.get(walkingPathIndex));
-			double distanceToLocation = worker.getPosition().getDistanceTo(location); 
+			double distanceToLocation = worker.getPosition().getDistanceTo(location);
 			if (coveredMeters >= distanceToLocation) {
 
 				// Set person at next path location.
@@ -641,7 +644,7 @@ public class WalkOutside extends Task implements Serializable {
 					walkingPathIndex++;
 				}
 			}
-			
+
 			else {
 				// Walk in direction of next path location.
 
@@ -653,7 +656,7 @@ public class WalkOutside extends Task implements Serializable {
 
 				// Set person at next path location.
 				worker.setPosition(location);
-				
+
 				coveredMeters = 0D;
 			}
 		}
@@ -663,7 +666,7 @@ public class WalkOutside extends Task implements Serializable {
 
 			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
 			Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
-			
+
 			worker.setPosition(new LocalPosition(finalLocation));
 
 			endTask();
@@ -674,7 +677,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Checks if there is an EVA problem for a person.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return true if an EVA problem.
 	 */
@@ -703,7 +706,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Determine the direction of travel to a location.
-	 * 
+	 *
 	 * @param destinationXLocation the destination X location.
 	 * @param destinationYLocation the destination Y location.
 	 * @return direction (radians).
@@ -728,7 +731,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Walk in a given direction for a given distance.
-	 * 
+	 *
 	 * @param direction the direction (radians) of travel.
 	 * @param distance  the distance (meters) to travel.
 	 */
@@ -738,7 +741,7 @@ public class WalkOutside extends Task implements Serializable {
 
 	/**
 	 * Gets the remaining path distance.
-	 * 
+	 *
 	 * @return distance (meters).
 	 */
 	private double getRemainingPathDistance() {
@@ -761,9 +764,9 @@ public class WalkOutside extends Task implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule
 	 * @return false
 	 */
 	@Override

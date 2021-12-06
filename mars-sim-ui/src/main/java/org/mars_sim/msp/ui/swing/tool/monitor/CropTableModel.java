@@ -112,7 +112,7 @@ public class CropTableModel extends UnitTableModel {
 		buildings = new ArrayList<Building>();
 		paddedSettlements = new ArrayList<Settlement>();
 
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderSettlement = unitManager.getCommanderSettlement();
 			addUnit(commanderSettlement);

@@ -547,18 +547,14 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
 
-		try {
-			// Create custom collect regolith mission panel.
-			MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
-			String collectRegolithMissionName = CollectRegolith.class.getName();
-			customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
-			missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
-	    } catch (Exception e) {
-        	logger.severe("Problem with collectRegolithPanel: " + e.getMessage());
-	    }
+		// Create custom collect regolith mission panel.
+		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(ResourceUtil.REGOLITH_TYPES);
+		String collectRegolithMissionName = CollectRegolith.class.getName();
+		customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
+		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
 
 		// Create custom collect ice mission panel.
-		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(iceAR);
+		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(new int[] {ResourceUtil.iceID});
 		String collectIceMissionName = CollectIce.class.getName();
 		customInfoPanels.put(collectIceMissionName, collectIcePanel);
 		missionCustomPane.add(collectIcePanel, collectIceMissionName);

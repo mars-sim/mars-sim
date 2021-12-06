@@ -322,7 +322,7 @@ public abstract class Vehicle extends Unit
 		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
-		
+
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 
@@ -356,7 +356,7 @@ public abstract class Vehicle extends Unit
 		if (capacities != null) {
 			eqmInventory.setResourceCapacityMap(capacities);
 		}
-		
+
 		if (this instanceof Rover) {
 
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;
@@ -489,12 +489,12 @@ public abstract class Vehicle extends Unit
 	public double getXLocation() {
 		return posParked.getX();
 	}
-	
+
 	@Override
 	public double getYLocation() {
 		return posParked.getY();
 	}
-	
+
 	@Override
 	public LocalPosition getPosition() {
 		return posParked;
@@ -704,52 +704,6 @@ public abstract class Vehicle extends Unit
 			statusTypes.remove(oldStatus);
 			writeLog();
 			fireUnitUpdate(UnitEventType.STATUS_EVENT, oldStatus);
-		}
-	}
-
-	/**
-	 * Checks the vehicle's status.
-	 */
-	private void checkStatus() {
-		// Update status based on current situation.
-		if (speed == 0) {
-			if (isInAGarage()) {
-				addStatus(StatusType.GARAGED);
-				removeStatus(StatusType.PARKED);
-			}
-			else {
-				addStatus(StatusType.PARKED);
-				removeStatus(StatusType.GARAGED);
-			}
-
-			removeStatus(StatusType.MOVING);
-//			removeStatus(StatusType.TOWED);
-		}
-		else {
-			addStatus(StatusType.MOVING);
-			removeStatus(StatusType.GARAGED);
-			removeStatus(StatusType.PARKED);
-		}
-
-		if (isBeingTowed()) {
-			addStatus(StatusType.TOWED);
-//			removeStatus(StatusType.GARAGED);
-//			removeStatus(StatusType.PARKED);
-		}
-		else if (this instanceof Rover && ((Rover)this).isTowingAVehicle()) {
-			removeStatus(StatusType.TOWING);
-		}
-
-		if (reservedForMaintenance) {
-			addStatus(StatusType.MAINTENANCE);
-			removeStatus(StatusType.MOVING);
-		}
-		else {
-			removeStatus(StatusType.MAINTENANCE);
-		}
-
-		if (malfunctionManager.hasMalfunction()) {
-			addStatus(StatusType.MALFUNCTION);
 		}
 	}
 

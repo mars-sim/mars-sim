@@ -893,30 +893,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 10kg steel canister. -->
-	<process name="make steel canister" tech="1" skill="1" work-time="50" process-time="20"
-			 power-required=".1">
-		<inputs>
-			<part name="steel sheet" number="2" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="0.8" />
-			<part name="steel canister" number="3" />
-		</outputs>
-	</process>
-
-	<process name="make gas canister" tech="1" skill="1" work-time="10" process-time="10"
-			power-required="0.1">
-		<inputs>
-			<part name="steel canister" number="1" />
-			<part name="valve" number="2" />
-			<part name="gasket" number="4" />
-		</inputs>
-		<outputs>
-			<equipment name="gas canister" number="1" />
-		</outputs>
-	</process>
-
 	<process name="make fire extinguisher" tech="2" skill="1" work-time="100" process-time="50"
 			power-required="0.1">
 		<inputs>
@@ -958,13 +934,70 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel barrel" tech="1" skill="1" work-time="25" process-time="20"
+	<process name="make steel barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<part name="steel sheet" number="2" />
+			<part name="steel sheet" number="1" />
 		</inputs>
 		<outputs>
-			<equipment name="barrel" number="3" />
+			<equipment name="barrel" number="6" />
+		</outputs>
+	</process>
+
+	<process name="make polyethylene barrel" tech="1" skill="1" work-time="10" process-time="10"
+			power-required="0.1">
+		<inputs>
+			<resource name="polyethylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<equipment name="barrel" number="6" />
+		</outputs>
+	</process>
+
+	<process name="make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
+			power-required=".1">
+		<inputs>
+			<part name="steel sheet" number="1" />
+		</inputs>
+		<outputs>
+			<equipment name="specimen box" number="12" />
+		</outputs>
+	</process>
+
+	<process name="make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
+			power-required=".1">
+		<inputs>
+			<resource name="polyethylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<equipment name="specimen box" number="12" />
+		</outputs>
+	</process>
+
+	<!-- Produces 10kg steel canister. -->
+	<process name="make steel canister" tech="1" skill="1" work-time="10" process-time="10"
+			 power-required=".1">
+		<inputs>
+			<!-- one steel sheet weighs 7.8 kg -->
+			<part name="steel sheet" number="1" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="0.4" />
+			<!-- one steel canister weighs 3.9 kg -->
+			<part name="steel canister" number="2" />
+		</outputs>
+	</process>
+
+	<process name="make gas canister" tech="1" skill="1" work-time="5" process-time="5"
+			power-required="0.1">
+		<inputs>
+			<part name="steel canister" number="1" />
+			<part name="valve" number="2" />
+			<part name="gasket" number="1" />
+		</inputs>
+		<outputs>
+			<!-- one gas canister weighs 4 kg -->
+			<equipment name="gas canister" number="1" />
 		</outputs>
 	</process>
 
@@ -999,15 +1032,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel specimen box" tech="2" skill="2" work-time="300" process-time="200"
-			power-required=".1">
-		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<equipment name="specimen box" number="30" />
-		</outputs>
-	</process>
 
 	<process name="produce ethylene"
 			tech="3" skill="2"
@@ -1080,16 +1104,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="plastic pipe" number="10" />
-		</outputs>
-	</process>
-
-	<process name="make plastic specimen box" tech="4" skill="3" work-time="100" process-time="200"
-			power-required=".1">
-		<inputs>
-			<resource name="polyethylene" amount="5.0" />
-		</inputs>
-		<outputs>
-			<equipment name="specimen box" number="10" />
 		</outputs>
 	</process>
 

@@ -186,7 +186,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		}
 
 		setTerrainHandlingCapability(spec.getTerrainHandling());
-		
+
 		// Create the rover's airlock.
 		airlock = new VehicleAirlock(this, 2, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
 										 spec.getAirlockExteriorLoc());
@@ -514,8 +514,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				v.storeAmountResource(CO2_ID, oxygenTaken - lacking);
 			}
 
-			else {
-
+			else if (isInSettlement()) {
 				lacking = getSettlement().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 				getSettlement().storeAmountResource(CO2_ID, oxygenTaken - lacking);
 			}
@@ -552,8 +551,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				lacking = v.retrieveAmountResource(WATER_ID, waterTaken);
 			}
 
-			else {
-
+			else if (isInSettlement()) {
 				lacking = getSettlement().retrieveAmountResource(WATER_ID, waterTaken);
 			}
 		}

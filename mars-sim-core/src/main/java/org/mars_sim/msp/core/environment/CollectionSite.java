@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectionSite.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-30
  * @author Manny Kung
  */
 
@@ -15,13 +15,13 @@ public class CollectionSite extends Site implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private double iceCollectionRate = -1;
-	
+
 	private double regolithCollectionRate = -1;
-	
-	private double estimatedIceVolume;
-	
+
+	private double estimatedIceVolume = 10_000;
+
 	public CollectionSite(Coordinates location) {
 		super(location);
 	}
@@ -52,7 +52,7 @@ public class CollectionSite extends Site implements Serializable {
 
 	/**
 	 * Returns true if the collection site have the same coordinates
-	 * 
+	 *
 	 * @param o
 	 * @return true if matched, false otherwise
 	 */
@@ -67,10 +67,10 @@ public class CollectionSite extends Site implements Serializable {
 
 		return false;
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {

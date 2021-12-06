@@ -19,12 +19,14 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -46,21 +48,19 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  */
 public final class ManufactureUtil {
 
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
-	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-	
-//    private static ItemResource printerItem;
-	public final static int printerID = ItemResourceUtil.printerID;
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ManufactureUtil.class.getName());
 
-	/** Private constructor. */
-	public ManufactureUtil() {
-		// printerItem = ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
-	}
+	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
+	private static final VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+
+	/** constructor. */
+	public ManufactureUtil() {}
 
 	/**
 	 * Gets all manufacturing processes.
-	 * 
+	 *
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
@@ -70,11 +70,11 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gives back an alphabetically ordered map of all manufacturing processes.
-	 * 
+	 *
 	 * @return {@link TreeMap}<{@link String},{@link ManufactureProcessInfo}>
 	 */
 	public static TreeMap<String, ManufactureProcessInfo> getAllManufactureProcessesMap() {
-		TreeMap<String, ManufactureProcessInfo> map = new TreeMap<String, ManufactureProcessInfo>();
+		TreeMap<String, ManufactureProcessInfo> map = new TreeMap<>();
 		for (ManufactureProcessInfo item : getAllManufactureProcesses()) {
 			map.put(item.getName(), item);
 		}
@@ -83,7 +83,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets manufacturing processes within the capability of a tech level.
-	 * 
+	 *
 	 * @param techLevel the tech level.
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
@@ -96,12 +96,12 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets manufacturing processes with given output.
-	 * 
+	 *
 	 * @param {@link String} name of desired output
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new ArrayList<>();
 		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -115,12 +115,12 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets manufacturing processes with given input.
-	 * 
+	 *
 	 * @param name {@link String} desired input
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new ArrayList<>();
 		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -135,7 +135,7 @@ public final class ManufactureUtil {
 	/**
 	 * Gets manufacturing processes within the capability of a tech level and a
 	 * skill level.
-	 * 
+	 *
 	 * @param techLevel  the tech level.
 	 * @param skillLevel the skill level.
 	 * @return list of processes.
@@ -150,7 +150,7 @@ public final class ManufactureUtil {
 	/**
 	 * Gets salvage processes info within the capability of a tech level and a skill
 	 * level.
-	 * 
+	 *
 	 * @param techLevel  the tech level.
 	 * @param skillLevel the skill level.
 	 * @return list of salvage processes info.
@@ -164,7 +164,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets salvage processes info within the capability of a tech level.
-	 * 
+	 *
 	 * @param techLevel the tech level.
 	 * @return list of salvage processes info.
 	 * @throws Exception if error get salvage processes info.
@@ -177,7 +177,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets the goods value of a manufacturing process at a settlement.
-	 * 
+	 *
 	 * @param process    the manufacturing process.
 	 * @param settlement the settlement.
 	 * @return goods value of output goods minus input goods.
@@ -204,7 +204,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets the estimated goods value of a salvage process at a settlement.
-	 * 
+	 *
 	 * @param process    the salvage process.
 	 * @param settlement the settlement.
 	 * @return goods value of estimated salvaged parts minus salvaged unit.
@@ -216,7 +216,7 @@ public final class ManufactureUtil {
 		Unit salvagedUnit = findUnitForSalvage(process, settlement);
 		if (salvagedUnit != null) {
 			GoodsManager goodsManager = settlement.getGoodsManager();
-	
+
 			double wearConditionModifier = 1D;
 			if (salvagedUnit instanceof Malfunctionable) {
 				Malfunctionable salvagedMalfunctionable = (Malfunctionable) salvagedUnit;
@@ -264,7 +264,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets the good value of a manufacturing process item for a settlement.
-	 * 
+	 *
 	 * @param item       the manufacturing process item.
 	 * @param settlement the settlement.
 	 * @param isOutput   is item an output of process?
@@ -276,11 +276,10 @@ public final class ManufactureUtil {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
-	
+
 		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
 			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
 			int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-			
 			double amount = item.getAmount();
 			if (isOutput) {
 				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(ar.getID());
@@ -288,27 +287,25 @@ public final class ManufactureUtil {
 					amount = remainingCapacity;
 				}
 			}
-//			Good good = GoodsUtil.getResourceGood(ar);
+
 			result = manager.getGoodValuePerItem(id) * amount;
-		} 
-		
+		}
+
 		else if (item.getType() == ItemType.PART) {
-//            ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
             int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-//			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
-		} 
-		
+		}
+
 		else if (item.getType() == ItemType.EQUIPMENT) {
 			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePerItem(id) * item.getAmount();
-		} 
-		
+		}
+
 		else if (item.getType() == ItemType.VEHICLE) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePerItem(good.getID()) * item.getAmount();
-		} 
-		
+		}
+
 		else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
@@ -318,110 +315,71 @@ public final class ManufactureUtil {
 	/**
 	 * Checks to see if a manufacturing process can be started at a given
 	 * manufacturing building.
-	 * 
+	 *
 	 * @param process  the manufacturing process to start.
 	 * @param workshop the manufacturing building.
 	 * @return true if process can be started.
 	 * @throws Exception if error determining if process can be started.
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
-		// settlement's inventory
-		Settlement settlement = workshop.getBuilding().getSettlement();
-
-		// Check to see if workshop is full of processes.
-		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse()) {
+		// Check to see if this workshop can accommodate another process.
+		if (workshop.getMaxProcesses() <= workshop.getCurrentProcesses()) {
+			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}
+
+		// Q: Are the numbers of 3D printers available for another processes ?
+		// Check for workshop.getNumPrintersInUse()
+		// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 
 		// Check to see if process tech level is above workshop tech level.
 		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
 			return false;
 		}
 
-//		// Check to see if there is an available printer in this building
-//		if (!isAn3DPrinterAvailable(workshop)) {
-//			return false;
-//		}
+		Settlement settlement = workshop.getBuilding().getSettlement();
 
 		// Check to see if process input items are available at settlement.
-        return areProcessInputsAvailable(process, settlement);
+        if (!areProcessInputsAvailable(process, settlement)) {
+			return false;
+		}
 
 		// Check to see if room for process output items at settlement.
-		// if (!canProcessOutputsBeStored(process, inv)) result = false;
+		if (!canProcessOutputsBeStored(process, settlement)) {
+			return false;
+		}
+
+		return true;
     }
 
-//	/**
-//	 * Check to see if there is an available printer in this building
-//	 * 
-//	 * @param workshop
-//	 * @return true if there is an available 3D Printer.
-//	 */
-//	public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
-//
-//		if (workshop.getMaxProcesses() > 0)
-//			return true;
-//		else
-//			return false;
-
-		// TODO: rework checking for the printer ?
-//    	boolean result = false;
-//    	int inBldg = 0;
-//    	Building building = workshop.getBuilding();
-//        //System.out.println("ManufactureUtil : starting isAn3DPrinterAvailable()");
-//
-//        //if (workshop.getNumPrinterInUse() == 0)
-//        //	workshop.set3DPrinterLocation(building);
-//
-//    	if (building.getBuildingInventory() != null) {
-//	        Inventory b_inv = building.getBuildingInventory();
-//
-//	        if (b_inv.hasItemResource(printerItem))
-//		        if (b_inv.getItemResourceNum(printerItem)>0) {
-//		        	inBldg = b_inv.getItemResourceNum(printerItem);
-//
-//			        int inUse = workshop.getNumPrinterInUse();
-//			        //System.out.println("ManufactureUtil.  " + inBldg + " : inBldg    " + inUse + " : inUse ");
-//
-//			        if (inBldg > inUse) {
-//			        	result = true;
-//			        	//System.out.println("ManufactureUtil.java isAn3DPrinterAvailable() : Yes");
-//			        }
-//		        }
-//	        // TODO: check if one of them is not malfunction or down for maintenance
-//    	}
-//        //System.out.println("ManufactureUtil : isAn3DPrinterAvailable() : "+ result);
-//        return result;
-//	}
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
 	 * building.
-	 * 
+	 *
 	 * @param process  the salvage process to start.
 	 * @param workshop the manufacturing building.
 	 * @return true if salvage process can be started.
 	 * @throws Exception if error determining if salvage process can be started.
 	 */
 	public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process, Manufacture workshop) {
-		boolean result = workshop.getCurrentProcesses() < workshop.getNumPrintersInUse();
-
-		// Check to see if workshop is full of processes.
 
         // Check to see if process tech level is above workshop tech level.
-		if (workshop.getTechLevel() < process.getTechLevelRequired())
-			result = false;
+		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+			return false;
+		}
 
 		// Check to see if a salvagable unit is available at the settlement.
-		Settlement settlement = workshop.getBuilding().getSettlement();
-		if (findUnitForSalvage(process, settlement) == null)
-			result = false;
+		if (findUnitForSalvage(process, workshop.getBuilding().getSettlement()) == null) {
+			return false;
+		}
 
-		return result;
+		return true;
 	}
 
 	/**
 	 * Checks if process inputs are available in an inventory.
-	 * 
+	 *
 	 * @param process the manufacturing process.
 	 * @param inv     the inventory.
 	 * @return true if process inputs are available.
@@ -434,16 +392,13 @@ public final class ManufactureUtil {
 		while (result && i.hasNext()) {
 			ManufactureProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-//                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
 				// Add demand tracking
-//				inv.addAmountDemandTotalRequest(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
 				// Add tracking demand
-//				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}
@@ -451,65 +406,66 @@ public final class ManufactureUtil {
 		return result;
 	}
 
-//    /**
-//     * Checks if enough storage room for process outputs in an inventory.
-//     * @param process the manufacturing process.
-//     * @param inv the inventory.
-//     * @return true if storage room.
-//     * @throws Exception if error determining storage room for outputs.
-//     */
-//	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Inventory inv)
-//			{
-//		boolean result = true;
-//
-//		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-//		while (j.hasNext()) {
-//			ManufactureProcessItem item = j.next();
-//			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-//				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-//				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
-//				if (item.getAmount() > capacity) result = false;
-//			}
-//			else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
-//				Part part = (Part) ItemResource.findItemResource(item.getName());
-//				double mass = item.getAmount() * part.getMassPerItem();
-//				double capacity = inv.getGeneralCapacity();
-//				if (mass > capacity) result = false;
-//			}
-//			else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
-//				String equipmentType = item.getName();
-//				int number = (int) item.getAmount();
-//				Equipment equipment = EquipmentFactory.getEquipment(equipmentType,
-//						new Coordinates(0D, 0D), true);
-//				double mass = equipment.getBaseMass() * number;
-//				double capacity = inv.getGeneralCapacity();
-//				if (mass > capacity) result = false;
-//			}
-//			else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
-//				// Vehicles are stored outside a settlement.
-//			}
-//			else throw new BuildingException("Manufacture.addProcess(): output: " +
-//					item.getType() + " not a valid type.");
-//		}
-//
-//		return result;
-//	}
+    /**
+     * Checks if enough storage room for process outputs in an inventory.
+     *
+     * @param process the manufacturing process.
+     * @param inv the inventory.
+     * @return true if storage room.
+     * @throws Exception if error determining storage room for outputs.
+     */
+	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Settlement settlement) {
+
+		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
+		while (j.hasNext()) {
+			ManufactureProcessItem item = j.next();
+			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
+				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
+				if (item.getAmount() > capacity)
+					return false;
+			}
+
+			else if (ItemType.PART == item.getType()) {
+				double mass = item.getAmount() * ((Part) ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
+				double capacity = settlement.getCargoCapacity();
+				if (mass > capacity)
+					return false;
+			}
+
+			else if (ItemType.EQUIPMENT == item.getType()) {
+				int number = (int) item.getAmount();
+				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
+				double capacity = settlement.getCargoCapacity();
+				if (mass > capacity)
+					return false;
+			}
+
+			else if (ItemType.VEHICLE == item.getType()) {
+				// Vehicles are stored outside a settlement.
+			}
+
+			else
+				logger.severe(settlement, "ManufactureUtil.addProcess(): output: " +
+					item.getType() + " not a valid type.");
+		}
+
+		return true;
+	}
 
 	/**
 	 * Checks if settlement has buildings with manufacture function.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @return true if buildings with manufacture function.
 	 * @throws BuildingException if error checking for manufacturing buildings.
 	 */
 	public static boolean doesSettlementHaveManufacturing(Settlement settlement) {
-//		BuildingManager manager = settlement.getBuildingManager();
 		return (settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).size() > 0);
 	}
 
 	/**
 	 * Gets the highest manufacturing tech level in a settlement.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @return highest manufacturing tech level.
 	 * @throws BuildingException if error determining highest tech level.
@@ -531,7 +487,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Gets the mass for a manufacturing process item.
-	 * 
+	 *
 	 * @param item the manufacturing process item.
 	 * @return mass (kg).
 	 * @throws Exception if error determining the mass.
@@ -555,7 +511,7 @@ public final class ManufactureUtil {
 
 	/**
 	 * Finds an available unit to salvage of the type needed by a salvage process.
-	 * 
+	 *
 	 * @param info       the salvage process information.
 	 * @param settlement the settlement to find the unit.
 	 * @return available salvagable unit, or null if none found.

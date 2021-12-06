@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
@@ -26,24 +25,24 @@ public class MarsSurface extends Unit implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
-	
+
 	private static final String NAME = "Mars Surface";
-	
+
 	private Set<Person> personList;
 
 	private Set<Robot> robotList;
-	
+
 	private Set<Vehicle> vehicleList;
 
 	public MarsSurface() {
 		super(NAME, null);
-		
+
 		personList = new UnitSet<>();
 		robotList = new UnitSet<>();
 		vehicleList = new UnitSet<>();
-				
+
 		setContainerUnit(null);
-		
+
 		setContainerID(Unit.OUTER_SPACE_UNIT_ID);
 
 		// This is hack playing on how the identifiers are created
@@ -51,25 +50,25 @@ public class MarsSurface extends Unit implements Serializable {
 			throw new IllegalStateException("MarsSurface has wrong ID: " + getIdentifier());
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
-	
+
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.PLANET;
 	}
-	
+
 	@Override
 	public Settlement getSettlement() {
 		return null;
 	}
-	
+
 	/**
 	 * Adds a person
-	 * 
+	 *
 	 * @param person
 	 * @param true if the person can be added
 	 */
@@ -78,10 +77,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return personList.add(person);
 		}
 	}
-	
+
 	/**
 	 * Removes a person
-	 * 
+	 *
 	 * @param person
 	 * @param true if the person can be removed
 	 */
@@ -90,10 +89,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return personList.remove(person);
 		}
 	}
-	
+
 	/**
 	 * Adds a robot
-	 * 
+	 *
 	 * @param robot
 	 * @param true if the robot can be added
 	 */
@@ -102,10 +101,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return robotList.add(robot);
 		}
 	}
-	
+
 	/**
 	 * Removes a robot
-	 * 
+	 *
 	 * @param robot
 	 * @param true if the robot can be removed
 	 */
@@ -114,10 +113,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return robotList.remove(robot);
 		}
 	}
-	
+
 	/**
 	 * Adds a vehicle
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be added
 	 */
@@ -126,10 +125,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return vehicleList.add(vehicle);
 		}
 	}
-	
+
 	/**
 	 * Removes a vehicle
-	 * 
+	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be removed
 	 */
@@ -138,10 +137,10 @@ public class MarsSurface extends Unit implements Serializable {
 			return vehicleList.remove(vehicle);
 		}
 	}
-	
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 * 
+	 *
 	 * @return the unit's container unit
 	 */
 	@Override
@@ -151,21 +150,21 @@ public class MarsSurface extends Unit implements Serializable {
 		// Note: there is no outer space unit
 		return this;
 	}
-	
+
 	/**
 	 * Is this unit inside a settlement
-	 * 
+	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	@Override
 	public boolean isInSettlement() {
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	@Override

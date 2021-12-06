@@ -32,7 +32,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 	private Timer mTimer;
 	private int mAngle;
 	private int mFadeCount;
-	private int mFadeLimit = 5;//15;
+	private int mFadeLimit = 5;
 
 	@Override
 	public void paint(Graphics g, JComponent c) {
@@ -61,7 +61,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 		g2.setPaint(Color.white);
 		g2.rotate(Math.PI * mAngle / 180, cx, cy);
 		for (int i = 0; i < 12; i++) {
-			float scale = (11.0f - (float) i) / 11.0f;
+			float scale = (11.0f - i) / 11.0f;
 			g2.drawLine(cx + s, cy, cx + s * 2, cy);
 			g2.rotate(-Math.PI / 6, cx, cy);
 			f = scale * fade;
@@ -110,6 +110,7 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 		mIsFadingOut = true;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
 		if ("tick".equals(pce.getPropertyName())) {

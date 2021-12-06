@@ -1,7 +1,7 @@
-/**
-  * Mars Simulation Project
+/*
+ * Mars Simulation Project
  * Treatment.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.health;
@@ -30,6 +30,7 @@ implements Serializable, Comparable<Treatment> {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param name The unique name.
 	 * @param skill Required Medical skill.
 	 * @param duration The duration of treatment in millisols.
@@ -61,6 +62,7 @@ implements Serializable, Comparable<Treatment> {
 
 	/**
 	 * Compare this object with another object.
+	 *
 	 * @param other Object to compare.
 	 * @return DO they match or not.
 	 */
@@ -76,6 +78,7 @@ implements Serializable, Comparable<Treatment> {
 	/**
 	 * Get the time required to perform this treatment by a Person with
 	 * the appropriate skill rating.
+	 *
 	 * @param skill The skill rating that will apply the treatment.
 	 * @return Adjusted treatment time according to skill.
 	 */
@@ -83,13 +86,14 @@ implements Serializable, Comparable<Treatment> {
 		double result = duration;
 		if ((result > 0D) && (skill < requiredSkill)) {
 			// Increase the time by the percentage skill lacking
-			result = duration * (1 + ((requiredSkill - skill)/requiredSkill));
+			result = duration * (1 + (1.0 * requiredSkill - skill)/requiredSkill);
 		}
 		return result;
 	}
 
 	/**
 	 * Return the theoretical duration of this treatment.
+	 *
 	 * @return The duration to apply this Treatment.
 	 */
 	public double getDuration() {
@@ -126,6 +130,7 @@ implements Serializable, Comparable<Treatment> {
 
 	/**
 	 * Hash code value for this object.
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {

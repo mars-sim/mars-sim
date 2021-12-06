@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Commander.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-11-30
  * @author Manny Kung
  */
 
@@ -17,7 +17,7 @@ public class Commander implements Serializable {
 
 	private int age = -1;
     private int phase;
-    
+
     private int leadershipPoint = 0;
 
 	private String firstName;
@@ -25,8 +25,8 @@ public class Commander implements Serializable {
     private String gender;
     private String job;
     private String countryStr = "";
-    private String sponsorStr = "";    
-    
+    private String sponsorStr = "";
+
     public String getFullName() {
     	if (firstName == null && lastName == null)
     		return null;
@@ -62,19 +62,19 @@ public class Commander implements Serializable {
     public void setCountryStr(String c) {
     	countryStr = c;
     }
-    
+
     public String getCountryStr() {
     	return countryStr;
     }
-    
+
     public void setSponsorStr(String c) {
     	sponsorStr = c;
     }
-    
+
     public String getSponsorStr() {
     	return sponsorStr;
     }
-    
+
     public int getAge() {
     	return age;
     }
@@ -90,23 +90,23 @@ public class Commander implements Serializable {
     public String getJob() {
     	return job;
     }
-    
+
     public int getPhase() {
     	return phase;
     }
-    
-    public void setInitialLeadershipPoint(int value) {   
+
+    public void setInitialLeadershipPoint(int value) {
     	leadershipPoint = value;
     }
-    
+
     public int getLeadershipPoint() {
 //    	if (initialLeadershipPoint == 0) {
 //    		determineLeadershipPoints
 //    	}
-    		
+
     	return leadershipPoint;
     }
-    
+
     public void setLeadershipPoint(int value) {
     	leadershipPoint = value;
     }
@@ -118,7 +118,7 @@ public class Commander implements Serializable {
     public void subtractLeadershipPoint(int value) {
     	leadershipPoint -= value;
     }
-    
+
     public void outputDetails(StringBuilder dest) {
     	dest.append("Full Name: ").append(firstName + ' ' + lastName).append(System.lineSeparator())
     	    .append("Age: ").append(age).append(System.lineSeparator())
@@ -127,8 +127,8 @@ public class Commander implements Serializable {
     	    .append("Country: ").append(countryStr).append(System.lineSeparator())
     	    .append("Sponsor: ").append(sponsorStr).append(System.lineSeparator());
     }
-    
-    
+
+
     @Override
     public String toString() {
         return "Commander " + firstName + ' ' + lastName;

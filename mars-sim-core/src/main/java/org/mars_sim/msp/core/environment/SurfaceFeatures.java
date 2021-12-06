@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -33,9 +32,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
-	
+
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
 	// This is the so-called "solar constant" of Mars (not really a constant per
@@ -51,7 +50,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
 	public static double MAX_SOLAR_IRRADIANCE = 717D;
-	
+
 	private static final double HALF_PI = Math.PI / 2d;
 
 	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
@@ -60,11 +59,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	// the integer form of millisol
 	private int msolCache;
-	
+
 	// non static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
-	
+
 	/** The locations that have been explored and/or mined. */
 	private List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
@@ -75,27 +74,27 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> irradianceCache;
-	
+
 	private MarsClock currentTime;
-	
+
 	private TerrainElevation terrainElevation;
 	private Weather weather;
 	private OrbitInfo orbitInfo;
-		
+
 //	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private static List<Landmark> landmarks = null;
-	private static MissionManager missionManager;	
-	
+	private static MissionManager missionManager;
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures(MarsClock marsClock, OrbitInfo orbitInfo, Weather weather) {
 		this.orbitInfo = orbitInfo;
 		this.weather = weather;
 		this.currentTime = marsClock;
-		
+
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
@@ -105,25 +104,25 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		irradianceCache = new ConcurrentHashMap<>();
 		currentIrradiance = new ConcurrentHashMap<>();
 		opticalDepthMap = new ConcurrentHashMap<>();
-		
+
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
 	}
 
 	/**
 	 * Initialize transient data in the simulation.
-	 * 
+	 *
 	 * @throws Exception if transient data could not be constructed.
 	 */
 	public static void initializeInstances(MissionManager mm, LandmarkConfig landmarkConfig) {
 		landmarks = landmarkConfig.getLandmarkList();
-		
+
 		missionManager = mm;
 	}
 
 	/**
 	 * Returns the terrain elevation
-	 * 
+	 *
 	 * @return terrain elevation
 	 */
 	public TerrainElevation getTerrainElevation() {
@@ -133,7 +132,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/**
 	 * Returns a float value representing the current sunlight conditions at a
 	 * particular location.
-	 * 
+	 *
 	 * @return value from 0.0 - 1.0; 0.0 represents night time darkness. 1.0
 	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
 	 *         conditions.
@@ -193,7 +192,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/***
 	 * Computes the optical depth of the martian dust
-	 * 
+	 *
 	 * @param location
 	 * @return tau
 	 */
@@ -202,7 +201,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		double tau = 0;
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
-		
+
 		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
 		// the starting value for opticalDepth is 0.2342. See Ref below
 		if (opticalDepthMap.containsKey(location))
@@ -237,73 +236,73 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return tau;
 	}
 
-	
+
 	/**
 	 * Gets the trend (positive if increasing, negative if decreasing)
-	 * 
+	 *
 	 * @param location
 	 * @return a number
 	 */
 	public int getTrend(Coordinates location) {
 		int trend = 0;
-		
+
 		if (irradianceCache.containsKey(location)
 				&& currentIrradiance.containsKey(location)) {
-			
+
 			double past = irradianceCache.get(location);
 			double current =  currentIrradiance.get(location);
-			
+
 			if (past < current)
 				trend = 1;
 			if (past > current)
 				trend = -1;
-			
+
 		}
-		
+
 		return trend;
 	}
 
 	/**
 	 * Calculate the solar irradiance ratio (between 0 and 1) at a particular location on Mars
-	 * 
+	 *
 	 * @param location the coordinate location on Mars.
 	 * @return (between 0 and 1)
 	 */
 	public double getSunlightRatio(Coordinates location) {
-		  return Math.round(getSolarIrradiance(location) 
+		  return Math.round(getSolarIrradiance(location)
 				  / MAX_SOLAR_IRRADIANCE * 100D)/100D;
 	}
-	
+
 	/**
 	 * Calculate the solar irradiance at a particular location on Mars
-	 * 
+	 *
 	 * @param location the coordinate location on Mars.
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
 		if (location == null)
 			return 0;
-		
+
 		int msol = currentTime.getMillisolInt();
-		
+
 		if (msolCache != msol) {
 			msolCache = msol;
-			
+
 			if (!currentIrradiance.isEmpty()) {
 				irradianceCache = currentIrradiance;
 				// Clear the current cache value of solar irradiance of all settlements
 				currentIrradiance.clear();
 			}
 //			logger.info("msolCache: " + msolCache + "   msol: " + msol);
-			
+
 			// If location is not in cache, calculate the solar irradiance
-			double G_h = calculateSolarIrradiance(location);		
+			double G_h = calculateSolarIrradiance(location);
 			// Save the value in the cache
 			currentIrradiance.put(location, G_h);
-			
+
 			return G_h;
 		}
-		
+
 		if (currentIrradiance.containsKey(location)) {
 			Double d = currentIrradiance.get(location);
 			if (d != null)
@@ -311,20 +310,20 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			else
 				return 0;
 		}
-		
+
 		else {//if (currentIrradiance.isEmpty()) {
 			// If location is not in cache, calculate the solar irradiance
-			double G_h = calculateSolarIrradiance(location);		
+			double G_h = calculateSolarIrradiance(location);
 			// Save the value in the cache
 			currentIrradiance.put(location, G_h);
-			
+
 			return G_h;
 		}
 	}
 
 	/**
 	 * Calculates the solar irradiance
-	 * 
+	 *
 	 * @param location
 	 * @return
 	 */
@@ -507,14 +506,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (G_h < 0)
 			G_h = 0;
-		
+
 		return G_h;
 	}
-	
+
 	/**
 	 * Returns true if location is in a dark polar region. A dark polar region is
 	 * where the sun doesn't rise in the current sol.
-	 * 
+	 *
 	 * @return true if location is in dark polar region
 	 */
 	public boolean inDarkPolarRegion(Coordinates location) {
@@ -556,21 +555,21 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		double gapTheta = sunTheta - (location.getTheta() + HALF_PI - 0.2);
 
 		if (gapTheta < 0) {
-			// Gone round the planet, 
+			// Gone round the planet,
 			gapTheta += (2 * Math.PI);
-		} 
-		
+		}
+
 		// Get the time as a ratio of the global times msols per day
-		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);	
-		
+		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);
+
 		MarsClock sunRise = (MarsClock) currentTime.clone();
 		sunRise.addTime(timeToSunRise);
 		return sunRise;
 	}
-	
+
 	/**
 	 * Checks if location is within a polar region of Mars.
-	 * 
+	 *
 	 * @param location the location to check.
 	 * @return true if in polar region.
 	 */
@@ -582,7 +581,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Gets a list of landmarks on Mars.
-	 * 
+	 *
 	 * @return list of landmarks.
 	 */
 	public List<Landmark> getLandmarks() {
@@ -591,7 +590,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Gets the mineral map.
-	 * 
+	 *
 	 * @return mineral map.
 	 */
 	public MineralMap getMineralMap() {
@@ -600,7 +599,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Adds an explored location.
-	 * 
+	 *
 	 * @param location                       the location coordinates.
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
@@ -610,11 +609,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
-		
+
 		ExploredLocation result = new ExploredLocation(location, estimatedMineralConcentrations, settlement);
 		synchronized (exploredLocations) {
 			exploredLocations.add(result);
-		} 
+		}
 		return result;
 	}
 
@@ -631,10 +630,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				  .orElse(null);
 		}
 	}
-	
+
 	/**
 	 * Gets a list of all explored locations on Mars.
-	 * 
+	 *
 	 * @return list of explored locations.
 	 */
 	public List<ExploredLocation> getExploredLocations() {
@@ -643,7 +642,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Gets the areothermal heat potential for a given location.
-	 * 
+	 *
 	 * @param location the coordinate location.
 	 * @return areothermal heat potential as percentage (0% - low, 100% - high).
 	 */
@@ -653,7 +652,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Time passing in the simulation.
-	 * 
+	 *
 	 * @param time time in millisols
 	 * @throws Exception if error during time.
 	 */
@@ -683,7 +682,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				}
 			}
 		}
-		
+
 //		if ((pulse.getId() % 10) == 0) {
 //			final Coordinates COORD = new Coordinates("10.0N", "10.0E");
 //			logger.log(Level.INFO, "Sun @ " + COORD.getFormattedString()
@@ -693,7 +692,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //		}
 		return true;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -705,7 +704,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		irradianceCache = null;
 		currentIrradiance.clear();
 		currentIrradiance = null;
-			
+
 		mineralMap.destroy();
 		mineralMap = null;
 		exploredLocations.clear();
@@ -715,7 +714,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		weather = null;
 		orbitInfo = null;
-		
+
 		landmarks.clear();
 		landmarks = null;
 	}

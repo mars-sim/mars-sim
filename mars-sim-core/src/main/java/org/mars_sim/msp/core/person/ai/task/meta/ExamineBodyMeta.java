@@ -35,14 +35,14 @@ public class ExamineBodyMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
 	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
-	
+
     public ExamineBodyMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		
+
 		setTrait(TaskTrait.MEDICAL);
 		setPreferredJob(JobType.MEDICS);
 	}
-    
+
 	@Override
 	public Task constructInstance(Person person) {
 		return new ExamineBody(person);
@@ -50,7 +50,6 @@ public class ExamineBodyMeta extends MetaTask {
 
 	@Override
 	public double getProbability(Person person) {
-
 		double result = 0D;
 
 		if (person.isInSettlement()) {
@@ -58,31 +57,29 @@ public class ExamineBodyMeta extends MetaTask {
 	        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 	        	return 0;
 	        }
-	                
+
 			int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
-//			System.out.print(" num : " + num);
+
 			// Get the local medical aids to use.
 			if (num > 0 && hasNeedyMedicalAids(person)) {
-				result = 500 + 300 * num;
+				result = 500.0 + 300 * num;
 			}
-//			System.out.print("   result : " + result);
+
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
-//			System.out.print("   result : " + result);
+
 			int numDoctor = JobUtil.numJobs(JobType.DOCTOR, person.getSettlement());
-//			System.out.print("   # Doctors : " + num);
+
 			// Job modifier.
 			if (numDoctor > 0) {
 				result = applyJobModifier(result, person);
 			}
-//			System.out.print("   result : " + result);
-			
+
 			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-//			System.out.print("   skill : " + skill);
+
 			if (skill == 0)
 				skill = .5;
 			result *= skill;
-//			System.out.print("   result : " + result);
 
 			result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
 
@@ -90,14 +87,14 @@ public class ExamineBodyMeta extends MetaTask {
 				result = 0;
 
 		}
-//		System.out.println("    " + person + " : " + Math.round(result*10.0)/10.0);
+
 		return result;
 	}
 
 	/**
 	 * Checks if there are local medical aids that have people waiting for
 	 * treatment.
-	 * 
+	 *
 	 * @param person the person.
 	 * @return true if needy medical aids.
 	 */
@@ -117,7 +114,7 @@ public class ExamineBodyMeta extends MetaTask {
 	/**
 	 * Checks if there are medical aids at a settlement that have people waiting for
 	 * treatment.
-	 * 
+	 *
 	 * @param person     the person.
 	 * @param settlement the settlement.
 	 * @return true if needy medical aids.
@@ -131,7 +128,7 @@ public class ExamineBodyMeta extends MetaTask {
 			// Check if there are any sick beds at building.
 			MedicalCare medicalCare = i.next().getMedical();
 			if (medicalCare.hasEmptyBeds()) {
-				return true;	
+				return true;
 			}
 		}
 
@@ -141,7 +138,7 @@ public class ExamineBodyMeta extends MetaTask {
 	/**
 	 * Checks if there are medical aids in a vehicle that have people waiting for
 	 * treatment.
-	 * 
+	 *
 	 * @param person  the person.
 	 * @param vehicle the vehicle.
 	 * @return true if needy medical aids.

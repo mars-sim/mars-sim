@@ -124,9 +124,9 @@ public class Simulation implements ClockListener, Serializable {
 	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
-	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
+	public final static String VERSION = Version.getVersion();
 	/** Build string. */
-	public final static String BUILD = Msg.getString("Simulation.build").trim(); //$NON-NLS-1$
+	public final static String BUILD = Version.getBuild();
 	/** Java version string. */
 	private final static String JAVA_TAG = System.getProperty("java.version");
 	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";
@@ -397,6 +397,8 @@ public class Simulation implements ClockListener, Serializable {
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
+        // Initialize RoleUtil
+        new RoleUtil();
         RoleUtil.initialize();
 
 		// Initialize instances prior to UnitManager initiatiation
@@ -844,9 +846,9 @@ public class Simulation implements ClockListener, Serializable {
 		long heapFreeSize = Runtime.getRuntime().freeMemory();
 
 		logger.config(
-		"heapSize: " + formatSize(heapSize)
-		+ "    heapMaxSize: " + formatSize(heapMaxSize)
-		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
+		"Current Heap Size: " + formatSize(heapSize)
+		+ "    Heap Max Size: " + formatSize(heapMaxSize)
+		+ "    Heap Free Size: " + formatSize(heapFreeSize) + "");
 
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
@@ -856,7 +858,7 @@ public class Simulation implements ClockListener, Serializable {
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
-			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
+			logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
 		}
 
 		// Restarts the master clock and adds back the Simulation clock listener

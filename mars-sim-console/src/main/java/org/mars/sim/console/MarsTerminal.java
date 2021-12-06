@@ -186,8 +186,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		});
 
-
-        changeTitle(false);
+		setPaneTitle(Simulation.title);
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -325,7 +324,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     }
 
 	public void changeTitle(boolean isPaused) {
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			if (isPaused) {
 				setPaneTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
 			} else {
@@ -341,6 +340,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	}
 
 	public void startLayer() {
+        changeTitle(false);
 		layerUI.start();
 	}
 

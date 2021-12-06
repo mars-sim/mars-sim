@@ -35,12 +35,12 @@ public class TaskSchedule implements Serializable {
 	public static final int NUM_SOLS = 10;
 	public static final int ON_CALL_START = 0;
 	public static final int ON_CALL_END = 1000;
-	
+
 	public static final int A_START = 250;
 	public static final int A_END = 750;
 	public static final int B_START = 751;
 	public static final int B_END = 249;
-	
+
 	public static final int X_START = 0;
 	public static final int X_END = 333;
 	public static final int Y_START = 334;
@@ -49,8 +49,6 @@ public class TaskSchedule implements Serializable {
 	public static final int Z_END = 1000;
 
 	// Data members
-//	private int now = 0;
-	
 	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
 
@@ -62,7 +60,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Constructor for TaskSchedule
-	 * 
+	 *
 	 * @param person
 	 */
 	public TaskSchedule(Person person) {
@@ -81,7 +79,7 @@ public class TaskSchedule implements Serializable {
 	public Map<ShiftType, Integer> getShiftChoice() {
 		return shiftChoice;
 	}
-	
+
 	/**
 	 * Normalize the score of the shift choice toward the center score of 50.
 	 */
@@ -109,7 +107,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Adjusts the work shift choice
-	 * 
+	 *
 	 * @param hours array
 	 */
 	public void adjustShiftChoice(int[] hours) {
@@ -139,7 +137,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Determines the work shift type
-	 * 
+	 *
 	 * @param hour
 	 * @return {@link ShiftType}
 	 */
@@ -168,7 +166,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Gets the time the shift starts
-	 * 
+	 *
 	 * @return time in millisols
 	 */
 	public int getShiftStart() {
@@ -190,7 +188,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Gets the time the shift end
-	 * 
+	 *
 	 * @return time in millisols
 	 */
 	public int getShiftEnd() {
@@ -212,7 +210,7 @@ public class TaskSchedule implements Serializable {
 
 	/***
 	 * Gets the shift type
-	 * 
+	 *
 	 * @return shift type
 	 */
 	public ShiftType getShiftType() {
@@ -221,7 +219,7 @@ public class TaskSchedule implements Serializable {
 
 	/*
 	 * Sets up the shift type
-	 * 
+	 *
 	 * @param shiftType
 	 */
 	public void setShiftType(ShiftType newShift) {
@@ -253,8 +251,8 @@ public class TaskSchedule implements Serializable {
 						s.decrementAShift(shiftTypeCache);
 
 					s.incrementAShift(newShift);
-				} 
-				
+				}
+
 				else if (person.isDeclaredDead()) {
 					s = person.getAssociatedSettlement();
 
@@ -263,7 +261,7 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 				}
-				
+
 				else {
 					s = person.getAssociatedSettlement();
 
@@ -273,7 +271,7 @@ public class TaskSchedule implements Serializable {
 					s.incrementAShift(newShift);
 
 					int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
-					
+
 					boolean isOnShiftNow = isShiftHour(now);
 					boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
 
@@ -295,9 +293,9 @@ public class TaskSchedule implements Serializable {
 
 	/*
 	 * Checks if a person is on shift
-	 * 
+	 *
 	 * @param time in millisols
-	 * 
+	 *
 	 * @return true or false
 	 */
 	public boolean isShiftHour(int millisols) {
@@ -337,7 +335,7 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Checks if a person is at the beginning (within the mission window) of his work shift
-	 * 
+	 *
 	 * @return true or false
 	 */
 	public boolean isPersonAtStartOfWorkShift() {
@@ -346,7 +344,7 @@ public class TaskSchedule implements Serializable {
 		if (currentShiftType == ShiftType.ON_CALL) {
 			return true; //isTimeAtStartOfAShift(missionWindow);
 		}
-		
+
 		else if (currentShiftType == ShiftType.A) {
             return now >= A_START && (now <= A_START + 250);
 		}
@@ -369,10 +367,10 @@ public class TaskSchedule implements Serializable {
 
 		return false;
 	}
-	
+
 	/**
 	 * Checks if the time now is at the beginning (within mission window) of a work shift
-	 * 
+	 *
 	 * @param missionWindow in millisols
 	 * @return true or false
 	 */
@@ -393,10 +391,10 @@ public class TaskSchedule implements Serializable {
 
         return now >= Z_START && now <= Z_START + missionWindow;
     }
-	
+
 	/**
 	 * Gets the score of a work shift
-	 * 
+	 *
 	 * @param st
 	 * @return score
 	 */
@@ -405,15 +403,15 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Gets the preferred work shift 
-	 * 
+	 * Gets the preferred work shift
+	 *
 	 * @return
 	 */
 	public List<ShiftType> getPreferredShift() {
 		Map<ShiftType, Integer> map = new HashMap<>(shiftChoice);
-		
+
 		int numShift = person.getAssociatedSettlement().getNumShift();
-		
+
 		if (numShift == 3) {
 			map.remove(ShiftType.A);
 			map.remove(ShiftType.B);
@@ -425,26 +423,26 @@ public class TaskSchedule implements Serializable {
 			map.remove(ShiftType.Z);
 			map.remove(ShiftType.OFF);
 		}
-		
+
 		return map.entrySet().stream().sorted((v1, v2) -> {
 				return v2.getValue().compareTo(v1.getValue());
 				})
 				.map(e -> e.getKey())
-				.collect(Collectors.toList());		
+				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Allocate a work shift for this person
 	 */
 	public void allocateAWorkShift() {
 		person.getAssociatedSettlement().assignWorkShift(person, person.getAssociatedSettlement().getPopulationCapacity());
 	}
-	
 
-	
+
+
 	public void destroy() {
 		person = null;
-		
+
 		currentShiftType = null;
 		shiftTypeCache = null;
 		shiftChoice = null;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2021-10-21
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -55,7 +55,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
-	
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
@@ -73,7 +73,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/** The duration of the task (millisols). */
 	private static final double DURATION = RandomUtil.getRandomDouble(40D) + 10D;
-			
+
 	// Data members
 	/** The vehicle that needs to be unloaded. */
 	private Vehicle vehicle;
@@ -82,7 +82,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person to perform the task.
 	 */
 	public UnloadVehicleGarage(Person person) {
@@ -92,7 +92,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (person.isOutside()) {
 			endTask();
 		}
-		
+
 		settlement = person.getSettlement();
 
 		if (settlement != null) {
@@ -102,7 +102,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the robot to perform the task.
 	 */
 	public UnloadVehicleGarage(Robot robot) {
@@ -112,7 +112,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (robot.isOutside()) {
 			endTask();
 		}
-		
+
 		settlement = robot.getSettlement();
 
 		if (settlement != null) {
@@ -125,7 +125,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param starter
 	 */
 	private void init(Worker starter) {
-		
+
 		VehicleMission mission = getMissionNeedingUnloading();
 		if (mission != null) {
 			vehicle = mission.getVehicle();
@@ -146,11 +146,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			endTask();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param person  the person to perform the task
 	 * @param vehicle the vehicle to be unloaded
 	 */
@@ -161,21 +161,22 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (person.isOutside()) {
 			endTask();
 		}
-	
+
 		this.vehicle = vehicle;
 
 		settlement = person.getSettlement();
 
 		if (vehicle != null && settlement != null) {
 			initLoad(person);
+			logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 		}
-
-		logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
+		else
+			endTask();
 	}
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param robot the robot to perform the task
 	 * @param vehicle the vehicle to be unloaded
 	 */
@@ -186,16 +187,18 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (robot.isOutside()) {
 			endTask();
 		}
-		
+
 		this.vehicle = vehicle;
 
 		settlement = robot.getSettlement();
 
 		if (vehicle != null && settlement != null) {
 			initLoad(robot);
+			logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
 		}
-	
-		logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
+		else
+			endTask();
+
 	}
 
 	/**
@@ -203,37 +206,29 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @param starter
 	 */
 	private void initLoad(Worker starter) {
-//		Building garageBuilding = BuildingManager.getBuilding(vehicle);
-//		if (garageBuilding != null) {
-//		// If vehicle is in a garage, add walk there to the garage.
-//			walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
-//		}
-
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 
-//		System.out.println("garage is " + garage);
-		
 		// End task if vehicle or garage not available
 		if (garage == null) {
 			endTask();
 			return;
 		}
-		
+
 		// Walk to garage
 		walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		// Set the description
 		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-		
+
 		// Initialize phase
 		addPhase(UNLOADING);
-		setPhase(UNLOADING); 
+		setPhase(UNLOADING);
 	}
-	
+
 	/**
 	 * Gets a list of vehicles that need unloading and aren't reserved for a
 	 * mission.
-	 * 
+	 *
 	 * @param settlement the settlement the vehicle is at.
 	 * @return list of vehicles.
 	 */
@@ -283,7 +278,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Gets a list of all disembarking vehicle missions at a settlement.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 * @return list of vehicle missions.
 	 */
@@ -297,7 +292,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
 					if (vehicleMission.hasVehicle()) {
-						Vehicle vehicle = vehicleMission.getVehicle();	
+						Vehicle vehicle = vehicleMission.getVehicle();
 						if (vehicle instanceof Crewable) {
 							Crewable c = (Crewable)vehicle;
 							if (c.getCrewNum() > 0 || c.getRobotCrewNum() > 0) {
@@ -305,7 +300,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 								continue;
 							}
 						}
-						
+
 						// If looking for garaged vehicles; then add to garage otherwise
 						// check vehicle is not in garage
 						if (!isFullyUnloaded(vehicle)) {
@@ -324,7 +319,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Gets a random vehicle mission unloading at the settlement.
-	 * 
+	 *
 	 * @return vehicle mission.
 	 */
 	private VehicleMission getMissionNeedingUnloading() {
@@ -342,7 +337,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Gets the vehicle being unloaded.
-	 * 
+	 *
 	 * @return vehicle
 	 */
 	public Vehicle getVehicle() {
@@ -364,7 +359,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Perform the unloading phase of the task.
-	 * 
+	 *
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
@@ -384,19 +379,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
         	endTask();
 			return 0;
 		}
-		
-//		if (person != null)
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
-//							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
-//							+ vehicle.getName() + ".",
-//					null);
-//		else
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
-//							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
-//							+ vehicle.getName() + ".",
-//					null);
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
@@ -411,7 +393,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				amountUnloading -= equipment.getMass();
 
 				if (!vehicle.getName().contains("Mock")) {
-					// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+					// Note: In maven test, the name of the vehicle is "Mock Vehicle"
 					// test if it's NOT under maven test
 					logger.log(worker, Level.INFO, 10_000, "Unloaded "
 										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
@@ -435,36 +417,35 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			try {
 				vehicle.retrieveAmountResource(id, amount);
 				settlement.storeAmountResource(id, amount);
-				
-				if (id != waterID && id != methaneID 
+
+				if (id != waterID && id != methaneID
 						&& id != foodID && id != oxygenID) {
 					double laborTime = 0;
 					if (id == iceID || id == regolithID)
 						laborTime = CollectResources.LABOR_TIME;
 					else
 						laborTime = CollectMinedMinerals.LABOR_TIME;
-					
-//					settlementInv.addAmountSupply(id, amount);
+
 					// Add to the daily output
 					settlement.addOutput(id, amount, laborTime);
 		            // Recalculate settlement good value for output item.
-//		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
+//		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);
 				}
-						
+
 			} catch (Exception e) {
 				logger.log(worker, Level.WARNING, 3_000,  "Could NOT unload the resources." + e);
 			}
 			amountUnloading -= amount;
 
 			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
-				// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+				// Note: In maven test, the name of the vehicle is "Mock Vehicle"
 				// test if it's NOT under maven test
 
 				logger.log(worker, Level.INFO, 10_000, "Just unloaded "
-						+ Math.round(amount * 100.0) / 100.0 + " kg of resources from " 
+						+ Math.round(amount * 100.0) / 100.0 + " kg of resources from "
 						+ vehicle.getName() + ".");
 			}
-					
+
 			totalAmount += amount;
 		}
 
@@ -513,13 +494,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
-					
+
 					if (p.transfer(settlement)) {
-						
-						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
-						
+
+						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
+
 						p.setAssociatedSettlement(settlement.getIdentifier());
-						
+
 						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
 					}
 					else {
@@ -531,11 +512,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (isFullyUnloaded(vehicle)) {
 			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
-				// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+				// Note: In maven test, the name of the vehicle is "Mock Vehicle"
 				// test if it's NOT under maven test
 
 				logger.log(worker, Level.INFO, 10_000, "Unloaded a total of "
-					+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " 
+					+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from "
 						+ vehicle.getName() + ".");
 			}
 			endTask();
@@ -546,11 +527,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Unload the inventory from a piece of equipment.
-	 * 
+	 *
 	 * @param equipment the equipment.
 	 */
 	public static void unloadEquipmentInventory(Equipment equipment, Settlement settlement) {
-	
+
 		// Note: only unloading amount resources at the moment.
 		if (equipment instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) equipment;
@@ -572,7 +553,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/**
 	 * Returns true if the vehicle is fully unloaded.
-	 * 
+	 *
 	 * @param vehicle Vehicle to check.
 	 * @return is vehicle fully unloaded?
 	 */

@@ -187,7 +187,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
-	private int projectedNumOfRobots;
+	private int initialNumOfRobots;
 	/** The template ID of the settlement. */
 	private int templateID;
 	/** The cache for the mission sol. */
@@ -421,14 +421,14 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @param initialNumOfRobots
 	 */
 	private Settlement(String name, int id, String template, ReportingAuthority sponsor, Coordinates location, int populationNumber,
-			int projectedNumOfRobots) {
+			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 
 		this.template = template;
 		this.location = location;
 		this.templateID = id;
-		this.projectedNumOfRobots = projectedNumOfRobots;
+		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 
 		// Determine the reporting authority
@@ -480,7 +480,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 
-		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
+		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
 
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
@@ -2582,8 +2582,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @return initial number of robots.
 	 */
-	public int getProjectedNumOfRobots() {
-		return projectedNumOfRobots;
+	public int getInitialNumOfRobots() {
+		return initialNumOfRobots;
 	}
 
 	/**

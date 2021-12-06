@@ -105,7 +105,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
 
-				missionProbability *= settlement.getNumCitizens() / f1 / f2
+				missionProbability *= 1.0 * settlement.getNumCitizens() / f1 / f2
 						* ( 1 + settlement.getMissionDirectiveModifier(mType));
 
 	            // Crowding modifier

@@ -1,9 +1,10 @@
 /*
  * Mars Simulation Project
  * CollectRegolith.java
- * @date 2021-08-20
+ * @date 2021-11-30
  * @author Sebastien Venot
  */
+
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
@@ -34,13 +35,13 @@ public class CollectRegolith extends CollectResourcesMission {
 	public static final MissionType missionType = MissionType.COLLECT_REGOLITH;
 
 	/** Number of large bags required for the mission. */
-	public static final int REQUIRED_LARGE_BAGS = 10;
+	public static final int REQUIRED_LARGE_BAGS = 20;
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	private static final double BASE_COLLECTION_RATE = 10D;
+	private static final double BASE_COLLECTION_RATE = 20D;
 
 	/** Number of collection sites. */
-	private static final int NUM_SITES = 2;
+	private static final int NUM_SITES = 3;
 
 
 	/**
@@ -75,7 +76,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	@Override
 	protected double scoreLocation(Coordinates newLocation) {
-		return terrainElevation.getRegolithCollectionRate(null, newLocation);
+		return terrainElevation.obtainRegolithCollectionRate(newLocation);
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * @return
 	 */
 	@Override
-	protected int [] getCollectibleResources() {
+	public int [] getCollectibleResources() {
 		return ResourceUtil.REGOLITH_TYPES;
 	}
 
@@ -110,6 +111,6 @@ public class CollectRegolith extends CollectResourcesMission {
 		else
 			setResourceID(getCollectibleResources()[rand]);
 
-		return terrainElevation.getRegolithCollectionRate(null, worker.getCoordinates());
+		return scoreLocation(worker.getCoordinates());
 	}
 }

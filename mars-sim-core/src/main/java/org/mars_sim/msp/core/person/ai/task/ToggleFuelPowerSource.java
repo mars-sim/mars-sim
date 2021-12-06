@@ -91,6 +91,14 @@ implements Serializable {
         if (building != null) {
             powerSource = getFuelPowerSource(building);
 
+            if (powerSource == null) {
+            	if (person.isOutside())
+            		setPhase(WALK_BACK_INSIDE);
+            	else
+            		endTask();
+            	return;
+            }
+
             boolean isOn = powerSource.isToggleON();
 
             if (orbitInfo == null)

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectIce.java
- * @date 2021-08-15
+ * @date 2021-11-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -34,13 +34,13 @@ public class CollectIce extends CollectResourcesMission {
 	public static final MissionType missionType = MissionType.COLLECT_ICE;
 
 	/** Number of barrels required for the mission. */
-	public static final int REQUIRED_BARRELS = 10;
+	public static final int REQUIRED_BARRELS = 20;
 
 	/** Collection rate of ice during EVA (kg/millisol). */
-	private static final double BASE_COLLECTION_RATE = 5D;
+	private static final double BASE_COLLECTION_RATE = 20D;
 
 	/** Number of collection sites. */
-	private static final int NUM_SITES = 2;
+	private static final int NUM_SITES = 3;
 
 	private int searchCount = 0;
 
@@ -79,7 +79,7 @@ public class CollectIce extends CollectResourcesMission {
 		int size = locations.size();
 
 		for (Coordinates location : locations) {
-			totalRate += terrainElevation.getIceCollectionRate(location);
+			totalRate += terrainElevation.obtainIceCollectionRate(location);
 		}
 
 		return totalRate / size;
@@ -87,7 +87,7 @@ public class CollectIce extends CollectResourcesMission {
 
 	@Override
 	protected double scoreLocation(Coordinates newLocation) {
-		return terrainElevation.getIceCollectionRate(newLocation);
+		return terrainElevation.obtainIceCollectionRate(newLocation);
 	}
 
 
@@ -103,7 +103,7 @@ public class CollectIce extends CollectResourcesMission {
 
 	@Override
 	protected double calculateRate(Worker worker) {
-		return terrainElevation.getIceCollectionRate(worker.getCoordinates());
+		return scoreLocation(worker.getCoordinates());
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @return
 	 */
 	@Override
-	protected int [] getCollectibleResources() {
+	public int [] getCollectibleResources() {
 		return new int [] {resourceID};
 	}
 }

@@ -44,13 +44,13 @@ public class Workout extends Task implements Serializable {
 
 	/**
 	 * Constructor. This is an effort-driven task.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 */
 	public Workout(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER,  
-				20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
+		super(NAME, person, true, false, STRESS_MODIFIER,
+				30.0 + RandomUtil.getRandomInt(-10, 10));
 
 		if (person.isInside()) {
 
@@ -60,7 +60,7 @@ public class Workout extends Task implements Serializable {
 				// Walk to gym building.
 				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, FunctionType.EXERCISE, true);
 				gym = gymBuilding.getExercise();
-				
+
 				// Initialize phase
 				addPhase(EXERCISING);
 				setPhase(EXERCISING);
@@ -71,12 +71,12 @@ public class Workout extends Task implements Serializable {
 				if (quarters != null) {
 					walkToBed(quarters, person, true);
 				}
-				
+
 				// Initialize phase
 				addPhase(EXERCISING);
 				setPhase(EXERCISING);
 			}
-			
+
 		} else {
 			endTask();
 		}
@@ -96,7 +96,7 @@ public class Workout extends Task implements Serializable {
 
 	/**
 	 * Performs the exercising phase.
-	 * 
+	 *
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
@@ -119,7 +119,7 @@ public class Workout extends Task implements Serializable {
 
 	/**
 	 * Gets an available building with the exercise function.
-	 * 
+	 *
 	 * @param person the person looking for the gym.
 	 * @return an available exercise building or null if none found.
 	 */

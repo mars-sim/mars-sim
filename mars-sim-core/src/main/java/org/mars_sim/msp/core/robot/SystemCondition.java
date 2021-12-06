@@ -4,6 +4,7 @@
  * @date 2021-08-28
  * @author Manny Kung
  */
+
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
@@ -28,7 +29,7 @@ public class SystemCondition implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
@@ -42,7 +43,7 @@ public class SystemCondition implements Serializable {
     private static int MAX_VALUE = 1;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
-    
+
     // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
     public static double FUEL_COMPOSITION_ENERGY_RATIO = 16290.323;
     //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
@@ -109,13 +110,13 @@ public class SystemCondition implements Serializable {
 
     	//1. Check malfunction
         //performSystemCheck();
- 
+
         // 2. Consume a minute amount of energy even if a robot does not perform any tasks
         reduceEnergy(time);
-    
+
         // 3. Calculate performance
         recalculate();
-	
+
         return (operable);
     }
 
@@ -144,10 +145,10 @@ public class SystemCondition implements Serializable {
 
 
     public void checkDischarged(double hunger) {
-        // TODO: need a different method and different terminology to account for the drain on the robot's battery
+        // Note: need a different method and different terminology to account for the drain on the robot's battery
 
     }
-        
+
     /**
      * This method checks the consume values of a resource. If the
      * actual is less than the required then a HealthProblem is
@@ -211,12 +212,12 @@ public class SystemCondition implements Serializable {
     /**
      * Get the details of this robot's death.
      * @return Detail of the death, will be null if person is still alive.
-     
+
     public DeathInfo getDeathDetails() {
         return deathDetails;
     }
 */
-    
+
     /**
      * Gets the robot's energy level.
      * @return robot's energy level in kilojoules
@@ -302,8 +303,8 @@ public class SystemCondition implements Serializable {
         }
     }
 
-    /** Gets the robot's discharge amount 
-     *  @return robot's power discharge amount 
+    /** Gets the robot's discharge amount
+     *  @return robot's power discharge amount
      */
     public double getPowerDischarge() {
         return powerDischarge;
@@ -311,7 +312,7 @@ public class SystemCondition implements Serializable {
 
 
     /**
-     * Define the robot's power level 
+     * Define the robot's power level
      * @param robot's power level .
      */
     public void setBatteryPower(double value) {
@@ -373,7 +374,7 @@ public class SystemCondition implements Serializable {
     private void recalculate() {
 
         double tempPerformance = 1.0D;
-        
+
         if (kJoules < 200D) {
         	tempPerformance = kJoules / 200D;
         }
@@ -407,7 +408,7 @@ public class SystemCondition implements Serializable {
         return config.getFuelConsumptionRate();
     }
 
-    
+
     /**
      * Prepare object for garbage collection.
      */

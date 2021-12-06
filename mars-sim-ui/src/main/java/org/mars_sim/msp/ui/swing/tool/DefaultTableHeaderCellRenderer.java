@@ -101,6 +101,8 @@ public class DefaultTableHeaderCellRenderer extends DefaultTableCellRenderer {
           return UIManager.getIcon("Table.ascendingSortIcon");
         case DESCENDING:
           return UIManager.getIcon("Table.descendingSortIcon");
+	default:
+		break;
       }
     }
     return null;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RestingMedicalRecoveryMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -32,7 +32,7 @@ public class RestingMedicalRecoveryMeta extends MetaTask {
     public RestingMedicalRecoveryMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 	}
-    
+
     @Override
     public Task constructInstance(Person person) {
         return new RestingMedicalRecovery(person);
@@ -42,7 +42,7 @@ public class RestingMedicalRecoveryMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
+
         if (person.isOutside())
         	return 0;
 
@@ -60,18 +60,18 @@ public class RestingMedicalRecoveryMeta extends MetaTask {
             result = 200D;
 
             int hunger = (int) person.getPhysicalCondition().getHunger();
-            result = result - (hunger - 333) / 3;
-            
+            result = result - (hunger - 333) / 3.0;
+
             // Determine if any available medical aids can be used for bed rest.
             if (hasUsefulMedicalAids(person)) {
                 result+= 100D;
             }
-            
+
 	        double pref = person.getPreference().getPreferenceScore(this);
-	        
+
 	        if (pref > 0)
 	        	result = result + pref * 10;
-	        
+
             if (result < 0) result = 0;
         }
 

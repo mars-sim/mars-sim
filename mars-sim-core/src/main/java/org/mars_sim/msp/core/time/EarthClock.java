@@ -55,21 +55,21 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param fullDateTimeString the UT date string
 	 * @throws Exception if date string is invalid.
 	 */
 	public EarthClock(String fullDateTimeString) {
 		// Java 8's Date/Time API in java.time package, see
 		// https://docs.oracle.com/javase/tutorial/datetime/TOC.html
-		
+
 		// Alternatively, dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
 
 		// see http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
 
 		// Use ZonedDate
 		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
-		
+
 		// Set Greenwich Mean Time (GMT) timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
 		// see http://www.diffen.com/difference/GMT_vs_UTC
@@ -135,10 +135,10 @@ public class EarthClock implements Serializable {
 	public Instant getInstant() {
 		return zonedDateTime.toInstant();
 	}
-	
+
 	/**
 	 * Returns the current date/time
-	 * 
+	 *
 	 * @return date
 	 */
 	public Date getCurrentDateTime() {
@@ -151,7 +151,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the number of milliseconds since 1 January 1970 00:00:00
-	 * 
+	 *
 	 * @return long
 	 */
 	public static long getMillisAtStart() {
@@ -160,7 +160,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the number of milliseconds since 1 January 1970 00:00:00
-	 * 
+	 *
 	 * @return long
 	 */
 	public void computeMillisAtStart() {
@@ -169,7 +169,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the number of milliseconds since 1 January 1970 00:00:00
-	 * 
+	 *
 	 * @return long
 	 */
 	public static long getMillis(EarthClock clock) {
@@ -178,7 +178,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * 
+	 *
 	 * @return date/time formatted in a string. eg "2055-May-06 03:37:22"
 	 */
 	public String getCurrentDateTimeString(EarthClock clock) {
@@ -187,16 +187,16 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * 
+	 *
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 (UT)"
 	 */
-	public String getTimeStampF0() {		
+	public String getTimeStampF0() {
 		return f0.format(Timestamp.from(zonedDateTime.toInstant()));
 	}
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * 
+	 *
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37 (UT)"
 	 */
 	public String getTimeStampF1() {
@@ -205,7 +205,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * 
+	 *
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22"
 	 */
 	public String getTimeStampF3() {
@@ -214,7 +214,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the date formatted in a string
-	 * 
+	 *
 	 * @return date formatted in a string. ex "2055-05-06"
 	 */
 	public String getDateStringF0() {
@@ -224,7 +224,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the date formatted in a string
-	 * 
+	 *
 	 * @return date formatted in a string. ex "2055-May-06"
 	 */
 	public String getDateStringF3() {
@@ -234,7 +234,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Returns the time formatted in a string
-	 * 
+	 *
 	 * @return date formatted in a string. ex "03:37:22"
 	 */
 	public String getTimeStringF0() {
@@ -244,7 +244,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Adds time to the calendar
-	 * 
+	 *
 	 * @param milliseconds the time to be added to the calendar
 	 */
 	public void addTime(long milliseconds) {
@@ -254,7 +254,7 @@ public class EarthClock implements Serializable {
 
 	/**
 	 * Displays the string version of the clock.
-	 * 
+	 *
 	 * @return time stamp string.
 	 */
 	public String toString() {
@@ -361,7 +361,7 @@ public class EarthClock implements Serializable {
 	public LocalTime getLocalTime() {
 		return zonedDateTime.toLocalTime();
 	}
-    
+
 	public void destroy() {
 		f0 = null;
 		f2 = null;

@@ -157,10 +157,29 @@ extends TestCase {
 	}
 
 	/*
-	 * Test container with Liquids
+	 * Test container with Liquids & Solids
 	 */
 	public void testBarrelLiquid() throws Exception {
-		assertPhaseSupported(EquipmentType.BARREL, PhaseType.LIQUID);
+		EquipmentType cType = EquipmentType.BARREL;
+		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
+
+		double cap = ContainerUtil.getContainerCapacity(cType);
+		int	allowedId1 = ResourceUtil.waterID;
+		int failedId1 = ResourceUtil.oxygenID;
+		int allowedId2 = ResourceUtil.regolithBID;
+
+		// Test negatives first
+		assertPhaseNotSupported(c, failedId1);
+
+		assertEquals("Container capacity 1", cap, c.getAmountResourceRemainingCapacity(allowedId1));
+		assertEquals("Container capacity 2", cap, c.getAmountResourceRemainingCapacity(allowedId2));
+		
+		// Check the correct resource can be stored
+		c.storeAmountResource(allowedId1, cap/2);
+		
+		// Both should be back to full capacity
+		assertEquals("Container " + c.getName() + " resource stored", allowedId1, c.getResource());
+		assertEquals("Container " + c.getName() + " stored", cap/2, c.getStoredMass());
 	}
 	
 	/*

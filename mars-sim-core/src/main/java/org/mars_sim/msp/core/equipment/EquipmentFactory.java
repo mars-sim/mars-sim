@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -90,17 +89,17 @@ public final class EquipmentFactory {
 	public static double getEquipmentMass(EquipmentType type) {
 		switch (type) {
 		case BAG:
-			return 0.1D;
+			return 0.1;
 		case BARREL:
-			return 1D;
+			return 1.3;
 		case EVA_SUIT:
 			return EVASuit.emptyMass;
 		case GAS_CANISTER:
-			return 2.0D;
+			return 4.0;
 		case LARGE_BAG:
 			return 0.2;
 		case SPECIMEN_BOX:
-			return 0.5;
+			return 0.65;
 		default:
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 		}

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RobotType.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-05
  * @author Manny Kung
  */
 
@@ -33,7 +33,7 @@ public enum RobotType {
 
 	/**
 	 * an internationalized translation for display in user interface.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	public String getName() {
@@ -50,7 +50,7 @@ public enum RobotType {
 	}
 
 	/**
-	 * Gets an array of internationalized robottype in alphabetical order.
+	 * Gets an array of internationalized robot type in alphabetical order.
 	 */
 	public static String[] getNames() {
 		List<String> list = new ArrayList<String>();
@@ -60,5 +60,4 @@ public enum RobotType {
 		Collections.sort(list);
 		return list.toArray(new String[] {});
 	}
-
 }

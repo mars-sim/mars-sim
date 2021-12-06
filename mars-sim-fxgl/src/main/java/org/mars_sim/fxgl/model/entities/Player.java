@@ -1,14 +1,14 @@
 package org.mars_sim.fxgl.model.entities;
 
-import com.almasb.fxgl.entity.Entity;
-import org.mars_sim.fxgl.gui.Dashboard;
+import java.util.HashSet;
+
 import org.mars_sim.fxgl.gui.PlayerData;
 import org.mars_sim.fxgl.main.AppSettings;
 import org.mars_sim.fxgl.model.util.EntityType;
 import org.mars_sim.fxgl.model.util.Moveable;
 import org.mars_sim.fxgl.model.util.Vector;
 
-import java.util.HashSet;
+import com.almasb.fxgl.entity.Entity;
 
 public class Player extends Entity implements Moveable {
 

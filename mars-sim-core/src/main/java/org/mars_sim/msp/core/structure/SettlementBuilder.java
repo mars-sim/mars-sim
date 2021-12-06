@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.2.0 2021-07-10
+ * @date 2021-11-30
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -60,12 +60,12 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  */
 public final class SettlementBuilder {
 	private static SimLogger logger = SimLogger.getLogger(SettlementBuilder.class.getName());
-	
+
 	public static final String EARTH = "Earth";
-	
+
 	// Change this to fore details time measurement on creation
 	private static final boolean MEASURE_PHASES = false;
-	
+
 	private UnitManager unitManager;
 	private RelationshipManager relationshipManager;
 	private CreditManager creditManager;
@@ -91,17 +91,17 @@ public final class SettlementBuilder {
 	 * Create all the initial Settlements
 	 */
 	public void createInitialSettlements(Scenario bootstrap) {
-		logger.config("Scenario " + bootstrap.getName() + " loading");
+		logger.config(bootstrap.getName() + " scenario loading...");
 		for (InitialSettlement spec : bootstrap.getSettlements()) {
 			createFullSettlement(spec);
 		}
-		
+
 		// If loading full default and game mode then place the Commander
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			GameManager.placeInitialCommander(unitManager);
 		}
 	}
-	
+
 	/**
 	 * This create a single fully populated Settlement according to the
 	 * specification. This includes all sub-units, e.g. Vehicles & Persons
@@ -111,7 +111,7 @@ public final class SettlementBuilder {
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
 		SettlementTemplate template = settlementConfig.getSettlementTemplate(spec.getSettlementTemplate());
-		logger.config("Creating " + spec.getName() + " based on template " + spec.getSettlementTemplate());
+		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
 
 		StopWatch watch = new StopWatch();
 		watch.start();
@@ -133,13 +133,13 @@ public final class SettlementBuilder {
 
 		// TOCO get off the Initial Settlement
 		String crew = spec.getCrew();
-		
+
 		// Create pre-configured robots as stated in robots.xml
 		if (crewConfig != null) {
 			createPreconfiguredRobots(settlement);
 			outputTimecheck(settlement, watch, "Create Preconfigured Robots");
 		}
-		
+
 		// Create more robots to fill the settlement(s)
 		createRobots(settlement);
 		outputTimecheck(settlement, watch, "Create Robots");
@@ -158,12 +158,12 @@ public final class SettlementBuilder {
 
 		// Add new settlement to credit manager.
 		creditManager.addSettlement(settlement);
-		
+
 		watch.stop();
 		if (MEASURE_PHASES) {
 			logger.config(settlement, "Fully created in " + watch.getTime());
 		}
-		
+
 		return settlement;
 	}
 
@@ -183,7 +183,7 @@ public final class SettlementBuilder {
 			sponsor = template.getSponsor();
 		}
 		ReportingAuthority ra = raFactory.getItem(sponsor);
-		
+
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
@@ -209,10 +209,10 @@ public final class SettlementBuilder {
 									initialNumOfRobots);
 		settlement.initialize();
 		unitManager.addUnit(settlement);
-	
+
 		return settlement;
 	}
-	
+
 	private void createVehicles(SettlementTemplate template, Settlement settlement) {
 		Map<String, Integer> vehicleMap = template.getVehicles();
 		Iterator<String> j = vehicleMap.keySet().iterator();
@@ -225,9 +225,9 @@ public final class SettlementBuilder {
 				String name = Vehicle.generateName(vehicleType, sponsor);
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 					LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
-					unitManager.addUnit(luv);	
+					unitManager.addUnit(luv);
 					settlement.addOwnedVehicle(luv);
-				} 
+				}
 				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
 					Drone drone = new Drone(name, vehicleType, settlement);
 					unitManager.addUnit(drone);
@@ -241,7 +241,7 @@ public final class SettlementBuilder {
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Creates the initial equipment at a settlement.
@@ -264,12 +264,12 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
-	 * 
+	 *
 	 * @throws Exception if Robots can not be constructed.
 	 */
 	private void createRobots(Settlement settlement) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
-		int initial = settlement.getProjectedNumOfRobots();
+		int initial = settlement.getInitialNumOfRobots();
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
 		while (settlement.getIndoorRobotsCount() < initial) {
 			// Get a robotType randomly
@@ -284,7 +284,7 @@ public final class SettlementBuilder {
 			robot.initialize();
 			// Set name at its parent class "Unit"
 			robot.setName(newName);
-			
+
 			String jobName = RobotJob.getName(robotType);
 			if (jobName != null) {
 				RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
@@ -292,9 +292,9 @@ public final class SettlementBuilder {
 					robot.getBotMind().setRobotJob(robotJob, true);
 				}
 			}
-			
+
 			unitManager.addUnit(robot);
-			
+
 			settlement.addOwnedRobot(robot);
 			// Set the container unit
 			robot.setContainerUnit(settlement);
@@ -337,7 +337,7 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates initial people based on available capacity at settlements.
-	 * 
+	 *
 	 * @throws Exception if people can not be constructed.
 	 */
 	private void createPeople(Settlement settlement) {
@@ -347,13 +347,13 @@ public final class SettlementBuilder {
 
 		// Fill up the settlement by creating more people
 		while (settlement.getIndoorPeopleCount() < initPop) {
-			
+
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 				gender = GenderType.MALE;
 			}
 			Person person = null;
-			
+
 			// This is random and may change on each call
 			String country = sponsor.getDefaultCountry();
 
@@ -369,27 +369,27 @@ public final class SettlementBuilder {
 					.setPersonality(null, null)
 					.setAttribute(null)
 					.build();
-			
+
 			person.initialize();
-			
+
 			unitManager.addUnit(person);
-			
+
 			settlement.addACitizen(person);
 			// Set the container unit
 			person.setContainerUnit(settlement);
-			
+
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set up preference
 			person.getPreference().initializePreference();
 
-			// Assign a job 
+			// Assign a job
 			person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 		}
 
 		// Set up work shift
 		unitManager.setupShift(settlement, initPop);
-		
+
 		// Establish a system of governance at a settlement.
 		settlement.getChainOfCommand().establishSettlementGovernance();
 	}
@@ -403,24 +403,24 @@ public final class SettlementBuilder {
 		if (crew == null) {
 			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}
-		
+
 		// Check for any duplicate full Name
 		Collection<Person> people = unitManager.getPeople();
 		List<String> existingfullnames = people.stream()
 				.map(Person::getName).collect(Collectors.toList());
 
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
-		
+
 		// Create all configured people.
 		for (Member m : crew.getTeam()) {
 			if (settlement.getInitialPopulation() > settlement.getNumCitizens()) {
-	
+
 				// Get person's settlement or same sponsor
 				ReportingAuthority sponsor = settlement.getSponsor();
 				if (m.getSponsorCode() != null) {
 					 sponsor = raFactory.getItem(m.getSponsorCode());
 				}
-	
+
 				// Check name
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
@@ -430,7 +430,7 @@ public final class SettlementBuilder {
 				}
 				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
 				existingfullnames.add(name);
-				
+
 				// Get person's gender or randomly determine it if not configured.
 				GenderType gender = m.getGender();
 				if (gender == null) {
@@ -439,31 +439,31 @@ public final class SettlementBuilder {
 						gender = GenderType.MALE;
 					}
 				}
-		
+
 				// Get person's age
 				int age = 0;
 				String ageStr = m.getAge();
 				if (ageStr != null)
-					age = Integer.parseInt(ageStr);	
+					age = Integer.parseInt(ageStr);
 				else
 					age = RandomUtil.getRandomInt(21, 65);
-	
+
 				// Retrieve country & sponsor designation from people.xml (may be edited in
 				// CrewEditorFX)
 				String country = m.getCountry();
-	
+
 				// Loads the person's preconfigured skills (if any).
 				Map<String, Integer> skillMap = m.getSkillMap();
-				
+
 				// Set the person's configured Big Five Personality traits (if any).
 				Map<String, Integer> bigFiveMap = new HashMap<>(); //TOOO
-		
+
 				// Override person's personality type based on people.xml, if any.
 				String mbti = m.getMBTI();
-				
+
 				// Set person's configured natural attributes (if any).
 				Map<String, Integer> attributeMap = new HashMap<>();
-				
+
 				// Create person and add to the unit manager.
 				// Use Builder Pattern for creating an instance of Person
 				Person person = Person.create(name, settlement)
@@ -475,22 +475,22 @@ public final class SettlementBuilder {
 						.setPersonality(bigFiveMap, mbti)
 						.setAttribute(attributeMap)
 						.build();
-				
+
 				person.initialize();
-				
+
 				unitManager.addUnit(person);
-				
+
 				settlement.addACitizen(person);
 				// Set the container unit
 				person.setContainerUnit(settlement);
-				
+
 				// Set the person as a preconfigured crew member
 				Map<String, Integer> relMap = m.getRelationshipMap();
 				if (relMap != null) {
 					addedCrew.put(person, relMap);
 				}
 				relationshipManager.addInitialSettler(person, settlement);
-		
+
 				// Set person's job (if any).
 				String jobName = m.getJob();
 				if (jobName != null) {
@@ -501,51 +501,51 @@ public final class SettlementBuilder {
 								JobUtil.MISSION_CONTROL);
 					}
 				}
-	
+
 				// Add Favorite class
 				String mainDish = m.getMainDish();
 				String sideDish = m.getSideDish();
 				String dessert = m.getDessert();
 				String activity = m.getActivity();
-		
+
 				// Add Favorite class
 				Favorite f = person.getFavorite();
-				
+
 				if (mainDish != null) {
 					f.setFavoriteMainDish(mainDish);
 				}
-				
+
 				if (sideDish != null) {
 					f.setFavoriteSideDish(sideDish);
 				}
-				
+
 				if (dessert != null) {
 					f.setFavoriteDessert(dessert);
-				}	
-	
+				}
+
 				if (activity != null) {
 					f.setFavoriteActivity(activity);
-				}	
-	
+				}
+
 				// Initialize Preference
 				person.getPreference().initializePreference();
 			}
 		}
-		
+
 		createConfiguredRelationships(addedCrew);
 	}
-	
+
 
 	/**
 	 * Creates all configured pre-configured crew relationships
-	 * @param addedCrew 
+	 * @param addedCrew
 	 */
 	private void createConfiguredRelationships(Map<Person, Map<String, Integer>> addedCrew) {
-	
+
 		// Create all configured people relationships.
 		for(Entry<Person, Map<String, Integer>> p : addedCrew.entrySet()) {
 			Person person = p.getKey();
-				
+
 			// Set person's configured relationships (if any).
 			Map<String, Integer> relationshipMap = p.getValue();
 			for (Entry<String, Integer> friend : relationshipMap.entrySet()) {
@@ -583,7 +583,7 @@ public final class SettlementBuilder {
 		for (int x = 0; x < size; x++) {
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			if (settlement.getName().equals(preConfigSettlementName)
-					&& (settlement.getNumBots() <= settlement.getProjectedNumOfRobots())) {
+					&& (settlement.getNumBots() <= settlement.getInitialNumOfRobots())) {
 				// Get robot's name (required)
 				String name = robotConfig.getConfiguredRobotName(x);
 
@@ -594,13 +594,13 @@ public final class SettlementBuilder {
 				String jobName = robotConfig.getConfiguredRobotJob(x);
 				if (jobName != null) {
 					// Create robot and add to the unit manager.
-		
+
 					// Set robot's configured skills (if any).
 					Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-					
+
 					// Set robot's configured natural attributes (if any).
 					Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-					
+
 					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(name, settlement, robotType)
 							.setCountry(EARTH)
@@ -610,7 +610,7 @@ public final class SettlementBuilder {
 					robot.initialize();
 
 					unitManager.addUnit(robot);
-					
+
 					settlement.addOwnedRobot(robot);
 					// Set the container unit
 					robot.setContainerUnit(settlement);
@@ -618,7 +618,7 @@ public final class SettlementBuilder {
 			}
 		}
 	}
-	
+
 	/**
 	 * Enable the use of a predefined crews
 	 */

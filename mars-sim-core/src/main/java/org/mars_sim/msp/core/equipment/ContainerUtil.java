@@ -83,25 +83,26 @@ public final class ContainerUtil {
 	}
 
 	/**
-	 * Gets the phase of amount resource that a container can hold.
+	 * Can a container type hold a certain Phase?
 	 * 
-	 * @param type the container type.
+	 * @param container the container type.
+	 * @parma phase Type of material to be stored
 	 * @return amount resource phase.
 	 */
-	public static PhaseType getContainerPhase(EquipmentType type) {
-		switch(type) {
+	public static boolean isPhaseSupported(EquipmentType container, PhaseType phase) {
+		switch(container) {
 		case GAS_CANISTER:
-			return PhaseType.GAS;
+			return (PhaseType.GAS == phase);
 		case BARREL:
-			return PhaseType.LIQUID;
+			return (PhaseType.LIQUID == phase) || (PhaseType.SOLID == phase);
 		case BAG:
-			return PhaseType.SOLID;
+			return (PhaseType.SOLID == phase);
 		case LARGE_BAG:
-			return PhaseType.SOLID;
+			return (PhaseType.SOLID == phase);
 		case SPECIMEN_BOX:
-			return PhaseType.SOLID;			
+			return (PhaseType.SOLID == phase);			
 		default:
-			throw new IllegalArgumentException("Equipment type " + type + " is not a container");
+			throw new IllegalArgumentException("Equipment type " + container + " is not a container");
 		}
 	}
 	

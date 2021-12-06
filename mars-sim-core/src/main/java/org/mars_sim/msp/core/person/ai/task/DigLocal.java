@@ -136,19 +136,24 @@ implements Serializable {
 
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
-        setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
+        if (diggingLoc != null)
+        	setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
 
 		// set the boolean to true so that it won't be done again today
 //		person.getPreference().setTaskDue(this, true);
 
-     // Determine storage bin location.
-//            Point2D.Double binLoc = determineBinLocation();
-//            setBinLocation(binLoc.getX(), binLoc.getY());
+        // Note: For Future
+        // Determine storage bin location.
+//      Point2D.Double binLoc = determineBinLocation();
+//      setBinLocation(binLoc.getX(), binLoc.getY());
 
        	// Add task phases
     	addPhase(collectionPhase);
-//        	addPhase(WALK_TO_BIN);
-//        	addPhase(DROP_OFF_RESOURCE);
+
+        // Note: For Future
+//      addPhase(WALK_TO_BIN);
+//      addPhase(DROP_OFF_RESOURCE);
+
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
 

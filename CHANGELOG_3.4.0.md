@@ -5,17 +5,19 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.3.1 (build ____) - 2021-__-__
+## v3.4.0 (build ____) - 2021-__-__
 
-### ISSUES ADDRESSED : 
+### ISSUES ADDRESSED :
 
 
 ### CORE ENGINE IMPROVEMENTS :
 1. Implement a reservation system for EVA egress.
-2. Add new Computation building function, new Computer Science subject, 
-   new Computer Scientist job, new role and skill.
+2. Add new Computation building function, new Computer Science
+   studies, new Computer Scientist job, new Computer
+   Specialist role and new Computing skill type.
 3. Make a person's carrying capacity to be age-dependent.
-4. Enable lightweight inventory for EVA suit.
+4. Replace with lightweight inventory for all units.
+
 
 ### UI IMPROVEMENT :
 
@@ -23,13 +25,17 @@ Copyright (C) 2021 Scott Davis
 ### FIXES :
 1. Consider loading/Unloading edge cases for Trading/Delivery.
 2. Resolve stalled delivery negotiation.
-3. Exploration Mission revisits existing sites until they reach an evaluation ready for Mining. 
+3. Exploration Mission revisits existing sites until they reach
+   an evaluation ready for Mining.
+4. Fix the mission selection that stop Navigation Tab from
+   displaying sites and navpoints.
+
 
 ------------------------------------------|---------------------
 
 ## v3.3.0 (build 6218) - 2021-09-25
 
-### ISSUES ADDRESSED : 
+### ISSUES ADDRESSED :
 
 -- remove old releases of junit which are abandoned upstream and add support for junit 5  #81
 -- Task & Building classes are not Serialised #334
@@ -57,11 +63,11 @@ Copyright (C) 2021 Scott Davis
 1. Increase # of crops in greenhouses.
 2. Move regolith-related processes from manufacturing to resource processing.
 3. Keep track of new vs. used EVA suits.
-4. Refine vehicle modeling. Give rovers and delivery drones acceleration profile. 
+4. Refine vehicle modeling. Give rovers and delivery drones acceleration profile.
 5. Sort Parts by type.
 6. Define countries and sponsors to xml instead of hard-coding them.
 7. Define scenarios.
-8. Revamp malfunction repair. 
+8. Revamp malfunction repair.
 9. Refactor loading mission resources.
 
 ### UI IMPROVEMENT :
@@ -81,12 +87,12 @@ Copyright (C) 2021 Scott Davis
 ------------------------------------------|---------------------
 ## v3.2.0 (build 5916) - 2021-07-06
 
-### ISSUES ADDRESSED : 
+### ISSUES ADDRESSED :
 
 1. Simulation goes into a loop with PlanMission Task improvement
 #370 by bevans2000 was closed on Jul 2
 
-2. Time Ratio (TR) Adjustment based on the Tick Per Sec (TPS) 
+2. Time Ratio (TR) Adjustment based on the Tick Per Sec (TPS)
 critical improvement
 #369 by mokun was closed 6 minutes ago
 
@@ -99,7 +105,7 @@ critical improvement
 5. MersenneTwisterFast is not Thread safe bug
 #362 by bevans2000 was closed on Jun 21
 
-6. Person is involved in too many Scientific studies started, 
+6. Person is involved in too many Scientific studies started,
 research agreement (or friendliness index) between settlements
 improvement
 #359 by bevans2000 was closed on Jul 27
@@ -115,7 +121,7 @@ improvement
 bug improvement
 #348 by mokun was closed 6 days ago
 
-10. Modeling of Airlock State and Airlock Operator's responsibility, 
+10. Modeling of Airlock State and Airlock Operator's responsibility,
 Vehicular Airlock, Console UI freeze improvement
 #340 by mokun was closed on Jul 11
 
@@ -128,24 +134,24 @@ Vehicular Airlock, Console UI freeze improvement
 13. MasterClock is reporting timing errors improvement
 #287 by bevans2000 was closed on Dec 30, 2020
 
-14. Problem find JFreechart in clean build, Java vs. JSON 
-serialization, concurrent thread for each settlement improvement 
+14. Problem find JFreechart in clean build, Java vs. JSON
+serialization, concurrent thread for each settlement improvement
 maven test
 #283 by bevans2000 was closed on Jun 23
 
-15. having a form to populate crew.xml; add beta_crew.xml feature 
+15. having a form to populate crew.xml; add beta_crew.xml feature
 request
 #251 by shirishag75 was closed on Jun 20
 
 16. How do I begin? Incompatibilies with Java 13 improvement
 #236 by Ranged was closed on Jun 23
 
-17. Is there a way to have a crew profile saved as well, 
-new /xml folder, edit people.xml, new crew.xml, beta_crew.xml 
+17. Is there a way to have a crew profile saved as well,
+new /xml folder, edit people.xml, new crew.xml, beta_crew.xml
 feature request improvement question
 #207 by shirishag75 was closed on Jun 20
 
-18. IllegalStateException. not in a valid location situation to 
+18. IllegalStateException. not in a valid location situation to
 start EVA task OUTSIDE bug
 #14 by larsnaesbye was closed on Jun 16, 2017
 
@@ -154,37 +160,37 @@ start EVA task OUTSIDE bug
 1. Switch back to supporting Java 11 for better compatibility.
 2. Enforce one continuous sleep session as much as possible.
 3. Reduce memory footprint by 50% when loading from a saved sim.
-4. Remove the duplicated EVA function in garages. 
-5. Refine ice collection rate. Higher above/ below +/-60 deg 
+4. Remove the duplicated EVA function in garages.
+5. Refine ice collection rate. Higher above/ below +/-60 deg
    latitude.
-6. Refine/add computing site value/score for collecting ice, 
+6. Refine/add computing site value/score for collecting ice,
    regolith, mineral exploration, and mining.
-7. Add new job 'psychologist' and new skill/science type 
+7. Add new job 'psychologist' and new skill/science type
    'psychology'.
-8. Add ability to choose individual destination for each 
-   crewman as listed in crew.xml when using Crew Editor. 
-9. Adjust job prospect and refine job assignment for each 
+8. Add ability to choose individual destination for each
+   crewman as listed in crew.xml when using Crew Editor.
+9. Adjust job prospect and refine job assignment for each
    settlement.
-10. Designate Night/Day/Swing shift as XYZ work shift. 
-    Designate Day/Night shift as AB work shift. 
-11. Change the start and end time for work shift A 
+10. Designate Night/Day/Swing shift as XYZ work shift.
+    Designate Day/Night shift as AB work shift.
+11. Change the start and end time for work shift A
     (Day shift) and work shift B (Night shift).
-12. Add teaching reward and learning points on skills when 
+12. Add teaching reward and learning points on skills when
    performing Teach task.
-13. Make a reading task contribute to adding experience points 
-    to a skill. 
-14. Add settlement and vehicle names tailored to its 
+13. Make a reading task contribute to adding experience points
+    to a skill.
+14. Add settlement and vehicle names tailored to its
     sponsor/country.
-15. Revamp EVA egress and ingress phases to model airlock 
+15. Revamp EVA egress and ingress phases to model airlock
     activities in finer details.
 16. Incorporate Weblaf's IconManager for caching svg icons.
 17. Add "Engineering" as a new science subject.
 18. Record the values of solar irradiance at each settlement.
-19. Auto-sense user-edited xml files and back them up when 
-    checksum are mismatched. Allow a list of exception 
+19. Auto-sense user-edited xml files and back them up when
+    checksum are mismatched. Allow a list of exception
     xml files.
-20. Logically partition the calling of units by settlement. 
-21. Revamp sending time pulse and clock threading.  
+20. Logically partition the calling of units by settlement.
+21. Revamp sending time pulse and clock threading.
 22. Rework acquiring new tasks and remove recursive calls inside Mind.
 23. Refactor and expand console capability. Enable SSH connection.
 24. Activate the fish farm and enable eating fish.
@@ -194,66 +200,66 @@ start EVA task OUTSIDE bug
     most recent average value of tick per second (TPS).
 28. Add Delivery mission and unmanned drone for trading resources
     (Experimental only).
-29. Meteorite fragments (upon impacting a settlement) can be found 
+29. Meteorite fragments (upon impacting a settlement) can be found
     and stored.
 
 
 ### UI IMPROVEMENT :
 
-1. Provide the exact relationship score and attribute score (in 
+1. Provide the exact relationship score and attribute score (in
    addition to its adjective) in Person Window.
 2. Add more levels of zooming in the settlement map.
-3. Switch to using svg icons for better scaling and visual 
+3. Switch to using svg icons for better scaling and visual
    consistency in the settlement map.
-4. Add showing the reference coordinates of the settlement map 
+4. Add showing the reference coordinates of the settlement map
    of the mouse pointer.
-5. Correct the scaling of the dot size and coordinates of 
-   the person/robot in PersonMapLayer and RobotMapLayer at 
-   various zoom level. 
+5. Correct the scaling of the dot size and coordinates of
+   the person/robot in PersonMapLayer and RobotMapLayer at
+   various zoom level.
 6. Revamp the design of EVA airlock in its svg image.
 7. Add BuildingPanelLiving to show the living accommodation
-   aspects of a building.   
-8. Show the second subtask's description and phase.       
-9. Change size of person/robot/building/vehicle/site label 
-   on-the-fly in response to the change of map scale in 
-   settlement map. 
-10. Display weather icon and top text banner in settlement map.    
+   aspects of a building.
+8. Show the second subtask's description and phase.
+9. Change size of person/robot/building/vehicle/site label
+   on-the-fly in response to the change of map scale in
+   settlement map.
+10. Display weather icon and top text banner in settlement map.
 11. Display parts in used in each building in Maint tab.
-12. Allow players to assign 'task order' to all settlers in 
-    Command Mode (NOT available in Sandbox Mode).  
-13. Provide sunrise, sunset, period of daylight, zenith time, 
-    max sunlight, current sunlight in the settlement map. 
-14. Replace speed/time ratio (TR) slider bar with increase and 
-    decrease speed button. 
-    
-    
+12. Allow players to assign 'task order' to all settlers in
+    Command Mode (NOT available in Sandbox Mode).
+13. Provide sunrise, sunset, period of daylight, zenith time,
+    max sunlight, current sunlight in the settlement map.
+14. Replace speed/time ratio (TR) slider bar with increase and
+    decrease speed button.
+
+
 ### FIXES :
 
 1. Fix OutOfMemoryError when saving sim.
 2. Remove extraneous object references that bloat the saved
    sim file.
 3. Fix rover embarking from a settlement.
-4. Correct major walking bugs in that person frozen in the EVA 
+4. Correct major walking bugs in that person frozen in the EVA
    Airlock building.
-5. Account for vehicle emergency while still parking in a 
+5. Account for vehicle emergency while still parking in a
    settlement.
-6. Correct the location of inner and outer door/hatch of 
+6. Correct the location of inner and outer door/hatch of
    EVA Airlock.
-7. Fix retrieving a list of vehicles reserved for mission or 
+7. Fix retrieving a list of vehicles reserved for mission or
    on mission.
 8. Fix loading the alpha crew in the crew editor.
 9. Correct the time consumed when reviewing mission plans.
-10. Correct the creation of a list of sites to be explored for 
-    mineral content. 
+10. Correct the creation of a list of sites to be explored for
+    mineral content.
 11. Correct the bed assignment.
-12. Correctly associate how the availability of 3D printers 
-    affect concurrent manufacturing processes. 
-13. Sync up the position of the WebSwitch when pausing or 
+12. Correctly associate how the availability of 3D printers
+    affect concurrent manufacturing processes.
+13. Sync up the position of the WebSwitch when pausing or
     resuming the sim.
 14. Fix finding a lab supporting certain science types.
 15. Fix and refactor the use of static references.
-16. Fix music mute and volume control. 
- 
+16. Fix music mute and volume control.
+
 ------------------------------------------|---------------------
 
 ## v3.1.1 (build 5283) - 2020-07-22
@@ -262,9 +268,9 @@ start EVA task OUTSIDE bug
 
 1. Switch to supporting Java 14 only
 
-2. Provide a bare basic way of using CLI to start a single settlement. 
+2. Provide a bare basic way of using CLI to start a single settlement.
 
-3. Refine the conversion between the level of effort of an operation and its modifier 
+3. Refine the conversion between the level of effort of an operation and its modifier
    in GoodsManager.
 
 ### UI IMPROVEMENT :
@@ -310,8 +316,8 @@ start EVA task OUTSIDE bug
 
 13. Create a death report on a deceased person.
 
-14. Add 'topics' for each scientific study. 
-    
+14. Add 'topics' for each scientific study.
+
 15. Add role prospect scores (like job prospects) on each role.
 
 16. Export xml config files to player's home folder and backup old xml files.
@@ -319,11 +325,11 @@ start EVA task OUTSIDE bug
 17. Allow playing external ogg music files in player's home folder.
 
 18. Add vehicle status log for tracking changes to a vehicle.
- 
+
 19. Add mission status log for tracking changes to a mission.
 
 21. Incorporate more accurate MOLA elevation data.
- 
+
 20. Link sponsor's mission directives to settlement's mission decisions.
 
 22. Add the price of a good.
@@ -342,7 +348,7 @@ start EVA task OUTSIDE bug
 
 3. Add earth calendar on bottom status bar.
 
-4. Add (x, y) coordinates, elevation info on Mars Navigator surface Map (and RGB/HSV values on the topo map)  
+4. Add (x, y) coordinates, elevation info on Mars Navigator surface Map (and RGB/HSV values on the topo map)
 
 5. Attach a separate 'EVA Airlock' building to Lander Hab.
 
@@ -373,21 +379,21 @@ start EVA task OUTSIDE bug
 
 12. Fix choosing sponsors (after choosing the country) in Crew Editor.
 
-13. Correct inconsistency in the quantity/amount of input resources in 
+13. Correct inconsistency in the quantity/amount of input resources in
     construction.xml.
-    
+
 -----------------------------------------------------------------------------------------
 
 ## v3.1.0-beta1 (build 4421) - 2018-07-30
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, a JavaFX WebEngine's bug may create garbled characters on certain 
+1. In MacOS, a JavaFX WebEngine's bug may create garbled characters on certain
    webpages in Help Browser.
 
 2. In Linux, text fields do not allow text input.
 
-3. A JavaFX WebEngine's crypto issue cripples the full UI loading of certain secure 
+3. A JavaFX WebEngine's crypto issue cripples the full UI loading of certain secure
    websites such as GitHub pages
 
 4. When clicking on a combobox to pick an option, the option list would pop up
@@ -401,7 +407,7 @@ start EVA task OUTSIDE bug
 
 2. Enable saving and loading past historical events.
 
-3. Improve how a vehicle should respond to "resources not enough" events 
+3. Improve how a vehicle should respond to "resources not enough" events
    during a mission. Will now travel toward a settlement as close as possible
    before turning on the beacon and asking for help.
 
@@ -416,42 +422,42 @@ start EVA task OUTSIDE bug
 8. Relate the onset of a random ailment to the task a person is performing.
 
 9. Add new resources such as silicon dioxide, quartz, glass, sodium carbonate,
-   & sodium oxide and new processes "make quartz from silicon dioxide", 
+   & sodium oxide and new processes "make quartz from silicon dioxide",
    "make soda from sodium oxide", "make glass from sand" and "extract silicon
    dioxide from sand".
-   
+
 10. Players may set water rationing and emphasis on certain type of tasks.
- 
+
 
 ### UI IMPROVEMENT :
 
-1. Display a lists of settlers according to their associated settlements in 
+1. Display a lists of settlers according to their associated settlements in
    Dashboard tab.
 
-2. Add a draggable dot matrix news ticker for notifying users of events 
+2. Add a draggable dot matrix news ticker for notifying users of events
    under the category of medical, malfunctions, safety/hazards and mission.
 
-3. Set default height and width to 1366x768 in the main menu and main window. 
+3. Set default height and width to 1366x768 in the main menu and main window.
 
 
 ### FIXES :
 
 1. Correct the missing decimal separator in Configuration Editor.
 
-2. Fix excessive rows showing up in task schedules. Enable mission name to 
+2. Fix excessive rows showing up in task schedules. Enable mission name to
    show up on separate column.
 
 3. Fix not being able to autosave if running in headless mode.
 
-4. Correct how field reliability data for parts is associated with human 
+4. Correct how field reliability data for parts is associated with human
    factor vs. parts fatigue vs. acts of God vs. software quality control issue
 
-5. Fix the formula that restore a person from fatigue while sleeping. Tweak 
-   it to work well for high fatigue case. 
-      
-6. Correct plexus graph issue (only after loading from a saved sim) that 
+5. Fix the formula that restore a person from fatigue while sleeping. Tweak
+   it to work well for high fatigue case.
+
+6. Correct plexus graph issue (only after loading from a saved sim) that
    prevent from fully restore credit/debit history between settlement and
-   existing relationship between settlers. 
+   existing relationship between settlers.
 
 
 -----------------------------------------------------------------------------------------
@@ -460,7 +466,7 @@ start EVA task OUTSIDE bug
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, JavaFX WebEngine's bug creates garbled characters on certain 
+1. In MacOS, JavaFX WebEngine's bug creates garbled characters on certain
    webpages in Help Browser.
 
 2. In Linux, text fields do not allow text input.
@@ -468,10 +474,10 @@ start EVA task OUTSIDE bug
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add checkbox for showing non-power/non-heat generating buildings in 
+1. Add checkbox for showing non-power/non-heat generating buildings in
    Power/Thermal Tab Panels.
 
-2. Improve grid battery charging/discharging model. 
+2. Improve grid battery charging/discharging model.
 
 3. Add air monitoring and heat ventilation for each building.
 
@@ -481,7 +487,7 @@ start EVA task OUTSIDE bug
 
 6. Improve dust storm model and connect it to wind speed for each settlement.
 
-7. Account for variation of outside air temperature in polar region.  
+7. Account for variation of outside air temperature in polar region.
 
 8. Refine range of latitude/longitude input in sim config editor and minimap.
 
@@ -491,14 +497,14 @@ start EVA task OUTSIDE bug
 
 11. Convert to metric system in calculating heat gain/loss in each building.
 
-12. Add reliability analysis on top of the malfunction model for tracking 
+12. Add reliability analysis on top of the malfunction model for tracking
     probability of failure for some item resource.
 
 13. Shrink down 30% the file size of a saved sim.
 
 14. Add thirst indicator and track if a person is dehydrated.
 
-15. Add ability for settlers to tag an EVA suit and stick to using it as 
+15. Add ability for settlers to tag an EVA suit and stick to using it as
     much as possible.
 
 16. Stabilize the value points (VP) based economy. Add variable inflation to
@@ -509,45 +515,45 @@ start EVA task OUTSIDE bug
 18. Rework input/outpost of various resource processes.
 
 19. Add noaudio argument if user desires running the simulation with no sound.
- 
+
 
 ### UI IMPROVEMENT :
 
 1. Display build # on the bottom right of the main menu.
 
-2. Add a list of supported resolutions in the main menu. Detect the current 
+2. Add a list of supported resolutions in the main menu. Detect the current
    screen resolution and set it as the default.
 
-3. Add separate volume controls for sound effects and background music in 
+3. Add separate volume controls for sound effects and background music in
    main menu and main scene.
 
 4. Add a Dashboard tab and show the basic info of all settlers (experimental).
 
-5. Incorporate certain ui elements from weblaf for improving the looks of 
+5. Incorporate certain ui elements from weblaf for improving the looks of
    some swing components.
 
 
 ### FIXES :
 
-1. Reduce building temperature fluctuation. 
+1. Reduce building temperature fluctuation.
 
 2. Fix bugs in solar/fuel/electric heating.
 
-3. Fix settlers being under-weight and short-height.  
+3. Fix settlers being under-weight and short-height.
 
 4. Correct issues with storing resources after loading from a saved sim.
-   
-5. Redefine stock capacity for each building to avoid space shortage.   
 
-6. Fix the tab choice combobox of an unit window from popping near the edge 
+5. Redefine stock capacity for each building to avoid space shortage.
+
+6. Fix the tab choice combobox of an unit window from popping near the edge
    of the screen.
 
 7. Correct botanists' low participation of of inspecting/cleaning/
-   sampling tissues in TendGreenhouse.	 
+   sampling tissues in TendGreenhouse.
 
 9. Set botanists' chance of sampling crop tissues to 50% if there's time
-   remaining after tending a greenhouse.	 
-	
+   remaining after tending a greenhouse.
+
 10. Fix user initiated construction mission.
 
 11. Fix various bugs during emergency rescue missions.
@@ -571,8 +577,8 @@ start EVA task OUTSIDE bug
 
 1. Refine phenological/growing stage for each category of crop.
 
-2. Disallow growing corn consecutively in the same greenhouse as it depletes 
-   nitrogen in the soil more quickly than other crops. 
+2. Disallow growing corn consecutively in the same greenhouse as it depletes
+   nitrogen in the soil more quickly than other crops.
 
 3. Rename Green Onion to Spring Onion. Remove Spices as a Crop Category.
 
@@ -583,7 +589,7 @@ start EVA task OUTSIDE bug
 
 2. Add animated Main Menu items.
 
-3. Create an EXE installation package specifically for installing mars-sim in 
+3. Create an EXE installation package specifically for installing mars-sim in
    Windows OS with Inno Script Studio.
 
 

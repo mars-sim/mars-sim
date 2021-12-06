@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @date 2021-08-20
+ * @date 2021-11-30
  * @author Scott Davis
  */
 
@@ -51,10 +51,10 @@ public abstract class CollectResourcesMission extends RoverMission
 	/** Mission phase. */
 	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase("Mission.phase.collectResources");
 
-	private static final String PROPSPECTING_SITE = "Propspecting Site #";
+	private static final String PROPSPECTING_SITE = "Prospecting Site #";
 
 	/** Estimated collection time multiplier for EVA. */
-	private static final double EVA_COLLECTION_OVERHEAD = 20D;
+	private static final double EVA_COLLECTION_OVERHEAD = 50D;
 
 	/** THe maximum number of sites under consideration. */
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
@@ -79,10 +79,8 @@ public abstract class CollectResourcesMission extends RoverMission
 	private int containerNum;
 	/** External flag for ending collection at the current site. */
 	private boolean endCollectingSite;
-	/** The total amount (kg) of resource collected. */
-	private double totalResourceCollected;
 	/** The total amount (kg) of resources collected. */
-	private double[] regolithCollected = {0, 0, 0, 0};
+	private Map<Integer,Double> collected;
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 	/** The type of resource to collect. */
@@ -122,6 +120,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			this.resourceCollectionRate = resourceCollectionRate;
 			this.containerID = containerID;
 			this.containerNum = containerNum;
+			this.collected = new HashMap<>();
 
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
@@ -172,9 +171,9 @@ public abstract class CollectResourcesMission extends RoverMission
 				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 				double containerCap = ContainerUtil.getContainerCapacity(containerID);
-				this.siteResourceGoal = (containerCap * (containerNum - 2)) / orderSites.size();
-				logger.info(getVehicle(), "Target mount of resource per site: "
-						+ siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
+				this.siteResourceGoal = 2 *containerCap * containerNum / orderSites.size();
+				logger.info(getVehicle(), "Target amount of resource per site: "
+						+ (int)siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
 						+ ".");
 			}
 
@@ -220,7 +219,7 @@ public abstract class CollectResourcesMission extends RoverMission
 		this.resourceID = resourceID;
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		this.siteResourceGoal = (containerCap * (containerNum - 2))/ collectionSites.size();
+		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
 		this.resourceCollectionRate = resourceCollectionRate;
 		this.containerID = containerID;
 		this.containerNum = containerNum;
@@ -262,17 +261,8 @@ public abstract class CollectResourcesMission extends RoverMission
 	 *
 	 * @return resource amount (kg).
 	 */
-	public double getTotalCollectedResources() {
-		return totalResourceCollected;
-	}
-
-	/**
-	 * Gets an array of regolith collected
-	 *
-	 * @return an array of regolith amount (kg).
-	 */
-	public double[] getRegolithCollected() {
-		return regolithCollected;
+	public Map<Integer,Double> getResourcesCollected() {
+		return collected;
 	}
 
 	/**
@@ -303,6 +293,8 @@ public abstract class CollectResourcesMission extends RoverMission
 						getCurrentNavpoint().getDescription());
 			}
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
+				// Update the resource collected
+				updateResources(getVehicle());
 				startTravellingPhase();
 			}
 			else {
@@ -345,26 +337,18 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return
 	 */
 	private double updateResources(ResourceHolder inv) {
-		double[] regolithCollected = {0, 0, 0, 0};
 		double resourceCollected = 0;
 		double resourcesCapacity = 0;
 
-
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
-		int size = getCollectibleResources().length;
-		for (int i=0; i<size; i++) {
-			int id = getCollectibleResources()[i];
-			regolithCollected[i] = inv.getAmountResourceStored(id);
-			resourceCollected += regolithCollected[i];
-			resourcesCapacity += inv.getAmountResourceCapacity(id);
+		for(int resourceId : getCollectibleResources()) {
+			double amount = inv.getAmountResourceStored(resourceId);
+			resourceCollected += amount;
+			resourcesCapacity += inv.getAmountResourceCapacity(resourceId);
+
+			collected.put(resourceId, amount);
 		}
-
-		// Set the array of regolith collected.
-		this.regolithCollected = regolithCollected;
-
-		// Set total collected resources.
-		totalResourceCollected = resourceCollected;
 
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourceCollected - collectingStart;
@@ -382,7 +366,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * the main resource but could be others.
 	 * @return
 	 */
-	protected abstract int [] getCollectibleResources();
+	public abstract int [] getCollectibleResources();
 
 	/**
 	 * Performs the collecting phase of the mission.
@@ -460,13 +444,14 @@ public abstract class CollectResourcesMission extends RoverMission
 
 			// Randomize the rate of collection upon arrival
 			rate = rate
-					* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
+					* (1 + RandomUtil.getRandomDouble(-.2, .2));
 
 			// Note: Add how areologists and some scientific study may come up with better technique
 			// to obtain better estimation of the collection rate. Go to a prospective site, rather
 			// than going to a site coordinate in the blind.
 
-			resourceCollectionRate = rate;
+			if (rate > 20)
+				resourceCollectionRate = rate;
 
 			// If person can collect resources, start him/her on that task.
 			if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
@@ -719,7 +704,7 @@ public abstract class CollectResourcesMission extends RoverMission
 	 * @return time (millisols)
 	 */
 	protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
-		double timePerPerson = siteResourceGoal / resourceCollectionRate;
+		double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
 		if (useBuffer)
 			timePerPerson *= EVA_COLLECTION_OVERHEAD;
 		return timePerPerson / getPeopleNumber();

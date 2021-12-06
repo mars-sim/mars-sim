@@ -23,14 +23,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -151,32 +149,32 @@ public class SimulationConfigEditor {
 			return this.selectedItem;
 		}
 	}
-	
+
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfigEditor.class.getName());
 
 	private static final int HORIZONTAL_SIZE = 1024;
 
-	
+
 	// Data members.
 	private boolean hasError, isCrewEditorOpen = true;
 
 	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
 	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
-	
+
 	private InitialSettlementModel settlementTableModel;
 	private JTable settlementTable;
-	
+
 	private ArrivingSettlementModel arrivalTableModel;
 	private JTable arrivalTable;
-		
+
 	private JLabel errorLabel;
 	private JButton startButton;
 	private WebFrame<?> f;
 
 	private CrewEditor crewEditor;
-	
+
 	private GameMode mode;
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
@@ -220,34 +218,34 @@ public class SimulationConfigEditor {
 
 		// Setup weblaf's IconManager
 		MainWindow.initIconManager();
-				
+
 		f = new WebFrame();
-		
+
 		f.setIconImage(MainWindow.getIconImage());
-	
+
 		f.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				System.exit(0);
 			}
 		});
-		
+
 		f.setSize(HORIZONTAL_SIZE, 350);
 		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
-		
+
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		f.setContentPane(contentPanel);
 
 		JPanel topPanel = null;
-		
-		if (GameManager.mode == GameMode.COMMAND) {
+
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			topPanel = new JPanel(new GridLayout(2, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
-		
+
 		else {
 			mode = GameMode.SANDBOX;
 			topPanel = new JPanel(new GridLayout(1, 1));
@@ -263,48 +261,48 @@ public class SimulationConfigEditor {
 			gameModeLabel.setStyleId(StyleId.labelShadow);
 			gameModeLabel.setFont(DIALOG_16);
 			topPanel.add(gameModeLabel);
-			
+
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
 			topPanel.add(ccPanel);
-			
-			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
+
+			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
 					commanderName), JLabel.LEFT); //$NON-NLS-1$
 			commanderLabel.setFont(DIALOG_14);
 			commanderLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(commanderLabel);
-			
+
 			ccPanel.add(new JLabel());
-			
-			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
+
+			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
 			sponsorLabel.setFont(DIALOG_14);
 			sponsorLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(sponsorLabel);
-			
+
 		}
-		
+
 		else {
 			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(DIALOG_16);
 			gameModeLabel.setStyleId(StyleId.labelShadow);
 			topPanel.add(gameModeLabel);
 		}
-		
+
 		tabPanel = new JTabbedPane();
 		f.add(tabPanel, BorderLayout.CENTER);
-		
+
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
 		tabPanel.add("Initial Settlement", settlementScrollPane);
 		createSettlementTable(settlementScrollPane);
-		
+
 		// Second tab
 		JScrollPane arrivalScrolPane = new JScrollPane();
 		arrivalScrolPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
 		tabPanel.add("Arriving Settlements", arrivalScrolPane);
 		createArrivalTable(arrivalScrolPane);
-		
+
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
 		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
@@ -341,7 +339,7 @@ public class SimulationConfigEditor {
 		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
-		
+
 		// Monitor table models for errors
 		settlementTableModel.addTableModelListener(new TableModelListener() {
 			@Override
@@ -355,7 +353,7 @@ public class SimulationConfigEditor {
 				checkModelErrors();
 			}
 		});
-		
+
 		// Create the config control
 		configControl = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
 
@@ -371,24 +369,24 @@ public class SimulationConfigEditor {
 				return finalizeSettlementConfig(newName, newDescription);
 			}
 		};
-		
+
 		// Add an Export button
 		JButton exportButton = new JButton("Export"); //$NON-NLS-1$
 		exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {	
+			public void actionPerformed(ActionEvent evt) {
 				exportScenario();
 			}
 		});
 		configControl.getPane().add(exportButton);
 		JButton importButton = new JButton("Import"); //$NON-NLS-1$
 		importButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {	
+			public void actionPerformed(ActionEvent evt) {
 				importScenario();
 			}
 		});
 		configControl.getPane().add(importButton);
 		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
-		
+
 		// Create the bottom button panel.
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomButtonPanel.setBorder(BorderFactory.createTitledBorder("Simulation"));
@@ -401,7 +399,7 @@ public class SimulationConfigEditor {
 			noteLabel.setForeground(java.awt.Color.BLUE);
 			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
 		}
-		
+
 		// Create the start button.
 		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
@@ -416,11 +414,11 @@ public class SimulationConfigEditor {
 				if (!hasError) {
 
 					f.setVisible(false);
-					
-					// Recalculate the Scenario in case user has made unsaved changes 
+
+					// Recalculate the Scenario in case user has made unsaved changes
 					selectedScenario = finalizeSettlementConfig(configControl.getSelectItemName(),
 																configControl.getDescription());
-					
+
 					// Close simulation config editor
 					closeWindow();
 				}
@@ -428,7 +426,7 @@ public class SimulationConfigEditor {
 		});
 
 		bottomButtonPanel.add(startButton);
-		 
+
 		// Edit Authority button.
 		JButton authorityButton = new JButton("Authorities"); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
@@ -437,7 +435,7 @@ public class SimulationConfigEditor {
 				editAuthorities();
 			}
 		});
-		
+
 		// Edit Crew button.
 		JButton crewButton = new JButton("Crew"); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
@@ -455,19 +453,19 @@ public class SimulationConfigEditor {
 			public void itemStateChanged(ItemEvent e) {
             	 useCrew = (e.getStateChange() == ItemEvent.SELECTED);
         		 crewButton.setEnabled(useCrew);
-             }     
+             }
         });
 
 		bottomButtonPanel.add(cb);
 		//bottomButtonPanel.add(authorityButton);
 		//bottomButtonPanel.add(crewButton);
-		
+
 		configurationButtonInnerTopPanel.add(authorityButton);
 		configurationButtonInnerTopPanel.add(crewButton);
-		
+
 		// Force a load of the default Scenario
 		configControl.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
-		
+
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
@@ -482,8 +480,8 @@ public class SimulationConfigEditor {
 				f.dispose();
 			}
 		});
-		
-		JRootPane rootPane = SwingUtilities.getRootPane(startButton); 
+
+		JRootPane rootPane = SwingUtilities.getRootPane(startButton);
 		rootPane.setDefaultButton(startButton);
 	}
 
@@ -492,13 +490,13 @@ public class SimulationConfigEditor {
 	 */
 	private void exportScenario() {
 		Scenario sc = configControl.getSeletedItem();
-		
+
 		// Prompt user for saved file
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Specify location to save export");   
+		fileChooser.setDialogTitle("Specify location to save export");
 		fileChooser.setSelectedFile(new File(sc.getName().replace(' ', '_') + "-export.zip"));
 		int userSelection = fileChooser.showSaveDialog(f);
-		
+
 		// Did the user select
 		File fileToSave = null;
 		if (userSelection == JFileChooser.APPROVE_OPTION) {
@@ -507,7 +505,7 @@ public class SimulationConfigEditor {
 		else {
 			return;
 		}
-		
+
 		// Request the export to the specified location
 		String errorMessage = null;
 		List<String> exported = null;
@@ -517,11 +515,11 @@ public class SimulationConfigEditor {
 		} catch (IOException e) {
 			errorMessage = "Problem : " + e.getMessage();
 		}
-		
+
 		showScenarioConfirmation("Export", errorMessage, exported);
 
 	}
-	
+
 	private void showScenarioConfirmation(String direction, String errorMessage, List<String> exported) {
 		String outcome = errorMessage;
 		if (outcome == null) {
@@ -530,7 +528,7 @@ public class SimulationConfigEditor {
 			builder.append(exported.stream().collect(Collectors.joining(",\n")));
 			outcome = builder.toString();
 		}
-		
+
 		// Show dialog
 		JOptionPane.showMessageDialog(f,
 			    outcome,
@@ -541,9 +539,9 @@ public class SimulationConfigEditor {
 	private void importScenario() {
 		// Prompt user for saved file
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Select the scenario export to load");   
+		fileChooser.setDialogTitle("Select the scenario export to load");
 		int userSelection = fileChooser.showOpenDialog(f);
-		
+
 		// Did the user select
 		File fileToOpen = null;
 		if (userSelection == JFileChooser.APPROVE_OPTION) {
@@ -552,7 +550,7 @@ public class SimulationConfigEditor {
 		else {
 			return;
 		}
-		
+
 		String errorMessage = null;
 		List<String> imported = null;
 		// Request the export to the specified location
@@ -562,15 +560,15 @@ public class SimulationConfigEditor {
 		} catch (IOException e) {
 			errorMessage = "Problem : " + e.getMessage();
 		}
-		
+
 		showScenarioConfirmation("Import", errorMessage, imported);
 		configControl.reload();
 	}
-	
+
 	private void createSettlementTable(JScrollPane settlementScrollPane) {
 		// Create settlement table.
 		settlementTableModel = new InitialSettlementModel(settlementConfig, raFactory);
-		
+
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.getColumnModel().getColumn(InitialSettlementModel.SETTLEMENT_COL).setPreferredWidth(80);
@@ -590,17 +588,17 @@ public class SimulationConfigEditor {
 
 		// Create combo box for editing sponsor column in settlement table.
 		setSponsorEditor(settlementTable, InitialSettlementModel.SPONSOR_COL);
-		
+
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL);
 		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
 		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
-		
+
 		// Create combo box for editing template column in settlement table.
-		setTemplateEditor(settlementTable, InitialSettlementModel.PHASE_COL);		
-		
+		setTemplateEditor(settlementTable, InitialSettlementModel.PHASE_COL);
+
 		// Align content to center of cell
 		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
 		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
@@ -610,7 +608,7 @@ public class SimulationConfigEditor {
 			column.setCellRenderer(defaultTableCellRenderer);
 		}
 	}
-	
+
 	private void setTemplateEditor(JTable table, int column) {
 		TableColumn templateColumn = table.getColumnModel().getColumn(column);
 		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
@@ -623,7 +621,7 @@ public class SimulationConfigEditor {
 	private void createArrivalTable(JScrollPane parentScrollPane) {
 		// Create  table.
 		arrivalTableModel = new ArrivingSettlementModel(settlementConfig, raFactory);
-		
+
 		arrivalTable = new JTable(arrivalTableModel);
 		arrivalTable.setRowSelectionAllowed(true);
 		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.SPONSOR_COL).setPreferredWidth(80);
@@ -642,10 +640,10 @@ public class SimulationConfigEditor {
 
 		// Create combo box for editing sponsor column in settlement table.
 		setSponsorEditor(arrivalTable, ArrivingSettlementModel.SPONSOR_COL);
-		
+
 		// Create combo box for editing template column in settlement table.
 		setTemplateEditor(arrivalTable, ArrivingSettlementModel.TEMPLATE_COL);
-		
+
 		// Align content to center of cell
 		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
 		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
@@ -655,7 +653,7 @@ public class SimulationConfigEditor {
 			column.setCellRenderer(defaultTableCellRenderer);
 		}
 	}
-	
+
 	private void setSponsorEditor(JTable table, int column) {
 		TableColumn sponsorColumn = table.getColumnModel().getColumn(column);
 		WebComboBox sponsorCB = new WebComboBox();
@@ -671,7 +669,7 @@ public class SimulationConfigEditor {
 		if (errorMessage == null) {
 			errorMessage = arrivalTableModel.getErrorMessage();
 		}
-		
+
 		if (!hasError && (errorMessage != null)) {
 			hasError = true;
 			errorLabel.setText(errorMessage);
@@ -682,11 +680,11 @@ public class SimulationConfigEditor {
 			clearError();
 		}
 	}
-	
+
 	private boolean isSettlementSelected() {
 		return tabPanel.getSelectedIndex() == 0;
 	}
-	
+
 	/**
 	 * Adds a new settlement with default values.
 	 */
@@ -714,7 +712,7 @@ public class SimulationConfigEditor {
 		}
 		else {
 			int[] rows = arrivalTable.getSelectedRows();
-			arrivalTableModel.removeArrival(rows);			
+			arrivalTableModel.removeArrival(rows);
 		}
 	}
 
@@ -724,21 +722,21 @@ public class SimulationConfigEditor {
 	private void editAuthorities() {
 		if (authorityEditor == null) {
 			authorityEditor = new AuthorityEditor(this, raFactory);
-		} 
+		}
 		else {
 			authorityEditor.getJFrame().setVisible(true);
 		}
 	}
-	
+
 	/**
 	 * Edits team profile.
-	 * 
+	 *
 	 * @param crew
 	 */
 	private void editCrewProfile() {
 		if (crewEditor == null || !isCrewEditorOpen) {
 			crewEditor = new CrewEditor(this, crewConfig, raFactory, personConfig);
-		} 
+		}
 		else {
 			crewEditor.getJFrame().setVisible(true);
 		}
@@ -775,7 +773,7 @@ public class SimulationConfigEditor {
 		completed = true;
 		notifyAll();
 	}
-	
+
 	/**
 	 * Clears all edit-check errors.
 	 */
@@ -790,7 +788,7 @@ public class SimulationConfigEditor {
 
 	/**
 	 * Determines a new settlement's template.
-	 * 
+	 *
 	 * @return template name.
 	 */
 	private String determineNewSettlementTemplate() {
@@ -806,8 +804,8 @@ public class SimulationConfigEditor {
 		return result;
 	}
 
-	/** 
-	 * Get a new Location ofr a Settlement 
+	/**
+	 * Get a new Location ofr a Settlement
 	 * @return
 	 */
 	private Coordinates determineNewSettlementLocation() {
@@ -827,12 +825,12 @@ public class SimulationConfigEditor {
 //            	logger.config("Waiting for player.");
                 wait();
             } catch (InterruptedException e)  {
-                Thread.currentThread().interrupt(); 
+                Thread.currentThread().interrupt();
             }
         }
         logger.config("Close the Site Editor.");
 	}
-	
+
 	/**
 	 * Crew configuration if to be used. If returns null then no Crews
 	 * @return

@@ -22,12 +22,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.mars.sim.console.chat.service.Credentials;
 import org.mars.sim.console.chat.service.RemoteChatService;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.tool.RandomStringUtils;
 
 /**
  * MarsProjectHeadless is the main class for starting mars-sim in purely
@@ -37,12 +37,12 @@ public class MarsProjectHeadless {
 
 	private static final String REMOTE = "remote";
 	private static final String NOREMOTE = "noremote";
-	private static final String DISPLAYHELP = "help";                   			
+	private static final String DISPLAYHELP = "help";
 	private static final String RESETADMIN = "resetadmin";
-	
+
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProjectHeadless.class.getName());
-	
+
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
 	// Location of service files
@@ -52,21 +52,21 @@ public class MarsProjectHeadless {
 
 	/**
 	 * Constructor 1.
-	 * 
+	 *
 	 * @param args command line arguments.
 	 */
 	public MarsProjectHeadless(String[] args) {
 		logger.config("Starting " + Simulation.title);
 		logger.config("List of input args : " + Arrays.toString(args));
-		
+
 		// Initialize the simulation.
-		initializeSimulation(args);	
+		initializeSimulation(args);
 	}
 
-	
+
 	/**
 	 * Initialize the simulation.
-	 * 
+	 *
 	 * @param args the command arguments.
 	 * @return true if new simulation (not loaded)
 	 */
@@ -76,7 +76,7 @@ public class MarsProjectHeadless {
 		int serverPort = 18080;
 
 		SimulationBuilder builder = new SimulationBuilder();
-		
+
 		Options options = new  Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
@@ -93,14 +93,14 @@ public class MarsProjectHeadless {
 		options.addOptionGroup(remoteGrp);
 		options.addOption(Option.builder(RESETADMIN)
 				.desc("Reset the internal admin password").build());
-		
+
 		CommandLineParser commandline = new DefaultParser();
 		boolean resetAdmin = false;
 		try {
 			CommandLine line = commandline.parse(options, args);
-			
+
 			builder.parseCommandLine(line);
-			
+
 			if (line.hasOption(REMOTE)) {
 				startServer = true;
 				String portValue = line.getOptionValue(REMOTE);
@@ -111,7 +111,7 @@ public class MarsProjectHeadless {
 			if (line.hasOption(NOREMOTE)) {
 				startServer = false;
 			}
-			
+
 			if (line.hasOption(DISPLAYHELP)) {
 				usage("Available options", options);
 			}
@@ -127,7 +127,7 @@ public class MarsProjectHeadless {
 		try {
 			// Build and run the simulator
 			builder.start();
-			
+
 			if (startServer) {
 				startRemoteConsole(serverPort, resetAdmin);
 			}
@@ -151,7 +151,7 @@ public class MarsProjectHeadless {
 
 	/**
 	 * Exit the simulation with an error message.
-	 * 
+	 *
 	 * @param message the error message.
 	 * @param e       the thrown exception or null if none.
 	 */
@@ -168,8 +168,8 @@ public class MarsProjectHeadless {
 
 	/**
 	 * Start the simulation instance.
-	 * @param serverPort 
-	 * @param changePassword 
+	 * @param serverPort
+	 * @param changePassword
 	 */
 	private void startRemoteConsole(int serverPort, boolean changePassword) {
 		try {
@@ -178,7 +178,7 @@ public class MarsProjectHeadless {
 				logger.info("Build " + serviceDataDir);
 				serviceDataDir.mkdirs();
 			}
-			
+
 			// Load the credential file
 			File credFile = new File(serviceDataDir, CREDENTIALS_FILE);
 			Credentials credentials = null;
@@ -187,7 +187,7 @@ public class MarsProjectHeadless {
 				credentials  = Credentials.load(credFile);
 				if (changePassword) {
 					adminPassword = RandomStringUtils.random(8, true, true);
-					credentials.setPassword(Credentials.ADMIN, adminPassword);				
+					credentials.setPassword(Credentials.ADMIN, adminPassword);
 				}
 				else {
 					adminPassword = credentials.getPassword(Credentials.ADMIN);
@@ -200,7 +200,7 @@ public class MarsProjectHeadless {
 				credentials.addUser("normal", "test456");
 
 			}
-			
+
 			// This should be dropped eventually
 			logger.info("User " + Credentials.ADMIN + " has password " + adminPassword);
 
@@ -213,7 +213,7 @@ public class MarsProjectHeadless {
 		}
 	}
 
-	
+
 	/**
 	 * The starting method for the application
 	 *

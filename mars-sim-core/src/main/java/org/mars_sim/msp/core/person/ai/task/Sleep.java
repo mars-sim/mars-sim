@@ -103,7 +103,7 @@ public class Sleep extends Task implements Serializable {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, "Sleep adjusted for shift start @ " + alarmTime + " : " + maxSleep);
+				logger.info(person, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 		}
@@ -629,15 +629,15 @@ public class Sleep extends Task implements Serializable {
 			ShiftType shiftType = person.getTaskSchedule().getShiftType();
 			// Set to 30 millisols prior to the beginning of the duty shift hour
 			if (shiftType == ShiftType.A)
-				time = TaskSchedule.A_START - 30; // 220
+				time = TaskSchedule.A_START - 30.0; // 220
 			else if (shiftType == ShiftType.B)
-				time = TaskSchedule.B_START - 30; // 721;
+				time = TaskSchedule.B_START - 30.0; // 721;
 			else if (shiftType == ShiftType.X)
-				time = TaskSchedule.X_START - 30; // 970;
+				time = TaskSchedule.X_START - 30.0; // 970;
 			else if (shiftType == ShiftType.Y)
-				time = TaskSchedule.Y_START - 30; // 304;
+				time = TaskSchedule.Y_START - 30.0; // 304;
 			else if (shiftType == ShiftType.Z)
-				time = TaskSchedule.Z_START - 30; // 637;
+				time = TaskSchedule.Z_START - 30.0; // 637;
 			else if (shiftType == ShiftType.ON_CALL) {
 				// if a person is on a mission outside, assume the day begins with
 				// the sun rises at ~250 milisols at 0 longitude

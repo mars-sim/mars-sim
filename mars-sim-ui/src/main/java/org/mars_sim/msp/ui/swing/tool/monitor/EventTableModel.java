@@ -72,7 +72,7 @@ public class EventTableModel extends AbstractTableModel
 		columnNames[CAUSE] = Msg.getString("EventTableModel.column.cause"); //$NON-NLS-1$
 		columnTypes[CAUSE] = String.class;
 		columnNames[WHILE] = Msg.getString("EventTableModel.column.while"); //$NON-NLS-1$
-		columnTypes[WHILE] = String.class;	
+		columnTypes[WHILE] = String.class;
 		columnNames[WHO] = Msg.getString("EventTableModel.column.who"); //$NON-NLS-1$
 		columnTypes[WHO] = Object.class;
 		columnNames[LOCATION0] = Msg.getString("EventTableModel.column.location0"); //$NON-NLS-1$
@@ -97,7 +97,7 @@ public class EventTableModel extends AbstractTableModel
 	private boolean displayTransport = false;
 
 	private String header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
-	
+
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
 
@@ -107,10 +107,10 @@ public class EventTableModel extends AbstractTableModel
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
-	
+
 	/**
 	 * constructor. Create a new Event model based on the specified event manager.
-	 * 
+	 *
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
@@ -135,29 +135,27 @@ public class EventTableModel extends AbstractTableModel
 
 	private synchronized void updateCachedEvents() {
 		List<SimpleEvent> events = null;
-		
+
 		// Clean out existing cached events for the Event Table.
 //		cachedEvents = new ArrayList<HistoricalEvent>();
 		cachedEvents = new ArrayList<SimpleEvent>();
-		
-//		int size = manager.getEvents().size();
-		
-		if (GameManager.mode == GameMode.COMMAND) {
+
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			int id = unitManager.getCommanderSettlement().getIdentifier();
 			events = new ArrayList<SimpleEvent>(eventManager.getEvents(id));
 		}
 		else {
 			events = new ArrayList<SimpleEvent>(eventManager.getEvents());
 		}
-		
-		// TODO: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
-		
-		// Filter events based on category.
+
+		// NOTE: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
+//		int size = manager.getEvents().size();
+//		// Filter events based on category.
 //		for (int x = 0; x < size; x++) {
-////			HistoricalEvent event = manager.getEvent(x);
+//			HistoricalEvent event = manager.getEvent(x);
 //			SimpleEvent event = manager.getEvent(x);
-			
-		for (SimpleEvent event : events) {	
+
+		for (SimpleEvent event : events) {
 			HistoricalEventCategory category = HistoricalEventCategory.int2enum((int) (event.getCat()));
 			EventType eventType = EventType.int2enum((event.getType()));
 			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard) {
@@ -169,9 +167,9 @@ public class EventTableModel extends AbstractTableModel
 			}
 
 			else if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical
-					&& (eventType == EventType.MEDICAL_STARTS 
+					&& (eventType == EventType.MEDICAL_STARTS
 							//|| eventType == EventType.MEDICAL_CURED
-							|| eventType == EventType.MEDICAL_TREATED 
+							|| eventType == EventType.MEDICAL_TREATED
 							|| eventType == EventType.MEDICAL_DEATH)) {
 				cachedEvents.add(event);
 			}
@@ -182,7 +180,7 @@ public class EventTableModel extends AbstractTableModel
 							|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
 							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
-							|| eventType == EventType.MISSION_RENDEZVOUS 
+							|| eventType == EventType.MISSION_RENDEZVOUS
 							|| eventType == EventType.MISSION_RESCUE_PERSON
 							|| eventType == EventType.MISSION_SALVAGE_VEHICLE)) {
 				cachedEvents.add(event);
@@ -208,7 +206,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Return the number of columns
-	 * 
+	 *
 	 * @return column count.
 	 */
 	public int getColumnCount() {
@@ -217,7 +215,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Return the type of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -230,7 +228,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Return the name of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
@@ -243,7 +241,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Get the name of the model.
-	 * 
+	 *
 	 * @return model name.
 	 */
 	public String getName() {
@@ -252,7 +250,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Get the number of rows in the model.
-	 * 
+	 *
 	 * @return the number of Events.
 	 */
 	public int getRowCount() {
@@ -264,7 +262,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Get the unit at the specified row.
-	 * 
+	 *
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit associated with the Event as the specified position.
 	 */
@@ -278,13 +276,13 @@ public class EventTableModel extends AbstractTableModel
 //				result = ((Building) source).getBuildingManager().getSettlement();
 //		}
 //		return result;
-//		
+//
 		return null;
 	}
 
 	/**
 	 * Is this model already ordered according to some external criteria.
-	 * 
+	 *
 	 * @return TRUE as the events are time ordered.
 	 */
 	public boolean getOrdered() {
@@ -295,7 +293,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Return the value of a Cell
-	 * 
+	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
@@ -334,7 +332,7 @@ public class EventTableModel extends AbstractTableModel
 					result = eventManager.getWhileDoing(event.getWhileDoing());
 				}
 					break;
-					
+
 				case WHO: {
 					result = eventManager.getWho(event.getWho());
 				}
@@ -367,7 +365,7 @@ public class EventTableModel extends AbstractTableModel
 	public synchronized void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
 		eventAdded(index, he);
 	}
-	
+
 	/**
 	 * Adds a new event.
 	 * @param index
@@ -390,19 +388,19 @@ public class EventTableModel extends AbstractTableModel
 			String who = eventManager.getWho(event.getWho());
 			String location0 = eventManager.getLoc0(event.getLoc0());
 			String location1 = eventManager.getLoc1(event.getLoc1());
-			
+
 			HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
 			EventType eventType = EventType.int2enum(event.getType());
-			
+
 			if (category == HistoricalEventCategory.MALFUNCTION) {
 
 				during = during.toLowerCase();
-				
+
 				if (during.equals("n/a"))
 					during = "while ";
 				else
 					during = "while " + during;
-				
+
 				header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 				// Only display notification window when malfunction has occurred, not when
@@ -419,7 +417,7 @@ public class EventTableModel extends AbstractTableModel
 							+ " may have caused the malfunction due to software quality control issues " + during + ".";
 					willNotify = true;
 				}
-				
+
 				else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
 					message = who + " reported " + cause + " in " + location0 + " at " + location1 + ".";
 					willNotify = true;
@@ -430,7 +428,7 @@ public class EventTableModel extends AbstractTableModel
 						message = "No one witnessed " + cause + " in " + location0 + " at "
 								+ location1+ ".";
 					else
-						message = who + " got traumatized by " + cause + during 
+						message = who + " got traumatized by " + cause + during
 							+ " in " + location0 + " at " + location1+ ".";
 					willNotify = true;
 				}
@@ -448,7 +446,7 @@ public class EventTableModel extends AbstractTableModel
 				if (eventType == EventType.MEDICAL_STARTS) {
 
 					String phrase = "";
-					
+
 					if (cause.equalsIgnoreCase("starvation"))
 						phrase = " is starving";
 					else if (cause.equalsIgnoreCase("cold"))
@@ -473,9 +471,9 @@ public class EventTableModel extends AbstractTableModel
 						phrase = " had a pulled muscle";
 					else
 						phrase = " complained about the " + cause;//" is suffering from ";
-					
+
 					willNotify = true;
-					
+
 					if (!during.equals("sleeping"))
 						during = "falling asleep";
 					if (!location0.equals("outside on Mars"))
@@ -488,14 +486,14 @@ public class EventTableModel extends AbstractTableModel
 					if (!location0.equals("outside on Mars"))
 						location0 = " in " + location0;
 					message = who + " died from " + cause + location0 + " at " + location1;
-					
+
 				} else if (eventType == EventType.MEDICAL_TREATED) {
 
 					willNotify = true;
 					if (!location0.equals("outside on Mars"))
 						location0 = " in " + location0;
 					message = who + " was being treated for " + cause + location0 + " at " + location1;
-					
+
 //					} else if (eventType == EventType.MEDICAL_CURED) {
 //
 //						willNotify = true;
@@ -512,7 +510,7 @@ public class EventTableModel extends AbstractTableModel
 
 				// Only display notification window when malfunction has occurred, not when
 				// fixed.
-			
+
 				if (eventType == EventType.MISSION_RESCUE_PERSON
 						|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 						|| eventType == EventType.MISSION_RENDEZVOUS) {
@@ -525,36 +523,36 @@ public class EventTableModel extends AbstractTableModel
 						|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
 //							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 						|| eventType == EventType.MISSION_MEDICAL_EMERGENCY) {
-					message = who + " has " + Conversion.setFirstWordLowercase(cause) 
-						+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
+					message = who + " has " + Conversion.setFirstWordLowercase(cause)
+						+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;
 					willNotify = true;
 				}
 
 				type = 2;
-		
+
 			}
 
 			else if (category == HistoricalEventCategory.HAZARD) {
 
 				if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
-					
+
 					header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 
 					if (who.toLowerCase().equals("none"))
 						message = "There was a " + eventType.getName() + " in " + location0 + " at " + location1
 								+ ". Fortunately, no one was hurt.";
 					else
-						message = who + " was rattled by the " + eventType.getName() + " while " 
+						message = who + " was rattled by the " + eventType.getName() + " while "
 								+ Conversion.setFirstWordLowercase(during) + " in " + location0
 								+ " at " + location1;
 					willNotify = true;
 				}
 
 				else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
-					
+
 					header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$
 					willNotify = true;
-					message = who + " was exposed to " + cause.replace("Dose", "dose") 
+					message = who + " was exposed to " + cause.replace("Dose", "dose")
 							+ " radiation while " + during + " in "
 							+ location0 + " at " + location1;
 				}
@@ -569,11 +567,11 @@ public class EventTableModel extends AbstractTableModel
 					if (messageCache.size() > MSG_CACHE)
 						messageCache.remove(messageCache.size() - 1);
 				}
-				else 
+				else
 					willNotify = false;
 			}
-			
-		
+
+
 			// Use controlsfx's notification window for javaFX UI
 			if (willNotify);
 //					Platform.runLater(new NotifyFXLauncher(header, message, type));
@@ -637,7 +635,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if malfunction events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayMalfunction() {
@@ -646,7 +644,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if malfunction events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayMalfunction(boolean display) {
@@ -656,7 +654,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if medical events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayMedical() {
@@ -665,7 +663,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if medical events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayMedical(boolean display) {
@@ -675,7 +673,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if mission events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayMission() {
@@ -684,7 +682,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if mission events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayMission(boolean display) {
@@ -694,7 +692,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if task events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayTask() {
@@ -703,7 +701,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if task events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayTask(boolean display) {
@@ -713,7 +711,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if hazard events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayHazard() {
@@ -722,7 +720,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if hazard events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayHazard(boolean display) {
@@ -732,7 +730,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Checks if transport events are to be displayed.
-	 * 
+	 *
 	 * @return true if displayed
 	 */
 	public boolean getDisplayTransport() {
@@ -741,7 +739,7 @@ public class EventTableModel extends AbstractTableModel
 
 	/**
 	 * Sets if transport events are to be displayed.
-	 * 
+	 *
 	 * @param display true if displayed
 	 */
 	public void setDisplayTransport(boolean display) {

@@ -233,7 +233,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
 
-			if (GameManager.mode == GameMode.COMMAND) {
+			if (GameManager.getGameMode() == GameMode.COMMAND) {
 				Settlement s = unitManager.getCommanderSettlement();
 				addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
 			}

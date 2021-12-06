@@ -229,7 +229,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double COMPOUND_DEMAND = .01;
 	private static final double ELEMENT_DEMAND = .1;
 
-	private static final double ELECTRICAL_DEMAND = .999;
+	private static final double ELECTRICAL_DEMAND = .09;
 	private static final double INSTRUMENT_DEMAND = .999;
 	private static final double METALLIC_DEMAND = .999;
 	private static final double UTILITY_DEMAND = .999;
@@ -243,6 +243,7 @@ public class GoodsManager implements Serializable, Temporal {
 	public static final double SOIL_VALUE_MODIFIER = .5;
 	public static final double REGOLITH_VALUE_MODIFIER = .25D;
 	public static final double SAND_VALUE_MODIFIER = .5D;
+	public static final double CONCRETE_VALUE_MODIFIER = .5D;
 	public static final double ROCK_MODIFIER = 0.99D;
 	public static final double METEORITE_MODIFIER = 1.05;
 	public static final double SALT_VALUE_MODIFIER = .2;
@@ -810,8 +811,6 @@ public class GoodsManager implements Serializable, Temporal {
 
 		if (exceed)
 			return value * PERCENT_81;
-//		else
-//			return value * PERCENT_121;
 
 		return value;
 	}
@@ -994,35 +993,11 @@ public class GoodsManager implements Serializable, Temporal {
 				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 			}
 
-//			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * LIFE_SUPPORT_FACTOR;
-
 			return numPeople * amountNeededSol * trade_factor * LIFE_SUPPORT_FACTOR;
 
 		} else
 			return 0;
 	}
-
-//	/**
-//	 * Gets the fuel demand for an amount resource.
-//	 *
-//	 * @param resource the resource to check.
-//	 * @return demand (kg)
-//	 */
-//	private double getFuelDemand(int resource) {
-//		double demand = 0;
-//		if (resource == ResourceUtil.methaneID) {
-//			int numPeople = settlement.getNumCitizens();
-//			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
-//			while (i.hasNext()) {
-////				double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
-//				demand += numPeople * transportation_factor * VEHICLE_FUEL_FACTOR;
-//			}
-////			double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-////			return 10 * Math.log(1 + numPeople) * amountNeededOrbit * FUEL_FACTOR * trade_factor;
-//		}
-//
-//		return demand;
-//	}
 
 	private double capLifeSupportAmountDemand(int resource, double demand) {
 		if (resource == ResourceUtil.oxygenID || resource == ResourceUtil.waterID || resource == ResourceUtil.hydrogenID
@@ -1030,13 +1005,6 @@ public class GoodsManager implements Serializable, Temporal {
 			return Math.min(LIFE_SUPPORT_MIN, demand);
 		return demand;
 	}
-
-//	private double lowerLifeSupportSupply(int resource, double supply) {
-//		if (resource == ResourceUtil.oxygenID || resource == ResourceUtil.waterID || resource == ResourceUtil.hydrogenID
-//				|| resource == ResourceUtil.methaneID)
-//			return Math.log(1 + supply);// / LIFE_SUPPORT_FACTOR;
-//		return supply;
-//	}
 
 	/**
 	 * Gets a particular mineral demand
@@ -1047,6 +1015,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getMineralDemand(int resource) {
 		double demand = 1;
+
 		if (resource == ResourceUtil.rockSaltID) {
 			return demand * SALT_VALUE_MODIFIER;
 		}
@@ -1057,6 +1026,14 @@ public class GoodsManager implements Serializable, Temporal {
 
 		else if (resource == ResourceUtil.soilID) {
 			return demand * settlement.getCropsNeedingTending() * SAND_VALUE_MODIFIER;
+		}
+
+		else if (resource == ResourceUtil.concreteID) {
+			double regolithVP = 1 + goodsValues.get(ResourceUtil.regolithID);
+			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
+			// the demand for sand is dragged up or down by that of regolith
+			// loses 5% by default
+			return demand * (.75 * regolithVP + .2 * sandVP) / sandVP * CONCRETE_VALUE_MODIFIER;
 		}
 
 		else if (resource == ResourceUtil.sandID) {
@@ -1099,6 +1076,7 @@ public class GoodsManager implements Serializable, Temporal {
 				return demand * (.3 * regolithVP + .6 * vp) / vp;// * REGOLITH_VALUE_MODIFIER;
 			}
 
+			// Checks if this resource is a ROCK type
 			String type = ResourceUtil.findAmountResource(resource).getType();
 			if (type != null && type.equalsIgnoreCase(ROCK)) {
 				double vp = goodsValues.get(resource);
@@ -1133,10 +1111,6 @@ public class GoodsManager implements Serializable, Temporal {
 			return demand / 2D;
 		}
 
-//		if (resource == ResourceUtil.toxicWasteID) {
-//			return (oldDemand + demand) / 2D;
-//		}
-
 		if (resource == ResourceUtil.coID) {
 			return demand / 2D;
 		}
@@ -1153,10 +1127,6 @@ public class GoodsManager implements Serializable, Temporal {
 			return demand / 2D * USEFUL_WASTE_VALUE;
 		}
 
-//		if (resource == ResourceUtil.eWasteID) {
-//			return (oldDemand + demand) / 2D;
-//		}
-
 		if (resource == ResourceUtil.co2ID) {
 			return demand / 2D;
 		}
@@ -1172,15 +1142,6 @@ public class GoodsManager implements Serializable, Temporal {
 		return demand;
 	}
 
-//    private double computeWaste(AmountResource resource) {
-//    	if (wasteScore == 0) {
-//	        double amountNeededOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-//	        int numPeople = settlement.getAllAssociatedPeople().size();
-//	        wasteScore = numPeople * amountNeededOrbit * WASTE_FACTOR * trade_factor;
-//    	}
-//    	return wasteScore;
-//    }
-
 	/**
 	 * Gets the potable water usage demand for an amount resource.
 	 *
@@ -1193,11 +1154,8 @@ public class GoodsManager implements Serializable, Temporal {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
-//			double amountNeededOrbit = amountNeededSol;// * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-			int numPeople = settlement.getNumCitizens();// .getIndoorPeopleCount();
+			int numPeople = settlement.getNumCitizens();
 			demand = numPeople * amountNeededSol * waterValue * trade_factor * (1 + waterRationLevel);
-//			System.out.println("getPotableWaterUsageDemand: oldDemand:" + oldDemand);
-//			System.out.println("getPotableWaterUsageDemand: demand:" + demand);
 		}
 
 		return demand;
@@ -1216,9 +1174,6 @@ public class GoodsManager implements Serializable, Temporal {
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return Math.max(1, settlement.getNumCitizens()) * (.8 * water + .2 * ice) / ice
 					* ICE_VALUE_MODIFIER * settlement.getWaterRationLevel();
-//			System.out.println("water demand: " + Math.round(water*10.0)/10.0
-//								+ "  ice demand: " + Math.round(ice*10.0)/10.0
-//								+ "  ice new demand: " + Math.round(d*10.0)/10.0);
 		}
 
 		return 0;
@@ -1234,14 +1189,13 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 0;
 		if (resource == ResourceUtil.regolithID) {
 			double sand = 1 + goodsValues.get(ResourceUtil.sandID);
+			double concrete = 1 + goodsValues.get(ResourceUtil.concreteID);
+			double cement = 1 + goodsValues.get(ResourceUtil.cementID);
 			double regolith = 1 + goodsValues.get(resource);
-			// The sandVP influences regolithVP
-			demand = 1 + Math.min(48, settlement.getNumCitizens()) * (.8 * regolith + .2 * sand) / regolith
+			// Limit the minimum value of regolith projected demand
+			demand = 1 + Math.min(48, settlement.getNumCitizens()) *
+					(.1 * cement + .2 * concrete + .5 * regolith + .2 * sand) / regolith
 					* REGOLITH_VALUE_MODIFIER;
-//			System.out.println(settlement + "  sand vp: " + Math.round(sand*10.0)/10.0
-//					+ "  regolith vp: " + Math.round(regolith*10.0)/10.0
-//					+ "  regolith oldDemand: " + Math.round(oldDemand*10.0)/10.0
-//					+ "  regolith new demand: " + Math.round(d*10.0)/10.0);
 		}
 
 		return demand;
@@ -1256,7 +1210,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getToiletryUsageDemand(int resource) {
 		if (resource == ResourceUtil.toiletTissueID) {
 			double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
-//			double amountNeededOrbit = amountNeededSol * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getIndoorPeopleCount();
 			return numPeople * amountNeededSol;
 		}
@@ -1354,11 +1307,9 @@ public class GoodsManager implements Serializable, Temporal {
 			Ingredient it = ii.next();
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
-//			if (ar.getType() == null)
-//				System.out.println(ar.getName());
 			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
 				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
-//				System.out.println(tissueName);
+
 				if (it.getAmountResourceID() == resource) {
 					// Tune demand with various factors
 					demand += CROP_FACTOR * cropFarm_factor;
@@ -1376,11 +1327,9 @@ public class GoodsManager implements Serializable, Temporal {
 			Ingredient it = iii.next();
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
-//			if (ar.getType() == null)
-//				System.out.println(ar.getName());
 			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
 				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
-//				System.out.println(tissueName);
+
 				if (it.getAmountResourceID() == resource) {
 					// Tune demand with various factors
 					demand += CROP_FACTOR * cropFarm_factor;
@@ -1407,36 +1356,6 @@ public class GoodsManager implements Serializable, Temporal {
 		return null;
 	}
 
-//	/**
-//	 * Gets the crop demand
-//	 *
-//	 * @param resource
-//	 * @return
-//	 */
-//	private double getTissueCultureDemand(int resource, double oldDemand) {
-//		int numCropTypes = cropConfig.getNumCropTypes();
-//		double demand = 0;
-//		boolean isCrop = false;
-//		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {
-//			// Average use of tissue culture at greenhouse each orbit.
-//			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR;
-//		}
-//
-//		else {
-//			for (String s : cropConfig.getCropTypeNames()) {
-//				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-//					demand += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR / numCropTypes * CROP_FACTOR;
-//					break;
-//				}
-//			}
-//		}
-//
-//		if (isCrop)
-//			return (demand + oldDemand)/2;
-//
-//		return demand;
-//	}
-
 	public void setCropFarmFactor(double value) {
 		cropFarm_factor = value * CROPFARM_BASE;
 	}
@@ -1456,10 +1375,6 @@ public class GoodsManager implements Serializable, Temporal {
 	public void setTradeFactor(double value) {
 		trade_factor = value * TRADE_BASE;
 	}
-
-	// public void setFreeMarketFactor(double value) {
-	// freeMarket_factor = value * freeMarket_factor;
-	// }
 
 	public void setTourismFactor(double value) {
 		tourism_factor = value * TOURISM_BASE;
@@ -1484,10 +1399,6 @@ public class GoodsManager implements Serializable, Temporal {
 	public double getTradeFactor() {
 		return trade_factor;
 	}
-
-	// public double getFreeMarketFactor() {
-	// return freeMarket_factor;
-	// }
 
 	public double getTourismFactor() {
 		return tourism_factor;
@@ -1528,7 +1439,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Estimate fertilizer needed when grey water not available.
 			demand = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM + Crop.FERTILIZER_NEEDED_WATERING) * factor;
 		} else if (resource == ResourceUtil.greyWaterID) {
-			// TODO: how to properly get rid of grey water? it should NOT be considered an
+			// NOTE: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
 			// Average grey water consumption rate of crops per orbit using total growing
 			// area.
@@ -1542,33 +1453,35 @@ public class GoodsManager implements Serializable, Temporal {
 
 	public double flattenAmountDemand(Good good, double oldDemand) {
 		double demand = 0;
+		String name = good.getName();
+		String type = GoodsUtil.getGoodType(good);
 
-		if (good.getName().contains("polyester"))
+		if (name.contains("polyester"))
 			demand = CHEMICAL_DEMAND * .5;
 
-		else if (good.getName().contains("styrene"))
+		else if (name.contains("styrene"))
 			demand = CHEMICAL_DEMAND * .5;
 
-		else if (good.getName().contains("polyethylene"))
+		else if (name.contains("polyethylene"))
 			demand = CHEMICAL_DEMAND * .5;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase("regolith")
-				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("ore")
-				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("mineral")
-				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("rock")
+		else if (type.equalsIgnoreCase("regolith")
+				|| type.equalsIgnoreCase("ore")
+				|| type.equalsIgnoreCase("mineral")
+				|| type.equalsIgnoreCase("rock")
 				)
 			demand = REGOLITH_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CHEMICAL))
+		else if (type.equalsIgnoreCase(GoodsUtil.CHEMICAL))
 			demand = CHEMICAL_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELEMENT))
+		else if (type.equalsIgnoreCase(GoodsUtil.ELEMENT))
 			demand = ELEMENT_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.COMPOUND))
+		else if (type.equalsIgnoreCase(GoodsUtil.COMPOUND))
 			demand = COMPOUND_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase("waste"))
+		else if (type.equalsIgnoreCase("waste"))
 			demand = WASTE_VALUE;
 
 		if (demand == 0)
@@ -1579,66 +1492,71 @@ public class GoodsManager implements Serializable, Temporal {
 
 	public double flattenPartDemand(Good good, double oldDemand) {
 		double demand = 0;
+		String name = good.getName();
+		String type = GoodsUtil.getGoodType(good);
 
-		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELECTRICAL)) {
+		if (type.equalsIgnoreCase(GoodsUtil.ELECTRICAL)) {
 			demand = ELECTRICAL_DEMAND;
 
-			if (good.getName().contains("light"))
+			if (name.contains("light"))
 				demand *= ELECTRICAL_DEMAND;
 
-			else if (good.getName().contains("resistor"))
+			else if (name.contains("resistor"))
 				demand *= ELECTRICAL_DEMAND;
 
-			else if (good.getName().contains("capacitor"))
+			else if (name.contains("capacitor"))
 				demand *= ELECTRICAL_DEMAND;
 
-			else if (good.getName().contains("diode"))
+			else if (name.contains("diode"))
 				demand *= ELECTRICAL_DEMAND;
 
 		}
 
-//		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
+//		else if (type.equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
 //			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
+		else if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			demand = INSTRUMENT_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.METALLIC)) {
+		else if (type.equalsIgnoreCase(GoodsUtil.METALLIC)) {
 			demand = METALLIC_DEMAND;
 
-			if (good.getName().contains("electrical wire"))
+			if (name.contains("electrical wire"))
 				demand *= ELECTRICAL_DEMAND;
 
-			else if (good.getName().contains("wire connector"))
+			else if (name.contains("wire connector"))
 				demand *= ELECTRICAL_DEMAND;
 		}
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.UTILITY)) {
+		else if (type.equalsIgnoreCase(GoodsUtil.UTILITY)) {
 			demand = UTILITY_DEMAND;
 
-			if (good.getName().contains("valve"))
+			if (name.contains("valve"))
+				demand *= .05;
+
+			else if (name.contains("pipe"))
+				demand *= .05;
+
+			else if (name.contains("tank"))
 				demand *= .1;
 
-			else if (good.getName().contains("pipe"))
+			else if (name.contains("bottle"))
+				demand *= .05;
+
+			else if (name.contains("duct"))
 				demand *= .1;
 
-			else if (good.getName().contains("tank"))
-				demand *= .1;
-
-			else if (good.getName().contains("bottle"))
-				demand *= .1;
-
-			else if (good.getName().contains("duct"))
+			else if (name.contains("gasket"))
 				demand *= .1;
 		}
 
-//		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
+//		else if (type.equalsIgnoreCase(GoodsUtil.KITCHEN))
 //			demand = KITCHEN_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
+		else if (type.equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
 			demand = CONSTRUCTION_DEMAND;
 
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.RAW))
+		else if (type.equalsIgnoreCase(GoodsUtil.RAW))
 			demand = INSTRUMENT_DEMAND;
 
 		if (demand == 0)
@@ -1656,55 +1574,56 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double flattenRawPartDemand(Part part, double oldDemand) {
 		double demand = 0;
+		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 
-		if (part.getName().contains(SCRAP))
+		if (name.contains(SCRAP))
 			demand = SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
-		else if (part.getName().contains(INGOT))
+		else if (name.contains(INGOT))
 			demand = INGOT_METAL_DEMAND;
 
-		else if (part.getName().contains(SHEET))
+		else if (name.contains(SHEET))
 			demand = SHEET_METAL_DEMAND;
 
-		else if (part.getName().equalsIgnoreCase(TRUSS))
+		else if (name.equalsIgnoreCase(TRUSS))
 			demand = SHEET_METAL_DEMAND;
 
-//		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
+//		if (name.equalsIgnoreCase(STEEL_WIRE))
 //			demand = STEEL_WIRE_DEMAND;
 //
-//		if (part.getName().equalsIgnoreCase(AL_WIRE))
+//		if (name.equalsIgnoreCase(AL_WIRE))
 //			demand = AL_WIRE_DEMAND;
 //
-//		else if (part.getName().contains("wire"))
+//		else if (name.contains("wire"))
 //			demand = WIRE_DEMAND;
 //
-//		else if (part.getName().contains("pipe"))
+//		else if (name.contains("pipe"))
 //			demand = PIPE_DEMAND;
 //
-//		else if (part.getName().contains("valve"))
+//		else if (name.contains("valve"))
 //			demand = PIPE_DEMAND;
 //
-//		if (part.getName().equalsIgnoreCase(STEEL_CAN))
+//		if (name.equalsIgnoreCase(STEEL_CAN))
 //			demand = STEEL_CAN_DEMAND;
 
-		else if (part.getName().contains(STEEL))
+		else if (name.contains(STEEL))
 			demand = STEEL_DEMAND;
 
-		else if (part.getName().equalsIgnoreCase(BOTTLE))
+		else if (name.equalsIgnoreCase(BOTTLE))
 			demand = BOTTLE_DEMAND;
 
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+		else if (name.equalsIgnoreCase(FIBERGLASS_CLOTH))
 			demand = FIBERGLASS_DEMAND;
 
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
+		else if (name.equalsIgnoreCase(FIBERGLASS))
 			demand = FIBERGLASS_DEMAND;
 
-		else if (part.getName().equalsIgnoreCase(BRICK))
+		else if (name.equalsIgnoreCase(BRICK))
 			demand = BRICK_DEMAND;
 
 		if (demand == 0)

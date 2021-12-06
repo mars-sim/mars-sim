@@ -432,7 +432,7 @@ extends TabPanel {
 		if (!uiDone)
 			this.initializeUI();
 		
-		List<Building> buildings = manager.getBuildingsWithLifeSupport();//getBuildings(BuildingFunction.LIFE_SUPPORT);
+		List<Building> buildings = manager.getBuildingsWithLifeSupport();
 		int numBuildings = buildings.size();
 
 		if (numBuildings != numBuildingsCache) {

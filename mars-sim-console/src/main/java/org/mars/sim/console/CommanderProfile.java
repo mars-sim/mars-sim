@@ -307,7 +307,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-       			.withDefaultValue(5)
+       			.withDefaultValue(2)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -318,7 +318,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-        		.withDefaultValue(6)
+        		.withDefaultValue(7)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -329,7 +329,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-        		.withDefaultValue(5)
+        		.withDefaultValue(28)
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -345,7 +345,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
        	List<String> newList = new ArrayList<>();
 
         for (int i=0; i< list.size(); i++) {
-        	newList.add(String.format("%2d %s", i, list.get(i)));
+        	newList.add(String.format("(%2d). %s", (i+1), list.get(i)));
         }
 
         return newList;
@@ -365,7 +365,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	int column = 0;
 
         	String c = "";
-        	int num = 0;
 
         	// Find out what column
         	if ((i - 1) % 3 == 0)
@@ -376,12 +375,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	// Look at how many whitespaces needed before printing each column
 			if (column == 0) {
 				c = list.get(i);
-				num = SPACES - c.length();
 			}
 
 			else if (column == 1 || column == 2) {
 	        	c = list.get(i);
-	        	num = SPACES - list.get(i-1).length();
+	        	int num = SPACES - list.get(i-1).length();
 
 	        	// Handle the extra space before the parenthesis
 	            for (int j=0; j < num; j++) {
@@ -399,11 +397,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             // if this is the last column
             if (column == 2 || i == list.size()-1) {
                 newList.add(s.toString());
-                //++;
                 s = new StringBuilder();
             }
-
-            logger.fine("num: " + num);
         }
 
         return newList;
@@ -454,6 +449,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		}
     }
 
+    public static void cancelLoadingProfile() {
+    	// Question: should the commander instance be set to null ?
+    	commander = null;
+    }
 
     private static Commander loadProperties(Properties p, Commander cc) {
         cc.setLastName(p.getProperty("commander.lastname"));

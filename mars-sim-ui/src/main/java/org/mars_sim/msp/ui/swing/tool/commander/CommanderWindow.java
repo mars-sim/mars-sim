@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -72,11 +71,11 @@ public class CommanderWindow extends ToolWindow {
 	/** Tool name. */
 	public static final int LIST_WIDTH = 300;
 	public static final int COMBOBOX_WIDTH = 200;
-	
+
 	public static final String NAME = "Commander Dashboard";
-	
+
 	public static final String LEADERSHIP_TAB = "Leadership";
-	
+
 	public static final String AGRICULTURE_TAB = "Agriculture";
 	public static final String ENGINEERING_TAB = "Engineering";
 	public static final String LOGISTIC_TAB = "Logistic";
@@ -90,23 +89,23 @@ public class CommanderWindow extends ToolWindow {
 	public static final String ACCEPT = "Accept Trading initiated by other settlements";
 	public static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	public static final String SEE_RIGHT = ".    -->";
-	
+
 	// Private members
-	
+
 	private String deletingTaskType;
 
 //	private Map<Person, List<String>> orders = new HashMap<>();
-	
+
 	private final Font SERIF = new Font("Serif", Font.PLAIN, 10);
 	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
-	
+
 //	private DefaultComboBoxModel<String> taskComboBoxModel;
-	
+
 	private JTabbedPane tabPane;
-	
+
 	private JComboBoxMW<String> taskComboBox;
 	private JComboBoxMW<Person> personComboBox;
-	
+
 	private ListModel listModel;
 	private JScrollPane listScrollPanel;
 	private JList<String> list;
@@ -117,30 +116,30 @@ public class CommanderWindow extends ToolWindow {
 	private WebPanel mainPane;
 	private WebPanel policyMainPanel;
 	private WebPanel innerPanel;
-	
+
 	private WebScrollPane WebScrollPane;
-	
+
 	private JRadioButton r0;
 	private JRadioButton r1;
 	private JRadioButton r2;
 	private JRadioButton r3;
-	private JRadioButton r4;		
-	
+	private JRadioButton r4;
+
 	private WebCheckBoxList<?> settlementMissionList;
-	
+
 //	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 
 	private Person cc;
 //	private Person selectedPerson;
-	
+
 	private Settlement settlement;
-	
+
 	private List<String> taskCache;
 
 	/** The MarsClock instance. */
 	private static MarsClock marsClock;
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
@@ -150,10 +149,10 @@ public class CommanderWindow extends ToolWindow {
 		super(NAME, desktop);
 
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		
+
 		cc = GameManager.commanderPerson;
 		settlement = cc.getAssociatedSettlement();
-		
+
 		// Create content panel.
 		mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -167,41 +166,41 @@ public class CommanderWindow extends ToolWindow {
 		WebPanel bottomPane = new WebPanel(new GridLayout(1, 4));
 		bottomPane.setPreferredSize(new Dimension(-1, 50));
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
-		
+
 //		JPanel leadershipPane = new JPanel(new BorderLayout());
 //		leadershipPane.setPreferredSize(new Dimension(200, 50));
 //		bottomPane.add(leadershipPane);
-		
+
 //		JLabel leadershipLabel = new JLabel("Leadership Points : ", JLabel.RIGHT);
 //		bottomPane.add(leadershipLabel);
-		
+
 //		leadershipPointsLabel = new JLabel("", JLabel.LEFT);
 //		bottomPane.add(leadershipPointsLabel);
 //		bottomPane.add(new JLabel());
 //		bottomPane.add(new JLabel());
-//		
+//
 //		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
-		
+
 		// Create the info tab panel.
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
-		
+
 		createAgriculturePanel();
-		
+
 		createEngineeringPanel();
-		
+
 		createLeadershipPanel();
-		
+
 		createLogisticPanel();
-			
+
 		createMissionPanel();
-		
+
 		createResourcePanel();
 
 		createSafetyPanel();
-		
+
 		createSciencePanel();
-		
+
 		setSize(new Dimension(640, 640));
 		setMaximizable(true);
 		setResizable(false);
@@ -220,30 +219,30 @@ public class CommanderWindow extends ToolWindow {
 	public void createLeadershipPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(LEADERSHIP_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		panel.add(topPanel, BorderLayout.NORTH);	
+		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
+
 	public void createAgriculturePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(AGRICULTURE_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		panel.add(topPanel, BorderLayout.NORTH);	
+		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
+
 	public void createEngineeringPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(ENGINEERING_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		panel.add(topPanel, BorderLayout.NORTH);	
+		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
+
 	/**
 	 * Creates the person combo box
-	 * 
+	 *
 	 * @param panel
 	 */
 	public void createPersonCombobox(JPanel panel) {
@@ -258,7 +257,7 @@ public class CommanderWindow extends ToolWindow {
 			Person n = i.next();
 	    	comboBoxModel.addElement(n);
 		}
-		
+
 		// Create comboBox.
 		personComboBox = new JComboBoxMW<Person>(comboBoxModel);
 		personComboBox.addActionListener(new ActionListener() {
@@ -268,24 +267,24 @@ public class CommanderWindow extends ToolWindow {
         });
 		personComboBox.setMaximumRowCount(8);
 		personComboBox.setSelectedItem(cc);
-		
+
 		JPanel comboBoxPanel = new JPanel(new BorderLayout());
 		comboBoxPanel.add(personComboBox);//, BorderLayout.CENTER);
-		
+
 		JPanel crewPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 //		crewPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
 		crewPanel.add(comboBoxPanel);
-		
+
 		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
 		crewPanel.setToolTipText("Choose the crew member to give a task order");
 		personComboBox.setToolTipText("Choose the crew member to give a task order");
-		
+
 	    panel.add(crewPanel, BorderLayout.NORTH);
 	}
-	
+
 	/**
 	 * Creates the task combo box
-	 * 
+	 *
 	 * @param panel
 	 */
 	public void createTaskCombobox(JPanel panel) {
@@ -300,7 +299,7 @@ public class CommanderWindow extends ToolWindow {
 			String n = i.next();
 	    	taskComboBoxModel.addElement(n);
 		}
-		
+
 		// Create comboBox.
 		taskComboBox = new JComboBoxMW<String>(taskComboBoxModel);
 		taskComboBox.addActionListener(new ActionListener() {
@@ -310,23 +309,23 @@ public class CommanderWindow extends ToolWindow {
         });
 		taskComboBox.setMaximumRowCount(10);
 //		comboBox.setSelectedIndex(-1);
-		
+
 		JPanel comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 //		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
 		comboBoxPanel.add(taskComboBox);//, BorderLayout.CENTER);
-		
+
 		JPanel taskPanel = new JPanel(new BorderLayout());
 //		taskPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
 		taskPanel.add(comboBoxPanel, BorderLayout.CENTER);
-				
+
 		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
 		taskPanel.setToolTipText("Choose a task order to give");
 		taskComboBox.setToolTipText("Choose a task order to give");
-		
+
 		// Create a button panel
 	    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    taskPanel.add(buttonPanel, BorderLayout.SOUTH);
-		
+
 		// Create the add button
 	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 25));
@@ -336,15 +335,15 @@ public class CommanderWindow extends ToolWindow {
 				Person selected = (Person) personComboBox.getSelectedItem();
 				String taskName = (String) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addAPendingTask(taskName);
-				
-				logBookTA.append(marsClock.getTrucatedDateTimeStamp() 
+
+				logBookTA.append(marsClock.getTrucatedDateTimeStamp()
 						+ " - Assigning '" + taskName + "' to " + selected + "\n");
 		        listUpdate();
 				repaint();
 			}
 		});
 		buttonPanel.add(addButton);//, BorderLayout.WEST);
-			
+
 		// Create the delete button
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 25));
@@ -362,10 +361,10 @@ public class CommanderWindow extends ToolWindow {
 
 	    panel.add(taskPanel, BorderLayout.CENTER);
 	}
-	
+
 	/**
 	 * Creates the task queue list
-	 * 
+	 *
 	 * @param panel
 	 */
 	public void createTaskQueueList(JPanel panel) {
@@ -374,24 +373,24 @@ public class CommanderWindow extends ToolWindow {
 		label.setUI(new VerticalLabelUI(false));
 	    label.setFont(DIALOG);
 		label.setBorder(new MarsPanelBorder());
-		
+
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
 	    taskQueuePanel.add(label, BorderLayout.NORTH);
-		
+
 	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		queueListPanel.add(taskQueuePanel);
-		
+
 		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
-	    
+
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 //		listScrollPanel.setBorder(new MarsPanelBorder());
-		
+
 		// Create list model
 		listModel = new ListModel();
-		
+
 		// Create list
 		list = new JList<String>(listModel);
 		listScrollPanel.setViewportView(list);
@@ -402,49 +401,49 @@ public class CommanderWindow extends ToolWindow {
 		        }
 		    }
 		});
-		
+
 		queueListPanel.add(listScrollPanel);
 	}
-	
-	
+
+
 	/**
 	 * Creates the log book panel for recording task orders
-	 * 
+	 *
 	 * @param panel
 	 */
 	public void createLogBookPanel(JPanel panel) {
-		
+
 //		Border title = BorderFactory.createTitledBorder("Log Book");
 		WebLabel logLabel = new WebLabel("          Log Book          ");
 		logLabel.setUI(new VerticalLabelUI(false));
 		logLabel.setFont(DIALOG);
 		logLabel.setBorder(new MarsPanelBorder());
-		
+
 	    JPanel logPanel = new JPanel(new BorderLayout());
 	    logPanel.add(logLabel, BorderLayout.NORTH);
-		
+
 		// Create an text area
 		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    textPanel.add(logPanel);
-	    
+
 	    panel.add(textPanel, BorderLayout.CENTER);
-		
+
 		logBookTA = new JTextArea(14, 35);
 		logBookTA.setEditable(false);
-		JScrollPane scrollTextArea = new JScrollPane (logBookTA, 
-				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+		JScrollPane scrollTextArea = new JScrollPane (logBookTA,
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 //		scrollTextArea.setSize(new Dimension(100, 100));
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
-			
+
 //		logBookTA.setPreferredSize(new Dimension(LIST_WIDTH, 120));
 //		logBookTA.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-		
+
 		textPanel.add(scrollTextArea);
 	}
-	
-	
+
+
 	/**
 	 * Creates the logistic panel for operation of tasks
 	 */
@@ -452,60 +451,60 @@ public class CommanderWindow extends ToolWindow {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		tabPane.add(LOGISTIC_TAB, mainPanel);
 		tabPane.setSelectedComponent(mainPanel);
-		
+
 	    JPanel centerPanel = new JPanel(new BorderLayout());
 	    mainPanel.add(centerPanel, BorderLayout.CENTER);
 	    mainPanel.add(new JLabel("  "), BorderLayout.WEST);
-	    mainPanel.add(new JLabel("  "), BorderLayout.EAST);	    
-	    
+	    mainPanel.add(new JLabel("  "), BorderLayout.EAST);
+
 		JPanel topPanel = new JPanel(new BorderLayout());
 		centerPanel.add(topPanel, BorderLayout.NORTH);
-		
+
 		JPanel topBorderPanel = new JPanel(new BorderLayout());
 		topPanel.add(topBorderPanel, BorderLayout.NORTH);
 
 		JPanel midPanel = new JPanel(new BorderLayout());
 		centerPanel.add(midPanel, BorderLayout.CENTER);
-		
+
 		JPanel southPanel = new JPanel(new BorderLayout());
 		centerPanel.add(southPanel, BorderLayout.SOUTH);
-	    		
+
 		// Create the person combo box
 		createPersonCombobox(topBorderPanel);
-		
+
 		// Create the task combo box
 		createTaskCombobox(topBorderPanel);
 
-		// Create the task queue list 
+		// Create the task queue list
 		createTaskQueueList(midPanel);
-		
+
 		// Create the log book panel
 		createLogBookPanel(southPanel);
 	}
-	
+
 	/**
 	 * Creates the mission tab panel
 	 */
 	public void createMissionPanel() {
 		WebPanel panel = new WebPanel(new BorderLayout());
 		tabPane.add(MISSION_TAB, panel);
-	     
+
 		policyMainPanel = new WebPanel(new BorderLayout());
 		panel.add(policyMainPanel, BorderLayout.NORTH);
 		policyMainPanel.setPreferredSize(new Dimension(200, 125));
 		policyMainPanel.setMaximumSize(new Dimension(200, 125));
-		
+
 		// Create a button panel
 		WebPanel buttonPanel = new WebPanel(new GridLayout(4,1));
 //		buttonPanel.setPreferredSize(new Dimension(250, 120));
 		policyMainPanel.add(buttonPanel, BorderLayout.CENTER);
-		
+
 		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trading policy "));
 		buttonPanel.setToolTipText("Select your trading policy with other settlements");
-		
+
 		ButtonGroup group0 = new ButtonGroup();
 		ButtonGroup group1 = new ButtonGroup();
-	
+
 		r0 = new JRadioButton(CAN_INITIATE, true);
 		r1 = new JRadioButton(CANNOT_INITIATE);
 
@@ -533,14 +532,14 @@ public class CommanderWindow extends ToolWindow {
 //		}
 		r2 = new JRadioButton(ACCEPT_NO, noTrading);
 		r3 = new JRadioButton(ACCEPT, !noTrading);
-		
+
 		WebLabel selectLabel = new WebLabel(" Choose :");
 		selectLabel.setMinimumSize(new Dimension(150, 25));
 		selectLabel.setPreferredSize(150, 25);
-		
+
 		innerPanel = new WebPanel(new BorderLayout());
 		innerPanel.add(selectLabel, BorderLayout.NORTH);
-		
+
 		// Set settlement check boxes
 		settlementMissionList = new WebCheckBoxList<>(StyleId.checkboxlist, createModel(getOtherSettlements()));
 		settlementMissionList.addListDataListener(new ListDataAdapter() {
@@ -553,16 +552,16 @@ public class CommanderWindow extends ToolWindow {
                 settlement.setAllowTradeMissionFromASettlement(s, selected);
 		    }
 		} );
-		
+
 		settlementMissionList.setVisibleRowCount(3);
 		innerPanel.add(settlementMissionList, BorderLayout.CENTER);
-		
+
 		WebScrollPane = new WebScrollPane(innerPanel);
 		WebScrollPane.setMaximumWidth(250);
 
 //		mainPanel.add(WebScrollPane, BorderLayout.EAST);
-		
-		if (noTrading) {			
+
+		if (noTrading) {
 			r2.setSelected(true);
 			r3.setSelected(false);
 			policyMainPanel.remove(WebScrollPane);
@@ -577,18 +576,18 @@ public class CommanderWindow extends ToolWindow {
 			policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
 //			settlementMissionList.setEnabled(true);
 		}
-		
+
 		group0.add(r0);
 		group0.add(r1);
-		
+
 		group1.add(r2);
 		group1.add(r3);
-		
+
 		buttonPanel.add(r0);
 		buttonPanel.add(r1);
 		buttonPanel.add(r2);
 		buttonPanel.add(r3);
-		
+
 		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
 		r0.addActionListener(actionListener);
 		r1.addActionListener(actionListener);
@@ -601,7 +600,7 @@ public class CommanderWindow extends ToolWindow {
 	    @Override
 	    public void actionPerformed(ActionEvent event) {
 	        JRadioButton button = (JRadioButton) event.getSource();
-	 
+
 	        if (button == r0) {
 	        	settlement.setMissionDisable(MissionType.TRADE, false);
 	        } else if (button == r1) {
@@ -625,23 +624,23 @@ public class CommanderWindow extends ToolWindow {
 	        }
 	    }
 	}
-	
+
 	public void createResourcePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(RESOURCE_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
 		panel.add(topPanel, BorderLayout.NORTH);
 
 		// Create a button panel
 		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
 		topPanel.add(buttonPanel);
-		
+
 		buttonPanel.setBorder(BorderFactory.createTitledBorder(" Pausing Interval"));
 		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");
-		
+
 		ButtonGroup group = new ButtonGroup();
-	
+
 		r0 = new JRadioButton("None", true);
 		r1 = new JRadioButton("250 millisols");
 		r2 = new JRadioButton("333 millisols");
@@ -653,57 +652,57 @@ public class CommanderWindow extends ToolWindow {
 		group.add(r2);
 		group.add(r3);
 		group.add(r4);
-		
+
 		buttonPanel.add(r0);
 		buttonPanel.add(r1);
 		buttonPanel.add(r2);
 		buttonPanel.add(r3);
 		buttonPanel.add(r4);
-		
+
 		RadioButtonActionListener actionListener = new RadioButtonActionListener();
 		r0.addActionListener(actionListener);
 		r1.addActionListener(actionListener);
 		r2.addActionListener(actionListener);
 		r3.addActionListener(actionListener);
 		r4.addActionListener(actionListener);
-	    
+
 	}
 
 	class RadioButtonActionListener implements ActionListener {
 	    @Override
 	    public void actionPerformed(ActionEvent event) {
 	        JRadioButton button = (JRadioButton) event.getSource();
-	 
+
 	        if (button == r0) {
 	        	masterClock.setCommandPause(false, 1000);
 	        } else if (button == r1) {
-	        	masterClock.setCommandPause(true, 250);	 
+	        	masterClock.setCommandPause(true, 250);
 	        } else if (button == r2) {
-	        	masterClock.setCommandPause(true, 333.333);	
+	        	masterClock.setCommandPause(true, 333.333);
 	        } else if (button == r3) {
-	        	masterClock.setCommandPause(true, 500);       	 
+	        	masterClock.setCommandPause(true, 500);
 	        } else if (button == r4) {
-	        	masterClock.setCommandPause(true, 999.999);	
+	        	masterClock.setCommandPause(true, 999.999);
 	        }
 	    }
 	}
-    
+
 	public void createSafetyPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(SAFETY_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		panel.add(topPanel, BorderLayout.NORTH);	
+		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
+
 	public void createSciencePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(SCIENCE_TAB, panel);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		panel.add(topPanel, BorderLayout.NORTH);	
+		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
+
 
     /**
      * Returns sample check box list model.
@@ -731,11 +730,11 @@ public class CommanderWindow extends ToolWindow {
         return list;
 //        return new ArrayList<Settlement>(unitManager.getSettlements()).remove(settlement);
     }
-    
+
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
-	
+
 	/**
 	 * Picks a task and delete it
 	 */
@@ -745,11 +744,11 @@ public class CommanderWindow extends ToolWindow {
 			deletingTaskType = n;
 			((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
 			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
-		} 
+		}
 		else
 			listUpdate();
 	}
-	
+
 	public void listUpdate() {
 		listModel.update();
  		list.validate();
@@ -761,17 +760,17 @@ public class CommanderWindow extends ToolWindow {
 //		comboBox.setRenderer(new PromptComboBoxRenderer("A list of tasks"));
 //		comboBox.setSelectedIndex(-1);
 	}
-	
+
 	public boolean isNavPointsMapTabOpen() {
         return tabPane.getSelectedIndex() == 1;
 	}
-	
+
 	public void update() {
 //		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
-		
+
 		// Update list
 		listUpdate();
-		
+
 //		// Update the settlement that are being checked
 //		if (changed) { //r3.isSelected()) {
 //			List<?> allowedSettlements =  settlementMissionList.getCheckedValues();
@@ -784,7 +783,7 @@ public class CommanderWindow extends ToolWindow {
 //			changed = false;
 //		}
 	}
-	
+
 	public void disableAllCheckedSettlement() {
 		List<?> allowedSettlements = settlementMissionList.getCheckedValues();
 		int size = allowedSettlements.size();
@@ -795,10 +794,10 @@ public class CommanderWindow extends ToolWindow {
 //				System.out.println("i : " + i + "  " + s);
 				settlementMissionList.setCheckBoxSelected(i, false);
 				settlement.setAllowTradeMissionFromASettlement(s, false);
-			}	
+			}
 		}
 	}
-	
+
 	/**
 	 * List model for the tasks in queue.
 	 */
@@ -811,7 +810,7 @@ public class CommanderWindow extends ToolWindow {
 
 	    private ListModel() {
 	    	Person selected = (Person) personComboBox.getSelectedItem();
-	    	
+
 	    	if (selected != null) {
 	        	List<String> tasks = selected.getMind().getTaskManager().getPendingTasks();
 		        if (tasks != null)
@@ -843,23 +842,23 @@ public class CommanderWindow extends ToolWindow {
         public void update() {
 
         	List<String> newTasks = ((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
-        	
+
         	if (newTasks != null) {
 	    		// if the list contains duplicate items, it somehow pass this test
 	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {
 	                List<String> oldList = list;
 	                List<String> tempList = new ArrayList<String>(newTasks);
 	                //Collections.sort(tempList);
-	
+
 	                list = tempList;
 	                fireContentsChanged(this, 0, getSize());
-	
+
 	                oldList.clear();
 	    		}
         	}
         }
 	}
-	
+
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -903,7 +902,7 @@ public class CommanderWindow extends ToolWindow {
 	        return c;
 		}
 	}
-	
+
 	/**
 	 * Prepares tool window for deletion.
 	 */

@@ -42,7 +42,7 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param amountResourceDoc the amount resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
@@ -52,46 +52,46 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Loads amount resources from the resources.xml config document.
-	 * 
+	 *
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
 	private static void loadAmountResources(Document amountResourceDoc) {
-		if (resourceSet == null || resourceSet.isEmpty()) {
+		if (resourceSet.isEmpty()) {
 			Element root = amountResourceDoc.getRootElement();
 			List<Element> resourceNodes = root.getChildren(RESOURCE);
 			for (Element resourceElement : resourceNodes) {
 				nextID++;
 				String name = resourceElement.getAttributeValue(NAME).toLowerCase();
-	
+
 				String type = resourceElement.getAttributeValue(TYPE);
-	
+
 				String description = resourceElement.getText();
 				// Get phase.
 				String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
-	
+
 				// PhaseType phase = PhaseType.valueOf(phaseString);
 				PhaseType phaseType = PhaseType.fromString(phaseString);
-	
+
 				// Get life support
 				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
-	
+
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
-	
+
 				AmountResource resource = new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible);
-				
+
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
 							"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
-				
+
 				for (AmountResource r: resourceSet) {
 					if (r.getName().equalsIgnoreCase(resource.getName()))
 						throw new IllegalStateException(
 								"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + resource.getName());
 				}
-				
+
 				resourceSet.add(resource);
-			
+
 				if (type != null && type.toLowerCase().equals(CROP)) {
 					nextID++;
 					// Create the tissue culture for each crop.
@@ -99,13 +99,13 @@ public class AmountResourceConfig implements Serializable {
 					AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
 							description, phaseType, lifeSupport, false);
 					tissueCultureSet.add(nextID);
-					
+
 					for (AmountResource r: resourceSet) {
 						if (r.getName().equalsIgnoreCase(tissue.getName()))
 							throw new IllegalStateException(
 									"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + tissue.getName());
 					}
-					
+
 					resourceSet.add(tissue);
 				}
 			}
@@ -114,7 +114,7 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Gets a set of all amount resources.
-	 * 
+	 *
 	 * @return set of resources.
 	 */
 	public Set<AmountResource> getAmountResources() {
@@ -124,7 +124,7 @@ public class AmountResourceConfig implements Serializable {
 	public Set<Integer> getTissueCultures() {
 		return tissueCultureSet;
 	}
-	
+
 	public int getNextID() {
 		return nextID;
 	}

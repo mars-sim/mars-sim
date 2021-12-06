@@ -119,7 +119,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private ResupplyWindow resupplyWindow;
 
 	private MarsClock marsCurrentTime;
-	
+
 	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -411,7 +411,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Set the components of the arrival date pane to be enabled or disabled.
-	 * 
+	 *
 	 * @param enable true if enable components, false if disable components.
 	 */
 	private void setEnableArrivalDatePane(boolean enable) {
@@ -427,7 +427,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Set the components of the time until arrival pane to be enabled or disabled.
-	 * 
+	 *
 	 * @param enable true if enable components, false if disable components.
 	 */
 	private void setEnableTimeUntilArrivalPane(boolean enable) {
@@ -709,7 +709,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Populates a resupply mission from the dialog info.
-	 * 
+	 *
 	 * @param resupplyMission the resupply mission to populate.
 	 */
 	private boolean populateResupplyMission(Resupply resupplyMission) {
@@ -874,18 +874,19 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Maps a number to an alphabet
-	 * 
+	 *
 	 * @param a number
 	 * @return a String
 	 */
 	private String getCharForNumber(int i) {
+		// Do note delete. Will use it
 		// NOTE: i must be > 1, if i = 0, return null
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
 	}
 
 	/**
 	 * Modify existing resupply mission new buildings based on supply table.
-	 * 
+	 *
 	 * @param resupplyMission resupply mission.
 	 * @param supplyItems     the supply items from the supply table.
 	 */
@@ -990,7 +991,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/**
 	 * Gets the arrival date from the dialog info.
-	 * 
+	 *
 	 * @return {@link MarsClock} arrival date.
 	 */
 	private MarsClock getArrivalDate() {

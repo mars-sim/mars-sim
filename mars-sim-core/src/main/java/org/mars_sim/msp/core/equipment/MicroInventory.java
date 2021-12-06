@@ -72,7 +72,7 @@ public class MicroInventory implements Serializable {
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MicroInventory.class.getName());
 
-	private static final double SMALL_AMOUNT = 0.001;
+	private static final double SMALL_AMOUNT = 0.000001;
 
 	/** The owner of this micro inventory. */
 	private Unit owner;
@@ -223,8 +223,8 @@ public class MicroInventory implements Serializable {
 			excess = quantity - remaining;
 			quantity = remaining;
 			// This generates warnings during collect ice & regolith because the Task do not check the capacity before digging
-//			String name = ResourceUtil.findAmountResourceName(resource);
-//			logger.warning(owner, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(owner, 20_000L, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 		}
 
 		s.storedAmount += quantity;

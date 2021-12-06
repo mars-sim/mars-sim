@@ -192,7 +192,7 @@ public class PersonTableModel extends UnitTableModel {
 //		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
 
-		if (GameManager.mode == GameMode.COMMAND)
+		if (GameManager.getGameMode() == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
 			setSource(unitManager.getPeople());

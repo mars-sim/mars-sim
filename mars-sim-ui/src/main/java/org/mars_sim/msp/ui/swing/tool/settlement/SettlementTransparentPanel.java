@@ -96,7 +96,7 @@ import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
 
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class SettlementTransparentPanel extends WebComponent implements ClockListener {
 
 	/** default logger. */
@@ -242,7 +242,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         surfaceFeatures = mars.getSurfaceFeatures();
         orbitInfo = mars.getOrbitInfo();
 
-		if (GameManager.mode == GameMode.COMMAND) {
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 		}
 		else
