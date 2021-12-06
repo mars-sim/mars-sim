@@ -775,22 +775,20 @@ implements Serializable {
                         destinationWalkState);
             }
             else {
-//            	if (person != null) {
-	                // Walk to rover airlock.
-	                Airlock airlock = initialRover.getAirlock();
-	                Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+                // Walk to rover airlock.
+                Airlock airlock = initialRover.getAirlock();
+                Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
-	                // Add rover interior walk step to starting airlock.
-	                createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
+                // Add rover interior walk step to starting airlock.
+                createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
 
-	                // Create interior airlock walk state.
-	                WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
-	                interiorAirlockState.airlock = airlock;
-	                interiorAirlockState.rover = initialRover;
-	                interiorAirlockState.loc = interiorAirlockPosition;
+                // Create interior airlock walk state.
+                WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
+                interiorAirlockState.airlock = airlock;
+                interiorAirlockState.rover = initialRover;
+                interiorAirlockState.loc = interiorAirlockPosition;
 
-	                determineWalkingSteps(interiorAirlockState, destinationWalkState);
-//            	}
+                determineWalkingSteps(interiorAirlockState, destinationWalkState);
             }
         }
     }

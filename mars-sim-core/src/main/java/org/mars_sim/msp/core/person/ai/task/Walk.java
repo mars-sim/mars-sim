@@ -1097,18 +1097,15 @@ public class Walk extends Task implements Serializable {
 
         if (building.isAHabOrHub()) {
     		if (person != null) {
+    			// check if it's a hab or hub building since they are the only ones
+    			// having a ladder to go up or down
+    	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+        			walkingStepIndex++;
+        			setPhase(getWalkingStepPhase());
+        		} else {
+        			endTask();
+        		}
     		}
-
-    		else {
-    		}
-
-    		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-    			walkingStepIndex++;
-    			setPhase(getWalkingStepPhase());
-    		} else {
-    			endTask();
-    		}
-
         }
         else {
 			endTask();
@@ -1135,18 +1132,15 @@ public class Walk extends Task implements Serializable {
 
         if (building.isAHabOrHub()) {
     		if (person != null) {
+    			// check if it's a hab or hub building since they are the only ones
+    			// having a ladder to go up or down
+    	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+        			walkingStepIndex++;
+        			setPhase(getWalkingStepPhase());
+        		} else {
+        			endTask();
+        		}
     		}
-
-    		else {
-    		}
-
-    		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-    			walkingStepIndex++;
-    			setPhase(getWalkingStepPhase());
-    		} else {
-    			endTask();
-    		}
-
         }
         else {
 			endTask();

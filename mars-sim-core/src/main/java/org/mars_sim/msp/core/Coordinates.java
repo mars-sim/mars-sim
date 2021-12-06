@@ -337,11 +337,11 @@ public class Coordinates implements Serializable {
 			direction = EAST_SHORT; //$NON-NLS-1$
 		} else if (theta >= Math.PI) {
 			degrees = Math.toDegrees(TWO_PI - theta);
-			direction = WEST_SHORT; //$NON-NLS-1$ ;
+			direction = WEST_SHORT; //$NON-NLS-1$
 		}
 
 		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + " " + direction; //$NON-NLS-1$
+		return formatter.format(degrees) + " " + direction;
 	}
 
 	/**

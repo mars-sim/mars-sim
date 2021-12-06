@@ -205,7 +205,7 @@ public class MasterClock implements Serializable {
 		logger.config("          Max millisol per pulse : " + maxMilliSolPerPulse);
 		logger.config(" Max elapsed time between pulses : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config("                   Accuracy bias : " + accuracyBias);
-		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
+//		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
 		logger.config("-----------------------------------------------------");
 	}
 

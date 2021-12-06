@@ -23,7 +23,6 @@
  */
 package org.mars_sim.msp.core.tool;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +63,7 @@ public class RandomStringUtils {
      * same millisecond.</p>
      */
 
-	private static final SecureRandom RANDOM = RandomUtil.getSecureRandom();
+	private static final Random RANDOM = RandomUtil.getRandom();
 
     /**
      * <p>{@code RandomStringUtils} instances should NOT be constructed in
