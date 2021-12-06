@@ -170,10 +170,10 @@ public class Walk extends Task implements Serializable {
 			endTask();
 			return;
 		}
-		
+
 		LocalPosition targetPosition = LocalAreaUtil.getRandomLocalRelativePosition(targetObject);
 		walkingSteps = new WalkingSteps(person, targetPosition.getX(), targetPosition.getY(), 0, targetObject);
-		
+
 		if (!canWalkAllSteps(person, walkingSteps)) {
 			logger.log(person, Level.SEVERE, 4_000, "Could not walk all steps.");
 			endTask();
@@ -196,11 +196,11 @@ public class Walk extends Task implements Serializable {
 		this.walkingSteps = walkingSteps;
 		setupPersonWalk();
 	}
-	
+
 	private void setupPersonWalk() {
 		// Initialize data members.
 		walkingStepIndex = 0;
-		
+
 		// Initialize task phase.
 		addPhase(WALKING_SETTLEMENT_INTERIOR);
 		addPhase(WALKING_ROVER_INTERIOR);
@@ -231,10 +231,11 @@ public class Walk extends Task implements Serializable {
 
 	/**
 	 * This is a factory method to create a Walk task if there is a valid path.
+	 *
 	 * @param person Person doing the walking
 	 * @param destPosition FInal destination within an interior object
 	 * @param destZ Vertical destination
-	 * @param destObject Destination 
+	 * @param destObject Destination
 	 * @return
 	 */
 	public static Walk createWalkingTask(Person person, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
@@ -243,7 +244,7 @@ public class Walk extends Task implements Serializable {
 
         // Check if all airlocks can be exited.
 		canWalk = canWalk && canExitAllAirlocks(person, walkingSteps);
-		
+
 		if (canWalk) {
 			return new Walk(person, walkingSteps);
 		}
@@ -253,21 +254,22 @@ public class Walk extends Task implements Serializable {
 
 	/**
 	 * This is a factory method to create a Walk task if there is a valid path.
+	 *
 	 * @param robot Robot doing the walking
 	 * @param destPosition FInal destination within an interior object
-	 * @param destObject Destination 
+	 * @param destObject Destination
 	 * @return
 	 */
 	public static Walk createWalkingTask(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
 		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition.getX(), destPosition.getY(), 0D, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
-		
+
 		if (canWalk) {
 			return new Walk(robot, walkingSteps);
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Find an emergency airlock at a person's location.
 	 *
@@ -398,7 +400,7 @@ public class Walk extends Task implements Serializable {
 			}
 
 		}
-		else if (robot != null) {
+		else {
 			if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
 				WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 				result = walkingStepPhaseMap.get(step.stepType);
@@ -546,7 +548,7 @@ public class Walk extends Task implements Serializable {
 				}
 			}
 		}
-		else if (robot != null) {
+		else {
 			logger.log(robot, Level.FINER, 4000, "Walking inside a settlement.");
 
 			// Check if robot has reached destination location.
@@ -655,7 +657,7 @@ public class Walk extends Task implements Serializable {
 
 			}
 
-		} else if (robot != null) {
+		} else {
 			logger.log(robot, Level.SEVERE, 5_000,
 					"Walking inside a rover.");
 
@@ -749,7 +751,7 @@ public class Walk extends Task implements Serializable {
 			}
 		}
 
-		else if (robot != null) {
+		else {
 
 			logger.log(robot, Level.SEVERE, 5_000,
 					"Calling walkingExteriorPhase().");
@@ -841,7 +843,7 @@ public class Walk extends Task implements Serializable {
 				}
 			}
 
-		} else if (robot != null) {
+		} else {
 			// Note : robot is NOT allowed to leave the settlement
 			endTask();
 		}
@@ -946,7 +948,7 @@ public class Walk extends Task implements Serializable {
 			}
 		}
 
-		else if (robot != null) {
+		else {
 
 //			logger.log(robot, Level.FINER, 4_000,
 //					"About to exit rover " + rover.getName()
@@ -1008,7 +1010,6 @@ public class Walk extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.walk.enteringRoverInsideGarage")); //$NON-NLS-1$
 
 		if (person != null) {
-
 //			logger.log(person, Level.FINER, 4_000,
 //					"About to enter the rover " + rover.getName()
 //					+ " in " + garageBuilding + ".");
@@ -1038,8 +1039,7 @@ public class Walk extends Task implements Serializable {
 //			}
 		}
 
-		else if (robot != null) {
-
+		else {
 //			logger.log(robot, Level.FINER, 4_000,
 //					"About to enter the rover " + rover.getName()
 //					+ " in " + garageBuilding + ".");
@@ -1097,11 +1097,9 @@ public class Walk extends Task implements Serializable {
 
         if (building.isAHabOrHub()) {
     		if (person != null) {
-
     		}
 
-    		else if (robot != null) {
-
+    		else {
     		}
 
     		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
@@ -1137,11 +1135,9 @@ public class Walk extends Task implements Serializable {
 
         if (building.isAHabOrHub()) {
     		if (person != null) {
-
     		}
 
-    		else if (robot != null) {
-
+    		else {
     		}
 
     		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
@@ -1226,5 +1222,4 @@ public class Walk extends Task implements Serializable {
 		walkingStepPhaseMap = null;
 		unitManager = null;
 	}
-
 }

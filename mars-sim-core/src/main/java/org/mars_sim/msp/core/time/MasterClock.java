@@ -758,7 +758,7 @@ public class MasterClock implements Serializable {
 		} catch (ExecutionException ee) {
 			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
 		} catch (RejectedExecutionException ree) {
-			// App shutting down
+			// Application shutting down
 			Thread.currentThread().interrupt();
 			// Executor is shutdown and cannot complete queued tasks
 			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);

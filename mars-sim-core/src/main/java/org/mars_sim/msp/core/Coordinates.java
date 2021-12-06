@@ -1,9 +1,10 @@
 /*
  * Mars Simulation Project
  * Coordinates.java
- * @date 2021-08-28
+ * @date 2021-12-06
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.core;
 
 import java.io.Serializable;
@@ -22,49 +23,45 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * {@link #phi} is latitude in (0 - PI) radians. <br/>
  */
 public class Coordinates implements Serializable {
-	// TODO: in future, may add rho as the diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0
+	// Note: in future, may add rho as the diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Coordinates.class.getName());
 
-	private static final double DEG_TO_RADIAN  = Math.PI / 180; 
-	private static final double RADIAN_TO_DEG  = 180 / Math.PI; 
+	private static final double DEG_TO_RADIAN  = Math.PI / 180;
+	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
 	private static final double PI_HALF = Math.PI / 2.0;
 	private static final double TWO_PI = Math.PI * 2D;
-	
+
 	// stored for efficiency but not serialized.
-	private static final transient String shortNorth = Msg.getString("direction.northShort");
-	private static final transient String shortEast = Msg.getString("direction.eastShort");
-	private static final transient String shortSouth = Msg.getString("direction.southShort");
-	private static final transient String shortWest = Msg.getString("direction.westShort");
+	private static final transient String NORTH_SHORT = Msg.getString("direction.northShort");
+	private static final transient String EAST_SHORT = Msg.getString("direction.eastShort");
+	private static final transient String SOUTH_SHORT = Msg.getString("direction.southShort");
+	private static final transient String WEST_SHORT = Msg.getString("direction.westShort");
+	private static final transient String LON_BAD_FORMAT = Msg.getString("Coordinates.error.longitudeBadFormat");
+	private static final transient String LAT_BAD_FORMAT = Msg.getString("Coordinates.error.latitudeBadFormat");
+	private static final transient String LON_BEGIN_WITH = Msg.getString("Coordinates.error.longitudeBeginWith");
+	private static final transient String LAT_BEGIN_WITH = Msg.getString("Coordinates.error.latitudeBeginWith");
 
 	// Data members
 	/** Phi value of coordinates PHI is latitude in 0-PI radians. */
 	private double phi;
 	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
 	private double theta;
-//	/** Sine of phi (stored for efficiency). */
-//	private double sinPhi;
-//	/** Sine of theta (stored for efficiency). */
-//	private double sinTheta;
-//	/** Cosine of phi (stored for efficiency). */
-//	private double cosPhi;
-//	/** Cosine of theta (stored for efficiency). */
-//	private double cosTheta;
+
 	/** Formatted string of the latitude. */
 	private String latCache;
 	/** Formatted string of the longitude. */
 	private String lonCache;
 
-
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
-	
+
 	/**
 	 * Constructs a Coordinates object, hence a constructor.
-	 * 
+	 *
 	 * @param phi    (latitude) the phi angle of the spherical coordinate
 	 * @param theta  (longitude) the theta angle of the spherical coordinate
 	 */
@@ -77,24 +74,18 @@ public class Coordinates implements Serializable {
 			this.phi -= Math.PI;
 		while (this.phi < 0)
 			this.phi += Math.PI;
-		
+
 		// Make sure theta is between 0 and 2 PI.
 		this.theta = theta;
 		while (this.theta < 0D)
-			this.theta += TWO_PI; 
+			this.theta += TWO_PI;
 		while (this.theta > TWO_PI)
 			this.theta -= TWO_PI;
-
-		// Set trigonometric functions
-//		sinPhi = Math.sin(this.phi);
-//		sinTheta = Math.sin(this.theta);
-//		cosPhi = Math.cos(this.phi);
-//		cosTheta = Math.cos(this.theta);
 	}
 
 	/**
 	 * Clone constructor
-	 * 
+	 *
 	 * @param originalCoordinates the Coordinates object to be cloned
 	 */
 	public Coordinates(Coordinates originalCoordinates) {
@@ -105,7 +96,7 @@ public class Coordinates implements Serializable {
 	 * Constructor with a latitude and longitude string. Expects direction
 	 * abbreviations according to current locale, so for english NESW, for german
 	 * NOSW, french NESO, etc.
-	 * 
+	 *
 	 * @param latitude  String representing latitude value. ex. "25.344 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 */
@@ -116,7 +107,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Generate a string representation of this object. It will be the same format
 	 * as the formattedString method.
-	 * 
+	 *
 	 * @return String description of Coordinate.
 	 * @see #getFormattedString()
 	 */
@@ -126,7 +117,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * phi accessor (related to latitude)
-	 * 
+	 *
 	 * @return the phi angle value of the coordinate
 	 */
 	public double getPhi() {
@@ -135,7 +126,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * theta accessor (related to longitude)
-	 * 
+	 *
 	 * @return the theta angle value of the coordinate
 	 */
 	public double getTheta() {
@@ -143,33 +134,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Returns true if coordinates have equal phi and theta values
-	 * 
-	 * @param otherCoords Coordinates object to be matched against
-	 * @return true if Coordinates values match, false otherwise
-	 */
-	public boolean equals(Object otherCoords) {
-		if (this == otherCoords) return true;
-		if (otherCoords instanceof Coordinates) {
-			Coordinates other = (Coordinates) otherCoords;
-            return (phi == other.phi) && (theta == other.theta);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * Gets the hash code for this object.
-	 * 
-	 * @return hash code.
-	 */
-	public int hashCode() {
-		return (int) ((phi * 1000D) + (theta * 1000D));
-	}
-
-	/**
 	 * Gets the arc angle between this location and a given coordinates.
-	 * 
+	 *
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
@@ -183,7 +149,7 @@ public class Coordinates implements Serializable {
 	 * Calculates the arc angle between this location and a given coordinates using
 	 * the spherical law of cosines.
 	 * http://en.wikipedia.org/wiki/Spherical_law_of_cosines
-	 * 
+	 *
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians)
 	 */
@@ -211,7 +177,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Calculates the arc angle between this location and a given location using the
 	 * haversine formula. http://en.wikipedia.org/wiki/Haversine_formula
-	 * 
+	 *
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
@@ -232,7 +198,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Calculates the arc angle between this location and a given location using
 	 * Vincenty's formula. http://en.wikipedia.org/wiki/Vincenty%27s_formulae
-	 * 
+	 *
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
@@ -259,7 +225,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Returns the distance in kilometers between this location and the given
 	 * coordinates
-	 * 
+	 *
 	 * @param otherCoords remote Coordinates object
 	 * @return distance (in km) to the remote Coordinates object
 	 */
@@ -267,11 +233,11 @@ public class Coordinates implements Serializable {
 		if (otherCoords == null) {
 			return 0;
 		}
-		
+
 		if (otherCoords.equals(this)) {
 			return 0;
 		}
-		
+
 		double rho = Environment.MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
@@ -280,7 +246,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Computes the distance between the two given coordinates
-	 * 
+	 *
 	 * @param c0
 	 * @param c1
 	 * @return distance (in km)
@@ -291,10 +257,10 @@ public class Coordinates implements Serializable {
 		}
 		return c0.getDistance(c1);
 	}
-	
+
 	/**
 	 * Gets a common formatted string to represent this location.
-	 * 
+	 *
 	 * @return formatted longitude & latitude string for this Coordinates object
 	 * @see #getFormattedLongitudeString()
 	 * @see #getFormattedLatitudeString()
@@ -309,7 +275,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a coordinate string (with parenthesis and comma) to represent this location.
-	 * 
+	 *
 	 * @return formatted longitude & latitude string for this coordinate
 	 * @see #getFormattedLongitudeString()
 	 * @see #getFormattedLatitudeString()
@@ -323,11 +289,11 @@ public class Coordinates implements Serializable {
 		buffer.append(')');
 		return buffer.toString();
 	}
-	
+
 	/**
 	 * Gets a common formatted string to represent longitude for this location. ex.
 	 * "35.6 E"
-	 * 
+	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public String getFormattedLongitudeString() {
@@ -339,7 +305,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a double to represent longitude for this location. ex. "-35.6"
-	 * 
+	 *
 	 * @return double longitude
 	 */
 	public double getLongitudeDouble() {
@@ -358,7 +324,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Gets a common formatted string to represent longitude for this location. ex.
 	 * "35.6 E"
-	 * 
+	 *
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
 	 */
@@ -368,10 +334,10 @@ public class Coordinates implements Serializable {
 
 		if ((theta < Math.PI) && (theta >= 0D)) {
 			degrees = Math.toDegrees(theta);
-			direction = Msg.getString("direction.eastShort"); //$NON-NLS-1$
+			direction = EAST_SHORT; //$NON-NLS-1$
 		} else if (theta >= Math.PI) {
 			degrees = Math.toDegrees(TWO_PI - theta);
-			direction = Msg.getString("direction.westShort"); //$NON-NLS-1$ ;
+			direction = WEST_SHORT; //$NON-NLS-1$ ;
 		}
 
 		// Add a whitespace in between the degree and its directional sign
@@ -381,7 +347,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Gets a common formatted string to represent latitude for this location. ex.
 	 * "35.6 S"
-	 * 
+	 *
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public String getFormattedLatitudeString() {
@@ -393,7 +359,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a double to represent latitude location. ex. "-35.6"
-	 * 
+	 *
 	 * @return latitude double
 	 */
 	public double getLatitudeDouble() {
@@ -414,7 +380,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Gets a common formatted string to represent latitude for this location. ex.
 	 * "35.6 S"
-	 * 
+	 *
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
 	 */
@@ -424,10 +390,10 @@ public class Coordinates implements Serializable {
 
 		if (phi <= PI_HALF) {
 			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
-			direction = Msg.getString("direction.northShort"); //$NON-NLS-1$
+			direction = NORTH_SHORT; //$NON-NLS-1$
 		} else if (phi > PI_HALF) {
 			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
-			direction = Msg.getString("direction.southShort"); //$NON-NLS-1$
+			direction = SOUTH_SHORT; //$NON-NLS-1$
 		}
 
 		// Note : direction.decimalFormat = 0.0
@@ -437,7 +403,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Converts phi to latitude
-	 * 
+	 *
 	 * @return latitude in degrees
 	 */
 	public double getPhi2Lat() {
@@ -446,7 +412,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Converts phi in radians to lat in radians
-	 * 
+	 *
 	 * @return latitude in radians
 	 */
 	public double getPhi2LatRadian() {
@@ -463,7 +429,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
 	 * and y display coordinates for spherical location.
-	 * 
+	 *
 	 * @param newCoords    the offset location
 	 * @param centerCoords location of the center of the map
 	 * @param rho          radius of planet (in km)
@@ -504,7 +470,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates
-	 * 
+	 *
 	 * @param x change in x value (in km)
 	 * @param y change in y value (in km)
 	 * @return new spherical location
@@ -517,7 +483,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates with
 	 * rho value for map.
-	 * 
+	 *
 	 * @param x              change in x value (in km)
 	 * @param y              change in y value (in km)
 	 * @param rho            rho value of map used (in km)
@@ -528,7 +494,7 @@ public class Coordinates implements Serializable {
 		double sinTheta = Math.sin(this.theta);
 		double cosPhi = Math.cos(this.phi);
 		double cosTheta = Math.cos(this.theta);
-		
+
 		double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
 		double x2 = x;
@@ -551,14 +517,14 @@ public class Coordinates implements Serializable {
 			else
 				theta_new = TWO_PI + theta_new;
 		}
-		
+
 		return new Coordinates(phi_new, theta_new);
 	}
 
 	/**
 	 * Returns angle direction to another location on surface of sphere 0 degrees is
 	 * north (clockwise)
-	 * 
+	 *
 	 * @param otherCoords target location
 	 * @return angle direction to target (in radians)
 	 */
@@ -579,7 +545,7 @@ public class Coordinates implements Serializable {
 	/**
 	 * Gets a new location with a given direction and distance from the current
 	 * location.
-	 * 
+	 *
 	 * @param direction direction to new location
 	 * @param distance  distance to new location (in km)
 	 * @return new location coordinates
@@ -617,7 +583,7 @@ public class Coordinates implements Serializable {
 	 * Parse a latitude string into a phi value. e.g. input: "25.344 N"
 	 * For latitude string: North is positive (+); South is negative (-)
 	 * For phi : it starts from the north pole (phi = 0) to the south pole (phi = PI)
-	 * 
+	 *
 	 * @param latitude as string
 	 * @return phi value in radians
 	 * @throws ParseException if latitude string could not be parsed.
@@ -632,9 +598,9 @@ public class Coordinates implements Serializable {
 
 		// Checks if the latitude string is a pure decimal number
 		boolean pureDecimal = true;
-		
+
 		try {
-			latValue = Double.parseDouble(latitude);		
+			latValue = Double.parseDouble(latitude);
 			if ((latValue > 90D) || (latValue < -90))
 				throw new IllegalStateException("Latitude value out of range : " + latValue);
 			if (latValue >= 0)
@@ -644,7 +610,7 @@ public class Coordinates implements Serializable {
 		} catch (NumberFormatException e) {
 			pureDecimal = false;
 		}
-		
+
 		if (!pureDecimal) {
 			try {
 				String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
@@ -662,23 +628,23 @@ public class Coordinates implements Serializable {
 
 			// TODO parse latitude depending on locale and validate
 			String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
-			if (direction.compareToIgnoreCase(shortNorth) == 0)
+			if (direction.compareToIgnoreCase(NORTH_SHORT) == 0)
 				latValue = 90D - latValue;
-			else if (direction.compareToIgnoreCase(shortSouth) == 0)
+			else if (direction.compareToIgnoreCase(SOUTH_SHORT) == 0)
 				latValue += 90D;
 			else
 				throw new IllegalStateException("Invalid Latitude direction : " + direction);
 		}
-	
+
 
 		double phi = DEG_TO_RADIAN * latValue;
 		return phi;
 	}
 
 	/**
-	 * Parse a longitude string into a theta value. e.g. input:  "63.5532 W" 
+	 * Parse a longitude string into a theta value. e.g. input:  "63.5532 W"
 	 * Note: East is positive (+), West is negative (-)
-	 * 
+	 *
 	 * @param longitude as string
 	 * @return theta value in radians
 	 * @throws ParseException if longitude string could not be parsed.
@@ -693,21 +659,21 @@ public class Coordinates implements Serializable {
 
 		// Checks if the longitude string is a pure decimal number
 		boolean pureDecimal = true;
-		
+
 		try {
 			longValue = Double.parseDouble(longitude);
 
 			while (longValue < 0D)
-				longValue += 360; 
+				longValue += 360;
 			while (longValue > 360)
 				longValue -= 360;
-			
+
 		} catch (NumberFormatException e) {
 			pureDecimal = false;
 		}
-		
+
 		if (!pureDecimal) {
-		
+
 			try {
 				String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
 				if (numberString.endsWith(Msg.getString("direction.degreeSign")))
@@ -718,13 +684,13 @@ public class Coordinates implements Serializable {
 			} catch (NumberFormatException e) {
 				throw new IllegalStateException("Longitude number invalid: " + longitude);
 			}
-	
+
 			// Note: parse longitude depending on locale and validate
 			String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
-	
-			if (directionStr.compareToIgnoreCase(shortWest) == 0)
+
+			if (directionStr.compareToIgnoreCase(WEST_SHORT) == 0)
 				longValue = 360D - longValue;
-			else if (directionStr.compareToIgnoreCase(shortEast) != 0)
+			else if (directionStr.compareToIgnoreCase(EAST_SHORT) != 0)
 				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 
 		}
@@ -735,7 +701,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a random latitude.
-	 * 
+	 *
 	 * @return latitude
 	 */
 	public static double getRandomLatitude() {
@@ -747,7 +713,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a random longitude.
-	 * 
+	 *
 	 * @return longitude
 	 */
 	public static double getRandomLongitude() {
@@ -755,10 +721,10 @@ public class Coordinates implements Serializable {
 		double theta = RandomUtil.getRandomDouble(2D * Math.PI);
 		return theta;
 	}
-	
+
 	/**
 	 * Check for the validity of the input latitude
-	 * 
+	 *
 	 * @param latitude the input latitude
 	 */
 	public static String checkLat(String latitude) {
@@ -767,41 +733,41 @@ public class Coordinates implements Serializable {
 		if ((latitude == null) || (latitude.isEmpty())) {
 			return (Msg.getString("Coordinates.error.latitudeMissing")); //$NON-NLS-1$
 		}
-		
+
 		else {
 			// check if the second from the last character is a digit or a letter,
 			// if a letter, setError
 			if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
-				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
+				return LAT_BAD_FORMAT; //$NON-NLS-1$
 			}
 
 			// check if the last character is a digit or a letter,
 			// if a digit, setError
 			if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
-				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
+				return LAT_BAD_FORMAT; //$NON-NLS-1$
 			}
-			
+
 			String s = latitude.trim().toUpperCase();
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
-				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
+				return LAT_BAD_FORMAT; //$NON-NLS-1$
 			}
 
-			if (!(s.endsWith(shortNorth) //$NON-NLS-1$ //$NON-NLS-2$
-					|| s.endsWith(shortSouth)) //$NON-NLS-1$ //$NON-NLS-2$
-				) { 
+			if (!(s.endsWith(NORTH_SHORT) //$NON-NLS-1$ //$NON-NLS-2$
+					|| s.endsWith(SOUTH_SHORT)) //$NON-NLS-1$ //$NON-NLS-2$
+				) {
 				return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
-						shortNorth, shortSouth);
+						NORTH_SHORT, SOUTH_SHORT);
 			} else {
 				String numLatitude = s.substring(0, s.length() - 1);
 				try {
 					double doubleLatitude = Double.parseDouble(numLatitude);
 					if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-						return Msg.getString("Coordinates.error.latitudeBeginWith"); //$NON-NLS-1$
+						return LAT_BEGIN_WITH; //$NON-NLS-1$
 					}
 				} catch (NumberFormatException e) {
-					return Msg.getString("Coordinates.error.latitudeBeginWith"); //$NON-NLS-1$
+					return LAT_BEGIN_WITH; //$NON-NLS-1$
 				}
 			}
 		}
@@ -810,7 +776,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Check for the validity of the input longitude
-	 * 
+	 *
 	 * @param longitude the input longitude
 	 */
 	public static String checkLon(String longitude) {
@@ -818,51 +784,77 @@ public class Coordinates implements Serializable {
 		// Check that settlement longitude is valid.
 		if ((longitude == null) || (longitude.isEmpty())) {
 			return Msg.getString("Coordinates.error.longitudeMissing"); //$NON-NLS-1$
-		} 
-		
+		}
+
 		else {
 			// check if the second from the last character is a digit or a letter,
 			// if a letter, setError
 			if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
-				return Msg.getString("Coordinates.error.longitudeBadFormat"); //$NON-NLS-1$
+				return LON_BAD_FORMAT; //$NON-NLS-1$
 			}
-			
+
 			// check if the last character is a digit or a letter,
 			// if a digit, setError
 			if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
-				return Msg.getString("Coordinates.error.longtidudeBadFormat"); //$NON-NLS-1$
+				return LON_BAD_FORMAT; //$NON-NLS-1$
 			}
-	
+
 			String s = longitude.trim().toUpperCase();
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
 				logger.warning(2_000, "The longitude [" + s + "] is missing the direction sign.");
-				return Msg.getString("Coordinates.error.longitudeBadFormat"); //$NON-NLS-1$
+				return LON_BAD_FORMAT; //$NON-NLS-1$
 			}
-			
-			if (!s.endsWith(Msg.getString("direction.westShort"))  //$NON-NLS-1$ //$NON-NLS-2$
-					&& !s.endsWith(Msg.getString("direction.eastShort"))  //$NON-NLS-1$ //$NON-NLS-2$
+
+			if (!s.endsWith(WEST_SHORT)  //$NON-NLS-1$ //$NON-NLS-2$
+					&& !s.endsWith(EAST_SHORT)  //$NON-NLS-1$ //$NON-NLS-2$
 					) {
 				return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
-						Msg.getString("direction.eastShort"), //$NON-NLS-1$
-						Msg.getString("direction.westShort") //$NON-NLS-1$
+						EAST_SHORT, //$NON-NLS-1$
+						WEST_SHORT //$NON-NLS-1$
 				);
 			} else {
 				String numLongitude = s.substring(0, s.length() - 1);
 				try {
 					double doubleLongitude = Double.parseDouble(numLongitude);
 					if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
-						return Msg.getString("Coordinates.error.longitudeBeginWith"); //$NON-NLS-1$
+						return LON_BEGIN_WITH; //$NON-NLS-1$
 					}
 				} catch (NumberFormatException e) {
-					return Msg.getString("Coordinates.error.longitudeBeginWith"); //$NON-NLS-1$
+					return LON_BEGIN_WITH; //$NON-NLS-1$
 				}
 			}
 		}
 		return null;
 	}
-	
+
+
+	/**
+	 * Returns true if coordinates have equal phi and theta values
+	 *
+	 * @param otherCoords Coordinates object to be matched against
+	 * @return true if Coordinates values match, false otherwise
+	 */
+	public boolean equals(Object otherCoords) {
+		if (this == otherCoords) return true;
+		if (otherCoords instanceof Coordinates) {
+			Coordinates other = (Coordinates) otherCoords;
+            return (phi == other.phi) && (theta == other.theta);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return (int) ((phi * 1000D) + (theta * 1000D));
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
