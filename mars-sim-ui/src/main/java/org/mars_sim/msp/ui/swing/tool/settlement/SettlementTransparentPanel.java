@@ -199,9 +199,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private WebButton[] weatherButtons = new WebButton[3];
 
 	private JPopupMenu labelsMenu;
-	/** Lists all settlements. */
+	/** Settlement Combo box */
 	private WebComboBox settlementListBox;
-	/** Combo box model. */
+	/** Settlement Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
 
 	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
@@ -466,8 +466,20 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			}
 		});
 
-		if (settlementListBox.getModel().getSize() > 0) {
+		int size = settlementListBox.getModel().getSize();
+
+		if (size > 1) {
+			// Gets the settlement
+			Settlement s = mapPanel.getSettlement();
+			// Change to the selected settlement in SettlementMapPanel
+			if (s != null)
+				changeSettlement(s);
+		}
+
+		else if (size == 1) {
+			// Selects the first settlement
 			settlementListBox.setSelectedIndex(0);
+			// Gets the settlement
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// Change to the selected settlement in SettlementMapPanel
 			changeSettlement(s);
@@ -803,7 +815,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     	return new String[] {icon00, icon01, icon10};//, icon11};
     }
 
-
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -837,7 +848,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		        return c;
 		    }
 	}
-
 
     public void buildZoomSlider() {
 

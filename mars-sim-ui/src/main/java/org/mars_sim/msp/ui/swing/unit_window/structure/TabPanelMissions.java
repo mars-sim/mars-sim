@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelMissions.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -31,6 +31,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.OverrideType;
@@ -51,14 +52,16 @@ import org.mars_sim.msp.ui.swing.unit_window.vehicle.TabPanelMission;
 @SuppressWarnings("serial")
 public class TabPanelMissions
 extends TabPanel {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
 	// Data members
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** The Settlement instance. */
 	private Settlement settlement;
-	
+
 	private List<Mission> missionsCache;
 	private DefaultListModel<Mission> missionListModel;
 	private JList<Mission> missionList;
@@ -85,16 +88,16 @@ extends TabPanel {
 		// Initialize data members.
 		this.settlement = settlement;
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		missionManager = Simulation.instance().getMissionManager();
-		
+
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -192,7 +195,7 @@ extends TabPanel {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
+
 		// Get all missions for the settlement.
 		//MissionManager manager = Simulation.instance().getMissionManager();
 		List<Mission> missions = missionManager.getMissionsForSettlement(settlement);
@@ -211,7 +214,7 @@ extends TabPanel {
 		}
 
 		// Update mission override check box if necessary.
-		if (settlement.getProcessOverride(OverrideType.MISSION) != overrideCheckbox.isSelected()) 
+		if (settlement.getProcessOverride(OverrideType.MISSION) != overrideCheckbox.isSelected())
 			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
 	}
 
@@ -227,12 +230,18 @@ extends TabPanel {
 	}
 
 	/**
-	 * Opens the monitor tool with a mission tab for the selected mission 
+	 * Opens the monitor tool with a mission tab for the selected mission
 	 * in the mission list.
 	 */
 	private void openMonitorTool() {
 		Mission mission = (Mission) missionList.getSelectedValue();
-		if (mission != null) getDesktop().addModel(new PersonTableModel(mission));
+		if (mission != null) {
+			try {
+				getDesktop().addModel(new PersonTableModel(mission));
+			} catch (Exception e) {
+				logger.severe("PersonTableModel cannot be added.");
+			}
+		}
 	}
 
 	/**
@@ -242,7 +251,7 @@ extends TabPanel {
 	private void setMissionCreationOverride(boolean override) {
 		settlement.setProcessOverride(OverrideType.MISSION, override);
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

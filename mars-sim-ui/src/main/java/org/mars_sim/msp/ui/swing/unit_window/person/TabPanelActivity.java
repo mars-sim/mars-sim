@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelActivity.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Scott Davis
  */
 
@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -47,6 +48,9 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelActivity extends TabPanel implements ActionListener {
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelActivity.class.getName());
+
 	private static final int COL_WDITH = 16;
 
 	private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); // " (at the Moment
@@ -55,46 +59,46 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** current task text cache */
 	private String taskTextCache = "";
 	/** current phase text cache */
-	private String taskPhaseCache = ""; 
+	private String taskPhaseCache = "";
 	/** sub task 1 text cache */
-	private String subTaskTextCache = ""; 
+	private String subTaskTextCache = "";
 	/** sub phase 1 text cache */
 	private String subTaskPhaseCache = "";
 	/** sub task 2 text cache */
-	private String subTask2TextCache = ""; 
+	private String subTask2TextCache = "";
 	/** sub phase 2 text cache */
 	private String subTask2PhaseCache = "";
 	/** data cache */
 	private String missionTextCache = "";
 	/** data cache */
-	private String missionPhaseCache = ""; 
+	private String missionPhaseCache = "";
 	/** The Person instance. */
 	private Person person = null;
 	/** The Robot instance. */
 	private Robot robot = null;
-	
+
 	private WebTextArea taskTextArea;
 	private WebTextArea taskPhaseArea;
-	
+
 	private WebTextArea subTaskTextArea;
 	private WebTextArea subTaskPhaseArea;
-	
+
 	private WebTextArea subTask2TextArea;
 	private WebTextArea subTask2PhaseArea;
-	
+
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
-	
+
 	private WebButton monitorButton;
 	private WebButton missionButton;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param unit    {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
@@ -109,23 +113,23 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 		}
-		
+
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		boolean dead = false;
-		
+
 		Mind mind = null;
 		BotMind botMind = null;
-		
+
 		TaskManager taskManager = null;
-		
+
 		DeathInfo deathInfo = null;
 
 		if (unit instanceof Person) {
@@ -161,7 +165,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		activityPanel.add(taskTopPanel, BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
-		
+
 		// Prepare current task panel
 		WebPanel currentTaskPanel = new WebPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(currentTaskPanel);
@@ -175,7 +179,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			taskTextCache = deathInfo.getTask();
 		else {
 			String t = taskManager.getTaskDescription(false);
-			if (t != null) 
+			if (t != null)
 //						&& !t.toLowerCase().contains("walk"))
 				taskTextCache = t;
 		}
@@ -214,11 +218,11 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		taskPhasePanel.add(new WebScrollPane(taskPhaseArea), BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
-		
+
 		// Prepare sub task 1 panel
 		WebPanel subTaskPanel = new WebPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTaskPanel);
-		
+
 		// Prepare sub task 1 label
 		WebLabel subtaskLabel = new WebLabel(Msg.getString("TabPanelActivity.subTask"), WebLabel.LEFT); //$NON-NLS-1$
 		subTaskPanel.add(subtaskLabel, BorderLayout.NORTH);
@@ -228,7 +232,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			subTaskTextCache = deathInfo.getSubTask();
 		else {
 			String t = taskManager.getSubTaskDescription();
-			if (t != null) 
+			if (t != null)
 //						&& !t.toLowerCase().contains("walk"))
 				subTaskTextCache = t;
 			else
@@ -271,12 +275,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		subTaskPhaseArea.setEditable(false);
 		subTaskPhasePanel.add(new WebScrollPane(subTaskPhaseArea), BorderLayout.CENTER);
 
-		/////////////////////////////////////////////////////////////////////////		
-		
+		/////////////////////////////////////////////////////////////////////////
+
 		// Prepare sub task 2 panel
 		WebPanel subTask2Panel = new WebPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTask2Panel);
-		
+
 		// Prepare sub task 2 label
 		WebLabel subtask2Label = new WebLabel(Msg.getString("TabPanelActivity.subTask2"), WebLabel.LEFT); //$NON-NLS-1$
 		subTask2Panel.add(subtask2Label, BorderLayout.NORTH);
@@ -286,7 +290,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			subTask2TextCache = deathInfo.getSubTask2();
 		else {
 			String t = taskManager.getSubTask2Description();
-			if (t != null) 
+			if (t != null)
 //						&& !t.toLowerCase().contains("walk"))
 				subTask2TextCache = t;
 			else
@@ -327,9 +331,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		subTask2PhaseArea.setLineWrap(true);
 		subTask2PhaseArea.setEditable(false);
 		subTask2PhasePanel.add(new WebScrollPane(subTask2PhaseArea), BorderLayout.CENTER);
-		
+
 		/////////////////////////////////////////////////////////////////////////
-		
+
 		// Prepare mission top panel
 		WebPanel missionTopPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
 		// missionTopPanel.setBorder(new MarsPanelBorder());
@@ -468,7 +472,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
+
 		Person person = null;
 		Robot robot = null;
 		Mind mind = null;
@@ -493,13 +497,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		String newTaskText = "";
 		String newTaskPhase = "";
-		
+
 		String newSubTaskText = "";
 		String newSubTaskPhase = "";
-		
+
 		String newSubTask2Text = "";
 		String newSubTask2Phase = "";
-		
+
 		String newMissionText = "";
 		String newMissionPhase = "";
 
@@ -511,7 +515,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			String stp = deathInfo.getSubTaskPhase();
 			String st2 = deathInfo.getSubTask2();
 			String st2p = deathInfo.getSubTask2Phase();
-			
+
 			if (t == null || t.equals(""))
 				newTaskText = NONE + DEAD_PHRASE;
 			else
@@ -521,7 +525,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newTaskPhase = NONE + DEAD_PHRASE;
 			else
 				newTaskPhase = tp + DEAD_PHRASE;
-			
+
 			if (st == null || st.equals(""))
 				newSubTaskText = NONE + DEAD_PHRASE;
 			else
@@ -530,8 +534,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			if (stp == null || stp.equals(""))
 				newSubTaskPhase = NONE + DEAD_PHRASE;
 			else
-				newSubTaskPhase = stp + DEAD_PHRASE;		
-			
+				newSubTaskPhase = stp + DEAD_PHRASE;
+
 			if (st2 == null || st2.equals(""))
 				newSubTask2Text = NONE + DEAD_PHRASE;
 			else
@@ -577,13 +581,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			} else {
 				newSubTaskPhase = "";
 			}
-			
+
 			if (subTask2Phase != null) {
 				newSubTask2Phase = subTask2Phase.getName();
 			} else {
 				newSubTask2Phase = "";
 			}
-			
+
 		}
 
 		if (!taskTextCache.equals(newTaskText)) {
@@ -593,12 +597,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		if (taskTextCache.equals(""))
 			taskPhaseArea.setText("");
-		
+
 		else if (!taskPhaseCache.equals(newTaskPhase)) {
 			taskPhaseCache = newTaskPhase;
 			taskPhaseArea.setText(newTaskPhase);
 		}
-		
+
 
 		if (!subTaskTextCache.equals(newSubTaskText)) {
 			subTaskTextCache = newSubTaskText;
@@ -607,12 +611,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		if (subTaskTextCache.equals(""))
 			subTaskPhaseArea.setText("");
-		
+
 		else if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
 			subTaskPhaseCache = newSubTaskPhase;
 			subTaskPhaseArea.setText(newSubTaskPhase);
 		}
-			
+
 		if (!subTask2TextCache.equals(newSubTask2Text)) {
 			subTask2TextCache = newSubTask2Text;
 			subTask2TextArea.setText(newSubTask2Text);
@@ -620,12 +624,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		if (subTask2TextCache.equals(""))
 			subTask2PhaseArea.setText("");
-		
+
 		else if (!subTask2PhaseCache.equals(newSubTask2Phase)) {
 			subTask2PhaseCache = newSubTask2Phase;
 			subTask2PhaseArea.setText(newSubTask2Phase);
 		}
-		
+
 		// Update mission text area if necessary.
 		if (dead) {
 			String m = deathInfo.getMission();
@@ -688,7 +692,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	/**
 	 * Action event occurs.
-	 * 
+	 *
 	 * @param event {@link ActionEvent} the action event
 	 */
 	@Override
@@ -712,8 +716,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 //							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
 //									.selectMission(mind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME, mind.getMission());
-						} else if (source == monitorButton)
-							desktop.addModel(new PersonTableModel(mind.getMission()));
+						} else if (source == monitorButton) {
+							try {
+								desktop.addModel(new PersonTableModel(mind.getMission()));
+							} catch (Exception e) {
+								logger.severe("PersonTableModel cannot be added.");
+							}
+						}
 					}
 				}
 			} else if (unit instanceof Robot) {

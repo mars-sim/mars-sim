@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * PopulationTabPanel.java
- * @version 3.2.0 2021-06-20
+ * TabPanelPopulation.java
+ * @date 2021-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -35,6 +35,7 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -54,19 +55,22 @@ public class TabPanelPopulation
 extends TabPanel
 implements MouseListener, ActionListener {
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelPopulation.class.getName());
+
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** The Settlement instance. */
 	private Settlement settlement;
-	
+
 	private JLabel populationIndoorLabel;
 	private JLabel populationCapacityLabel;
-	
+
 	private PopulationListModel populationListModel;
 	private JList<Person> populationList;
 	private JScrollPane populationScrollPanel;
-	
+
 	private int populationIndoorCache;
 	private int populationCapacityCache;
 
@@ -87,14 +91,14 @@ implements MouseListener, ActionListener {
 		settlement = (Settlement) unit;
 
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -107,37 +111,37 @@ implements MouseListener, ActionListener {
 		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
 //		countPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(countPanel);
-		
+
 		// Create population indoor label
 		WebLabel populationIndoorHeader = new WebLabel(Msg.getString("TabPanelPopulation.indoor"),
 				WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(populationIndoorHeader);
-		
+
 		populationIndoorCache = settlement.getIndoorPeopleCount();
 		populationIndoorLabel = new WebLabel(populationIndoorCache + "", WebLabel.LEFT);
 		countPanel.add(populationIndoorLabel);
-		
+
 		// Create population capacity label
 		WebLabel populationCapacityHeader = new WebLabel(Msg.getString("TabPanelPopulation.capacity"),
 				WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(populationCapacityHeader);
-		
+
 		populationCapacityCache = settlement.getPopulationCapacity();
 		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
 		countPanel.add(populationCapacityLabel);
-		
+
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
 				5, 10, // initX, initY
 				5, 2); // xPad, yPad
-		
+
         UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelPopulation.TitledBorder") + " ");
 //      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-        
+
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		populationDisplayPanel.setBorder(title);
@@ -171,7 +175,7 @@ implements MouseListener, ActionListener {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
+
 		Settlement settlement = (Settlement) unit;
 
 		int num = settlement.getIndoorPeopleCount();
@@ -255,7 +259,11 @@ implements MouseListener, ActionListener {
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the population monitor button was pressed, create tab in monitor tool.
-		desktop.addModel(new PersonTableModel((Settlement) unit, false));
+		try {
+			desktop.addModel(new PersonTableModel((Settlement) unit, false));
+		} catch (Exception e) {
+			logger.severe("PersonTableModel cannot be added.");
+		}
 	}
 
 	/**
@@ -277,7 +285,7 @@ implements MouseListener, ActionListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -288,5 +296,5 @@ implements MouseListener, ActionListener {
 		populationList = null;
 		populationScrollPanel = null;
 	}
-	
+
 }

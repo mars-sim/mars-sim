@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

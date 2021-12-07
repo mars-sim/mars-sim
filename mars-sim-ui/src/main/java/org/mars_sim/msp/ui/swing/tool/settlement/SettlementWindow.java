@@ -1,9 +1,10 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Lars Naesbye Christensen
  */
+
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
@@ -36,8 +37,7 @@ import com.alee.managers.style.StyleId;
 public class SettlementWindow extends ToolWindow {
 
 	// default logger.
-	// private static final Logger logger =
-	// Logger.getLogger(SettlementWindow.class.getName());
+	// private static final Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
@@ -54,9 +54,6 @@ public class SettlementWindow extends ToolWindow {
 	public static final String SETTLEMENT_MAP = "  Map : (";
 	public static final String PIXEL_MAP = "  Window : (";
 
-	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
-
-//	public static final int TIME_DELAY = 330;
 	public static final int HORIZONTAL = 800;// 630;
 	public static final int VERTICAL = 800;// 590;
 
@@ -68,7 +65,7 @@ public class SettlementWindow extends ToolWindow {
 	private WebStyledLabel pixelXYLabel;
 	private WebStyledLabel popLabel;
 	private WebPanel subPanel;
-	
+
 	/** The status bar. */
 	private WebStatusBar statusBar;
 	/** The main desktop. */
@@ -76,22 +73,21 @@ public class SettlementWindow extends ToolWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-
 	private Font font = new Font("SansSerif", Font.PLAIN, 12);
-	
+
 	/** static MarsClock instance. */
 	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param desktop the main desktop panel.
 	 */
 	public SettlementWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
-		
+
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -122,7 +118,7 @@ public class SettlementWindow extends ToolWindow {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
 		Font font1 = new Font("SansSerif", Font.BOLD, 13);
-		
+
         popLabel = new WebStyledLabel(StyleId.styledlabelShadow);
         popLabel.setFont(font1);
         popLabel.setForeground(Color.DARK_GRAY);
@@ -135,33 +131,33 @@ public class SettlementWindow extends ToolWindow {
 	    pixelXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    pixelXYLabel.setFont(font);
 	    pixelXYLabel.setForeground(Color.GRAY);
-	    
+
 	    WebPanel emptyPanel = new WebPanel();
 	    emptyPanel.setPreferredSize(new Dimension(145, 20));
 	    emptyPanel.add(new WebLabel(""));
-	    
+
 	    WebPanel w0 = new WebPanel();
 	    w0.setPreferredSize(new Dimension(125, 20));
 	    w0.add(pixelXYLabel);
-	    
+
 	    WebPanel w1 = new WebPanel();
 	    w1.setPreferredSize(new Dimension(115, 20));
 	    w1.add(popLabel);
-	    
+
 	    WebPanel w2 = new WebPanel();
 	    w2.setPreferredSize(new Dimension(145, 20));
 	    w2.add(buildingXYLabel);
-	    
+
 	    WebPanel w3 = new WebPanel();
 	    w3.setPreferredSize(new Dimension(135, 20));
 	    w3.add(mapXYLabel);
-	    
-        statusBar.add(w0); 
-        statusBar.add(emptyPanel);  
+
+        statusBar.add(w0);
+        statusBar.add(emptyPanel);
         statusBar.addToMiddle(w1);
         statusBar.addToEnd(w2);
         statusBar.addToEnd(w3);
-        
+
         // Create subPanel for housing the settlement map
 		subPanel = new WebPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
@@ -171,13 +167,13 @@ public class SettlementWindow extends ToolWindow {
 
 		mapPanel = new SettlementMapPanel(desktop, this);
 		mapPanel.createUI();
-		
+
 		// Added SpotlightLayerUI
 		LayerUI<WebPanel> layerUI = new SpotlightLayerUI(mapPanel);
 		JLayer<WebPanel> jlayer = new JLayer<WebPanel>(mapPanel, layerUI);
 		subPanel.add(jlayer, BorderLayout.CENTER);
 		// subPanel.add(mapPanel, BorderLayout.CENTER);
-		
+
 		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		setMinimumSize(new Dimension(HORIZONTAL / 2, VERTICAL / 2));
@@ -186,14 +182,12 @@ public class SettlementWindow extends ToolWindow {
 		setMaximizable(true);
 
 		setVisible(true);
-
-		pack();
-
+//		pack();
 	}
 
 	/**
 	 * Gets the settlement map panel.
-	 * 
+	 *
 	 * @return the settlement map panel.
 	 */
 	public SettlementMapPanel getMapPanel() {
@@ -202,7 +196,7 @@ public class SettlementWindow extends ToolWindow {
 
 	/**
 	 * Gets the main desktop panel for this tool.
-	 * 
+	 *
 	 * @return main desktop panel.
 	 */
 	public MainDesktopPane getDesktop() {
@@ -213,15 +207,15 @@ public class SettlementWindow extends ToolWindow {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
 	}
-	
+
 	public String format1(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return (int)x + ", " + (int)y;
 	}
-	
+
 	/**
 	 * Sets the label of the coordinates within a building
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param blank
@@ -239,7 +233,7 @@ public class SettlementWindow extends ToolWindow {
 
 	/**
 	 * Sets the x/y pixel label of the settlement window
-	 * 
+	 *
 	 * @param point
 	 * @param blank
 	 */
@@ -253,10 +247,10 @@ public class SettlementWindow extends ToolWindow {
 			pixelXYLabel.setText(sb.toString());
 		}
 	}
-	
+
 	/**
 	 * Sets the label of the settlement map coordinates
-	 * 
+	 *
 	 * @param point
 	 * @param blank
 	 */
@@ -270,16 +264,16 @@ public class SettlementWindow extends ToolWindow {
 			mapXYLabel.setText(sb.toString());
 		}
 	}
-	
+
 	/**
 	 * Sets the population label
-	 * 
+	 *
 	 * @param pop
 	 */
 	public void setPop(int pop) {
-        popLabel.setText(POPULATION + pop + WHITESPACES_2);	
+        popLabel.setText(POPULATION + pop + WHITESPACES_2);
 	}
-	
+
 	@Override
 	public void destroy() {
 		buildingXYLabel = null;

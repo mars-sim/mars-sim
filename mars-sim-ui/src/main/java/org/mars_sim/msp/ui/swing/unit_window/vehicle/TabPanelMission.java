@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -51,6 +52,8 @@ import com.alee.laf.text.WebTextArea;
 @SuppressWarnings("serial")
 public class TabPanelMission
 extends TabPanel {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelMission.class.getName());
 
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
@@ -66,18 +69,18 @@ extends TabPanel {
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
-	
+
 	private static MissionManager missionManager;
-	
+
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) { 
+	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
@@ -93,12 +96,12 @@ extends TabPanel {
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-			
-		missionManager = Simulation.instance().getMissionManager(); 
-		
+
+		missionManager = Simulation.instance().getMissionManager();
+
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		// Prepare mission top panel
@@ -176,7 +179,7 @@ extends TabPanel {
 		memberList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				// If double-click, open person dialog.
-				if (arg0.getClickCount() >= 2) 
+				if (arg0.getClickCount() >= 2)
 					getDesktop().openUnitWindow((Unit) memberList.getSelectedValue(), false);
 			}
 		});
@@ -211,7 +214,13 @@ extends TabPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				Vehicle vehicle = (Vehicle) unit;
 				Mission mission = missionManager.getMissionForVehicle(vehicle);
-				if (mission != null) getDesktop().addModel(new PersonTableModel(mission));
+				if (mission != null) {
+					try {
+						getDesktop().addModel(new PersonTableModel(mission));
+					} catch (Exception e) {
+						logger.severe("PersonTableModel cannot be added.");
+					}
+				}
 			}
 		});
 		monitorButton.setEnabled(mission != null);
@@ -224,7 +233,7 @@ extends TabPanel {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
+
 		Vehicle vehicle = (Vehicle) unit;
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
@@ -269,15 +278,15 @@ extends TabPanel {
 		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);
 	}
-	
+
 	public void destroy() {
-		missionTextArea = null; 
-		missionPhaseTextArea = null; 
-		memberListModel = null; 
-		memberList = null; 
-		missionButton = null; 
-		monitorButton = null; 
-		memberCache = null; 
-		missionManager = null; 
+		missionTextArea = null;
+		missionPhaseTextArea = null;
+		memberListModel = null;
+		memberList = null;
+		missionButton = null;
+		monitorButton = null;
+		memberCache = null;
+		missionManager = null;
 	}
 }

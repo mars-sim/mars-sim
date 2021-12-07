@@ -165,7 +165,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param unitManager Manager containing Robot objects.
 	 */
-	public RobotTableModel(MainDesktopPane desktop) {
+	public RobotTableModel(MainDesktopPane desktop) throws Exception {
 		super(Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
 				"RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -188,7 +188,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
-	public RobotTableModel(Crewable vehicle) {
+	public RobotTableModel(Crewable vehicle) throws Exception {
 		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				((Unit) vehicle).getName()), "RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -208,7 +208,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param allAssociated Are all people associated with this settlement to be
 	 *                      displayed?
 	 */
-	public RobotTableModel(Settlement settlement, boolean allAssociated) {
+	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
 		super((allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
 				settlement.getName())
 				: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
@@ -237,7 +237,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param mission Monitored mission Robot objects.
 	 */
-	public RobotTableModel(Mission mission) {
+	public RobotTableModel(Mission mission) throws Exception {
 		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				mission.getTypeID()), "RobotTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);

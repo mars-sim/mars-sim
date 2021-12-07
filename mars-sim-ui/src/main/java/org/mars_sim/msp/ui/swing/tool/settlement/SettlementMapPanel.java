@@ -60,7 +60,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	// Data members
 	private boolean exit = true;
-	
+
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -79,7 +79,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private boolean showDaylightLayer;
 
 	private MainDesktopPane desktop;
-	
+
 	private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
@@ -87,18 +87,18 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private SettlementTransparentPanel settlementTransparentPanel;
 
 	private DayNightMapLayer dayNightMapLayer;
-	
+
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
 
 	private Font font = new Font("SansSerif", Font.BOLD, 11);
-	
+
 	private static Simulation sim;
 	private static UnitManager unitManager;
 	private static MasterClock masterClock;
-	
+
 	/**
 	 * Constructor 1 A panel for displaying a settlement map.
 	 */
@@ -109,15 +109,15 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		if (sim == null)
 			sim = Simulation.instance();
-		
+
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
-		
+
 		if (!unitManager.getSettlements().isEmpty())
 			settlement = (Settlement) unitManager.getSettlements().toArray()[0];
 
 		setLayout(new BorderLayout());
-			
+
 		setDoubleBuffered(true);
 
 		// Initialize data members.
@@ -135,7 +135,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 	}
-	
+
 	public void createUI() {
 
 		initLayers(desktop);
@@ -148,9 +148,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		if (masterClock == null)
 			masterClock = sim.getMasterClock();
-		
+
 		masterClock.addClockListener(this);
-	
+
 		detectMouseMovement();
 		setFocusable(true);
 		requestFocusInWindow();
@@ -162,13 +162,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
-		
+
 		// Set up the dayNightMapLayer layers
 		dayNightMapLayer = new DayNightMapLayer(this);
-		
-		// Check the DayNightLayer at the start of the sim 
+
+		// Check the DayNightLayer at the start of the sim
 		setShowDayNightLayer(true);
-				
+
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
@@ -226,14 +226,14 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					yLast = evt.getY();
 //				}
 			}
-			
+
 			@Override
 			public void mouseMoved(MouseEvent evt) {
 				int x = evt.getX();
 				int y = evt.getY();
-				
+
 				// Call to determine if it should display or remove the building coordinate within a building
-				showBuildingCoord(x, y); 
+				showBuildingCoord(x, y);
 				// Display the pixel coordinate of the window panel
 				// Note: the top left-most corner of window panel is (0,0)
 				settlementWindow.setPixelXYCoord(x, y, false);
@@ -242,18 +242,18 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 				if (exit) {
 					exit = false;
-				}					
+				}
 			}
 		});
-		
+
 		addMouseListener(new MouseAdapter() {
 
 			@Override
 		    public void mouseEntered(MouseEvent evt) {
 				exit = false;
 			}
-		    
-		    
+
+
 			@Override
 			public void mouseExited(MouseEvent evt) {
 
@@ -270,33 +270,33 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					exit = true;
 				}
 			}
-			   
+
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				
-//				if (evt.getButton() == MouseEvent.BUTTON3 
+
+//				if (evt.getButton() == MouseEvent.BUTTON3
 //						|| evt.getButton() == MouseEvent.BUTTON1) {
-				
+
 					// Set initial mouse drag position.
 					xLast = evt.getX();
-					yLast = evt.getY();		
-//				}				
+					yLast = evt.getY();
+//				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
-				
+
 //				if (evt.getButton() == MouseEvent.BUTTON3
 //						|| evt.getButton() == MouseEvent.BUTTON1) {
 //					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					
+
 					if (evt.isPopupTrigger()) {
 						setCursor(new Cursor(Cursor.HAND_CURSOR));
 						doPop(evt);
 					}
 					else
 						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					
+
 					// Reset them to zero to prevent over-dragging of the settlement map
 					xLast = 0;
 					yLast = 0;
@@ -307,20 +307,20 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //			public void mouseClicked(MouseEvent evt) {
 //				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //			}
-			
+
 		});
 	}
 
 	/**
 	 * Checks if the player selected an unit
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void doPop(final MouseEvent evt) {
 //		System.out.println("doPop()");
 		int x = evt.getX();
 		int y = evt.getY();
-		
+
 		final ConstructionSite site = selectConstructionSiteAt(x, y);
 		final Building building = selectBuildingAt(x, y);
 		final Vehicle vehicle = selectVehicleAt(x, y);
@@ -354,17 +354,17 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //		}
 		repaint();
 	}
-		
+
 	/**
 	 * Displays the specific x y coordinates within a building
 	 * (based upon where the mouse is pointing at)
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 */
 	public void showBuildingCoord(int xPixel, int yPixel) {
 		boolean showBlank = true;
-		
+
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
@@ -418,7 +418,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					settlementWindow.setBuildingXYCoord(distanceX, distanceY, false);
 
 					showBlank = false;
-					
+
 					break;
 				}
 //				else {
@@ -427,7 +427,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //				}
 			}
 		}
-		
+
 		if (showBlank)
 			// Remove the building coordinate
 			settlementWindow.setBuildingXYCoord(0, 0, true);
@@ -435,7 +435,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Gets the settlement currently displayed.
-	 * 
+	 *
 	 * @return settlement or null if none.
 	 */
 	public Settlement getSettlement() {
@@ -444,7 +444,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Gets the SettlementWindow class.
-	 * 
+	 *
 	 * @return settlementWindow or null if none.
 	 */
 	public SettlementWindow getSettlementWindow() {
@@ -453,7 +453,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets the settlement to display.
-	 * 
+	 *
 	 * @param settlement the settlement.
 	 */
 	public synchronized void setSettlement(Settlement newSettlement) {
@@ -469,7 +469,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Gets the map scale.
-	 * 
+	 *
 	 * @return scale (pixels per meter).
 	 */
 	public double getScale() {
@@ -478,7 +478,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets the map scale.
-	 * 
+	 *
 	 * @param scale (pixels per meter).
 	 */
 	public void setScale(double scale) {
@@ -490,7 +490,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Gets the map rotation.
-	 * 
+	 *
 	 * @return rotation (radians).
 	 */
 	public double getRotation() {
@@ -499,7 +499,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets the map rotation.
-	 * 
+	 *
 	 * @param rotation (radians).
 	 */
 	public void setRotation(double rotation) {
@@ -525,7 +525,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Moves the center of the map by a given number of pixels.
-	 * 
+	 *
 	 * @param xDiff the X axis pixels.
 	 * @param yDiff the Y axis pixels.
 	 */
@@ -537,7 +537,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		// Correct due to rotation of map.
 		double c = MoreMath.cos(rotation);
 		double s = MoreMath.sin(rotation);
-		
+
 		double realXDiff = c * xDiff + s * yDiff;
 		double realYDiff = c * yDiff - s * xDiff;
 
@@ -550,7 +550,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a person if any person is at the given x and y pixel position.
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedPerson;
@@ -580,7 +580,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects the robot if any robot is at the given x and y pixel position.
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedRobot;
@@ -610,7 +610,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a building
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedBuilding
@@ -672,7 +672,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					if (selectedBuilding != null) {
 						selectBuilding(selectedBuilding);
 					}
-					
+
 					break;
 				}
 			}
@@ -682,7 +682,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a construction site
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selected construction site
@@ -771,7 +771,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a vehicle
-	 * 
+	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedVehicle
@@ -812,7 +812,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a vehicle, as used by TransportWizard
-	 * 
+	 *
 	 * @param xLoc the position of the template building on the displayed map.
 	 * @param yLoc the position of the template building on the displayed map.
 	 * @return selectedVehicle
@@ -868,7 +868,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a person on the map.
-	 * 
+	 *
 	 * @param person the selected person.
 	 */
 	public void selectPerson(Person person) {
@@ -888,17 +888,17 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Displays the person on the map
-	 * 
+	 *
 	 * @param person
 	 */
 	public void displayPerson(Person person) {
 		if (settlement != null && person != null)
 			selectedPerson.put(settlement, person);
 	}
-	
+
 	/**
 	 * Get the selected person for the current settlement.
-	 * 
+	 *
 	 * @return the selected person.
 	 */
 	public Person getSelectedPerson() {
@@ -911,7 +911,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Selects a building on the map.
-	 * 
+	 *
 	 * @param person the selected building.
 	 */
 	public void selectBuilding(Building building) {
@@ -924,10 +924,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the selected building for the current settlement.
-	 * 
+	 *
 	 * @return the selected building.
 	 */
 	public Building getSelectedBuilding() {
@@ -937,10 +937,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Selects a robot on the map.
-	 * 
+	 *
 	 * @param robot the selected robot.
 	 */
 	public void selectRobot(Robot robot) {
@@ -960,17 +960,17 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Displays the robot on the map
-	 * 
+	 *
 	 * @param robot
 	 */
 	public void displayRobot(Robot robot) {
 		if (settlement != null && robot != null)
 			selectedRobot.put(settlement, robot);
 	}
-	
+
 	/**
 	 * Get the selected Robot for the current settlement.
-	 * 
+	 *
 	 * @return the selected Robot.
 	 */
 	public Robot getSelectedRobot() {
@@ -984,7 +984,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	/**
 	 * Convert a pixel X,Y position to a X,Y (meter) position local to the
 	 * settlement in view.
-	 * 
+	 *
 	 * @param xPixel the pixel X position.
 	 * @param yPixel the pixel Y position.
 	 * @return the X,Y settlement position.
@@ -1013,7 +1013,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if building labels should be displayed.
-	 * 
+	 *
 	 * @return true if building labels should be displayed.
 	 */
 	public boolean isShowBuildingLabels() {
@@ -1022,7 +1022,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if building labels should be displayed.
-	 * 
+	 *
 	 * @param showLabels true if building labels should be displayed.
 	 */
 	public void setShowBuildingLabels(boolean showLabels) {
@@ -1036,7 +1036,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if construction site labels should be displayed.
-	 * 
+	 *
 	 * @return true if construction site labels should be displayed.
 	 */
 	public boolean isShowConstructionLabels() {
@@ -1045,7 +1045,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if construction site labels should be displayed.
-	 * 
+	 *
 	 * @param showLabels true if construction site labels should be displayed.
 	 */
 	public void setShowConstructionLabels(boolean showLabels) {
@@ -1060,7 +1060,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if person labels should be displayed.
-	 * 
+	 *
 	 * @return true if person labels should be displayed.
 	 */
 	public boolean isShowPersonLabels() {
@@ -1069,7 +1069,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if person labels should be displayed.
-	 * 
+	 *
 	 * @param showLabels true if person labels should be displayed.
 	 */
 	public void setShowPersonLabels(boolean showLabels) {
@@ -1083,7 +1083,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if Robot labels should be displayed.
-	 * 
+	 *
 	 * @return true if Robot labels should be displayed.
 	 */
 	public boolean isShowRobotLabels() {
@@ -1092,7 +1092,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if Robot labels should be displayed.
-	 * 
+	 *
 	 * @param showLabels true if Robot labels should be displayed.
 	 */
 	public void setShowRobotLabels(boolean showLabels) {
@@ -1106,7 +1106,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if vehicle labels should be displayed.
-	 * 
+	 *
 	 * @return true if vehicle labels should be displayed.
 	 */
 	public boolean isShowVehicleLabels() {
@@ -1115,7 +1115,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if vehicle labels should be displayed.
-	 * 
+	 *
 	 * @param showLabels true if vehicle labels should be displayed.
 	 */
 	public void setShowVehicleLabels(boolean showLabels) {
@@ -1129,7 +1129,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Checks if DaylightLayer should be displayed.
-	 * 
+	 *
 	 * @return true if DaylightLayer should be displayed.
 	 */
 	public boolean isDaylightTrackingOn() {
@@ -1138,7 +1138,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	/**
 	 * Sets if DayNightLayershould be displayed.
-	 * 
+	 *
 	 * @param showDayNightLayer true if DayNightLayer should be displayed.
 	 */
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
@@ -1151,8 +1151,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	public DayNightMapLayer getDayNightMapLayer() {
 		return dayNightMapLayer;
 	}
-	
-	
+
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
@@ -1164,7 +1164,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //	/*
 //	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
 //	 */
-///		
+///
 //	public void paintDoubleBuffer() {
 //		if (dbImage == null) {
 //			dbImage = createImage(width, height);
@@ -1177,20 +1177,20 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //		}
 //		Graphics2D g2d = (Graphics2D) dbg;
 
-		if (building != null 
+		if (building != null
 				|| (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME))) {
 			Graphics2D g2d = (Graphics2D) g;
-	
+
 			g2d.setFont(font);
-			
+
 			// long startTime = System.nanoTime();
-	
+
 			// Set graphics rendering hints.
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-	
+
 			// Display all map layers.
 			Iterator<SettlementMapLayer> i = mapLayers.iterator();
 			while (i.hasNext()) {

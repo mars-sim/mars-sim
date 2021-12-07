@@ -103,14 +103,14 @@ public class CropTableModel extends UnitTableModel {
 	 *
 	 * @param unitManager Unit manager that holds settlements.
 	 */
-	public CropTableModel() {
+	public CropTableModel() throws Exception {
 		super(Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
 
 		totalNumCropMap = new ConcurrentHashMap<>();
-		buildings = new ArrayList<Building>();
-		paddedSettlements = new ArrayList<Settlement>();
+		buildings = new ArrayList<>();
+		paddedSettlements = new ArrayList<>();
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
@@ -127,7 +127,7 @@ public class CropTableModel extends UnitTableModel {
 		unitManager.addUnitManagerListener(unitManagerListener);
 
 		if (catMap == null) {
-			catMap = new ConcurrentHashMap<Integer, String>();
+			catMap = new ConcurrentHashMap<>();
 
 			for (CropCategoryType type : CropCategoryType.values()) {
 				int n = type.ordinal();
@@ -280,12 +280,10 @@ public class CropTableModel extends UnitTableModel {
 	 * @param b Building
 	 * @return total num of crops
 	 */
-	// Called by getValueAt()
 	public int getTotalNumOfAllCrops(Building b) {
 		int num = 0;
 
-		Farming farm = b.getFarming();
-		num += farm.getCrops().size();
+		num += b.getFarming().getCrops().size();
 
 		totalNumCropMap.put(b, num);
 		return num;
@@ -298,7 +296,6 @@ public class CropTableModel extends UnitTableModel {
 	 * @param Unit newUnit
 	 * @return an Integer List
 	 */
-	// Called by addUnit()
 	public List<Integer> setUpNewCropCache(Building b) {// Unit newUnit) {
 
 		List<Integer> intList = new ArrayList<Integer>(numCropCat);
@@ -306,14 +303,14 @@ public class CropTableModel extends UnitTableModel {
 		for (int i = 0; i < numCropCat; i++)
 			intList.add(0);
 
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+//		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		try {
-			Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
+			Farming farm = b.getFarming();
 			List<Crop> cropsList = farm.getCrops();
-			int kk = 0;
+//			int kk = 0;
 			Iterator<Crop> k = cropsList.iterator();
 			while (k.hasNext()) {
-				kk++;
+//				kk++;
 				Crop crop = k.next();
 				String catName = crop.getCropType().getCropCategoryType().getName();
 				int num = getCategoryNum(catName);
@@ -434,7 +431,7 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	protected void addUnit(Unit newUnit) {
 		if (cropCatMap == null)
-			cropCatMap = new ConcurrentHashMap<Building, List<Integer>>();
+			cropCatMap = new ConcurrentHashMap<>();
 		// if cropCache does not a record of the settlement
 		if (!paddedSettlements.contains(newUnit)) {
 			try {// Setup a cropCache and cropMap in CropTableModel

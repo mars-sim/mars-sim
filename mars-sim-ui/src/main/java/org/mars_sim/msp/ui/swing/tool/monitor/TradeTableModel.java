@@ -35,7 +35,8 @@ public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
-	private static final String TRADE_GOODS = "Name";
+	private static final String TRADE_GOODS = "Good(s)";
+	private static final String TRADE_NAME = "Name";
 	private static final String QUANTITY = "kg/# - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
@@ -144,7 +145,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return TRADE_GOODS;
+		if (columnIndex == 0) return TRADE_NAME;
 		else if (columnIndex == 1) return CATEGORY;
 		else if (columnIndex == 2) return TYPE;
 		else {

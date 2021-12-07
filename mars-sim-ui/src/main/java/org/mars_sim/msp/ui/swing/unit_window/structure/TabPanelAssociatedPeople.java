@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelAssociatedPeople.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -31,6 +31,7 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -44,11 +45,14 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
- * The AssociatedPeopleTabPanel is a tab panel for information on all people
+ * The TabPanelAssociatedPeople is a tab panel for information on all people
  * associated with a settlement.
  */
 @SuppressWarnings("serial")
 public class TabPanelAssociatedPeople extends TabPanel implements MouseListener, ActionListener {
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelAssociatedPeople.class.getName());
 
 	// Data members
 	/** Is UI constructed. */
@@ -57,21 +61,21 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 	private int populationCitizensCache;
 	private int populationCapacityCache;
 	private int populationIndoorCache;
-	
+
 	private Settlement settlement;
-	
+
 	private AssociatedPopulationListModel populationListModel;
 	private JList<Person> populationList;
 	private WebScrollPane populationScrollPanel;
-	
+
 	private WebLabel populationCitizensLabel;
 	private WebLabel populationCapacityLabel;
 	private WebLabel populationIndoorLabel;
 
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -84,14 +88,14 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		settlement = (Settlement) unit;
 
 	}
-	
+
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
-		
+
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -110,7 +114,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		WebLabel populationNumHeader = new WebLabel(Msg.getString("TabPanelAssociatedPeople.associated"),
 				WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(populationNumHeader);
-		
+
 		populationCitizensCache = settlement.getNumCitizens();
 		populationCitizensLabel = new WebLabel(populationCitizensCache + "", WebLabel.LEFT);
 		countPanel.add(populationCitizensLabel);
@@ -119,25 +123,25 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		WebLabel populationIndoorHeader = new WebLabel(Msg.getString("TabPanelAssociatedPeople.indoor"),
 				WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(populationIndoorHeader);
-		
+
 		populationIndoorCache = settlement.getIndoorPeopleCount();
 		populationIndoorLabel = new WebLabel(populationIndoorCache + "", WebLabel.LEFT);
 		countPanel.add(populationIndoorLabel);
-		
+
 		// Create population capacity label
 		WebLabel populationCapacityHeader = new WebLabel(Msg.getString("TabPanelAssociatedPeople.capacity"),
 				WebLabel.RIGHT); // $NON-NLS-1$
 		countPanel.add(populationCapacityHeader);
-		
+
 		populationCapacityCache = settlement.getPopulationCapacity();
 		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
 		countPanel.add(populationCapacityLabel);
-		
+
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
 				5, 10, // initX, initY
 				5, 2); // xPad, yPad
-		
+
         UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         TitledBorder title = BorderFactory.createTitledBorder(
@@ -145,7 +149,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 //      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-        
+
 		// Create spring layout population display panel
 		WebPanel populationDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		populationDisplayPanel.setBorder(title);
@@ -172,11 +176,11 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelAssociatedPeople.tooltip.monitor")); //$NON-NLS-1$
 		populationDisplayPanel.add(monitorButton);
-		
+
 //		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT));
 ////		buttonPane.setPreferredSize(new Dimension(25, 25));
 //		buttonPane.add(monitorButton);
-//		
+//
 //		populationDisplayPanel.add(buttonPane);
 
 	}
@@ -201,7 +205,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 			populationIndoorCache = num;
 			populationIndoorLabel.setText(populationIndoorCache + "");
 		}
-		
+
 		int cap = settlement.getPopulationCapacity();
 		// Update capacity
 		if (populationCapacityCache != cap) {
@@ -272,7 +276,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 	/**
 	 * Mouse clicked event occurs.
-	 * 
+	 *
 	 * @param event the mouse event
 	 */
 	public void mouseClicked(MouseEvent event) {
@@ -299,12 +303,16 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 	/**
 	 * Action event occurs.
-	 * 
+	 *
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the population monitor button was pressed, create tab in monitor tool.
-		desktop.addModel(new PersonTableModel((Settlement) unit, true));
+		try {
+			desktop.addModel(new PersonTableModel((Settlement) unit, true));
+		} catch (Exception e) {
+			logger.severe("PersonTableModel cannot be added.");
+		}
 	}
 
 	/**

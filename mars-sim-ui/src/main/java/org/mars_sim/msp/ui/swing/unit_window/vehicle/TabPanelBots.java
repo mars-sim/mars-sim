@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBots.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -23,6 +23,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -36,38 +37,37 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
-/** 
+/**
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
 @SuppressWarnings("serial")
 public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelBots.class.getName());
 
 	private WebLabel crewNumLabel;
 	private WebLabel crewCapLabel;
 	private DefaultListModel<Robot> crewListModel;
-	//private DefaultListModel<Unit> crewListModel;
 	private JList<Robot> crewList;
-	//private JList<Unit> crewList;
 	private Collection<Robot> crewCache;
-	//private Collection<Unit> crewCache;
 
 	private int crewNumCache;
 	private int crewCapacityCache;
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
-	
+
 	/** The Crewable instance. */
 	private Crewable crewable;
-	
+
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelBots(Vehicle vehicle, MainDesktopPane desktop) { 
+	public TabPanelBots(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
@@ -83,7 +83,7 @@ implements MouseListener, ActionListener {
 	public boolean isUIDone() {
 		return uiDone;
 	}
-	
+
 	public void initializeUI() {
 		uiDone = true;
 
@@ -93,7 +93,7 @@ implements MouseListener, ActionListener {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
 		topContentPanel.add(titlePanel);
-		
+
 		// Create crew count panel
 		WebPanel crewCountPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
 //		crewCountPanel.setBorder(new MarsPanelBorder());
@@ -174,7 +174,7 @@ implements MouseListener, ActionListener {
 
 	}
 
-	/** 
+	/**
 	 * Action event occurs.
 	 * @param event the action event
 	 */
@@ -182,10 +182,14 @@ implements MouseListener, ActionListener {
 		// If the crew monitor button was pressed, create tab in monitor tool.
 		Vehicle vehicle = (Vehicle) unit;
 		Crewable crewable = (Crewable) vehicle;
-		desktop.addModel(new RobotTableModel(crewable));
+		try {
+			desktop.addModel(new RobotTableModel(crewable));
+		} catch (Exception e) {
+			logger.severe("RobotTableModel cannot be added.");
+		}
 	}
 
-	/** 
+	/**
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */
@@ -201,12 +205,12 @@ implements MouseListener, ActionListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
-	
+
 	public void destroy() {
-		crewNumLabel = null; 
-		crewCapLabel = null; 
-		crewListModel = null; 
-		crewList = null; 
-		crewCache = null; 
+		crewNumLabel = null;
+		crewCapLabel = null;
+		crewListModel = null;
+		crewList = null;
+		crewCache = null;
 	}
 }

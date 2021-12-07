@@ -58,6 +58,7 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -302,7 +303,7 @@ public class MainDesktopPane extends JDesktopPane
 	/*
 	 * Creates tool windows
 	 */
-	private void prepareToolWindows() {
+	private void prepareToolWindows() throws Exception {
 		if (toolWindows != null)
 			toolWindows.clear();
 
@@ -313,8 +314,10 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				commanderWindow.setClosed(true);
 			} catch (PropertyVetoException e) {
+				logger.severe("Commander Window not ready: " + e.getMessage());
 			}
 			toolWindows.add(commanderWindow);
+			logger.config("toolWindows.add(commanderWindow)");
 		}
 
 		// Prepare navigator window
@@ -322,76 +325,91 @@ public class MainDesktopPane extends JDesktopPane
 		try {
 			navWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Navigator Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(navWindow);
-
-//		logger.config("toolWindows.add(navWindow)");
+		logger.config("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
 		try {
 			searchWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Search Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(searchWindow);
+		logger.config("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
 		timeWindow = new TimeWindow(this);
 		try {
 			timeWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Time Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(timeWindow);
+		logger.config("toolWindows.add(timeWindow)");
 
 		// Prepare settlement tool window
 		settlementWindow = new SettlementWindow(this);
 		try {
 			settlementWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Settlement Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
+		logger.config("toolWindows.add(settlementWindow)");
 
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try {
 			scienceWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Science Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(scienceWindow);
+		logger.config("toolWindows.add(scienceWindow)");
 
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
 		try {
 			guideWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Guide Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(guideWindow);
+		logger.config("toolWindows.add(guideWindow)");
 
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try {
 			monitorWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Monitor Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(monitorWindow);
+		logger.config("toolWindows.add(monitorWindow)");
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);
 		try {
 			missionWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Mission Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(missionWindow);
+		logger.config("toolWindows.add(missionWindow)");
 
 		// Prepare resupply tool window
 		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
 		try {
 			resupplyWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
+			logger.severe("Resupply Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(resupplyWindow);
-
+		logger.config("toolWindows.add(resupplyWindow)");
 	}
 
 	/*
@@ -841,7 +859,13 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void resetDesktop() {
 		// Prepare tool windows
-		SwingUtilities.invokeLater(() -> prepareToolWindows());
+		SwingUtilities.invokeLater(() -> {
+			try {
+				prepareToolWindows();
+			} catch (Exception e) {
+				logger.severe("Cannot prepare tool windows: " + e.getMessage());
+			}
+		});
 
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 
@@ -1100,6 +1124,10 @@ public class MainDesktopPane extends JDesktopPane
 		return eventTableModel;
 	}
 
+	public SettlementMapPanel getSettlementMapPanel() {
+		return settlementWindow.getMapPanel();
+	}
+
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 	}
@@ -1123,7 +1151,6 @@ public class MainDesktopPane extends JDesktopPane
 
 	public boolean isEmpty() {
         return super.getAllFrames().length == 0;
-
 	}
 
 	/**

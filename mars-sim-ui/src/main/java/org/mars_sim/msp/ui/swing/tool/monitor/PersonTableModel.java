@@ -54,8 +54,6 @@ public class PersonTableModel extends UnitTableModel {
 
 	 private static final Logger logger =  Logger.getLogger(PersonTableModel.class.getName());
 
-	// private static MainDesktopPane desktop;
-
 	// Column indexes
 	/** Person name column. */
 	private final static int NAME = 0;
@@ -184,7 +182,7 @@ public class PersonTableModel extends UnitTableModel {
 	 *
 	 * @param unitManager Manager containing Person objects.
 	 */
-	public PersonTableModel(MainDesktopPane desktop) {
+	public PersonTableModel(MainDesktopPane desktop) throws Exception {
 		super(Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -208,7 +206,7 @@ public class PersonTableModel extends UnitTableModel {
 	 *
 	 * @param vehicle Monitored vehicle Person objects.
 	 */
-	public PersonTableModel(Crewable vehicle) {
+	public PersonTableModel(Crewable vehicle) throws Exception {
 		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit) vehicle).getName()), "PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -228,7 +226,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param allAssociated Are all people associated with this settlement to be
 	 *                      displayed?
 	 */
-	public PersonTableModel(Settlement settlement, boolean allAssociated) {
+	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
 		super((allAssociated ? Msg.getString("PersonTableModel.nameCitizens", //$NON-NLS-1$
 						settlement.getName())
 							 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
@@ -257,18 +255,18 @@ public class PersonTableModel extends UnitTableModel {
 	 *
 	 * @param mission Monitored mission Person objects.
 	 */
-	public PersonTableModel(Mission mission) {
+	public PersonTableModel(Mission mission) throws Exception {
 		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getTypeID()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.MISSION_PEOPLE;
 		this.mission = mission;
-		Collection<Person> missionPeople = new ArrayList<Person>();
+		Collection<Person> missionPeople = new ArrayList<>();
 		Iterator<MissionMember> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			if (member instanceof Person) {
+			if (member.getUnitType() == UnitType.PERSON) {
 				missionPeople.add((Person) member);
 			}
 		}
@@ -290,12 +288,12 @@ public class PersonTableModel extends UnitTableModel {
 	protected void addUnit(Unit newUnit) {
 
 		if (performanceValueCache == null) {
-			performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
+			performanceValueCache = new HashMap<>();
 		}
 
 		if (!performanceValueCache.containsKey(newUnit)) {
 			try {
-				Map<Integer, String> performanceItemMap = new HashMap<Integer, String>(4);
+				Map<Integer, String> performanceItemMap = new HashMap<>();
 
 				Person person = (Person) newUnit;
 				PhysicalCondition condition = person.getPhysicalCondition();
@@ -335,7 +333,7 @@ public class PersonTableModel extends UnitTableModel {
 	protected void removeUnit(Unit oldUnit) {
 
 		if (performanceValueCache == null) {
-			performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
+			performanceValueCache = new HashMap<>();
 		}
 		if (performanceValueCache.containsKey(oldUnit)) {
 			Map<Integer, String> performanceItemMap = performanceValueCache.get(oldUnit);
@@ -351,21 +349,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-
-		// WARNING : the instance of desktop is NOT guarantee
-		// if (desktop.getMainScene() != null) {
-		// Platform.runLater(
-		// new PersonTableUpdater(event, this)
-		// );
-
-		// }
-		// else {
-		// WARNING : the use of SwingUtilities below seems to create StackOverflow from
-		// time to time in eclipse
 		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
-//		}
-
-
 	}
 
 	/**
@@ -379,9 +363,6 @@ public class PersonTableModel extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber() && getUnit(rowIndex) instanceof Person) {
 			Person person = (Person) getUnit(rowIndex);
-			// boolean isDead = person.getPhysicalCondition().isDead();
-			// PhysicalCondition pc = person.getPhysicalCondition();
-			// Mind mind = person.getMind();
 
 			switch (columnIndex) {
 
@@ -614,7 +595,7 @@ public class PersonTableModel extends UnitTableModel {
 		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
 
 		static {
-			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
+			HashMap<UnitEventType, Integer> m = new HashMap<>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
 			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
 			m.put(UnitEventType.HUNGER_EVENT, ENERGY);

@@ -180,7 +180,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 *
 	 * @param unitManager Proxy manager contains displayable Vehicles.
 	 */
-	public VehicleTableModel() { //UnitManager unitManager) {
+	public VehicleTableModel() throws Exception {
 		super(
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$

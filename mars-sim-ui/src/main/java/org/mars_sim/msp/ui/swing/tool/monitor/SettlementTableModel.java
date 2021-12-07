@@ -153,7 +153,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
 	 */
-	public SettlementTableModel() {
+	public SettlementTableModel() throws Exception {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
@@ -173,7 +173,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 *
 	 * @param settlement
 	 */
-	public SettlementTableModel(Settlement settlement) {
+	public SettlementTableModel(Settlement settlement) throws Exception {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 

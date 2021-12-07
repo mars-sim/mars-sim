@@ -38,7 +38,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	private String countingMsgKey;
 	/** Names of the displayed columns. */
 	private String columnNames[];
-	
+
 	/** Types of the individual columns. */
 	private Class<?> columnTypes[];
 	/** Collection of units. */
@@ -48,7 +48,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name           Name of the model.
 	 * @param countingMsgKey {@link String} key for calling the internationalized
 	 *                       text that counts the number of units. should be a valid
@@ -57,7 +57,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param names          Names of the columns displayed.
 	 * @param types          The Classes of the individual columns.
 	 */
-	protected UnitTableModel(String name, String countingMsgKey, String names[], Class<?> types[]) {
+	protected UnitTableModel(String name, String countingMsgKey, String names[], Class<?> types[]) throws Exception {
 		// Initialize data members
 		this.name = name;
 		this.countingMsgKey = countingMsgKey;
@@ -69,7 +69,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Add a unit to the model.
-	 * 
+	 *
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
@@ -85,7 +85,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Remove a unit from the model.
-	 * 
+	 *
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
@@ -103,7 +103,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Gets the index value of a given unit.
-	 * 
+	 *
 	 * @param unit the unit
 	 * @return the index value.
 	 */
@@ -123,7 +123,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Adds a collection of units to the model.
-	 * 
+	 *
 	 * @param newUnits the units to add.
 	 */
 	protected void addAll(Collection<Unit> newUnits) {
@@ -146,7 +146,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Checks if unit is in table model already.
-	 * 
+	 *
 	 * @param unit the unit to check.
 	 * @return true if unit is in table.
 	 */
@@ -156,7 +156,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Gets the number of units in the model.
-	 * 
+	 *
 	 * @return number of units.
 	 */
 	protected int getUnitNumber() {
@@ -191,7 +191,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Return the number of columns
-	 * 
+	 *
 	 * @return column count.
 	 */
 	public int getColumnCount() {
@@ -200,7 +200,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Return the type of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -213,7 +213,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Return the name of the column requested.
-	 * 
+	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
@@ -226,7 +226,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Get the name of the model.
-	 * 
+	 *
 	 * @return model name.
 	 */
 	public String getName() {
@@ -235,7 +235,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Get the number of rows in the model.
-	 * 
+	 *
 	 * @return the number of Units.
 	 */
 	public int getRowCount() {
@@ -244,7 +244,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Is this model already ordered according to some external criteria.
-	 * 
+	 *
 	 * @return FALSE as the Units have no natural order.
 	 */
 	public boolean getOrdered() {
@@ -253,7 +253,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Get the unit at the specified row.
-	 * 
+	 *
 	 * @param index Index of the row.
 	 * @return Unit matching row
 	 */
@@ -274,7 +274,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Gets the index of the row a given unit is at.
-	 * 
+	 *
 	 * @param unit the unit to find.
 	 * @return the row index or -1 if not in table model.
 	 */
@@ -287,7 +287,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 
 	/**
 	 * Get the unit at the specified row.
-	 * 
+	 *
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit at specified position.
 	 */

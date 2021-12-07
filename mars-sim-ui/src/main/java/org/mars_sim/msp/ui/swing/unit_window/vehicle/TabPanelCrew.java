@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCrew.java
- * @date 2021-11-09
+ * @date 2021-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -56,10 +57,11 @@ import com.alee.laf.text.WebTextField;
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
  */
+@SuppressWarnings("serial")
 public class TabPanelCrew extends TabPanel implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelCrew.class.getName());
 
 	private WebLabel crewNumLabel;
 
@@ -262,7 +264,11 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// If the crew monitor button was pressed, create tab in monitor tool.
 		Vehicle vehicle = (Vehicle) unit;
 		Crewable crewable = (Crewable) vehicle;
-		desktop.addModel(new PersonTableModel(crewable));
+		try {
+			desktop.addModel(new PersonTableModel(crewable));
+		} catch (Exception e) {
+			logger.severe("PersonTableModel cannot be added.");
+		}
 	}
 
 	public void destroy() {
