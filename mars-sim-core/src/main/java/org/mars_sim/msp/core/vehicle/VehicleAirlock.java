@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -35,9 +34,9 @@ extends Airlock {
 	// Data members.
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;
-	private Point2D airlockInsidePos;
-	private Point2D airlockInteriorPos;
-	private Point2D airlockExteriorPos;
+	private LocalPosition airlockInsidePos;
+	private LocalPosition airlockInteriorPos;
+	private LocalPosition airlockExteriorPos;
 
 	/**
 	 * Constructor.
@@ -64,13 +63,13 @@ extends Airlock {
 		}
 
 		// Determine airlock interior position.
-		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorLoc.getX(), interiorLoc.getY(), vehicle);
+		airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorLoc, vehicle);
 
 		// Determine airlock exterior position.
-		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorLoc.getX(), exteriorLoc.getY(), vehicle);
+		airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorLoc, vehicle);
 
 		// Determine airlock inside position.
-		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(loc.getX(), loc.getY(), vehicle);
+		airlockInsidePos = LocalAreaUtil.getLocalRelativePosition(loc, vehicle);
 
 	}
 
@@ -84,40 +83,7 @@ extends Airlock {
         return stepInside(person);
     }
 
-//   @Override
-//    protected boolean egress(Person person) {
-//    	boolean successful = false;
-//
-//        if (inAirlock(person)) {
-//            // check if the airlock has been de-pressurized, ready to open the outer door to
-//            // get exposed to the outside air and release the person
-//            successful = stepOnMars(person);
-//        }
-//        else {
-//            throw new IllegalStateException(person.getName() + " not in " + getEntityName() + ".");
-//        }
-//
-//        return successful;
-//    }
-//
-//    @Override
-//    protected boolean ingress(Person person) {
-//    	boolean successful = false;
-//
-//        if (inAirlock(person)) {
-//            // check if the airlock has been sealed from outside and pressurized, ready to
-//            // open the inner door to release the person into the settlement
-//            successful = stepInside(person);
-//        }
-//
-//        else {
-//            throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName() + ".");
-//        }
-//
-//        return successful;
-//    }
-
-	   /**
+    /**
      * Steps back into the airlock of a vehicle
      *
      * @param person
@@ -191,27 +157,27 @@ extends Airlock {
 	}
 
 	@Override
-	public Point2D getAvailableInteriorPosition(boolean value) {
+	public LocalPosition getAvailableInteriorPosition(boolean value) {
 		return getAvailableInteriorPosition();
 	}
 
 	@Override
-	public Point2D getAvailableExteriorPosition(boolean value) {
+	public LocalPosition getAvailableExteriorPosition(boolean value) {
 		return getAvailableExteriorPosition();
 	}
 
 	@Override
-	public Point2D getAvailableInteriorPosition() {
+	public LocalPosition getAvailableInteriorPosition() {
 		return airlockInteriorPos;
 	}
 
 	@Override
-	public Point2D getAvailableExteriorPosition() {
+	public LocalPosition getAvailableExteriorPosition() {
 		return airlockExteriorPos;
 	}
 
 	@Override
-	public Point2D getAvailableAirlockPosition() {
+	public LocalPosition getAvailableAirlockPosition() {
 		return airlockInsidePos;
 	}
 

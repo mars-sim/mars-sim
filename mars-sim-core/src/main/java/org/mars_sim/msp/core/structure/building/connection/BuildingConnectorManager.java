@@ -333,8 +333,8 @@ public class BuildingConnectorManager implements Serializable {
 			throw new IllegalArgumentException("Building arguments cannot be null");
 		}
 
-		InsideBuildingPath validPath = determineShortestPath(building1, building1.getXLocation(),
-				building1.getYLocation(), building2, building2.getXLocation(), building2.getYLocation());
+		InsideBuildingPath validPath = determineShortestPath(building1, building1.getPosition(),
+															building2, building2.getPosition());
 
 		if (validPath != null) {
 			result = true;

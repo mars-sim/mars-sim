@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -697,8 +698,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		for (Person p : getIndoorPeople()) {
 			logger.log(this, p, Level.INFO, 4_000,
 						"Had to end the current indoor tasks at ("
-						+ Math.round(p.getXLocation()*10.0)/10.0 + ", "
-						+ Math.round(p.getYLocation()*10.0)/10.0 + ")", null);
+						+  p.getPosition() + ")", null);
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
 	}
@@ -1745,8 +1745,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
 				if (!chamberFull || !reservationFull) {
-					double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
-							person.getYLocation());
+					double distance = building.getPosition().getDistanceTo(person.getPosition());
 					if (distance < leastDistance) {
 						result = building.getEVA().getAirlock();
 						leastDistance = distance;
@@ -1905,7 +1904,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @param location  Starting position.
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Building building, Point2D location) {
+	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
@@ -1922,8 +1921,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			if ((!chamberFull || !reservationFull)
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
-				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), location.getX(),
-						location.getY());
+				double distance = nextBuilding.getPosition().getDistanceTo(location);
 				if (distance < leastDistance) {
 					EVA eva = nextBuilding.getEVA();
 					if (eva != null) {
@@ -1944,7 +1942,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @return true if an airlock is walkable from the building.
 	 */
 	public boolean hasWalkableAvailableAirlock(Building building) {
-		return (getClosestWalkableAvailableAirlock(building, new Point2D.Double(0D, 0D)) != null);
+		return (getClosestWalkableAvailableAirlock(building, LocalPosition.DEFAULT_POSITION) != null);
 	}
 
 	/**

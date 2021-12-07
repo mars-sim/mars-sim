@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -117,9 +116,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private double cabinAirVolume;
 
 	/** The rover's lab activity spots. */
-	private List<Point2D> labActivitySpots;
+	private List<LocalPosition> labActivitySpots;
 	/** The rover's sick bay activity spots. */
-	private List<Point2D> sickBayActivitySpots;
+	private List<LocalPosition> sickBayActivitySpots;
 
 	/** The rover's occupants. */
 	private Set<Person> occupants;
@@ -854,7 +853,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 *
 	 * @return list of activity spots as Point2D objects.
 	 */
-	public List<Point2D> getLabActivitySpots() {
+	public List<LocalPosition> getLabActivitySpots() {
 		return labActivitySpots;
 	}
 
@@ -881,7 +880,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 *
 	 * @return list of activity spots as Point2D objects.
 	 */
-	public List<Point2D> getSickBayActivitySpots() {
+	public List<LocalPosition> getSickBayActivitySpots() {
 		return sickBayActivitySpots;
 	}
 

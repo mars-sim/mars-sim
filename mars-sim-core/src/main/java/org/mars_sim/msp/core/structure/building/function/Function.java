@@ -13,12 +13,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -49,7 +51,7 @@ public abstract class Function implements Serializable, Temporal {
 
 	private FunctionType type;
 	protected Building building;
-	private List<Point2D> activitySpots;
+	private List<LocalPosition> activitySpots;
 
 	private long lastPulse = 0; // First initial pulse is always 1
 
@@ -84,7 +86,6 @@ public abstract class Function implements Serializable, Temporal {
 		this.building = building;
 
 		// load any activity hotspots
-		if (buildingConfig == null) System.out.println("buildingConfig is null");
 		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), confType);
 	}
 
@@ -202,19 +203,18 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param person the person looking for the activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
-	public Point2D getAvailableActivitySpot(Person person) {
+	public LocalPosition getAvailableActivitySpot(Person person) {
 
-		Point2D result = null;
+		LocalPosition result = null;
 
 		if (activitySpots != null) {
 
-			List<Point2D> availableActivitySpots = new ArrayList<>();
-			Iterator<Point2D> i = activitySpots.iterator();
+			List<LocalPosition> availableActivitySpots = new ArrayList<>();
+			Iterator<LocalPosition> i = activitySpots.iterator();
 			while (i.hasNext()) {
-				Point2D activitySpot = i.next();
+				LocalPosition activitySpot = i.next();
 				// Convert activity spot from building local to settlement local.
-				Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
-						activitySpot.getY(), getBuilding());
+				LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
 
 				// Check if spot is unoccupied.
 				boolean available = true;
@@ -225,8 +225,7 @@ public abstract class Function implements Serializable, Temporal {
 					if (!tempPerson.equals(person)) {
 
 						// Check if person's location is very close to activity spot.
-						Point2D personLoc = new Point2D.Double(tempPerson.getXLocation(), tempPerson.getYLocation());
-						if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, personLoc)) {
+						if (settlementActivitySpot.isClose(tempPerson.getPosition())) {
 							available = false;
 						}
 					}
@@ -255,22 +254,21 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param robot the bot looking for the activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
-	public Point2D getAvailableActivitySpot(Robot robot) {
+	public LocalPosition getAvailableActivitySpot(Robot robot) {
 
-		Point2D result = null;
+		LocalPosition result = null;
 
 		if (activitySpots != null) {
 
 			if (isAtActivitySpot(robot)) {
-				result = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+				result = robot.getPosition();
 			} else {
-				List<Point2D> availableActivitySpots = new ArrayList<>();
-				Iterator<Point2D> i = activitySpots.iterator();
+				List<LocalPosition> availableActivitySpots = new ArrayList<>();
+				Iterator<LocalPosition> i = activitySpots.iterator();
 				while (i.hasNext()) {
-					Point2D activitySpot = i.next();
+					LocalPosition activitySpot = i.next();
 					// Convert activity spot from building local to settlement local.
-					Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
-							activitySpot.getY(), getBuilding());
+					LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
 
 					// Check if spot is unoccupied.
 					boolean available = true;
@@ -281,8 +279,7 @@ public abstract class Function implements Serializable, Temporal {
 						if (!tempRobot.equals(robot)) {
 
 							// Check if robot's location is very close to activity spot.
-							Point2D robotLoc = new Point2D.Double(tempRobot.getXLocation(), tempRobot.getYLocation());
-							if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, robotLoc)) {
+							if (settlementActivitySpot.isClose(tempRobot.getPosition())) {
 								available = false;
 							}
 						}
@@ -309,30 +306,28 @@ public abstract class Function implements Serializable, Temporal {
 	/**
 	 * Checks if an activity spot is empty/unoccupied
 	 *
-	 * @param spot as a {@link Point2D}
+	 * @param s as a {@link Point2D}
 	 * @return true if this activity spot is empty.
 	 */
-	public boolean isActivitySpotEmpty(Point2D spot) {
+	public boolean isActivitySpotEmpty(LocalPosition s) {
 		if (activitySpots == null || activitySpots.isEmpty())
 			return true;
 
 		boolean result = false;
 
-		Iterator<Point2D> i = activitySpots.iterator();
+		Iterator<LocalPosition> i = activitySpots.iterator();
 		while (i.hasNext()) {
-			Point2D activitySpot = i.next();
+			LocalPosition activitySpot = i.next();
 
-			if (activitySpot == spot) {
+			if (activitySpot.equals(s)) {
 				// Convert activity spot from building local to settlement local.
 				Building b = getBuilding();
-				Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
-						activitySpot.getY(), b);
+				LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, b);
 
 				for (Person person : b.getInhabitants()) {
 					// Check if person's location is identical or very very close (1e-5 meters) to
 					// activity spot.
-					Point2D personLoc = new Point2D.Double(person.getXLocation(), person.getYLocation());
-					if (!LocalAreaUtil.areLocationsClose(settlementActivitySpot, personLoc)) {
+					if (!settlementActivitySpot.isClose(person.getPosition())) {
 						return true;
 					}
 				}
@@ -340,8 +335,7 @@ public abstract class Function implements Serializable, Temporal {
 				for (Robot robot : b.getRobots()) {
 					// Check if robot location is identical or very very close (1e-5 meters) to
 					// activity spot.
-					Point2D loc = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-					if (!LocalAreaUtil.areLocationsClose(settlementActivitySpot, loc)) {
+					if (!settlementActivitySpot.isClose(robot.getPosition())) {
 						return true;
 					}
 				}
@@ -352,38 +346,23 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if a person is at an activity spot for this building function.
+	 * Checks if a worker is at an activity spot for this building function.
 	 *
-	 * @param person the person.
-	 * @return true if the person is currently at an activity spot.
+	 * @param worker the Worker.
+	 * @return true if the worker's Position is currently at an activity spot.
 	 */
-	public boolean isAtActivitySpot(Person person) {
-		return isAtActivitySpot(person.getXLocation(), person.getYLocation());
-	}
-
-	/**
-	 * Checks if a robot is at an activity spot for this building function.
-	 *
-	 * @param robot the robot.
-	 * @return true if the robot is currently at an activity spot.
-	 */
-	public boolean isAtActivitySpot(Robot robot) {
-		return isAtActivitySpot(robot.getXLocation(), robot.getYLocation());
-	}
-
-	private boolean isAtActivitySpot(double x, double y) {
+	public boolean isAtActivitySpot(Worker worker) {
+		LocalPosition target = worker.getPosition();
 		boolean result = false;
 
-		Iterator<Point2D> i = activitySpots.iterator();
+		Iterator<LocalPosition> i = activitySpots.iterator();
 		while (i.hasNext() && !result) {
-			Point2D activitySpot = i.next();
+			LocalPosition activitySpot = i.next();
 			// Convert activity spot from building local to settlement local.
-			Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
-					activitySpot.getY(), getBuilding());
+			LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
 
 			// Check if location is very close to activity spot.
-			Point2D robotLoc = new Point2D.Double(x, y);
-			if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, robotLoc)) {
+			if (settlementActivitySpot.isClose(target)) {
 				result = true;
 			}
 		}
@@ -397,10 +376,10 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if building function has activity spots.
 	 */
 	public boolean hasActivitySpots() {
-		return (activitySpots.size() > 0);
+		return !activitySpots.isEmpty();
 	}
 
-	public List<Point2D> getActivitySpotsList() {
+	public List<LocalPosition> getActivitySpotsList() {
 		return activitySpots;
 	}
 
@@ -412,7 +391,7 @@ public abstract class Function implements Serializable, Temporal {
 	public int getNumEmptyActivitySpots() {
 		int empty = 0;
 		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (Point2D s: activitySpots) {
+			for (LocalPosition s: activitySpots) {
 				if (isActivitySpotEmpty(s))
 					empty++;
 			}
@@ -427,7 +406,7 @@ public abstract class Function implements Serializable, Temporal {
 	 */
 	public boolean hasEmptyActivitySpot() {
 		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (Point2D s: activitySpots) {
+			for (LocalPosition s: activitySpots) {
 				if (isActivitySpotEmpty(s))
 					return true;
 			}
@@ -443,7 +422,7 @@ public abstract class Function implements Serializable, Temporal {
 	public int getNumOccupiedActivitySpots() {
 		int occupied = 0;
 		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (Point2D s: activitySpots) {
+			for (LocalPosition s: activitySpots) {
 				if (!isActivitySpotEmpty(s))
 					occupied++;
 			}
@@ -477,10 +456,7 @@ public abstract class Function implements Serializable, Temporal {
 	public void destroy() {
 		type = null;
 		building = null;
-		if (activitySpots != null) {
-			activitySpots.clear();
-			activitySpots = null;
-		}
+		activitySpots = null;
 	}
 
 

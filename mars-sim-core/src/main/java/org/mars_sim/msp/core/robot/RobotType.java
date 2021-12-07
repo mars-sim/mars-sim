@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public enum RobotType {
 
@@ -59,5 +60,38 @@ public enum RobotType {
 		}
 		Collections.sort(list);
 		return list.toArray(new String[] {});
+	}
+
+	/**
+	 * What is the default Function for a Robot Type.
+	 * Not sure this is the best place for this implementation.
+	 * @return
+	 */
+	public FunctionType getDefaultFunction() {
+		switch (this) {
+		case CHEFBOT:
+			return FunctionType.COOKING;
+		
+		case CONSTRUCTIONBOT:
+			return FunctionType.MANUFACTURE;
+			
+		case DELIVERYBOT:
+			return FunctionType.ROBOTIC_STATION;
+			
+		case GARDENBOT:
+			return FunctionType.FARMING;
+			
+		case MAKERBOT:
+			return FunctionType.MANUFACTURE;
+			
+		case MEDICBOT:
+			return FunctionType.MEDICAL_CARE;
+			
+		case REPAIRBOT:
+			return FunctionType.LIFE_SUPPORT;
+			
+		default:
+			return FunctionType.ROBOTIC_STATION;
+		}
 	}
 }

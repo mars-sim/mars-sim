@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,9 +198,9 @@ public abstract class Vehicle extends Unit
 	/** A collection of locations that make up the vehicle's trail. */
 	private List<Coordinates> trail;
 	/** List of operator activity spots. */
-	private List<Point2D> operatorActivitySpots;
+	private List<LocalPosition> operatorActivitySpots;
 	/** List of passenger activity spots. */
-	private List<Point2D> passengerActivitySpots;
+	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
 	/** The vehicle's status log. */
@@ -510,7 +509,7 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return list of activity spots as Point2D objects.
 	 */
-	public List<Point2D> getOperatorActivitySpots() {
+	public List<LocalPosition> getOperatorActivitySpots() {
 		return operatorActivitySpots;
 	}
 
@@ -519,7 +518,7 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return list of activity spots as Point2D objects.
 	 */
-	public List<Point2D> getPassengerActivitySpots() {
+	public List<LocalPosition> getPassengerActivitySpots() {
 		return passengerActivitySpots;
 	}
 

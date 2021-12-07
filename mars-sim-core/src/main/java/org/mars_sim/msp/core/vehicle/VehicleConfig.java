@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,8 +62,6 @@ public class VehicleConfig implements Serializable {
 	private static final String PART = "part";
 	private static final String NAME = "name";
 	private static final String AIRLOCK = "airlock";
-	private static final String X_LOCATION = "xloc";
-	private static final String Y_LOCATION = "yloc";
 	private static final String INTERIOR_LOCATION = "interior";
 	private static final String EXTERIOR_LOCATION = "exterior";
 	private static final String ACTIVITY = "activity";
@@ -208,16 +205,14 @@ public class VehicleConfig implements Serializable {
 			if (activityElement != null) {
 
 				// Initialize activity spot lists.
-				List<Point2D> operatorActivitySpots = new ArrayList<>();
-				List<Point2D> passengerActivitySpots = new ArrayList<>();
-				List<Point2D> sickBayActivitySpots = new ArrayList<>();
-				List<Point2D> labActivitySpots = new ArrayList<>();
+				List<LocalPosition> operatorActivitySpots = new ArrayList<>();
+				List<LocalPosition> passengerActivitySpots = new ArrayList<>();
+				List<LocalPosition> sickBayActivitySpots = new ArrayList<>();
+				List<LocalPosition> labActivitySpots = new ArrayList<>();
 
 				for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
 					Element activitySpotElement = (Element) activitySpot;
-					double xLoc = Double.parseDouble(activitySpotElement.getAttributeValue(X_LOCATION));
-					double yLoc = Double.parseDouble(activitySpotElement.getAttributeValue(Y_LOCATION));
-					Point2D spot = new Point2D.Double(xLoc, yLoc);
+					LocalPosition spot = ConfigHelper.parseLocalPosition(activitySpotElement);
 					String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
 					if (OPERATOR_TYPE.equals(activitySpotType)) {
 						operatorActivitySpots.add(spot);

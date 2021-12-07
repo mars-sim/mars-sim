@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -56,7 +55,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private double greyWaterFraction;
 
 	/** The bed registry in this facility. */
-	private Map<Integer, Point2D> assignedBeds = new ConcurrentHashMap<>();
+	private Map<Integer, LocalPosition> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
@@ -81,9 +80,6 @@ public class LivingAccommodations extends Function implements Serializable {
 		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
 		// Calculate the grey water fraction
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
-
-//		// Load bed locations
-//		loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
 	}
 
 	/**
@@ -163,11 +159,11 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
 	 * @return the bed registered with the given person
 	 */
-	public Point2D registerSleeper(Person person, boolean isAGuest) {
+	public LocalPosition registerSleeper(Person person, boolean isAGuest) {
 		// Obtain a standard set of clothing items
 		person.wearGarment(building.getSettlement());
 
-		Point2D registeredBed = person.getBed();
+		LocalPosition registeredBed = person.getBed();
 
 		if (registeredBed == null) {
 
@@ -178,32 +174,16 @@ public class LivingAccommodations extends Function implements Serializable {
 			}
 
 			else if (!assignedBeds.containsKey(person.getIdentifier())) {
-				// TODO: need to rework for guest stay
-				if (isAGuest) {
-					// Note : do not designate a bed since he's only a guest
-					Point2D bed = designateABed(person, isAGuest);
-					if (bed != null) {
-						logger.log(building, person, Level.WARNING, 2000,
-								" was given a temporary bed.", null);
-						return bed;
-					} else {
-						logger.log(building, person, Level.WARNING, 2000,
-								   "Could not find a temporary bed.", null);
-					}
-
-
-				} else {
-					// for a new inhabitant
-					// if a person has never been assigned a bed
-					Point2D bed = designateABed(person, isAGuest);
-					if (bed != null) {
+				LocalPosition bed = designateABed(person, isAGuest);
+				if (bed != null) {
+					if (!isAGuest) {
 						registeredSleepers++;
-						return bed;
-					} else {
-						logger.log(building, person, Level.WARNING, 2000,
-								"Did not have a bed assigned yet.", null);
 					}
+					return bed;
 				}
+
+				logger.log(building, person, Level.WARNING, 2000,
+								   "Could not find a temporary bed.", null);
 			}
 		}
 
@@ -224,14 +204,13 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param person
 	 * @param bed
 	 */
-	public void assignABed(Person person, Point2D bed) {
+	public void assignABed(Person person, LocalPosition bed) {
 		assignedBeds.put(person.getIdentifier(), bed);
 		person.setBed(bed);
 		person.setQuarters(building);
 
-		logger.log(building, person, Level.INFO, 0, "Designated a bed at ("
-					+ Math.round(bed.getX()*100.0)/100.0 + ", "
-					+ Math.round(bed.getY()*100.0)/100.0 + ").", null);
+		logger.log(building, person, Level.INFO, 0, "Designated a bed at "
+					+ bed.getShortFormat() + ".", null);
 	}
 
 	/**
@@ -239,15 +218,13 @@ public class LivingAccommodations extends Function implements Serializable {
 	 *
 	 * @return
 	 */
-	public Point2D getEmptyBed() {
-		List<Point2D> beds = super.getActivitySpotsList();
-		Collections.shuffle(beds);
-		for (Point2D bed : beds) {
+	public LocalPosition getEmptyBed() {
+		List<LocalPosition> beds = super.getActivitySpotsList();
+		for (LocalPosition bed : beds) {
 			if (!assignedBeds.containsValue(bed)) {
 				double x = bed.getX() + building.getXLocation();
 				double y = bed.getY() + building.getYLocation();
-				Point2D spot = new Point2D.Double(x, y);
-				return spot;
+				return new LocalPosition(x, y);
 			}
 		}
 		return null;
@@ -260,27 +237,25 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param person
 	 * @return
 	 */
-	public Point2D designateABed(Person person, boolean guest) {
-		Point2D bed = null;
-		List<Point2D> spots = super.getActivitySpotsList();
+	public LocalPosition designateABed(Person person, boolean guest) {
+		LocalPosition bed = null;
+		List<LocalPosition> spots = super.getActivitySpotsList();
 		int numDesignated = getNumAssignedBeds();
 		if (numDesignated < maxNumBeds) {
 			// TODO: there should be at least one bed available-- Note: it may not be empty. a
 			// traveler may be sleeping on it.
-			for (Point2D spot : spots) {
+			for (LocalPosition spot : spots) {
 				// Convert the activity spot (the bed location) to the settlement reference coordinate
 				double x = spot.getX() + building.getXLocation();
 				double y = spot.getY() + building.getYLocation();
-				bed = new Point2D.Double(x, y);
+				bed = new LocalPosition(x, y);
 				if (!assignedBeds.containsValue(bed)) {
 					if (!guest) {
 						assignABed(person, bed);
-
 					}
 					else { // is a guest
 						logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
-								+ Math.round(bed.getX()*100.0)/100.0  + ", "
-								+ Math.round(bed.getY()*100.0)/100.0  + ").", null);
+								+ bed + ").", null);
 					}
 					break;
 				}
@@ -288,21 +263,6 @@ public class LivingAccommodations extends Function implements Serializable {
 		}
 
 		return bed;
-	}
-
-	/**
-	 * Removes a sleeper from a bed.
-	 *
-	 * @throws BuildingException if no sleepers to remove.
-	 */
-	public void removeSleeper(Person person) {
-		registeredSleepers--;
-		if (registeredSleepers < 0) {
-			registeredSleepers = 0;
-			throw new IllegalStateException("Beds are empty.");
-		} else {
-			// bedMap.remove(bedMap.get(person));
-		}
 	}
 
 	/**
@@ -395,13 +355,14 @@ public class LivingAccommodations extends Function implements Serializable {
 		}
 	}
 
+
 	/**
-	 * Gets the assigned bed map
-	 *
+	 * Release any bed assigned to a Person
+	 * @param person
 	 * @return
 	 */
-	public Map<Integer, Point2D> getAssignedBeds() {
-		return assignedBeds;
+	public void releaseBed(Person person) {
+		assignedBeds.remove(person.getIdentifier());
 	}
 
 	/*
@@ -409,15 +370,6 @@ public class LivingAccommodations extends Function implements Serializable {
 	 */
 	public boolean hasAnUnmarkedBed() {
         return getNumAssignedBeds() < maxNumBeds;
-	}
-
-	/**
-	 * is this activity spot empty ?
-	 *
-	 * @param spot
-	 */
-	public boolean isActivitySpotEmpty(Point2D spot) {
-		return super.isActivitySpotEmpty(spot);
 	}
 
 	@Override

@@ -92,7 +92,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(-6D, 0.5D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, building2);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building2);
         assertNotNull(walkingSteps);
         assertTrue(walkingSteps.canWalkAllSteps());
         assertNotNull(walkingSteps.getWalkingStepsList());
@@ -101,7 +101,7 @@ public class WalkingStepsTest extends TestCase {
         WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
 
         assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep1.stepType);
-        assertEquals(target, new LocalPosition(walkStep1.loc));
+        assertEquals(target, walkStep1.loc);
     }
 
     /**
@@ -115,8 +115,9 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
+        LocalPosition target = new LocalPosition(-12D, 0D);
         Building building0 = buildEVA(buildingManager, LOCAL_POSITION1, 0D, 0);
-        Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
+        Building building1 = buildBuilding(buildingManager, target, 270D, 1);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -124,7 +125,7 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, 0D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
         assertNotNull(walkingSteps);
 
         assertFalse(walkingSteps.canWalkAllSteps());
@@ -149,14 +150,14 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
-
-        Building building1 = buildEVA(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
+        var target = new LocalPosition(-12D, 0D);
+        Building building1 = buildEVA(buildingManager, target, 270D, 1);
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, 0D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -206,7 +207,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(10D, 15D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, null);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -229,7 +230,7 @@ public class WalkingStepsTest extends TestCase {
 
         assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
 
-        assertEquals(target, new LocalPosition(walkStep3.loc));
+        assertEquals(target, walkStep3.loc);
     }
 
     /**
@@ -249,7 +250,7 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(10D, 15D), 0D, null);
 
         assertNotNull(walkingSteps);
 
@@ -284,7 +285,7 @@ public class WalkingStepsTest extends TestCase {
         person.transfer(rover);
 
         LocalPosition target = new LocalPosition(20D, 15D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target.getX(), target.getY(), 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, null);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -307,7 +308,7 @@ public class WalkingStepsTest extends TestCase {
 
         assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
 
-        assertEquals(target, new LocalPosition(walkStep3.loc));
+        assertEquals(target, walkStep3.loc);
     }
 
     /**
@@ -329,7 +330,7 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
         person.transfer(rover);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, 0D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, 0D, building0);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -386,7 +387,7 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked.getX(), parked.getY(), 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
         
         assertNotNull(walkingSteps);
 
@@ -438,7 +439,7 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked.getX(), parked.getY(), 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
         
         assertNotNull(walkingSteps);
 
@@ -468,7 +469,7 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
 		person.transfer(rover1);
 		
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked2.getX(), parked2.getY(), 0D, rover2);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked2, 0D, rover2);
         
         assertNotNull(walkingSteps);
 
@@ -570,7 +571,7 @@ public class WalkingStepsTest extends TestCase {
         person.setPosition(new LocalPosition(4D, 4D));
         BuildingManager.addPersonOrRobotToBuilding(person, garage.getBuilding());
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, 0D, rover);
         
         assertNotNull(walkingSteps);
 
@@ -614,7 +615,8 @@ public class WalkingStepsTest extends TestCase {
         person.setPosition(LocalPosition.DEFAULT_POSITION);
         person.transfer(rover);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, 0D, garage.getBuilding());
+        LocalPosition target = new LocalPosition(4D, 4D);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, garage.getBuilding());
         
         assertNotNull(walkingSteps);
         
@@ -634,7 +636,7 @@ public class WalkingStepsTest extends TestCase {
 
         assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep2.stepType);
 
-        assertEquals(new Point2D.Double(4D, 4D), walkStep2.loc);
+        assertEquals(target, walkStep2.loc);
     }
 
     /**
@@ -654,7 +656,8 @@ public class WalkingStepsTest extends TestCase {
 		Person person = new Person(settlement);
 		person.transfer(surface);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, 0D, building0);
+		LocalPosition target = new LocalPosition(4D, 4D);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building0);
         
         assertNotNull(walkingSteps);
 
@@ -678,9 +681,7 @@ public class WalkingStepsTest extends TestCase {
 
         assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep3.stepType);
 
-        assertEquals(4D, walkStep3.loc.getX());
-
-        assertEquals(4D, walkStep3.loc.getY());
+        assertEquals(target, walkStep3.loc);
     }
 
 
@@ -701,7 +702,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person(settlement);
         person.transfer(surface);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, 0D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(3D, 3D), 0D, building0);
         
         assertNotNull(walkingSteps);
 
@@ -730,7 +731,7 @@ public class WalkingStepsTest extends TestCase {
         person.setPosition(new LocalPosition(20D,15D));
         person.transfer(surface);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parkedPosition, 0D, rover);
         
         assertNotNull(walkingSteps);
         
@@ -754,6 +755,6 @@ public class WalkingStepsTest extends TestCase {
 
         assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep3.stepType);
 
-        assertEquals(parkedPosition, new LocalPosition(walkStep3.loc));
+        assertEquals(parkedPosition, walkStep3.loc);
     }
 }

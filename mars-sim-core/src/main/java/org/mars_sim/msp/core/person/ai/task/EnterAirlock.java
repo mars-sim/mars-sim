@@ -6,12 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -75,11 +73,11 @@ public class EnterAirlock extends Task implements Serializable {
 	/** The airlock to be used. */
 	private Airlock airlock;
 	/** The inside airlock position. */
-	private Point2D insideAirlockPos = null;
+	private LocalPosition insideAirlockPos = null;
 	/** The exterior airlock position. */
-	private Point2D exteriorDoorPos = null;
+	private LocalPosition exteriorDoorPos = null;
 	/** The interior airlock position. */
-	private Point2D interiorDoorPos = null;
+	private LocalPosition interiorDoorPos = null;
 
 	/**
 	 * Constructor.
@@ -160,7 +158,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		else {
 			int previousZone = zone + 1;
-			Point2D newPos = fetchNewPos(zone);
+			LocalPosition newPos = fetchNewPos(zone);
 			if (newPos != null) {
 				if (airlock.occupy(zone, newPos, id)) {
 					if (previousZone <= 4) {
@@ -197,10 +195,10 @@ public class EnterAirlock extends Task implements Serializable {
 	 *
 	 * @param zone the destination
 	 * @param id   the id of the person
-	 * @return Point2D
+	 * @return LocalPosition
 	 */
-	private Point2D fetchNewPos(int zone) {
-		Point2D newPos = null;
+	private LocalPosition fetchNewPos(int zone) {
+		LocalPosition newPos = null;
 
 		if (zone == 0) {
 			newPos = airlock.getAvailableInteriorPosition(false);
@@ -227,7 +225,7 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @param newPos the target position in that zone
 	 * @param zone
 	 */
-	private void moveThere(Point2D newPos, int zone) {
+	private void moveThere(LocalPosition newPos, int zone) {
 		if (zone == 2) {
 			walkToEVASpot((Building) airlock.getEntity());
 		}
@@ -238,12 +236,11 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		else {
-			person.setPosition(new LocalPosition(newPos));
+			person.setPosition(newPos);
 		}
 
-		logger.log(person, Level.FINE, 4000, "Arrived at ("
-				+ Math.round(newPos.getX() * 100.0) / 100.0 + ", "
-				+ Math.round(newPos.getY() * 100.0) / 100.0 + ") in airlock zone " + zone + ".");
+		logger.log(person, Level.FINE, 4000, "Arrived at "
+				+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 	}
 
 	/**
@@ -304,8 +301,7 @@ public class EnterAirlock extends Task implements Serializable {
 				exteriorDoorPos = airlock.getAvailableExteriorPosition();
 			}
 
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
-					exteriorDoorPos)) {
+			if (exteriorDoorPos.isClose(person.getPosition())) {
 
 				if (airlock.addAwaitingOuterDoor(person, id)) {
 					canProceed = true;
@@ -445,7 +441,7 @@ public class EnterAirlock extends Task implements Serializable {
 //				exteriorDoorPos = airlock.getAvailableExteriorPosition();
 //			}
 
-//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
+//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()),
 //					exteriorDoorPos)) {
 
 				if (!airlock.isOuterDoorLocked()) {
@@ -486,7 +482,7 @@ public class EnterAirlock extends Task implements Serializable {
 //				exteriorDoorPos = airlock.getAvailableExteriorPosition();
 //			}
 
-//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
+//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()),
 //					exteriorDoorPos)) {
 
 				if (!airlock.isOuterDoorLocked()) {
@@ -561,18 +557,16 @@ public class EnterAirlock extends Task implements Serializable {
 				insideAirlockPos = airlock.getAvailableAirlockPosition();
 			}
 
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
-					insideAirlockPos)) {
+			if (insideAirlockPos.isClose(person.getPosition())) {
 				canProceed = true;
 			}
 
 			else {
 				Rover airlockRover = (Rover) airlock.getEntity();
 				logger.log(person, Level.FINE, 4_000, "Walked to the reference position.");
-
+ 
 				// Walk to interior airlock position.
-				addSubTask(new WalkRoverInterior(person, airlockRover,
-										new LocalPosition(insideAirlockPos)));
+				addSubTask(new WalkRoverInterior(person, airlockRover, insideAirlockPos));
 			}
 		}
 
@@ -824,11 +818,8 @@ public class EnterAirlock extends Task implements Serializable {
 				interiorDoorPos = airlock.getAvailableInteriorPosition();
 			}
 
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
-					interiorDoorPos)) {
-
+			if (interiorDoorPos.isClose(person.getPosition())) {
 				if (airlock.inAirlock(person)) {
-
 					canExit = airlock.exitAirlock(person, id, false);
 				}
 			}
@@ -838,7 +829,7 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log(person, Level.FINE, 4_000,
 						"Attempted to step closer to " + airlockRover.getNickName() + "'s inner door.");
 
-				addSubTask(new WalkRoverInterior(person, airlockRover, new LocalPosition(interiorDoorPos)));
+				addSubTask(new WalkRoverInterior(person, airlockRover, interiorDoorPos));
 			}
 		}
 

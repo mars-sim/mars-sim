@@ -1,6 +1,5 @@
 package org.mars_sim.msp.core.vehicle;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -32,10 +31,10 @@ public class VehicleSpec implements Serializable {
 	private boolean hasPartAttachments = false;
 	private List<ScienceType> labTechSpecialties = null;
 	private List<Part> attachableParts = null;
-	private List<Point2D> operatorActivitySpots;
-	private List<Point2D> passengerActivitySpots;
-	private List<Point2D> sickBayActivitySpots;
-	private List<Point2D> labActivitySpots;
+	private List<LocalPosition> operatorActivitySpots;
+	private List<LocalPosition> passengerActivitySpots;
+	private List<LocalPosition> sickBayActivitySpots;
+	private List<LocalPosition> labActivitySpots;
 	private LocalPosition airlockLoc;
 	private LocalPosition airlockInteriorLoc;
 	private LocalPosition airlockExteriorLoc;
@@ -173,22 +172,22 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/** @return the operator activity spots. */
-	public final List<Point2D> getOperatorActivitySpots() {
+	public final List<LocalPosition> getOperatorActivitySpots() {
 		return operatorActivitySpots;
 	}
 
 	/** @return the passenger activity spots. */
-	public final List<Point2D> getPassengerActivitySpots() {
+	public final List<LocalPosition> getPassengerActivitySpots() {
 		return passengerActivitySpots;
 	}
 
 	/** @return the sick bay activity spots. */
-	public final List<Point2D> getSickBayActivitySpots() {
+	public final List<LocalPosition> getSickBayActivitySpots() {
 		return sickBayActivitySpots;
 	}
 
 	/** @return the lab activity spots. */
-	public final List<Point2D> getLabActivitySpots() {
+	public final List<LocalPosition> getLabActivitySpots() {
 		return labActivitySpots;
 	}
 
@@ -211,8 +210,8 @@ public class VehicleSpec implements Serializable {
 		
 	}
 
-	void setActivitySpots(List<Point2D> operatorActivitySpots2, List<Point2D> passengerActivitySpots2,
-			List<Point2D> sickBayActivitySpots2, List<Point2D> labActivitySpots2) {
+	void setActivitySpots(List<LocalPosition> operatorActivitySpots2, List<LocalPosition> passengerActivitySpots2,
+			List<LocalPosition> sickBayActivitySpots2, List<LocalPosition> labActivitySpots2) {
 		this.operatorActivitySpots = Collections.unmodifiableList(operatorActivitySpots2);
 		this.passengerActivitySpots = Collections.unmodifiableList(passengerActivitySpots2);
 		this.sickBayActivitySpots = Collections.unmodifiableList(sickBayActivitySpots2);

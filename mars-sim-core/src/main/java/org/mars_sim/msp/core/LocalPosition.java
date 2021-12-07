@@ -157,6 +157,14 @@ public class LocalPosition implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Get the position as a shortened string.
+	 * @return
+	 */
+	public String getShortFormat() {
+		return String.format("(%.1f, %.1f)", x, y);
+	}
+
 	@Override
 	public String toString() {
 		return "[x=" + x + ", y=" + y + "]";
@@ -170,5 +178,4 @@ public class LocalPosition implements Serializable {
 	public java.awt.geom.Point2D.Double toPoint() {
 		return new java.awt.geom.Point2D.Double(x, y);
 	}
-
 }

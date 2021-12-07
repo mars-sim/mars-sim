@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -932,14 +932,14 @@ public abstract class Airlock implements Serializable {
 	 * @param inside true if the position is inside of the interior door
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableInteriorPosition(boolean inside);
+	public abstract LocalPosition getAvailableInteriorPosition(boolean inside);
 
 	/**
 	 * Gets an available position inside the airlock entity.
 	 *
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableInteriorPosition();
+	public abstract LocalPosition getAvailableInteriorPosition();
 
 	/**
 	 * Gets an available position outside the airlock entity.
@@ -947,23 +947,23 @@ public abstract class Airlock implements Serializable {
 	 * @param inside true if the position is inside of the exterior door
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableExteriorPosition(boolean inside);
+	public abstract LocalPosition getAvailableExteriorPosition(boolean inside);
 
 	/**
 	 * Gets an available position outside the airlock entity.
 	 *
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableExteriorPosition();
+	public abstract LocalPosition getAvailableExteriorPosition();
 
 	/**
 	 * Gets an available airlock position
 	 *
 	 * @return available airlock position.
 	 */
-	public abstract Point2D getAvailableAirlockPosition();
+	public abstract LocalPosition getAvailableAirlockPosition();
 
-    public boolean occupy(int zone, Point2D p, Integer id) {
+    public boolean occupy(int zone, LocalPosition p, Integer id) {
     	return ((BuildingAirlock)this).occupy(zone, p, id);
     }
 

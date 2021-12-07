@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,14 +25,14 @@ public class BuildingSpec {
 
 	static class FunctionSpec {
 		private Map<String, Object> props;
-		private List<Point2D> spots;
+		private List<LocalPosition> spots;
 
-		public FunctionSpec(Map<String, Object> props, List<Point2D> spots) {
+		public FunctionSpec(Map<String, Object> props, List<LocalPosition> spots) {
 			this.props = props;
-			this.spots = spots;
+			this.spots = Collections.unmodifiableList(spots);
 		}
 
-		public List<Point2D> getActivitySpots() {
+		public List<LocalPosition> getActivitySpots() {
 			return spots;
 		}
 		
@@ -92,7 +91,7 @@ public class BuildingSpec {
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
 
-	private List<Point2D> beds;
+	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
 
 	private List<ScienceType> wasteSpecialties;
@@ -250,11 +249,11 @@ public class BuildingSpec {
 		return name;
 	}
 	
-	public List<Point2D> getBeds() {
+	public List<LocalPosition> getBeds() {
 		return beds;
 	}
 
-	void setBeds(List<Point2D> beds) {
+	void setBeds(List<LocalPosition> beds) {
 		this.beds = beds;
 	}
 	

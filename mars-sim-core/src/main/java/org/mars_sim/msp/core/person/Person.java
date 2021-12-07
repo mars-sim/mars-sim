@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,7 +186,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/** Person's ReportingAuthority instance. */
 	private ReportingAuthority ra;
 	/** The bed location of the person */
-	private Point2D bed;
+	private LocalPosition bed;
 	/** The EVA suit that the person has donned on. */
 	private EVASuit suit;
 	/** The person's current scientific study. */
@@ -813,9 +812,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	void deregisterBed() {
 		// Set quarters to null
 		if (quartersInt != -1) {
-			Map<Integer, Point2D>  map = unitManager.getBuildingByID(quartersInt).getLivingAccommodations().getAssignedBeds();
-			if (map.containsKey(getIdentifier()))
-				map.remove(getIdentifier());
+			unitManager.getBuildingByID(quartersInt).getLivingAccommodations().releaseBed(this);
 			quartersInt = -1;
 		}
 		// Empty the bed
@@ -1361,11 +1358,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		this.quartersInt = b.getIdentifier();
 	}
 
-	public Point2D getBed() {
+	public LocalPosition getBed() {
 		return bed;
 	}
 
-	public void setBed(Point2D bed) {
+	public void setBed(LocalPosition bed) {
 		this.bed = bed;
 	}
 
