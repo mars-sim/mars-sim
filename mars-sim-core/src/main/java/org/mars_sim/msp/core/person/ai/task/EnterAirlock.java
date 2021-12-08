@@ -231,8 +231,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		else if (zone == 4) {
-			addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), newPos.getX(),
-					newPos.getY(), true));
+			addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
 		}
 
 		else {
@@ -312,8 +311,8 @@ public class EnterAirlock extends Task implements Serializable {
 				Rover airlockRover = (Rover) airlock.getEntity();
 
 				// Walk to exterior door position.
-				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
-						exteriorDoorPos.getY(), true));
+				addSubTask(new WalkOutside(person, person.getPosition(),
+											exteriorDoorPos, true));
 
 				logger.log(person, Level.FINE, 4_000,
 						"Attempted to step closer to " + airlockRover.getNickName() + "'s exterior door.");

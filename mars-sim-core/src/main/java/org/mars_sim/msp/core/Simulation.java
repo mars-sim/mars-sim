@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
@@ -698,7 +697,6 @@ public class Simulation implements ClockListener, Serializable {
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 
 		// Re-initialize Task related class
-		Walk.initializeInstances(unitManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 

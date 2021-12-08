@@ -429,29 +429,6 @@ public class Walk extends Task implements Serializable {
 		return result;
 	}
 
-//    private static boolean canExitAllAirlocks(Robot robot, WalkingSteps walkingSteps) {
-//
-//        boolean result = true;
-//
-//        List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
-//        if (stepList != null) {
-//            Iterator<WalkingSteps.WalkStep> i = stepList.iterator();
-//            while (i.hasNext()) {
-//                WalkingSteps.WalkStep step = i.next();
-//                if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
-//                    Airlock airlock = step.airlock;
-//                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
-//                        result = false;
-//                       	LogConsolidated.log(Level.SEVERE, 4_000, sourceName,
-//                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
-
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -700,11 +677,10 @@ public class Walk extends Task implements Serializable {
 			}
 			else {
 				if (person.isOutside()) {
-					setDescription("Walking outside toward (" + step.loc + ")");
+					setDescription("Walking outside toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
-					addSubTask(new WalkOutside(person, person.getPosition().getX(), person.getPosition().getY(),
-												step.loc.getX(), step.loc.getY(), true));
+					addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,
@@ -739,8 +715,7 @@ public class Walk extends Task implements Serializable {
 							"Outside. Starting WalkOutside.");
 					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
 					// + yy + ")");
-					addSubTask(new WalkOutside(robot, robot.getPosition().getX(), robot.getPosition().getY(),
-							step.loc.getX(), step.loc.getY(), true));
+					addSubTask(new WalkOutside(robot, robot.getPosition(), step.loc, true));
 				}
 				else {
 					logger.log(robot, Level.SEVERE, 5_000,
@@ -1150,15 +1125,6 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
-	 *
-	 * @param mgr
-	 */
-	public static void initializeInstances(UnitManager mgr) {
-		unitManager = mgr;
-	}
-
-	/**
 	 * Does a change of Phase for this Task generate an entry in the Task Schedule
 	 * @return false
 	 */
@@ -1169,8 +1135,6 @@ public class Walk extends Task implements Serializable {
 
 	public void destroy() {
 		walkingSteps = null;
-//		walkingStepPhaseMap.clear();
 		walkingStepPhaseMap = null;
-		unitManager = null;
 	}
 }

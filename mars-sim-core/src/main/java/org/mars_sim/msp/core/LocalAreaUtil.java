@@ -760,6 +760,7 @@ public class LocalAreaUtil {
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return direction in degrees clockwise from North.
+	 * @deprecated
 	 */
 	public static double getDirection(Point2D point1, Point2D point2) {
 

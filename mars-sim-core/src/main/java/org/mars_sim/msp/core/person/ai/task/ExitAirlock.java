@@ -256,11 +256,8 @@ public class ExitAirlock extends Task implements Serializable {
 			// boundary of Zone 3 in EVA airlock and Zone 4 (which is outside) via
 			// the outer door.
 			addSubTask(
-					new WalkOutside(person,
-					person.getPosition().getX(),
-					person.getPosition().getY(),
-					airlock.getAvailableExteriorPosition().getX(),
-					airlock.getAvailableExteriorPosition().getY(), true));
+					new WalkOutside(person, person.getPosition(),
+					airlock.getAvailableExteriorPosition(), true));
 		}
 
 		else {
