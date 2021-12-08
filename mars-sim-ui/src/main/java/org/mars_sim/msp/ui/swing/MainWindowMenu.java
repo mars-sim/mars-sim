@@ -220,7 +220,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create monitor tool menu item
 		ImageIcon monitoricon = new ImageIcon(getClass().getResource(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME, monitoricon);
+		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.TITLE, monitoricon);
 		monitorToolItem.addActionListener(this);
 		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
 		toolsMenu.add(monitorToolItem);
@@ -506,9 +506,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		else if (selectedItem == monitorToolItem) {
 			if (monitorToolItem.isSelected())
-				desktop.openToolWindow(MonitorWindow.NAME);
+				desktop.openToolWindow(MonitorWindow.TITLE);
 			else
-				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.TITLE);
 		}
 
 		else if (selectedItem == missionToolItem) {
@@ -624,7 +624,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		marsNavigatorItem.setSelected(desktop.isToolWindowOpen(NavigatorWindow.NAME));
 		searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
 		timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
-		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
+		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.TITLE));
 		missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));

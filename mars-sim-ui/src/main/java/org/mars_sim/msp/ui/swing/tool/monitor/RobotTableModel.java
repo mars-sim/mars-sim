@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * RobotTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.Collection;
@@ -201,11 +200,11 @@ public class RobotTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Constructs a RobotTableModel that displays residents are all associated
-	 * people with a specified settlement.
+	 * Constructs a RobotTableModel that displays all associated
+	 * robots with a specified settlement.
 	 *
 	 * @param settlement    the settlement to check.
-	 * @param allAssociated Are all people associated with this settlement to be
+	 * @param allAssociated Are all robots associated with this settlement to be
 	 *                      displayed?
 	 */
 	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
@@ -213,7 +212,7 @@ public class RobotTableModel extends UnitTableModel {
 				settlement.getName())
 				: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 						settlement.getName())),
-				(allAssociated ? "RobotTableModel.countingAssociatedRobots" : //$NON-NLS-1$
+				(allAssociated ? "RobotTableModel.countingRobots" : //$NON-NLS-1$
 						"RobotTableModel.countingResidents" //$NON-NLS-1$
 				), columnNames, columnTypes);
 
@@ -229,6 +228,19 @@ public class RobotTableModel extends UnitTableModel {
 			settlementListener = new InhabitantSettlementListener();
 			settlement.addUnitListener(settlementListener);
 		}
+	}
+
+	public RobotTableModel(Settlement settlement) throws Exception {
+		super(Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
+				settlement.getName()),
+				"RobotTableModel.countingRobots", //$NON-NLS-1$
+				columnNames, columnTypes);
+
+		this.settlement = settlement;
+		sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
+		setSource(settlement.getRobots());
+		settlementListener = new InhabitantSettlementListener();
+		settlement.addUnitListener(settlementListener);
 	}
 
 	/**

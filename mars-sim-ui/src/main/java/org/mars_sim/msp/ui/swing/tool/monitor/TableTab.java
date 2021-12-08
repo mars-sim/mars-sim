@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableTab.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -67,7 +67,7 @@ abstract class TableTab extends MonitorTab {
 
 	/**
 	 * Create a table within a tab displaying the specified model.
-	 * 
+	 *
 	 * @param model           The model of Units to display.
 	 * @param mandatory       Is this table view mandatory.
 	 * @param singleSelection Does this table only allow single selection?
@@ -122,7 +122,7 @@ abstract class TableTab extends MonitorTab {
 //                /**
 //                 * Display the cell contents as a tooltip. Useful when cell
 //                 * contents in wider than the cell
-//                 
+//
 //                public String getToolTipText(MouseEvent e) {
 //                	// TODO: create tooltip text for greenhouse crop
 //                    return getCellText(e);
@@ -155,7 +155,7 @@ abstract class TableTab extends MonitorTab {
 
 			// Add a mouse listener for the mouse event selecting the sorted column
 			// Not the best way but no double click is provided on Header class
-			// Get the TableColumn header to display sorted column	
+			// Get the TableColumn header to display sorted column
 			header = (JTableHeader) table.getTableHeader();
 			// theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
 			// header.setDefaultRenderer(theRenderer);
@@ -223,7 +223,7 @@ abstract class TableTab extends MonitorTab {
 
 		// Added RowNumberTable
 		JTable rowTable = new RowNumberTable(table);
-		
+
 		TableStyle.setTableStyle(rowTable);
 		// Add a scrolled window and center it with the table
 		JScrollPane scroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -235,16 +235,17 @@ abstract class TableTab extends MonitorTab {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		TableStyle.setTableStyle(table);
-		
+
 		add(scroller, BorderLayout.CENTER);
-		
+
 		setName(model.getName());
 		setSortColumn(0);
 
 		// Add ColumnResizer
-		SwingUtilities.invokeLater(() -> {
-			 adjustColumnWidth(table);
-		});
+		if (table != null) {
+			adjustColumnWidth(table);
+//			SwingUtilities.invokeLater(() -> adjustColumnWidth(table));
+		}
 
 		// Update the selected row after each sorting
 		table.setUpdateSelectionOnSort(false);
@@ -252,7 +253,6 @@ abstract class TableTab extends MonitorTab {
 	}
 
 	public JTable getTable() {
-		// System.out.println("table is "+ table);
 		return table;
 	}
 
@@ -270,7 +270,7 @@ abstract class TableTab extends MonitorTab {
 		    int maxWidth = header.getPreferredSize().width + 15;
 		    w = Math.max(w, maxWidth);
 //		    System.out.println("maxWidth :"+maxWidth);
-		    
+
 			for (int row = 0; row < table.getRowCount(); row++) {
 				if (tableCellRenderer == null)
 					tableCellRenderer = table.getCellRenderer(row, col);
@@ -286,7 +286,7 @@ abstract class TableTab extends MonitorTab {
 		            break;
 		        }
 			}
-			
+
 			preferredWidth = Math.max(w, preferredWidth);
 			tableColumn.setPreferredWidth(preferredWidth);
 		}
@@ -353,7 +353,7 @@ abstract class TableTab extends MonitorTab {
 	/**
 	 * Get the cell contents under the MouseEvent, this will be displayed as a
 	 * tooltip.
-	 * 
+	 *
 	 * @param e MouseEvent triggering tool tip.
 	 * @return Tooltip text.
 	 */
@@ -372,8 +372,8 @@ abstract class TableTab extends MonitorTab {
 //                	CropTableModel model = (CropTableModel) (table.getModel());
 //                	result = model.getToolTip(row, column);
 //                }
-//                
-//                else               	
+//
+//                else
 				result = cell.toString();
 			}
 		}
@@ -409,7 +409,7 @@ abstract class TableTab extends MonitorTab {
 		propsWindow = null;
 
 	}
-	
+
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a
 	 * Graphics object. It represents an arrow Icon that can be other ascending or
@@ -497,5 +497,5 @@ abstract class TableTab extends MonitorTab {
 			return theResult;
 		}
 	}
-	
+
 }

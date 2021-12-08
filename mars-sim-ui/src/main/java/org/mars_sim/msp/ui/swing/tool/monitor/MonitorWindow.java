@@ -4,6 +4,7 @@
  * @date 2021-12-06
  * @author Barry Evans
  */
+
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
@@ -20,34 +21,23 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -80,7 +70,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static final int STATUS_HEIGHT = 25;
 	private static final int HEIGHT = 512;
 
-	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// Added an custom icon for each tab
 	public static final String BASE_ICON = Msg.getString("icon.base"); //$NON-NLS-1$
@@ -91,7 +81,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String EVENT_ICON = Msg.getString("icon.event"); //$NON-NLS-1$
 	public static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
 	public static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
-	public static final String ANALYTIC_ICON = Msg.getString("icon.analytic"); //$NON-NLS-1$
+	public static final String ANALYTICS_ICON = Msg.getString("icon.analytics"); //$NON-NLS-1$
 	public static final String TRADE_ICON = Msg.getString("icon.trade"); //$NON-NLS-1$
 
 	public static final String TRASH_ICON = Msg.getString("icon.trash"); //$NON-NLS-1$
@@ -104,15 +94,17 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
 
 	// Data members
+	private boolean allSettlements = false;
+
 	private WebTabbedPane tabsSection;
-	// private JideTabbedPane tabsSection;
+	// Note: may use JideTabbedPane instead
 
 	private WebLabel rowCount;
 
 	/** Tab showing historical events. */
 	private EventTab eventsTab;
 
-	private MonitorTab oldTab = null;
+//	private MonitorTab oldTab = null;
 
 	private WebButton buttonPie;
 	private WebButton buttonBar;
@@ -125,10 +117,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/** Settlement Combo box */
 	private WebComboBox settlementListBox;
-	/** Settlement Combo box model. */
-	private SettlementComboBoxModel settlementCBModel;
-
-	private MainDesktopPane desktop;
 
 	private MainWindow mainWindow;
 
@@ -140,6 +128,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //	private Searchable searchable;
 //	private SearchableBar searchBar;
 
+	private Settlement selectedSettlement;
+	private List<Settlement> settlementList;
+
 	/**
 	 * Constructor.
 	 *
@@ -147,8 +138,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
-		super(NAME, desktop);
-		this.desktop = desktop;
+		super(TITLE, desktop);
 
 		mainWindow = desktop.getMainWindow();
 
@@ -175,22 +165,19 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		topPane.add(new JPanel());
 
 		// Create tabbed pane for the table
-		tabsSection = new WebTabbedPane(StyleId.tabbedpane, WebTabbedPane.LEFT, WebTabbedPane.SCROLL_TAB_LAYOUT);
+		tabsSection = new WebTabbedPane(StyleId.tabbedpane, SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		// May choose WRAP_TAB_LAYOUT
 		tabsSection.setForeground(Color.DARK_GRAY);
 		// Add all the tabs
 		addAllTabs();
 		// Add a listener for the tab changes
-		tabsSection.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				tabChanged(true);
-			}
-		});
+		tabsSection.addChangeListener(e -> updateTab());
+
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Open the Events tab at the start of the sim
-//		tabsSection.setSelectedIndex(2);
-//		table.repaint();
+//		May call tabsSection.setSelectedIndex(2)
+//		May call table.repaint()
 
 		// Create a status panel
 		statusPanel = new WebPanel();
@@ -201,9 +188,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		addBottomBar();
 
 		// Add the default table tabs
-		// Added notifyBox
-//		NotificationWindow notifyBox = new NotificationWindow(desktop);
-
+		// May use NotificationWindow notifyBox = new NotificationWindow(desktop)
 		// Note: must use setSize() to define a starting size
 		setSize(new Dimension(mainWindow.getSelectedSize().width - 20, HEIGHT));
 		setMinimumSize(new Dimension(640, 256));
@@ -228,32 +213,18 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void addAllTabs() {
 		// Add tabs into the table
 		try {
-			addTab(new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON));
-			addTab(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
+			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement), true, BOT_ICON));
+			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
 			addTab(new FoodInventoryTab(this));
 			addTab(new TradeTab(this));
 			addTab(new MissionTab(this));
-			addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
-			addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
-			// People from all settlements
-			addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
+			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, BASE_ICON));
+			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
 
-			if (GameManager.getGameMode() == GameMode.COMMAND) {
-				Settlement s = unitManager.getCommanderSettlement();
-				// People from one settlement
-				addTab(new UnitTab(this, new PersonTableModel(s, true), true, ANALYTIC_ICON));
-			}
-			else {
-				// Add a tab for each settlement
-				for (Settlement s : unitManager.getSettlements()) {
-					Settlement ss = desktop.getSettlementMapPanel().getSettlement();
-					if (s.equals(ss))
-						// People from one settlement
-						addTab(new UnitTab(this, new PersonTableModel(s, true), true, ANALYTIC_ICON));
-				}
-			}
+			// People from each settlement
+			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
 
 		} catch (Exception e) {
 			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
@@ -330,48 +301,64 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		if (index != -1)
 			tabsSection.setSelectedIndex(index);
 		else {
+			logger.severe(model + " not found.");
 			try {
 				addTab(new UnitTab(this, model, false, UnitWindow.USER));
 			} catch (Exception e) {
-				logger.severe("UnitTab cannot be added");
+				logger.severe(model + " cannot be added.");
 			}
 		}
 	}
 
+	/**
+	 * Gets a list of sponsored settlements
+	 *
+	 * @return List<Settlement>
+	 */
+	public List<Settlement> getSettlements() {
+		if (settlementList == null) {
+			List<Settlement> settlements = new ArrayList<>();
+
+			if (GameManager.getGameMode() == GameMode.COMMAND) {
+				settlements = unitManager.getCommanderSettlements();
+			}
+
+			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+				settlements.addAll(unitManager.getSettlements());
+			}
+
+			Collections.sort(settlements);
+			settlementList = settlements;
+		}
+
+		return settlementList;
+	}
 
 	/**
 	 * Builds the settlement combo box
 	 */
+	@SuppressWarnings("unchecked")
 	public void buildSettlementNameComboBox() {
 
-		settlementCBModel = new SettlementComboBoxModel();
-		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
+		settlementListBox = new WebComboBox(StyleId.comboboxHover, getSettlements());
 		settlementListBox.setWidePopup(true);
 		settlementListBox.setSize(getNameLength() * 12, 30);
-		settlementListBox.setBackground(new Color(51, 35, 0,128)); // dull gold color
+		settlementListBox.setBackground(new Color(205, 133, 63, 128));// (51, 35, 0, 128) is dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
 		settlementListBox.setForeground(Color.ORANGE.darker());
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
-		settlementListBox.addItemListener(new ItemListener() {
-			@Override
-			// unitUpdate will update combobox when a new building is added
-			public void itemStateChanged(ItemEvent event) {
-				Settlement s = (Settlement) event.getItem();
-				// Change to the selected settlement in SettlementMapPanel
-				changeSettlement(s);
-			}
-		});
 
 		int size = settlementListBox.getModel().getSize();
-
 		if (size > 1) {
 			// Gets the selected settlement from SettlementMapPanel
 			Settlement s = desktop.getSettlementMapPanel().getSettlement();
+			// Selects the settlement in the combo box
+			settlementListBox.setSelectedItem(s);
 			// Change to the selected settlement in SettlementMapPanel
 			if (s != null)
-				changeSettlement(s);
+				setSettlement(s);
 		}
 
 		else if (size == 1) {
@@ -380,8 +367,24 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			// Gets the settlement
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// Change to the selected settlement in SettlementMapPanel
-			changeSettlement(s);
+			setSettlement(s);
 		}
+
+		// Set the item listener only after the setup is done
+		settlementListBox.addItemListener(new ItemListener() {
+			// Note: ensure unitUpdate() update combobox when a new building is added
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				Settlement newSettlement = (Settlement) event.getItem();
+				// Change to the selected settlement in SettlementMapPanel
+				if (newSettlement != selectedSettlement) {
+					setSettlement(newSettlement);
+				}
+
+				// Still need to update the existing tab
+				updateTab();
+			}
+		});
 	}
 
 	/**
@@ -389,9 +392,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 *
 	 * @param s
 	 */
-	public void changeSettlement(Settlement s) {
-		// Set the selected settlement in SettlementMapPanel
-		desktop.getSettlementMapPanel().setSettlement(s);
+	public void setSettlement(Settlement s) {
+		// Set the selected settlement
+		selectedSettlement = s;
 		// Set the box opaque
 		settlementListBox.setOpaque(false);
 	}
@@ -474,7 +477,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public MonitorTab getSelected() {
 		Component c = tabsSection.getSelectedComponent();
 		if (c != null)
-			return (MonitorTab)(tabsSection.getSelectedComponent());
+			return (MonitorTab)c;
 		else {
 			logger.severe("No tab selected.");
 			return null;
@@ -487,131 +490,118 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Select a tab
-	 *
-	 * @param reloadSearch
+	 * Updates the tab content
 	 */
-	public void tabChanged(boolean reloadSearch) {
+	public void updateTab() {
 		// SwingUtilities.updateComponentTreeUI(this);
-		MonitorTab newTab = getSelected();
+		MonitorTab selectedTab = getSelected();
+		MonitorTab newTab = null;
+		MonitorModel model = selectedTab.getModel();
+		TableTab tableTab = null;
 		JTable table = null;
+		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
+		selectedTab.getModel().removeTableModelListener(this);
 
-		if (newTab != oldTab) {
-			newTab.getModel().addTableModelListener(this);
+		// Disable all buttons
+		buttonBar.setEnabled(false);
+		buttonMap.setEnabled(false);
+		buttonDetails.setEnabled(false);
+		buttonMissions.setEnabled(false);
+		buttonFilter.setEnabled(false);
 
-			// Disable all buttons
-			buttonMap.setEnabled(false);
-			buttonDetails.setEnabled(false);
-			buttonMissions.setEnabled(false);
-			buttonFilter.setEnabled(false);
+		try {
 
-			try {
+			if (selectedTab instanceof UnitTab) {
+				// Enable these buttons
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
 
-				if (newTab instanceof UnitTab) {
-					buttonBar.setEnabled(false);
-					buttonMap.setEnabled(true);
-					buttonDetails.setEnabled(true);
+				UnitTableModel unitTableModel = (UnitTableModel)model;
+//				unitTableModel.clear();
 
-//					MonitorModel model = newTab.getModel();
-//
-//					// Retire the old tab
-//					retireTab(newTab);
-//
-//					if (model instanceof RobotTableModel) {
-//						newTab = new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON);
-//						addTab(newTab);
-//					}
-//					else if (model instanceof CropTableModel) {
-//						newTab = new UnitTab(this, new CropTableModel(), true, CROP_ICON);
-//						addTab(newTab);
-//					}
-//					else if (model instanceof SettlementTableModel) {
-//						newTab = new UnitTab(this, new SettlementTableModel(), true, BASE_ICON);
-//						addTab(newTab);
-//					}
-//					else if (model instanceof VehicleTableModel) {
-//						newTab = new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON);
-//						addTab(newTab);
-//					}
-//					else if (model instanceof PersonTableModel) {
-//						newTab = new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON);
-//						addTab(newTab);
-//					}
-					table = ((UnitTab) newTab).getTable();
-
-				} else if (newTab instanceof MissionTab) {
-					buttonBar.setEnabled(true);
-					buttonMap.setEnabled(true);
-					buttonMissions.setEnabled(true);
-					// Retire the old tab
-//					retireTab(newTab);
-//					newTab = new MissionTab(this);
-//					addTab(newTab);
-					table = ((MissionTab) newTab).getTable();
-				} else if (newTab instanceof EventTab) {
-					buttonBar.setEnabled(false);
-					buttonMap.setEnabled(true);
-					buttonDetails.setEnabled(true);
-					buttonFilter.setEnabled(true);
-					// Retire the old tab
-//					retireTab(newTab);
-//					eventsTab = new EventTab(this, desktop);
-//					newTab = eventsTab;
-//					addTab(newTab);
-					table = ((EventTab) newTab).getTable();
-				} else if (newTab instanceof FoodInventoryTab) {
-					buttonBar.setEnabled(true);
-					buttonMap.setEnabled(true);
-					buttonDetails.setEnabled(true);
-					buttonFilter.setEnabled(true);
-					// Retire the old tab
-//					retireTab(newTab);
-//					newTab = new FoodInventoryTab(this);
-//					addTab(newTab);
-					table = ((FoodInventoryTab) newTab).getTable();
-				} else if (newTab instanceof TradeTab) {
-					buttonBar.setEnabled(true);
-					buttonMap.setEnabled(true);
-					buttonDetails.setEnabled(true);
-					buttonFilter.setEnabled(true);
-					// Retire the old tab
-//					retireTab(newTab);
-//					newTab = new TradeTab(this);
-//					addTab(newTab);
-					table = ((TradeTab) newTab).getTable();
+				if (model instanceof RobotTableModel) {
+					unitTableModel = new RobotTableModel(selectedSettlement);
+					newTab = new UnitTab(this, unitTableModel, true, BOT_ICON);
+				}
+				else if (model instanceof CropTableModel) {
+					unitTableModel = new CropTableModel(selectedSettlement);
+					newTab = new UnitTab(this, unitTableModel, true, CROP_ICON);
+				}
+				else if (model instanceof SettlementTableModel) {
+					unitTableModel = new SettlementTableModel(selectedSettlement);
+					newTab = new UnitTab(this, unitTableModel, true, BASE_ICON);
+				}
+				else if (model instanceof VehicleTableModel) {
+					unitTableModel = new VehicleTableModel(selectedSettlement);
+					newTab = new UnitTab(this, unitTableModel, true, VEHICLE_ICON);
+				}
+				else if (model instanceof PersonTableModel) {
+					unitTableModel = new PersonTableModel(selectedSettlement, true);
+					newTab = new UnitTab(this, unitTableModel, true, PEOPLE_ICON);
 				}
 
-				this.table = table;
+			} else if (selectedTab instanceof MissionTab) {
+				// Enable these buttons
+				buttonBar.setEnabled(true);
+				buttonMap.setEnabled(true);
+				buttonMissions.setEnabled(true);
 
-			} catch (Exception e) {
-				logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage());
+				newTab = new MissionTab(this);
+
+			} else if (selectedTab instanceof EventTab) {
+				// Enable these buttons
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
+
+				eventsTab = new EventTab(this, desktop);
+				newTab = eventsTab;
+
+			} else if (selectedTab instanceof FoodInventoryTab) {
+				// Enable these buttons
+				buttonBar.setEnabled(true);
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
+
+				newTab = new FoodInventoryTab(this);
+
+			} else if (selectedTab instanceof TradeTab) {
+				// Enable these buttons
+				buttonBar.setEnabled(true);
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
+
+				newTab = new TradeTab(this);
 			}
 
-			// Update skin theme using TableStyle's setTableStyle()
-			if (table != null) { // for pie and bar chart, skip the codes below
-				// Note: needed for periodic refreshing in ToolWindow
-				// TableStyle.setTableStyle(new RowNumberTable(table));
-				TableStyle.setTableStyle(table);
-				rowTable = new RowNumberTable(table);
-				TableStyle.setTableStyle(rowTable);
-				// statusPanel.remove(_tableSearchableBar);
-//				if (reloadSearch)
-//					createSearchableBar(table);
-			}
+			swapTab(selectedTab, newTab);
+			model = newTab.getModel();
+			tableTab = (TableTab)newTab;
+			table = tableTab.getTable();
+			this.table = table;
+			model.addTableModelListener(this);
+			tabsSection.setSelectedComponent(newTab);
+			tabsSection.addChangeListener(e -> updateTab());
 
-			// String status = newTab.getCountString();
+			// Update the row count label with new numbers
 			rowCount.setText(newTab.getCountString());
 
-			if (oldTab != null) {
-				MonitorModel model = oldTab.getModel();
-				if (model != null)
-					oldTab.getModel().removeTableModelListener(this);
-			}
-
-			// Set oldTab to newTab
-			oldTab = newTab;
+		} catch (Exception e) {
+			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage());
 		}
 
+//		if (table != null) {
+//			// Note: for pie and bar chart, skip the codes below
+//			TableStyle.setTableStyle(table);
+//			rowTable = new RowNumberTable(table);
+//			// Note: needed for periodic refreshing in ToolWindow
+//			TableStyle.setTableStyle(rowTable);
+//
+//			// May reactivate statusPanel.remove(_tableSearchableBar) later
+//			// May reactivate this: if (reloadSearch) createSearchableBar(table) later
+//		}
 		// SwingUtilities.updateComponentTreeUI(this);
 	}
 
@@ -740,6 +730,20 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
+	 * Swaps out the old tab with a new tab
+	 *
+	 * @param oldTab
+	 * @param newTab
+	 */
+	private void swapTab(MonitorTab oldTab, MonitorTab newTab) {
+		int index = tabsSection.indexOfComponent(oldTab);
+		tabsSection.remove(oldTab);
+		oldTab.removeTab();
+		tabsSection.insertTab("", newTab.getIcon(), newTab, newTab.getName(), index);
+	}
+
+
+	/**
 	 * Retires a tab from Monitor Tool
 	 *
 	 * @param tab
@@ -802,6 +806,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void refreshTableStyle() {
 		if (table != null) {
 			TableStyle.setTableStyle(table);
+			rowTable = new RowNumberTable(table);
 			TableStyle.setTableStyle(rowTable);
 			MonitorTab selected = getSelected();
 			if (selected == eventsTab) {
@@ -839,15 +844,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * Prepare tool window for deletion.
 	 */
 	public void destroy() {
-//		Iterator<MonitorTab> i = tabs.iterator();
-//		while (i.hasNext())
-//			i.next().removeTab();
-//		tabs.clear();
-//		tabs = null;
 		tabsSection = null;
 		rowCount = null;
 		eventsTab = null;
-		oldTab = null;
 		buttonPie = null;
 		buttonBar = null;
 		buttonRemoveTab = null;
@@ -905,113 +904,100 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	    }
 	}
 
-	/**
-	 * Inner class combo box model for settlements.
-	 */
-	public class SettlementComboBoxModel
-	extends DefaultComboBoxModel<Object>
-	implements
-	UnitManagerListener,
-	UnitListener {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Constructor.
-		 */
-		public SettlementComboBoxModel() {
-			// User DefaultComboBoxModel constructor.
-			super();
-			// Initialize settlement list.
-			updateSettlements();
-			// Add this as a unit manager listener.
-			unitManager.addUnitManagerListener(this);
-
-			// Add addUnitListener
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-			Iterator<Settlement> i = settlementList.iterator();
-			while (i.hasNext()) {
-				i.next().addUnitListener(this);
-			}
-
-		}
-
-		/**
-		 * Update the list of settlements.
-		 */
-		private void updateSettlements() {
-			// Clear all elements
-			removeAllElements();
-
-			List<Settlement> settlements = new ArrayList<Settlement>();
-
-			// Add the command dashboard button
-			if (GameManager.getGameMode() == GameMode.COMMAND) {
-				settlements = unitManager.getCommanderSettlements();
-			}
-
-			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-				settlements.addAll(unitManager.getSettlements());
-			}
-
-			Collections.sort(settlements);
-
-			Iterator<Settlement> i = settlements.iterator();
-			while (i.hasNext()) {
-				addElement(i.next());
-			}
-		}
-
-		@Override
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-				updateSettlements();
-			}
-		}
-
-		@Override
-		public void unitUpdate(UnitEvent event) {
-			// Note: Easily 100+ UnitEvent calls every second
-			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-				Object target = event.getTarget();
-				Building building = (Building) target; // overwrite the dummy building object made by the constructor
-				BuildingManager mgr = building.getBuildingManager();
-				Settlement s = mgr.getSettlement();
-				desktop.getSettlementMapPanel().setSettlement(s);
-				// Updated ComboBox
-				settlementListBox.setSelectedItem(s);
-			}
-
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
-				// Update the number of citizens
-				Settlement s = (Settlement) settlementListBox.getSelectedItem();
-				// Set the selected settlement in SettlementMapPanel
-				desktop.getSettlementMapPanel().setSettlement(s);
-				// Set the population label in the status bar
-				desktop.getSettlementMapPanel().getSettlementWindow().setPop(s.getNumCitizens());
-				// Set the box opaque
-				settlementListBox.setOpaque(false);
-			}
-		}
-
-		/**
-		 * Prepare class for deletion.
-		 */
-		public void destroy() {
-
-			removeAllElements();
-
-			unitManager.removeUnitManagerListener(this);
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-			Iterator<Settlement> i = settlementList.iterator();
-			while (i.hasNext()) {
-				i.next().removeUnitListener(this);
-			}
-		}
-	}
+//	/**
+//	 * Inner class combo box model for settlements.
+//	 */
+//	public class SettlementComboBoxModel
+//	extends DefaultComboBoxModel<Object>
+//	implements
+//	UnitManagerListener,
+//	UnitListener {
+//
+//		/** default serial id. */
+//		private static final long serialVersionUID = 1L;
+//
+//		/**
+//		 * Constructor.
+//		 */
+//		public SettlementComboBoxModel() {
+//			// User DefaultComboBoxModel constructor.
+//			super();
+//			// Initialize settlement list.
+//			updateSettlements();
+//			// Add this as a unit manager listener.
+//			unitManager.addUnitManagerListener(this);
+//
+//			// Add addUnitListener
+//			Collection<Settlement> settlements = unitManager.getSettlements();
+//			List<Settlement> settlementList = new ArrayList<>(settlements);
+//			Iterator<Settlement> i = settlementList.iterator();
+//			while (i.hasNext()) {
+//				i.next().addUnitListener(this);
+//			}
+//
+//		}
+//
+//		/**
+//		 * Update the list of settlements.
+//		 */
+//		private void updateSettlements() {
+//			// Clear all elements
+//			removeAllElements();
+//
+//			List<Settlement> settlements = new ArrayList<>();
+//
+//			// Add the command dashboard button
+//			if (GameManager.getGameMode() == GameMode.COMMAND) {
+//				settlements = unitManager.getCommanderSettlements();
+//			}
+//
+//			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+//				settlements.addAll(unitManager.getSettlements());
+//			}
+//
+//			Collections.sort(settlements);
+//
+//			Iterator<Settlement> i = settlements.iterator();
+//			while (i.hasNext()) {
+//				addElement(i.next());
+//			}
+//		}
+//
+//		@Override
+//		public void unitManagerUpdate(UnitManagerEvent event) {
+//			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
+//				updateSettlements();
+//			}
+//		}
+//
+//		@Override
+//		public void unitUpdate(UnitEvent event) {
+//			// Note: Easily 100+ UnitEvent calls every second
+//			UnitEventType eventType = event.getType();
+//			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+//
+//			}
+//
+//			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+//
+//			}
+//		}
+//
+//		/**
+//		 * Prepare class for deletion.
+//		 */
+//		public void destroy() {
+//
+//			removeAllElements();
+//
+//			unitManager.removeUnitManagerListener(this);
+//			Collection<Settlement> settlements = unitManager.getSettlements();
+//			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+//			Iterator<Settlement> i = settlementList.iterator();
+//			while (i.hasNext()) {
+//				i.next().removeUnitListener(this);
+//			}
+//		}
+//	}
 
 }

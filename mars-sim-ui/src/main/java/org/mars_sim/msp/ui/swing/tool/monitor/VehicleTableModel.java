@@ -172,7 +172,7 @@ public class VehicleTableModel extends UnitTableModel {
 	private GameMode mode;
 
 	private Settlement commanderSettlement;
-
+	private Settlement settlement;
 
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
@@ -195,6 +195,25 @@ public class VehicleTableModel extends UnitTableModel {
 		}
 		else
 			setSource(unitManager.getVehicles());
+
+		init();
+	}
+
+	public VehicleTableModel(Settlement settlement) throws Exception {
+		super(
+			Msg.getString("VehicleTableModel.tabName"),
+			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
+
+		this.settlement = settlement;
+		setSource(settlement.getAllAssociatedVehicles());
+
+		init();
+	}
+
+	public void init() {
 
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
