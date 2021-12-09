@@ -986,7 +986,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		}
 
 		// Keeps track of things based on msol
-		trackMsol(pulse);
+		trackByMSol(pulse);
 
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
@@ -998,6 +998,11 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		return true;
 	}
 
+	/**
+	 * Track the level of stress of indoor people
+	 *
+	 * @param pulse
+	 */
 	private void trackStress(ClockPulse pulse) {
 		double time = pulse.getElapsed();
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
@@ -1010,6 +1015,11 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		}
 	}
 
+	/**
+	 * Calls other time passings.
+	 *
+	 * @param pulse
+	 */
 	private void otherTimePassings(ClockPulse pulse) {
 
 		powerGrid.timePassing(pulse);
@@ -1027,6 +1037,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		timePassing(pulse, ownedRobots);
 	}
 
+	/**
+	 * Create a building map and adjacent building map
+	 */
 	private void createBuildingMap() {
 		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
 			int numConnectors = adjacentBuildingMap.size();
@@ -1045,7 +1058,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @param pulse
 	 */
-	private void trackMsol(ClockPulse pulse) {
+	private void trackByMSol(ClockPulse pulse) {
 		// Sample a data point every SAMPLE_FREQ (in msols)
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -1146,7 +1159,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			try {
 				p.timePassing(pulse);
 				if (p.isDeclaredDead()) {
-					logger.info(p, "Dead so removing from citizens");
+					logger.info(this, p, "was listed 'dead' in the registry.");
 					died.add(p);
 				}
 			}

@@ -28,6 +28,10 @@ public class ResourceProcessing extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final double PROCESS_MAX_VALUE = 100D;
+	/** The period of time [in millisols] between each resource processing call. */
+	public static final double PROCESS_INTERVAL = 2.0;
+
+	private double time;
 
 	private double powerDownProcessingLevel;
 
@@ -70,7 +74,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			while (ii.hasNext()) {
 				int resource = ii.next();
 				if (!process.isWasteOutputResource(resource)) {
-					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
+					double rate = process.getMaxOutputResourceRate(resource);
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 				}
 			}
@@ -80,7 +84,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		    while (iii.hasNext()) {
 		    	int resource = iii.next();
 				if (!process.isAmbientInputResource(resource)) {
-					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
+					double rate = process.getMaxInputResourceRate(resource);
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 
 					// Check inventory limit.
@@ -95,7 +99,6 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			// Subtract value of require power.
-//			double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
 			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL * 1000D;
 			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
@@ -145,17 +148,20 @@ public class ResourceProcessing extends Function implements Serializable {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			double productionLevel = 0D;
-			if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
-				productionLevel = 1D;
-			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
-				productionLevel = powerDownProcessingLevel;
-
-			// Run each resource process.
-			Iterator<ResourceProcess> i = resourceProcesses.iterator();
-			while (i.hasNext()) {
-				// 	processResources takes up 32% of all cpu utilization
-				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlement());
+			time += pulse.getElapsed();
+			if (time >= PROCESS_INTERVAL) {
+				time = time - PROCESS_INTERVAL;
+				double productionLevel = 0D;
+				if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
+					productionLevel = 1D;
+				else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
+					productionLevel = powerDownProcessingLevel;
+				// Run each resource process.
+				Iterator<ResourceProcess> i = resourceProcesses.iterator();
+				while (i.hasNext()) {
+					// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
+					i.next().processResources(PROCESS_INTERVAL, productionLevel, getBuilding().getSettlement());
+				}
 			}
 		}
 		return valid;
