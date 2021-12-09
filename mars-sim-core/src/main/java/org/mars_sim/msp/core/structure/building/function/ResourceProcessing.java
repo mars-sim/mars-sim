@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ResourceProcessing class is a building function indicating that the
@@ -28,10 +29,11 @@ public class ResourceProcessing extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final double PROCESS_MAX_VALUE = 100D;
-	/** The period of time [in millisols] between each resource processing call. */
-	public static final double PROCESS_INTERVAL = 2.0;
 
-	private double time;
+	/** The interval of time [in millisols] between each resource processing call. */
+	private static double processInterval = 1.0;
+	/** The time accumulated [in millisols] for each resource processing call. */
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, processInterval/5.0);
 
 	private double powerDownProcessingLevel;
 
@@ -141,16 +143,16 @@ public class ResourceProcessing extends Function implements Serializable {
 	/**
 	 * Time passing for the building.
 	 *
-	 * @param time amount of time passing (in millisols)
+	 * @param accumulatedTime amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			time += pulse.getElapsed();
-			if (time >= PROCESS_INTERVAL) {
-				time = time - PROCESS_INTERVAL;
+			accumulatedTime += pulse.getElapsed();
+			if (accumulatedTime >= processInterval) {
+				accumulatedTime = accumulatedTime - processInterval;
 				double productionLevel = 0D;
 				if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
 					productionLevel = 1D;
@@ -160,11 +162,23 @@ public class ResourceProcessing extends Function implements Serializable {
 				Iterator<ResourceProcess> i = resourceProcesses.iterator();
 				while (i.hasNext()) {
 					// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
-					i.next().processResources(PROCESS_INTERVAL, productionLevel, getBuilding().getSettlement());
+					i.next().processResources(processInterval, productionLevel, getBuilding().getSettlement());
 				}
 			}
 		}
 		return valid;
+	}
+
+	/**
+	 * Sets the process interval
+	 *
+	 * @param value
+	 */
+	public static void setInterval(double value) {
+		double v = value/10.0;
+		// Randomize the process interval so that each process may
+		// run at a different time
+		processInterval = value + RandomUtil.getRandomDouble(-v, v);
 	}
 
 	/**

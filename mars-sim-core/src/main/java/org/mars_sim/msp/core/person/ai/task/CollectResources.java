@@ -79,7 +79,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
-		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
+		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
 				SkillType.AREOLOGY);
 
 		if (!person.isFit()) {

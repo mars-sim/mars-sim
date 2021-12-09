@@ -44,6 +44,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring")); //$NON-NLS-1$
 
 	// Static members
+	/** The average labor time it takes to find the resource. */
+	public static final double LABOR_TIME = 50D;
+
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
 	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D + RandomUtil.getRandomDouble(.5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
@@ -54,13 +57,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private double totalCollected = 0;
 	private double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
 	private double chance = numSamplesCollected / Exploration.EXPLORING_SITE_TIME;
-	
+
 	private ExploredLocation site;
 	private Rover rover;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param person the person performing the task.
 	 * @param site   the site to explore.
 	 * @param rover  the mission rover.
@@ -69,12 +72,12 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.AREOLOGY);
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), SkillType.AREOLOGY);
 
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
-		
+
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
@@ -87,14 +90,14 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			logger.warning(person, "No more specimen box for collecting rock samples.");
 			endTask();
 		}
-		
+
 		// Add task phase
 		addPhase(EXPLORING);
 	}
 
 	/**
 	 * Checks if a person can explore a site.
-	 * 
+	 *
 	 * @param member the member
 	 * @param rover  the rover
 	 * @return true if person can explore a site.
@@ -117,15 +120,15 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				logger.fine(person, "Ended exploring site due to being hungry at meal time.");
 				return false;
 			}
-			
+
 			if (EVAOperation.isExhausted(person)) {
 				logger.fine(person, "Ended exploring site due to being exhausted.");
 				return false;
 			}
-			
+
 			if (person.getPhysicalCondition().computeFitnessLevel() < 3)
 				return false;
-			
+
 			// Check if person's medical condition will not allow task.
             return !(person.getPerformanceRating() < .2D);
 		}
@@ -154,7 +157,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Perform the exploring phase of the task.
-	 * 
+	 *
 	 * @param time the time available (millisols).
 	 * @return remaining time after performing phase (millisols).
 	 * @throws Exception if error performing phase.
@@ -169,7 +172,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -177,7 +180,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -185,9 +188,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
         		endTask();
 			return time;
 		}
-		
+
 		int rand = RandomUtil.getRandomInt(1);
-		
+
 		if (rand == 0) {
 			// Improve mineral concentration estimates.
 			improveMineralConcentrationEstimates(time);
@@ -198,7 +201,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		}
 
 		// TODO: Add other site exploration activities later.
-	
+
 		// Add experience points
 		addExperience(time);
 
@@ -214,13 +217,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
         		endTask();
 			return 0;
 		}
-		
+
 		return 0D;
 	}
 
 	/**
 	 * Collect rock samples if chosen.
-	 * 
+	 *
 	 * @param time the amount of time available (millisols).
 	 * @throws Exception if error collecting rock samples.
 	 */
@@ -229,7 +232,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			double probability = Math.round((1 + site.getNumEstimationImprovement()) * chance * time *100.0)/100.0;
 			if (probability > .8)
 				probability = .8;
-			
+
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, ROCK_SAMPLES_ID);
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
@@ -244,7 +247,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Improve the mineral concentration estimates of an explored site.
-	 * 
+	 *
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
@@ -252,17 +255,17 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				* ESTIMATE_IMPROVEMENT_FACTOR;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 			improveSiteEstimates(site, getEffectiveSkillLevel());
-			
-			logger.log(person, Level.INFO, 5_000, 
-					"Exploring at site " + site.getLocation().getFormattedString() 
+
+			logger.log(person, Level.INFO, 5_000,
+					"Exploring at site " + site.getLocation().getFormattedString()
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");
 		}
 	}
-	
+
 	/**
 	 * Improve the mineral estimates for a particular site. Reviewer has a certain
-	 * skill rating. 
+	 * skill rating.
 	 * @param site
 	 * @param skill
 	 */
@@ -290,7 +293,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Checks if the person is carrying a specimen container.
-	 * 
+	 *
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
@@ -299,7 +302,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 	/**
 	 * Takes the least full specimen container from the rover, if any are available.
-	 * 
+	 *
 	 * @return true if the person receives a specimen container.
 	 */
 	private boolean takeSpecimenContainer() {

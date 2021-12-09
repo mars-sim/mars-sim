@@ -30,6 +30,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -405,6 +407,9 @@ public class MasterClock implements Serializable {
 				if (ratio <= max) {
 					logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
 					targetTR = ratio;
+
+					// Set the new scale factor
+					setScaleFactor();
 				}
 				else {
 					ratio = max;
@@ -414,6 +419,15 @@ public class MasterClock implements Serializable {
 			else
 				targetTR = 1;
 		}
+	}
+
+	/**
+	 * Gets the current speed
+	 *
+	 * @return
+	 */
+	public int getCurrentSpeed() {
+		return (int)(Math.log(targetTR) / Math.log(2));
 	}
 
 	/**
@@ -432,6 +446,23 @@ public class MasterClock implements Serializable {
 	 */
 	public int getUserTR() {
 		return userTR;
+	}
+
+	/**
+	 * Set the new scale factor
+	 */
+	public void setScaleFactor() {
+		double ratio = (3.0 - 0.3)/MAX_SPEED;
+		double scale = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
+		logger.config("The scale factor becomes " + scale);
+		// Update the interval in resource processing
+		ResourceProcessing.setInterval(scale);
+		// Update the interval in Farming
+		Farming.setInterval(scale);
+	}
+
+	public void getScaleFactor() {
+
 	}
 
 	/**

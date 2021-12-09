@@ -33,9 +33,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 
-	/** The period of time [in millisols] between each resource processing call. */
-	private static final double PROCESS_INTERVAL = 2.0;
-
 	private static final double TUNING_FACTOR = .18;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
@@ -158,7 +155,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double co2Cache = 0;
 	private double o2Cache = 0;
 
-	private double accumulatedTime;
+	/** The interval of time [in millisols] between each crop update call. */
+	private double processInterval = 1.0;
+	/** The time accumulated [in millisols] for each crop update call. */
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, processInterval/5.0);
 
 	private final double co2Threshold;
 	private final double o2Threshold;
@@ -734,14 +734,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double elapsed = pulse.getElapsed();
 		accumulatedTime += elapsed;
 
-		if (accumulatedTime >= PROCESS_INTERVAL) {
-			accumulatedTime = accumulatedTime - PROCESS_INTERVAL;
+		if (accumulatedTime >= processInterval) {
+			accumulatedTime = accumulatedTime - processInterval;
 
 			PhaseType phaseType = currentPhase.getPhaseType();
 			if (phaseType == PhaseType.FINISHED) {
 				return true;
 			}
-			double time = elapsed * productionLevel;
+			double time = accumulatedTime * productionLevel;
 
 			growingTimeCompleted += time;
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
@@ -807,10 +807,18 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return true;
 	}
 
+	/**
+	 * Turns on lighting
+	 *
+	 * @param kW
+	 */
 	private void turnOnLighting(double kW) {
 		lightingPower = kW;
 	}
 
+	/**
+	 * Turns off lighting
+	 */
 	private void turnOffLighting() {
 		lightingPower = 0;
 	}
@@ -1333,6 +1341,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
+	 * Sets the process interval
+	 *
+	 * @param value
+	 */
+	public void setInterval(double value) {
+		processInterval = value;
+	}
+
+	/**
 	 * Compares if the object is the same as this crop
 	 */
 	@Override
@@ -1369,4 +1386,5 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public int compareTo(Crop o) {
 		return cropSpec.compareTo(o.getCropType());
 	}
+
 }
