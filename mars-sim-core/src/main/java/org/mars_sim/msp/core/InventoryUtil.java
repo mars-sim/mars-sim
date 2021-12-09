@@ -29,10 +29,10 @@ public class InventoryUtil {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(InventoryUtil.class.getName());
-	
+
 	/**
 	 * Gets a good EVA suit
-	 * 
+	 *
 	 * @param housing The unit housing the airlock to be used.
 	 * @param p
 	 * @return
@@ -40,7 +40,7 @@ public class InventoryUtil {
 	public static EVASuit getGoodEVASuit(Person p) {
 		Unit cu = p.getContainerUnit();
 		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
- 		
+
  		// Find suit without malfunction
  		// TODO favorite a previous one
 		for (Equipment e : candidates) {
@@ -51,11 +51,11 @@ public class InventoryUtil {
 		}
 
 		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
-		
+
 		logger.warning(p, "Could not find a good EVA suit in " + cu.getName() + "(" + numEVASuit + ").");
 		return null;
 	}
-	
+
 	/**
 	 * Gets a good working EVA suit from an inventory.
 	 *
@@ -74,26 +74,29 @@ public class InventoryUtil {
 				if (!malfunction) {
 					suits.add(suit);
 				}
-				else 
-					logger.log(p, Level.WARNING, 50_000, 
+				else
+					logger.log(p, Level.WARNING, 50_000,
 						"Spotted the malfunction with " + suit.getName() + " when being examined.");
-				
+
 				try {
 					boolean hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
-					if (!malfunction && hasEnoughResources) {			
-						if (p != null && suit.getLastOwner() == p) {
-							// Prefers to pick the same suit that a person has been tagged in the past
-							return suit;
+
+					if (!malfunction) {
+						if (hasEnoughResources) {
+							if (p != null && suit.getLastOwner() == p) {
+								// Prefers to pick the same suit that a person has been tagged in the past
+								return suit;
+							}
+							else
+								// tag it as good suit for possible use below
+								goodSuits.add(suit);
 						}
-						else
-							// tag it as good suit for possible use below
-							goodSuits.add(suit);
+						else {
+							// tag it as no resource suit for possible use below
+							noResourceSuits.add(suit);
+						}
 					}
-					else if (!malfunction && !hasEnoughResources) {
-						// tag it as no resource suit for possible use below
-						noResourceSuits.add(suit);					
-					}
-					
+
 				} catch (Exception ex) {
 					logger.log(p, Level.SEVERE, 50_000,
 							"Could not find enough resources for " + suit.getName() + ".", ex);
@@ -105,29 +108,29 @@ public class InventoryUtil {
 		int size = goodSuits.size();
 		if (size == 1)
 			return goodSuits.get(0);
-		else if (size > 1)
+		if (size > 1)
 			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
-		
-		// Picks any one of the good suits
+
+		// Picks any one of the no-resource suits
 		size = noResourceSuits.size();
 		if (size == 1)
 			return noResourceSuits.get(0);
-		else if (size > 1)
+		if (size > 1)
 			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Checks if entity unit has enough resource supplies to fill the EVA suit.
-	 * 
+	 *
 	 * @param entityInv the entity unit.
 	 * @param suit      the EVA suit.
 	 * @return true if enough supplies.
 	 * @throws Exception if error checking suit resources.
 	 */
 	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
-		int otherPeopleNum = 0; 
+		int otherPeopleNum = 0;
 		if (owner instanceof Settlement)
 			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
 
@@ -152,5 +155,5 @@ public class InventoryUtil {
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}
-	
+
 }

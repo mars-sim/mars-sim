@@ -31,9 +31,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
-	private static final double TUNING_FACTOR = .18;
-
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
+
+	/** The period of time [in millisols] between each resource processing call. */
+	private static final double PROCESS_INTERVAL = 2.0;
+
+	private static final double TUNING_FACTOR = .18;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -154,6 +157,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private double co2Cache = 0;
 	private double o2Cache = 0;
+
+	private double accumulatedTime;
 
 	private final double co2Threshold;
 	private final double o2Threshold;
@@ -304,7 +309,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Set the remaining harvest based on percentageGrowth
 			remainingHarvest = (maxHarvest * percentageGrowth)/100D;
 		}
-		
+
 		updatePhase(phaseType);
 	}
 
@@ -726,72 +731,79 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
+		double elapsed = pulse.getElapsed();
+		accumulatedTime += elapsed;
 
-		PhaseType phaseType = currentPhase.getPhaseType();
-		if (phaseType == PhaseType.FINISHED) {
-			return true;
-		}
-		double time = pulse.getElapsed() * productionLevel;
+		if (accumulatedTime >= PROCESS_INTERVAL) {
+			accumulatedTime = accumulatedTime - PROCESS_INTERVAL;
 
-		growingTimeCompleted += time;
-		percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
-
-		if (phaseType != PhaseType.HARVESTING) {
-			// Right before the harvesting phase
-			if (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
-				// Advance onto the next phase
-				advancePhase();
-			}
-		}
-
-		// check for the passing of each day
-		if (pulse.isNewSol()) {
-
-			// Resets the daily harvest back to zero
-			dailyHarvest = 0;
-
-			// Update the resource usage
-			updateUsage(pulse.getMarsTime().getMissionSol());
-
-			if (dailyHarvest < 0) {
-				updatePhase(PhaseType.FINISHED);
-				dailyHarvest = 0;
+			PhaseType phaseType = currentPhase.getPhaseType();
+			if (phaseType == PhaseType.FINISHED) {
 				return true;
 			}
-			// Note: is it better off doing the actualHarvest computation once a day or
-			// every time
-			// Reset the daily work counter currentPhaseWorkCompleted back to zero
-			// currentPhaseWorkCompleted = 0D;
-			cumulativeDailyPAR = 0;
+			double time = elapsed * productionLevel;
+
+			growingTimeCompleted += time;
+			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
+
+			if (phaseType != PhaseType.HARVESTING) {
+				// Right before the harvesting phase
+				if (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
+					// Advance onto the next phase
+					advancePhase();
+				}
+			}
+
+			// check for the passing of each day
+			if (pulse.isNewSol()) {
+
+				// Resets the daily harvest back to zero
+				dailyHarvest = 0;
+
+				// Update the resource usage
+				updateUsage(pulse.getMarsTime().getMissionSol());
+
+				if (dailyHarvest < 0) {
+					updatePhase(PhaseType.FINISHED);
+					dailyHarvest = 0;
+					return true;
+				}
+				// Note: is it better off doing the actualHarvest computation once a day or
+				// every time
+				// Reset the daily work counter currentPhaseWorkCompleted back to zero
+				// currentPhaseWorkCompleted = 0D;
+				cumulativeDailyPAR = 0;
+			}
+
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
+				// Checks on crop health
+				trackHealth();
+			}
+
+			// max possible harvest within this period of time
+			double maxPeriodHarvest = maxHarvest * (time / cropSpec.getGrowingTime());
+			// Compute each harvestModifiers and sum them up below
+			// Note: computeHarvest takes up 40% of all cpu utilization
+			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
+													solarIrradiance,
+													greyFilterRate,
+													temperatureModifier);
+			// Add to the daily harvest.
+			dailyHarvest += maxPeriodHarvest * harvestModifier;
+			// Add to the cumulative harvest.
+			remainingHarvest += maxPeriodHarvest * harvestModifier;
+
+			if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
+				updatePhase(PhaseType.FINISHED);
+			}
+
+			if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
+				dailyHarvest = 0;
+				totalHarvest = 0;
+			}
 		}
 
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % CHECK_HEALTH_FREQUENCY == 0) {
-			// Checks on crop health
-			trackHealth();
-		}
-
-		// max possible harvest within this period of time
-		double maxPeriodHarvest = maxHarvest * (time / cropSpec.getGrowingTime());
-		// Compute each harvestModifiers and sum them up below
-		// Note: computeHarvest takes up 40% of all cpu utilization
-		double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
-												solarIrradiance,
-												greyFilterRate,
-												temperatureModifier);
-		// Add to the daily harvest.
-		dailyHarvest += maxPeriodHarvest * harvestModifier;
-		// Add to the cumulative harvest.
-		remainingHarvest += maxPeriodHarvest * harvestModifier;
-
-		if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
-			updatePhase(PhaseType.FINISHED);
-		}
-
-		if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
-			dailyHarvest = 0;
-			totalHarvest = 0;
-		}
 		return true;
 	}
 

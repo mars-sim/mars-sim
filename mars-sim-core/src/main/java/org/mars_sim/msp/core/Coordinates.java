@@ -859,6 +859,5 @@ public class Coordinates implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		formatter = null;
 	}
 }

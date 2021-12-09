@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Temporal.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-09
  * @author Barry Evans
  */
 
@@ -12,7 +12,7 @@ package org.mars_sim.msp.core.time;
  *
  */
 public interface Temporal {
-	
+
 	/**
 	 * Time has advanced.
 	 * @param pulse The advancement of time.
