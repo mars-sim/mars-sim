@@ -779,12 +779,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * fixed at the last location of the containing unit.
 	 */
 	public void buryBody() {
-		// Remove the person from the settlement
-//		getContainerUnit().getInventory().retrieveUnit(this);
 		// Bury the body
 		isBuried = true;
 		// Back up the last container unit
-//		condition.getDeathDetails().backupContainerUnit(containerUnit);
 		condition.getDeathDetails().backupContainerID(getContainerID());
 		// set container unit to null if not done so
 		setContainerUnit(null);
@@ -792,8 +789,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		// Set his/her buried settlement
 		buriedSettlement = associatedSettlementID;
-
-		// Remove the person from being a member of the associated settlement
+		// Remove the person from the settlement's registry
 		setAssociatedSettlement(-1);
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
@@ -850,7 +846,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		}
 
 		// If Person is dead, then skip
-		if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
+		if (!condition.isDead() && getLifeSupportType() != null) {
 
 			support = getLifeSupportType();
 
@@ -929,8 +925,18 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 				}
 			}
 		}
+		else
+			checkDecease();
 
-		else if (!isBuried && condition.getDeathDetails() != null
+		return true;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public boolean checkDecease() {
+		if (!isBuried && condition.getDeathDetails() != null
 				&& condition.getDeathDetails().getBodyRetrieved()) {
 
 			if (!declaredDead) {

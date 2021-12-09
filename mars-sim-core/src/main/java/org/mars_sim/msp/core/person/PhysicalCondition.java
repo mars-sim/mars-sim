@@ -406,16 +406,23 @@ public class PhysicalCondition implements Serializable {
 			radiation.timePassing(pulse);
 			// Update the existing health problems
 			checkHealth(pulse);
-
-
-			// Build up fatigue & hunger for given time passing.
+			// Update thirst
 			setThirst(thirst + time * bodyMassDeviation);
-
+			// Update fatigue
 			setFatigue(fatigue + time);
-
+			// Update hunger
 			setHunger(hunger + time * bodyMassDeviation);
 
-			// normal bodily function consume a minute amount of energy
+			// Note: this stress factor is different from LifeSupport's timePassing's
+			//       stress modifier for each particular building
+			// Get stress factor due to settlement overcrowding
+			if (person.isInSettlement()) {
+				double stressFactor = person.getSettlement().getStressFactor(time);
+				// Update stress
+				setStress(stress + stressFactor);
+			}
+
+			// Note: Normal bodily function consume a minute amount of energy
 			// even if a person does not perform any tasks
 			// Note: removing this as reduce energy is already handled
 			// in the TaskManager and people are always performing tasks
@@ -425,11 +432,11 @@ public class PhysicalCondition implements Serializable {
 			int msol = pulse.getMarsTime().getMillisolInt();
 			if (msol % 7 == 0) {
 
+				// Update starvation
 				checkStarvation(hunger);
+				// Update dehydration
 				checkDehydration(thirst);
-
-//				// If person is at high stress, check for mental breakdown.
-
+				// Check for mental breakdown if person is at high stress,
 				// Check if person is at very high fatigue may collapse.
 
 				if (!isRadiationPoisoned)

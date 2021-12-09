@@ -1074,10 +1074,8 @@ public class SimulationConfig implements Serializable {
 		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-
 //		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 		scienceConfig = new ScienceConfig();
-
 
 		logger.config("Done loading all xml config files.");
 	}
