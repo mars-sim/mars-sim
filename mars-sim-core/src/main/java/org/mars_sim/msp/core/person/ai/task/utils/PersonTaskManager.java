@@ -195,7 +195,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		if (!pendingTasks.isEmpty()) {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
-				Task newTask = getAPendingMetaTask().constructInstance(person);
+				Task newTask = metaTask.constructInstance(person);
 				logger.info(person, "Starting a task order of '" + newTask.getName() + "'.");
 				startTask(newTask);
 			}

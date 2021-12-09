@@ -2117,7 +2117,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
-				transferred = ((Settlement)destination).addPeopleWithin(this);
+				transferred = ((Building)destination).getSettlement().addPeopleWithin(this);
 			}
 
 			if (!transferred) {

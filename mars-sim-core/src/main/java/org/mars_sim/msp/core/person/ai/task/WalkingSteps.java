@@ -292,7 +292,9 @@ implements Serializable {
         	}
         }
 
-        result.loc = new Point2D.Double(xLoc, yLoc);
+        if (result != null)
+        	result.loc = new Point2D.Double(xLoc, yLoc);
+
         return result;
     }
 

@@ -22,6 +22,8 @@ import javax.swing.JInternalFrame;
 @SuppressWarnings("serial")
 class MainDesktopManager extends DefaultDesktopManager {
 
+	// See https://stackoverflow.com/questions/8136944/preventing-jinternalframe-from-being-moved-out-of-a-jdesktoppane#8138986
+
 	/** The value of GAP is to ensure the frame is flushed exactly at the edge of the main window. */
 	private static final int GAP = 10;
 
@@ -41,8 +43,6 @@ class MainDesktopManager extends DefaultDesktopManager {
 		frame.setVisible(false);
 	}
 
-	// see
-	// http://stackoverflow.com/questions/8136944/preventing-jinternalframe-from-being-moved-out-of-a-jdesktoppane#8138986
 	@Override
 	public void beginDraggingFrame(JComponent f) {
 
@@ -94,14 +94,21 @@ class MainDesktopManager extends DefaultDesktopManager {
 		}
 	}
 
+	/**
+	 * Is the frame within the bound of its parent ?
+	 *
+	 * @param f
+	 * @param newX
+	 * @param newY
+	 * @param newWidth
+	 * @param newHeight
+	 * @return
+	 */
 	protected boolean inBounds(JInternalFrame f, int newX, int newY, int newWidth, int newHeight) {
 		if (newX < 0 || newY < 0)
 			return false;
 		if (newX + newWidth > f.getDesktopPane().getWidth())
 			return false;
-//        return newY + newHeight <= f.getDesktopPane().getHeight();
-		if (newY + newHeight >= f.getDesktopPane().getHeight())
-			return false;
-        return true;
+        return newY + newHeight <= f.getDesktopPane().getHeight();
     }
 }
