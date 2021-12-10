@@ -2,13 +2,18 @@ package org.mars_sim.msp.core.structure.building.connection;
 
 import java.util.List;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 
 import junit.framework.TestCase;
 
 public class InsideBuildingPathTest extends TestCase {
 
-    public void testConstructor() {
+    private static final LocalPosition POSITION_5X5 = new LocalPosition(5D, 5D);
+	private static final LocalPosition POSITION_10X5 = new LocalPosition(10D, 5D);
+	private static final LocalPosition POSITION_10X10 = new LocalPosition(10D, 10D);
+
+	public void testConstructor() {
         
         InsideBuildingPath path = new InsideBuildingPath();
         assertEquals(0D, path.getPathLength());
@@ -30,7 +35,7 @@ public class InsideBuildingPathTest extends TestCase {
         assertEquals(0, remainingLocations1.size());
         
         MockBuilding building = new MockBuilding();
-        InsidePathLocation location = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location = new BuildingLocation(building, POSITION_5X5);
         
         assertFalse(path.containsPathLocation(location));
         
@@ -52,10 +57,10 @@ public class InsideBuildingPathTest extends TestCase {
         InsideBuildingPath path = new InsideBuildingPath();
         
         MockBuilding building = new MockBuilding();
-        InsidePathLocation location1 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
         path.addPathLocation(location1);
         
-        InsidePathLocation location2 = new BuildingLocation(building, 10D, 5D);
+        InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
         path.addPathLocation(location2);
         
         assertEquals(location1, path.getNextPathLocation());
@@ -71,13 +76,13 @@ public class InsideBuildingPathTest extends TestCase {
         
         MockBuilding building = new MockBuilding();
         
-        InsidePathLocation location1 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
         path.addPathLocation(location1);
         
-        InsidePathLocation location2 = new BuildingLocation(building, 10D, 5D);
+        InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
         path.addPathLocation(location2);
         
-        InsidePathLocation location3 = new BuildingLocation(building, 10D, 10D);
+        InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
         path.addPathLocation(location3);
         
         List<InsidePathLocation> remainingLocations1 = path.getRemainingPathLocations();
@@ -106,17 +111,17 @@ public class InsideBuildingPathTest extends TestCase {
         
         MockBuilding building = new MockBuilding();
         
-        InsidePathLocation location1 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
         path.addPathLocation(location1);
         
         assertTrue(path.isEndOfPath());
         
-        InsidePathLocation location2 = new BuildingLocation(building, 10D, 5D);
+        InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
         path.addPathLocation(location2);
         
         assertFalse(path.isEndOfPath());
         
-        InsidePathLocation location3 = new BuildingLocation(building, 10D, 10D);
+        InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
         path.addPathLocation(location3);
         
         assertFalse(path.isEndOfPath());
@@ -136,22 +141,22 @@ public class InsideBuildingPathTest extends TestCase {
         
         MockBuilding building = new MockBuilding();
         
-        InsidePathLocation location1 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
         path.addPathLocation(location1);
         
         assertEquals(0D, path.getPathLength());
         
-        InsidePathLocation location2 = new BuildingLocation(building, 10D, 5D);
+        InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
         path.addPathLocation(location2);
         
         assertEquals(5D, path.getPathLength());
         
-        InsidePathLocation location3 = new BuildingLocation(building, 10D, 10D);
+        InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
         path.addPathLocation(location3);
         
         assertEquals(10D, path.getPathLength());
         
-        InsidePathLocation location4 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location4 = new BuildingLocation(building, POSITION_5X5);
         path.addPathLocation(location4);
         
         assertEquals(10D + Math.sqrt(50D), path.getPathLength());
@@ -163,13 +168,13 @@ public class InsideBuildingPathTest extends TestCase {
         
         MockBuilding building = new MockBuilding();
         
-        InsidePathLocation location1 = new BuildingLocation(building, 5D, 5D);
+        InsidePathLocation location1 = new BuildingLocation(building, POSITION_5X5);
         path1.addPathLocation(location1);
         
-        InsidePathLocation location2 = new BuildingLocation(building, 10D, 5D);
+        InsidePathLocation location2 = new BuildingLocation(building, POSITION_10X5);
         path1.addPathLocation(location2);
         
-        InsidePathLocation location3 = new BuildingLocation(building, 10D, 10D);
+        InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
         path1.addPathLocation(location3);
         
         InsideBuildingPath path2 = (InsideBuildingPath) path1.clone();

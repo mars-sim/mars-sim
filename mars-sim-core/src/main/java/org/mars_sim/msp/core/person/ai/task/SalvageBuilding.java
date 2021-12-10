@@ -94,7 +94,7 @@ implements Serializable {
 
             // Determine location for salvage site.
             LocalPosition salvageSiteLoc = determineSalvageLocation();
-            setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
+            setOutsideSiteLocation(salvageSiteLoc);
 
             // Add task phase
             addPhase(SALVAGE);
@@ -131,7 +131,7 @@ implements Serializable {
 
         // Determine location for salvage site.
         LocalPosition salvageSiteLoc = determineSalvageLocation();
-        setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
+        setOutsideSiteLocation(salvageSiteLoc);
 
         // Add task phase
         addPhase(SALVAGE);

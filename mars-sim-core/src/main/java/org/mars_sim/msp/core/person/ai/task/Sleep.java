@@ -371,9 +371,8 @@ public class Sleep extends Task implements Serializable {
 						double x = bed.getX();
 						double y = bed.getY();
 
-	//					accommodations = q1.getLivingAccommodations();
 						// Concert the coordinate back
-						LocalPosition spot = new LocalPosition(x - q1.getXLocation(), y - q1.getYLocation());
+						LocalPosition spot = new LocalPosition(x - q1.getPosition().getX(), y - q1.getPosition().getY());
 
 						boolean empty = q1.getLivingAccommodations().isActivitySpotEmpty(spot);
 

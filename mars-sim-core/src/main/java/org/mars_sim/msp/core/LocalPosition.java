@@ -110,6 +110,16 @@ public class LocalPosition implements Serializable {
         return new LocalPosition(newXLoc, newYLoc);
 	}
 	
+
+	/**
+	 * Get this relative position as an absolute position relative to a basepoint.
+	 * @param bsaepoint Position as the base
+	 * @return
+	 */
+	public LocalPosition getAbsolutePosition(LocalPosition basepoint) {
+		return new LocalPosition(x + basepoint.x, y + basepoint.y);
+	}
+	
 	/**
 	 * Is another position close to this one?
 	 * @param other

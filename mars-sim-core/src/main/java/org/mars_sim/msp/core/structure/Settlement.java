@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -1764,55 +1764,31 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * current location.
 	 *
 	 * @param person    the person.
-	 * @param xLocation the X location.
-	 * @param yLocation the Y location.
+	 * @param pos Position to search
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
-		Building currentBuilding = BuildingManager.getBuilding(person);
+	public Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos) {
+		Building currentBuilding = BuildingManager.getBuilding(worker);
 
 		if (currentBuilding == null) {
 			// Note: What if a person is out there in ERV building for maintenance ?
 			// ERV building has no LifeSupport function. currentBuilding will be null
-			logger.log(person, Level.WARNING, 10_000, "Not currently in a building.");
+			logger.log(worker, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
-		return getAirlock(currentBuilding, xLocation, yLocation);
+		return getAirlock(currentBuilding, pos);
 	}
-
-	/**
-	 * Gets an airlock for an EVA egress
-	 *
-	 * @param robot
-	 * @param xLocation
-	 * @param yLocation
-	 * @return
-	 */
-	public Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
-		Building currentBuilding = BuildingManager.getBuilding(robot);
-
-		if (currentBuilding == null) {
-			// Note: need to refine the concept of where a robot can go. They are thought to need
-			// RoboticStation function to "survive", much like a person who needs LifeSupport function
-			logger.log(robot, Level.WARNING, 10_000, "Not currently in a building.");
-			return null;
-		}
-
-		return getAirlock(currentBuilding, xLocation, yLocation);
-	}
-
 
 	/**
 	 * Gets an airlock for an EVA egress, preferably an pressurized airlock.
 	 * Consider if the chambers are full and if the reservation is full.
 	 *
 	 * @param currentBuilding
-	 * @param xLocation
-	 * @param yLocation
+	 * @param pos Position for search
 	 * @return
 	 */
-	private Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
+	private Airlock getAirlock(Building currentBuilding, LocalPosition pos) {
 		Airlock result = null;
 
 		// Search the closest of the buildings
@@ -1829,8 +1805,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			if ((!chamberFull || !reservationFull)
 				&& buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
-				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
-						xLocation, yLocation);
+				double distance = building.getPosition().getDistanceTo(pos);
 				if (distance < leastDistance) {
 
 					result = building.getEVA().getAirlock();

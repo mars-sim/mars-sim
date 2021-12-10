@@ -222,9 +222,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		List<LocalPosition> beds = super.getActivitySpotsList();
 		for (LocalPosition bed : beds) {
 			if (!assignedBeds.containsValue(bed)) {
-				double x = bed.getX() + building.getXLocation();
-				double y = bed.getY() + building.getYLocation();
-				return new LocalPosition(x, y);
+				return bed.getAbsolutePosition(building.getPosition());
 			}
 		}
 		return null;
@@ -246,9 +244,7 @@ public class LivingAccommodations extends Function implements Serializable {
 			// traveler may be sleeping on it.
 			for (LocalPosition spot : spots) {
 				// Convert the activity spot (the bed location) to the settlement reference coordinate
-				double x = spot.getX() + building.getXLocation();
-				double y = spot.getY() + building.getYLocation();
-				bed = new LocalPosition(x, y);
+				bed = spot.getAbsolutePosition(building.getPosition());
 				if (!assignedBeds.containsValue(bed)) {
 					if (!guest) {
 						assignABed(person, bed);

@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface Worker extends Loggable, Serializable, EquipmentOwner {
@@ -96,7 +97,13 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return
 	 */
 	public Settlement getSettlement();
-
+	
+	/**
+	 * Get the Worker's building
+	 * @return building
+	 */
+	public Building getBuildingLocation();
+	
 	/**
 	 * Is the Worker outside
 	 *

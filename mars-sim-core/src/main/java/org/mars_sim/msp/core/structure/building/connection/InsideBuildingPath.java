@@ -113,9 +113,7 @@ public class InsideBuildingPath implements Serializable, Cloneable {
             Iterator<InsidePathLocation> i = pathLocations.iterator();
             while (i.hasNext()) {
                 InsidePathLocation location = i.next();
-                result += Point2D.Double.distance(previousLocation.getXLocation(), 
-                        previousLocation.getYLocation(), location.getXLocation(), 
-                        location.getYLocation());
+                result += previousLocation.getPosition().getDistanceTo(location.getPosition());
                 previousLocation = location;
             }
         }

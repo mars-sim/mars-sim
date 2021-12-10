@@ -1022,8 +1022,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
 		LocalPosition bed = person.getBed();
 		if (bed != null) {
-			LocalPosition spot = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(bed.getX() - building.getXLocation(),
-					bed.getY() - building.getYLocation()), building);
+			LocalPosition spot = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(bed.getX() - building.getPosition().getX(),
+					bed.getY() - building.getPosition().getY()), building);
 			
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, spot, allowFail);

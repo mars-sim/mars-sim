@@ -381,25 +381,6 @@ public class BuildingConnectorManager implements Serializable {
 
 		return finalPath;
 	}
-	
-	/**
-	 * Determines the shortest building path between two locations in buildings.
-	 * 
-	 * @param building1     the first building.
-	 * @param building1XLoc the starting X location in the first building.
-	 * @param building1YLoc the starting Y location in the first building.
-	 * @param building2     the second building.
-	 * @param building2XLoc the ending X location in the second building.
-	 * @param building2YLoc the ending Y location in the second building.
-	 * @return shortest path or null if no path found.
-	 * @deprecated
-	 */
-	public InsideBuildingPath determineShortestPath(Building building1, double building1XLoc, double building1YLoc,
-			Building building2, double building2XLoc, double building2YLoc) {
-
-		return determineShortestPath(building1, new LocalPosition(building1XLoc, building1YLoc),
-									 building2, new LocalPosition(building2XLoc, building2YLoc));
-	}
 
 	/**
 	 * Recursive method to determine the shortest path between two buildings.

@@ -1245,25 +1245,12 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @return building or null if none.
 	 */
-	public static Building getBuilding(Unit unit) {
-		Building result = null;
-		Person person = null;
-		Robot robot = null;
-
-		if (unit instanceof Person) {
-			person = (Person) unit;
-			if (person.isInSettlement()) {
-				return person.getBuildingLocation();
-			}
+	public static Building getBuilding(Worker worker) {
+		if (worker.isInSettlement()) {
+			return worker.getBuildingLocation();
 		}
-
-		else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			if (robot.isInSettlement()) {
-				return robot.getBuildingLocation();
-			}
-		}
-		return result;
+		
+		return null;
 	}
 
 	/**

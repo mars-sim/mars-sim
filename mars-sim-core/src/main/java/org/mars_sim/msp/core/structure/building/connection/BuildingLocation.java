@@ -29,17 +29,6 @@ public class BuildingLocation implements Serializable, InsidePathLocation {
      * @param xLoc the X location
      * @param yLoc the Y location
      */
-    @Deprecated
-    public BuildingLocation(Building building, double xLoc, double yLoc) {
-        this(building, new LocalPosition(xLoc, yLoc));
-    }
-
-    /**
-     * Constructor
-     * @param building the building.
-     * @param xLoc the X location
-     * @param yLoc the Y location
-     */
     public BuildingLocation(Building building, LocalPosition pos) {
         this.building = building;
         this.pos = pos;

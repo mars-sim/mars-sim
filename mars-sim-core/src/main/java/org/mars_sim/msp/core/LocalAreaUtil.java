@@ -252,62 +252,6 @@ public class LocalAreaUtil {
 		return result;
 	}
 	
-	/**
-	 * Checks if a point location does not collide with any existing vehicle,
-	 * building, or construction site.
-	 *
-	 * @param xLoc        the new X location.
-	 * @param yLoc        the new Y location.
-	 * @param coordinates the global coordinate location to check.
-	 * @return true if location doesn't collide with anything.
-	 * @deprecated
-	 */
-	public static boolean isLocationCollisionFree(double xLoc, double yLoc, Coordinates coordinates) {
-
-		boolean result = true;
-
-		Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
-		while (i.hasNext()) {// && result) {
-//			LocalBoundedObject object = i.next();
-			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, i.next())) {
-				// result = false;
-				// logger.info("checkLocationCollision(): a point location is colliding with an
-				// existing vehicle, building, or construction site");
-				// break;
-				return false;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if a point location does not collide with any Immovable bounded
-	 * objects (existing vehicle, & construction sites).
-	 *
-	 * @param xLoc        the new X location.
-	 * @param yLoc        the new Y location.
-	 * @param coordinates the global coordinate location to check.
-	 * @return true if location doesn't collide with anything.
-	 */
-	public static boolean checkImmovableCollision(double xLoc, double yLoc, Coordinates coordinates) {
-
-		boolean result = true;
-
-		Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
-		while (i.hasNext() && result) {
-			LocalBoundedObject object = i.next();
-			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
-				// result = false;
-				// logger.info("checkImmovableCollision(): Colliding with an immovable object (a
-				// building or construction site");
-				// break;
-				return false;
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Checks if a point location does not collide with any existing vehicle or
@@ -521,20 +465,6 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Checks if a point location is within a local bounded object's bounds.
-	 *
-	 * @param xLoc   the new X location.
-	 * @param yLoc   the new Y location.
-	 * @param object the local bounded object.
-	 * @return true if location is within object bounds.
-	 * @deprecated
-	 */
-	public static boolean isLocationWithinLocalBoundedObject(double xLoc, double yLoc, LocalBoundedObject object) {
-		return isPositionWithinLocalBoundedObject(new LocalPosition(xLoc, yLoc), object);
-	}
-
-
-	/**
 	 * Checks if a position is within a local bounded object's bounds.
 	 *
 	 * @param position Position to test
@@ -542,8 +472,8 @@ public class LocalAreaUtil {
 	 * @return true if position is within object bounds.
 	 */
 	public static boolean isPositionWithinLocalBoundedObject(LocalPosition position, LocalBoundedObject object) {
-		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
-				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+		Rectangle2D rect = new Rectangle2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
+				object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
 		Area area = new Area(path);
 		return area.contains(position.getX(), position.getY());
