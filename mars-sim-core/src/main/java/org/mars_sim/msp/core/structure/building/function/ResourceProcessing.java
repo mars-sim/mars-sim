@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ResourceProcessing class is a building function indicating that the
@@ -30,14 +28,15 @@ public class ResourceProcessing extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 
+	/** Does The interval of time [in millisols] need a reset ? */
+	private static volatile boolean resetInterval = true;
 	/** The interval of time [in millisols] between each resource processing call. */
-	private static double processInterval = 1.0;
-	/** The time accumulated [in millisols] for each resource processing call. */
-	private double accumulatedTime = RandomUtil.getRandomDouble(0, processInterval/5.0);
+	private static volatile double processInterval = 1.0;
+
 
 	private double powerDownProcessingLevel;
 
@@ -154,37 +153,44 @@ public class ResourceProcessing extends Function implements Serializable {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			accumulatedTime += pulse.getElapsed();
-			if (accumulatedTime >= processInterval) {
-				logger.info("pulse.getElapsed(): " + pulse.getElapsed() + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
-				accumulatedTime = accumulatedTime - processInterval;
-				double productionLevel = 0D;
-				if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
-					productionLevel = 1D;
-				else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
-					productionLevel = powerDownProcessingLevel;
-				// Run each resource process.
-				Iterator<ResourceProcess> i = resourceProcesses.iterator();
-				while (i.hasNext()) {
-					// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
-					i.next().processResources(processInterval, productionLevel, getBuilding().getSettlement());
-				}
+
+			double productionLevel = 0D;
+			if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
+				productionLevel = 1D;
+			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
+				productionLevel = powerDownProcessingLevel;
+			// Run each resource process.
+			Iterator<ResourceProcess> i = resourceProcesses.iterator();
+			while (i.hasNext()) {
+
+				ResourceProcess rp = i.next();
+//				if (resetInterval) {
+//					rp.setInterval(processInterval);
+//					resetInterval = false;
+//				}
+
+				// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
+				rp.processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
 		}
 		return valid;
 	}
 
-	/**
-	 * Sets the process interval
-	 *
-	 * @param value
-	 */
-	public static void setInterval(double value) {
-		double v = value/10.0;
-		// Randomize the process interval so that each process may
-		// run at a different time
-		processInterval = value + RandomUtil.getRandomDouble(-v, v);
-	}
+//	/**
+//	 * Set the interval reset to true
+//	 */
+//	public static void resetInterval() {
+//		resetInterval = true;
+//	}
+//
+//	/**
+//	 * Sets the process interval
+//	 *
+//	 * @param value
+//	 */
+//	public static void setInterval(double value) {
+//		processInterval = value;
+//	}
 
 	/**
 	 * Gets the amount of power required when function is at full power.

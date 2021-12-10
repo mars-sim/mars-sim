@@ -62,7 +62,7 @@ public class MasterClock implements Serializable {
 	private static int BASE_TR;
 	/** The multiplier value that relates TPS to upper TR. */
 	private static final double MULTIPLIER  = 128.0;
-	/** The time interval between each pulse for updating resource processes. */
+	/** The time interval between each pulse for updating resource processes and crop growth. */
 	private static final double TIME_INTERVAL = 50.0;
 	/** The time ratio int array. */
 	private static int[] trArray = new int[MAX_SPEED + 1];
@@ -83,6 +83,8 @@ public class MasterClock implements Serializable {
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 
+	/** The scale factor for updating process and crop update calls. */
+	private volatile double scaleFactor;
 	/** The current simulation time ratio. */
 	private volatile double actualTR = 0;
 	/** The time taken to execute one frame in the game loop */
@@ -91,6 +93,7 @@ public class MasterClock implements Serializable {
 	private volatile int targetTR = 0;
 	/** The user's desire simulation time ratio. */
 	private volatile int userTR = 0;
+
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -457,16 +460,18 @@ public class MasterClock implements Serializable {
 	 */
 	public void setScaleFactor() {
 		double ratio = TIME_INTERVAL / MAX_SPEED;
-		double scale = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
-		logger.config("The scale factor becomes " + scale);
-		// Update the interval in resource processing
-		ResourceProcessing.setInterval(scale);
-		// Update the interval in Farming
-		Farming.setInterval(scale);
+		scaleFactor = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
+		logger.config("The scale factor becomes " + scaleFactor);
+//		// Update the interval in resource processing
+//		ResourceProcessing.resetInterval();
+//		ResourceProcessing.setInterval(scale);
+//		// Update the interval in Farming
+//		Farming.resetInterval();
+//		Farming.setInterval(scale);
 	}
 
-	public void getScaleFactor() {
-
+	public double getScaleFactor() {
+		return scaleFactor;
 	}
 
 	/**

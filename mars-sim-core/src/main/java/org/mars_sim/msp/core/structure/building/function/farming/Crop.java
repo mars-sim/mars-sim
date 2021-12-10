@@ -156,9 +156,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double o2Cache = 0;
 
 	/** The interval of time [in millisols] between each crop update call. */
-	private double processInterval = 1.0;
+//	private double processInterval = 1.0;
 	/** The time accumulated [in millisols] for each crop update call. */
-	private double accumulatedTime = RandomUtil.getRandomDouble(0, processInterval/5.0);
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
 	private final double co2Threshold;
 	private final double o2Threshold;
@@ -738,10 +738,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 			return true;
 		}
 
+		double processInterval = pulse.getMasterClock().getScaleFactor();
 		double elapsed = pulse.getElapsed();
 		accumulatedTime += elapsed;
 
 		if (accumulatedTime >= processInterval) {
+			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+
 			accumulatedTime = accumulatedTime - processInterval;
 
 			double time = accumulatedTime * productionLevel;
@@ -1353,14 +1356,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return (phaseType != PhaseType.INCUBATION) && (phaseType != PhaseType.FINISHED);
 	}
 
-	/**
-	 * Sets the process interval
-	 *
-	 * @param value
-	 */
-	public void setInterval(double value) {
-		processInterval = value;
-	}
+//	/**
+//	 * Sets the process interval
+//	 *
+//	 * @param value
+//	 */
+//	public void setInterval(double value) {
+//		double v = value/5.0;
+//		// Randomize the process interval so that each crop update may
+//		// run at a different time
+//		processInterval = value + RandomUtil.getRandomDouble(0, v);
+//	}
 
 	/**
 	 * Compares if the object is the same as this crop

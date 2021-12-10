@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
@@ -31,13 +33,20 @@ public class ResourceProcess implements Serializable {
 
 	private static final double SMALL_AMOUNT = 0.000001;
 
-	private String name;
 
 	private boolean runningProcess;
-	private int[] timeLimit = new int[] {1, 0};
+
+//	/** The interval of time [in millisols] between each crop update call. */
+//	private double processInterval = 1.0;
+	/** The time accumulated [in millisols] for each crop update call. */
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
+
+	private String name;
+
+	private int[] timeLimit = new int[] {1, 0};
 
 	private ResourceProcessSpec definition;
 
@@ -177,13 +186,13 @@ public class ResourceProcess implements Serializable {
 	/**
 	 * Processes resources for a given amount of time.
 	 *
-	 * @param time            (millisols)
+	 * @param pulse
 	 * @param productionLevel proportion of max process rate (0.0D - 1.0D)
 	 * @param inventory       the inventory pool to use for processes.
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(double time, double productionLevel, Settlement settlement) {
-
+	public void processResources(ClockPulse pulse, double productionLevel, Settlement settlement) {
+		double time = pulse.getElapsed();
 		double level = productionLevel;
 
 		if ((level < 0D) || (level > 1D) || (time < 0D))
@@ -191,69 +200,79 @@ public class ResourceProcess implements Serializable {
 
 		if (runningProcess) {
 
-			// Get resource bottleneck
-			double bottleneck = getInputBottleneck(time, settlement);
-			if (level > bottleneck)
-				level = bottleneck;
+			accumulatedTime += time;
 
-			// logger.info(name + " production level: " + productionLevel);
+			double processInterval = pulse.getMasterClock().getScaleFactor();
 
-			// Input resources from inventory.
-			Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
-			for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
-				Integer resource = input.getKey();
-				double maxRate = input.getValue();
-				double resourceRate = maxRate * level;
-				double resourceAmount = resourceRate * time;
-				double remainingAmount = settlement.getAmountResourceStored(resource);
-				if (remainingAmount > SMALL_AMOUNT && resourceAmount > remainingAmount) {
-					resourceAmount = remainingAmount;
-					double missing = settlement.retrieveAmountResource(resource, resourceAmount);
-					if (missing > 0) {
-						// Refund the amount
-						settlement.storeAmountResource(resource, missing);
+			if (accumulatedTime >= processInterval) {
+				logger.info("pulse width: " + time + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+
+				accumulatedTime = accumulatedTime - processInterval;
+
+				// Get resource bottleneck
+				double bottleneck = getInputBottleneck(time, settlement);
+				if (level > bottleneck)
+					level = bottleneck;
+
+				// logger.info(name + " production level: " + productionLevel);
+
+				// Input resources from inventory.
+				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
+					Integer resource = input.getKey();
+					double maxRate = input.getValue();
+					double resourceRate = maxRate * level;
+					double resourceAmount = resourceRate * time;
+					double remainingAmount = settlement.getAmountResourceStored(resource);
+					if (remainingAmount > SMALL_AMOUNT && resourceAmount > remainingAmount) {
+						resourceAmount = remainingAmount;
+						double missing = settlement.retrieveAmountResource(resource, resourceAmount);
+						if (missing > 0) {
+							// Refund the amount
+							settlement.storeAmountResource(resource, missing);
+							setProcessRunning(false);
+							break;
+							// Note: create flag to indicate if which the input resource is missing
+						}
+					}
+					else {
 						setProcessRunning(false);
 						break;
-						// Note: create flag to indicate if which the input resource is missing
 					}
 				}
-				else {
-					setProcessRunning(false);
-					break;
-				}
-			}
 
-			// Output resources to inventory.
-			Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
-			for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
-				Integer resource = output.getKey();
-				double maxRate = output.getValue();
-				double resourceRate = maxRate * level;
-				double resourceAmount = resourceRate * time;
-				double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
-				if (resourceAmount > SMALL_AMOUNT && resourceAmount > remainingCapacity) {
-					resourceAmount = remainingCapacity;
-					double excess = settlement.storeAmountResource(resource, resourceAmount);
-					if (excess > 0) {
-						// Refund the amount
-						settlement.retrieveAmountResource(resource, excess);
+				// Output resources to inventory.
+				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
+				for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
+					Integer resource = output.getKey();
+					double maxRate = output.getValue();
+					double resourceRate = maxRate * level;
+					double resourceAmount = resourceRate * time;
+					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
+					if (resourceAmount > SMALL_AMOUNT && resourceAmount > remainingCapacity) {
+						resourceAmount = remainingCapacity;
+						double excess = settlement.storeAmountResource(resource, resourceAmount);
+						if (excess > 0) {
+							// Refund the amount
+							settlement.retrieveAmountResource(resource, excess);
+							setProcessRunning(false);
+							break;
+							// Note: create flag to indicate if which the output resource capacity is missing
+							// and increase container's vp in order to trigger manufacturing processes
+							// to make more containers if possible
+						}
+					}
+					else {
 						setProcessRunning(false);
 						break;
-						// Note: create flag to indicate if which the output resource capacity is missing
-						// and increase container's vp in order to trigger manufacturing processes
-						// to make more containers if possible
 					}
 				}
-				else {
-					setProcessRunning(false);
-					break;
-				}
-			}
-		} else
-			level = 0D;
+			} else
+				level = 0D;
 
-		// Set the current production level.
-		currentProductionLevel = level;
+			// Set the current production level.
+			currentProductionLevel = level;
+		}
 	}
 
 	/**
@@ -356,4 +375,17 @@ public class ResourceProcess implements Serializable {
 		timeLimit[0] = sol;
 		timeLimit[1] = millisols;
 	}
+
+
+	/**
+	 * Sets the process interval
+	 *
+	 * @param value
+	 */
+//	public void setInterval(double value) {
+//		double v = value/5.0;
+//		// Randomize the process interval so that each process may
+//		// run at a different time
+//		processInterval = value + RandomUtil.getRandomDouble(0, v);
+//	}
 }
