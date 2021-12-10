@@ -146,6 +146,13 @@ public class WalkOutside extends Task implements Serializable {
 	}
 
 	/**
+	 * How many waypoints are there?
+	 */
+	public int getNumberWayPoints() {
+		return walkingPath.size();
+	}
+	
+	/**
 	 * Determine the outside walking path, avoiding obstacles as necessary.
 	 *
 	 * @return walking path as list of X,Y locations.
@@ -188,21 +195,17 @@ public class WalkOutside extends Task implements Serializable {
 	 *
 	 * @return path as list of points or null if no path found.
 	 */
-	List<LocalPosition> determineObstacleAvoidancePath() {
+	private List<LocalPosition> determineObstacleAvoidancePath() {
 
 		List<LocalPosition> result = null;
 
 		// Check if start or destination locations are within obstacles.
 		// Return null if either are within obstacles.
-		boolean startLocWithinObstacle = false;
-		boolean destinationLocWithinObstacle = false;
-
-		startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(start.getX(), start.getY(),
-				worker.getCoordinates());
-		destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destination.getX(),
-				destination.getY(), worker.getCoordinates());
+		boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, worker.getCoordinates());
+		boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, worker.getCoordinates());
 
 		if (startLocWithinObstacle || destinationLocWithinObstacle) {
+			//logger.warning(worker, "Start/End positions are inside an entity");
 			return null;
 		}
 
@@ -278,11 +281,18 @@ public class WalkOutside extends Task implements Serializable {
 		return result;
 	}
 
-	private boolean checkClearPathToDestination(LocalPosition currentLoc, LocalPosition destination2) {
-		// TODO Auto-generated method stub
-		return false;
+	/**
+	 * Checks if path between two locations is free of obstacles.
+	 *
+	 * @param startPos  the first location.
+	 * @param endPos     the second location.
+	 * @return true if path free of obstacles.
+	 */
+	private boolean checkClearPathToDestination(LocalPosition startPos, LocalPosition endPos) {
+		Line2D line = new Line2D.Double(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY());
+		return LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);
 	}
-
+	
 	/**
 	 * Find location in openSet with lowest fScore value. The fScore value is the
 	 * distance (m) from start through location to destination.

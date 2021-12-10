@@ -49,16 +49,13 @@ public class LocalAreaUtil {
 	/** Time stamps for obstacle area cache. */
 	private static final Map<Coordinates, String> obstacleAreaTimestamps = new ConcurrentHashMap<Coordinates, String>();
 
-	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
-	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	private static UnitManager unitManager;
+	private static MarsClock marsClock;
 
 	/**
 	 * Private empty constructor for utility class.
 	 */
 	private LocalAreaUtil() {
-		unitManager = sim.getUnitManager();
-		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -234,6 +231,28 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Checks if a point position does not collide with any existing vehicle,
+	 * building, or construction site.
+	 *
+	 * @param pos Position to check.
+	 * @param coordinates the global coordinate location to check.
+	 * @return true if location doesn't collide with anything.
+	 */
+	public static boolean isPositionCollisionFree(LocalPosition pos, Coordinates coordinates) {
+
+		boolean result = true;
+
+		Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
+		while (i.hasNext()) {
+			if (isPositionWithinLocalBoundedObject(pos, i.next())) {
+				return false;
+			}
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Checks if a point location does not collide with any existing vehicle,
 	 * building, or construction site.
 	 *
@@ -241,6 +260,7 @@ public class LocalAreaUtil {
 	 * @param yLoc        the new Y location.
 	 * @param coordinates the global coordinate location to check.
 	 * @return true if location doesn't collide with anything.
+	 * @deprecated
 	 */
 	public static boolean isLocationCollisionFree(double xLoc, double yLoc, Coordinates coordinates) {
 
@@ -798,8 +818,6 @@ public class LocalAreaUtil {
 		boolean cached = false;
 		Area obstacleArea = null;
 		if (useCache && obstacleAreaCache.containsKey(coordinates)) {
-			if (marsClock == null)
-				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			String currentTimestamp = marsClock.getDateTimeStamp();
 			String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
 			if (currentTimestamp.equals(cachedTimestamp)) {
@@ -938,4 +956,13 @@ public class LocalAreaUtil {
 		return (getDistance(x1, y1, x2, y2) < VERY_SMALL_DISTANCE);
 	}
 
+	/**
+	 * Initialise the simulation globals
+	 * @param unitMgr
+	 * @param marsClk
+	 */
+	public static void initializeInstances(UnitManager unitMgr, MarsClock marsClk) {
+		unitManager = unitMgr;
+		marsClock = marsClk;
+	}
 }

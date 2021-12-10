@@ -322,6 +322,9 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, environment,
 				 environment.getWeather(), surfaceFeatures, new MissionManager());
 		Unit.setUnitManager(unitManager);
+		
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 	}
 
 	/**
@@ -415,7 +418,8 @@ public class Simulation implements ClockListener, Serializable {
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		
 		doneInitializing = true;
 	}
 
@@ -699,7 +703,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Task related class
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);

@@ -28,6 +28,9 @@ import junit.framework.TestCase;
 
 public abstract class AbstractMarsSimUnitTest extends TestCase {
 
+	protected static final double BUILDING_LENGTH = 9D;
+	protected static final double BUILDING_WIDTH = 9D;
+
 	private static final double MSOLS_PER_EXECUTE = 0.1D;
 	
 	protected UnitManager unitManager;
@@ -96,8 +99,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    MockBuilding building0 = new MockBuilding(buildingManager, name);
 	    building0.setTemplateID(id);
 	    building0.setName(name);
-	    building0.setWidth(9D);
-	    building0.setLength(9D);
+	    building0.setWidth(BUILDING_WIDTH);
+	    building0.setLength(BUILDING_LENGTH);
 	    building0.setLocation(pos);
 	    building0.setFacing(facing);
 	    buildingManager.addMockBuilding(building0);	
@@ -132,6 +135,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 				.setAttribute(null)
 				.build();
 		person.initialize();
+		
+		unitManager.addUnit(person);
 		return person;
 	}
 
