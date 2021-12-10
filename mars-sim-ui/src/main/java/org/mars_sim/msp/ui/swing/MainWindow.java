@@ -4,7 +4,6 @@
  * @date 2021-08-15
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
@@ -137,17 +136,12 @@ extends JComponent implements ClockListener {
 	public static final String CLOUDY_SVG = Msg.getString("img.svg.cloudy");//$NON-NLS-1$
 	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
 	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
-
 	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
 	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
-
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	private static final String SOL = "   Sol ";
 	private static final String WHITESPACES = "   ";
-	private static final String UMT = " (UMT)";
-//	private static final String SLEEP_TIME = "   Sleep Time : ";
-//	private static final String MS = " ms   ";
 
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
@@ -203,11 +197,8 @@ extends JComponent implements ClockListener {
 
 	/** WebSwitch for the control of play or pause the simulation*/
 	private WebSwitch pauseSwitch;
-
 	private WebButton increaseSpeed;
-
 	private WebButton decreaseSpeed;
-
 	private WebButton starMap;
 
 	private JCheckBox overlayCheckBox;
@@ -215,11 +206,9 @@ extends JComponent implements ClockListener {
 	private WebOverlay overlay;
 
 	private WebStyledLabel blockingOverlay;
-
 	private WebStyledLabel solLabel;
 
 	private WebTextField marsTimeTF;
-
 	private WebDateField earthDateField;
 
 	private WebMemoryBar memoryBar;
@@ -857,17 +846,15 @@ extends JComponent implements ClockListener {
 	}
 
 	public void createEarthDate() {
-		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
+		earthDateField = new WebDateField(StyleId.datefield);
 		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
-//		earthDateField.setPreferredWidth(280);
 		earthDateField.setAllowUserInput(false);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
-//		earthDateField.setAlignmentX(.5f);
-//		earthDateField.setAlignmentY(.5f);
 		earthDateField.setPadding(0, 10, 0, 10);
 		earthDateField.setMargin(0, 0, 0, 0);
-		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
+		// Note: May use "yyyy-MMM-dd EEE HH:mm a '['z']'"
+		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd EEE HH:mm a  ", LanguageManager.getLocale());
 		d.setTimeZone(TimeZone.getTimeZone("GMT"));
 		earthDateField.setDateFormat(d);
 
@@ -885,12 +872,9 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setEditable(false);
 		marsTimeTF.setFont(ARIAL_FONT);
 		marsTimeTF.setForeground(new Color(150,96,0));
-//		marsTimeTF.setAlignmentX(.5f);
-//		marsTimeTF.setAlignmentY(.5f);
-//		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
 		marsTimeTF.setPadding(0, 10, 0, 10);
 		marsTimeTF.setMargin(0, 0, 0, 0);
-		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mars Time (UMT)", TooltipWay.up);
+		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mean Time (UMT)", TooltipWay.up);
 	}
 
 	public WebTextField getMarsTime() {
@@ -1271,7 +1255,7 @@ extends JComponent implements ClockListener {
 		}
 
 		if (marsTimeTF != null && marsClock != null) {
-			marsTimeTF.setText(marsClock.getTrucatedDateTimeStamp() + UMT);
+			marsTimeTF.setText(marsClock.getDisplayTruncatedTimeStamp());
 		}
 	}
 

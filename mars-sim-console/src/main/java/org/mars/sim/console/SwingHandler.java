@@ -4,7 +4,6 @@
  * @date 2021-10-02
  * @author Manny Kung
  */
-
 package org.mars.sim.console;
 
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
@@ -25,7 +24,7 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
 
 public class SwingHandler {
-	
+
 	private static final Logger logger = Logger.getLogger(SwingHandler.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
@@ -34,7 +33,7 @@ public class SwingHandler {
     private final Object dataObject;
 
     private final String backKeyStroke;
-    
+
     private final Supplier<StringInputReader> stringInputReaderSupplier;
 
     private final List<Task<?,?,?>> tasks = new ArrayList<>();
@@ -72,7 +71,7 @@ public class SwingHandler {
 
         @Override
         public void run() {
-            
+
             R inputReader = inputReaderSupplier.get();
             if (showPrevious)
             	inputReader.withDefaultValue(defaultValueSupplier.get());
@@ -162,9 +161,9 @@ public class SwingHandler {
         } catch (RuntimeException e) {
 			logger.severe(sourceName + ": RuntimeException detected: ");
         }
-        
+
     }
-    
+
     private Field getField(String fieldName) {
         try {
             return dataObject.getClass().getField(fieldName);

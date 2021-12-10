@@ -581,8 +581,9 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("                       Size : " + computeFileSize(file));
 		logger.config("              Made in Build : " + loadBuild);
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
-
-		logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+		logger.config("           Earth Time Stamp : " + masterClock.getEarthClock().getTimeStampF4());
+		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+		logger.config("   Machine Local Time Stamp : " + masterClock.getEarthClock().getLastSavedLocalTime());
 		logger.config(" --------------------------------------------------------------------");
 		if (Simulation.BUILD.equals(loadBuild)) {
 			logger.config(" Note : The two builds are identical.");
@@ -854,6 +855,8 @@ public class Simulation implements ClockListener, Serializable {
 		System.gc();
 
 		if (heapFreeSize > MIN_HEAP_SPACE){
+			// Save local machine timestamp
+			masterClock.getEarthClock().setLastSavedLocalTime();
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
 		}

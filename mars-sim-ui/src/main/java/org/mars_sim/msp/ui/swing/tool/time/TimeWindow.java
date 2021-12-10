@@ -16,13 +16,16 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
@@ -74,6 +77,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String AVE_TPS = "Average TPS : ";
 	/** the execution time unit */
 	public static final String MS = " ms";
+	/** the Universal Mean Time abbreviation */
+	private static final String UMT = " (UMT) ";
+	/** the Greenwich Mean Time abbreviation */
+	private static final String GMT = " (GMT) ";
 
 	// Data members
 	private int solElapsedCache = 0;
@@ -93,7 +100,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** label for Earth time. */
 	private WebStyledLabel earthTimeLabel;
 	/** label for Martian month. */
-	private WebLabel martianMonthLabel;
+	private WebLabel martianMonthHeaderLabel;
 	/** label for Northern hemisphere season. */
 	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
@@ -163,7 +170,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Set window resizable to false.
 		setResizable(false);
-
 		// Initialize data members
 		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
@@ -181,25 +187,32 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Martian time panel
 		WebPanel martianTimePane = new WebPanel(new BorderLayout());
-		martianTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+//		martianTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		mainPane.add(martianTimePane, BorderLayout.NORTH);
 
 		// Create Martian time header label
 		WebLabel martianTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianTime"), WebLabel.CENTER); //$NON-NLS-1$
 		martianTimeHeaderLabel.setFont(SANS_SERIF_FONT);
-		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
+//		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
 		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		martianTimeLabel.setFont(ARIAL_FONT);
-		martianTimeLabel.setForeground(new Color(135,100,39));
-		martianTimeLabel.setText(marsTime.getDateTimeStamp());
+		martianTimeLabel.setForeground(new Color(135, 100, 39));
+		martianTimeLabel.setText(marsTime.getDisplayDateTimeStamp() + UMT);
+		TooltipManager.setTooltip(martianTimeLabel, "Mars Timestamp in Universal Mean Time (UMT)", TooltipWay.down);
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
+		martianTimePane.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				martianTimeHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                SANS_SERIF_FONT));
 
 		// Create Martian calendar panel
 		WebPanel martianCalendarPane = new WebPanel(new FlowLayout());
-		martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+//		martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		mainPane.add(martianCalendarPane, BorderLayout.CENTER);
 
 		// Create Martian calendar month panel
@@ -207,9 +220,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		martianCalendarPane.add(calendarMonthPane);
 
 		// Create martian month label
-		martianMonthLabel = new WebLabel("Month of " + marsTime.getMonthName(), WebLabel.CENTER);
-		martianMonthLabel.setFont(SANS_SERIF_FONT);
-		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
+		martianMonthHeaderLabel = new WebLabel("Month of " + marsTime.getMonthName(), WebLabel.CENTER);
+		martianMonthHeaderLabel.setFont(SANS_SERIF_FONT);
+//		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
+		martianCalendarPane.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				martianMonthHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                SANS_SERIF_FONT));
 
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
@@ -230,9 +249,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		seasonPane.add(marsSeasonPane, BorderLayout.NORTH);
 
 		// Create Martian season label
-		WebLabel marsSeasonLabel = new WebLabel(Msg.getString("TimeWindow.martianSeasons"), WebLabel.CENTER); //$NON-NLS-1$
-		marsSeasonLabel.setFont(SANS_SERIF_FONT);
-		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
+		WebLabel marsSeasonHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianSeasons"), WebLabel.CENTER); //$NON-NLS-1$
+		marsSeasonHeaderLabel.setFont(SANS_SERIF_FONT);
+//		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
+		marsSeasonPane.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				marsSeasonHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                SANS_SERIF_FONT));
 
 		// Create Martian season panel
 		WebPanel hemiPane = new WebPanel(new SpringLayout());//BorderLayout());
@@ -245,12 +270,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				"<br>&#8201;Fall : 89 days vs 146 sols" +
 				"<br>&#8201;Winter : 89 days vs 158 sols</html>";
 
+		hemiPane.setToolTip(str);
+
 //		Note :
 //		&#8201; Thin tab space
 //		&#8194; En tab space
 //		&#8195; Em tab space
-
-		marsSeasonPane.setToolTip(str);
 
 		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
 
@@ -280,13 +305,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Earth time panel
 		WebPanel earthTimePane = new WebPanel(new BorderLayout());
-		earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+//		earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		seasonPane.add(earthTimePane, BorderLayout.CENTER);
 
 		// Create Earth time header label
 		WebLabel earthTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.earthTime"), WebLabel.CENTER); //$NON-NLS-1$
 		earthTimeHeaderLabel.setFont(SANS_SERIF_FONT);
-		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
+//		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Earth time label
 		earthTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
@@ -294,15 +319,21 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		earthTimeLabel.setFont(ARIAL_FONT);
 		earthTimeLabel.setForeground(new Color(0, 69, 165));
-		earthTimeLabel.setText(earthTime.getTimeStampF0());
+		earthTimeLabel.setText(earthTime.getTimeStampF4() + GMT);
+		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.down);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
+		earthTimePane.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				earthTimeHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                SANS_SERIF_FONT));
 
 		// Create time panel
 		WebPanel timePane = new WebPanel(new SpringLayout());
 //		timePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		southPane.add(timePane, BorderLayout.NORTH);
 
-		// Create uptime header label
 		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.RIGHT); //$NON-NLS-1$
 		uptimeHeaderLabel.setFont(SANS_SERIF_FONT);
 		timePane.add(uptimeHeaderLabel);
@@ -351,14 +382,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create the target time ratio label
 		WebLabel prefTRHeader = new WebLabel(Msg.getString("TimeWindow.prefTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
-		TooltipManager.setTooltip(prefTRHeader, "The user-preferred target time ratio", TooltipWay.right);
+		TooltipManager.setTooltip(prefTRHeader, "User-preferred target time ratio", TooltipWay.down);
 		int prefTR = (int)masterClock.getUserTR();
 		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
 		preferredTRLabel.setFont(SANS_SERIF_FONT0);
 
 		// Create the actual time ratio label
 		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
-		TooltipManager.setTooltip(actualTRHeader, "The master clock's actual time ratio", TooltipWay.right);
+		TooltipManager.setTooltip(actualTRHeader, "Master clock's actual time ratio", TooltipWay.down);
 		double actualTR = masterClock.getActualRatio();
 		actuallTRLabel = new WebLabel(Math.round(actualTR*10.0)/10.0 + "", WebLabel.LEFT); //$NON-NLS-1$
 		actuallTRLabel.setFont(SANS_SERIF_FONT1);
@@ -389,23 +420,26 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		southPane.add(pulsePane, BorderLayout.SOUTH);
 
-
 		// Create the speed panel
 		WebPanel speedPanel = new WebPanel(new GridLayout(2, 1));
 		pulsePane.add(speedPanel, BorderLayout.NORTH);
 
-
 		// Create the time compression header label
-		WebLabel compressionLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
-		compressionLabel.setFont(SANS_SERIF_FONT);
+		WebLabel compressionHeaderLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
+		compressionHeaderLabel.setFont(SANS_SERIF_FONT);
 
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-
 //		speedPanel.add(TRHeader);
 //		speedPanel.add(timeRatioLabel);
-		speedPanel.add(compressionLabel);
+//		speedPanel.add(compressionLabel);
 		speedPanel.add(timeCompressionLabel);
+		speedPanel.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				compressionHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                SANS_SERIF_FONT));
 
 		addMouseListener(new MouseInputAdapter() {
 			@Override
@@ -423,8 +457,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
-		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
-
+		setSize(new Dimension((int) windowSize.getWidth() + 10, (int) windowSize.getHeight()));
 
 		// Update the two time labels
 		updateTimeLabels();
@@ -438,7 +471,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				solElapsedCache = solElapsed;
 				String mn = marsTime.getMonthName();
 				if (mn != null)// && martianMonthLabel != null)
-					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
+					SwingUtilities.invokeLater(() -> martianMonthHeaderLabel.setText("Month of " + mn));
 				setSeason();
 			}
 		}
@@ -534,22 +567,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 */
 	public void updateFastLabels() {
 		if (marsTime != null && martianTimeLabel != null) {
-			String ts = marsTime.getDateTimeStamp();
+			String ts = marsTime.getDisplayDateTimeStamp() + UMT;
 			if (ts != null && !ts.equals(":") && !ts.equals("") )
 				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
-
-//			int solElapsed = marsTime.getMissionSol();
-//			if (solElapsedCache != solElapsed) {
-//				solElapsedCache = solElapsed;
-//				String mn = marsTime.getMonthName();
-//				if (mn != null)// && martianMonthLabel != null)
-//					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
-//				setSeason();
-//			}
 		}
 
 		if (earthTime != null) {
-			String ts = earthTime.getTimeStampF0();
+			String ts = earthTime.getTimeStampF4() + GMT;
 			if (ts != null)
 				SwingUtilities.invokeLater(() -> earthTimeLabel.setText(ts));
 		}

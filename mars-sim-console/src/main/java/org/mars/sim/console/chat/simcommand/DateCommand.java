@@ -27,7 +27,7 @@ public class DateCommand extends ChatCommand {
 		super(TopLevel.SIMULATION_GROUP, "d", "date", "What is the date?");
 	}
 
-	/** 
+	/**
 	 * Output the current simulation date time.
 	 */
 	@Override
@@ -37,13 +37,13 @@ public class DateCommand extends ChatCommand {
 		MasterClock clock = context.getSim().getMasterClock();
 		EarthClock earthClock = clock.getEarthClock();
 		MarsClock marsClock = clock.getMarsClock();
-		
+
 		responseText.appendLabelledDigit("Mission Sol", marsClock.getMissionSol());
 		responseText.appendLabeledString("Mars Date", MarsClockFormat.getDateString(marsClock));
 		responseText.appendLabeledString("Mars Time", MarsClockFormat.getDecimalTimeString(marsClock));
-		responseText.appendLabeledString("Earth Date", earthClock.getDateStringF3());
+		responseText.appendLabeledString("Earth Date", earthClock.getDateStringF4());
 		responseText.appendLabeledString("Earth Time", earthClock.getTimeStringF0());
-		responseText.appendLabeledString("Uptime",clock.getUpTimer().getUptime());
+		responseText.appendLabeledString("Uptime", clock.getUpTimer().getUptime());
 
 		if (context.getRoles().contains(ConversationRole.ADMIN)) {
 			// For Admin user display details about the simulation engine
@@ -52,9 +52,9 @@ public class DateCommand extends ChatCommand {
 			responseText.appendLabelledDigit("Last sleep time (msec)", (int) clock.getSleepTime());
 			responseText.appendLabelledDigit("Pulse count", (int) clock.getTotalPulses());
 		}
-		
+
 		context.println(responseText.getOutput());
-		
+
 		return true;
 	}
 

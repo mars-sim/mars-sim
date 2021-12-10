@@ -37,15 +37,23 @@ public class EarthClock implements Serializable {
 	/** Initialized logger. */
 	private static final Logger logger = Logger.getLogger(EarthClock.class.getName());
 
+	private static final String FULL_TIME_FORMAT = "%02d:%02d:%02d";
+	private static final String DATE_FORMAT = "%04d-%s-%02d";
+	private static final String WEEK_DATE_FORMAT = " %s ";
+	private static final String FULL_DATE_TIME_FORMAT = DATE_FORMAT + WEEK_DATE_FORMAT + FULL_TIME_FORMAT;
+
 	/**
 	 * Tracks the number of milliseconds since 1 January 1970 00:00:00 at the start of the sim
 	 */
 	private static long millisAtStart;
 
+	private String lastSavedLocalTime;
+
 	private SimpleDateFormat f0;
 	private SimpleDateFormat f1;
 	private SimpleDateFormat f2;
 	private SimpleDateFormat f3;
+	private SimpleDateFormat f4;
 
 	private SimpleTimeZone zone;
 
@@ -116,6 +124,8 @@ public class EarthClock implements Serializable {
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
 
+		f4 = new SimpleDateFormat("yyyy-MMM-dd EEE HH:mm:ss.SSS", Locale.US);
+		f4.setTimeZone(zone);
 	}
 
 	public static String getMonthForInt(int m) {
@@ -206,10 +216,19 @@ public class EarthClock implements Serializable {
 	/**
 	 * Returns the date/time formatted in a string
 	 *
-	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22"
+	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22"
 	 */
 	public String getTimeStampF3() {
 		return f3.format(Timestamp.from(zonedDateTime.toInstant()));
+	}
+
+	/**
+	 * Returns the date/time formatted in a string
+	 *
+	 * @return date/time formatted in a string. ex "2055-May-06 Sun 03:37:22"
+	 */
+	public String getTimeStampF4() {
+		return f4.format(Timestamp.from(zonedDateTime.toInstant()));
 	}
 
 	/**
@@ -225,12 +244,23 @@ public class EarthClock implements Serializable {
 	/**
 	 * Returns the date formatted in a string
 	 *
-	 * @return date formatted in a string. ex "2055-May-06"
+	 * @return date formatted in a string. ex "2055-05-06"
 	 */
 	public String getDateStringF3() {
 		String d = getTimeStampF3();
 		return d.substring(0, d.indexOf(" "));
 	}
+
+	/**
+	 * Returns the date formatted in a string
+	 *
+	 * @return date formatted in a string. ex "2055-May-06"
+	 */
+	public String getDateStringF4() {
+		String d = getTimeStampF4();
+		return d.substring(0, d.indexOf(" "));
+	}
+
 
 	/**
 	 * Returns the time formatted in a string
@@ -360,6 +390,36 @@ public class EarthClock implements Serializable {
 
 	public LocalTime getLocalTime() {
 		return zonedDateTime.toLocalTime();
+	}
+
+	/**
+	 * Save the local machine timestamp
+	 */
+	public void setLastSavedLocalTime() {
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		lastSavedLocalTime = f4.format(timestamp);
+		logger.config("Saving local timestamp as " + lastSavedLocalTime);
+	}
+
+	/**
+	 * Gets the last saved local machine timestamp
+	 *
+	 * @return
+	 */
+	public String getLastSavedLocalTime() {
+		return lastSavedLocalTime;
+	}
+
+	/**
+	 * Returns formatted time stamp string in the format of "03-Adir-05:056.434"
+	 *
+	 * @param time {@link MarsClock} instance
+	 * @return formatted String
+	 */
+	public static String getDateTimeStamp(EarthClock time) {
+		return String.format(FULL_DATE_TIME_FORMAT, time.getYear(), time.getMonthString(),
+										            time.getDayOfMonth(), time.getDayOfWeekString(),
+										            time.getHour(), time.getMinute(), time.getSecond());
 	}
 
 	public void destroy() {

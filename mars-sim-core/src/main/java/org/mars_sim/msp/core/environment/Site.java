@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * Site.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-09
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
@@ -21,11 +20,11 @@ public class Site implements Serializable {
 	protected Coordinates location;
 	// degree of uncertainty [in % ] of its content
 	private double uncertainty;
-	
+
 	private double steepness = -1;
-	
+
 	private double elevation = -10_000;
-	
+
 	public Site (Coordinates location) {
 		this.location = location;
 	}
@@ -61,10 +60,10 @@ public class Site implements Serializable {
 	public void setElevation(double elevation) {
 		this.elevation = elevation;
 	}
-	
+
 	/**
 	 * Returns true if the collection site have the same coordinates
-	 * 
+	 *
 	 * @param o
 	 * @return true if matched, false otherwise
 	 */
@@ -79,21 +78,20 @@ public class Site implements Serializable {
 
 		return false;
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
-	 * 
+	 *
 	 * @return hash code.
 	 */
 	public int hashCode() {
 		return (int)(Math.abs(steepness) + Math.abs(elevation)) + location.hashCode();
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		location.destroy();
 		location = null;
 	}
 }

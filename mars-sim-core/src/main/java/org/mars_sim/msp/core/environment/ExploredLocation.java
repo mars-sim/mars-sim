@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploredLocation.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-09
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param location                       the location coordinates.
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
@@ -54,7 +54,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Gets the location coordinates.
-	 * 
+	 *
 	 * @return coordinates.
 	 */
 	public Coordinates getLocation() {
@@ -63,7 +63,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Gets a map of estimated mineral concentrations at the location.
-	 * 
+	 *
 	 * @return a map of all mineral types and their estimated concentrations (0%
 	 *         -100%)
 	 */
@@ -74,7 +74,7 @@ public class ExploredLocation implements Serializable {
 	/**
 	 * Get the number of times the mineral concentration estimation has been
 	 * improved.
-	 * 
+	 *
 	 * @return number of times.
 	 */
 	public int getNumEstimationImprovement() {
@@ -90,7 +90,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Sets if the location has been mined or not.
-	 * 
+	 *
 	 * @param mined true if mined.
 	 */
 	public void setMined(boolean mined) {
@@ -99,7 +99,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Checks if the location has been mined or not.
-	 * 
+	 *
 	 * @return true if mined.
 	 */
 	public boolean isMined() {
@@ -108,7 +108,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Sets if the location has been explored or not.
-	 * 
+	 *
 	 * @param explored true if explored.
 	 */
 	public void setExplored(boolean explored) {
@@ -117,7 +117,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Checks if the location has been explored of not.
-	 * 
+	 *
 	 * @return true if explored.
 	 */
 	public boolean isExplored() {
@@ -126,7 +126,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Sets if the location has been reserved for mining.
-	 * 
+	 *
 	 * @param reserved true if reserved.
 	 */
 	public void setReserved(boolean reserved) {
@@ -135,7 +135,7 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Checks if the location has been reserved for mining.
-	 * 
+	 *
 	 * @return true if reserved.
 	 */
 	public boolean isReserved() {
@@ -144,10 +144,21 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * The settlement that explored this site.
-	 * 
+	 *
 	 * @return settlement
 	 */
 	public Settlement getSettlement() {
 		return settlement;
+	}
+
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		location = null;
+		estimatedMineralConcentrations.clear();
+		estimatedMineralConcentrations = null;
+		settlement = null;
 	}
 }

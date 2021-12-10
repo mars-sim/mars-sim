@@ -854,10 +854,4 @@ public class Coordinates implements Serializable {
 	public int hashCode() {
 		return (int) ((phi * 1000D) + (theta * 1000D));
 	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-	}
 }

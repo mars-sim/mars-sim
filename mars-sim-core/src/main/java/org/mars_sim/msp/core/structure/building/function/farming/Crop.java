@@ -722,58 +722,41 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	/**
 	 * Time passing for crop.
+	 * @param pulse
+	 * @param productionLevel
 	 * @param solarIrradiance
 	 * @param greyFilterRate
 	 * @param temperatureModifier
 	 *
-	 * @param time - amount of time passing (millisols)
+	 * @return
 	 */
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
+		PhaseType phaseType = currentPhase.getPhaseType();
+		if (phaseType == PhaseType.FINISHED) {
+			return true;
+		}
+
 		double elapsed = pulse.getElapsed();
 		accumulatedTime += elapsed;
 
 		if (accumulatedTime >= processInterval) {
 			accumulatedTime = accumulatedTime - processInterval;
 
-			PhaseType phaseType = currentPhase.getPhaseType();
-			if (phaseType == PhaseType.FINISHED) {
-				return true;
-			}
 			double time = accumulatedTime * productionLevel;
 
 			growingTimeCompleted += time;
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
 
-			if (phaseType != PhaseType.HARVESTING) {
-				// Right before the harvesting phase
-				if (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
-					// Advance onto the next phase
-					advancePhase();
-				}
+			// Right before the harvesting phase
+			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
+				// Advance onto the next phase
+				advancePhase();
 			}
 
-			// check for the passing of each day
-			if (pulse.isNewSol()) {
-
-				// Resets the daily harvest back to zero
-				dailyHarvest = 0;
-
-				// Update the resource usage
-				updateUsage(pulse.getMarsTime().getMissionSol());
-
-				if (dailyHarvest < 0) {
-					updatePhase(PhaseType.FINISHED);
-					dailyHarvest = 0;
-					return true;
-				}
-				// Note: is it better off doing the actualHarvest computation once a day or
-				// every time
-				// Reset the daily work counter currentPhaseWorkCompleted back to zero
-				// currentPhaseWorkCompleted = 0D;
-				cumulativeDailyPAR = 0;
-			}
+			if (checkNewSol(pulse))
+				return true;
 
 			int msol = pulse.getMarsTime().getMillisolInt();
 			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
@@ -805,6 +788,36 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check for the passing of each day
+	 *
+	 * @param pulse
+	 * @return
+	 */
+	public boolean checkNewSol(ClockPulse pulse) {
+		if (pulse.isNewSol()) {
+
+			// Resets the daily harvest back to zero
+			dailyHarvest = 0;
+
+			// Update the resource usage
+			updateUsage(pulse.getMarsTime().getMissionSol());
+
+			if (dailyHarvest < 0) {
+				updatePhase(PhaseType.FINISHED);
+				dailyHarvest = 0;
+				return true;
+			}
+			// Note: is it better off doing the actualHarvest computation once a day or
+			// every time
+			// Reset the daily work counter currentPhaseWorkCompleted back to zero
+			// currentPhaseWorkCompleted = 0D;
+			cumulativeDailyPAR = 0;
+		}
+
+		return false;
 	}
 
 	/**
