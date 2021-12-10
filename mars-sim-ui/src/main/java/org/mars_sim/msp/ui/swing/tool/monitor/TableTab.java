@@ -207,7 +207,6 @@ abstract class TableTab extends MonitorTab {
 					return getCellText(e);
 				};
 			};
-
 		}
 
 		// Apply sorting for multiple columns
@@ -244,12 +243,10 @@ abstract class TableTab extends MonitorTab {
 		// Add ColumnResizer
 		if (table != null) {
 			adjustColumnWidth(table);
-//			SwingUtilities.invokeLater(() -> adjustColumnWidth(table));
+			// Note: may need to use SwingUtilities.invokeLater(() -> adjustColumnWidth(table))
+			// Update the selected row after each sorting
+			table.setUpdateSelectionOnSort(false);
 		}
-
-		// Update the selected row after each sorting
-		table.setUpdateSelectionOnSort(false);
-
 	}
 
 	public JTable getTable() {
@@ -269,7 +266,6 @@ abstract class TableTab extends MonitorTab {
 		    Component header = rendCol.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
 		    int maxWidth = header.getPreferredSize().width + 15;
 		    w = Math.max(w, maxWidth);
-//		    System.out.println("maxWidth :"+maxWidth);
 
 			for (int row = 0; row < table.getRowCount(); row++) {
 				if (tableCellRenderer == null)
@@ -277,8 +273,6 @@ abstract class TableTab extends MonitorTab {
 				Component c = table.prepareRenderer(tableCellRenderer, row, col);
 				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
 				preferredWidth = Math.max(width, preferredWidth);
-//		        System.out.println("preferredWidth :"+preferredWidth);
-//		        System.out.println("Width :"+width);
 
 		        if (preferredWidth <= maxWidth){
 			        // Exceeded the maximum width, no need to check other rows

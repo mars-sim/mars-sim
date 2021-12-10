@@ -62,6 +62,8 @@ public class MasterClock implements Serializable {
 	private static int BASE_TR;
 	/** The multiplier value that relates TPS to upper TR. */
 	private static final double MULTIPLIER  = 128.0;
+	/** The time interval between each pulse for updating resource processes. */
+	private static final double TIME_INTERVAL = 50.0;
 	/** The time ratio int array. */
 	private static int[] trArray = new int[MAX_SPEED + 1];
 
@@ -207,6 +209,9 @@ public class MasterClock implements Serializable {
 		logger.config("                   Accuracy bias : " + accuracyBias);
 //		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
 		logger.config("-----------------------------------------------------");
+
+		// Set the new scale factor
+		setScaleFactor();
 	}
 
 	/**
@@ -451,7 +456,7 @@ public class MasterClock implements Serializable {
 	 * Set the new scale factor
 	 */
 	public void setScaleFactor() {
-		double ratio = (3.0 - 0.3)/MAX_SPEED;
+		double ratio = TIME_INTERVAL / MAX_SPEED;
 		double scale = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
 		logger.config("The scale factor becomes " + scale);
 		// Update the interval in resource processing

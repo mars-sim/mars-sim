@@ -218,6 +218,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+			return time;
 		}
 
 		double remainingPersonCapacity = person.getAmountResourceRemainingCapacity(resourceType);

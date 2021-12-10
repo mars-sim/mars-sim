@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -27,6 +28,9 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 
@@ -152,6 +156,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		if (valid) {
 			accumulatedTime += pulse.getElapsed();
 			if (accumulatedTime >= processInterval) {
+				logger.info("pulse.getElapsed(): " + pulse.getElapsed() + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
 				accumulatedTime = accumulatedTime - processInterval;
 				double productionLevel = 0D;
 				if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
