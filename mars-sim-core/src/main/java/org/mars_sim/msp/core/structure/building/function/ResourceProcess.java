@@ -356,4 +356,12 @@ public class ResourceProcess implements Serializable {
 		timeLimit[0] = sol;
 		timeLimit[1] = millisols;
 	}
+
+	/**
+	 * Times of the toggle operation. First item is the toggle work executed, 2nd is the target.
+	 * @return
+	 */
+	public double[] getToggleSwitchDuration() {
+		return new double[] {toggleRunningWorkTime, definition.getToggleDuration()};
+	}
 }
