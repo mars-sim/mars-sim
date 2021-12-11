@@ -142,8 +142,8 @@ public class RobotMapLayer implements SettlementMapLayer {
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 
-		double translationX = -1.0 * robot.getXLocation() * scale - radius;
-		double translationY = -1.0 * robot.getYLocation() * scale - radius;
+		double translationX = -1.0 * robot.getPosition().getX() * scale - radius;
+		double translationY = -1.0 * robot.getPosition().getY() * scale - radius;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);

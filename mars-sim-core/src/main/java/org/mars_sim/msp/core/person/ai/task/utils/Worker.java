@@ -154,26 +154,6 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	public void setMission(Mission newMission);
 
 	/**
-	 * Gets the worker X location at a settlement.
-	 *
-	 * @return X distance (meters) from the settlement's center.
-	 * @deprecated
-	 */
-	default double getXLocation() {
-		return getPosition().getX();
-	}
-
-	/**
-	 * Gets the worker's Y location at a settlement.
-	 *
-	 * @return Y distance (meters) from the settlement's center.
-	 * @deprecated
-	 */
-	default double getYLocation() {
-		return getPosition().getY();
-	}
-
-	/**
 	 * Get the Worker's position within the Settlement/Vehicle
 	 * @return
 	 */

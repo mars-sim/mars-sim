@@ -33,16 +33,6 @@ public class BoundedObject implements LocalBoundedObject, Serializable {
 	}
 
 	@Override
-	public double getXLocation() {
-		return loc.getX();
-	}
-
-	@Override
-	public double getYLocation() {
-		return loc.getY();
-	}
-
-	@Override
 	public double getWidth() {
 		return w;
 	}

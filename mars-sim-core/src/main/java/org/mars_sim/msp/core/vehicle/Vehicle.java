@@ -485,16 +485,6 @@ public abstract class Vehicle extends Unit
 	}
 
 	@Override
-	public double getXLocation() {
-		return posParked.getX();
-	}
-
-	@Override
-	public double getYLocation() {
-		return posParked.getY();
-	}
-
-	@Override
 	public LocalPosition getPosition() {
 		return posParked;
 	}

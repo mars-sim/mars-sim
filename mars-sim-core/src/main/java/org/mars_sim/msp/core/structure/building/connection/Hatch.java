@@ -66,16 +66,6 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	public LocalPosition getPosition() {
 		return pos;
 	}
-	
-	@Override
-	public double getXLocation() {
-		return pos.getX();
-	}
-
-	@Override
-	public double getYLocation() {
-		return pos.getY();
-	}
 
 	@Override
 	public double getWidth() {
