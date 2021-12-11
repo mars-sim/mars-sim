@@ -27,7 +27,16 @@ public class ResourceProcessing extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+//	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
+
 	public static final double PROCESS_MAX_VALUE = 100D;
+
+	/** Does The interval of time [in millisols] need a reset ? */
+	private static volatile boolean resetInterval = true;
+	/** The interval of time [in millisols] between each resource processing call. */
+	private static volatile double processInterval = 1.0;
+
 
 	private double powerDownProcessingLevel;
 
@@ -70,7 +79,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			while (ii.hasNext()) {
 				int resource = ii.next();
 				if (!process.isWasteOutputResource(resource)) {
-					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
+					double rate = process.getMaxOutputResourceRate(resource);
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 				}
 			}
@@ -80,7 +89,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		    while (iii.hasNext()) {
 		    	int resource = iii.next();
 				if (!process.isAmbientInputResource(resource)) {
-					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
+					double rate = process.getMaxInputResourceRate(resource);
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 
 					// Check inventory limit.
@@ -95,7 +104,6 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			// Subtract value of require power.
-//			double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
 			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL * 1000D;
 			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
@@ -138,28 +146,51 @@ public class ResourceProcessing extends Function implements Serializable {
 	/**
 	 * Time passing for the building.
 	 *
-	 * @param time amount of time passing (in millisols)
+	 * @param accumulatedTime amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
+
 			double productionLevel = 0D;
 			if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
-
 			// Run each resource process.
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
-				// 	processResources takes up 32% of all cpu utilization
-				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlement());
+
+				ResourceProcess rp = i.next();
+//				if (resetInterval) {
+//					rp.setInterval(processInterval);
+//					resetInterval = false;
+//				}
+
+				// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
+				rp.processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
 		}
 		return valid;
 	}
+
+//	/**
+//	 * Set the interval reset to true
+//	 */
+//	public static void resetInterval() {
+//		resetInterval = true;
+//	}
+//
+//	/**
+//	 * Sets the process interval
+//	 *
+//	 * @param value
+//	 */
+//	public static void setInterval(double value) {
+//		processInterval = value;
+//	}
 
 	/**
 	 * Gets the amount of power required when function is at full power.

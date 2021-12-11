@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
@@ -286,7 +285,6 @@ public class PersonTableModel extends UnitTableModel {
 
 	@Override
 	protected void addUnit(Unit newUnit) {
-
 		if (performanceValueCache == null) {
 			performanceValueCache = new HashMap<>();
 		}
@@ -331,7 +329,6 @@ public class PersonTableModel extends UnitTableModel {
 
 	@Override
 	protected void removeUnit(Unit oldUnit) {
-
 		if (performanceValueCache == null) {
 			performanceValueCache = new HashMap<>();
 		}

@@ -4,7 +4,6 @@
  * @date 2021-09-20
  * @author Manny Kung
  */
-
 package org.mars.sim.console;
 
 import java.awt.AlphaComposite;

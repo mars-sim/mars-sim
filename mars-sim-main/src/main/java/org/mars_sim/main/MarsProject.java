@@ -197,6 +197,7 @@ public class MarsProject {
 	}
 
 	private void startScenarioEditor(SimulationBuilder builder) {
+		MainWindow.setInteractiveTerm(interactiveTerm);
 		// Start sim config editor
 		SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
 		logger.config("Start the Site Editor...");

@@ -143,23 +143,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
-
-//		// Create load menu item
-//		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
-//		loadItem = new JMenuItem(Msg.getString("mainMenu.open"), loadicon); //$NON-NLS-1$
-//		loadItem.addActionListener(this);
-//		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
-//		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
-//		fileMenu.add(loadItem);
-//
-//		// Create load autosave menu item
-//		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
-//		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
-//		loadAutosaveItem.addActionListener(this);
-//		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
-//		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
-//		fileMenu.add(loadAutosaveItem);
-
 		fileMenu.add(new JSeparator());
 
 		// Create save menu item
@@ -220,7 +203,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create monitor tool menu item
 		ImageIcon monitoricon = new ImageIcon(getClass().getResource(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME, monitoricon);
+		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.TITLE, monitoricon);
 		monitorToolItem.addActionListener(this);
 		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
 		toolsMenu.add(monitorToolItem);
@@ -426,7 +409,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		if (selectedItem == musicMuteItem) {
 
 			if (event.getStateChange() == ItemEvent.SELECTED) {
-//				System.out.println("Music was on. Mute it now.");
 				// mute the music
 				soundPlayer.muteMusic();
 				musicVolumeSlider.setEnabled(false);
@@ -434,20 +416,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				musicMuteItem.repaint();
 		    } else {
 		    	// unmute the music
-//				System.out.println("Music was off. Turn it on now.");
 				soundPlayer.unmuteMusic();
 				musicVolumeSlider.setEnabled(true);
 				musicMuteItem.revalidate();
 				musicMuteItem.repaint();
 		    }
-//			// Is the music track stopped ?
-//			if (soundPlayer.isMusicTrackStopped()) {
-//				System.out.println("Music track is stopped. Mute the music.");
-//				// mute the music
-//				soundPlayer.muteMusic();
-//				musicVolumeSlider.setEnabled(false);
-//				musicMuteItem.setSelected(true);
-//			}
 		}
 
 		else if (selectedItem == effectMuteItem) {
@@ -506,9 +479,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		else if (selectedItem == monitorToolItem) {
 			if (monitorToolItem.isSelected())
-				desktop.openToolWindow(MonitorWindow.NAME);
+				desktop.openToolWindow(MonitorWindow.TITLE);
 			else
-				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.TITLE);
 		}
 
 		else if (selectedItem == missionToolItem) {
@@ -558,7 +531,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		else if (selectedItem == musicVolumeUpItem) {
 			int newVolume = musicVolumeSlider.getValue() + 1;
 			if (newVolume <= 10) {
-//				System.out.println("music : " + newVolume);
 				soundPlayer.musicVolumeUp();
 				musicVolumeSlider.setValue(newVolume);
 			}
@@ -569,7 +541,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		else if (selectedItem == musicVolumeDownItem) {
 			int newVolume = musicVolumeSlider.getValue() - 1;
 			if (newVolume >= 0) {
-//				System.out.println("music : " + newVolume);
 				soundPlayer.musicVolumeDown();
 				musicVolumeSlider.setValue(newVolume);
 			}
@@ -580,7 +551,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		else if (selectedItem == effectVolumeUpItem) {
 			int newVolume = effectVolumeSlider.getValue() + 1;
 			if (newVolume <= 10) {
-//				System.out.println("sound effect : " + newVolume);
 				soundPlayer.soundVolumeUp();
 				effectVolumeSlider.setValue(newVolume);
 			}
@@ -589,7 +559,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		else if (selectedItem == effectVolumeDownItem) {
 			int newVolume = effectVolumeSlider.getValue() - 1;
 			if (newVolume >= 0) {
-//				System.out.println("sound effect : " + newVolume);
 				soundPlayer.soundVolumeDown();
 				effectVolumeSlider.setValue(newVolume);
 			}
@@ -624,7 +593,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		marsNavigatorItem.setSelected(desktop.isToolWindowOpen(NavigatorWindow.NAME));
 		searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
 		timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
-		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
+		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.TITLE));
 		missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
@@ -645,10 +614,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		musicMuteItem.setSelected(soundPlayer.isMusicMute());
 		effectMuteItem.setSelected(soundPlayer.isEffectMute());
 	}
-
-//	public void clickUnitBarMenuItem() {
-////		showUnitBarItem.doClick();
-//	}
 
 	public void menuCanceled(MenuEvent event) {
 	}

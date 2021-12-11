@@ -31,9 +31,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
-	private static final double TUNING_FACTOR = .18;
-
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
+
+	private static final double TUNING_FACTOR = .18;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -154,6 +154,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private double co2Cache = 0;
 	private double o2Cache = 0;
+
+	/** The interval of time [in millisols] between each crop update call. */
+//	private double processInterval = 1.0;
+	/** The time accumulated [in millisols] for each crop update call. */
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
 	private final double co2Threshold;
 	private final double o2Threshold;
@@ -304,7 +309,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Set the remaining harvest based on percentageGrowth
 			remainingHarvest = (maxHarvest * percentageGrowth)/100D;
 		}
-		
+
 		updatePhase(phaseType);
 	}
 
@@ -717,34 +722,84 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	/**
 	 * Time passing for crop.
+	 * @param pulse
+	 * @param productionLevel
 	 * @param solarIrradiance
 	 * @param greyFilterRate
 	 * @param temperatureModifier
 	 *
-	 * @param time - amount of time passing (millisols)
+	 * @return
 	 */
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
-
 		PhaseType phaseType = currentPhase.getPhaseType();
 		if (phaseType == PhaseType.FINISHED) {
 			return true;
 		}
-		double time = pulse.getElapsed() * productionLevel;
 
-		growingTimeCompleted += time;
-		percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
+		double processInterval = pulse.getMasterClock().getScaleFactor();
+		double elapsed = pulse.getElapsed();
+		accumulatedTime += elapsed;
 
-		if (phaseType != PhaseType.HARVESTING) {
+		if (accumulatedTime >= processInterval) {
+			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+
+			accumulatedTime = accumulatedTime - processInterval;
+
+			double time = accumulatedTime * productionLevel;
+
+			growingTimeCompleted += time;
+			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
+
 			// Right before the harvesting phase
-			if (percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
+			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
 				// Advance onto the next phase
 				advancePhase();
 			}
+
+			if (checkNewSol(pulse))
+				return true;
+
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
+				// Checks on crop health
+				trackHealth();
+			}
+
+			// max possible harvest within this period of time
+			double maxPeriodHarvest = maxHarvest * (time / cropSpec.getGrowingTime());
+			// Compute each harvestModifiers and sum them up below
+			// Note: computeHarvest takes up 40% of all cpu utilization
+			double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
+													solarIrradiance,
+													greyFilterRate,
+													temperatureModifier);
+			// Add to the daily harvest.
+			dailyHarvest += maxPeriodHarvest * harvestModifier;
+			// Add to the cumulative harvest.
+			remainingHarvest += maxPeriodHarvest * harvestModifier;
+
+			if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
+				updatePhase(PhaseType.FINISHED);
+			}
+
+			if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
+				dailyHarvest = 0;
+				totalHarvest = 0;
+			}
 		}
 
-		// check for the passing of each day
+		return true;
+	}
+
+	/**
+	 * Check for the passing of each day
+	 *
+	 * @param pulse
+	 * @return
+	 */
+	public boolean checkNewSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
 
 			// Resets the daily harvest back to zero
@@ -765,40 +820,21 @@ public class Crop implements Comparable<Crop>, Serializable {
 			cumulativeDailyPAR = 0;
 		}
 
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % CHECK_HEALTH_FREQUENCY == 0) {
-			// Checks on crop health
-			trackHealth();
-		}
-
-		// max possible harvest within this period of time
-		double maxPeriodHarvest = maxHarvest * (time / cropSpec.getGrowingTime());
-		// Compute each harvestModifiers and sum them up below
-		// Note: computeHarvest takes up 40% of all cpu utilization
-		double harvestModifier = computeHarvest(maxPeriodHarvest, pulse, time,
-												solarIrradiance,
-												greyFilterRate,
-												temperatureModifier);
-		// Add to the daily harvest.
-		dailyHarvest += maxPeriodHarvest * harvestModifier;
-		// Add to the cumulative harvest.
-		remainingHarvest += maxPeriodHarvest * harvestModifier;
-
-		if ((dailyHarvest < 0) || (percentageGrowth > 110D)) {
-			updatePhase(PhaseType.FINISHED);
-		}
-
-		if (currentPhase.getPhaseType() == PhaseType.FINISHED) {
-			dailyHarvest = 0;
-			totalHarvest = 0;
-		}
-		return true;
+		return false;
 	}
 
+	/**
+	 * Turns on lighting
+	 *
+	 * @param kW
+	 */
 	private void turnOnLighting(double kW) {
 		lightingPower = kW;
 	}
 
+	/**
+	 * Turns off lighting
+	 */
 	private void turnOffLighting() {
 		lightingPower = 0;
 	}
@@ -1320,6 +1356,18 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return (phaseType != PhaseType.INCUBATION) && (phaseType != PhaseType.FINISHED);
 	}
 
+//	/**
+//	 * Sets the process interval
+//	 *
+//	 * @param value
+//	 */
+//	public void setInterval(double value) {
+//		double v = value/5.0;
+//		// Randomize the process interval so that each crop update may
+//		// run at a different time
+//		processInterval = value + RandomUtil.getRandomDouble(0, v);
+//	}
+
 	/**
 	 * Compares if the object is the same as this crop
 	 */
@@ -1357,4 +1405,5 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public int compareTo(Crop o) {
 		return cropSpec.compareTo(o.getCropType());
 	}
+
 }

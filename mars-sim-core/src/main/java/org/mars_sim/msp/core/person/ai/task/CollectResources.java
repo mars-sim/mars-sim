@@ -79,7 +79,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
-		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
+		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
 				SkillType.AREOLOGY);
 
 		if (!person.isFit()) {
@@ -183,6 +183,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error collecting resources.
 	 */
 	private double collectResources(double time) {
+		double result = 0;
 
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
@@ -207,6 +208,17 @@ public class CollectResources extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+			return time;
+		}
+
+		// Collect resources.
+		Container container = person.findContainer(containerType, false, resourceType);
+		if (container == null) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
 		}
 
 		double remainingPersonCapacity = person.getAmountResourceRemainingCapacity(resourceType);
@@ -238,19 +250,19 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 
-		// Collect resources.
-		Container container = person.findContainer(containerType, false, resourceType);
+		// Collect resources
 		if (samplesCollected <= sampleLimit) {
 			container.storeAmountResource(resourceType, samplesCollected);
-			return 0D;
+			result = 0;
 		} else {
 			if (sampleLimit >= 0D) {
 				container.storeAmountResource(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
-			return time - (sampleLimit / collectionRate);
+			result = time - (sampleLimit / collectionRate);
 		}
 
+		return result;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorTab.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -33,7 +33,7 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Tee constructor that creates a view within a tab displaying the specified model.
-	 * 
+	 *
 	 * @param model     The model of entities to display.
 	 * @param mandatory This view is a mandatory view can can not be removed.
 	 * @param icon      Iconic representation.
@@ -42,7 +42,7 @@ public abstract class MonitorTab extends JPanel {
 		this.model = model;
 		this.icon = icon;
 		this.mandatory = mandatory;
-		
+
 		this.setOpaque(false);
 
 		// Create a panel
@@ -77,7 +77,7 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Center the map on the first selected row.
-	 * 
+	 *
 	 * @param desktop Main window of application.
 	 */
 	public void centerMap(MainDesktopPane desktop) {
@@ -110,7 +110,7 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Get the icon associated with this view.
-	 * 
+	 *
 	 * @return Icon for this view
 	 */
 	public Icon getIcon() {
@@ -119,7 +119,7 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Get the associated model.
-	 * 
+	 *
 	 * @return Monitored model associated to the tab.
 	 */
 	public MonitorModel getModel() {
@@ -128,7 +128,7 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Get the mandatory state of this view
-	 * 
+	 *
 	 * @return Mandatory view.
 	 */
 	public boolean getMandatory() {

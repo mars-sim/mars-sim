@@ -4,7 +4,6 @@
  * @date 2021-08-15
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
@@ -137,17 +136,12 @@ extends JComponent implements ClockListener {
 	public static final String CLOUDY_SVG = Msg.getString("img.svg.cloudy");//$NON-NLS-1$
 	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
 	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
-
 	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
 	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
-
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	private static final String SOL = "   Sol ";
 	private static final String WHITESPACES = "   ";
-	private static final String UMT = " (UMT)";
-//	private static final String SLEEP_TIME = "   Sleep Time : ";
-//	private static final String MS = " ms   ";
 
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
@@ -203,11 +197,8 @@ extends JComponent implements ClockListener {
 
 	/** WebSwitch for the control of play or pause the simulation*/
 	private WebSwitch pauseSwitch;
-
 	private WebButton increaseSpeed;
-
 	private WebButton decreaseSpeed;
-
 	private WebButton starMap;
 
 	private JCheckBox overlayCheckBox;
@@ -215,11 +206,9 @@ extends JComponent implements ClockListener {
 	private WebOverlay overlay;
 
 	private WebStyledLabel blockingOverlay;
-
 	private WebStyledLabel solLabel;
 
 	private WebTextField marsTimeTF;
-
 	private WebDateField earthDateField;
 
 	private WebMemoryBar memoryBar;
@@ -299,28 +288,33 @@ extends JComponent implements ClockListener {
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			graphicsDevice = gs[0];
-
+			logger.config("1 screen detected.");	
 		}
 		else if (gs.length == 0) {
 			throw new RuntimeException("No Screens Found.");
+			// NOTE: what about the future server version of mars-sim in which no screen is needed.
 		}
-
-		// Load UI configuration.
-		if (cleanUI || (graphicsDevice != null && graphicsDevice == gs[0])) {
-			int screenWidth = graphicsDevice.getDisplayMode().getWidth();
-			int screenHeight = graphicsDevice.getDisplayMode().getHeight();
-			selectedSize = new Dimension(screenWidth, screenHeight);
-
-			// Set frame size
-			frame.setSize(selectedSize);
-			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-		}
-
 		else {
+			logger.config(gs.length + " screens detected.");	
+		}
+		
+		logger.config("Do you want to use the last saved screen configuration ?");
+		logger.config("To proceed, please click Yes or No in the pop up window box.");
+		
+		int reply = JOptionPane.showConfirmDialog(frame,
+				"Do you want to use the last saved screen configuration", 
+				"Screen Configuration", 
+				JOptionPane.YES_NO_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+        	
+			logger.config("You choose Yes. Loading last saved screen configuration.");	
+			
+    		// Load previous UI configuration.
 			UIConfig.INSTANCE.parseFile();
-
+			
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
+			
 			selectedSize = calculatedScreenSize();
 
 			// Set frame size
@@ -328,17 +322,60 @@ extends JComponent implements ClockListener {
 
 			// Set frame location.
 			if (useDefault) {
+				logger.config("useDefault is: " + useDefault);
 				// Center frame on screen
 	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
 				frame.setLocation(
 					((screen_size.width - selectedSize.width) / 2),
 					((screen_size.height - selectedSize.height) / 2)
 				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
 			}
 			else {
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+				logger.config("Use last saved screen configuration.");	
 			}
-		}
+        }
+        
+        // No. use the new default setting
+        else {
+			logger.config("You choose No. Loading default screen configuration.");	
+			
+    		if (graphicsDevice != null) {
+	    		// Check if there's only one screen if (graphicsDevice == gs[0])
+	    		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+	    		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
+	    		selectedSize = new Dimension(screenWidth, screenHeight);
+	
+    			// Set frame location.
+				// Center frame on screen
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				frame.setLocation(
+					((screen_size.width - selectedSize.width) / 2),
+					((screen_size.height - selectedSize.height) / 2)
+				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
+	    
+	    		// Set frame size
+	    		frame.setSize(selectedSize);
+    		}
+    		
+    		else {
+    			// if there's more than one screen
+    			selectedSize = calculatedScreenSize();
+
+				// Set frame size
+				frame.setSize(selectedSize);
+				
+    			// Center frame on screen
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				frame.setLocation(
+					((screen_size.width - selectedSize.width) / 2),
+					((screen_size.height - selectedSize.height) / 2)
+				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
+    		}
+        }
 
 		try {
 			// Set up MainDesktopPane
@@ -372,27 +409,43 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Calculates the screen size.
+	 * 
 	 * @return
 	 */
 	private Dimension calculatedScreenSize() {
 
 		Dimension frameSize = interactiveTerm.getSelectedScreen();
+		if (frameSize != null) {
+			logger.config("Selected screen size: " + frameSize.width + " x " + frameSize.height);
+		}
+		else {
+			if (useDefault) {
+				logger.config("useDefault is: " + useDefault);
+				logger.config("Use default screen configuration.");
+			}
+			else {
+				// Use any stored size
+				frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+				logger.config("Use last saved window size: " + frameSize.width + " x " + frameSize.height);	
+			}
+		}
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-		logger.config("Screen size " + screenSize.width + " x " + screenSize.height);
-		if ((frameSize == null) && !useDefault) {
-			// Use any stored size
-			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+		if (screenSize != null)
+			logger.config("Current screen size: " + screenSize.width + " x " + screenSize.height);
+		
+		if (frameSize != null) {
+			// Check selected is not bigger than the screen
+			if (frameSize.width > screenSize.width
+					|| frameSize.height > screenSize.height) {
+				logger.warning("Selected screen size cannot be larger than physical screen size.");
+				frameSize = null;
+			}
+			else {
+				// proceed to the next
+			}
 		}
-
-		// Check selected is not bigger than the screen
-		if ((frameSize != null) && ((frameSize.width > screenSize.width)
-					|| (frameSize.height > screenSize.height))) {
-			logger.warning("Selected screen size larger than physical screen");
-			frameSize = null;
-		}
-
-		// If no size then screen size
+ 
 		if (frameSize == null) {
 			// Make frame size 80% of screen size.
 			if (screenSize.width > 800) {
@@ -400,16 +453,17 @@ extends JComponent implements ClockListener {
 					(int) Math.round(screenSize.getWidth() * .8),
 					(int) Math.round(screenSize.getHeight() * .8)
 				);
+				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
 			}
 			else {
 				frameSize = new Dimension(screenSize);
+				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
+
 			}
 		}
-		logger.config("Window size " + frameSize.width + " x " + frameSize.height);
-
+		
 		return frameSize;
 	}
-
 
 	/**
 	 * Get the selected screen size for the main window.
@@ -857,17 +911,15 @@ extends JComponent implements ClockListener {
 	}
 
 	public void createEarthDate() {
-		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
+		earthDateField = new WebDateField(StyleId.datefield);
 		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
-//		earthDateField.setPreferredWidth(280);
 		earthDateField.setAllowUserInput(false);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
-//		earthDateField.setAlignmentX(.5f);
-//		earthDateField.setAlignmentY(.5f);
 		earthDateField.setPadding(0, 10, 0, 10);
 		earthDateField.setMargin(0, 0, 0, 0);
-		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
+		// Note: May use "yyyy-MMM-dd EEE HH:mm a '['z']'"
+		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd EEE HH:mm a  ", LanguageManager.getLocale());
 		d.setTimeZone(TimeZone.getTimeZone("GMT"));
 		earthDateField.setDateFormat(d);
 
@@ -885,12 +937,9 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setEditable(false);
 		marsTimeTF.setFont(ARIAL_FONT);
 		marsTimeTF.setForeground(new Color(150,96,0));
-//		marsTimeTF.setAlignmentX(.5f);
-//		marsTimeTF.setAlignmentY(.5f);
-//		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
 		marsTimeTF.setPadding(0, 10, 0, 10);
 		marsTimeTF.setMargin(0, 0, 0, 0);
-		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mars Time (UMT)", TooltipWay.up);
+		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mean Time (UMT)", TooltipWay.up);
 	}
 
 	public WebTextField getMarsTime() {
@@ -1271,7 +1320,7 @@ extends JComponent implements ClockListener {
 		}
 
 		if (marsTimeTF != null && marsClock != null) {
-			marsTimeTF.setText(marsClock.getTrucatedDateTimeStamp() + UMT);
+			marsTimeTF.setText(marsClock.getDisplayTruncatedTimeStamp());
 		}
 	}
 

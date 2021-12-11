@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.AlphaComposite;
@@ -1322,7 +1321,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				// Set the selected settlement in SettlementMapPanel
 				mapPanel.setSettlement(s);
 				// Set the population label in the status bar
-//				System.out.println(s + " : " + s.getNumCitizens());
 				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
 				// Set the box opaque
 				settlementListBox.setOpaque(false);

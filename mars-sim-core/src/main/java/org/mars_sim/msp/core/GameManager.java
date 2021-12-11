@@ -49,6 +49,7 @@ public class GameManager {
     public static Person commanderPerson;
 
     public GameManager() {
+    	// initialize here
     }
 
     /**

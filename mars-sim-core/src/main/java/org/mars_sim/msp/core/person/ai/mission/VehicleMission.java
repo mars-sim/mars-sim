@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -719,98 +720,95 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
 		boolean hasEmergency = hasEmergency();
 
-		if (vehicle != null) {
+		if (destination != null
+				&& vehicle != null
+				&& vehicle.getCoordinates() != null
+				&& destination.getLocation() != null) {
 
-			if (destination != null
-					&& vehicle.getCoordinates() != null
-					&& destination.getLocation() != null) {
+			reachedDestination = vehicle.getCoordinates().equals(destination.getLocation())
+					|| Coordinates.computeDistance(vehicle.getCoordinates(), destination.getLocation()) < SMALL_DISTANCE;
 
-				reachedDestination = vehicle.getCoordinates().equals(destination.getLocation())
-						|| Coordinates.computeDistance(vehicle.getCoordinates(), destination.getLocation()) < SMALL_DISTANCE;
+			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
+		}
 
-				malfunction = vehicle.getMalfunctionManager().hasMalfunction();
+		// If emergency, make sure the current operateVehicleTask is pointed home.
+		if ((allCrewHasMedical || hasEmergency || malfunction) &&
+			operateVehicleTask != null &&
+			destination != null &&
+			destination.getLocation() != null &&
+			operateVehicleTask.getDestination() != null &&
+			!operateVehicleTask.getDestination().equals(destination.getLocation())) {
+				updateTravelDestination();
+		}
+
+		// Choose a driver
+		if (!reachedDestination && !malfunction) {
+			boolean becomeDriver = false;
+
+			if (operateVehicleTask != null) {
+				// Someone should be driving or it's me !!!
+				becomeDriver = vehicle != null &&
+					((vehicle.getOperator() == null)
+						|| (vehicle.getOperator().equals(member)));
+			}
+			else {
+				// None is driving
+				becomeDriver = true;
 			}
 
-			// If emergency, make sure the current operateVehicleTask is pointed home.
-			if ((allCrewHasMedical || hasEmergency || malfunction) &&
-				operateVehicleTask != null &&
-				destination != null &&
-				destination.getLocation() != null &&
-				operateVehicleTask.getDestination() != null &&
-				!operateVehicleTask.getDestination().equals(destination.getLocation())) {
-					updateTravelDestination();
-			}
-
-			// Choose a driver
-			if (!reachedDestination && !malfunction) {
-				boolean becomeDriver = false;
+			// Take control
+			if (becomeDriver) {
+				if (operateVehicleTask != null) {
+					operateVehicleTask = createOperateVehicleTask(member, operateVehicleTask.getPhase());
+				} else {
+					operateVehicleTask = createOperateVehicleTask(member, null);
+				}
 
 				if (operateVehicleTask != null) {
-					// Someone should be driving or it's me !!!
-					becomeDriver = vehicle != null &&
-						((vehicle.getOperator() == null)
-							|| (vehicle.getOperator().equals(member)));
-				}
-				else {
-					// None is driving
-					becomeDriver = true;
-				}
-
-				// Take control
-				if (becomeDriver) {
-					if (operateVehicleTask != null) {
-						operateVehicleTask = createOperateVehicleTask(member, operateVehicleTask.getPhase());
-					} else {
-						operateVehicleTask = createOperateVehicleTask(member, null);
+					if (member.getUnitType() == UnitType.PERSON) {
+						assignTask((Person)member, operateVehicleTask);
 					}
+					else {
+						assignTask((Robot)member, operateVehicleTask);
 
-					if (operateVehicleTask != null) {
-						// Bad forgive me !!!
-						if (member instanceof Person) {
-							assignTask((Person)member, operateVehicleTask);
-						}
-						else {
-							assignTask((Robot)member, operateVehicleTask);
-
-						}
-						lastOperator = member;
-						return;
 					}
+					lastOperator = member;
+					return;
+				}
+			}
+		}
+
+		// If the destination has been reached, end the phase.
+		if (reachedDestination) {
+			Settlement base = destination.getSettlement();
+			if (vehicle.getAssociatedSettlement().equals(base)) {
+				logger.info(vehicle, "Arrived back home " + base.getName());
+				vehicle.transfer(base);
+
+				// TODO There is a problem with the Vehicle not being on the
+				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
+				// This is temporary fix pending #474 which will revisit transfers
+				if (!base.equals(vehicle.getContainerUnit())) {
+					vehicle.setContainerUnit(base);
+					logger.warning(vehicle, "Had to force container to home base");
 				}
 			}
 
-			// If the destination has been reached, end the phase.
-			if (reachedDestination) {
-				Settlement base = destination.getSettlement();
-				if (vehicle.getAssociatedSettlement().equals(base)) {
-					logger.info(vehicle, "Arrived back home " + base.getName());
-					vehicle.transfer(base);
+			reachedNextNode();
+			setPhaseEnded(true);
+		}
 
-					// TODO There is a problem with the Vehicle not being on the
-					// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
-					// This is temporary fix pending #474 which will revisit transfers
-					if (!base.equals(vehicle.getContainerUnit())) {
-						vehicle.setContainerUnit(base);
-						logger.warning(vehicle, "Had to force container to home base");
-					}
-				}
-
-				reachedNextNode();
-				setPhaseEnded(true);
+		if (vehicle != null && VehicleType.isRover(vehicle.getVehicleType())) {
+			// Check the remaining trip if there's enough resource
+			// Must set margin to false since it's not needed.
+			if (!hasEnoughResourcesForRemainingMission(false)) {
+				// If not, determine an emergency destination.
+				determineEmergencyDestination(member);
 			}
 
-			if (VehicleType.isRover(vehicle.getVehicleType())) {
-				// Check the remaining trip if there's enough resource
-				// Must set margin to false since it's not needed.
-				if (!hasEnoughResourcesForRemainingMission(false)) {
-					// If not, determine an emergency destination.
-					determineEmergencyDestination(member);
-				}
-
-				// If vehicle has unrepairable malfunction, end mission.
-				if (hasUnrepairableMalfunction()) {
-					getHelp(MissionStatus.UNREPAIRABLE_MALFUNCTION);
-				}
+			// If vehicle has unrepairable malfunction, end mission.
+			if (hasUnrepairableMalfunction()) {
+				getHelp(MissionStatus.UNREPAIRABLE_MALFUNCTION);
 			}
 		}
 	}

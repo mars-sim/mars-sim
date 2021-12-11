@@ -749,7 +749,7 @@ public class UnitManager implements Serializable, Temporal {
 			try {
 				activeSettlement.set(settlement);
 				settlement.timePassing(currentPulse);
-				activeSettlement.set(null);
+				activeSettlement.remove();
 			}
 			catch (RuntimeException rte) {
 				String msg = "Problem with pulse on " + settlement.getName()

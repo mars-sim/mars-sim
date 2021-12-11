@@ -1576,9 +1576,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 					logger.warning(this + "Not possible to be stored into " + cu + ".");
 				}
 			}
-			else if (destination.getUnitType() == UnitType.BUILDING) {
-				transferred = ((Building)cu).getSettlement().addRobot(this);
-			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				transferred = ((MarsSurface)destination).addRobot(this);
 			}
@@ -1587,7 +1584,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
-				transferred = ((Settlement)destination).addRobot(this);
+				transferred = ((Building)destination).getSettlement().addRobot(this);
 			}
 
 			if (!transferred) {

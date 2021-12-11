@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CropTableModel.java
- * @date 2021-09-20
+ * @date 2021-12-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategoryType;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
@@ -94,6 +92,7 @@ public class CropTableModel extends UnitTableModel {
 	private Map<Integer, String> catMap;
 
 	private Settlement commanderSettlement;
+	private Settlement settlement;
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -121,6 +120,25 @@ public class CropTableModel extends UnitTableModel {
 			setSource(unitManager.getSettlements());
 		}
 
+		init();
+	}
+
+	public CropTableModel(Settlement settlement) throws Exception {
+		super(Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
+				"CropTableModel.countingCrops", //$NON-NLS-1$
+				columnNames, columnTypes);
+
+		this.settlement = settlement;
+		totalNumCropMap = new ConcurrentHashMap<>();
+		buildings = new ArrayList<>();
+		paddedSettlements = new ArrayList<>();
+
+		addUnit(settlement);
+
+		init();
+	}
+
+	public void init() {
 		updateMaps();
 
 		unitManagerListener = new LocalUnitManagerListener();

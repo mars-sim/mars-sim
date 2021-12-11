@@ -76,6 +76,11 @@ public class Farming extends Function implements Serializable {
 	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
 	private static final double MIN  = .00001D;// 0.0000000001;
 
+	/** Does The interval of time [in millisols] need a reset ? */
+	private static volatile boolean resetInterval = true;
+	/** The interval of time [in millisols] between each crop update call. */
+	private static volatile double processInterval = 1.0;
+
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -682,6 +687,11 @@ public class Farming extends Function implements Serializable {
 			List<Crop> toRemove = new ArrayList<>();
 			for(Crop crop : crops) {
 
+//				if (resetInterval) {
+//					crop.setInterval(processInterval);
+//					resetInterval = false;
+//				}
+
 				try {
 					crop.timePassing(pulse, productionLevel, solarIrradiance,
 									 greyFilterRate, temperatureModifier);
@@ -1111,7 +1121,7 @@ public class Farming extends Function implements Serializable {
 	 * @return
 	 */
 	public int getNumNeedTending() {
-		
+
 		int cropsNeedingTending = 0;
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
@@ -1123,7 +1133,24 @@ public class Farming extends Function implements Serializable {
 				cropsNeedingTending++;
 		}
 		cropsNeedingTending += numCrops2Plant;
-		
+
 		return cropsNeedingTending;
 	}
+
+//	/**
+//	 * Set the interval reset to true
+//	 */
+//	public static void resetInterval() {
+//		resetInterval = true;
+//	}
+//
+//	/**
+//	 * Sets the process interval
+//	 *
+//	 * @param value
+//	 */
+//	public static void setInterval(double value) {
+//		processInterval = value;
+//		resetInterval = true;
+//	}
 }

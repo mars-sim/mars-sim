@@ -85,7 +85,7 @@ public class MarsClockFormat {
 	}
 
 	/**
-	 * Returns the time string in the format of e.g. "00000056"
+	 * Returns the martian time string in the format of e.g. "00000056"
 	 *
 	 * @param time {@link MarsClock} instance
 	 * @return String in millisols
@@ -95,7 +95,7 @@ public class MarsClockFormat {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of "03-Adir-05:056.434"
+	 * Returns formatted martian time stamp string in the format of "03-Adir-05:056.434"
 	 *
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
@@ -106,7 +106,7 @@ public class MarsClockFormat {
 	}
 
 	/**
-	 * Returns a truncated time stamp string in the format of "03-Adir-05:056"
+	 * Returns a truncated martian time stamp string in the format of "03-Adir-05:056"
 	 *
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
@@ -117,7 +117,7 @@ public class MarsClockFormat {
 	}
 
 	/**
-	 * Gets the date string in the format of e.g. "03-Adir-05"
+	 * Gets the martian date string in the format of e.g. "03-Adir-05"
 	 *
 	 * @param time {@link MarsClock} instance
 	 * @return date string

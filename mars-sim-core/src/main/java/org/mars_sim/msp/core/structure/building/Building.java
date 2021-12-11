@@ -1223,8 +1223,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 						if (person.getBuildingLocation() == this
 								&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
 
-							// TODO: someone got hurt, declare medical emergency
-							// TODO: delineate the accidents from those listed in malfunction.xml
+							// Note 1: someone got hurt, declare medical emergency
+							// Note 2: delineate the accidents from those listed in malfunction.xml
 							// currently, malfunction whether a person gets hurt is handled by Malfunction
 							// above
 							int resilience = person.getNaturalAttributeManager()

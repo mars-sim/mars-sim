@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -18,6 +19,8 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.panel.WebPanel;
 
 
 /**
@@ -30,10 +33,6 @@ public class MarsCalendarDisplay extends JComponent {
 	// Data members
 	/** The Martian clock instance. */
 	private MarsClock marsTime;
-
-//	private MainDesktopPane desktop;
-
-//	private MainScene mainScene;
 	
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
@@ -41,9 +40,7 @@ public class MarsCalendarDisplay extends JComponent {
 	private int solHeight;
 	private int solsInMonth;
 	private int solCache;
-	
-//	private int themeCache = -1;
-	
+
 	private char[] weekLetters = { 'S', 'P', 'D', 'T', 'H', 'V', 'J' };
 	
 	private FontMetrics solMetrics;
@@ -86,13 +83,11 @@ public class MarsCalendarDisplay extends JComponent {
 
 		// Initialize data members
 		this.marsTime = marsTime;
-//		this.desktop = desktop;
-//		mainScene = desktop.getMainScene();
-		
+	
 		// Set component size
 		setPreferredSize(new Dimension(140, 100));
-		setMaximumSize(getPreferredSize());
-		setMinimumSize(getPreferredSize());
+		setMaximumSize(new Dimension(140, 100));
+		setMinimumSize(new Dimension(140, 100));
 		
 		// Set up week letter font
 		weekMetrics = getFontMetrics(weekFont);
@@ -110,55 +105,6 @@ public class MarsCalendarDisplay extends JComponent {
 	 * Updates the calendar display
 	 */
 	public void update() {
-
-//		if (mainScene != null) {
-//			int theme = 0;//MainScene.getTheme();
-//
-//			if (themeCache != theme) {
-//				themeCache = theme;
-//
-//				if (theme == 1) {
-//					// green theme
-//					baseColor = Color.orange;
-//					midColor = new Color(104, 114, 77); // 74, 140, 94
-//					darkColor = new Color(73, 97, 0);
-//				} else if (theme == 2) {
-//					// red theme
-//					baseColor = Color.red;
-//					midColor = new Color(255, 102, 102); // pink orange
-//					darkColor = new Color(51, 25, 0); // dark brown
-//				} else if (theme == 3) {
-//					// brownish theme
-//					baseColor = Color.orange;
-//					midColor = new Color(210, 117, 101); // orange pink
-//					darkColor = new Color(140, 94, 74); // greyish brown pink
-//				}
-//
-//				else if (theme == 4) {
-//					// grey theme
-//					baseColor = Color.gray;
-//					midColor = Color.lightGray;
-//					darkColor = Color.DARK_GRAY;
-//				} else if (theme == 5) {
-//					// purple theme
-//					baseColor = Color.magenta;
-//					midColor = new Color(112, 76, 103);
-//					darkColor = new Color(51, 0, 51);
-//				} else if (theme == 6 || theme == 0) {
-//					// blue theme
-//					baseColor = Color.white;//new Color(85, 152, 212);//Color.cyan;
-//					midColor = new Color(99, 125, 150);
-//					darkColor = new Color(101, 139, 210);
-//				} else if (theme == 7) {
-//					// pale olive theme
-//					baseColor = Color.orange;
-//					midColor = new Color(152, 149, 92);
-//					darkColor = new Color(138, 141, 74);
-//				}
-//
-//				SwingUtilities.invokeLater(() -> repaint());
-//			}
-////		}
 
 		// check for the passing of each day
 		int newSol = marsTime.getMissionSol();

@@ -289,8 +289,10 @@ implements Serializable {
         		result = new WalkState(WalkState.OUTSIDE_LOC);
         	}
         }
-
-        result.loc = pos;
+        
+        if (result != null) {
+        	result.loc = pos;
+        }
         return result;
     }
 

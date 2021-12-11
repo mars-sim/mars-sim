@@ -4,7 +4,6 @@
  * @date 2021-11-29
  * @author Manny Kung
  */
-
 package org.mars.sim.console;
 
 import org.beryx.textio.TextTerminal;

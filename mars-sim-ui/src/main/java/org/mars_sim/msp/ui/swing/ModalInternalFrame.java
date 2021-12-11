@@ -29,20 +29,20 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(ModalInternalFrame.class.getName());
-    
+
 	// Data members
 	boolean modal = false;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param title
 	 *            the title of the frame.
 	 */
 	public ModalInternalFrame(String title) {
 		// Call JInternalFrame constructor.
 		super(title, false, false, false, false);
-		
+
 		setFrameIcon(MainWindow.getLanderIcon());
 	}
 
@@ -50,7 +50,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 			boolean iconifiable) {
 		// Call JInternalFrame constructor.
 		super(title, resizable, closable, maximizable, iconifiable);
-		
+
 		setFrameIcon(MainWindow.getLanderIcon());
 	}
 
@@ -103,8 +103,8 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 							dispatch = false;
 
 						}
-					} 
-					
+					}
+
 					else if (event instanceof ActiveEvent) {
 						ActiveEvent activeEvent = (ActiveEvent) event;
 						activeEvent.dispatch();
@@ -145,7 +145,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 
 	/**
 	 * Set if the frame is modal.
-	 * 
+	 *
 	 * @param modal
 	 *            true if frame is modal.
 	 */
@@ -155,27 +155,18 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 
 	/**
 	 * Checks if the frame is modal.
-	 * 
+	 *
 	 * @return true if frame is modal.
 	 */
 	public boolean isModal() {
 		return this.modal;
 	}
-	
+
 	/**
 	 * Sets the icon image for the main window.
 	 */
 	public void setIconImage() {
-//		super.setFrameIcon(ImageLoader.getIcon(MainWindow.LANDER_PNG, ImageLoader.ICON_DIR));
 		super.setFrameIcon(MainWindow.getLanderIcon());
-
-//		String fullImageName = MainWindow.LANDER_PNG;
-//		URL resource = ImageLoader.class.getResource(fullImageName);
-//		Toolkit kit = Toolkit.getDefaultToolkit();
-//		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
-////		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
-//		ImageIcon icon = new ImageIcon(img);
-//		super.setFrameIcon(icon);
 	}
-	
+
 }

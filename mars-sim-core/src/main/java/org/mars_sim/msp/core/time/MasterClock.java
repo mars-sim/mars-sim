@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2021-08-21
+ * @date 2021-12-09
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.time;
 
 import java.io.File;
@@ -30,6 +29,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -61,6 +62,8 @@ public class MasterClock implements Serializable {
 	private static int BASE_TR;
 	/** The multiplier value that relates TPS to upper TR. */
 	private static final double MULTIPLIER  = 128.0;
+	/** The time interval between each pulse for updating resource processes and crop growth. */
+	private static final double TIME_INTERVAL = 50.0;
 	/** The time ratio int array. */
 	private static int[] trArray = new int[MAX_SPEED + 1];
 
@@ -80,6 +83,8 @@ public class MasterClock implements Serializable {
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 
+	/** The scale factor for updating process and crop update calls. */
+	private volatile double scaleFactor;
 	/** The current simulation time ratio. */
 	private volatile double actualTR = 0;
 	/** The time taken to execute one frame in the game loop */
@@ -88,6 +93,7 @@ public class MasterClock implements Serializable {
 	private volatile int targetTR = 0;
 	/** The user's desire simulation time ratio. */
 	private volatile int userTR = 0;
+
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -206,6 +212,9 @@ public class MasterClock implements Serializable {
 		logger.config("                   Accuracy bias : " + accuracyBias);
 //		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
 		logger.config("-----------------------------------------------------");
+
+		// Set the new scale factor
+		setScaleFactor();
 	}
 
 	/**
@@ -405,6 +414,9 @@ public class MasterClock implements Serializable {
 				if (ratio <= max) {
 					logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
 					targetTR = ratio;
+
+					// Set the new scale factor
+					setScaleFactor();
 				}
 				else {
 					ratio = max;
@@ -414,6 +426,15 @@ public class MasterClock implements Serializable {
 			else
 				targetTR = 1;
 		}
+	}
+
+	/**
+	 * Gets the current speed
+	 *
+	 * @return
+	 */
+	public int getCurrentSpeed() {
+		return (int)(Math.log(targetTR) / Math.log(2));
 	}
 
 	/**
@@ -432,6 +453,25 @@ public class MasterClock implements Serializable {
 	 */
 	public int getUserTR() {
 		return userTR;
+	}
+
+	/**
+	 * Set the new scale factor
+	 */
+	public void setScaleFactor() {
+		double ratio = TIME_INTERVAL / MAX_SPEED;
+		scaleFactor = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
+		logger.config("The scale factor becomes " + scaleFactor);
+//		// Update the interval in resource processing
+//		ResourceProcessing.resetInterval();
+//		ResourceProcessing.setInterval(scale);
+//		// Update the interval in Farming
+//		Farming.resetInterval();
+//		Farming.setInterval(scale);
+	}
+
+	public double getScaleFactor() {
+		return scaleFactor;
 	}
 
 	/**

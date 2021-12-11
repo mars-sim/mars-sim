@@ -79,7 +79,7 @@ public class LocalAreaUtil {
 
 		return new LocalPosition(translateX, translateY);
 	}
-		
+
 	/**
 	 * Gets a local relative location from a location relative to this bounded
 	 * object.
@@ -117,7 +117,7 @@ public class LocalAreaUtil {
 	public static Point2D.Double getObjectRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 		return getObjectRelativePosition(new LocalPosition(xLoc, yLoc), boundedObject).toPoint();
 	}
-	
+
 	/**
 	 * Gets a object relative location for a given location and an object.
 	 *
@@ -181,7 +181,7 @@ public class LocalAreaUtil {
 		return new LocalPosition(x,y);
 	}
 
-	
+
 	/**
 	 * Gets a random position outside a local bounded object at a given distance
 	 * away.
@@ -224,6 +224,9 @@ public class LocalAreaUtil {
 			y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
 					- ((boundedObject.getLength() / 2D) + distance);
 			break;
+
+		default:
+		    break;
 		}
 
 		return new LocalPosition(x, y);
@@ -419,7 +422,7 @@ public class LocalAreaUtil {
 		Area area = new Area(path);
 		return area.contains(position.getX(), position.getY());
 	}
-	
+
 	/**
 	 * Gets the bounding rectangle around a local bounded object with facing.
 	 *

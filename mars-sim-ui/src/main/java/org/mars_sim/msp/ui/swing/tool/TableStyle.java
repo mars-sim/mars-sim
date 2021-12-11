@@ -32,7 +32,7 @@ public class TableStyle extends ZebraJTable{
 	private static String themeName = null;
 
 	private static int themeCache = -1;
-	
+
 	public TableStyle() {
 		super();
 	}
@@ -55,13 +55,10 @@ public class TableStyle extends ZebraJTable{
     public static void setTableStyle(JTable table) {
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
-//        if (MainWindow.OS.contains("linux"))
-//        	table.setRowHeight(24);
-//        else 
         table.setRowHeight(24);
-        
+
         table.setFont(new Font("Arial", Font.PLAIN, 12));
-        
+
     	int theme = 0;//MainScene.getTheme();
 
 		// 255 228 225	MistyRose1
@@ -70,23 +67,23 @@ public class TableStyle extends ZebraJTable{
 	    //theHeader = table.getTableHeader();
 	    //theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
 	    //theHeader.setDefaultRenderer(theRenderer);
-    	
+
 	    // Disable this will allow a gradient color on the header
 	    //theHeader.setOpaque(false);
 		//theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 		//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));
 		//theHeader.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
-    	
+
     	// TODO: why is it NOT working?
 		//if (hBack != null) theHeader.setBackground(hBack);
 		//if (hFore != null) theHeader.setForeground(hFore);
 
     	SwingUtilities.invokeLater(()-> {
-    		
+
     		if (themeCache != theme) {
-    			
+
     		   	if (theme == 0) { // snow + skyblue
-    	    		
+
     	    		// see default colors for nimbus
     	    		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
     	    		//hFore = new Color(57, 105, 138);// ;//(57, 105, 138) is dark navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
@@ -181,23 +178,23 @@ public class TableStyle extends ZebraJTable{
     	    		border = Color.WHITE;//new Color(243, 247, 136);//Color.WHITE; //new Color(101,75,0); //Color.orange;
     	    		themeName = "Mud Orange"; //Standard Nimrod";
     	    	}
-    		   	
+
 				if (fore != null) table.setForeground(fore);
 				if (back != null) table.setBackground(back);
-		
+
 				if (selFore != null) table.setSelectionForeground(selFore);
 				if (selBack != null) table.setSelectionBackground(selBack);
-		
+
 				if (grid != null) table.setGridColor(grid);
-		
+
 				//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 				table.setShowGrid(true);
 				table.setShowVerticalLines(true);
 				//table.setBorder(BorderFactory.createLineBorder(border, 1));
 				table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
+
 				table.repaint();
-				
+
 				themeCache = theme;
     		}
     	});

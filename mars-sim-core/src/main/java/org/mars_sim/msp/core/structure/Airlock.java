@@ -639,7 +639,7 @@ public abstract class Airlock implements Serializable {
 				}
 			}
 
-			operatorID = Integer.valueOf(selectedID);
+			operatorID = selectedID;
 
 			logger.log(selected, Level.FINE, 4_000,
 					"Stepped up becoming the airlock operator.");

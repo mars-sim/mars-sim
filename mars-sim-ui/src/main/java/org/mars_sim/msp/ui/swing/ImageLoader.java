@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * ImageLoader.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-07
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Graphics2D;
@@ -28,24 +27,22 @@ import javax.swing.ImageIcon;
  * strategies can be easily implemented within this class.
  */
 public class ImageLoader {
-	
+
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ImageLoader.class.getName());
 
-	private static HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
-	private static HashMap<String, Image> imageCache = new HashMap<String, Image>();
+	private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
+	private static HashMap<String, Image> imageCache = new HashMap<>();
 	private static Toolkit usedToolkit = null;
 
 	/**
 	 * Sub-directory/package for the images
 	 */
-	/* [landrus, 26.11.09]: use classloader compatible paths */
+	// Use classloader compatible paths
 	public final static String IMAGE_DIR = "/images/";
-
 	public final static String ICON_DIR = "/icons/";
-
 	public final static String VEHICLE_ICON_DIR = "/icons/vehicle/";
-	
+
 	/**
 	 * Static singleton
 	 */
@@ -53,8 +50,8 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Load the image icon with the specified name and a "png" image extension from 
-	 * IMAGE_DIR. This operation may either create a new Image Icon of returned 
+	 * Load the image icon with the specified name and a "png" image extension from
+	 * IMAGE_DIR. This operation may either create a new Image Icon of returned
 	 * a previously created one.
 	 *
 	 * @param imagename
@@ -77,52 +74,31 @@ public class ImageLoader {
 	public static ImageIcon getIcon(String imagename, String dir) {
 		return getIcon(imagename, "png", dir);
 	}
-	
+
 	public static ImageIcon getNewIcon(String imagename) {
 		ImageIcon found = null;
-		
+
 		if (imagename == null || imagename.equals("")) {
 			return found;
 		}
-		
-//		else if (imagename.contains(".svg")) {
-//    		
-//        	if (imagename.equals(MainWindow.SANDSTORM_SVG)) {
-//        		found = SettlementTransparentPanel.sandstorm;
-//        	}
-//        	else if (imagename.equals(MainWindow.DUST_DEVIL_SVG)) {
-//        		found = SettlementTransparentPanel.dustDevil;
-//        	}
-//        	else if (imagename.equals(MainWindow.SNOWFLAKE_SVG)) {
-//        		found = SettlementTransparentPanel.snowflake;
-//        	}
-//        	else if (imagename.equals(MainWindow.COLD_WIND_SVG)) {
-//        		found = SettlementTransparentPanel.wind;
-//        	}
-//        	else if (imagename.equals("")) {
-//        		found = SettlementTransparentPanel.emptyIcon;
-//        	}
-//    	}
-//    	
-//    	else {
-		
-			String ext = "png";
-			String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
-			found = iconCache.get(fullImageName);
-			if (found == null) {
-				String fileName = fullImageName.startsWith("/") ? fullImageName : "/" + fullImageName;
-	
-				/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-				URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
-				if (resource == null) {
-	    			logger.severe("'" + fileName + "' cannot be found");
-	    		}
-				
-				found = new ImageIcon(resource);
-		    	
-				iconCache.put(fullImageName, found);
-			}
-//    	}
+
+		String ext = "png";
+		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
+		found = iconCache.get(fullImageName);
+		if (found == null) {
+			String fileName = fullImageName.startsWith("/") ? fullImageName : "/" + fullImageName;
+
+			// Don't use the system classloader in a webstart env
+			URL resource = ImageLoader.class.getResource(fileName);
+			// e.g. ClassLoader.getSystemResource(fileName)
+			if (resource == null) {
+    			logger.severe("'" + fileName + "' cannot be found");
+    		}
+
+			found = new ImageIcon(resource);
+
+			iconCache.put(fullImageName, found);
+		}
 
 		return found;
 	}
@@ -136,7 +112,7 @@ public class ImageLoader {
 	 * @param ext
 	 *            the file extension (ex. "png", "jpg").
 	 * @param idr
-	 *            the direcotyr of the file .  
+	 *            the direcotyr of the file .
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename, String ext, String dir) {
@@ -146,13 +122,9 @@ public class ImageLoader {
 			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
 //			logger.config("Filename : " + fileName + "   imagename : " + imagename + "    ext : "+ ext + "    dir : " + dir);
 			found = new ImageIcon(ImageLoader.class.getResource(fileName));
-//			if (found == null) {
-//				logger.severe("Filename : " + fileName + " NOT found !");
-//			}
-//			else
-				iconCache.put(fullImageName, found);
+			iconCache.put(fullImageName, found);
 		}
-		
+
 		return found;
 	}
 
@@ -185,11 +157,11 @@ public class ImageLoader {
 		}
 		return newImage;
 	}
-	
-	
+
+
 	/**
 	 * Convert from icon to image
-	 * 
+	 *
 	 * @param icon
 	 * @return
 	 */
@@ -198,11 +170,11 @@ public class ImageLoader {
 		if (icon instanceof ImageIcon) {
 			return ((ImageIcon)icon).getImage();
 		}
-		
+
 		else {
 			int w = icon.getIconWidth();
 			int h = icon.getIconHeight();
-			GraphicsEnvironment ge = 
+			GraphicsEnvironment ge =
 					GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice gd = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc = gd.getDefaultConfiguration();
@@ -213,5 +185,4 @@ public class ImageLoader {
 			return image;
 	   }
 	}
-	
 }

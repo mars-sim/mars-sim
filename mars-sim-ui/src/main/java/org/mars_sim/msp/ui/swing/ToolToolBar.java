@@ -177,7 +177,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(timeButton);
 
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton(MonitorWindow.NAME, Msg.getString("img.monitor")); //$NON-NLS-1$
+		ToolButton monitorButton = new ToolButton(MonitorWindow.TITLE, Msg.getString("img.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);

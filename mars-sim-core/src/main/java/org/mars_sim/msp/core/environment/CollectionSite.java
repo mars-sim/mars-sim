@@ -76,5 +76,4 @@ public class CollectionSite extends Site implements Serializable {
 	public int hashCode() {
 		return (int)(Math.abs(iceCollectionRate) + Math.abs(regolithCollectionRate)) + location.hashCode();
 	}
-
 }

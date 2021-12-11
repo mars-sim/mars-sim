@@ -964,9 +964,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			return false;
 		}
 
-		// If settlement is overcrowded, increase inhabitant's stress.
-		trackStress(pulse);
-
 		doCropsNeedTending(pulse);
 
 		// what to take into consideration the presence of robots ?
@@ -986,30 +983,35 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		}
 
 		// Keeps track of things based on msol
-		trackMsol(pulse);
+		trackByMSol(pulse);
 
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
 
 		createBuildingMap();
-		// Check if anyone deceased
-		checkDeceased(pulse);
 
 		return true;
 	}
 
-	private void trackStress(ClockPulse pulse) {
-		double time = pulse.getElapsed();
+	/**
+	 * Gets the stress factor due to occupancy density
+	 *
+	 * @param time
+	 * @return
+	 */
+	public double getStressFactor(double time) {
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
-			double stressModifier = .1D * overCrowding * time;
-			for (Person p : getIndoorPeople()) {
-				PhysicalCondition c = p.getPhysicalCondition();
-				c.setStress(c.getStress() + stressModifier);
-			}
+			return .1D * overCrowding * time;
 		}
+		return 0;
 	}
 
+	/**
+	 * Calls other time passings.
+	 *
+	 * @param pulse
+	 */
 	private void otherTimePassings(ClockPulse pulse) {
 
 		powerGrid.timePassing(pulse);
@@ -1020,6 +1022,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 		compositionOfAir.timePassing(pulse);
 
+		// Update citizens
+		timePassing(pulse, citizens);
+
 		// Update owned vehicles
 		timePassing(pulse, ownedVehicles);
 
@@ -1027,6 +1032,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		timePassing(pulse, ownedRobots);
 	}
 
+	/**
+	 * Create a building map and adjacent building map
+	 */
 	private void createBuildingMap() {
 		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
 			int numConnectors = adjacentBuildingMap.size();
@@ -1045,7 +1053,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @param pulse
 	 */
-	private void trackMsol(ClockPulse pulse) {
+	private void trackByMSol(ClockPulse pulse) {
 		// Sample a data point every SAMPLE_FREQ (in msols)
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -1135,32 +1143,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	}
 
 	/**
-	 * Checks if anyone passes away
-	 *
-	 * @param pulse
-	 */
-	private void checkDeceased(ClockPulse pulse) {
-		// Persons can die and leave the Settlement
-		Set<Person> died = new HashSet<>();
-		for (Person p : citizens) {
-			try {
-				p.timePassing(pulse);
-				if (p.isDeclaredDead()) {
-					logger.info(p, "Dead so removing from citizens");
-					died.add(p);
-				}
-			}
-			catch (RuntimeException rte) {
-				logger.severe(this, "Problem applying pulse : " + rte.getMessage(),
-						      rte);
-			}
-		}
-		if (!died.isEmpty()) {
-			citizens.removeAll(died);
-		}
-	}
-
-	/**
 	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
 	 * to avoid the impact spreading to other units.
 	 * @param pulse
@@ -1168,13 +1150,12 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	private void timePassing(ClockPulse pulse, Collection<? extends Temporal> ownedUnits) {
 		for (Temporal t : ownedUnits) {
-			try {
+//			try {
 				t.timePassing(pulse);
-			}
-			catch (RuntimeException rte) {
-				logger.severe(this, "Problem applying pulse : " + rte.getMessage(),
-						      rte);
-			}
+//			}
+//			catch (RuntimeException rte) {
+//				logger.severe(this, "Problem applying pulse : " + rte.getMessage(), rte);
+//			}
 		}
 	}
 
@@ -2097,6 +2078,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		if (!citizens.contains(p))
 			return true;
 		if (citizens.remove(p)) {
+			removePeopleWithin(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);

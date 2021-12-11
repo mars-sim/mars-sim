@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTableModel.java
- * @date 2021-10-21
+ * @date 2021-12-07
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -174,14 +174,14 @@ public class SettlementTableModel extends UnitTableModel {
 	 * @param settlement
 	 */
 	public SettlementTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
+		super(Msg.getString("SettlementTableModel.tabName"),
+				"SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
 		addUnit(settlement);
 
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-
 	}
 
 	/**
