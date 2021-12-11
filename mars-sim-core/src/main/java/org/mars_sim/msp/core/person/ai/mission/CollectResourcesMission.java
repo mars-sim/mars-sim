@@ -64,6 +64,9 @@ public abstract class CollectResourcesMission extends RoverMission
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
 
+	/** Upper limit of mission to avoid airlock congestion */
+	private static final int MAX_PEOPLE = 6;
+
 	// Data members
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
@@ -112,7 +115,12 @@ public abstract class CollectResourcesMission extends RoverMission
 		if (isDone()) {
 			return;
 		}
-
+		
+		// Too many members creates a congestion at the airlock during EVA
+		if (getMissionCapacity() > MAX_PEOPLE) {
+			setMissionCapacity(MAX_PEOPLE);
+		}
+		
 		Settlement s = startingPerson.getSettlement();
 
 		if (s != null) {
