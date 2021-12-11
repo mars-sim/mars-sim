@@ -288,28 +288,33 @@ extends JComponent implements ClockListener {
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			graphicsDevice = gs[0];
-
+			logger.config("1 screen detected.");	
 		}
 		else if (gs.length == 0) {
 			throw new RuntimeException("No Screens Found.");
+			// NOTE: what about the future server version of mars-sim in which no screen is needed.
 		}
-
-		// Load UI configuration.
-		if (cleanUI || (graphicsDevice != null && graphicsDevice == gs[0])) {
-			int screenWidth = graphicsDevice.getDisplayMode().getWidth();
-			int screenHeight = graphicsDevice.getDisplayMode().getHeight();
-			selectedSize = new Dimension(screenWidth, screenHeight);
-
-			// Set frame size
-			frame.setSize(selectedSize);
-			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-		}
-
 		else {
+			logger.config(gs.length + " screens detected.");	
+		}
+		
+		logger.config("Do you want to use the last saved screen configuration ?");
+		logger.config("To proceed, please click Yes or No in the pop up window box.");
+		
+		int reply = JOptionPane.showConfirmDialog(frame,
+				"Do you want to use the last saved screen configuration", 
+				"Screen Configuration", 
+				JOptionPane.YES_NO_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+        	
+			logger.config("You choose Yes. Loading last saved screen configuration.");	
+			
+    		// Load previous UI configuration.
 			UIConfig.INSTANCE.parseFile();
-
+			
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
+			
 			selectedSize = calculatedScreenSize();
 
 			// Set frame size
@@ -317,17 +322,60 @@ extends JComponent implements ClockListener {
 
 			// Set frame location.
 			if (useDefault) {
+				logger.config("useDefault is: " + useDefault);
 				// Center frame on screen
 	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
 				frame.setLocation(
 					((screen_size.width - selectedSize.width) / 2),
 					((screen_size.height - selectedSize.height) / 2)
 				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
 			}
 			else {
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+				logger.config("Use last saved screen configuration.");	
 			}
-		}
+        }
+        
+        // No. use the new default setting
+        else {
+			logger.config("You choose No. Loading default screen configuration.");	
+			
+    		if (graphicsDevice != null) {
+	    		// Check if there's only one screen if (graphicsDevice == gs[0])
+	    		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+	    		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
+	    		selectedSize = new Dimension(screenWidth, screenHeight);
+	
+    			// Set frame location.
+				// Center frame on screen
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				frame.setLocation(
+					((screen_size.width - selectedSize.width) / 2),
+					((screen_size.height - selectedSize.height) / 2)
+				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
+	    
+	    		// Set frame size
+	    		frame.setSize(selectedSize);
+    		}
+    		
+    		else {
+    			// if there's more than one screen
+    			selectedSize = calculatedScreenSize();
+
+				// Set frame size
+				frame.setSize(selectedSize);
+				
+    			// Center frame on screen
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				frame.setLocation(
+					((screen_size.width - selectedSize.width) / 2),
+					((screen_size.height - selectedSize.height) / 2)
+				);
+				logger.config("Use default configuration to set frame to the center of the screen.");	
+    		}
+        }
 
 		try {
 			// Set up MainDesktopPane
@@ -361,27 +409,43 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Calculates the screen size.
+	 * 
 	 * @return
 	 */
 	private Dimension calculatedScreenSize() {
 
 		Dimension frameSize = interactiveTerm.getSelectedScreen();
+		if (frameSize != null) {
+			logger.config("Selected screen size: " + frameSize.width + " x " + frameSize.height);
+		}
+		else {
+			if (useDefault) {
+				logger.config("useDefault is: " + useDefault);
+				logger.config("Use default screen configuration.");
+			}
+			else {
+				// Use any stored size
+				frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+				logger.config("Use last saved window size: " + frameSize.width + " x " + frameSize.height);	
+			}
+		}
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-		logger.config("Screen size " + screenSize.width + " x " + screenSize.height);
-		if ((frameSize == null) && !useDefault) {
-			// Use any stored size
-			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+		if (screenSize != null)
+			logger.config("Current screen size: " + screenSize.width + " x " + screenSize.height);
+		
+		if (frameSize != null) {
+			// Check selected is not bigger than the screen
+			if (frameSize.width > screenSize.width
+					|| frameSize.height > screenSize.height) {
+				logger.warning("Selected screen size cannot be larger than physical screen size.");
+				frameSize = null;
+			}
+			else {
+				// proceed to the next
+			}
 		}
-
-		// Check selected is not bigger than the screen
-		if ((frameSize != null) && ((frameSize.width > screenSize.width)
-					|| (frameSize.height > screenSize.height))) {
-			logger.warning("Selected screen size larger than physical screen");
-			frameSize = null;
-		}
-
-		// If no size then screen size
+ 
 		if (frameSize == null) {
 			// Make frame size 80% of screen size.
 			if (screenSize.width > 800) {
@@ -389,16 +453,17 @@ extends JComponent implements ClockListener {
 					(int) Math.round(screenSize.getWidth() * .8),
 					(int) Math.round(screenSize.getHeight() * .8)
 				);
+				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
 			}
 			else {
 				frameSize = new Dimension(screenSize);
+				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
+
 			}
 		}
-		logger.config("Window size " + frameSize.width + " x " + frameSize.height);
-
+		
 		return frameSize;
 	}
-
 
 	/**
 	 * Get the selected screen size for the main window.

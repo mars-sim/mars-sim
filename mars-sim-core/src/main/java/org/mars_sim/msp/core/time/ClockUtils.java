@@ -66,7 +66,7 @@ public class ClockUtils implements Serializable {
 	public static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400, SEC_PER_YR = 31536000;
 
 	/** the real second label string */
-	public static final String ONE_REAL_SEC = "1s [real-time] = ";
+	public static final String ONE_REAL_SEC = " -> 01s [real-time]";
 	/** the sim time label string */
 	public static final String SIM_TIME = " [sim-time]";
 
@@ -201,8 +201,6 @@ public class ClockUtils implements Serializable {
 
 		StringBuilder b = new StringBuilder();
 
-		b.append(ONE_REAL_SEC);
-
 		if (hours > 0) {
 			b.append(String.format("%02d", hours)).append(HOURS);
 		}
@@ -213,8 +211,9 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%02d", (int)secs) + SECONDS).append(SIM_TIME);
-
+		b.append(String.format("%02d", (int)secs) + SECONDS)
+			.append(SIM_TIME).append(ONE_REAL_SEC);
+		
 		String s = b.toString();
 
 		map.put(ratio, s);

@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
@@ -21,8 +20,6 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -70,7 +67,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the sleep time label string */
 	public static final String SLEEP_TIME = "Sleep : ";
 	/** the residual time label string */
-	public static final String MARS_PULSE_TIME = "Simulated Pulse : ";
+	public static final String MARS_PULSE_TIME = "Pulse Width : ";
 	/** the execution time unit */
 	public static final String MILLISOLS = " millisols";
 	/** the ave TPS label string */
@@ -153,11 +150,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private EarthClock earthTime;
 
 	/** Arial font. */
-	private final Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
+	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
 	/** Sans serif font. */
-	private final Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 14);
-	private final Font SANS_SERIF_FONT0 = new Font(Font.MONOSPACED, Font.ITALIC, 12);
-	private final Font SANS_SERIF_FONT1 = new Font(Font.DIALOG, Font.ITALIC, 12);
+	private final Font sansSerifFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+	private final Font monospacedFont = new Font(Font.MONOSPACED, Font.ITALIC, 12);
+	private final Font dialogFont = new Font(Font.DIALOG, Font.BOLD, 14);
+	private final Font serifFont = new Font(Font.SERIF, Font.ITALIC, 12);
+	
 	/**
 	 * Constructs a TimeWindow object
 	 *
@@ -191,12 +190,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Martian time header label
 		WebLabel martianTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianTime"), WebLabel.CENTER); //$NON-NLS-1$
-		martianTimeHeaderLabel.setFont(SANS_SERIF_FONT);
+		martianTimeHeaderLabel.setFont(dialogFont);
 
 		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		martianTimeLabel.setFont(ARIAL_FONT);
+		martianTimeLabel.setFont(arialFont);
 		martianTimeLabel.setForeground(new Color(135, 100, 39));
 		martianTimeLabel.setText(marsTime.getDisplayDateTimeStamp() + UMT);
 		TooltipManager.setTooltip(martianTimeLabel, "Mars Timestamp in Universal Mean Time (UMT)", TooltipWay.down);
@@ -206,7 +205,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				martianTimeHeaderLabel.getText(),
 				TitledBorder.LEFT,
                 TitledBorder.TOP,
-                SANS_SERIF_FONT));
+                dialogFont));
 
 		// Create Martian calendar panel
 		WebPanel martianCalendarPane = new WebPanel(new FlowLayout());
@@ -218,44 +217,42 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create martian month label
 		martianMonthHeaderLabel = new WebLabel("Month of " + marsTime.getMonthName(), WebLabel.CENTER);
-		martianMonthHeaderLabel.setFont(SANS_SERIF_FONT);
-		martianCalendarPane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				martianMonthHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                SANS_SERIF_FONT));
-
+		martianMonthHeaderLabel.setFont(dialogFont);
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		WebPanel innerCalendarPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		innerCalendarPane.setPreferredSize(new Dimension(140, 100));
-		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, Color.ORANGE));//new Color(210,105,30)));
+		calendarMonthPane.setPreferredSize(new Dimension(140, 125));
+		calendarMonthPane.setMaximumSize(new Dimension(140, 125));
+		calendarMonthPane.setMinimumSize(new Dimension(140, 125));
 		innerCalendarPane.add(calendarDisplay);
-		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
+//		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, Color.ORANGE));//new Color(210,105,30)));
+		calendarMonthPane.add(innerCalendarPane, BorderLayout.NORTH);
 
-		WebPanel seasonPane = new WebPanel(new BorderLayout());
-		mainPane.add(seasonPane, BorderLayout.SOUTH);
+		martianCalendarPane.setBorder(BorderFactory.createTitledBorder(
+				MainDesktopPane.newEmptyBorder(),
+//				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				martianMonthHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                dialogFont));
+		
+		WebPanel statPane = new WebPanel(new BorderLayout());//FlowLayout(FlowLayout.LEFT));
+		mainPane.add(statPane, BorderLayout.SOUTH);
 
-		WebPanel southPane = new WebPanel(new BorderLayout());
-		seasonPane.add(southPane, BorderLayout.SOUTH);
-
-		WebPanel marsSeasonPane = new WebPanel(new BorderLayout());
-		seasonPane.add(marsSeasonPane, BorderLayout.NORTH);
-
+		// Create Martian hemisphere panel
+		WebPanel hemiPane = new WebPanel(new SpringLayout());
+		statPane.add(hemiPane, BorderLayout.NORTH);
+		
 		// Create Martian season label
 		WebLabel marsSeasonHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianSeasons"), WebLabel.CENTER); //$NON-NLS-1$
-		marsSeasonHeaderLabel.setFont(SANS_SERIF_FONT);
-		marsSeasonPane.setBorder(BorderFactory.createTitledBorder(
+		marsSeasonHeaderLabel.setFont(dialogFont);
+		hemiPane.setBorder(BorderFactory.createTitledBorder(
 				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
 				marsSeasonHeaderLabel.getText(),
 				TitledBorder.LEFT,
                 TitledBorder.TOP,
-                SANS_SERIF_FONT));
+                dialogFont));
 
-		// Create Martian season panel
-		WebPanel hemiPane = new WebPanel(new SpringLayout());//BorderLayout());
-		marsSeasonPane.add(hemiPane, BorderLayout.CENTER);
 
 		String str =
 				"<html>&#8201;Earth (days) vs Mars (sols)" +
@@ -270,8 +267,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		&#8201; Thin tab space
 //		&#8194; En tab space
 //		&#8195; Em tab space
-
-		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
+		
+//		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
 
 		// Create Northern season header label
 		WebLabel northernSeasonHeader = new WebLabel(Msg.getString("TimeWindow.northernHemisphere"),
@@ -279,7 +276,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		hemiPane.add(northernSeasonHeader);
 
 		// Create Northern season label
-		northernSeasonLabel = new WebLabel(orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE), WebLabel.LEFT);
+		northernSeasonLabel = new WebLabel(" ", 
+				WebLabel.LEFT);
 		hemiPane.add(northernSeasonLabel);
 
 		// Create Southern season header label
@@ -288,28 +286,29 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		hemiPane.add(southernSeasonHeader);
 
 		// Create Southern season label
-		southernSeasonLabel = new WebLabel(orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE), WebLabel.LEFT);
+		southernSeasonLabel = new WebLabel(" ", 
+				WebLabel.LEFT);
 		hemiPane.add(southernSeasonLabel);
 
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(hemiPane,
 				2, 2, 		// rows, cols
-				40, 5,	// initX, initY
+				45, 5,	// initX, initY
 				7, 3);		// xPad, yPad
 
 		// Create Earth time panel
 		WebPanel earthTimePane = new WebPanel(new BorderLayout());
-		seasonPane.add(earthTimePane, BorderLayout.CENTER);
+		statPane.add(earthTimePane, BorderLayout.CENTER);
 
 		// Create Earth time header label
 		WebLabel earthTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.earthTime"), WebLabel.CENTER); //$NON-NLS-1$
-		earthTimeHeaderLabel.setFont(SANS_SERIF_FONT);
+		earthTimeHeaderLabel.setFont(dialogFont);
 
 		// Create Earth time label
 		earthTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		earthTimeLabel.setFont(ARIAL_FONT);
+		earthTimeLabel.setFont(arialFont);
 		earthTimeLabel.setForeground(new Color(0, 69, 165));
 		earthTimeLabel.setText(earthTime.getTimeStampF4() + GMT);
 		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.down);
@@ -319,40 +318,26 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				earthTimeHeaderLabel.getText(),
 				TitledBorder.LEFT,
                 TitledBorder.TOP,
-                SANS_SERIF_FONT));
+                dialogFont));
 
-		// Create time panel
-		WebPanel timePane = new WebPanel(new SpringLayout());
-		southPane.add(timePane, BorderLayout.NORTH);
-
-		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.RIGHT); //$NON-NLS-1$
-		uptimeHeaderLabel.setFont(SANS_SERIF_FONT);
-		timePane.add(uptimeHeaderLabel);
-
-		// Create uptime label
-		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.LEFT);
-		timePane.add(uptimeLabel);
-
-		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.RIGHT); //$NON-NLS-1$
-		TPSHeaderLabel.setFont(SANS_SERIF_FONT);
-		timePane.add(TPSHeaderLabel);
-
-		String TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
-
-		ticksPerSecLabel = new WebLabel(TicksPerSec, WebLabel.LEFT);
-		timePane.add(ticksPerSecLabel);
-
-		// Use spring panel layout.
-		SpringUtilities.makeCompactGrid(timePane,
-				2, 2, 		// rows, cols
-				23, 1,	// initX, initY
-				7, 3);		// xPad, yPad
+		WebPanel southPane = new WebPanel(new BorderLayout());
+		statPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create param panel
 		WebPanel paramPane = new WebPanel(new SpringLayout());
-		paramPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
-		southPane.add(paramPane, BorderLayout.CENTER);
+//		paramPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+		southPane.add(paramPane, BorderLayout.NORTH);
 
+		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"),
+				WebLabel.RIGHT); //$NON-NLS-1$
+		TPSHeaderLabel.setFont(sansSerifFont);
+		TPSHeaderLabel.setForeground(Color.MAGENTA.darker());
+		
+		String TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
+		ticksPerSecLabel = new WebLabel(TicksPerSec, WebLabel.LEFT);
+		ticksPerSecLabel.setFont(sansSerifFont);
+		ticksPerSecLabel.setForeground(Color.red.darker());
+		
 		aveTPSHeader = new WebLabel(AVE_TPS, WebLabel.RIGHT);
 		aveTPSLabel = new WebLabel(0 + "", WebLabel.LEFT);
 
@@ -376,15 +361,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		TooltipManager.setTooltip(prefTRHeader, "User-preferred target time ratio", TooltipWay.down);
 		int prefTR = (int)masterClock.getUserTR();
 		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
-		preferredTRLabel.setFont(SANS_SERIF_FONT0);
+		preferredTRLabel.setFont(monospacedFont);
 
 		// Create the actual time ratio label
 		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(actualTRHeader, "Master clock's actual time ratio", TooltipWay.down);
 		double actualTR = masterClock.getActualRatio();
 		actuallTRLabel = new WebLabel(Math.round(actualTR*10.0)/10.0 + "", WebLabel.LEFT); //$NON-NLS-1$
-		actuallTRLabel.setFont(SANS_SERIF_FONT1);
+		actuallTRLabel.setFont(serifFont);
 
+		paramPane.add(TPSHeaderLabel);
+		paramPane.add(ticksPerSecLabel);
 		paramPane.add(aveTPSHeader);
 		paramPane.add(aveTPSLabel);
 		paramPane.add(execTimeHeader);
@@ -402,32 +389,45 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(paramPane,
-				6, 2, //rows, cols
-				35, 2,        //initX, initY
+				7, 2, //rows, cols
+				43, 2,        //initX, initY
 				7, 3);       //xPad, yPad
 
-		// Create the pulse pane
-		WebPanel pulsePane = new WebPanel(new BorderLayout());
-		southPane.add(pulsePane, BorderLayout.SOUTH);
-
-		// Create the speed panel
-		WebPanel speedPanel = new WebPanel(new GridLayout(2, 1));
-		pulsePane.add(speedPanel, BorderLayout.NORTH);
+		// Create the compressionPane pane
+		WebPanel compressionPane = new WebPanel(new BorderLayout());
+		southPane.add(compressionPane, BorderLayout.CENTER);
 
 		// Create the time compression header label
-		WebLabel compressionHeaderLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
-		compressionHeaderLabel.setFont(SANS_SERIF_FONT);
-
+		WebLabel compressionHeaderLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), 
+				WebLabel.CENTER); //$NON-NLS-1$
+		compressionHeaderLabel.setFont(dialogFont);
+		
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-		speedPanel.add(timeCompressionLabel);
-		speedPanel.setBorder(BorderFactory.createTitledBorder(
+		compressionPane.add(timeCompressionLabel);
+		compressionPane.setBorder(BorderFactory.createTitledBorder(
 				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
 				compressionHeaderLabel.getText(),
 				TitledBorder.LEFT,
                 TitledBorder.TOP,
-                SANS_SERIF_FONT));
+                dialogFont));
 
+		// Create the compressionPane pane
+		WebPanel upTimePane = new WebPanel(new BorderLayout());
+		southPane.add(upTimePane, BorderLayout.SOUTH);
+
+		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.RIGHT); //$NON-NLS-1$
+ 		upTimePane.setBorder(BorderFactory.createTitledBorder(
+				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
+				uptimeHeaderLabel.getText(),
+				TitledBorder.LEFT,
+                TitledBorder.TOP,
+                dialogFont));
+
+		// Create uptime label
+		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.CENTER);
+		upTimePane.add(uptimeLabel);
+		
 		addMouseListener(new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {

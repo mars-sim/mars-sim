@@ -143,7 +143,8 @@ public class MainDesktopPane extends JDesktopPane
 
 		prepareListeners();
 
-		SwingUtilities.invokeLater(() -> init());
+		init();
+//		SwingUtilities.invokeLater(() -> init());
 	}
 
 	private void init() {
@@ -167,7 +168,8 @@ public class MainDesktopPane extends JDesktopPane
 		firstDisplay = true;
 		// Set background paper size
 		Dimension selectedSize = mainWindow.getSelectedSize();
-		setPreferredSize(new Dimension(selectedSize.width, selectedSize.height - 35));
+		if (selectedSize != null)
+			setPreferredSize(new Dimension(selectedSize.width - 20, selectedSize.height - 35));
 		// Prep listeners
 		prepareListeners();
 
