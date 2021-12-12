@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -135,9 +135,9 @@ implements Serializable {
 
 
         // Determine digging location.
-        Point2D.Double diggingLoc = determineDiggingLocation();
+        LocalPosition diggingLoc = determineDiggingLocation();
         if (diggingLoc != null)
-        	setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
+        	setOutsideSiteLocation(diggingLoc);
 
 		// set the boolean to true so that it won't be done again today
 //		person.getPreference().setTaskDue(this, true);
@@ -356,9 +356,9 @@ implements Serializable {
      * Determine location for digging regolith.
      * @return digging X and Y location outside settlement.
      */
-    private Point2D.Double determineDiggingLocation() {
+    private LocalPosition determineDiggingLocation() {
 
-        Point2D.Double newLocation = null;
+        LocalPosition newLocation = null;
         boolean goodLocation = false;
         for (int x = 0; (x < 5) && !goodLocation; x++) {
             for (int y = 0; (y < 10) && !goodLocation; y++) {
@@ -367,14 +367,10 @@ implements Serializable {
 
                     double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
                     double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-                    double newXLoc = boundedObject.getXLocation() - (distance * Math.sin(radianDirection));
-                    double newYLoc = boundedObject.getYLocation() + (distance * Math.cos(radianDirection));
-                    Point2D.Double boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+                    LocalPosition boundedLocalPoint = boundedObject.getPosition().getPosition(distance, radianDirection);
 
-                    newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
-                            boundedLocalPoint.getY(), boundedObject);
-                    goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-                            person.getCoordinates());
+                    newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, boundedObject);
+                    goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, person.getCoordinates());
                 }
             }
         }
@@ -390,11 +386,11 @@ implements Serializable {
      * Determine storage bin location for dropping off regolith.
      * @return storage bin X and Y location outside settlement.
      */
-    private Point2D.Double determineBinLocation() {
+    private LocalPosition determineBinLocation() {
 
     	Building bin = findBin();
-    	double x = bin.getXLocation();
-    	double y = bin.getYLocation();
+    	double x = bin.getPosition().getX();
+    	double y = bin.getPosition().getY();
     	int facing = (int)bin.getFacing();
 
     	if (facing == 0) {
@@ -409,7 +405,7 @@ implements Serializable {
 			x -= 3;
 		}
 
-        return new Point2D.Double(x, y);
+        return new LocalPosition(x, y);
     }
 
     /**

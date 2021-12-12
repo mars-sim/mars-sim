@@ -7,10 +7,8 @@
 
 package org.mars_sim.msp.core.structure.building;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -813,42 +811,6 @@ public class BuildingManager implements Serializable {
 		return buildings.size();
 	}
 
-
-	/**
-	 * Register beds for everyone in the settlement at the start of the sim
-	 */
-	public void registerBeds() {
-		List<Point2D> beds = new ArrayList<>();
-		Map<Point2D, Building> map = new HashMap<>();
-		// Discover a list of beds
-		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
-			Function l = b.getLivingAccommodations();
-			List<Point2D> spots = l.getActivitySpotsList();
-			for (Point2D s : spots) {
-				// Convert the activity spot (the bed location) to the settlement reference coordinate
-				double x = s.getX() + b.getXLocation();
-				double y = s.getY() + b.getYLocation();
-				s.setLocation(x, y);
-				beds.add(s);
-				map.put(s, b);
-			}
-		}
-
-		for (Person p : getSettlement().getAllAssociatedPeople()) {
-			if (p.getBed() == null) {
-				Iterator<Point2D> i = beds.iterator();
-	            while (i.hasNext()) {
-	            	Point2D s = i.next();
-	            	Building b = map.get(s);
-	            	b.getLivingAccommodations().assignABed(p, s);
-//					beds.remove(s);
-					i.remove();
-					break;
-				}
-			}
-		}
-	}
-
 	/**
 	 * Time passing for all buildings.
 	 *
@@ -891,54 +853,12 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an empty bed in an airlock randomly
-	 *
-	 * @return
-	 */
-	public Point2D getAirlockEmptyBed() {
-		List<Building> list = getBuildings(FunctionType.EVA, FunctionType.LIVING_ACCOMMODATIONS);
-		Collections.shuffle(list);
-		for (Building b : list) {
-			Point2D bed = b.getLivingAccommodations().getEmptyBed();
-			return bed;
-		}
-		return null;
-	}
-
-	/**
 	 * Gets a random building with an airlock.
 	 *
 	 * @return random building.
 	 */
 	public Building getRandomAirlockBuilding() {
 		return getABuilding(FunctionType.EVA);
-
-//		if (buildingFunctionsMap == null) {
-//			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
-//			setupBuildingFunctionsMap();
-//		}
-//
-//		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
-//			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
-//			int num = list.size();
-//			if (num == 0)
-//				return null;
-//			else if (num == 1)
-//				return list.get(0);
-//
-//			int rand = RandomUtil.getRandomInt(num - 1);
-//			return list.get(rand);
-//		}
-//
-//		else {
-//			List<Building> list = buildings.stream()
-//					.filter(b -> b.hasFunction(FunctionType.EVA)).collect(Collectors.toList());
-//
-//			buildingFunctionsMap.put(FunctionType.EVA, list);
-//			logger.config(FunctionType.EVA + " was not found in buildingFunctionsMap yet. Just added.");
-//
-//			return list.get(0);
-//		}
 	}
 
 	/**
@@ -1004,24 +924,7 @@ public class BuildingManager implements Serializable {
 			robot = (Robot) unit;
 			// find robot type
 			RobotType robotType = robot.getRobotType();
-			FunctionType function = null;
-
-			if (robotType == RobotType.CHEFBOT) {
-				function = FunctionType.COOKING;
-			} else if (robotType == RobotType.CONSTRUCTIONBOT) {
-				function = FunctionType.MANUFACTURE;
-			} else if (robotType == RobotType.DELIVERYBOT) {
-				function = FunctionType.GROUND_VEHICLE_MAINTENANCE;
-			} else if (robotType == RobotType.GARDENBOT) {
-				function = FunctionType.FARMING;
-			} else if (robotType == RobotType.MAKERBOT) {
-				function = FunctionType.MANUFACTURE;
-			} else if (robotType == RobotType.MEDICBOT) {
-				function = FunctionType.MEDICAL_CARE;
-			} else if (robotType == RobotType.REPAIRBOT) {
-				function = FunctionType.ROBOTIC_STATION;
-				// TODO: create another building function to house repairbot ?
-			}
+			FunctionType function = robotType.getDefaultFunction();
 
 			List<Building> functionBuildings = manager.getBuildings(function);
 
@@ -1030,7 +933,7 @@ public class BuildingManager implements Serializable {
 			// Note: if the function is robotic-station, go through the list and remove
 			// hallways
 			// since we don't want robots to stay in a hallway
-			List<Building> validBuildings = new ArrayList<Building>();
+			List<Building> validBuildings = new ArrayList<>();
 			for (Building bldg : functionBuildings) {
 				RoboticStation roboticStation = bldg.getRoboticStation();
 				// remove hallway, tunnel, observatory
@@ -1079,7 +982,7 @@ public class BuildingManager implements Serializable {
 			}
 
 			else {
-				List<Building> validBuildings1 = new ArrayList<Building>();
+				List<Building> validBuildings1 = new ArrayList<>();
 				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
 				for (Building bldg : stations) {
 					// remove hallway, tunnel, observatory
@@ -1253,17 +1156,7 @@ public class BuildingManager implements Serializable {
 
 		Settlement settlement = vehicle.getSettlement();
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-			for (Building garageBuilding : list) {
-				try {
-					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-					if (garage != null && garage.containsVehicle(vehicle)) {
-						return true;
-					}
-				} catch (Exception e) {
-					logger.log(null, vehicle, Level.SEVERE, 2000, "Not in a building.", e);
-				}
-			}
+			return settlement.getBuildingManager().isInGarage(vehicle);
 		}
 		return false;
 	}
@@ -1352,25 +1245,12 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @return building or null if none.
 	 */
-	public static Building getBuilding(Unit unit) {
-		Building result = null;
-		Person person = null;
-		Robot robot = null;
-
-		if (unit instanceof Person) {
-			person = (Person) unit;
-			if (person.isInSettlement()) {
-				return person.getBuildingLocation();
-			}
+	public static Building getBuilding(Worker worker) {
+		if (worker.isInSettlement()) {
+			return worker.getBuildingLocation();
 		}
-
-		else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			if (robot.isInSettlement()) {
-				return robot.getBuildingLocation();
-			}
-		}
-		return result;
+		
+		return null;
 	}
 
 	/**
@@ -1541,8 +1421,7 @@ public class BuildingManager implements Serializable {
 
 				for (Building building : buildingList) {
 					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
-							building.getXLocation(), building.getYLocation());
+							currentBuilding.getPosition(), building, building.getPosition());
 
 					if (validPath != null) {
 						result.add(building);
@@ -1557,8 +1436,7 @@ public class BuildingManager implements Serializable {
 
 				for (Building building : buildingList) {
 					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
-							building.getXLocation(), building.getYLocation());
+							currentBuilding.getPosition(), building, building.getPosition());
 
 					if (validPath != null) {
 						result.add(building);
@@ -1614,53 +1492,6 @@ public class BuildingManager implements Serializable {
 			logger.log(unit, Level.SEVERE, 2000, "The building is null.");
 	}
 
-	/**
-	 * Adds the person to the building at a given location if possible.
-	 *
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
-	 * @param posotion Position within the Building
-	 */
-	public static void addPersonOrRobotToBuilding(Unit unit, Building building, LocalPosition position) {
-		if (building != null) {
-
-			if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(position, building)) {
-				throw new IllegalArgumentException(
-						building.getNickName() + " does not contain location " + position);
-			}
-
-			try {
-				if (unit instanceof Person) {
-					Person person = (Person) unit;
-					LifeSupport lifeSupport = building.getLifeSupport();
-
-					if (!lifeSupport.containsOccupant(person)) {
-						lifeSupport.addPerson(person);
-
-						person.setPosition(position);
-						person.setCurrentBuilding(building);
-					}
-				}
-
-				else if (unit instanceof Robot) {
-					Robot robot = (Robot) unit;
-					RoboticStation roboticStation = building.getRoboticStation();
-
-					if (roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-
-						robot.setPosition(position);
-						robot.setCurrentBuilding(building);
-					}
-				}
-
-			} catch (Exception e) {
-				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
-			}
-		} else {
-			logger.severe(unit, "Building is null.");
-		}
-	}
 
 	/**
 	 * Adds the person to the building at a random location if possible.
@@ -2103,19 +1934,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public int obtainNextInhabitableID() {
 		return nextInhabitableID++;
-
-//		int max = -1;
-//		for (Building b : buildings) {
-//			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
-//				int id = b.getInhabitableID();
-//				max = Math.max(id, max);
-//				// if (id > nextNum)
-//				// nextNum++;
-//			}
-//		}
-//
-////		System.out.println("getNextInhabitableID() " + buildings.size());
-//		return max + 1;
 	}
 
 	/**
@@ -2125,14 +1943,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public int getNumInhabitables() {
 		return nextInhabitableID;
-//		int max = -1;
-//		for (Building b : buildings) {
-//			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
-//				int id = b.getInhabitableID();
-//				max = Math.max(id, max);
-//			}
-//		}
-//		return max;
 	}
 
 	/**
@@ -2171,21 +1981,6 @@ public class BuildingManager implements Serializable {
 			buildingTypeIDMap.put(buildingType, id);
 			return id;
 		}
-
-//        int largest = 0;
-//        Iterator<Building> i = buildings.iterator();
-//        while (i.hasNext()) {
-//            Building b = i.next();
-//            String type = b.getBuildingType();
-//            if (buildingType.equals(type)) {
-//            	int id = b.getTemplateID();
-//            	//largest = Math.max(id, largest);
-//            	if (id > largest)
-//            	largest++;
-//            }
-//        }
-//
-//        return largest + 1;
 	}
 
 	/**
@@ -2196,11 +1991,6 @@ public class BuildingManager implements Serializable {
 	public String getBuildingNickName(String buildingType) {
 		return buildingType + " " + getNextBuildingTypeID(buildingType);
 	}
-
-//	private String getCharForNumber(int i) {
-//		// NOTE: i must be > 1, if i = 0, return null
-//	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
-//	}
 
 	/**
 	 * Gets a list of farm buildings needing work from a list of buildings with the

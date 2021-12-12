@@ -17,18 +17,20 @@ public interface LocalBoundedObject {
 	 * 
 	 * @return X location (meters from local center point - West: positive, East:
 	 *         negative).
-	 * @deprecated
 	 */
-	public double getXLocation();
+	default double getXLocation() {
+		return getPosition().getX();
+	}
 
 	/**
 	 * Gets the Y location of the object from the local area's center point.
 	 * 
 	 * @return Y location (meters from local center point - North: positive, South:
 	 *         negative).
-	 * @deprecated
 	 */
-	public double getYLocation();
+	default double getYLocation() {
+		return getPosition().getY();
+	}
 
 	/**
 	 * Get the position of this object relative to the local area's center point

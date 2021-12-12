@@ -14,24 +14,6 @@ import org.mars_sim.msp.core.LocalPosition;
 public interface InsidePathLocation {
 
     /**
-     * Gets the X location in the settlement locale.
-     * @return X location (meters).
-     */
-	@Deprecated
-    default double getXLocation() {
-    	return getPosition().getX();
-    }
-    
-    /**
-     * Gets the Y location in the settlement locale.
-     * @return Y location (meters).
-     */
-	@Deprecated
-    default double getYLocation() {
-    	return getPosition().getY();
-    }
-    
-    /**
      * Gets the position in the settlement locale.
      * @return Position in (meters).
      */

@@ -6,14 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -691,20 +689,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			double effectiveStressModifier = stressModifier;
 
-			if (effectiveStressModifier > 0D) {
+			if (effectiveStressModifier != 0D) {
 
 				// Reduce stress modifier for person's skill related to the task.
 				int skill = getEffectiveSkillLevel();
 				effectiveStressModifier -= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
 
 				// If effective stress modifier < 0, set it to 0.
-				if (effectiveStressModifier < 0D) {
-					effectiveStressModifier = 0D;
+				if (effectiveStressModifier !=  0D) {
+					double newStress = person.getPhysicalCondition().getStress() + (effectiveStressModifier * time);
+					if (newStress >= 0D) {
+						person.getPhysicalCondition().setStress(newStress);
+					}
 				}
 			}
-
-			person.getPhysicalCondition()
-					.setStress(person.getPhysicalCondition().getStress() + (effectiveStressModifier * time));
 		}
 	}
 
@@ -1022,10 +1020,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail true if allowing the walk task to fail
 	 */
 	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
-		Point2D bed = person.getBed();
+		LocalPosition bed = person.getBed();
 		if (bed != null) {
-			Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
-					bed.getY() - building.getYLocation(), building);
+			LocalPosition spot = LocalAreaUtil.getLocalRelativePosition(new LocalPosition(bed.getX() - building.getPosition().getX(),
+					bed.getY() - building.getPosition().getY()), building);
+			
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, spot, allowFail);
 			return true;
@@ -1052,7 +1051,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			return;
 		}
 
-		Point2D settlementLoc = null;
+		LocalPosition settlementLoc = null;
 		if (person != null) {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(person);
@@ -1071,9 +1070,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		}
 	}
 
-	protected Point2D walkToEVASpot(Building building) {
+	protected LocalPosition walkToEVASpot(Building building) {
 
-		Point2D loc = building.getFunction(FunctionType.EVA).getAvailableActivitySpot(person);
+		LocalPosition loc = building.getFunction(FunctionType.EVA).getAvailableActivitySpot(person);
 
 		if (loc != null) {
 			// Create subtask for walking to destination.
@@ -1100,7 +1099,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			return;
 		}
 
-		Point2D settlementLoc = null;
+		LocalPosition settlementLoc = null;
 		if (person != null) {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(person);
@@ -1131,7 +1130,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
 		// Create subtask for walking to destination.
-		createWalkingSubtask(building, adjustedInteriorPos.toPoint(), allowFail);
+		createWalkingSubtask(building, adjustedInteriorPos, allowFail);
 	}
 
 	/**
@@ -1171,17 +1170,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param activitySpots list of activity spots.
 	 * @param allowFail     true if walking is allowed to fail.
 	 */
-	protected void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots, boolean allowFail) {
+	protected void walkToActivitySpotInRover(Rover rover, List<LocalPosition> activitySpots, boolean allowFail) {
 
 		// Determine available operator activity spots.
-		Point2D activitySpot = null;
+		LocalPosition activitySpot = null;
 		if ((activitySpots != null) && (activitySpots.size() > 0)) {
 
-			List<Point2D> availableSpots = new CopyOnWriteArrayList<Point2D>();
-			Iterator<Point2D> i = activitySpots.iterator();
+			List<LocalPosition> availableSpots = new ArrayList<>();
+			Iterator<LocalPosition> i = activitySpots.iterator();
 			while (i.hasNext()) {
-				Point2D spot = i.next();
-				Point2D localSpot = LocalAreaUtil.getLocalRelativeLocation(spot.getX(), spot.getY(), rover);
+				LocalPosition spot = i.next();
+				LocalPosition localSpot = LocalAreaUtil.getLocalRelativePosition(spot, rover);
 				if (isActivitySpotAvailable(rover, localSpot)) {
 					availableSpots.add(localSpot);
 				}
@@ -1200,10 +1199,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Checks if an activity spot is available (unoccupied).
 	 * 
 	 * @param rover        the rover.
-	 * @param activitySpot the activity spot (local-relative)
+	 * @param localSpot the activity spot (local-relative)
 	 * @return true if activity spot is unoccupied.
 	 */
-	private boolean isActivitySpotAvailable(Rover rover, Point2D activitySpot) {
+	private boolean isActivitySpotAvailable(Rover rover, LocalPosition localSpot) {
 
 		boolean result = true;
 
@@ -1215,8 +1214,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (!crewmember.equals(person)) {
 
 					// Check if crew member's location is very close to activity spot.
-					Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
-					if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
+					if (localSpot.isClose(crewmember.getPosition())) {
 						result = false;
 					}
 				}
@@ -1229,8 +1227,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (!crewmember.equals(robot)) {
 
 					// Check if crew member's location is very close to activity spot.
-					Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
-					if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
+					if (localSpot.isClose(crewmember.getPosition())) {
 						result = false;
 					}
 				}
@@ -1247,7 +1244,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param activitySpot the activity spot as a Point2D object.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
-	private void walkToActivitySpotInRover(Rover rover, Point2D activitySpot, boolean allowFail) {
+	private void walkToActivitySpotInRover(Rover rover, LocalPosition activitySpot, boolean allowFail) {
 
 		if (activitySpot != null) {
 
@@ -1271,7 +1268,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(rover);
 
 		// Create subtask for walking to destination.
-		createWalkingSubtask(rover, adjustedInteriorPos.toPoint(), allowFail);
+		createWalkingSubtask(rover, adjustedInteriorPos, allowFail);
 	}
 
 	/**
@@ -1285,13 +1282,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// If person is in a settlement, walk to random building.
 			Settlement s = person.getSettlement();
 			if (s != null) {
-
-//				Building currentBuilding = person.getBuildingLocation();
-//
-//				if (currentBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-//					walkToEmptyActivitySpotInBuilding(currentBuilding, allowFail);
-//					return;
-//				}
 				
 				List<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
@@ -1340,24 +1330,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (currentBuilding != null) {
 				RobotType type = robot.getRobotType();
-				FunctionType fct = null;
-
-				if (type == RobotType.CHEFBOT)
-					fct = FunctionType.COOKING;
-				else if (type == RobotType.CONSTRUCTIONBOT)
-					fct = FunctionType.MANUFACTURE;
-				else if (type == RobotType.DELIVERYBOT)
-					fct = FunctionType.ROBOTIC_STATION;
-				else if (type == RobotType.GARDENBOT)
-					fct = FunctionType.FARMING;
-				else if (type == RobotType.MAKERBOT)
-					fct = FunctionType.MANUFACTURE;
-				else if (type == RobotType.MEDICBOT)
-					fct = FunctionType.MEDICAL_CARE;
-				else if (type == RobotType.REPAIRBOT)
-					fct = FunctionType.LIFE_SUPPORT;
-				else
-					fct = FunctionType.ROBOTIC_STATION;
+				FunctionType fct = type.getDefaultFunction();
 
 				List<Building> buildingList = currentBuilding.getBuildingManager().getBuildingsNoHallwayTunnelObs(fct);
 
@@ -1379,17 +1352,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Create a walk to an interior position in a building or vehicle.
 	 * 
 	 * @param interiorObject the destination interior object.
-	 * @param settlementPos  the settlement local position destination.
+	 * @param settlementLoc  the settlement local position destination.
 	 * @param allowFail      true if walking is allowed to fail.
 	 */
-	private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
+	private void createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition settlementLoc, boolean allowFail) {
 
 		Walk walkingTask = null;
 		if (person != null) {
-			walkingTask = Walk.createWalkingTask(person, new LocalPosition(settlementPos), 0, interiorObject);
+			walkingTask = Walk.createWalkingTask(person, settlementLoc, 0, interiorObject);
 		}
 		else if (robot != null) {
-			walkingTask = Walk.createWalkingTask(robot, new LocalPosition(settlementPos.getX(), settlementPos.getY()), interiorObject);
+			walkingTask = Walk.createWalkingTask(robot, settlementLoc, interiorObject);
 		}
 		
 		if (walkingTask != null) {

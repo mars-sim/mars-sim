@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -172,7 +170,7 @@ public class Walk extends Task implements Serializable {
 		}
 
 		LocalPosition targetPosition = LocalAreaUtil.getRandomLocalRelativePosition(targetObject);
-		walkingSteps = new WalkingSteps(person, targetPosition.getX(), targetPosition.getY(), 0, targetObject);
+		walkingSteps = new WalkingSteps(person, targetPosition, 0, targetObject);
 
 		if (!canWalkAllSteps(person, walkingSteps)) {
 			logger.log(person, Level.SEVERE, 4_000, "Could not walk all steps.");
@@ -239,7 +237,7 @@ public class Walk extends Task implements Serializable {
 	 * @return
 	 */
 	public static Walk createWalkingTask(Person person, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition.getX(), destPosition.getY(), destZ, destObject);
+		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destZ, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
         // Check if all airlocks can be exited.
@@ -261,7 +259,7 @@ public class Walk extends Task implements Serializable {
 	 * @return
 	 */
 	public static Walk createWalkingTask(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition.getX(), destPosition.getY(), 0D, destObject);
+		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, 0D, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
 		if (canWalk) {
@@ -329,13 +327,6 @@ public class Walk extends Task implements Serializable {
 		return result;
 	}
 
-	public static boolean canWalkAllSteps(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
-
-		WalkingSteps walkingSteps = new WalkingSteps(robot, xLoc, yLoc, zLoc, interiorObject);
-
-		return canWalkAllSteps(robot, walkingSteps);
-	}
-
 	/**
 	 * Check if person can walk to a local destination.
 	 *
@@ -356,12 +347,7 @@ public class Walk extends Task implements Serializable {
 
 		return result;
 	}
-
-	private static boolean canWalkAllSteps(Robot robot, WalkingSteps walkingSteps) {
-
-		return walkingSteps.canWalkAllSteps();
-	}
-
+	
 	/**
 	 * Populates the walking step phase map.
 	 */
@@ -442,29 +428,6 @@ public class Walk extends Task implements Serializable {
 		return result;
 	}
 
-//    private static boolean canExitAllAirlocks(Robot robot, WalkingSteps walkingSteps) {
-//
-//        boolean result = true;
-//
-//        List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
-//        if (stepList != null) {
-//            Iterator<WalkingSteps.WalkStep> i = stepList.iterator();
-//            while (i.hasNext()) {
-//                WalkingSteps.WalkStep step = i.next();
-//                if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
-//                    Airlock airlock = step.airlock;
-//                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
-//                        result = false;
-//                       	LogConsolidated.log(Level.SEVERE, 4_000, sourceName,
-//                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
-
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -511,12 +474,7 @@ public class Walk extends Task implements Serializable {
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Building building = BuildingManager.getBuilding(person);
-			LocalPosition personLocation = person.getPosition();
-			double x = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double y = Math.round(step.loc.getY() * 100.0) / 100.0;
-			LocalPosition stepLocation = new LocalPosition(x, y);
-
-			if (step.building != null && step.building.equals(building) && personLocation.isClose(stepLocation)) {
+			if (step.building != null && step.building.equals(building) && step.loc.isClose(person.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 
@@ -532,7 +490,7 @@ public class Walk extends Task implements Serializable {
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
 					if (step.building != null) {
-						addSubTask(new WalkSettlementInterior(person, step.building, stepLocation, 0));
+						addSubTask(new WalkSettlementInterior(person, step.building, step.loc, 0));
 					}
 					else {
 						logger.log(person, Level.SEVERE, 5_000,
@@ -554,11 +512,7 @@ public class Walk extends Task implements Serializable {
 			// Check if robot has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Building building = BuildingManager.getBuilding(robot);
-			LocalPosition robotLocation = robot.getPosition();
-			double x = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double y = Math.round(step.loc.getY() * 100.0) / 100.0;
-			LocalPosition stepLocation = new LocalPosition(x, y);
-			if (step.building.equals(building) && robotLocation.isClose(stepLocation)) {
+			if (step.building.equals(building) && step.loc.isClose(robot.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Almost arriving at (" + x + ", " + y + ") in " +
@@ -575,7 +529,7 @@ public class Walk extends Task implements Serializable {
 					// Going from building to step.building
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
-					addSubTask(new WalkSettlementInterior(robot, step.building, stepLocation));
+					addSubTask(new WalkSettlementInterior(robot, step.building, step.loc));
 				}
 				else {
 					logger.log(robot , Level.SEVERE, 5_000, "Not in a building.");
@@ -616,18 +570,15 @@ public class Walk extends Task implements Serializable {
 			if (rover != null) {
 				// Update rover destination if rover has moved and existing destination is no
 				// longer within rover.
-				if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.loc.getX(), step.loc.getY(), rover)) {
+				if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
 					// Determine new destination location within rover.
 					LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
-					step.loc = relativeRoverLoc.toPoint();
+					step.loc = relativeRoverLoc;
 				}
 			}
 
-			Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-			double x = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double y = Math.round(step.loc.getY() * 100.0) / 100.0;
-			Point2D stepLocation = new Point2D.Double(x, y);
-			if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
+
+			if (step.rover.equals(rover) && step.loc.isClose(person.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Walking back to the rover at (" + x + ", " + y + ")");
@@ -646,7 +597,7 @@ public class Walk extends Task implements Serializable {
 				if (person.isInVehicle() || person.isInVehicleInGarage()) {
 					logger.log(person, Level.FINE , 5_000,
 						"Starting WalkRoverInterior.");
-					addSubTask(new WalkRoverInterior(person, step.rover, new LocalPosition(x, y)));
+					addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
 				}
 
 				else if (person.isOutside()) {
@@ -667,19 +618,14 @@ public class Walk extends Task implements Serializable {
 
 			// Update rover destination if rover has moved and existing destination is no
 			// longer within rover.
-			if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.loc.getX(), step.loc.getY(), rover)) {
+			if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
 				// Determine new destination location within rover.
 				// TODO: Determine location based on activity spot?
 				LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
-				step.loc = relativeRoverLoc.toPoint();
+				step.loc = relativeRoverLoc;
 			}
 
-			Point2D robotLocation = robot.getPosition().toPoint();
-			// Point2D stepLocation = new Point2D.Double(step.loc.getX(), step.loc.getY());
-			double x = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double y = Math.round(step.loc.getY() * 100.0) / 100.0;
-			Point2D stepLocation = new Point2D.Double(x, y);
-			if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
+			if (step.rover.equals(rover) && step.loc.isClose(robot.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Walking back to the rover at (" + x + ", " + y + ")");
@@ -692,7 +638,7 @@ public class Walk extends Task implements Serializable {
 //				logger.finest("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
 				logger.log(person, Level.SEVERE, 5_000,
 					"Starting WalkRoverInterior.");
-				addSubTask(new WalkRoverInterior(robot, step.rover, new LocalPosition(x, y)));
+				addSubTask(new WalkRoverInterior(robot, step.rover, step.loc));
 			}
 
 		}
@@ -718,15 +664,7 @@ public class Walk extends Task implements Serializable {
 
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-			double x = person.getXLocation();
-			double y = person.getYLocation();
-
-			double xx = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double yy = Math.round(step.loc.getY() * 100.0) / 100.0;
-			Point2D stepLocation = new Point2D.Double(xx, yy);
-			// Point2D stepLocation = new Point2D.Double(step.loc.getX(), step.loc.getY());
-			if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
+			if (step.loc.isClose(person.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					setPhase(getWalkingStepPhase());
@@ -738,10 +676,10 @@ public class Walk extends Task implements Serializable {
 			}
 			else {
 				if (person.isOutside()) {
-					setDescription("Walking outside toward (" + xx + ", " + yy + ")");
+					setDescription("Walking outside toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
-					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
+					addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,
@@ -758,14 +696,7 @@ public class Walk extends Task implements Serializable {
 
 			// Check if robot has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-			double xx = Math.round(step.loc.getX() * 100.0) / 100.0;
-			double yy = Math.round(step.loc.getY() * 100.0) / 100.0;
-			Point2D stepLocation = new Point2D.Double(xx, yy);
-			// Point2D stepLocation = new Point2D.Double(step.loc.getX(), step.loc.getY());
-			double x = robot.getXLocation();
-			double y = robot.getYLocation();
-			if (LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
+			if (step.loc.isClose(robot.getPosition())) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Walking toward (" + xx + ", " + yy + ")");
@@ -783,7 +714,7 @@ public class Walk extends Task implements Serializable {
 							"Outside. Starting WalkOutside.");
 					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
 					// + yy + ")");
-					addSubTask(new WalkOutside(robot, x, y, xx, yy, true));
+					addSubTask(new WalkOutside(robot, robot.getPosition(), step.loc, true));
 				}
 				else {
 					logger.log(robot, Level.SEVERE, 5_000,
@@ -1193,15 +1124,6 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
-	 *
-	 * @param mgr
-	 */
-	public static void initializeInstances(UnitManager mgr) {
-		unitManager = mgr;
-	}
-
-	/**
 	 * Does a change of Phase for this Task generate an entry in the Task Schedule
 	 * @return false
 	 */
@@ -1212,8 +1134,6 @@ public class Walk extends Task implements Serializable {
 
 	public void destroy() {
 		walkingSteps = null;
-//		walkingStepPhaseMap.clear();
 		walkingStepPhaseMap = null;
-		unitManager = null;
 	}
 }

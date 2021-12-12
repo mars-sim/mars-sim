@@ -376,16 +376,12 @@ public class ResourceProcess implements Serializable {
 		timeLimit[1] = millisols;
 	}
 
-
 	/**
-	 * Sets the process interval
-	 *
-	 * @param value
+	 * Times of the toggle operation. First item is the toggle work executed, 2nd is the target.
+	 * @return
 	 */
-//	public void setInterval(double value) {
-//		double v = value/5.0;
-//		// Randomize the process interval so that each process may
-//		// run at a different time
-//		processInterval = value + RandomUtil.getRandomDouble(0, v);
-//	}
+	public double[] getToggleSwitchDuration() {
+		return new double[] {toggleRunningWorkTime, definition.getToggleDuration()};
+	}
+
 }

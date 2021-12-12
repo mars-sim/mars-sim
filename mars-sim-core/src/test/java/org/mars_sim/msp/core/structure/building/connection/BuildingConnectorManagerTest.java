@@ -196,57 +196,67 @@ public class BuildingConnectorManagerTest extends TestCase {
 
         BuildingConnectorManager manager = new BuildingConnectorManager(settlement, buildingTemplates);
 
-        InsideBuildingPath path1 = manager.determineShortestPath(building0, 0D, 0D, building0, 4.5D, 0D);
+        InsideBuildingPath path1 = manager.determineShortestPath(building0, new LocalPosition(0D, 0D),
+        														 building0, new LocalPosition(4.5D, 0D));
         assertNotNull(path1);
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
         assertEquals(1, path1.getRemainingPathLocations().size());
-        assertNotNull(path1.getNextPathLocation());
-        assertEquals(4.5D, path1.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(0D, path1.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        InsidePathLocation nextPath = path1.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(4.5D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(0D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertTrue(path1.isEndOfPath());
 
-        InsideBuildingPath path2 = manager.determineShortestPath(building0, 2D, -1D, building2, -5D, 1D);
+        InsideBuildingPath path2 = manager.determineShortestPath(building0, new LocalPosition(2D, -1D),
+        														building2, new LocalPosition(-5D, 1D));
 
         // 2016-12-09 To pass maven test, change the code in getBuilding(int id) in BuildingManager to the non-java stream version
         assertNotNull(path2);
         assertEquals(7.694507207732848D, path2.getPathLength(), SMALL_DELTA);
         assertEquals(2, path2.getRemainingPathLocations().size());
-        assertNotNull(path2.getNextPathLocation());
-        assertEquals(-4.5D, path2.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(0D, path2.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        nextPath = path2.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-4.5D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(0D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertFalse(path2.isEndOfPath());
         path2.iteratePathLocation();
         assertEquals(1, path2.getRemainingPathLocations().size());
-        assertNotNull(path2.getNextPathLocation());
-        assertEquals(-5D, path2.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(1D, path2.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        nextPath = path2.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-5D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(1D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertTrue(path2.isEndOfPath());
 
-        InsideBuildingPath path3 = manager.determineShortestPath(building0, 2D, -1D, building1, -10D, 1D);
+        InsideBuildingPath path3 = manager.determineShortestPath(building0, new LocalPosition(2D, -1D),
+        														 building1, new LocalPosition(-10D, 1D));
         assertNotNull(path3);
         assertEquals(12.269055622550205D, path3.getPathLength(), SMALL_DELTA);
         assertEquals(4, path3.getRemainingPathLocations().size());
-        assertNotNull(path3.getNextPathLocation());
-        assertEquals(-4.5D, path3.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(0D, path3.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        nextPath = path3.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-4.5D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(0D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertFalse(path3.isEndOfPath());
         path3.iteratePathLocation();
         assertEquals(3, path3.getRemainingPathLocations().size());
-        assertNotNull(path3.getNextPathLocation());
-        assertEquals(-6D, path3.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(0D, path3.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        nextPath = path3.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-6D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(0D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertFalse(path3.isEndOfPath());
         path3.iteratePathLocation();
         assertEquals(2, path3.getRemainingPathLocations().size());
-        assertNotNull(path3.getNextPathLocation());
-        assertEquals(-7.5D, path3.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(0D, path3.getNextPathLocation().getYLocation(), .0001D);
+        nextPath = path3.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-7.5D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(0D, nextPath.getPosition().getY(), .0001D);
         assertFalse(path3.isEndOfPath());
         path3.iteratePathLocation();
         assertEquals(1, path3.getRemainingPathLocations().size());
-        assertNotNull(path3.getNextPathLocation());
-        assertEquals(-10D, path3.getNextPathLocation().getXLocation(), SMALL_DELTA);
-        assertEquals(1D, path3.getNextPathLocation().getYLocation(), SMALL_DELTA);
+        nextPath = path3.getNextPathLocation();
+        assertNotNull(nextPath);
+        assertEquals(-10D, nextPath.getPosition().getX(), SMALL_DELTA);
+        assertEquals(1D, nextPath.getPosition().getY(), SMALL_DELTA);
         assertTrue(path3.isEndOfPath());
     }
 }

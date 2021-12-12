@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,6 +14,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -48,7 +48,7 @@ implements Serializable {
 	/**
 	 * constructor 1.
 	 */
-	public WalkingSteps(Person person, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Person person, LocalPosition pos, double zLoc, LocalBoundedObject interiorObject) {
         this.person = person;
 
         // Initialize data members.
@@ -61,7 +61,7 @@ implements Serializable {
 
         // Determine destination walk state.
         // NOTE: will incorporate zLoc
-        WalkState destinationWalkState = determineDestinationWalkState(xLoc, yLoc, interiorObject);
+        WalkState destinationWalkState = determineDestinationWalkState(pos, interiorObject);
 
         if (initialWalkState != null) {
 	        // Determine walking steps to destination.
@@ -76,7 +76,7 @@ implements Serializable {
 	/**
 	 * constructor 2.
 	 */
-	public WalkingSteps(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Robot robot, LocalPosition pos, double zLoc, LocalBoundedObject interiorObject) {
         this.robot = robot;
 
         // Initialize data members.
@@ -89,7 +89,7 @@ implements Serializable {
 
         // Determine destination walk state.
         // NOTE: will incorporate zLoc
-        RobotWalkState destinationWalkState = determineDestinationRobotWalkState(xLoc, yLoc, interiorObject);
+        RobotWalkState destinationWalkState = determineDestinationRobotWalkState(pos, interiorObject);
 
         if (initialWalkState != null) {
 	        // Determine walking steps to destination.
@@ -199,7 +199,7 @@ implements Serializable {
 
         // Set person X and Y location.
         if (result != null) {
-            result.loc = person.getPosition().toPoint();
+            result.loc = person.getPosition();
         }
 
         return result;
@@ -220,11 +220,10 @@ implements Serializable {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(robot.getXLocation(),
-                    robot.getYLocation(), building)) {
+            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
             	logger.log(robot, Level.SEVERE, 5000,
             			"Invalid walk start location at (" +
-                        robot.getXLocation() + ", " + robot.getYLocation()
+                        robot.getPosition()
                         + ") and not within " + building + ".");
             }
         }
@@ -236,7 +235,7 @@ implements Serializable {
 
         // Set robot X and Y location.
         if (result != null) {
-            result.loc = robot.getPosition().toPoint();
+            result.loc = robot.getPosition();
         }
 
         return result;
@@ -245,12 +244,11 @@ implements Serializable {
     /**
      * Determines the destination walk state.
      *
-     * @param xLoc the destination X location.
-     * @param yLoc the destination Y location.
+     * @param pos the destination location.
      * @param interiorObject the destination interior object (inhabitable building or rover).
      * @return destination walk state.
      */
-    private WalkState determineDestinationWalkState(double xLoc, double yLoc,
+    private WalkState determineDestinationWalkState(LocalPosition pos,
             LocalBoundedObject interiorObject) {
 
         WalkState result = null;
@@ -260,15 +258,15 @@ implements Serializable {
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
             	if (person != null)
             		logger.log(person, Level.SEVERE, 4000,
             			"Invalid walk destination location. (" +
-                        xLoc + ", " + yLoc + ") and not within " + building + ".");
+                        pos + ") and not within " + building + ".");
             	else if (robot != null)
         			logger.log(robot, Level.SEVERE, 4000,
         					"Invalid walk destination location at (" +
-                            xLoc + ", " + yLoc + ") and not within " + building + ".");
+                            pos + ") and not within " + building + ".");
             }
         }
         else if (interiorObject instanceof Rover) {
@@ -278,10 +276,10 @@ implements Serializable {
 	            result = new WalkState(WalkState.ROVER_LOC);
 	            result.rover = rover;
 
-	            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, rover)) {
+	            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, rover)) {
 	            	logger.log(person, Level.SEVERE, 5000,
 	            				"Invalid walk destination location at (" +
-	                        xLoc + ", " + yLoc + ") and not within rover " + rover + ".");
+	                        pos + ") and not within rover " + rover + ".");
 	            }
         	}
         }
@@ -291,22 +289,21 @@ implements Serializable {
         		result = new WalkState(WalkState.OUTSIDE_LOC);
         	}
         }
-
-        if (result != null)
-        	result.loc = new Point2D.Double(xLoc, yLoc);
-
+        
+        if (result != null) {
+        	result.loc = pos;
+        }
         return result;
     }
 
     /**
      * Determines the destination walk state.
      *
-     * @param xLoc the destination X location.
-     * @param yLoc the destination Y location.
+     * @param pos the destination position
      * @param interiorObject the destination interior object (inhabitable building or rover).
      * @return destination walk state.
      */
-    private RobotWalkState determineDestinationRobotWalkState(double xLoc, double yLoc,
+    private RobotWalkState determineDestinationRobotWalkState(LocalPosition pos,
             LocalBoundedObject interiorObject) {
 
     	RobotWalkState result = null;
@@ -316,13 +313,13 @@ implements Serializable {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
         			logger.log(robot, Level.SEVERE, 5000,
         					"Invalid walk destination location at (" +
-                            xLoc + ", " + yLoc + ") and not within building " + building);
+                            pos + ") and not within building " + building);
             }
 
-            result.loc = new Point2D.Double(xLoc, yLoc);
+            result.loc = pos;
         }
         return result;
     }
@@ -520,7 +517,7 @@ implements Serializable {
             }
 
             Building airlockBuilding = (Building) airlock.getEntity();
-            Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
             // Add settlement interior walk step to starting airlock.
             createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -536,7 +533,7 @@ implements Serializable {
 
     }
 
-    /**
+	/**
      * Determine the walking steps from a building interior to another building interior.
      *
      * @param initialWalkState the initial walk state.
@@ -607,7 +604,7 @@ implements Serializable {
             }
 
             Building airlockBuilding = (Building) airlock.getEntity();
-            Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
             // Add settlement interior walk step to starting airlock.
             createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -653,7 +650,7 @@ implements Serializable {
         }
 
         Building airlockBuilding = (Building) airlock.getEntity();
-        Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+        LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
         // Add settlement interior walk step to starting airlock.
         createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -724,7 +721,7 @@ implements Serializable {
         else {
             // Walk to rover airlock.
             Airlock airlock = initialRover.getAirlock();
-            Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
             // Add rover interior walk step to starting airlock.
             createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -779,7 +776,7 @@ implements Serializable {
             else {
                 // Walk to rover airlock.
                 Airlock airlock = initialRover.getAirlock();
-                Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
                 // Add rover interior walk step to starting airlock.
                 createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -829,7 +826,7 @@ implements Serializable {
 
             // Walk to rover airlock.
             Airlock airlock = initialRover.getAirlock();
-            Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
 
             // Add rover interior walk step to starting airlock.
             createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -901,7 +898,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -915,7 +912,7 @@ implements Serializable {
             // Create exterior airlock walk state.
             WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
             exteriorAirlockState.airlock = airlock;
-            Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+            LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
             exteriorAirlockState.loc = exteriorAirlockPosition;
 
             determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -965,7 +962,7 @@ implements Serializable {
                     // Create exterior airlock walk state.
                     WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                     exteriorAirlockState.airlock = airlock;
-                    Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                    LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
                     exteriorAirlockState.loc = exteriorAirlockPosition;
 
                     determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -979,7 +976,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -1003,7 +1000,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -1028,7 +1025,7 @@ implements Serializable {
         // Create exterior airlock walk state.
         WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
         exteriorAirlockState.airlock = airlock;
-        Point2D exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+        LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
         exteriorAirlockState.loc = exteriorAirlockPosition;
 
         determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -1086,7 +1083,7 @@ implements Serializable {
                 WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                 interiorAirlockState.airlock = airlock;
                 interiorAirlockState.building = airlockBuilding;
-                Point2D interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
                 interiorAirlockState.loc = interiorAirlockPosition;
 
                 determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -1099,7 +1096,7 @@ implements Serializable {
                 if (destinationAirlock != null) {
 
                     // Create walk step to exterior airlock position.
-                    Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
                     createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                     // Create exterior airlock walk state.
@@ -1139,7 +1136,7 @@ implements Serializable {
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
-                Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -1195,7 +1192,7 @@ implements Serializable {
                     WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                     interiorAirlockState.airlock = initialAirlock;
                     interiorAirlockState.building = (Building) initialAirlock.getEntity();
-                    Point2D interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
+                    LocalPosition interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
                     interiorAirlockState.loc = interiorAirlockPosition;
 
                     determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -1203,7 +1200,7 @@ implements Serializable {
                 else {
 
                     // Create walk step to exterior airlock position.
-                    Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
                     createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                     // Create exterior airlock walk state.
@@ -1245,7 +1242,7 @@ implements Serializable {
                 WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                 interiorAirlockState.airlock = initialAirlock;
                 interiorAirlockState.rover = destinationRover;
-                Point2D interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
                 interiorAirlockState.loc = interiorAirlockPosition;
 
                 determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -1255,7 +1252,7 @@ implements Serializable {
                 Airlock destinationAirlock = destinationRover.getAirlock();
 
                 // Create walk step to exterior airlock position.
-                Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -1323,7 +1320,7 @@ implements Serializable {
         if (destinationAirlock != null) {
 
             // Create walk step to exterior airlock position.
-            Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
             createWalkExteriorStep(destinationAirlockExteriorPosition);
 
             // Create exterior airlock walk state.
@@ -1364,7 +1361,7 @@ implements Serializable {
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
-                Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -1396,7 +1393,7 @@ implements Serializable {
             Airlock destinationAirlock = destinationRover.getAirlock();
 
             // Create walk step to exterior airlock position.
-            Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
             createWalkExteriorStep(destinationAirlockExteriorPosition);
 
             // Create exterior airlock walk state.
@@ -1450,7 +1447,7 @@ implements Serializable {
      * @param destLoc the destination position.
      * @param destinationRover the destination rover.
      */
-    private void createWalkRoverInteriorStep(Point2D destLoc, Rover destinationRover) {
+    private void createWalkRoverInteriorStep(LocalPosition destLoc, Rover destinationRover) {
 
         WalkStep walkStep = new WalkStep(WalkStep.ROVER_INTERIOR_WALK);
         walkStep.loc = destLoc;
@@ -1464,7 +1461,7 @@ implements Serializable {
      * @param destLoc the destination.
      * @param destinationBuilding the destination building.
      */
-    private void createWalkSettlementInteriorStep(Point2D destLoc,
+    private void createWalkSettlementInteriorStep(LocalPosition destLoc,
             Building destinationBuilding) {
        WalkStep walkStep = new WalkStep(WalkStep.SETTLEMENT_INTERIOR_WALK);
        walkStep.loc = destLoc;
@@ -1479,7 +1476,7 @@ implements Serializable {
      * @param destZLoc the destination Z location.
      * @param destinationBuilding the destination building.
      */
-    private void createClimbUpStep(Point2D destLoc, double destZLoc,
+    private void createClimbUpStep(LocalPosition destLoc, double destZLoc,
             Building destinationBuilding) {
        if (person != null) {
            WalkStep walkStep = new WalkStep(WalkStep.UP_LADDER);
@@ -1500,7 +1497,7 @@ implements Serializable {
      * @param destZLoc the destination Z location.
      * @param destinationBuilding the destination building.
      */
-    private void createClimbDownStep(Point2D destLoc, double destZLoc,
+    private void createClimbDownStep(LocalPosition destLoc, double destZLoc,
             Building destinationBuilding) {
        if (person != null) {
            WalkStep walkStep = new WalkStep(WalkStep.DOWN_LADDER);
@@ -1518,7 +1515,7 @@ implements Serializable {
      * Create an exterior walking step.
      * @param destLoc the destination.
      */
-    private void createWalkExteriorStep(Point2D destLoc) {
+    private void createWalkExteriorStep(LocalPosition destLoc) {
 
         WalkStep walkExterior = new WalkStep(WalkStep.EXTERIOR_WALK);
         walkExterior.loc = destLoc;
@@ -1588,7 +1585,7 @@ implements Serializable {
 
         // Data members
         private int stateType;
-        private Point2D loc;
+        private LocalPosition loc;
         private double zLoc;
 
         private Building building;
@@ -1621,7 +1618,7 @@ implements Serializable {
 
         // Data members
         int stepType;
-        Point2D loc;
+        LocalPosition loc;
         double zLoc;
 
         Building building;
@@ -1649,7 +1646,7 @@ implements Serializable {
 
         // Data members
         private int stateType;
-        private Point2D loc;
+        private LocalPosition loc;
         private Building building;
 
         private RobotWalkState(int stateType) {

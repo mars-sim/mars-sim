@@ -87,7 +87,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
-			setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+			setOutsideSiteLocation(constructionSiteLoc);
 
 			// Add task phase
 			addPhase(CONSTRUCTION);
@@ -126,7 +126,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 		// Determine location for construction site.
 		LocalPosition constructionSiteLoc = determineConstructionLocation();
-		setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+		setOutsideSiteLocation(constructionSiteLoc);
 
 		// Add task phase
 		addPhase(CONSTRUCTION);
@@ -141,7 +141,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	public static boolean canConstruct(Person person, ConstructionSite site) {
 
 		// Check if person can exit the settlement airlock.
-		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), site.getYLocation());
+		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getPosition());
 		if (airlock != null) {
 			if (!ExitAirlock.canExitAirlock(person, airlock))
 				return false;

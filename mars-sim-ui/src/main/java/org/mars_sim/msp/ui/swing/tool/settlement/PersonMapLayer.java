@@ -127,8 +127,8 @@ public class PersonMapLayer implements SettlementMapLayer {
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 
-		double translationX = -1.0 * person.getXLocation() * scale - radius;
-		double translationY = -1.0 * person.getYLocation() * scale - radius;
+		double translationX = -1.0 * person.getPosition().getX() * scale - radius;
+		double translationY = -1.0 * person.getPosition().getY() * scale - radius;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);

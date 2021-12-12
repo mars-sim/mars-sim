@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface Worker extends Loggable, Serializable, EquipmentOwner {
@@ -96,7 +97,13 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @return
 	 */
 	public Settlement getSettlement();
-
+	
+	/**
+	 * Get the Worker's building
+	 * @return building
+	 */
+	public Building getBuildingLocation();
+	
 	/**
 	 * Is the Worker outside
 	 *
@@ -145,26 +152,6 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission);
-
-	/**
-	 * Gets the worker X location at a settlement.
-	 *
-	 * @return X distance (meters) from the settlement's center.
-	 * @deprecated
-	 */
-	default double getXLocation() {
-		return getPosition().getX();
-	}
-
-	/**
-	 * Gets the worker's Y location at a settlement.
-	 *
-	 * @return Y distance (meters) from the settlement's center.
-	 * @deprecated
-	 */
-	default double getYLocation() {
-		return getPosition().getY();
-	}
 
 	/**
 	 * Get the Worker's position within the Settlement/Vehicle

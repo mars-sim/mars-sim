@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
@@ -323,6 +322,9 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, environment,
 				 environment.getWeather(), surfaceFeatures, new MissionManager());
 		Unit.setUnitManager(unitManager);
+		
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 	}
 
 	/**
@@ -416,7 +418,8 @@ public class Simulation implements ClockListener, Serializable {
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		
 		doneInitializing = true;
 	}
 
@@ -699,10 +702,10 @@ public class Simulation implements ClockListener, Serializable {
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 
 		// Re-initialize Task related class
-		Walk.initializeInstances(unitManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
-
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);

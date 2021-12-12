@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
@@ -367,13 +367,12 @@ public class Sleep extends Task implements Serializable {
 						// logger.fine(person + " does have a designated bed at " + pq.getNickName());
 
 						// check if this bed is currently empty or occupied (either ED or OD)
-						Point2D bed = person.getBed();
+						LocalPosition bed = person.getBed();
 						double x = bed.getX();
 						double y = bed.getY();
 
-	//					accommodations = q1.getLivingAccommodations();
 						// Concert the coordinate back
-						Point2D spot = new Point2D.Double(x - q1.getXLocation(), y - q1.getYLocation());
+						LocalPosition spot = new LocalPosition(x - q1.getPosition().getX(), y - q1.getPosition().getY());
 
 						boolean empty = q1.getLivingAccommodations().isActivitySpotEmpty(spot);
 
@@ -438,7 +437,7 @@ public class Sleep extends Task implements Serializable {
 							return;
 						}
 
-						Point2D bed = la.registerSleeper(person, false);
+						LocalPosition bed = la.registerSleeper(person, false);
 						if (bed == null)
 							logger.severe(person, "bed is null.");
 

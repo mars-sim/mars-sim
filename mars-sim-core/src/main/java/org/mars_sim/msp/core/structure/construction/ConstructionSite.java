@@ -123,16 +123,6 @@ implements Serializable, LocalBoundedObject {
     }
 
     @Override
-    public double getXLocation() {
-        return position.getX();
-    }
-
-    @Override
-    public double getYLocation() {
-        return position.getY();
-    }
-
-    @Override
     public LocalPosition getPosition() {
     	return position;
     }

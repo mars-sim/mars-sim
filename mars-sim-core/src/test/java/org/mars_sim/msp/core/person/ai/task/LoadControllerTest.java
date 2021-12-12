@@ -30,9 +30,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import junit.framework.TestCase;
 
 /**
- * Tests the loading of a vehicle
+ * Tests the loading controller operation for a vehicle
  */
-public class LoadVehicleTest
+public class LoadControllerTest
 extends TestCase {
 
 	// Extra amount to add to resouRce to handle double arithmetic mismatch

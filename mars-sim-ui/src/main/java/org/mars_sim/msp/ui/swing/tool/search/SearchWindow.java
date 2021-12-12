@@ -366,8 +366,8 @@ extends ToolWindow {
 		if (u instanceof Person) {
 			Person p = (Person) u;
 			
-			double xLoc = p.getXLocation();
-			double yLoc = p.getYLocation();
+			double xLoc = p.getPosition().getX();
+			double yLoc = p.getPosition().getY();
 			double scale = mapPanel.getScale();
 			mapPanel.reCenter();
 			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -379,8 +379,8 @@ extends ToolWindow {
 		else if (u instanceof Robot) {
 			Robot r = (Robot) u;
 			
-			double xLoc = r.getXLocation();
-			double yLoc = r.getYLocation();
+			double xLoc = r.getPosition().getX();
+			double yLoc = r.getPosition().getY();
 			double scale = mapPanel.getScale();
 			mapPanel.reCenter();
 			mapPanel.moveCenter(xLoc * scale, yLoc * scale);

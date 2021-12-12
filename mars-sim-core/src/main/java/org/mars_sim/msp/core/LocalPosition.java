@@ -110,6 +110,16 @@ public class LocalPosition implements Serializable {
         return new LocalPosition(newXLoc, newYLoc);
 	}
 	
+
+	/**
+	 * Get this relative position as an absolute position relative to a basepoint.
+	 * @param bsaepoint Position as the base
+	 * @return
+	 */
+	public LocalPosition getAbsolutePosition(LocalPosition basepoint) {
+		return new LocalPosition(x + basepoint.x, y + basepoint.y);
+	}
+	
 	/**
 	 * Is another position close to this one?
 	 * @param other
@@ -157,6 +167,14 @@ public class LocalPosition implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Get the position as a shortened string.
+	 * @return
+	 */
+	public String getShortFormat() {
+		return String.format("(%.1f, %.1f)", x, y);
+	}
+
 	@Override
 	public String toString() {
 		return "[x=" + x + ", y=" + y + "]";
@@ -170,5 +188,4 @@ public class LocalPosition implements Serializable {
 	public java.awt.geom.Point2D.Double toPoint() {
 		return new java.awt.geom.Point2D.Double(x, y);
 	}
-
 }

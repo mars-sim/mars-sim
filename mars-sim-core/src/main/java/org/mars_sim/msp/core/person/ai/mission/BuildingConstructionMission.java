@@ -1122,9 +1122,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 									|| (baseLevel == building.getBaseLevel());
 
 							if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
-								double distance = Point2D.distance(startingBuilding.getXLocation(),
-										startingBuilding.getYLocation(), building.getXLocation(),
-										building.getYLocation());
+								double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
 								if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
 									// Check that new building can be placed between the two buildings.
@@ -1164,8 +1162,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 					if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
 
-						double distance = Point2D.distance(startingBuilding.getXLocation(),
-								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
+						double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
 						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
 							// Check that new building can be placed between the two buildings.
@@ -1201,8 +1198,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 							|| (baseLevel == building.getBaseLevel());
 
 					if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
-						double distance = Point2D.distance(startingBuilding.getXLocation(),
-								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
+						double distance = startingBuilding.getPosition().getDistanceTo(building.getPosition());
 						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 
 							// Check that new building can be placed between the two buildings.

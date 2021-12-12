@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,12 +63,10 @@ public class WalkOutside extends Task implements Serializable {
 	public static final double NEIGHBOR_DISTANCE = 7D;
 
 	// Data members
-	private double startXLocation;
-	private double startYLocation;
-	private double destinationXLocation;
-	private double destinationYLocation;
+	private LocalPosition start;
+	private LocalPosition destination;
 	private boolean obstaclesInPath;
-	private List<Point2D> walkingPath;
+	private List<LocalPosition> walkingPath;
 	private int walkingPathIndex;
 	private double[] obstacleSearchLimits;
 	private boolean ignoreEndEVA;
@@ -78,53 +75,52 @@ public class WalkOutside extends Task implements Serializable {
 	 * Constructor.
 	 *
 	 * @param person               the person performing the task.
-	 * @param startXLocation       the starting local X location.
-	 * @param startYLocation       the starting local Y location.
-	 * @param destinationXLocation the destination local X location.
-	 * @param destinationYLocation the destination local Y location.
+	 * @param start                the starting local location.
+	 * @param destination		   the destination local location.
 	 * @param ignoreEndEVA         ignore end EVA situations and continue walking
 	 *                             task.
 	 */
-	public WalkOutside(Person person, double startXLocation, double startYLocation, double destinationXLocation,
-			double destinationYLocation, boolean ignoreEndEVA) {
+	public WalkOutside(Person person, LocalPosition start, LocalPosition destination,
+			boolean ignoreEndEVA) {
 
 		// Use Task constructor.
 		super("Walking Exterior", person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
-
-		// Initialize data members.
-		this.startXLocation = startXLocation;
-		this.startYLocation = startYLocation;
-		this.destinationXLocation = destinationXLocation;
-		this.destinationYLocation = destinationYLocation;
-		this.ignoreEndEVA = ignoreEndEVA;
 
 		// Check that the person is currently outside a settlement or vehicle.
 		if (person.isInside())
 			throw new IllegalStateException("WalkOutside task started when " + person + " is " + person.getLocationStateType());
 
-		init();
+		init(start, destination, ignoreEndEVA);
 	}
 
-	public WalkOutside(Robot robot, double startXLocation, double startYLocation, double destinationXLocation,
-			double destinationYLocation, boolean ignoreEndEVA) {
+	/**
+	 * Constructor.
+	 *
+	 * @param robot                the robot performing the walk.
+	 * @param start                the starting local location.
+	 * @param destination		   the destination local location.
+	 * @param ignoreEndEVA         ignore end EVA situations and continue walking
+	 *                             task.
+	 */
+	public WalkOutside(Robot robot, LocalPosition start, LocalPosition destination,
+					   boolean ignoreEndEVA) {
 
 		// Use Task constructor.
 		super("Walking Exterior", robot, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
-		// Initialize data members.
-		this.startXLocation = startXLocation;
-		this.startYLocation = startYLocation;
-		this.destinationXLocation = destinationXLocation;
-		this.destinationYLocation = destinationYLocation;
-		this.ignoreEndEVA = ignoreEndEVA;
 
 		// Check that the robot is currently outside a settlement or vehicle.
 		if (robot.isInside())
 			throw new IllegalStateException("WalkOutside task started when " + robot + " is " + robot.getLocationStateType());
 
-		init();
+		init(start, destination, ignoreEndEVA);
 	}
 
-	public void init() {
+	private void init(LocalPosition start, LocalPosition destination, boolean ignoreEndEVA) {
+
+		// Initialize data members.
+		this.start = start;
+		this.destination = destination;
+		this.ignoreEndEVA = ignoreEndEVA;
 
 		obstaclesInPath = false;
 		walkingPathIndex = 1;
@@ -150,30 +146,34 @@ public class WalkOutside extends Task implements Serializable {
 	}
 
 	/**
+	 * How many waypoints are there?
+	 */
+	public int getNumberWayPoints() {
+		return walkingPath.size();
+	}
+	
+	/**
 	 * Determine the outside walking path, avoiding obstacles as necessary.
 	 *
 	 * @return walking path as list of X,Y locations.
 	 */
-	List<Point2D> determineWalkingPath() {
+	private List<LocalPosition> determineWalkingPath() {
 
-		Point2D startLoc = new Point2D.Double(startXLocation, startYLocation);
-		Point2D destinationLoc = new Point2D.Double(destinationXLocation, destinationYLocation);
-
-		List<Point2D> result = new ArrayList<Point2D>();
-		result.add(startLoc);
+		List<LocalPosition> result = new ArrayList<>();
+		result.add(start);
 
 		// Check if direct walking path to destination is free of obstacles.
-		Line2D line = new Line2D.Double(startXLocation, startYLocation, destinationXLocation, destinationYLocation);
+		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
 
 		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);;
 
 		if (freePath) {
-			result.add(destinationLoc);
+			result.add(destination);
 		}
 
 		else {
 			// Determine path around obstacles using A* path planning algorithm.
-			List<Point2D> obstacleAvoidancePath = determineObstacleAvoidancePath();
+			List<LocalPosition> obstacleAvoidancePath = determineObstacleAvoidancePath();
 
 			if (obstacleAvoidancePath != null) {
 				// Set to obstacle avoidance path.
@@ -182,7 +182,7 @@ public class WalkOutside extends Task implements Serializable {
 
 			else {
 				// Accept obstacle-blocked path as last resort.
-				result.add(destinationLoc);
+				result.add(destination);
 				obstaclesInPath = true;
 			}
 		}
@@ -195,24 +195,17 @@ public class WalkOutside extends Task implements Serializable {
 	 *
 	 * @return path as list of points or null if no path found.
 	 */
-	List<Point2D> determineObstacleAvoidancePath() {
+	private List<LocalPosition> determineObstacleAvoidancePath() {
 
-		List<Point2D> result = null;
-
-		Point2D startLoc = new Point2D.Double(startXLocation, startYLocation);
-		Point2D endLoc = new Point2D.Double(destinationXLocation, destinationYLocation);
+		List<LocalPosition> result = null;
 
 		// Check if start or destination locations are within obstacles.
 		// Return null if either are within obstacles.
-		boolean startLocWithinObstacle = false;
-		boolean destinationLocWithinObstacle = false;
-
-		startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
-				worker.getCoordinates());
-		destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
-				destinationYLocation, worker.getCoordinates());
+		boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, worker.getCoordinates());
+		boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, worker.getCoordinates());
 
 		if (startLocWithinObstacle || destinationLocWithinObstacle) {
+			//logger.warning(worker, "Start/End positions are inside an entity");
 			return null;
 		}
 
@@ -221,32 +214,32 @@ public class WalkOutside extends Task implements Serializable {
 		// http://en.wikipedia.org/wiki/A*
 
 		// The set of locations already evaluated.
-		Set<Point2D> closedSet = new HashSet<Point2D>();
+		Set<LocalPosition> closedSet = new HashSet<>();
 
 		// The set of tentative locations to be evaluated
-		Set<Point2D> openSet = new HashSet<Point2D>();
+		Set<LocalPosition> openSet = new HashSet<>();
 
 		// Initially add starting location to openSet.
-		openSet.add(startLoc);
+		openSet.add(start);
 
 		// The map of navigated locations.
-		Map<Point2D, Point2D> cameFrom = new ConcurrentHashMap<Point2D, Point2D>();
+		Map<LocalPosition, LocalPosition> cameFrom = new ConcurrentHashMap<>();
 
 		// Check each location in openSet.
 		while (openSet.size() > 0) {
 
 			// Find loc in openSet with lowest fScore value.
 			// FScore is distance (m) from start through currentLoc to destination.
-			Point2D currentLoc = getLowestFScore(openSet);
+			LocalPosition currentLoc = getLowestFScore(openSet);
 
 			if (currentLoc == null)
 				break;
 
 			// Check if clear path to destination.
-			if (checkClearPathToDestination(currentLoc, endLoc)) {
+			if (checkClearPathToDestination(currentLoc, destination)) {
 
 				// Create path from currentLoc.
-				List<Point2D> path = recreatePath(cameFrom, currentLoc);
+				List<LocalPosition> path = recreatePath(cameFrom, currentLoc);
 				result = optimizePath(path);
 				break;
 			}
@@ -260,10 +253,10 @@ public class WalkOutside extends Task implements Serializable {
 			double currentGScore = getGScore(currentLoc);
 
 			// Go through each reachable neighbor location.
-			Iterator<Point2D> i = getNeighbors(currentLoc).iterator();
+			Iterator<LocalPosition> i = getNeighbors(currentLoc).iterator();
 			while (i.hasNext()) {
 
-				Point2D neighborLoc = i.next();
+				LocalPosition neighborLoc = i.next();
 
 				if (closedSet.contains(neighborLoc)) {
 					continue;
@@ -289,19 +282,31 @@ public class WalkOutside extends Task implements Serializable {
 	}
 
 	/**
+	 * Checks if path between two locations is free of obstacles.
+	 *
+	 * @param startPos  the first location.
+	 * @param endPos     the second location.
+	 * @return true if path free of obstacles.
+	 */
+	private boolean checkClearPathToDestination(LocalPosition startPos, LocalPosition endPos) {
+		Line2D line = new Line2D.Double(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY());
+		return LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);
+	}
+	
+	/**
 	 * Find location in openSet with lowest fScore value. The fScore value is the
 	 * distance (m) from start through location to destination.
 	 *
 	 * @param openSet a set of locations.
 	 * @return location with lowest fScore value.
 	 */
-	private Point2D getLowestFScore(Set<Point2D> openSet) {
+	private LocalPosition getLowestFScore(Set<LocalPosition> openSet) {
 
 		double lowestFScore = Double.POSITIVE_INFINITY;
-		Point2D result = null;
-		Iterator<Point2D> i = openSet.iterator();
+		LocalPosition result = null;
+		Iterator<LocalPosition> i = openSet.iterator();
 		while (i.hasNext()) {
-			Point2D loc = i.next();
+			LocalPosition loc = i.next();
 			double fScore = getFScore(loc);
 			if (fScore < lowestFScore) {
 				result = loc;
@@ -313,43 +318,31 @@ public class WalkOutside extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if path between two locations is free of obstacles.
-	 *
-	 * @param currentLoc the first location.
-	 * @param endLoc     the second location.
-	 * @return true if path free of obstacles.
-	 */
-	boolean checkClearPathToDestination(Point2D currentLoc, Point2D endLoc) {
-		Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(), endLoc.getY());
-		return LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);
-	}
-
-	/**
 	 * Recreate a path from the cameFromMap.
 	 *
-	 * @param cameFromMap a map of locations and their previous locations.
-	 * @param endLocation the last location in a path (not destination location).
+	 * @param cameFrom a map of locations and their previous locations.
+	 * @param currentLoc2 the last location in a path (not destination location).
 	 * @return path as list of points.
 	 */
-	private List<Point2D> recreatePath(Map<Point2D, Point2D> cameFromMap, Point2D endLocation) {
+	private List<LocalPosition> recreatePath(Map<LocalPosition, LocalPosition> cameFrom, LocalPosition currentLoc2) {
 
-		List<Point2D> result = new ArrayList<Point2D>();
+		List<LocalPosition> result = new ArrayList<>();
 
 		// Add destination location to end of path.
-		result.add(new Point2D.Double(destinationXLocation, destinationYLocation));
+		result.add(destination);
 
 		// Add endLocation location to start of path.
-		result.add(0, endLocation);
+		result.add(0, currentLoc2);
 
-		Point2D currentLoc = endLocation;
-		while (cameFromMap.containsKey(currentLoc)) {
-			Point2D cameFromLoc = cameFromMap.get(currentLoc);
+		LocalPosition currentLoc = currentLoc2;
+		while (cameFrom.containsKey(currentLoc)) {
+			LocalPosition cameFromLoc = cameFrom.get(currentLoc);
 
 			// Add came from location to start of path.
 			result.add(0, cameFromLoc);
 
 			// Remove currentLoc key from cameFromMap to prevent endless loops.
-			cameFromMap.remove(currentLoc);
+			cameFrom.remove(currentLoc);
 
 			currentLoc = cameFromLoc;
 		}
@@ -363,18 +356,18 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param initialPath the initial path to optimize.
 	 * @return optimized path.
 	 */
-	private List<Point2D> optimizePath(List<Point2D> initialPath) {
+	private List<LocalPosition> optimizePath(List<LocalPosition> initialPath) {
 
 		// Cannot be a CopyOnWrite because remove method is not Supported
-		List<Point2D> optimizedPath = new ArrayList<Point2D>(initialPath);
+		List<LocalPosition> optimizedPath = new ArrayList<>(initialPath);
 
-		Iterator<Point2D> i = optimizedPath.iterator();
+		Iterator<LocalPosition> i = optimizedPath.iterator();
 		while (i.hasNext()) {
-			Point2D loc = i.next();
+			LocalPosition loc = i.next();
 			int locIndex = optimizedPath.indexOf(loc);
 			if ((locIndex > 0) && (locIndex < (optimizedPath.size() - 1))) {
-				Point2D prevLoc = optimizedPath.get(locIndex - 1);
-				Point2D nextLoc = optimizedPath.get(locIndex + 1);
+				LocalPosition prevLoc = optimizedPath.get(locIndex - 1);
+				LocalPosition nextLoc = optimizedPath.get(locIndex + 1);
 
 				// If clear path between previous and next location,
 				// remove this location from path.
@@ -395,8 +388,8 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param loc the location.
 	 * @return gScore value.
 	 */
-	private double getGScore(Point2D loc) {
-		return Point2D.distance(startXLocation, startYLocation, loc.getX(), loc.getY());
+	private double getGScore(LocalPosition loc) {
+		return start.getDirectionTo(loc);
 	}
 
 	/**
@@ -407,9 +400,9 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param loc the location.
 	 * @return the fScore value.
 	 */
-	private double getFScore(Point2D loc) {
+	private double getFScore(LocalPosition loc) {
 		double gScore = getGScore(loc);
-		double fScore = gScore + Point2D.distance(loc.getX(), loc.getY(), destinationXLocation, destinationYLocation);
+		double fScore = gScore + loc.getDistanceTo(destination);
 		return fScore;
 	}
 
@@ -421,12 +414,12 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param currentLoc the current location.
 	 * @return set of neighbor locations.
 	 */
-	private Set<Point2D> getNeighbors(Point2D currentLoc) {
+	private Set<LocalPosition> getNeighbors(LocalPosition currentLoc) {
 
-		Set<Point2D> result = new HashSet<Point2D>(8);
+		Set<LocalPosition> result = new HashSet<>(8);
 
 		// Get location North of currentLoc.
-		Point2D northLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
+		LocalPosition northLoc = new LocalPosition(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
 		Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(), northLoc.getY());
 		if (LocalAreaUtil.isLinePathCollisionFree(northLine, worker.getCoordinates(), true)) {
 			result.add(northLoc);
@@ -434,14 +427,14 @@ public class WalkOutside extends Task implements Serializable {
 
 
 		// Get location East of currentLoc.
-		Point2D eastLoc = new Point2D.Double(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
+		LocalPosition eastLoc = new LocalPosition(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
 		Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(), eastLoc.getY());
 		if (LocalAreaUtil.isLinePathCollisionFree(eastLine, worker.getCoordinates(), true)) {
 			result.add(eastLoc);
 		}
 
 		// Get location South of currentLoc.
-		Point2D southLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
+		LocalPosition southLoc = new LocalPosition(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
 		Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(), southLoc.getY());
 		if (LocalAreaUtil.isLinePathCollisionFree(southLine, worker.getCoordinates(), true)) {
 			result.add(southLoc);
@@ -449,7 +442,7 @@ public class WalkOutside extends Task implements Serializable {
 
 
 		// Get location West of currentLoc.
-		Point2D westLoc = new Point2D.Double(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
+		LocalPosition westLoc = new LocalPosition(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
 		Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(), westLoc.getY());
 
 		if (LocalAreaUtil.isLinePathCollisionFree(westLine, worker.getCoordinates(), true)) {
@@ -466,7 +459,7 @@ public class WalkOutside extends Task implements Serializable {
 	 * @return array of four double values representing X max, X min, Y max, and Y
 	 *         min.
 	 */
-	double[] getLocalObstacleSearchLimits(Coordinates location) {
+	private double[] getLocalObstacleSearchLimits(Coordinates location) {
 
 		double[] result = new double[] { 0D, 0D, 0D, 0D };
 
@@ -496,6 +489,10 @@ public class WalkOutside extends Task implements Serializable {
 		}
 
 		// Extend boundary to include starting location.
+		double startXLocation = start.getX();
+		double startYLocation = start.getY();
+		double destinationXLocation = destination.getX();
+		double destinationYLocation = destination.getY();
 		if (result[0] < startXLocation) {
 			result[0] = startXLocation;
 		}
@@ -541,31 +538,31 @@ public class WalkOutside extends Task implements Serializable {
 	/**
 	 * Check if point location is within the obstacle search limits.
 	 *
-	 * @param location the location.
+	 * @param neighborLoc the location.
 	 * @return true if location is within search limits.
 	 */
-	private boolean withinObstacleSearch(Point2D location) {
+	private boolean withinObstacleSearch(LocalPosition neighborLoc) {
 
 		if (obstacleSearchLimits == null) {
 			obstacleSearchLimits = getLocalObstacleSearchLimits(worker.getCoordinates());
 		}
 
-		boolean result = !(location.getX() > obstacleSearchLimits[0]);
+		boolean result = !(neighborLoc.getX() > obstacleSearchLimits[0]);
 
 		// Check if X value is larger than X max limit.
 
         // Check if X value is smaller than X min limit.
-		if (location.getX() < obstacleSearchLimits[1]) {
+		if (neighborLoc.getX() < obstacleSearchLimits[1]) {
 			result = false;
 		}
 
 		// Check if Y value is larger than Y max limit.
-		if (location.getY() > obstacleSearchLimits[2]) {
+		if (neighborLoc.getY() > obstacleSearchLimits[2]) {
 			result = false;
 		}
 
 		// Check if Y value is smaller thank Y min limit.
-		if (location.getY() < obstacleSearchLimits[3]) {
+		if (neighborLoc.getY() < obstacleSearchLimits[3]) {
 			result = false;
 		}
 
@@ -632,7 +629,7 @@ public class WalkOutside extends Task implements Serializable {
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
-			LocalPosition location = new LocalPosition(walkingPath.get(walkingPathIndex));
+			LocalPosition location = walkingPath.get(walkingPathIndex);
 			double distanceToLocation = worker.getPosition().getDistanceTo(location);
 			if (coveredMeters >= distanceToLocation) {
 
@@ -649,8 +646,9 @@ public class WalkOutside extends Task implements Serializable {
 				// Walk in direction of next path location.
 
 				// Determine direction
-				double direction = determineDirection(location.getX(), location.getY());
-
+				//double direction = determineDirection(location.getX(), location.getY());
+				double direction = worker.getPosition().getDirectionTo(location);
+				
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, coveredMeters);
 
@@ -665,9 +663,8 @@ public class WalkOutside extends Task implements Serializable {
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
 			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
-			Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
-
-			worker.setPosition(new LocalPosition(finalLocation));
+			LocalPosition finalLocation = walkingPath.get(walkingPath.size() - 1);
+			worker.setPosition(finalLocation);
 
 			endTask();
 		}
@@ -683,50 +680,6 @@ public class WalkOutside extends Task implements Serializable {
 	 */
 	public boolean hasEVAProblem(Person person) {
 		return EVAOperation.hasEVAProblem(person);
-	}
-
-//    /**
-//     * Check for radiation exposure of the person performing this EVA.
-//     * @param time the amount of time on EVA (in millisols)
-//
-//    protected void isRadiationDetected(double time) {
-//
-//    	if (person != null) {
-//    	    int millisols =  (int) marsClock.getMillisol();
-//    		// Check every RADIATION_CHECK_FREQ (in millisols)
-//    	    // Compute whether a baseline, GCR, or SEP event has occurred
-//    	    // Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
-//    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
-//    	    	person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
-//
-//    	} else if (robot != null) {
-//
-//    	}
-//    }
-
-	/**
-	 * Determine the direction of travel to a location.
-	 *
-	 * @param destinationXLocation the destination X location.
-	 * @param destinationYLocation the destination Y location.
-	 * @return direction (radians).
-	 */
-	private double determineDirection(double destinationXLocation, double destinationYLocation) {
-		double result = 0;
-
-		result = Math.atan2(worker.getXLocation() - destinationXLocation,
-				destinationYLocation - worker.getYLocation());
-
-
-		while (result > (Math.PI * 2D)) {
-			result -= (Math.PI * 2D);
-		}
-
-		while (result < 0D) {
-			result += (Math.PI * 2D);
-		}
-
-		return result;
 	}
 
 	/**
@@ -748,18 +701,13 @@ public class WalkOutside extends Task implements Serializable {
 
 		double result = 0D;
 
-		double prevXLoc = 0;
-		double prevYLoc = 0;
-
-		prevXLoc = worker.getXLocation();
-		prevYLoc = worker.getYLocation();
+		LocalPosition prevLoc = worker.getPosition();
 
 		for (int x = walkingPathIndex; x < walkingPath.size(); x++) {
-			Point2D nextLoc = walkingPath.get(x);
-			double distance = Point2D.Double.distance(prevXLoc, prevYLoc, nextLoc.getX(), nextLoc.getY());
+			LocalPosition nextLoc = walkingPath.get(x);
+			double distance = prevLoc.getDistanceTo(nextLoc);
 			result += distance;
-			prevXLoc = nextLoc.getX();
-			prevYLoc = nextLoc.getY();
+			prevLoc = nextLoc;
 		}
 
 		return result;

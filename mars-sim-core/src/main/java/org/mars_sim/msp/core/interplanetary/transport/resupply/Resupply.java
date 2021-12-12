@@ -246,7 +246,7 @@ public class Resupply implements Serializable, Transportable {
 			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 		}
 		
-		return new BoundedObject(bounds.getXLocation(), bounds.getYLocation(), width, length, bounds.getFacing());
+		return new BoundedObject(bounds.getPosition(), width, length, bounds.getFacing());
 	}
 
 	/**

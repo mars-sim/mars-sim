@@ -392,8 +392,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			combox.setSelectedItem(p.getSettlement());
 
 			Building b = p.getBuildingLocation();
-			double xLoc = b.getXLocation();
-			double yLoc = b.getYLocation();
+			double xLoc = b.getPosition().getX();
+			double yLoc = b.getPosition().getY();
 			double scale = mapPanel.getScale();
 			mapPanel.reCenter();
 			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -418,8 +418,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 				combox.setSelectedItem(vv.getSettlement());
 
-				double xLoc = vv.getXLocation();
-				double yLoc = vv.getYLocation();
+				double xLoc = vv.getPosition().getX();
+				double yLoc = vv.getPosition().getY();
 				double scale = mapPanel.getScale();
 //				mapPanel.reCenter();
 				mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -451,11 +451,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 					combox.setSelectedItem(s);
 
-					double xLoc = p.getXLocation();
-					double yLoc = p.getYLocation();
 					double scale = mapPanel.getScale();
 					mapPanel.reCenter();
-					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+					mapPanel.moveCenter(p.getPosition().getX() * scale, p.getPosition().getY() * scale);
 	//				mapPanel.setShowBuildingLabels(true);
 
 					if (mapPanel.getSelectedPerson() != null && mapPanel.getSelectedPerson() != p)
@@ -483,8 +481,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			combox.setSelectedItem(r.getSettlement());
 
 			Building b = r.getBuildingLocation();
-			double xLoc = b.getXLocation();
-			double yLoc = b.getYLocation();
+			double xLoc = b.getPosition().getX();
+			double yLoc = b.getPosition().getY();
 			double scale = mapPanel.getScale();
 			mapPanel.reCenter();
 			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -506,8 +504,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 				combox.setSelectedItem(vv.getSettlement());
 
-				double xLoc = vv.getXLocation();
-				double yLoc = vv.getYLocation();
+				double xLoc = vv.getPosition().getX();
+				double yLoc = vv.getPosition().getY();
 				double scale = mapPanel.getScale();
 				mapPanel.reCenter();
 				mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -536,11 +534,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 				combox.setSelectedItem(s);
 
-				double xLoc = r.getXLocation();
-				double yLoc = r.getYLocation();
 				double scale = mapPanel.getScale();
 				mapPanel.reCenter();
-				mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+				mapPanel.moveCenter(r.getPosition().getX() * scale, r.getPosition().getY() * scale);
 //				mapPanel.setShowBuildingLabels(true);
 
 				if (mapPanel.getSelectedRobot() != null && mapPanel.getSelectedRobot() != r)
@@ -556,8 +552,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			desktop.openToolWindow(SettlementWindow.NAME);
 			combox.setSelectedItem(v.getSettlement());
 
-			double xLoc = v.getXLocation();
-			double yLoc = v.getYLocation();
+			double xLoc = v.getPosition().getX();
+			double yLoc = v.getPosition().getY();
 			double scale = mapPanel.getScale();
 			mapPanel.reCenter();
 			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
@@ -604,8 +600,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 //				else
 					combox.setSelectedItem(vv.getSettlement());
 
-				double xLoc = vv.getXLocation();
-				double yLoc = vv.getYLocation();
+				double xLoc = vv.getPosition().getX();
+				double yLoc = vv.getPosition().getY();
 				double scale = mapPanel.getScale();
 				mapPanel.reCenter();
 				mapPanel.moveCenter(xLoc * scale, yLoc * scale);

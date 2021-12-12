@@ -67,7 +67,7 @@ public class MissionAgenda implements Serializable {
 	 * @param unit
 	 */
 	public void reportFindings(Worker unit) {
-		logger.info(unit, 20_000L, name + ": " + findings);
+		logger.fine(unit, name + ": " + findings);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class MissionAgenda implements Serializable {
 	 * @param unit
 	 */
 	public void gatherSamples(Worker unit) {
-		logger.info(unit, 20_000L, name + ": " + samples);
+		logger.fine(unit, name + ": " + samples);
 	}
 	
 	public String toString() {

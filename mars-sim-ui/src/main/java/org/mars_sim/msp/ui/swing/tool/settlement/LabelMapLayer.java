@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -187,14 +188,14 @@ implements SettlementMapLayer {
 						// Shrink the size of a hallway label.
 						//e.g. Turned "Hallway 12 " into "H12"
 						String newName = "H " + words[1];
-						drawStructureLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
+						drawStructureLabel(g2d, newName, building.getPosition(),
 								HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 0);
 					}
 					else if (type.equalsIgnoreCase("Tunnel")) {
 						// Shrink the size of a hallway label.
 						//e.g. Turned "Hallway 12 " into "H12"
 						String newName = "T " + words[1];
-						drawStructureLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
+						drawStructureLabel(g2d, newName, building.getPosition(),
 								HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 0);
 					}
 					else {
@@ -229,7 +230,7 @@ implements SettlementMapLayer {
 							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 						}
 											
-						drawStructureLabel(g2d, name, building.getXLocation(), building.getYLocation(),
+						drawStructureLabel(g2d, name, building.getPosition(),
 								frontColor, outlineColor, 0);
 					}
 				}
@@ -318,7 +319,7 @@ implements SettlementMapLayer {
 								y = (int)(yOffset * 2);	
 						}
 						
-						drawStructureLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
+						drawStructureLabel(g2d, words[j], building.getPosition(),
 								frontColor, outlineColor, y);
 					}
 				}
@@ -364,13 +365,13 @@ implements SettlementMapLayer {
 				s = s-2;
 				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {
 					for (int j = 0; j < s; j++) {
-						drawStructureLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
+						drawStructureLabel(g2d, words[j], site.getPosition(),
 							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
 					}
 				}
 				else {
 					for (int j = 0; j < s; j++) {
-						drawStructureLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
+						drawStructureLabel(g2d, words[j], site.getPosition(),
 							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
 					}
 				}
@@ -427,7 +428,7 @@ implements SettlementMapLayer {
 				if (vehicleLoc.equals(settlementLoc)) {
 					
 					if (vehicle.getName().contains("LUV")) {
-						drawStructureLabel(g2d,vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(),
+						drawStructureLabel(g2d,vehicle.getName(), vehicle.getPosition(),
 							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
 					}
 					
@@ -436,7 +437,7 @@ implements SettlementMapLayer {
 						String words[] = vehicle.getName().split(" ");
 						int s = words.length;
 						for (int j = 0; j < s; j++) {
-							drawStructureLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(),
+							drawStructureLabel(g2d, words[j], vehicle.getPosition(),
 								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size));
 						}
 					}
@@ -478,8 +479,7 @@ implements SettlementMapLayer {
 			// Draw selected person.
 			if (people.contains(selectedPerson)) {
 				// Draw person name.
-				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getXLocation(),
-					selectedPerson.getYLocation(), sColor, soColor,
+				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getPosition(), sColor, soColor,
 					xoffset, 0);
 
 				// Draw task.
@@ -487,8 +487,7 @@ implements SettlementMapLayer {
 				if (taskString != null && !taskString.equals(""))
 					drawPersonRobotLabel(
 //						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
-						g2d, taskString, selectedPerson.getXLocation(),
-						selectedPerson.getYLocation(), sColor, soColor,
+						g2d, taskString, selectedPerson.getPosition(), sColor, soColor,
 						xoffset, size);
 
 				// Draw mission.
@@ -497,8 +496,7 @@ implements SettlementMapLayer {
 					String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
 					if (missionString != null && !missionString.equals(""))
 						drawPersonRobotLabel(
-							g2d, missionString, selectedPerson.getXLocation(),
-							selectedPerson.getYLocation(), sColor, soColor,
+							g2d, missionString, selectedPerson.getPosition(), sColor, soColor,
 							xoffset, 2 * (size));
 				}
 			}
@@ -521,7 +519,7 @@ implements SettlementMapLayer {
 						else n += " " + words[j].substring(0, 1) + ".";
 					}	
 					boolean male = person.getGender().equals(GenderType.MALE);
-					drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
+					drawPersonRobotLabel(g2d, n, person.getPosition(),
 								(male ? MALE_COLOR : FEMALE_COLOR),
 								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), xoffset, 0);
 				}
@@ -561,7 +559,7 @@ implements SettlementMapLayer {
 //					for (int j = 0; j < s; j++)
 //						drawPersonRobotLabel(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
 //								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
-					drawPersonRobotLabel(g2d, robot.getName(), robot.getXLocation(), robot.getYLocation(),
+					drawPersonRobotLabel(g2d, robot.getName(), robot.getPosition(),
 							ROBOT_COLOR, ROBOT_OUTLINE_COLOR, xoffset, 0);
 				}
 			}
@@ -571,16 +569,16 @@ implements SettlementMapLayer {
 		if (robots.contains(selectedRobot)) {
 			// Draw robot name.
 			drawPersonRobotLabel(
-				g2d, selectedRobot.getName(), selectedRobot.getXLocation(),
-				selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
+				g2d, selectedRobot.getName(), selectedRobot.getPosition(),
+				ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 				xoffset, 0);
 
 			// Draw task.
 			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 			if (taskString != null && !taskString.equals(""))
 				drawPersonRobotLabel(
-					g2d, taskString, selectedRobot.getXLocation(),
-					selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
+					g2d, taskString, selectedRobot.getPosition(),
+					ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 					xoffset, size);
 
 			// Draw mission.
@@ -589,8 +587,8 @@ implements SettlementMapLayer {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
 				if (missionString != null && !missionString.equals(""))
 					drawPersonRobotLabel(
-						g2d, missionString, selectedRobot.getXLocation(),
-						selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
+						g2d, missionString, selectedRobot.getPosition(),
+						ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 						xoffset, 2 * (size));
 			}
 		}
@@ -601,13 +599,12 @@ implements SettlementMapLayer {
 	 * 
 	 * @param g2d the graphics 2D context.
 	 * @param label the label string.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
+	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
 	 * @param labelOutlineColor the color of the outline of the label.
 	 */
 	private void drawStructureLabel(
-		Graphics2D g2d, String label, double xLoc, double yLoc,
+		Graphics2D g2d, String label, LocalPosition loc,
 		Color labelColor, Color labelOutlineColor, int yOffset
 	) {
 		double scale = mapPanel.getScale();
@@ -615,7 +612,6 @@ implements SettlementMapLayer {
 		int size = (int)(fontSize / 2.0);
 		size = Math.max(size, 2);
 		
-//		System.out.println((int)scale);
 		// If the scale is smaller than 5, then 
 		// there is no need of using labelOutlineColor 
 		if (scale <= 5)
@@ -642,8 +638,8 @@ implements SettlementMapLayer {
 		// Determine transform information.
 		double centerX = labelImage.getWidth() / 2D;
 		double centerY = labelImage.getHeight() / 2D;
-		double translationX = (-1D * xLoc * mapPanel.getScale()) - centerX;
-		double translationY = (-1D * yLoc * mapPanel.getScale()) - centerY;
+		double translationX = (-1D * loc.getX() * mapPanel.getScale()) - centerX;
+		double translationY = (-1D * loc.getY() * mapPanel.getScale()) - centerY;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -663,15 +659,14 @@ implements SettlementMapLayer {
 	 * Draws a label to the right of an X, Y location.
 	 * @param g2d the graphics 2D context.
 	 * @param label the label string.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
+	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
 	 * @param labelOutlineColor the color of the outline of the label.
 	 * @param xOffset the X pixel offset from the center point.
 	 * @param yOffset the Y pixel offset from the center point.
 	 */
 	private void drawPersonRobotLabel(
-		Graphics2D g2d, String label, double xLoc, double yLoc,
+		Graphics2D g2d, String label, LocalPosition loc,
 		Color labelColor, Color labelOutlineColor, int xOffset, int yOffset
 	) {
 
@@ -696,8 +691,8 @@ implements SettlementMapLayer {
 		// Determine transform information.
 		double centerX = labelImage.getWidth() / 2D ;
 		double centerY = labelImage.getHeight() / 2D ;
-		double translationX = (-1D * xLoc * scale) - centerX;
-		double translationY = (-1D * yLoc * scale) - centerY;
+		double translationX = (-1D * loc.getX() * scale) - centerX;
+		double translationY = (-1D * loc.getY() * scale) - centerY;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);

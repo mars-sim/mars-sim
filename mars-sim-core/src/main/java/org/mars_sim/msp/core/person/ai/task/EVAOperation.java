@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
+//import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
@@ -79,8 +80,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	private double siteDuration;
 	private double timeOnSite;
-	private double outsideSiteXLoc;
-	private double outsideSiteYLoc;
+	private LocalPosition outsideSitePos;
 	private LocalPosition binPosition;
 
 	private LocalBoundedObject interiorObject;
@@ -206,24 +206,15 @@ public abstract class EVAOperation extends Task implements Serializable {
 	/**
 	 * Set the outside side local location.
 	 *
-	 * @param xLoc the X location.
-	 * @param yLoc the Y location.
+	 * @param pos The outside position of the EVA
 	 */
-	protected void setOutsideSiteLocation(double xLoc, double yLoc) {
-		outsideSiteXLoc = xLoc;
-		outsideSiteYLoc = yLoc;
+	protected void setOutsideSiteLocation(LocalPosition pos) {
+		outsideSitePos = pos;
 	}
 
 	/**
-	 * Set the outside side local location.
-<<<<<<< HEAD
-	 * 
+	 * Set the outside side local location
 	 * @param pos Position of the Bin
-=======
-	 *
-	 * @param xLoc the X location.
-	 * @param yLoc the Y location.
->>>>>>> refs/remotes/upstream/master
 	 */
 	protected void setBinLocation(LocalPosition pos) {
 		binPosition = pos;
@@ -264,7 +255,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	    // If not at field work site location, create walk outside subtask.
         if (person.isInside()) {// || !closeToLocation) {
         	// A person is walking toward an airlock or inside an airlock
-            Walk walkingTask = Walk.createWalkingTask(person, new LocalPosition(outsideSiteXLoc, outsideSiteYLoc), 0, null);
+            Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, 0, null);
             if (walkingTask != null) {
                 addSubTask(walkingTask);
             }
@@ -626,26 +617,23 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected boolean setRandomOutsideLocation(Rover rover) {
 
-		Point2D newLocation = null;
+		LocalPosition newLocation = null;
 		boolean goodLocation = false;
 		for (int x = 0; (x < 5) && !goodLocation; x++) {
 			for (int y = 0; (y < 10) && !goodLocation; y++) {
 
 				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-						rover);
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						worker.getCoordinates());
+				LocalPosition boundedLocalPoint = rover.getPosition().getPosition(distance, radianDirection);
+				
+				newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, rover);
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
 			}
 		}
 
 		if (goodLocation) {
-			setOutsideSiteLocation(newLocation.getX(), newLocation.getY());
+			setOutsideSiteLocation(newLocation);
 		}
 		else {
 			endTask();
@@ -667,12 +655,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 		for (int x = 0; (x < 50) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(basePoint, 1D);
 			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	basePoint);
-			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-					worker.getCoordinates());
+			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
 		}
 
 		if (goodLocation) {
-			setOutsideSiteLocation(newLocation.getX(), newLocation.getY());
+			setOutsideSiteLocation(newLocation);
 		}
 		else {
 			endTask();
@@ -690,34 +677,16 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param        double yLocation the destination's Y location.
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
+	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos) {
 		Airlock result = null;
 
-		Settlement s = person.getSettlement();
+		Settlement s = worker.getSettlement();
 		if (s != null) {
-			result = s.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+			result = s.getClosestWalkableAvailableAirlock(worker, pos);
 		}
 
-		else if (person.isInVehicle()) {
-			Vehicle vehicle = person.getVehicle();
-			if (vehicle instanceof Airlockable) {
-				result = ((Airlockable) vehicle).getAirlock();
-			}
-		}
-
-		return result;
-	}
-
-	public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
-		Airlock result = null;
-
-		Settlement s = robot.getSettlement();
-		if (s != null) {
-			result = s.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
-		}
-
-		else if (robot.isInVehicle()) {
-			Vehicle vehicle = robot.getVehicle();
+		else if (worker.isInVehicle()) {
+			Vehicle vehicle = worker.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
 			}
@@ -733,19 +702,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param person the person.
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getWalkableAvailableAirlock(Person person) {
-		return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
-	}
-
-	/**
-	 * Gets an available airlock to a given location that has a walkable path from
-	 * the robot's current location.
-	 *
-	 * @param robot the robot.
-	 * @return airlock or null if none available
-	 */
-	public static Airlock getWalkableAvailableAirlock(Robot robot) {
-		return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
+	public static Airlock getWalkableAvailableAirlock(Worker worker) {
+		return getClosestWalkableAvailableAirlock(worker, worker.getPosition());
 	}
 
 	/**

@@ -376,8 +376,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				double width = building.getWidth();
 				double length = building.getLength();
 				int facing = (int) building.getFacing();
-				double x = building.getXLocation();
-				double y = building.getYLocation();
+				double x = building.getPosition().getX();
+				double y = building.getPosition().getY();
 				double xx = 0;
 				double yy = 0;
 
@@ -563,8 +563,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		Iterator<Person> i = CollectionUtils.getPeopleToDisplay(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
-			double distanceX = person.getXLocation() - settlementPosition.getX();
-			double distanceY = person.getYLocation() - settlementPosition.getY();
+			double distanceX = person.getPosition().getX() - settlementPosition.getX();
+			double distanceY = person.getPosition().getY() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
 				selectedPerson = person;
@@ -593,8 +593,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		Iterator<Robot> i = RobotMapLayer.getRobotsToDisplay(settlement).iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
-			double distanceX = robot.getXLocation() - settlementPosition.getX();
-			double distanceY = robot.getYLocation() - settlementPosition.getY();
+			double distanceX = robot.getPosition().getX() - settlementPosition.getX();
+			double distanceY = robot.getPosition().getY() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
 				selectedRobot = robot;
@@ -629,8 +629,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				double width = building.getWidth();
 				double length = building.getLength();
 				int facing = (int) building.getFacing();
-				double x = building.getXLocation();
-				double y = building.getYLocation();
+				double x = building.getPosition().getX();
+				double y = building.getPosition().getY();
 				double xx = 0;
 				double yy = 0;
 
@@ -699,8 +699,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				double width = s.getWidth();
 				double length = s.getLength();
 				int facing = (int) s.getFacing();
-				double x = s.getXLocation();
-				double y = s.getYLocation();
+				double x = s.getPosition().getX();
+				double y = s.getPosition().getY();
 				double xx = 0;
 				double yy = 0;
 
@@ -794,8 +794,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			else
 				newRange = length / 2.0;
 
-			double x = vehicle.getXLocation();
-			double y = vehicle.getYLocation();
+			double x = vehicle.getPosition().getX();
+			double y = vehicle.getPosition().getY();
 
 			double distanceX = x - settlementPosition.getX();
 			double distanceY = y - settlementPosition.getY();
@@ -836,8 +836,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			else
 				newRange = (length + buildingLength) / 2.0;
 
-			double x = vehicle.getXLocation();
-			double y = vehicle.getYLocation();
+			double x = vehicle.getPosition().getX();
+			double y = vehicle.getPosition().getY();
 
 			// distances between the center of the vehicle and the center of the building
 			double distanceX = x - xLoc;

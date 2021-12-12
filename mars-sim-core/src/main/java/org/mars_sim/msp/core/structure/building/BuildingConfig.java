@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -56,7 +55,7 @@ public class BuildingConfig implements Serializable {
 	private static final String CAPACITY = "capacity";
 
 	private static final String WASTE_DISPOSAL = "waste-disposal";
-	private static final String WASTE_SPECIALTY = "waste-specialty";
+	//private static final String WASTE_SPECIALTY = "waste-specialty";
 
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
@@ -92,8 +91,6 @@ public class BuildingConfig implements Serializable {
 	private static final String GROWING_AREA = "growing-area";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
-	private static final String X_LOCATION = "xloc";
-	private static final String Y_LOCATION = "yloc";
 	private static final String DEFAULT = "default";
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
@@ -176,7 +173,7 @@ public class BuildingConfig implements Serializable {
 			FunctionType function = FunctionType.valueOf(name.toUpperCase());
 
 			// Has any Activity spots ?
-			List<Point2D> spots = parseLocations(element, ACTIVITY, ACTIVITY_SPOT,
+			List<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
 													width, length);
 
 			// Get attributes as basic properties
@@ -264,7 +261,7 @@ public class BuildingConfig implements Serializable {
 
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
-			List<Point2D> beds = parseLocations(medicalElement, BEDS, BED_LOCATION,
+			List<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
 												width, length);
 			newSpec.setBeds(beds);
 		}
@@ -423,52 +420,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse an list of locations for a building's function. These have a <xloc> & <yloc> structure.
-	 *
-	 * @param functionElement Element holding locations
-	 * @param locations Name of the location elements
-	 * @param pointName Nmae of the point item
-	 * @return list of activity spots as Point2D objects.
-	 */
-	private List<Point2D> parseLocations(Element functionElement, String locations, String pointName,
-										 double buildingWidth, double buildingLength) {
-		List<Point2D> result = new ArrayList<>();
-
-		// Maximum coord is half the width or length
-		double maxX = buildingWidth/2D;
-		double maxY = buildingLength/2D;
-
-		Element activityElement = functionElement.getChild(locations);
-		if (activityElement != null) {
-			for(Element activitySpot : activityElement.getChildren(pointName)) {
-				double xLocation = Double.parseDouble(activitySpot.getAttributeValue(X_LOCATION));
-				double yLocation = Double.parseDouble(activitySpot.getAttributeValue(Y_LOCATION));
-
-				// Check location is within the building. Check as long as the maximum
-				// is defined
-				if (((maxX > 0) && (maxX < Math.abs(xLocation)))
-						|| ((maxY > 0) && (maxY < Math.abs(yLocation)))) {
-
-					// Roughly walk back over the XPath
-					StringBuilder name = new StringBuilder();
-					do {
-						name.append(functionElement.getName()).append(' ');
-						functionElement = functionElement.getParentElement();
-					} while (!functionElement.getName().equals(BUILDING));
-					name.append(" in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
-
-					throw new IllegalArgumentException("Locations '" + locations
-							+ "' of " + name.toString()
-							+ " are outside building");
-				}
-
-				result.add(new Point2D.Double(xLocation, yLocation));
-			}
-		}
-		return result;
-	}
-	
-	/**
 	 * Parse an list of position for a building's function. These have a <xloc> & <yloc> structure.
 	 *
 	 * @param functionElement Element holding locations
@@ -561,9 +512,9 @@ public class BuildingConfig implements Serializable {
 	 * @param function
 	 * @return
 	 */
-	public List<Point2D> getActivitySpots(String buildingType, FunctionType function) {
+	public List<LocalPosition> getActivitySpots(String buildingType, FunctionType function) {
 		FunctionSpec fs = getBuildingSpec(buildingType).getFunctionSpec(function);
-		List<Point2D> result = null;
+		List<LocalPosition> result = null;
 		if (fs != null) {
 			result = fs.getActivitySpots();
 		}
