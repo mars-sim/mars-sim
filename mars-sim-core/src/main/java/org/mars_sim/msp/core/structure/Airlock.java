@@ -51,7 +51,8 @@ public abstract class Airlock implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(Airlock.class.getName());
 
 	/** Pressurize/depressurize time (millisols). */
-	public static final double CYCLE_TIME = 10D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
+	public static final double CYCLE_TIME = 10D; 
+	// Note: should we add pre-breathing time into CYCLE_TIME ?
 
 	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 4;

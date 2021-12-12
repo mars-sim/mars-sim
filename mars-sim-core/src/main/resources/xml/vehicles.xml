@@ -198,7 +198,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- interior-xloc, interior-yloc: the relative X/Y location inside the vehicle. -->
 		<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the vehicle. -->
 		<airlock xloc="-1.25" yloc="0.0">
-			<interior xloc="-.75" yloc="0.0"/>
+			<interior xloc="-0.75" yloc="0.0"/>
 			<exterior xloc="-2.75" yloc="0.0"/>
 	    </airlock>
 	    
@@ -247,7 +247,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0">
-			<interior xloc="-.75" yloc="0.0"/>
+			<interior xloc="-0.75" yloc="0.0"/>
 			<exterior xloc="-2.75" yloc="0.0" />
 		</airlock>
 		<activity>

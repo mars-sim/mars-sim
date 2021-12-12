@@ -240,7 +240,7 @@ implements Serializable {
         	for (Person invitee : invitees) {
 	            // Add invitation to study.
 	            study.addInvitedResearcher(invitee);
-
+	            
 	            // Check if existing relationship between primary researcher and invitee.
 	            if (!relationshipManager.hasRelationship(person, invitee)) {
 	                // Add new communication meeting relationship.
@@ -249,8 +249,8 @@ implements Serializable {
 
 	            // Add 10 points to invitee's opinion of primary researcher due to invitation.
 	            Relationship relationship = relationshipManager.getRelationship(invitee, person);
-	            double currentOpinion = relationship.getPersonOpinion(invitee);
-	            relationship.setPersonOpinion(invitee, currentOpinion + 10D);
+	            double currentOpinion = relationship.getPersonOpinion(person);
+	            relationship.setPersonOpinion(person, currentOpinion + 10D);
 
 	            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
 	                    " to collaborate in " + study.getName() + ".");

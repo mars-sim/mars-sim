@@ -7,6 +7,8 @@
 package org.mars.sim.console;
 
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -611,7 +613,19 @@ public class InteractiveTerm {
 		if (selectedScreen >= 0) {
 			return screenSizes[selectedScreen];
 		}
-		return null;
+		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		int screenWidth = gs[0].getDisplayMode().getWidth();
+		int screenHeight = gs[0].getDisplayMode().getHeight();
+		
+		
+		for (int i=0; i<screenSizes.length; i++) {
+			if (screenSizes[i].width == screenWidth
+					&& screenSizes[i].height == screenHeight) {
+				selectedScreen = i;
+			}
+		}
+		
+		return new Dimension(screenWidth, screenHeight);
 	}
 
 }

@@ -932,7 +932,8 @@ public class SimulationConfig implements Serializable {
 			else {
 				// if the xml file doesn't exist
 				if(testf.renameTo(f)) {
-					logger.config(f.getName() + " didn't exist localy. Just got created.");
+//					logger.config(f.getName() + " didn't exist locally. Just got created.");
+					logger.config("A new version of " + f.getName() + " just got created.");
 				} else {
 					logger.config("Error in renaming the test xml file " + testf.getName());
 				}

@@ -561,10 +561,9 @@ public final class SettlementBuilder {
 						if (relationship != null) {
 							relationship.setPersonOpinion(person, opinion);
 						} else {
-							relationshipManager.addRelationship(person, potentialFriend,
+							relationship = relationshipManager.addRelationship(person, potentialFriend,
 									Relationship.EXISTING_RELATIONSHIP);
-							relationship = relationshipManager.getRelationship(person, potentialFriend);
-							relationship.setPersonOpinion(person, opinion);
+							relationship.setPersonOpinion(potentialFriend, opinion);
 						}
 					}
 				}

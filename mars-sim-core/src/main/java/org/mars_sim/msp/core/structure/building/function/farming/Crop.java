@@ -743,7 +743,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		accumulatedTime += elapsed;
 
 		if (accumulatedTime >= processInterval) {
-			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+//			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
 
 			accumulatedTime = accumulatedTime - processInterval;
 

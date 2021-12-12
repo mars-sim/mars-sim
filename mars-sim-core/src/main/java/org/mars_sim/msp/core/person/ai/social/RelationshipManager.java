@@ -127,10 +127,9 @@ public class RelationshipManager implements Serializable {
 				Person person2 = i.next();
 				if (!person2.equals(person)) {
 					addRelationship(person, person2, Relationship.FIRST_IMPRESSION);
-
-					if (logger.isLoggable(Level.FINEST)) {
+//					if (logger.isLoggable(Level.FINEST)) {
 						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
-					}
+//					}
 				}
 			}
 		}
@@ -144,13 +143,15 @@ public class RelationshipManager implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static
 	 *                         members)
 	 */
-	public void addRelationship(Person person1, Person person2, String relationshipType) {
+	public Relationship addRelationship(Person person1, Person person2, String relationshipType) {
 		try {
 			Relationship relationship = new Relationship(person1, person2, relationshipType);
 			relationshipGraph.addEdge(relationship, person1.getIdentifier(), person2.getIdentifier(), false);
+			return relationship;
 		} catch (NoSuchNodeException e) {
           	logger.log(Level.SEVERE, "Cannot instantiate relationship: "+ e.getMessage());
 		}
+		return null;
 	}
 
 	/**
@@ -417,11 +418,9 @@ public class RelationshipManager implements Serializable {
 			// Check if new relationship.
 			if (!hasRelationship(person, localPerson)) {
 				addRelationship(person, localPerson, Relationship.EXISTING_RELATIONSHIP);
-
-				if (logger.isLoggable(Level.FINEST)) {
-					logger.finest(
-							person.getName() + " and " + localPerson.getName() + " meet for the first time.");
-				}
+//				if (logger.isLoggable(Level.FINEST)) {
+					logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
+//				}
 			}
 
 			// Determine probability of relationship change per millisol.
@@ -483,10 +482,10 @@ public class RelationshipManager implements Serializable {
 				Relationship relationship = getRelationship(person, localPerson);
 				if (relationship != null)
 					relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
-				if (logger.isLoggable(Level.FINEST)) {
+//				if (logger.isLoggable(Level.FINEST)) {
 					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
 							+ changeAmount);
-				}
+//				}
 			}
 		}
 //		count2++;

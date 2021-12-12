@@ -1609,7 +1609,6 @@ public class BuildingManager implements Serializable {
 			vPOldCache = new HashMap<>();
 
 		// Update building values cache once per Sol.
-		// MarsClock currentTime =?
 		if ((lastVPUpdateTime == null)
 				|| (MarsClock.getTimeDiff(marsClock, lastVPUpdateTime) > 1000D)) {
 			vPNewCache.clear();
@@ -1780,8 +1779,6 @@ public class BuildingManager implements Serializable {
 					}
 				}
 			}
-
-			// System.out.println("Building " + buildingType + " value: " + (int) result);
 
 			if (newBuilding)
 				vPNewCache.put(buildingType, result);

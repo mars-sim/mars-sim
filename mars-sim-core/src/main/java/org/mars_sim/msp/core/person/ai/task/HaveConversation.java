@@ -328,7 +328,10 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double havingConversation(double time) {
-
+    	if (person == null) {
+    		System.err.println("havingConversation(): person is null.");
+    	}
+    	
         if (isDone() || invitee == null) {
         	endTask();
             return time;
@@ -338,7 +341,7 @@ implements Serializable {
         if (getDuration() <= (getTimeCompleted() + time)) {
 
         	if (invitee != null) {
-	        	// List 8 situations for having a conversation
+	        	// List situations for having a conversation
 	            if (person.isInSettlement()) {
 	            	talkTo(invitee);
 	            }
@@ -350,16 +353,16 @@ implements Serializable {
 
 	            if (relationshipManager != null && !relationshipManager.hasRelationship(invitee, person)) {
 	                // Add new communication meeting relationship.
-	                relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
-
-	                // Add 1 point to invitee's opinion of the one who starts the conversation
-	                Relationship relationship = relationshipManager.getRelationship(invitee, person);
+	            	Relationship relationship = relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
+	                
 	                if (relationship == null) {
-	        			throw new IllegalStateException(person + ": relationship is null.");
-	                } else {
-		                double currentOpinion = relationship.getPersonOpinion(invitee);
-		                relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
-	                }
+						relationshipManager.addRelationship(person, invitee,
+								Relationship.EXISTING_RELATIONSHIP);
+						relationship = relationshipManager.getRelationship(invitee, person);
+					}
+	                
+	                double currentOpinion = relationship.getPersonOpinion(invitee);
+	                relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
 	            }
         	}
         }

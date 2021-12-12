@@ -287,7 +287,6 @@ extends JComponent implements ClockListener {
 
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
-			graphicsDevice = gs[0];
 			logger.config("1 screen detected.");	
 		}
 		else if (gs.length == 0) {
@@ -298,6 +297,10 @@ extends JComponent implements ClockListener {
 			logger.config(gs.length + " screens detected.");	
 		}
 		
+		graphicsDevice = gs[0];
+		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
+
 		logger.config("Do you want to use the last saved screen configuration ?");
 		logger.config("To proceed, please click Yes or No in the pop up window box.");
 		
@@ -315,66 +318,76 @@ extends JComponent implements ClockListener {
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
 			
-			selectedSize = calculatedScreenSize();
-
-			// Set frame size
-			frame.setSize(selectedSize);
-
-			// Set frame location.
+			logger.config("useDefault is: " + useDefault);
+			
 			if (useDefault) {
-				logger.config("useDefault is: " + useDefault);
-				// Center frame on screen
-	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
+				
+				// Set frame size
+				frame.setSize(selectedSize);
+				logger.config("The default window dimension is "
+						+ selectedSize.width
+						+ " x "
+						+ selectedSize.height
+						+ ".");
+				
+	    		selectedSize = new Dimension(screenWidth, screenHeight);
 				frame.setLocation(
-					((screen_size.width - selectedSize.width) / 2),
-					((screen_size.height - selectedSize.height) / 2)
+					((screenWidth - selectedSize.width) / 2),
+					((screenHeight - selectedSize.height) / 2)
 				);
+				
 				logger.config("Use default configuration to set frame to the center of the screen.");	
+				logger.config("The window frame is centered, starting at (" 
+						+ (screenWidth - selectedSize.width) / 2 
+						+ ", "
+						+ (screenHeight - selectedSize.height) / 2
+						+ ").");
 			}
 			else {
+				// Set frame size
+				frame.setSize(UIConfig.INSTANCE.getMainWindowDimension());
+				logger.config("The last saved window dimension is "	
+					+ UIConfig.INSTANCE.getMainWindowDimension().width
+					+ " x "
+					+ UIConfig.INSTANCE.getMainWindowDimension().height
+					+ ".");
+				
+				// Display screen at a certain location
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-				logger.config("Use last saved screen configuration.");	
+				logger.config("The last saved screen starting at (" 
+						+ UIConfig.INSTANCE.getMainWindowLocation().x
+						+ ", "
+						+ UIConfig.INSTANCE.getMainWindowLocation().y
+						+ ").");
 			}
         }
         
         // No. use the new default setting
         else {
-			logger.config("You choose No. Loading default screen configuration.");	
-			
-    		if (graphicsDevice != null) {
-	    		// Check if there's only one screen if (graphicsDevice == gs[0])
-	    		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
-	    		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
-	    		selectedSize = new Dimension(screenWidth, screenHeight);
-	
-    			// Set frame location.
-				// Center frame on screen
-	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-				frame.setLocation(
-					((screen_size.width - selectedSize.width) / 2),
-					((screen_size.height - selectedSize.height) / 2)
-				);
-				logger.config("Use default configuration to set frame to the center of the screen.");	
-	    
-	    		// Set frame size
-	    		frame.setSize(selectedSize);
-    		}
+    		Dimension frameSize = interactiveTerm.getSelectedScreen();
     		
-    		else {
-    			// if there's more than one screen
-    			selectedSize = calculatedScreenSize();
-
-				// Set frame size
-				frame.setSize(selectedSize);
-				
-    			// Center frame on screen
-	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-				frame.setLocation(
-					((screen_size.width - selectedSize.width) / 2),
-					((screen_size.height - selectedSize.height) / 2)
-				);
-				logger.config("Use default configuration to set frame to the center of the screen.");	
-    		}
+			logger.config("You choose No. Loading default screen dimension "
+					+ frameSize.width
+					+ " x "
+					+ frameSize.height
+					+ ".");
+			
+			// Set frame size
+			frame.setSize(frameSize);
+			
+			// Center frame on screen
+			frame.setLocation(
+				((screenWidth - frameSize.width) / 2),
+				((screenHeight - frameSize.height) / 2)
+			);
+			
+			logger.config("Use default configuration to set frame to the center of the screen.");
+			logger.config("The window frame is centered, starting at (" 
+					+ (screenWidth - frameSize.width) / 2 
+					+ ", "
+					+ (screenHeight - frameSize.height) / 2
+					+ ").");	
         }
 
 		try {
@@ -412,11 +425,12 @@ extends JComponent implements ClockListener {
 	 * 
 	 * @return
 	 */
-	private Dimension calculatedScreenSize() {
-
+	private Dimension calculatedScreenSize(int screenWidth, int screenHeight) {
+		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
+		
 		Dimension frameSize = interactiveTerm.getSelectedScreen();
 		if (frameSize != null) {
-			logger.config("Selected screen size: " + frameSize.width + " x " + frameSize.height);
+			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
 		}
 		else {
 			if (useDefault) {
@@ -426,14 +440,15 @@ extends JComponent implements ClockListener {
 			else {
 				// Use any stored size
 				frameSize = UIConfig.INSTANCE.getMainWindowDimension();
-				logger.config("Use last saved window size: " + frameSize.width + " x " + frameSize.height);	
+				logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
 			}
 		}
-		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		if (screenSize != null)
-			logger.config("Current screen size: " + screenSize.width + " x " + screenSize.height);
-		
+		if (screenSize != null) {
+			logger.config("Current toolkit screen size is " + screenSize.width + " x " + screenSize.height);
+		}
+
+				
 		if (frameSize != null) {
 			// Check selected is not bigger than the screen
 			if (frameSize.width > screenSize.width
@@ -453,11 +468,11 @@ extends JComponent implements ClockListener {
 					(int) Math.round(screenSize.getWidth() * .8),
 					(int) Math.round(screenSize.getHeight() * .8)
 				);
-				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
+				logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
 			}
 			else {
 				frameSize = new Dimension(screenSize);
-				logger.config("New window size: " + frameSize.width + " x " + frameSize.height);
+				logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
 
 			}
 		}

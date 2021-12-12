@@ -205,7 +205,7 @@ public class ResourceProcess implements Serializable {
 			double processInterval = pulse.getMasterClock().getScaleFactor();
 
 			if (accumulatedTime >= processInterval) {
-				logger.info("pulse width: " + time + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+//				logger.info("pulse width: " + time + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
 
 				accumulatedTime = accumulatedTime - processInterval;
 

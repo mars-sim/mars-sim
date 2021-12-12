@@ -159,12 +159,13 @@ implements Serializable {
             if (relationshipManager == null)
             	relationshipManager = Simulation.instance().getRelationshipManager();
             	
+            Relationship relationship = null;
+            
             if (!relationshipManager.hasRelationship(candidate, inviter)) {
                 // Add new communication meeting relationship.
-                relationshipManager.addRelationship(candidate, inviter, Relationship.COMMUNICATION_MEETING);
+            	relationship = relationshipManager.addRelationship(candidate, inviter, Relationship.COMMUNICATION_MEETING);
             }
 
-            Relationship relationship = relationshipManager.getRelationship(candidate, inviter);
             double currentOpinion = relationship.getPersonOpinion(inviter);
             relationship.setPersonOpinion(inviter, currentOpinion + RandomUtil.getRandomDouble(1));
         }
@@ -212,10 +213,6 @@ implements Serializable {
 			
 				logger.fine(person, Msg.getString("Task.description.meetTogether.detail", candidate.getName()));
 	
-		        //if (isDone()) {
-		        //    return time;
-		        //}
-		
 		        if (getDuration() <= (getTimeCompleted() + time)) {
 		
 		            // Check if existing relationship between primary researcher and invitee.
@@ -226,11 +223,10 @@ implements Serializable {
 		                // Add new communication meeting relationship.
 		                relationshipManager.addRelationship(person, candidate, Relationship.COMMUNICATION_MEETING);
 		            }
-		            // Add 1 point to invitee's opinion of the one who starts the conversation
+		            // Add 1 point to the opinion of the candidate toward the person
 		            Relationship relationship = relationshipManager.getRelationship(candidate, person);
-		            double currentOpinion = relationship.getPersonOpinion(candidate);
-		            relationship.setPersonOpinion(candidate, currentOpinion + RandomUtil.getRandomDouble(1));
-		 
+		            double currentOpinion = relationship.getPersonOpinion(person);
+		            relationship.setPersonOpinion(person, currentOpinion + RandomUtil.getRandomDouble(1));
 		        }
 		    }
     	}
