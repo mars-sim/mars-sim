@@ -83,6 +83,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
 	public static final String ANALYTICS_ICON = Msg.getString("icon.analytics"); //$NON-NLS-1$
 	public static final String TRADE_ICON = Msg.getString("icon.trade"); //$NON-NLS-1$
+	public static final String BUILDING_ICON = Msg.getString("icon.building"); //$NON-NLS-1$;
 
 	public static final String TRASH_ICON = Msg.getString("icon.trash"); //$NON-NLS-1$
 	public static final String CENTERMAP_ICON = Msg.getString("icon.centermap"); //$NON-NLS-1$
@@ -92,6 +93,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	public static final String BAR_ICON = Msg.getString("icon.bar"); //$NON-NLS-1$
 	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
+
 
 	// Data members
 	private boolean allSettlements = false;
@@ -190,7 +192,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Add the default table tabs
 		// May use NotificationWindow notifyBox = new NotificationWindow(desktop)
 		// Note: must use setSize() to define a starting size
-		setSize(new Dimension(mainWindow.getSelectedSize().width - 20, HEIGHT));
+		Dimension size = mainWindow.getSelectedSize();
+		if (size != null)
+			setSize(new Dimension(size.width - 20, HEIGHT));
 		setMinimumSize(new Dimension(640, 256));
 		// Note: Need to verify why setPreferredSize() prevents Monitor Window from being
 		// resizable and create spurious error message in linux in some cases
@@ -222,6 +226,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			addTab(new MissionTab(this));
 			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, BASE_ICON));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
+			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
 
 			// People from each settlement
 			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
@@ -539,7 +544,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 					unitTableModel = new PersonTableModel(selectedSettlement, true);
 					newTab = new UnitTab(this, unitTableModel, true, PEOPLE_ICON);
 				}
-
+				else if (model instanceof BuildingTableModel) {
+					unitTableModel = new BuildingTableModel(selectedSettlement);
+					newTab = new UnitTab(this, unitTableModel, true, BUILDING_ICON);
+				}
 			} else if (selectedTab instanceof MissionTab) {
 				// Enable these buttons
 				buttonBar.setEnabled(true);

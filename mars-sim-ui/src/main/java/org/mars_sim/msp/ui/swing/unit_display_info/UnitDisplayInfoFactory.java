@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -23,6 +24,7 @@ public final class UnitDisplayInfoFactory {
 
 	// Static bean instances.
 	private static UnitDisplayInfo settlementBean = new SettlementDisplayInfoBean();
+	private static UnitDisplayInfo buildingBean = new BuildingDisplayInfoBean();
 	private static UnitDisplayInfo personBean = new PersonDisplayInfoBean();
 	private static UnitDisplayInfo robotBean = new RobotDisplayInfoBean();
 	private static UnitDisplayInfo roverBean = new RoverDisplayInfoBean();
@@ -50,6 +52,8 @@ public final class UnitDisplayInfoFactory {
 			return settlementBean;
 		else if (unit instanceof Person)
 			return personBean;
+		else if (unit instanceof Building)
+			return buildingBean;
 		else if (unit instanceof Robot)
 			return robotBean;
 		else if (unit instanceof Vehicle) {

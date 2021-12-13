@@ -89,7 +89,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The Building class is a settlement's building.
  */
-public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
+public class Building extends Structure implements Malfunctionable, Indoor, 
 		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder, ItemHolder {
 
 	/** default serial id. */
@@ -247,6 +247,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		this.settlement = manager.getSettlement();
 		this.settlementID = settlement.getIdentifier();
+		setContainerID(settlementID);
 
 		this.loc = bounds.getPosition();
 		this.facing = bounds.getFacing();

@@ -43,12 +43,9 @@ public class BuildingWindow extends UnitWindow {
 
         // Add tab panels
         addTopPanel(new LocationTabPanel(building, desktop));
-        addTabPanel(new InventoryTabPanel(building, desktop));
-        if (building instanceof Malfunctionable)
-        	addTabPanel(new MaintenanceTabPanel(building, desktop));
+        addTabPanel(new MaintenanceTabPanel(building, desktop));
 
-        //salvaged = building.isSalvaged();
-        //if (salvaged) addTabPanel(new SalvageTabPanel(building, desktop));
+        // Add tabs for each supported Function
     }
 
     /**
