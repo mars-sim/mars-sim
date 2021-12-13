@@ -48,6 +48,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
 
+	private static final double SMALL_AMOUNT = 0.0000001;
+	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
 	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
@@ -239,6 +241,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					if (diff > bestDiff) {
 						bestDiff = diff;
 						result = process;
+						logger.info(building, 20_000, process.getProcessName() + ": " + Math.round(diff * 100.0)/100.0);
 					}
 				}
 			}
@@ -293,7 +296,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = 0;
 
-		if (inputValue != 0)
+		if (inputValue > SMALL_AMOUNT)
 			diff = (outputValue - inputValue) / inputValue;
 
 		// Subtract power required per millisol.
@@ -493,13 +496,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			}
 
 			if (resourceProcessBuilding != null) {
-				logger.log(person.getSettlement(), person, Level.FINE, 0,
+				logger.log(person.getSettlement(), person, Level.INFO, 1_000,
 						   "Manually turned " + toggle + " " + process.getProcessName()
 						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
 			}
 			else {
-				logger.log(person.getSettlement(), person, Level.FINE, 0,
+				logger.log(person.getSettlement(), person, Level.INFO, 1_000,
 							"Turned " + toggle + " remotely " + process.getProcessName()
 					       + " in " + person.getBuildingLocation().getNickName()
 					       + ".");

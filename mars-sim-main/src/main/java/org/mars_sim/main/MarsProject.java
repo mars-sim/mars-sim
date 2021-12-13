@@ -109,14 +109,18 @@ public class MarsProject {
 			}
 			// Get user choices if there is no template defined or a preload
 			else if (!builder.isFullyDefined()) {
-				logger.config("Please go to the console's Main Menu to choose an option.");
 
+				logger.config("Do you want go straight to starting a new default simulation in Sandbox Mode  ?");
+				logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
+				
 				// Ask the player if wanting to do a 'Quick Start'
 				int reply = JOptionPane.showConfirmDialog(interactiveTerm.getTerminal().getFrame(),
 						"Do you want to go straight to starting a new default simulation in Sandbox Mode ? ", 
 						"Quick Start", 
 						JOptionPane.YES_NO_OPTION);
 		        if (reply == JOptionPane.YES_OPTION) {
+					logger.config("You choose Yes. Go straight starting a new default simulation in Sandbox Mode.");	
+					
 					// Build and run the simulator
 					builder.start();
 					// Start the wait layer
@@ -129,6 +133,7 @@ public class MarsProject {
 					return;
 		        }
 				
+				logger.config("Please go to the Console Main Menu to choose an option.");
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
 					logger.config("Start the Scenario Editor...");
@@ -168,6 +173,12 @@ public class MarsProject {
 		}
 	}
 
+	/**
+	 * Check what switches or arguments have been provided
+	 * 
+	 * @param builder
+	 * @param args
+	 */
 	private void checkOptions(SimulationBuilder builder, String[] args) {
 
 		Options options = new Options();

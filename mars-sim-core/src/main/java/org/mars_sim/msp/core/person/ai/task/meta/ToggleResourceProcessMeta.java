@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -18,11 +19,15 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 
 /**
  * Meta task for the ToggleResourceProcess task.
  */
 public class ToggleResourceProcessMeta extends MetaTask {
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
@@ -49,42 +54,49 @@ public class ToggleResourceProcessMeta extends MetaTask {
 		// instead of having to do an EVA outside.
 		// Question: are there circumstances when a person still
 		// has to go outside ?
-		if (person.isInSettlement()) {
-
-			Settlement settlement = person.getSettlement();
+		
+		Settlement settlement = person.getSettlement();
+		
+		if (settlement != null) {
 
 			// Check if settlement has resource process override set.
-			if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
-				Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
-				if (building != null) {
-					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
-
-					String name = process.getProcessName();
-
-					if (name.toLowerCase().contains("sabatier")) {
-						int waterRationLevel = settlement.getWaterRationLevel();
-						result += waterRationLevel;
-					}
-
-					double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
-					double baseProb = diff * FACTOR;
-					if (baseProb > 10000) {
-						baseProb = 10000;
-					}
-					result += baseProb;
-
-	                if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-	                    // Factor in building crowding and relationship factors.
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	                }
-				}
+			if (settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
+				return 0;
 			}
+			
+			Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
+			
+			if (building != null) {
+				ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
 
-			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
-			result *= multiple;
+				String name = process.getProcessName();
 
-			result = applyPersonModifier(result, person);
+				if (name.toLowerCase().contains(ResourceProcessing.SABATIER)) {
+					int waterRationLevel = settlement.getWaterRationLevel();
+					result += waterRationLevel;
+				}
+
+				double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
+				
+				logger.info(building, 20_000, "@Meta " + name + ": " + Math.round(diff * 100.0)/100.0);
+				
+				double baseProb = diff * FACTOR;
+				if (baseProb > FACTOR) {
+					baseProb = FACTOR;
+				}
+				result += baseProb;
+
+                if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+                    // Factor in building crowding and relationship factors.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                }
+                
+    			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
+    			result *= multiple;
+
+    			result = applyPersonModifier(result, person);
+			}
 		}
 
 		return result;

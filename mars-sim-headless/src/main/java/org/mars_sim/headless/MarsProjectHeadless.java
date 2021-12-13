@@ -77,7 +77,7 @@ public class MarsProjectHeadless {
 
 		SimulationBuilder builder = new SimulationBuilder();
 
-		Options options = new  Options();
+		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
 		}

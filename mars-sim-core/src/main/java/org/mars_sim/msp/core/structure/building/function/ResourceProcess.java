@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -29,10 +29,9 @@ public class ResourceProcess implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(ResourceProcess.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
-
 
 	private boolean runningProcess;
 
@@ -117,9 +116,9 @@ public class ResourceProcess implements Serializable {
 			toggleRunningWorkTime = 0D;
 			runningProcess = !runningProcess;
 			if (runningProcess) {
-				logger.finest("Done turning on " + name);
+				logger.fine("Done turning on " + name);
 			} else {
-				logger.finest("Done turning off " + name);
+				logger.fine("Done turning off " + name);
 			}
 
 			// Reset for next toggle
@@ -205,7 +204,9 @@ public class ResourceProcess implements Serializable {
 			double processInterval = pulse.getMasterClock().getScaleFactor();
 
 			if (accumulatedTime >= processInterval) {
-//				logger.info("pulse width: " + time + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
+				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 1000.0)/1000.0 
+						+ "  accumulatedTime: " + Math.round(accumulatedTime * 1000.0)/1000.0 
+						+ "  processInterval: " + processInterval);
 
 				accumulatedTime = accumulatedTime - processInterval;
 
@@ -223,16 +224,15 @@ public class ResourceProcess implements Serializable {
 					double maxRate = input.getValue();
 					double resourceRate = maxRate * level;
 					double resourceAmount = resourceRate * time;
-					double remainingAmount = settlement.getAmountResourceStored(resource);
-					if (remainingAmount > SMALL_AMOUNT && resourceAmount > remainingAmount) {
-						resourceAmount = remainingAmount;
-						double missing = settlement.retrieveAmountResource(resource, resourceAmount);
-						if (missing > 0) {
-							// Refund the amount
-							settlement.storeAmountResource(resource, missing);
+					double stored = settlement.getAmountResourceStored(resource);
+					if (stored > SMALL_AMOUNT) {	
+						if (resourceAmount > stored) {
 							setProcessRunning(false);
 							break;
 							// Note: create flag to indicate if which the input resource is missing
+						}
+						else {
+							settlement.retrieveAmountResource(resource, resourceAmount);
 						}
 					}
 					else {
@@ -249,18 +249,17 @@ public class ResourceProcess implements Serializable {
 					double resourceRate = maxRate * level;
 					double resourceAmount = resourceRate * time;
 					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
-					if (resourceAmount > SMALL_AMOUNT && resourceAmount > remainingCapacity) {
-						resourceAmount = remainingCapacity;
-						double excess = settlement.storeAmountResource(resource, resourceAmount);
-						if (excess > 0) {
-							// Refund the amount
-							settlement.retrieveAmountResource(resource, excess);
+					
+					if (remainingCapacity > SMALL_AMOUNT) {
+						if (resourceAmount > remainingCapacity) {
 							setProcessRunning(false);
 							break;
-							// Note: create flag to indicate if which the output resource capacity is missing
-							// and increase container's vp in order to trigger manufacturing processes
-							// to make more containers if possible
+							// Note: create flag to indicate if which the input resource is missing
 						}
+						else {
+							settlement.storeAmountResource(resource, resourceAmount);
+						}
+						
 					}
 					else {
 						setProcessRunning(false);

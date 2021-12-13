@@ -303,7 +303,7 @@ extends JComponent implements ClockListener {
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
 		logger.config("Do you want to use the last saved screen configuration ?");
-		logger.config("To proceed, please click Yes or No in the pop up window box.");
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
 		
 		if (cleanUI) {
 			useDefaultScreenConfig(screenWidth, screenHeight);
