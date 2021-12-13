@@ -46,9 +46,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
 	/** Half of PI. */
-	private static final double HALF_PI = Math.PI / 2D;
+	private static final double HALF_PI = Math.PI / 2;
 	/** Two PIs. */
-	private static final double TWO_PIs = Math.PI * 2D;
+	private static final double TWO_PIs = Math.PI * 2;
 	
 	// from https://www.teuse.net/games/mars/mars_dates.html
 	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
@@ -75,6 +75,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final String SUMMER = "Summer";
 	private static final String AUTUMN = "Autumn";
 	private static final String WINTER = "Winter";
+	
+	private static final String R_IS = "r is ";
 	
 	/**
 	 * The initial areocentric solar longitude (or the orbital position of Mars
@@ -210,7 +212,7 @@ public class OrbitInfo implements Serializable, Temporal {
 //		x = 277.18758 - v;
 //		x = 277.18758 - 26.1875	
 		System.out.println("Scenario 1");
-		System.out.println("r is " + Math.round(r * 10000.0) / 10000.0);
+		System.out.println(R_IS + Math.round(r * 10000.0) / 10000.0);
 		System.out.println("Ls is " + Math.round(Ls * 10000.0) / 10000.0);
 
 		// Scenario 2
@@ -231,7 +233,7 @@ public class OrbitInfo implements Serializable, Temporal {
 //		x = 277.18758 - v;
 //		x = 277.18758 - 26.1875	
 		System.out.println("Scenario 2");
-		System.out.println("r is " + Math.round(r * 10000.0) / 10000.0);
+		System.out.println(R_IS + Math.round(r * 10000.0) / 10000.0);
 		System.out.println("Ls is " + Math.round(Ls * 10000.0) / 10000.0);
 
 		// Scenario 3
@@ -268,7 +270,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		v = (L_s - offsetL_s) + 360;
 
 		System.out.println("v_old (deg) is " + Math.round(v * 10000.0) / 10000.0);
-		System.out.println("r is " + r);// Math.round(r * 10000.0)/10000.0);
+		System.out.println(R_IS + r);// Math.round(r * 10000.0)/10000.0);
 
 	}
 
@@ -414,7 +416,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		// compute latitude in radians rather than in degree
 		double lat = location.getPhi2LatRadian();
 
-		// TODO: figure out a more compact Equation of Time (EOT) using numerical model
+		// NOTE: figure out a more compact Equation of Time (EOT) using numerical model
 		// of the Mars "Analemma".
 
 		// Note: Mars has an EOT varying between -51.1min and +39.9min, since Mars has

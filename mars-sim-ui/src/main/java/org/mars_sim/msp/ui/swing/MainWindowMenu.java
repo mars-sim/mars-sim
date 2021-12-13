@@ -568,21 +568,21 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
+			ourGuide.setURLString(Msg.getString("doc.about")); //$NON-NLS-1$
 		}
 
 		else if (selectedItem == guideItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
+			ourGuide.setURLString(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
 
 		else if (selectedItem == tutorialItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+			ourGuide.setURLString(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
 
