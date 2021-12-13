@@ -52,26 +52,71 @@ public class MarsProject {
 	private static final String DISPLAYHELP = "help";
 	private static final String GENERATEHELP = "html";
 	private static final String SITEEDITOR = "editor";
-
+	private static final String NEW = "new";
+	
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
+	
+	private boolean useNew = false;
+	
+	private boolean useSiteEditor;
+
+	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
+
+	private SimulationBuilder builder;
 
 	private Simulation sim = Simulation.instance();
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
-
-	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
-
-	private boolean useSiteEditor;
-
 
 	/**
 	 * Constructor
 	 */
 	public MarsProject() {
 		logger.config("Starting " + Simulation.title);
+		// Set the InteractionTerm instance
+		MainWindow.setInteractiveTerm(interactiveTerm);
 	};
 
+	/**
+	 * Check for confirmation in a dialog box
+	 * 
+	 * @return
+	 */
+	public boolean checkDialogBox() {
+		logger.config("Do you want go straight to starting a new default simulation in Sandbox Mode  ?");
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
+		// Ask the player if wanting to do a 'Quick Start'
+		int reply = JOptionPane.showConfirmDialog(interactiveTerm.getTerminal().getFrame(),
+				"Do you want to go straight to starting a new default simulation in Sandbox Mode ? ", 
+				"Quick Start", 
+				JOptionPane.YES_NO_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+			logger.config("You choose Yes. Go straight starting a new default simulation in Sandbox Mode.");	
+			
+			quickStart();
+			
+			return true;
+        }
+        
+        return false;
+	}
+	
+	/**
+	 * Quick start
+	 * 
+	 * @return
+	 */
+	public void quickStart() {
+		// Build and run the simulator
+		builder.start();
+		// Start the wait layer
+		InteractiveTerm.startLayer();
+		// Start beryx console
+		startConsoleThread();
+		// Start main window
+		setupMainWindow(true);
+	}
 	
 	/**
 	 * Parse the argument and start the simulation.
@@ -79,18 +124,24 @@ public class MarsProject {
 	 */
 	public void parseArgs(String[] args) {
 		logger.config("List of input args : " + Arrays.toString(args));
-
-		SimulationBuilder builder = new SimulationBuilder();
+		
+		builder = new SimulationBuilder();
 
 		checkOptions(builder, args);
 
 		// Do it
 		try {
+			if (useNew) {
+				logger.config("Quick starting the default scenario in Sandbox Mode.");
+				quickStart();
+				return;
+			}
+			
 			if (useGUI) {
 				// Start the splash window
 				if (!useSiteEditor) {
 					MainWindow.startSplash();
-					MainWindow.setInteractiveTerm(interactiveTerm);
+
 				}
 				// Use opengl
 				// Question: How compatible are linux and macos with opengl ?
@@ -110,29 +161,9 @@ public class MarsProject {
 			// Get user choices if there is no template defined or a preload
 			else if (!builder.isFullyDefined()) {
 
-				logger.config("Do you want go straight to starting a new default simulation in Sandbox Mode  ?");
-				logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
-				
-				// Ask the player if wanting to do a 'Quick Start'
-				int reply = JOptionPane.showConfirmDialog(interactiveTerm.getTerminal().getFrame(),
-						"Do you want to go straight to starting a new default simulation in Sandbox Mode ? ", 
-						"Quick Start", 
-						JOptionPane.YES_NO_OPTION);
-		        if (reply == JOptionPane.YES_OPTION) {
-					logger.config("You choose Yes. Go straight starting a new default simulation in Sandbox Mode.");	
-					
-					// Build and run the simulator
-					builder.start();
-					// Start the wait layer
-					InteractiveTerm.startLayer();
-					// Start beryx console
-					startConsoleThread();
-					// Start main window
-					setupMainWindow(true);
-					
+				if (checkDialogBox())
 					return;
-		        }
-				
+		
 				logger.config("Please go to the Console Main Menu to choose an option.");
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
@@ -187,11 +218,13 @@ public class MarsProject {
 		}
 
 		options.addOption(Option.builder(DISPLAYHELP)
-				.desc("Help of the options").build());
+				.desc("Display help options").build());
 		options.addOption(Option.builder(NOAUDIO)
 				.desc("Disable the audio").build());
 		options.addOption(Option.builder(NOGUI)
 				.desc("Disable the main UI").build());
+		options.addOption(Option.builder(NEW)
+				.desc("Enable quick start").build());
 		options.addOption(Option.builder(GENERATEHELP)
 				.desc("Generate HTML help").build());
 		options.addOption(Option.builder(SITEEDITOR)
@@ -212,6 +245,9 @@ public class MarsProject {
 			}
 			if (line.hasOption(NOGUI)) {
 				useGUI = false;
+			}
+			if (line.hasOption(NEW)) {
+				useNew = true;
 			}
 			if (line.hasOption(SITEEDITOR)) {
 				useSiteEditor = true;
@@ -379,8 +415,10 @@ public class MarsProject {
 
 		// starting the simulation
 		MarsProject project = new MarsProject();
+		
 		project.parseArgs(args);
-		logger.config("Simulation running");
+		
+		logger.config("Finish processing MarsProject");
 	}
 
 }

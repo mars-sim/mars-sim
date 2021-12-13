@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.guide;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -64,7 +63,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** The guide window URL. */
 	private URL guideURL;
 	/** The What's New URL. */
-	private URL whatsNewURL;
+//	private URL whatsNewURL;
 	
 	private ImageIcon icon = new ImageIcon(GuideWindow.class.getResource(HOME_ICON));
 	
@@ -81,17 +80,17 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, desktop);
 
-		EventQueue.invokeLater(new Runnable(){
-	        public void run() {
+//		EventQueue.invokeLater(new Runnable(){
+//	        public void run() {
 	        	init();            
-	        }
-	    });   
+//	        }
+//	    });   
 	}
 	
 	public void init() {
 		
-		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
-		whatsNewURL = getClass().getResource(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
+		URL guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
+//		URL whatsNewURL = getClass().getResource(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
 				
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.setSize(16, 16);
@@ -242,7 +241,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		htmlPane = null;
 		viewPort = null;
 		guideURL = null;
-		whatsNewURL = null;
+//		whatsNewURL = null;
 		homeButton = null;
 		backButton = null;
 		forwardButton = null;

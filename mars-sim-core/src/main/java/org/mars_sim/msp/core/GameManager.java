@@ -25,7 +25,7 @@ public class GameManager {
     }
 
     /** An instance of GameMode. */
-    private static GameMode gameMode = GameMode.COMMAND;
+    private static GameMode gameMode = GameMode.SANDBOX;
 
     /** The menu variable captures the first menu choice in the console main menu. */
     public static String menu = "";

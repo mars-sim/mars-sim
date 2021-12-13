@@ -228,7 +228,7 @@ public class ResourceProcess implements Serializable {
 					double stored = settlement.getAmountResourceStored(resource);
 					if (stored > SMALL_AMOUNT) {	
 						if (resourceAmount > stored) {
-							logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
+							logger.warning(settlement, 30_000, name + ": not enough input resource " + ResourceUtil.findAmountResourceName(resource)
 								+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
 							setProcessRunning(false);
 							break;
@@ -239,7 +239,7 @@ public class ResourceProcess implements Serializable {
 						}
 					}
 					else {
-						logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
+						logger.warning(settlement, 30_000, name + ": not enough input resource " + ResourceUtil.findAmountResourceName(resource)
 						+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
 						setProcessRunning(false);
 						break;
