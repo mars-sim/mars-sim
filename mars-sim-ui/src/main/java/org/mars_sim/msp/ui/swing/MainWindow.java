@@ -280,7 +280,8 @@ extends JComponent implements ClockListener {
 		// Set up the frame
 		frame = new JFrame();
 		frame.setResizable(true);
-
+		frame.setMinimumSize(new Dimension(640, 640));
+		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
@@ -321,8 +322,9 @@ extends JComponent implements ClockListener {
 			logger.config("useDefault is: " + useDefault);
 			
 			if (useDefault) {
-				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
-				
+//				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
+	    		selectedSize = new Dimension(screenWidth, screenHeight);
+	    		
 				// Set frame size
 				frame.setSize(selectedSize);
 				logger.config("The default window dimension is "
@@ -330,32 +332,33 @@ extends JComponent implements ClockListener {
 						+ " x "
 						+ selectedSize.height
 						+ ".");
-				
-	    		selectedSize = new Dimension(screenWidth, screenHeight);
+
 				frame.setLocation(
 					((screenWidth - selectedSize.width) / 2),
 					((screenHeight - selectedSize.height) / 2)
 				);
 				
 				logger.config("Use default configuration to set frame to the center of the screen.");	
-				logger.config("The window frame is centered, starting at (" 
+				logger.config("The window frame is centered and starts at (" 
 						+ (screenWidth - selectedSize.width) / 2 
 						+ ", "
 						+ (screenHeight - selectedSize.height) / 2
 						+ ").");
 			}
 			else {
+	    		selectedSize = UIConfig.INSTANCE.getMainWindowDimension();
+				
 				// Set frame size
-				frame.setSize(UIConfig.INSTANCE.getMainWindowDimension());
+				frame.setSize(selectedSize);
 				logger.config("The last saved window dimension is "	
-					+ UIConfig.INSTANCE.getMainWindowDimension().width
+					+ selectedSize.width
 					+ " x "
-					+ UIConfig.INSTANCE.getMainWindowDimension().height
+					+ selectedSize.height
 					+ ".");
 				
 				// Display screen at a certain location
 				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-				logger.config("The last saved screen starting at (" 
+				logger.config("The last saved frame starts at (" 
 						+ UIConfig.INSTANCE.getMainWindowLocation().x
 						+ ", "
 						+ UIConfig.INSTANCE.getMainWindowLocation().y
@@ -365,28 +368,28 @@ extends JComponent implements ClockListener {
         
         // No. use the new default setting
         else {
-    		Dimension frameSize = interactiveTerm.getSelectedScreen();
+        	selectedSize = interactiveTerm.getSelectedScreen();
     		
 			logger.config("You choose No. Loading default screen dimension "
-					+ frameSize.width
+					+ selectedSize.width
 					+ " x "
-					+ frameSize.height
+					+ selectedSize.height
 					+ ".");
 			
 			// Set frame size
-			frame.setSize(frameSize);
+			frame.setSize(selectedSize);
 			
 			// Center frame on screen
 			frame.setLocation(
-				((screenWidth - frameSize.width) / 2),
-				((screenHeight - frameSize.height) / 2)
+				((screenWidth - selectedSize.width) / 2),
+				((screenHeight - selectedSize.height) / 2)
 			);
 			
 			logger.config("Use default configuration to set frame to the center of the screen.");
-			logger.config("The window frame is centered, starting at (" 
-					+ (screenWidth - frameSize.width) / 2 
+			logger.config("The window frame is centered and starts at (" 
+					+ (screenWidth - selectedSize.width) / 2 
 					+ ", "
-					+ (screenHeight - frameSize.height) / 2
+					+ (screenHeight - selectedSize.height) / 2
 					+ ").");	
         }
 

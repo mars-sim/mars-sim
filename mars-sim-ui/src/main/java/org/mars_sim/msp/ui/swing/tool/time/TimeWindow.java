@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
@@ -37,7 +36,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 //import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -129,14 +127,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** label for time compression. */
 	private WebLabel timeCompressionLabel;
 
-	/** Icon for play. */
-	private Icon playIcon;
-	/** Icon for pause. */
-	private Icon pauseIcon;
-
-	/** MainWindow instance . */
-	private MainWindow mainWindow;
-
 	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
 	private final DecimalFormat formatter3 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
@@ -165,8 +155,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
-		mainWindow = desktop.getMainWindow();
-
+	
 		// Set window resizable to false.
 		setResizable(false);
 		// Initialize data members

@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -68,6 +70,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
 
 	private static final int STATUS_HEIGHT = 25;
+	private static final int WIDTH = 1024;
 	private static final int HEIGHT = 512;
 
 	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
@@ -170,11 +173,19 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection.setForeground(Color.DARK_GRAY);
 		// Add all the tabs
 		addAllTabs();
+		
+//		Note: may use lambda tabsSection.addChangeListener(e -> updateTab())
+		
 		// Add a listener for the tab changes
-		tabsSection.addChangeListener(e -> updateTab());
-
+		tabsSection.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				updateTab();
+			}
+		});
+					
 		mainPane.add(tabsSection, BorderLayout.CENTER);
-
+		
 		// Open the Events tab at the start of the sim
 //		May call tabsSection.setSelectedIndex(2)
 //		May call table.repaint()
@@ -183,28 +194,24 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel = new WebPanel();
 		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
 		mainPane.add(statusPanel, BorderLayout.SOUTH);
-
+	
 		// Add the buttons and row count label at the bottom
-		addBottomBar();
-
-		// Add the default table tabs
+		addBottomBar();	
+	
 		// May use NotificationWindow notifyBox = new NotificationWindow(desktop)
-		// Note: must use setSize() to define a starting size
-		setSize(new Dimension(mainWindow.getSelectedSize().width - 20, HEIGHT));
-		setMinimumSize(new Dimension(640, 256));
-		// Note: Need to verify why setPreferredSize() prevents Monitor Window from being
-		// resizable and create spurious error message in linux in some cases
-		// setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
 		setResizable(true);
 		setMaximizable(true);
 		setVisible(true);
 
-		Dimension desktopSize = desktop.getSize();
-		Dimension jInternalFrameSize = this.getSize();
-		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-		setLocation(width, height);
+		setSize(new Dimension(WIDTH, HEIGHT));	
+		setMinimumSize(new Dimension(640, 256));
+		Dimension desktopSize = desktop.getMainWindow().getFrame().getSize();
+		Dimension windowSize = getSize();
 
+		int width = (desktopSize.width - windowSize.width) / 2;
+		int height = (desktopSize.height - windowSize.height - 100) / 2;
+		setLocation(width, height);
 	}
 
 	/**
