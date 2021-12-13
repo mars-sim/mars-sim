@@ -241,7 +241,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					if (diff > bestDiff) {
 						bestDiff = diff;
 						result = process;
-						logger.info(building, 20_000, process.getProcessName() + ": " + Math.round(diff * 100.0)/100.0);
+//						logger.info(building, 20_000, process.getProcessName() + " diff: " + Math.round(diff * 1000.0)/1000.0);
 					}
 				}
 			}
@@ -305,17 +305,22 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		diff -= powerValue;
 
 		if (process.isProcessRunning()) {
+			// most likely don't need to change the status of this process 
 			diff *= -1D;
 		}
 
 		// Check if settlement is missing one or more of the output resources.
 		if (isEmptyOutputResourceInProcess(settlement, process)) {
+			// will need to execute the task of toggling on this process to produce more output resources
 			diff *= 2D;
 		}
 
+		// NOTE: Need to detect if the output resource is dwindling 
+		
 		// Check if settlement is missing one or more of the input resources.
 		if (isEmptyInputResourceInProcess(settlement, process)) {
 			if (process.isProcessRunning()) {
+				// will need to execute the task of toggling off this process 
 				diff *= 1D;
 			} else {
 				diff = 0D;
@@ -392,7 +397,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			int resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
 				double stored = settlement.getAmountResourceStored(resource);
-				if (stored == 0D) {
+				if (stored < SMALL_AMOUNT) {
 					result = true;
 					break;
 				}
@@ -416,7 +421,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		while (i.hasNext()) {
 			int resource = i.next();
 			double stored = settlement.getAmountResourceStored(resource);
-			if (stored == 0D) {
+			if (stored < SMALL_AMOUNT) {
 				result = true;
 				break;
 			}

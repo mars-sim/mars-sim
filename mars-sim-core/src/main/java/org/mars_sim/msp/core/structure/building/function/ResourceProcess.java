@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -204,9 +205,9 @@ public class ResourceProcess implements Serializable {
 			double processInterval = pulse.getMasterClock().getScaleFactor();
 
 			if (accumulatedTime >= processInterval) {
-				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 1000.0)/1000.0 
-						+ "  accumulatedTime: " + Math.round(accumulatedTime * 1000.0)/1000.0 
-						+ "  processInterval: " + processInterval);
+//				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
+//						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
+//						+ "  processInterval: " + processInterval);
 
 				accumulatedTime = accumulatedTime - processInterval;
 
@@ -227,6 +228,8 @@ public class ResourceProcess implements Serializable {
 					double stored = settlement.getAmountResourceStored(resource);
 					if (stored > SMALL_AMOUNT) {	
 						if (resourceAmount > stored) {
+							logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
+								+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
 							setProcessRunning(false);
 							break;
 							// Note: create flag to indicate if which the input resource is missing
@@ -236,6 +239,8 @@ public class ResourceProcess implements Serializable {
 						}
 					}
 					else {
+						logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
+						+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
 						setProcessRunning(false);
 						break;
 					}
@@ -252,6 +257,9 @@ public class ResourceProcess implements Serializable {
 					
 					if (remainingCapacity > SMALL_AMOUNT) {
 						if (resourceAmount > remainingCapacity) {
+							logger.warning(settlement, 30_000, name + "Not enough storage or container space for storing output resource " 
+									+ ResourceUtil.findAmountResourceName(resource)
+									+ ". Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg of room");
 							setProcessRunning(false);
 							break;
 							// Note: create flag to indicate if which the input resource is missing
@@ -262,6 +270,9 @@ public class ResourceProcess implements Serializable {
 						
 					}
 					else {
+						logger.warning(settlement, 30_000, name + "Not enough storage or container space for storing output resource " 
+								+ ResourceUtil.findAmountResourceName(resource)
+								+ ". Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg of room");
 						setProcessRunning(false);
 						break;
 					}

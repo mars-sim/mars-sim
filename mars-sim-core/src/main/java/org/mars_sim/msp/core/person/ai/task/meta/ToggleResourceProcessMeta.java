@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -27,7 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 public class ToggleResourceProcessMeta extends MetaTask {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
@@ -78,7 +77,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 				double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
 				
-				logger.info(building, 20_000, "@Meta " + name + ": " + Math.round(diff * 100.0)/100.0);
+//				logger.info(building, 20_000, "@Meta " + name + " diff: " + Math.round(diff * 1000.0)/1000.0);
 				
 				double baseProb = diff * FACTOR;
 				if (baseProb > FACTOR) {
