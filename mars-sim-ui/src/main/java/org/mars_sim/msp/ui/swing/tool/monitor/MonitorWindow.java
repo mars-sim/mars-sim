@@ -70,7 +70,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
 
 	private static final int STATUS_HEIGHT = 25;
-	private static final int WIDTH = 1024;
+	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 512;
 
 	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$

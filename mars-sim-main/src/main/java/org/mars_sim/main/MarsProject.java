@@ -72,6 +72,7 @@ public class MarsProject {
 		logger.config("Starting " + Simulation.title);
 	};
 
+	
 	/**
 	 * Parse the argument and start the simulation.
 	 * @param args
@@ -101,7 +102,7 @@ public class MarsProject {
 
 			// Preload the Config
 			simulationConfig.loadConfig();
-
+			
 			if (useSiteEditor) {
 				logger.config("Start the Scenario Editor...");
 				startScenarioEditor(builder);
@@ -110,6 +111,24 @@ public class MarsProject {
 			else if (!builder.isFullyDefined()) {
 				logger.config("Please go to the console's Main Menu to choose an option.");
 
+				// Ask the player if wanting to do a 'Quick Start'
+				int reply = JOptionPane.showConfirmDialog(interactiveTerm.getTerminal().getFrame(),
+						"Do you want to go straight to starting a new default simulation in Sandbox Mode ? ", 
+						"Quick Start", 
+						JOptionPane.YES_NO_OPTION);
+		        if (reply == JOptionPane.YES_OPTION) {
+					// Build and run the simulator
+					builder.start();
+					// Start the wait layer
+					InteractiveTerm.startLayer();
+					// Start beryx console
+					startConsoleThread();
+					// Start main window
+					setupMainWindow(true);
+					
+					return;
+		        }
+				
 				int type = interactiveTerm.startConsoleMainMenu();
 				if (type == 1) {
 					logger.config("Start the Scenario Editor...");
@@ -329,11 +348,7 @@ public class MarsProject {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-
-		/*
-		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so
-		 * that this gets webstart compatible. Also create the logs dir in user.home
-		 */
+		// Note Read the logging configuration from the classloader to make it webstart compatible
 		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 
 		try {

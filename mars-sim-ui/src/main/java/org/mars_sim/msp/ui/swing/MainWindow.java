@@ -305,6 +305,50 @@ extends JComponent implements ClockListener {
 		logger.config("Do you want to use the last saved screen configuration ?");
 		logger.config("To proceed, please click Yes or No in the pop up window box.");
 		
+		if (cleanUI) {
+			useDefaultScreenConfig(screenWidth, screenHeight);
+		}
+		else {
+			askScreenConfig(screenWidth, screenHeight);
+		}
+		
+		try {
+			// Set up MainDesktopPane
+			desktop = new MainDesktopPane(this);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
+		}
+
+		// Set up timers for use on the status bar
+		setupDelayTimer();
+
+		try {
+			// Set up other elements
+			init();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
+		}
+
+		// Show frame
+		frame.setVisible(true);
+
+		// Stop the wait indicator layer
+		layerUI.stop();
+
+		// Dispose the Splash Window
+		disposeSplash();
+
+		// Open all initial windows.
+		desktop.openInitialWindows();
+	}
+
+	/**
+	 * Asks if the player wants to use last saved screen configuration
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 */
+	private void askScreenConfig(int screenWidth, int screenHeight) {
 		int reply = JOptionPane.showConfirmDialog(frame,
 				"Do you want to use the last saved screen configuration", 
 				"Screen Configuration", 
@@ -368,61 +412,39 @@ extends JComponent implements ClockListener {
         
         // No. use the new default setting
         else {
-        	selectedSize = interactiveTerm.getSelectedScreen();
-    		
-			logger.config("You choose No. Loading default screen dimension "
-					+ selectedSize.width
-					+ " x "
-					+ selectedSize.height
-					+ ".");
-			
-			// Set frame size
-			frame.setSize(selectedSize);
-			
-			// Center frame on screen
-			frame.setLocation(
-				((screenWidth - selectedSize.width) / 2),
-				((screenHeight - selectedSize.height) / 2)
-			);
-			
-			logger.config("Use default configuration to set frame to the center of the screen.");
-			logger.config("The window frame is centered and starts at (" 
-					+ (screenWidth - selectedSize.width) / 2 
-					+ ", "
-					+ (screenHeight - selectedSize.height) / 2
-					+ ").");	
+        	useDefaultScreenConfig(screenWidth, screenHeight);
         }
-
-		try {
-			// Set up MainDesktopPane
-			desktop = new MainDesktopPane(this);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
-		}
-
-		// Set up timers for use on the status bar
-		setupDelayTimer();
-
-		try {
-			// Set up other elements
-			init();
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
-		}
-
-		// Show frame
-		frame.setVisible(true);
-
-		// Stop the wait indicator layer
-		layerUI.stop();
-
-		// Dispose the Splash Window
-		disposeSplash();
-
-		// Open all initial windows.
-		desktop.openInitialWindows();
 	}
-
+	
+	/**
+	 * Use the default screen config
+	 */
+	private void useDefaultScreenConfig(int screenWidth, int screenHeight) {
+	   	selectedSize = interactiveTerm.getSelectedScreen();
+		
+				logger.config("You choose No. Loading default screen dimension "
+						+ selectedSize.width
+						+ " x "
+						+ selectedSize.height
+						+ ".");
+				
+				// Set frame size
+				frame.setSize(selectedSize);
+				
+				// Center frame on screen
+				frame.setLocation(
+					((screenWidth - selectedSize.width) / 2),
+					((screenHeight - selectedSize.height) / 2)
+				);
+				
+				logger.config("Use default configuration to set frame to the center of the screen.");
+				logger.config("The window frame is centered and starts at (" 
+						+ (screenWidth - selectedSize.width) / 2 
+						+ ", "
+						+ (screenHeight - selectedSize.height) / 2
+						+ ").");	
+	}
+	
 	/**
 	 * Calculates the screen size.
 	 * 

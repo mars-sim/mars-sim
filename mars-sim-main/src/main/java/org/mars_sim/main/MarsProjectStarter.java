@@ -40,9 +40,7 @@ public class MarsProjectStarter {
 		String javaHome = System.getenv(JAVA_HOME);
 		
 	    System.out.println("      JAVA_HOME : " + javaHome);
-        
-//        System.out.println(" File.separator : " + File.separator);
-        
+      
  		if (javaHome != null) {
  			if (javaHome.contains(ONE_WHITESPACE))
  				javaHome = "\"" + javaHome;
@@ -83,7 +81,6 @@ public class MarsProjectStarter {
  			if (javaHome.contains(ONE_WHITESPACE))
  				command.append("\"");
 
-// 		    System.out.println("      JAVA_HOME : " + javaHome);
  	        System.out.println("   Java Command : " + command.toString());  
  		}
  		
