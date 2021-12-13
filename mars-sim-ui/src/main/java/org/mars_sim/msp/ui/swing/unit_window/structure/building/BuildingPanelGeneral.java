@@ -33,7 +33,6 @@ import com.alee.managers.tooltip.TooltipWay;
 public class BuildingPanelGeneral
 extends BuildingFunctionPanel {
 
-	private Building building;
 
 	/**
 	 * Constructor.
@@ -41,20 +40,18 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	public BuildingPanelGeneral(Building building, MainDesktopPane desktop) {
-		super(building, desktop);
+		super("General", building, desktop);
+	}
 
-		this.building = building;
-
-		setLayout(new BorderLayout());
-
-		WebLabel titleLabel = new WebLabel("General", WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		add(titleLabel, BorderLayout.NORTH);
+	/**
+	 * Build the UI elements
+	 */
+	@Override
+	protected void buildUI(JPanel center, JPanel bottom) {
 
 		// Prepare spring layout info panel.
 		JPanel infoPanel = new JPanel(new SpringLayout());
-//		infoPanel.setBorder(new MarsPanelBorder());
-		add(infoPanel, BorderLayout.CENTER);
+		center.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare dimension label
 		JLabel dimLabel = new JLabel("Dimension: ", JLabel.RIGHT); //$NON-NLS-1$
@@ -96,11 +93,5 @@ extends BuildingFunctionPanel {
 		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
 				80, 1, // initX, initY
 				5, 5); // xPad, yPad
-	}
-
-	/**
-	 * Update this panel with latest values
-	 */
-	public void update() {
 	}
 }

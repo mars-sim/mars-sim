@@ -11,6 +11,7 @@ import javax.swing.event.ChangeEvent;
 
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
 import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 
 
 /**
@@ -42,10 +44,20 @@ public class BuildingWindow extends UnitWindow {
         super(desktop, building, false);
 
         // Add tab panels
-        addTopPanel(new LocationTabPanel(building, desktop));
-        addTabPanel(new MaintenanceTabPanel(building, desktop));
-
-        // Add tabs for each supported Function
+        addTopPanel(new BuildingPanelGeneral(building, desktop));
+        
+        // Add tabs for each supported Function. A bit messy but it is type safe
+        if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
+        	addTabPanel(new BuildingPanelLiving(building.getLivingAccommodations(), desktop));
+        }
+        if (building.hasFunction(FunctionType.COOKING)) {
+        	addTabPanel(new BuildingPanelCooking(building.getCooking(), desktop));        	
+        }
+        if (building.hasFunction(FunctionType.FARMING)) {
+        	addTabPanel(new BuildingPanelFarming(building.getFarming(), desktop));        	
+        }
+        
+    	sortTabPanels();
     }
 
     /**
@@ -53,13 +65,6 @@ public class BuildingWindow extends UnitWindow {
      */
     public void update() {
         super.update();
-
-        // Check if building has been salvaged.
-        //Building building = (Building) getUnit();
-        //if (!salvaged && building.isSalvaged()) {
-        //    addTabPanel(new SalvageTabPanel(building, desktop));
-        //    salvaged = true;
-        //}
     }
 
     @Override

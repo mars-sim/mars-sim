@@ -27,6 +27,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -121,27 +122,28 @@ implements MouseListener {
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(farm.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelFarming.title"), farm.getBuilding(), desktop);
 
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	@Override
+	protected void buildUI(JPanel center, JPanel bottom) {
 
 		// Prepare farming label
-		WebLabel farmingLabel = new WebLabel(Msg.getString("BuildingPanelFarming.title"), WebLabel.CENTER);
-		WebPanel farmingPanel = new WebPanel(new FlowLayout());
-	    farmingPanel.add(farmingLabel);
-		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		add(farmingLabel, BorderLayout.NORTH);
+//		WebLabel farmingLabel = new WebLabel(Msg.getString("BuildingPanelFarming.title"), WebLabel.CENTER);
+//		WebPanel farmingPanel = new WebPanel(new FlowLayout());
+//	    farmingPanel.add(farmingLabel);
+//		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+//		add(farmingLabel, BorderLayout.NORTH);
 
 		// Create label panel
 		WebPanel springPanel = new WebPanel(new SpringLayout());
-		add(springPanel, BorderLayout.CENTER);
+		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
 		WebLabel radLabel = new WebLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache), WebLabel.RIGHT);
@@ -231,9 +233,10 @@ implements MouseListener {
 		                                65, 5,        //initX, initY
 		                                3, 1);       //xPad, yPad
 
-		WebPanel southPanel = new WebPanel(new BorderLayout());
-		add(southPanel, BorderLayout.SOUTH);
-
+		//WebPanel southPanel = new WebPanel(new BorderLayout());
+		//add(southPanel, BorderLayout.SOUTH);
+		JPanel southPanel = bottom;
+		
 		// Create scroll panel for crop table
 		WebScrollPane tableScrollPanel = new WebScrollPane();
 		// Set the height and width of the table

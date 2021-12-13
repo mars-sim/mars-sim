@@ -11,6 +11,9 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -46,23 +49,21 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	public BuildingPanelLiving(LivingAccommodations living, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(living.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelLiving.title"), living.getBuilding(), desktop);
 
 		// Initialize data members
 		this.living = living;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	/**
+	 * Build the UI elements
+	 */
+	@Override
+	protected void buildUI(JPanel center, JPanel bottom) {
 
 		// Create label panel
 		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
-
-		// Create medical care label
-		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelLiving.title"), WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(titleLabel);
+		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Create bed capacity label
 		bedCapLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.capacity",

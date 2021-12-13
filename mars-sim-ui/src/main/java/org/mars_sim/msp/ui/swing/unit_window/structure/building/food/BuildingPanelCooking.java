@@ -51,26 +51,19 @@ extends BuildingFunctionPanel {
 	public BuildingPanelCooking(Cooking kitchen, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(kitchen.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelCooking.title"), kitchen.getBuilding(), desktop);
 
 		// Initialize data members
 		this.kitchen = kitchen;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
-
+	}
+	
+	@Override
+	protected void buildUI(JPanel center, JPanel bottom) {
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(6, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
+		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-
-		// Prepare cooking label
-		// 2014-11-21 Changed font type, size and color and label text
-		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//cookingLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(cookingLabel);
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
