@@ -48,6 +48,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
 
+	private static final double SMALL_AMOUNT = 0.0000001;
+	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
 	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
@@ -239,6 +241,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					if (diff > bestDiff) {
 						bestDiff = diff;
 						result = process;
+//						logger.info(building, 20_000, process.getProcessName() + " diff: " + Math.round(diff * 1000.0)/1000.0);
 					}
 				}
 			}
@@ -293,7 +296,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = 0;
 
-		if (inputValue != 0)
+		if (inputValue > SMALL_AMOUNT)
 			diff = (outputValue - inputValue) / inputValue;
 
 		// Subtract power required per millisol.
@@ -302,17 +305,22 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		diff -= powerValue;
 
 		if (process.isProcessRunning()) {
+			// most likely don't need to change the status of this process 
 			diff *= -1D;
 		}
 
 		// Check if settlement is missing one or more of the output resources.
 		if (isEmptyOutputResourceInProcess(settlement, process)) {
+			// will need to execute the task of toggling on this process to produce more output resources
 			diff *= 2D;
 		}
 
+		// NOTE: Need to detect if the output resource is dwindling 
+		
 		// Check if settlement is missing one or more of the input resources.
 		if (isEmptyInputResourceInProcess(settlement, process)) {
 			if (process.isProcessRunning()) {
+				// will need to execute the task of toggling off this process 
 				diff *= 1D;
 			} else {
 				diff = 0D;
@@ -389,7 +397,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			int resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
 				double stored = settlement.getAmountResourceStored(resource);
-				if (stored == 0D) {
+				if (stored < SMALL_AMOUNT) {
 					result = true;
 					break;
 				}
@@ -413,7 +421,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		while (i.hasNext()) {
 			int resource = i.next();
 			double stored = settlement.getAmountResourceStored(resource);
-			if (stored == 0D) {
+			if (stored < SMALL_AMOUNT) {
 				result = true;
 				break;
 			}
@@ -493,13 +501,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			}
 
 			if (resourceProcessBuilding != null) {
-				logger.log(person.getSettlement(), person, Level.FINE, 0,
+				logger.log(person.getSettlement(), person, Level.INFO, 1_000,
 						   "Manually turned " + toggle + " " + process.getProcessName()
 						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
 			}
 			else {
-				logger.log(person.getSettlement(), person, Level.FINE, 0,
+				logger.log(person.getSettlement(), person, Level.INFO, 1_000,
 							"Turned " + toggle + " remotely " + process.getProcessName()
 					       + " in " + person.getBuildingLocation().getNickName()
 					       + ".");

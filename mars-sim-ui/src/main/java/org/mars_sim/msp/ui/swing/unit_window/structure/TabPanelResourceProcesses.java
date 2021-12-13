@@ -140,12 +140,11 @@ extends TabPanel {
 		// Clear the list.
 		processListPanel.removeAll();
 
-		//    	try {
 		// Add a label for each process in each processing building.
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			ResourceProcessing processing = (ResourceProcessing) building.getFunction(FunctionType.RESOURCE_PROCESSING);
+			ResourceProcessing processing = building.getResourceProcessing();
 			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
 			while (j.hasNext()) {
 				ResourceProcess process = j.next();
@@ -239,7 +238,6 @@ extends TabPanel {
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
-			// 2014-11-17 Changed building.getName() to building.getNickName()
 			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", building.getNickName(), process.getProcessName())); //$NON-NLS-1$
 			add(label);
 
@@ -253,17 +251,15 @@ extends TabPanel {
 			setToolTipText(getToolTipString(building));
 		}
 
-		// TODO internationalize the resource processes' dynamic tooltip
-		// 2014-11-20 Aligned text to improved tooltip readability (for English Locale only)
+		// NOTE: internationalize the resource processes' dynamic tooltip
+		// Align text to improved tooltip readability (for English Locale only)
 		private String getToolTipString(Building building) {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
-			// 2014-11-17 Changed building.getName() to building.getNickName()
 			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
 			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
 			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
 			Iterator<Integer> i = process.getInputResources().iterator();
-			// 2014-11-20 Added ambientStr and ii and ii++
 			String ambientStr = "";
 			int ii = 0;
 			while (i.hasNext()) {
@@ -273,7 +269,6 @@ extends TabPanel {
 				String rateString = decFormatter.format(rate);
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
-				// 2014-11-20 Capitalized resource.getName()
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
 					.append(ambientStr).append(" @ ")
 					.append(rateString).append(" kg/sol<br>");
@@ -281,19 +276,16 @@ extends TabPanel {
 			}
 			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
 			Iterator<Integer> j = process.getOutputResources().iterator();
-			// 2014-11-20 Added jj and jj++
 			int jj = 0;
 			while (j.hasNext()) {
 				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				Integer resource = j.next();
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				// 2014-11-20 Capitalized resource.getName()
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
 					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}
-			// 2014-11-20 Moved * from front to back of the text
 			// Added a note to denote an ambient input resource
 			if (ambientStr == "*")
 				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");

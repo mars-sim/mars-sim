@@ -143,8 +143,11 @@ public class MainDesktopPane extends JDesktopPane
 
 		prepareListeners();
 
-		init();
-//		SwingUtilities.invokeLater(() -> init());
+		// Note: without using SwingUtilities.invokeLater, 
+		// GuideWindow will not load up
+//		init();
+		
+		SwingUtilities.invokeLater(() -> init());
 	}
 
 	private void init() {
@@ -166,10 +169,10 @@ public class MainDesktopPane extends JDesktopPane
 		moveToBack(backgroundLabel);
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-		// Set background paper size
-		Dimension selectedSize = mainWindow.getSelectedSize();
-		if (selectedSize != null)
-			setPreferredSize(new Dimension(selectedSize.width - 20, selectedSize.height - 35));
+//		// Set background paper size
+//		Dimension selectedSize = mainWindow.getSelectedSize();
+//		if (selectedSize != null)
+//			setPreferredSize(new Dimension(selectedSize.width - 20, selectedSize.height - 35));
 		// Prep listeners
 		prepareListeners();
 
@@ -423,8 +426,8 @@ public class MainDesktopPane extends JDesktopPane
 		try {
 			announcementWindow.setClosed(true);
 		} catch (java.beans.PropertyVetoException e) {
+			logger.severe("Announcement Window not ready: " + e.getMessage());
 		}
-
 	}
 
 	/**

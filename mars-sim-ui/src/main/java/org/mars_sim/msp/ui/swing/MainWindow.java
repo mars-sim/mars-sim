@@ -280,7 +280,8 @@ extends JComponent implements ClockListener {
 		// Set up the frame
 		frame = new JFrame();
 		frame.setResizable(true);
-
+		frame.setMinimumSize(new Dimension(640, 640));
+		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
@@ -302,94 +303,15 @@ extends JComponent implements ClockListener {
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
 		logger.config("Do you want to use the last saved screen configuration ?");
-		logger.config("To proceed, please click Yes or No in the pop up window box.");
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
 		
-		int reply = JOptionPane.showConfirmDialog(frame,
-				"Do you want to use the last saved screen configuration", 
-				"Screen Configuration", 
-				JOptionPane.YES_NO_OPTION);
-        if (reply == JOptionPane.YES_OPTION) {
-        	
-			logger.config("You choose Yes. Loading last saved screen configuration.");	
-			
-    		// Load previous UI configuration.
-			UIConfig.INSTANCE.parseFile();
-			
-			// Set the UI configuration
-			useDefault = UIConfig.INSTANCE.useUIDefault();
-			
-			logger.config("useDefault is: " + useDefault);
-			
-			if (useDefault) {
-				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
-				
-				// Set frame size
-				frame.setSize(selectedSize);
-				logger.config("The default window dimension is "
-						+ selectedSize.width
-						+ " x "
-						+ selectedSize.height
-						+ ".");
-				
-	    		selectedSize = new Dimension(screenWidth, screenHeight);
-				frame.setLocation(
-					((screenWidth - selectedSize.width) / 2),
-					((screenHeight - selectedSize.height) / 2)
-				);
-				
-				logger.config("Use default configuration to set frame to the center of the screen.");	
-				logger.config("The window frame is centered, starting at (" 
-						+ (screenWidth - selectedSize.width) / 2 
-						+ ", "
-						+ (screenHeight - selectedSize.height) / 2
-						+ ").");
-			}
-			else {
-				// Set frame size
-				frame.setSize(UIConfig.INSTANCE.getMainWindowDimension());
-				logger.config("The last saved window dimension is "	
-					+ UIConfig.INSTANCE.getMainWindowDimension().width
-					+ " x "
-					+ UIConfig.INSTANCE.getMainWindowDimension().height
-					+ ".");
-				
-				// Display screen at a certain location
-				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-				logger.config("The last saved screen starting at (" 
-						+ UIConfig.INSTANCE.getMainWindowLocation().x
-						+ ", "
-						+ UIConfig.INSTANCE.getMainWindowLocation().y
-						+ ").");
-			}
-        }
-        
-        // No. use the new default setting
-        else {
-    		Dimension frameSize = interactiveTerm.getSelectedScreen();
-    		
-			logger.config("You choose No. Loading default screen dimension "
-					+ frameSize.width
-					+ " x "
-					+ frameSize.height
-					+ ".");
-			
-			// Set frame size
-			frame.setSize(frameSize);
-			
-			// Center frame on screen
-			frame.setLocation(
-				((screenWidth - frameSize.width) / 2),
-				((screenHeight - frameSize.height) / 2)
-			);
-			
-			logger.config("Use default configuration to set frame to the center of the screen.");
-			logger.config("The window frame is centered, starting at (" 
-					+ (screenWidth - frameSize.width) / 2 
-					+ ", "
-					+ (screenHeight - frameSize.height) / 2
-					+ ").");	
-        }
-
+		if (cleanUI) {
+			useDefaultScreenConfig(screenWidth, screenHeight);
+		}
+		else {
+			askScreenConfig(screenWidth, screenHeight);
+		}
+		
 		try {
 			// Set up MainDesktopPane
 			desktop = new MainDesktopPane(this);
@@ -420,6 +342,109 @@ extends JComponent implements ClockListener {
 		desktop.openInitialWindows();
 	}
 
+	/**
+	 * Asks if the player wants to use last saved screen configuration
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 */
+	private void askScreenConfig(int screenWidth, int screenHeight) {
+		int reply = JOptionPane.showConfirmDialog(frame,
+				"Do you want to use the last saved screen configuration", 
+				"Screen Configuration", 
+				JOptionPane.YES_NO_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+        	
+			logger.config("You choose Yes. Loading last saved screen configuration.");	
+			
+    		// Load previous UI configuration.
+			UIConfig.INSTANCE.parseFile();
+			
+			// Set the UI configuration
+			useDefault = UIConfig.INSTANCE.useUIDefault();
+			
+			logger.config("useDefault is: " + useDefault);
+			
+			if (useDefault) {
+//				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
+	    		selectedSize = new Dimension(screenWidth, screenHeight);
+	    		
+				// Set frame size
+				frame.setSize(selectedSize);
+				logger.config("The default window dimension is "
+						+ selectedSize.width
+						+ " x "
+						+ selectedSize.height
+						+ ".");
+
+				frame.setLocation(
+					((screenWidth - selectedSize.width) / 2),
+					((screenHeight - selectedSize.height) / 2)
+				);
+				
+				logger.config("Use default configuration to set frame to the center of the screen.");	
+				logger.config("The window frame is centered and starts at (" 
+						+ (screenWidth - selectedSize.width) / 2 
+						+ ", "
+						+ (screenHeight - selectedSize.height) / 2
+						+ ").");
+			}
+			else {
+	    		selectedSize = UIConfig.INSTANCE.getMainWindowDimension();
+				
+				// Set frame size
+				frame.setSize(selectedSize);
+				logger.config("The last saved window dimension is "	
+					+ selectedSize.width
+					+ " x "
+					+ selectedSize.height
+					+ ".");
+				
+				// Display screen at a certain location
+				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+				logger.config("The last saved frame starts at (" 
+						+ UIConfig.INSTANCE.getMainWindowLocation().x
+						+ ", "
+						+ UIConfig.INSTANCE.getMainWindowLocation().y
+						+ ").");
+			}
+        }
+        
+        // No. use the new default setting
+        else {
+        	useDefaultScreenConfig(screenWidth, screenHeight);
+        }
+	}
+	
+	/**
+	 * Use the default screen config
+	 */
+	private void useDefaultScreenConfig(int screenWidth, int screenHeight) {
+	   	selectedSize = interactiveTerm.getSelectedScreen();
+		
+				logger.config("You choose No. Loading default screen dimension "
+						+ selectedSize.width
+						+ " x "
+						+ selectedSize.height
+						+ ".");
+				
+				// Set frame size
+				frame.setSize(selectedSize);
+				
+				// Center frame on screen
+				frame.setLocation(
+					((screenWidth - selectedSize.width) / 2),
+					((screenHeight - selectedSize.height) / 2)
+				);
+				
+				logger.config("Use default configuration to set frame to the center of the screen.");
+				logger.config("The window frame is centered and starts at (" 
+						+ (screenWidth - selectedSize.width) / 2 
+						+ ", "
+						+ (screenHeight - selectedSize.height) / 2
+						+ ").");	
+	}
+	
 	/**
 	 * Calculates the screen size.
 	 * 

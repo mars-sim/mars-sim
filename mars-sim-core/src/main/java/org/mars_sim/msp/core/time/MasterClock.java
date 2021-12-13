@@ -29,8 +29,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

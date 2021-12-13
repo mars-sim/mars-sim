@@ -30,6 +30,8 @@ public class ResourceProcessing extends Function implements Serializable {
 	/** default logger. */
 //	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
 
+	public static final String SABATIER = "sabatier";
+	
 	public static final double PROCESS_MAX_VALUE = 100D;
 
 	/** Does The interval of time [in millisols] need a reset ? */

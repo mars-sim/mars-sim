@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -19,8 +18,6 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.panel.WebPanel;
 
 
 /**

@@ -25,7 +25,7 @@ class MainDesktopManager extends DefaultDesktopManager {
 	// See https://stackoverflow.com/questions/8136944/preventing-jinternalframe-from-being-moved-out-of-a-jdesktoppane#8138986
 
 	/** The value of GAP is to ensure the frame is flushed exactly at the edge of the main window. */
-	private static final int GAP = 10;
+	private static final int GAP = 8;
 
 	/** Constructs a MainDesktopManager object */
 	public MainDesktopManager() {
