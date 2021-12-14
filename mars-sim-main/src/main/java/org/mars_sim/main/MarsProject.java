@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProject.java
- * @date 2021-08-25
+ * @date 2021-12-12
  * @author Scott Davis
  */
 package org.mars_sim.main;
@@ -119,7 +119,8 @@ public class MarsProject {
 	}
 	
 	/**
-	 * Parse the argument and start the simulation.
+	 * Parses the argument and start the simulation.
+	 * 
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
@@ -205,7 +206,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * Check what switches or arguments have been provided
+	 * Checks what switches or arguments have been provided
 	 * 
 	 * @param builder
 	 * @param args
@@ -262,11 +263,16 @@ public class MarsProject {
 		}
 	}
 
+	/**
+	 * Starts the scenario editor
+	 * 
+	 * @param builder
+	 */
 	private void startScenarioEditor(SimulationBuilder builder) {
 		MainWindow.setInteractiveTerm(interactiveTerm);
 		// Start sim config editor
 		SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
-		logger.config("Start the Site Editor...");
+		logger.config("Starting the Scenario Editor...");
 		editor.waitForCompletion();
 
 		UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
@@ -282,11 +288,17 @@ public class MarsProject {
 	}
 
 
+	/**
+	 * Prints the help options
+	 * 
+	 * @param message
+	 * @param options
+	 */
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
 		System.out.println();
 		System.out.println(message);
-		format.printHelp(" [for mars-sim Swing edition]", options);
+		format.printHelp(" [for mars-sim Swing Edition]", options);
 		System.exit(1);
 	}
 
@@ -318,6 +330,9 @@ public class MarsProject {
 		return null;
 	}
 
+	/**
+	 * Generates the html help files
+	 */
 	private void generateHelp() {
 		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
 
@@ -334,7 +349,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * Exit the simulation with an error message.
+	 * Exits the simulation with an error message.
 	 *
 	 * @param message the error message.
 	 * @param e       the thrown exception or null if none.
@@ -353,12 +368,17 @@ public class MarsProject {
 	}
 
 
+	/**
+	 * Runs the main window 
+	 * 
+	 * @param cleanUI
+	 */
 	public void setupMainWindow(boolean cleanUI) {
 		while (true) {
 	        try {
 				TimeUnit.MILLISECONDS.sleep(250);
 				if (!sim.isUpdating()) {
-					logger.config("Starting GUI");
+					logger.config("Starting the Main Window...");
 					new MainWindow(cleanUI).stopLayerUI();
 					break;
 				}
@@ -370,7 +390,7 @@ public class MarsProject {
 
 
 	/**
-	 * Start the simulation instance.
+	 * Starts the simulation instance.
 	 */
 	private void startConsoleThread() {
 		Thread consoleThread = new Thread(new ConsoleTask());
@@ -378,6 +398,9 @@ public class MarsProject {
 		consoleThread.start();
 	}
 
+	/**
+	 * The ConsoleTask allows running the beryx console in a thread
+	 */
 	class ConsoleTask implements Runnable {
 
 		ConsoleTask() {
@@ -390,12 +413,12 @@ public class MarsProject {
 	}
 
 	/**
-	 * The starting method for the application
+	 * The main starting method for the application
 	 *
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-		// Note Read the logging configuration from the classloader to make it webstart compatible
+		// Note: Read the logging configuration from the classloader to make it webstart compatible
 		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 
 		try {
@@ -409,16 +432,17 @@ public class MarsProject {
 			}
 		}
 
-		// general text antialiasing
+		// Sets text antialiasing
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("awt.useSystemAAFontSettings", "lcd"); // for newer VMs
 
-		// starting the simulation
+		// Starts the simulation
 		MarsProject project = new MarsProject();
 		
+		// Processes the arguments
 		project.parseArgs(args);
 		
-		logger.config("Finish processing MarsProject");
+		logger.config("Finish processing MarsProject.");
 	}
 
 }

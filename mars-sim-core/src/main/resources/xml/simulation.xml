@@ -33,11 +33,11 @@
 
 		<!-- The base time ratio (TR) is the default simulation time ratio : the ratio of real time to sim time prior to modification
 			Note 1 : It denotes the initial speed of the simulation.
-			     2 : Value must be a positive number between 16 and 2048 and cannot be zero.
+			     2 : Value must be a positive integer between 16 and 2048 and cannot be zero.
 			     3 : The calculated TR is dependent upon the # of cpu threads available on user's machine.
 			     4 : The base TR value below will be overridden by the calculated TR at the start of the sim.
 		-->
-		<!-- Default: 128.0 -->
+		<!-- Default: 128 -->
 		<base-time-ratio value="128" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
@@ -55,10 +55,10 @@
 		 <!-- Default: 3.37932048 millisols ~ 5 earth minutes or 300 earth seconds -->
 		 <max-simulated-pulse value="3.37932048"/>
 
-		 <!-- The simulation creates a pulse periodically to execution the simulation. This value defines the
+		 <!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
 		  maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
 		  frequently depending on the time ratio and the accuracy as well as the machine power. -->
-		 <!-- Default is 1000 : 1 second -->
+		 <!-- Default is 1000 (must be an integer. 1000 milisecs equals to 1 sec) -->
 		 <default-time-pulse value="1000"/>
 
 		 <!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate
@@ -83,7 +83,7 @@
 		<mars-start-date-time value="00-Adir-01:000.000" />
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
-		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
+		<!-- Value must be a positive number between 1 and 360 and cannot be zero -->
 		<!-- Min : 1 ; Max : 360 -->
 		<!-- Default: 15 -->
 		<autosave-interval value="15" />
@@ -94,6 +94,7 @@
 		<average-transit-time value="60" />
 
 		<!-- unused-cores is the difference between the number of cores and the number of simulation threads -->
+		<!-- unused-cores are the numbers of cores that are free from being used by mars-sim -->
 		<!-- Min : 0 -->
 		<!-- Default: 2 -->
 		<unused-cores value="2" />
