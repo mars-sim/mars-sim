@@ -7,23 +7,18 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
-
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
@@ -47,50 +42,36 @@ extends BuildingFunctionPanel {
 	 * Build the UI elements
 	 */
 	@Override
-	protected void buildUI(JPanel center, JPanel bottom) {
+	protected void buildUI(JPanel center) {
 
+		JPanel topPanel = new JPanel(new BorderLayout());
+		center.add(topPanel, BorderLayout.NORTH);
+
+		// Add SVG Image loading for the building
+		Dimension dim = new Dimension(110, 110);
+		Settlement settlement = building.getSettlement();
+		SettlementMapPanel mapPanel = new SettlementMapPanel(settlement, building);
+
+		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		svgPanel.setPreferredSize(dim);
+		svgPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+		svgPanel.add(mapPanel);
+		topPanel.add(svgPanel, BorderLayout.NORTH);
+		
 		// Prepare spring layout info panel.
 		JPanel infoPanel = new JPanel(new SpringLayout());
-		center.add(infoPanel, BorderLayout.NORTH);
+		topPanel.add(infoPanel, BorderLayout.CENTER);
+
+		addTextField(infoPanel, "Building Type: ", building.getBuildingType(), null);
 
 		// Prepare dimension label
-		JLabel dimLabel = new JLabel("Dimension: ", JLabel.RIGHT); //$NON-NLS-1$
-		//dimLabel.setSize(2, 2);
-		infoPanel.add(dimLabel);
-
-		// Prepare dimension TF
-		WebPanel wrapper0 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField dimTF = new JTextField();
-		dimTF.setText(building.getLength() + " x " + building.getWidth() + " x 2.5");
-		dimTF.setEditable(false);
-//		wrapper0.setPreferredSize(new Dimension(150, 24));
-//		dimTF.setCaretPosition(0);
-		TooltipManager.setTooltip (dimTF,
-				"Length[m] x Width[m] x Height[m]",
-				TooltipWay.down);
-		wrapper0.add(dimTF);
-		infoPanel.add(wrapper0);
+		addTextField(infoPanel, "Dimension: ", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
 
 		// Prepare mass label
-		JLabel massLabel = new JLabel("Base Mass: ", JLabel.RIGHT); //$NON-NLS-1$
-		//massLabel.setSize(2, 2);
-		infoPanel.add(massLabel);
-
-		// Prepare mass TF
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField massTF = new JTextField();
-		massTF.setText(building.getBaseMass() + " kg");
-		massTF.setEditable(false);
-//		wrapper1.setPreferredSize(new Dimension(150, 24));
-//		massTF.setCaretPosition(0);
-		TooltipManager.setTooltip (massTF,
-				"The base mass of this building",
-				TooltipWay.down);
-		wrapper1.add(massTF);
-		infoPanel.add(wrapper1);
+		addTextField(infoPanel, "Base Mass:", building.getBaseMass() + " kg", "The base mass of this building");
 
 		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(infoPanel, 3, 2, // rows, cols
 				80, 1, // initX, initY
 				5, 5); // xPad, yPad
 	}

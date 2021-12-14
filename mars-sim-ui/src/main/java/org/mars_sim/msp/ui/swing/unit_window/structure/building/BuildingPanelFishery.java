@@ -6,15 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.label.WebLabel;
 
 /**
  * The BuildingPanelFishery class is a building function panel for
@@ -32,8 +33,8 @@ extends BuildingFunctionPanel {
 	private double weedMass;
 	
 	private Fishery tank;
-	private WebLabel numFishLabel;
-	private WebLabel weedLabel;
+	private JTextField numFishLabel;
+	private JTextField weedLabel;
 	
 	/**
 	 * Constructor.
@@ -41,55 +42,46 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	public BuildingPanelFishery(Fishery tank, MainDesktopPane desktop) {
-		super(tank.getBuilding(), desktop);
-
+		super(Msg.getString("BuildingPanelFishery.title"), tank.getBuilding(), desktop);
 		
 		this.tank = tank;
-		this.building = tank.getBuilding();
+	}
 	
-		setLayout(new GridLayout(4, 1, 0, 0));
-			
-		WebLabel titleLabel = new WebLabel(
-					Msg.getString("BuildingPanelFishery.title"), //$NON-NLS-1$
-					WebLabel.CENTER);		
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		add(titleLabel);
-
-		WebLabel sizeLabel = new WebLabel(
-				Msg.getString("BuildingPanelFishery.tankSize", tank.getTankSize()), //$NON-NLS-1$
-				WebLabel.CENTER
-			);
-		add(sizeLabel);	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+		JPanel labelPanel = new JPanel(new GridLayout(3, 2, 3, 1));
+		center.add(labelPanel, BorderLayout.NORTH);
+		
+		addTextField(labelPanel, Msg.getString("BuildingPanelFishery.tankSize"), tank.getTankSize(), null);
 		
 		numFish = tank.getNumFish();
-		numFishLabel = new WebLabel(
-				Msg.getString("BuildingPanelFishery.numFish", numFish), //$NON-NLS-1$
-				WebLabel.CENTER
-			);
-		add(numFishLabel);	
+		numFishLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.numFish"),
+									numFish, null);
+	
 				
 		weedMass = tank.getWeedMass();	
-		weedLabel = new WebLabel(	
-				Msg.getString("BuildingPanelFishery.weedMass", formatter.format(weedMass)), //$NON-NLS-1$
-				WebLabel.CENTER
-			);
-		add(weedLabel);
+		weedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.weedMass"),
+								 formatter.format(weedMass), null);
 	}
 
 	/**
 	 * Update this panel with latest values
 	 */
+	@Override
 	public void update() {	
 
 		if (numFish != tank.getNumFish()) {
 			numFish = tank.getNumFish();
-			numFishLabel.setText(Msg.getString("BuildingPanelFishery.numFish", numFish)); //$NON-NLS-1$
+			numFishLabel.setText(Integer.toString(numFish));
 		}
 
 		double newWeedMass = tank.getWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;
-			weedLabel.setText(Msg.getString("BuildingPanelFishery.weedMass", formatter.format(weedMass))); //$NON-NLS-1$
+			weedLabel.setText(formatter.format(weedMass));
 		}
 	}
 }

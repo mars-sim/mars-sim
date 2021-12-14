@@ -48,26 +48,23 @@ extends BuildingFunctionPanel {
 	public BuildingPanelPreparingDessert(PreparingDessert kitchen, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(kitchen.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelPreparingDessert.title"), kitchen.getBuilding(), desktop);
 
 		// Initialize data members
 		this.kitchen = kitchen;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
-
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+			
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(6, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
+		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-
-		// Prepare cooking label
-		// 2014-11-21 Changed font type, size and color and label text
-		JLabel makingSoyLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.title"), JLabel.CENTER); //$NON-NLS-1$
-		makingSoyLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//makingSoyLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(makingSoyLabel);
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
@@ -89,7 +86,6 @@ extends BuildingFunctionPanel {
 		servingsDessertTodayLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertTodayLabel);
 
-
 		String dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
 		// Update Dessert grade
 		dessertQualityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertGradeCache), JLabel.CENTER); //$NON-NLS-1$
@@ -101,7 +97,7 @@ extends BuildingFunctionPanel {
 	 * @param quality 
 	 * @return grade
 	 */
-	public String computeGrade(double quality) {
+	private static String computeGrade(double quality) {
 		String grade = "";
 				
 		if (quality < -3)
@@ -129,6 +125,7 @@ extends BuildingFunctionPanel {
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
 		// Update cook number
 		if (numCooksCache != kitchen.getNumCooks()) {

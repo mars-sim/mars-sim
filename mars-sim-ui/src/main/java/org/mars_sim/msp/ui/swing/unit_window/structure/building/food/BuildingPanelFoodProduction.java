@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +27,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -79,27 +79,25 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	 * @param foodFactory the manufacturing building function.
 	 * @param desktop     the main desktop.
 	 */
-	@SuppressWarnings("unchecked")
 	public BuildingPanelFoodProduction(FoodProduction foodFactory, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
-		super(foodFactory.getBuilding(), desktop);
+		super("Food Production", foodFactory.getBuilding(), desktop);
 
 		// Initialize data model.
 		this.foodFactory = foodFactory;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	/**
+	 * Build the UI elements
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
 		WebPanel labelPanel = new WebPanel();
-		labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
+		labelPanel.setLayout(new GridLayout(2, 1, 0, 0));
 
-		add(labelPanel, BorderLayout.NORTH);
-
-		// Prepare manufacturing label
-		WebLabel foodProductionLabel = new WebLabel("Food Production", WebLabel.CENTER);
-		foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		labelPanel.add(foodProductionLabel);
+		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare tech level label
 		WebLabel techLabel = new WebLabel("Tech Level: " + foodFactory.getTechLevel(), WebLabel.CENTER);
@@ -113,7 +111,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		// Create scroll pane for food production processes
 		scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
-		add(scrollPanel, BorderLayout.CENTER);
+		center.add(scrollPanel, BorderLayout.CENTER);
 //		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create process list main panel
@@ -126,10 +124,9 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
 		List<FoodProductionProcess> list = foodFactory.getProcesses();
-		// Collections.sort(list);
 
 		// Create process panels
-		processCache = new ArrayList<FoodProductionProcess>(list);
+		processCache = new ArrayList<>(list);
 		Iterator<FoodProductionProcess> i = processCache.iterator();
 		while (i.hasNext())
 			processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
@@ -179,7 +176,6 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		interactionPanel.add(btnPanel);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 
@@ -216,7 +212,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		// Update all process panels.
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
-			FoodProductionPanel panel = getFoodProductionPanel(i.next()); // java.util.ConcurrentModificationException
+			FoodProductionPanel panel = getFoodProductionPanel(i.next());
 			if (panel != null)
 				panel.update();
 

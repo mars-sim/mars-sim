@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -36,7 +37,6 @@ import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
@@ -59,9 +59,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
-import com.alee.laf.text.WebTextField;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 
 /**
@@ -74,7 +71,7 @@ extends BuildingFunctionPanel
 implements MouseListener {
 
 	// Data members
-	private WebTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
+	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -118,7 +115,6 @@ implements MouseListener {
 	 * @param farm {@link Farming} the farming building this panel is for.
 	 * @param desktop {@link MainDesktopPane} The main desktop.
 	 */
-	@SuppressWarnings("unchecked")
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
@@ -127,105 +123,49 @@ implements MouseListener {
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		surface = desktop.getSimulation().getMars().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	
+	/**
+	 * Build the UI
+	 */
 	@Override
-	protected void buildUI(JPanel center, JPanel bottom) {
-
-		// Prepare farming label
-//		WebLabel farmingLabel = new WebLabel(Msg.getString("BuildingPanelFarming.title"), WebLabel.CENTER);
-//		WebPanel farmingPanel = new WebPanel(new FlowLayout());
-//	    farmingPanel.add(farmingLabel);
-//		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
-//		add(farmingLabel, BorderLayout.NORTH);
+	protected void buildUI(JPanel center) {
 
 		// Create label panel
 		WebPanel springPanel = new WebPanel(new SpringLayout());
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
-		WebLabel radLabel = new WebLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache), WebLabel.RIGHT);
-		TooltipManager.setTooltip(radLabel, "Estimated sunlight on top of the greenhouse roof", TooltipWay.down);
-		springPanel.add(radLabel);
-
 		radCache = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		radTF = new WebTextField(radCache + "");
-		radTF.setEditable(false);
-		radTF.setColumns(8);
-//		radTF.setPreferredSize(new Dimension(120, 25));
-		wrapper1.add(radTF);
-		springPanel.add(wrapper1);
-
+		radTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
+							 radCache + "", "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
-		WebLabel farmersLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numFarmers.title"), WebLabel.RIGHT);
-	    //farmersPanel.add(farmersLabel);
-		TooltipManager.setTooltip(radLabel, "# of active gardeners tending the greenhouse", TooltipWay.down);
-		springPanel.add(farmersLabel);
-
 		farmersCache = farm.getFarmerNum();
-		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		farmersTF = new WebTextField(farmersCache + "");
-		farmersTF.setEditable(false);
-		farmersTF.setColumns(3);
-		farmersTF.setPreferredSize(new Dimension(120, 25));
-		wrapper2.add(farmersTF);
-		springPanel.add(wrapper2);
+		farmersTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.numFarmers.title"),
+				                 farmersCache + "", "# of active gardeners tending the greenhouse");
 
 		// Prepare crops label
-		WebLabel cropsLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numCrops.title"), WebLabel.RIGHT);
-		springPanel.add(cropsLabel);
-
 		cropsCache = farm.getCrops().size();
-		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		cropsTF = new WebTextField(cropsCache + "");
-		cropsTF.setEditable(false);
-		cropsTF.setColumns(3);
-		cropsTF.setPreferredSize(new Dimension(120, 25));
-		wrapper3.add(cropsTF);
-		springPanel.add(wrapper3);
-
-		WebLabel waterUsageLabel = new WebLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), WebLabel.RIGHT);
-		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
-		springPanel.add(waterUsageLabel);
+		cropsTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.numCrops.title"),
+							   cropsCache + "", null);
 
 		waterUsageCache = farm.computeUsage(0);
-		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		waterUsageTF = new WebTextField(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""));
-		waterUsageTF.setEditable(false);
-		waterUsageTF.setColumns(11);
-		waterUsageTF.setPreferredSize(new Dimension(160, 25));
-		wrapper4.add(waterUsageTF);
-		springPanel.add(wrapper4);
-
-		WebLabel o2Label = new WebLabel(Msg.getString("BuildingPanelFarming.o2.title"), WebLabel.RIGHT);
-		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
-		springPanel.add(o2Label);
+		waterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.waterUsage.title"),
+									Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""),
+									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 
 		o2Cache = farm.computeUsage(1);
-		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		o2TF = new WebTextField(Msg.getString("BuildingPanelFarming.o2", o2Cache + ""));
-		o2TF.setEditable(false);
-		o2TF.setColumns(11);
-		o2TF.setPreferredSize(new Dimension(160, 25));
-		wrapper5.add(o2TF);
-		springPanel.add(wrapper5);
-
-		WebLabel co2Label = new WebLabel(Msg.getString("BuildingPanelFarming.co2.title"), WebLabel.RIGHT);
-		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
-		springPanel.add(co2Label);
+		o2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.o2.title"),
+							Msg.getString("BuildingPanelFarming.o2", o2Cache + ""),
+							Msg.getString("BuildingPanelFarming.o2.tooltip"));
 
 		co2Cache = farm.computeUsage(2);
-		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		co2TF = new WebTextField(Msg.getString("BuildingPanelFarming.co2", co2Cache + ""));
-		co2TF.setEditable(false);
-		co2TF.setColumns(11);
-		co2TF.setPreferredSize(new Dimension(160, 25));
-		wrapper6.add(co2TF);
-		springPanel.add(wrapper6);
+		co2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.co2.title"),
+							 Msg.getString("BuildingPanelFarming.co2", co2Cache + ""),
+							 Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
@@ -233,9 +173,8 @@ implements MouseListener {
 		                                65, 5,        //initX, initY
 		                                3, 1);       //xPad, yPad
 
-		//WebPanel southPanel = new WebPanel(new BorderLayout());
-		//add(southPanel, BorderLayout.SOUTH);
-		JPanel southPanel = bottom;
+		WebPanel southPanel = new WebPanel(new BorderLayout());
+		center.add(southPanel, BorderLayout.SOUTH);
 		
 		// Create scroll panel for crop table
 		WebScrollPane tableScrollPanel = new WebScrollPane();
@@ -395,7 +334,7 @@ implements MouseListener {
 	/*
 	 * Builds an tooltip for displaying the growth parameters of a crop
 	 */
-	public StringBuilder buildCropToolTip(int row, int col, String n) {
+	private StringBuilder buildCropToolTip(int row, int col, String n) {
 
 		StringBuilder result = new StringBuilder("");
 		String cropName, cat;
@@ -494,6 +433,7 @@ implements MouseListener {
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */
+	@Override
 	public void mouseClicked(MouseEvent event) {
 
 		// Note: If double-click, open tooltip for the selected crop?
@@ -506,15 +446,22 @@ implements MouseListener {
 		}
 	}
 
+	@Override
 	public void mousePressed(MouseEvent event) {}
+	
+	@Override
 	public void mouseReleased(MouseEvent event) {}
+	
+	@Override
 	public void mouseEntered(MouseEvent event) {}
+	
+	@Override
 	public void mouseExited(MouseEvent event) {}
-
 
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
 
 		// Update farmers label if necessary.
@@ -797,7 +744,10 @@ implements MouseListener {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		// take care to avoid null exceptions
 		if (cropCache != null) {
 			cropCache.clear();

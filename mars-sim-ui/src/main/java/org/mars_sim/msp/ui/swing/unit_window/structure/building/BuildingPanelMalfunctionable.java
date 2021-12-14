@@ -6,6 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -14,20 +24,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.BoxLayout;
 
 /**
  * The BuildingPanelMalfunctionable class is a building function panel
@@ -54,24 +52,22 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	public BuildingPanelMalfunctionable(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super((Building) malfunctionable, desktop);
+		super(Msg.getString("BuildingPanelMalfunctionable.title"), (Building) malfunctionable, desktop);
 
 		// Initialize data members.
 		this.malfunctionable = malfunctionable;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
-
-		// Create malfunctions label
-		WebLabel malfunctionsLabel = new WebLabel(Msg.getString("BuildingPanelMalfunctionable.title"), WebLabel.CENTER);
-		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		add(malfunctionsLabel, BorderLayout.NORTH);
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		// Create scroll panel for malfunction list
 		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
-		add(scrollPanel, BorderLayout.CENTER);
+		center.add(scrollPanel, BorderLayout.NORTH);
 		scrollPanel.setOpaque(false);
 		scrollPanel.setBackground(new Color(0, 0, 0, 128));
 		scrollPanel.getViewport().setOpaque(false);

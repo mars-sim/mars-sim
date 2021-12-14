@@ -6,40 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.SwingUtilities;
-
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
-import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * The BuildingTableModel maintains a list of Building objects. By defaults the source

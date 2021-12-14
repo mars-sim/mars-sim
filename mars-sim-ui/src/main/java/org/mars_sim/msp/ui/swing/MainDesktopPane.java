@@ -1084,6 +1084,13 @@ public class MainDesktopPane extends JDesktopPane
 		return isConstructingSite;
 	}
 
+	/**
+	 * Get a reference to teh SImulation being displayed
+	 * @return
+	 */
+	public Simulation getSimulation() {
+		return sim;
+	}
 
 	@Override // @Override needed for Main window
 	public void unitUpdate(UnitEvent event) {
@@ -1142,12 +1149,6 @@ public class MainDesktopPane extends JDesktopPane
 		if (time > 0 && !mainWindow.isIconified()) {
 			updateWindows();
 		}
-
-		// hasFocus() is always false
-		// isFocusable() is always true
-		// isEnabled() is always true
-		// isVisible() is always true
-		// isShowing() is always true
 	}
 
 	@Override

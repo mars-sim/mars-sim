@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +29,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -50,7 +50,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 
 import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -90,45 +89,39 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * @param workshop the manufacturing building function.
 	 * @param desktop  the main desktop.
 	 */
-	@SuppressWarnings("unchecked")
 	public BuildingPanelManufacture(Manufacture workshop, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
-		super(workshop.getBuilding(), desktop);
+		super("Manufacturing", workshop.getBuilding(), desktop);
 
 		// Initialize data model.
 		this.workshop = workshop;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
 		WebPanel labelPane = new WebPanel();
-		labelPane.setLayout(new GridLayout(4, 1, 0, 0));
-		add(labelPane, BorderLayout.NORTH);
-
-		// Prepare manufacturing label
-		WebLabel manufactureLabel = new WebLabel("Manufacturing", WebLabel.CENTER);
-		manufactureLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		labelPane.add(manufactureLabel);
+		labelPane.setLayout(new GridLayout(3, 2, 0, 0));
+		center.add(labelPane, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		WebLabel techLabel = new WebLabel("Tech Level: " + workshop.getTechLevel(), WebLabel.CENTER);
-		labelPane.add(techLabel);
+		addTextField(labelPane, "Tech Level:", workshop.getTechLevel(), null);
 
 		// Prepare processCapacity label
-		WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + workshop.getMaxProcesses(),
-				WebLabel.CENTER);
-		labelPane.add(processCapacityLabel);
+		addTextField(labelPane, "Process Capacity:", workshop.getMaxProcesses(), null);
 
 		// Prepare processCapacity label
-		WebLabel numPrintersLabel = new WebLabel("# of Printers In Use: " + workshop.getNumPrintersInUse(),
-				WebLabel.CENTER);
-		labelPane.add(numPrintersLabel);
+		addTextField(labelPane, "# of Printers In Use: ",
+					 workshop.getNumPrintersInUse(), null);
 			
 		// Create scroll pane for manufacturing processes
 		scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
-		add(scrollPanel, BorderLayout.CENTER);
+		center.add(scrollPanel, BorderLayout.CENTER);
 		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create process list main panel
@@ -141,28 +134,26 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
 		List<ManufactureProcess> list = workshop.getProcesses();
-		//Collections.sort(list);
 
 		// Create process panels
-		processCache = new ArrayList<ManufactureProcess>(list);
+		processCache = new ArrayList<>(list);
 		Iterator<ManufactureProcess> i = processCache.iterator();
 		while (i.hasNext())
 			processListPane.add(new ManufacturePanel(i.next(), false, processStringWidth));
 
 		// Create salvage panels.
-		salvageCache = new ArrayList<SalvageProcess>(workshop.getSalvageProcesses());
+		salvageCache = new ArrayList<>(workshop.getSalvageProcesses());
 		Iterator<SalvageProcess> j = salvageCache.iterator();
 		while (j.hasNext())
 			processListPane.add(new SalvagePanel(j.next(), false, processStringWidth));
 
 		// Create interaction panel.
 		WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 10, 10));
-		add(interactionPanel, BorderLayout.SOUTH);
+		center.add(interactionPanel, BorderLayout.SOUTH);
 		
 		// Create new manufacture process selection.
 		processComboBoxCache = getAvailableProcesses();
 		processComboBox = new JComboBoxMW<>();
-//		processComboBox.addItem(processComboBoxCache);
 		
 		Iterator<ManufactureProcessInfo> k = processComboBoxCache.iterator();
 		while (k.hasNext()) processComboBox.addItem(k.next());
@@ -213,12 +204,9 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 				}
 			}
 		});
-		interactionPanel.add(btnPanel);
-		
-		
+		interactionPanel.add(btnPanel);		
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 
@@ -230,7 +218,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			// Add process panels for new processes.
 			Iterator<ManufactureProcess> i = processes.iterator();
 			while (i.hasNext()) {
-				ManufactureProcess process = i.next(); // java.util.ConcurrentModificationException
+				ManufactureProcess process = i.next();
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false, processStringWidth));
 			}
@@ -246,7 +234,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			// Remove process panels for old processes.
 			Iterator<ManufactureProcess> j = processCache.iterator();
 			while (j.hasNext()) {
-				ManufactureProcess process = j.next(); // java.util.ConcurrentModificationException
+				ManufactureProcess process = j.next(); 
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);
 					if (panel != null)
@@ -300,8 +288,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 		if (!newProcesses.equals(processComboBoxCache)) {
 			processComboBoxCache = newProcesses;
-
-//			processComboBox.removeAllItems(); // Exception in thread "pool-255-thread-1" java.lang.ArrayIndexOutOfBoundsException: 9
 
 			for (ManufactureProcessInfo m : processComboBoxCache) {
 				processComboBox.removeItem(m);
@@ -466,7 +452,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/**
 	 * Inner class for the manufacture selection list cell renderer.
 	 */
-	@SuppressWarnings("serial")
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 
 		@Override
@@ -501,7 +486,10 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		// take care to avoid null exceptions
 		workshop = null;
 		processListPane = null;
@@ -513,5 +501,4 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		salvageSelectionCache = null;
 		newProcessButton = null;
 	}
-
 }

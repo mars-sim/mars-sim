@@ -22,24 +22,21 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -49,7 +46,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseListener, ClockListener {
+public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseListener {
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 
@@ -66,15 +63,15 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private String outerDoorStateCache = "";
 
 //	private WebLabel capLabel;
-	private WebLabel innerDoorLabel;
-	private WebLabel outerDoorLabel;
-	private WebLabel occupiedLabel;
-	private WebLabel emptyLabel;
-	private WebLabel operatorLabel;
-	private WebLabel airlockStateLabel;
-	private WebLabel cycleTimeLabel;
-	private WebLabel innerDoorStateLabel;
-	private WebLabel outerDoorStateLabel;
+	private JTextField innerDoorLabel;
+	private JTextField outerDoorLabel;
+	private JTextField occupiedLabel;
+	private JTextField emptyLabel;
+	private JTextField operatorLabel;
+	private JTextField airlockStateLabel;
+	private JTextField cycleTimeLabel;
+	private JTextField innerDoorStateLabel;
+	private JTextField outerDoorStateLabel;
 
 	private ListModel occupantListModel;
 	private ReservationListModel reservationListModel;
@@ -87,9 +84,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private BuildingAirlock buildingAirlock;
 	private Airlock airlock;
 
-	private static Simulation sim;
-	private static MasterClock masterClock;
-	private static UnitManager unitManager;
+	private UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -99,59 +94,41 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	public BuildingPanelEVA(EVA eva, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(eva.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelEVA.title"), eva.getBuilding(), desktop);
 
 		// Initialize data members
 		this.eva = eva;
 		this.airlock = eva.getAirlock();
 		this.buildingAirlock = (BuildingAirlock)eva.getAirlock();
 
-		if (sim == null)
-			sim = Simulation.instance();
-
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		masterClock.addClockListener(this);
-
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
+		unitManager = desktop.getSimulation().getUnitManager();
 
 		// Create occupant list model
 		occupantListModel = new ListModel();
 
 		// Create reservation list model
 		reservationListModel = new ReservationListModel();
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(10, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
+		WebPanel labelPanel = new WebPanel(new GridLayout(9, 2, 3, 1));
+		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
 
-		// Create medical care label
-		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelEVA.title"), WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(titleLabel);
-
-		// Create capacity label
-//		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
-//				eva.getAirlockCapacity()), WebLabel.CENTER);
-//		labelPanel.add(capLabel);
-
 		// Create outerDoorLabel
-		outerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor.number",
-				eva.getNumAwaitingOuterDoor()), WebLabel.CENTER);
-		labelPanel.add(outerDoorLabel);
+		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
+									  eva.getNumAwaitingOuterDoor(), null);
 
 		// Create innerDoorLabel
-		innerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.innerDoor.number",
-				eva.getNumAwaitingInnerDoor()), WebLabel.CENTER);
-		labelPanel.add(innerDoorLabel);
+		innerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
+									  eva.getNumAwaitingInnerDoor(), null);
 
 
 		if (eva.getAirlock().isInnerDoorLocked())
@@ -160,10 +137,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 			innerDoorStateCache = UNLOCKED;
 		}
 		// Create innerDoorStateLabel
-		innerDoorStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.innerDoor.state",
-				innerDoorStateCache), WebLabel.CENTER);
-		labelPanel.add(innerDoorStateLabel);
-
+		innerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
+										   innerDoorStateCache, null);
 
 		if (eva.getAirlock().isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
@@ -171,52 +146,41 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 			outerDoorStateCache = UNLOCKED;
 		}
 		// Create outerDoorStateLabel
-		outerDoorStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor.state",
-				outerDoorStateCache), WebLabel.CENTER);
-		labelPanel.add(outerDoorStateLabel);
-
+		outerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
+										   outerDoorStateCache, null);
 
 		// Create occupiedLabel
-		occupiedLabel = new WebLabel(Msg.getString("BuildingPanelEVA.occupied",
-				eva.getNumOccupied()), WebLabel.CENTER);
-		labelPanel.add(occupiedLabel);
-
+		occupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.occupied"),
+									 eva.getNumOccupied(), null);
 
 		// Create emptyLabel
-		emptyLabel = new WebLabel(Msg.getString("BuildingPanelEVA.empty",
-				eva.getNumEmptied()), WebLabel.CENTER);
-		labelPanel.add(emptyLabel);
-
+		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
+								  eva.getNumEmptied(), null);
 
 		// Create OperatorLabel
-		operatorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.operator",
-				eva.getOperatorName()), WebLabel.CENTER);
-		labelPanel.add(operatorLabel);
-
+		operatorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName(), null);
 
 		// Create airlockStateLabel
-		airlockStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlock.state",
-				eva.getAirlock().getState().toString()), WebLabel.CENTER);
-		labelPanel.add(airlockStateLabel);
-
+		airlockStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
+										 airlock.getState().toString(), null);
 
 		// Create cycleTimeLabel
-		cycleTimeLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlock.cycleTime",
-				Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0), WebLabel.CENTER);
-		labelPanel.add(cycleTimeLabel);
+		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
+									  String.format("%.1f", airlock.getRemainingCycleTime()), null);
 
+		// Detials panels
 		UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
 		Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 		TitledBorder title = BorderFactory.createTitledBorder(
 	        		lowerEtched, " " + Msg.getString("BuildingPanelEVA.titledB.occupants") + " ");
-//	      title.setTitleJustification(TitledBorder.RIGHT);
 		Font titleFont = UIManager.getFont("TitledBorder.font");
 		title.setTitleFont(titleFont.deriveFont(Font.ITALIC + Font.BOLD));
 
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		occupantPanel.setBorder(title);
-		add(occupantPanel, BorderLayout.CENTER);
+		center.add(occupantPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for occupant list.
 		scrollPanel = new WebScrollPane();
@@ -235,7 +199,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		// Create reservation panel
 		WebPanel reservationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		reservationPanel.setBorder(title1);
-		add(reservationPanel, BorderLayout.SOUTH);
+		center.add(reservationPanel, BorderLayout.SOUTH);
 
 		// Create scroll panel for occupant list.
 		scrollPanel1 = new WebScrollPane();
@@ -243,7 +207,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		reservationPanel.add(scrollPanel1);
 
 		// Create reservation list
-		reservationList = new JList<Person>(reservationListModel);
+		reservationList = new JList<>(reservationListModel);
 		reservationList.addMouseListener(this);
 		scrollPanel1.setViewportView(reservationList);
 
@@ -251,58 +215,53 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 	@Override
 	public void update() {
-		// Update CapLabel
-//		if (capCache != eva.getAirlockCapacity()) {
-//			capCache = eva.getAirlockCapacity();
-//			capLabel.setText(Msg.getString("BuildingPanelEVA.capacity", capCache));
-//		}
 
 		// Update innerDoorLabel
 		if (innerDoorCache != eva.getNumAwaitingInnerDoor()) {
 			innerDoorCache = eva.getNumAwaitingInnerDoor();
-			innerDoorLabel.setText(Msg.getString("BuildingPanelEVA.innerDoor.number", innerDoorCache));
+			innerDoorLabel.setText(Integer.toString(innerDoorCache));
 		}
 
 		// Update outerDoorLabel
 		if (outerDoorCache != eva.getNumAwaitingOuterDoor()) {
 			outerDoorCache = eva.getNumAwaitingOuterDoor();
-			outerDoorLabel.setText(Msg.getString("BuildingPanelEVA.outerDoor.number", outerDoorCache));
+			outerDoorLabel.setText(Integer.toString(outerDoorCache));
 		}
 
 		// Update occupiedLabel
 		if (occupiedCache != eva.getNumOccupied()) {
 			occupiedCache = eva.getNumOccupied();
-			occupiedLabel.setText(Msg.getString("BuildingPanelEVA.occupied", occupiedCache));
+			occupiedLabel.setText(Integer.toString(occupiedCache));
 		}
 
 		// Update emptyLabel
 		if (emptyCache != eva.getNumEmptied()) {
 			emptyCache = eva.getNumEmptied();
-			emptyLabel.setText(Msg.getString("BuildingPanelEVA.empty", emptyCache));
+			emptyLabel.setText(Integer.toString(emptyCache));
 		}
 
 		// Update operatorLabel
 		if (!operatorCache.equals(eva.getOperatorName())) {
 			operatorCache = eva.getOperatorName();
-			operatorLabel.setText(Msg.getString("BuildingPanelEVA.operator", operatorCache));
+			operatorLabel.setText(operatorCache);
 		}
 
 		// Update airlockStateLabel
-		String state = eva.getAirlock().getState().toString();
+		String state = airlock.getState().toString();
 		if (!airlockStateCache.equalsIgnoreCase(state)) {
 			airlockStateCache = state;
-			airlockStateLabel.setText(Msg.getString("BuildingPanelEVA.airlock.state", state));
+			airlockStateLabel.setText(state);
 		}
 
 		// Update cycleTimeLabel
-		double time = Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0;
+		double time = airlock.getRemainingCycleTime();
 		if (cycleTimeCache != time) {
 			cycleTimeCache = time;
-			cycleTimeLabel.setText(Msg.getString("BuildingPanelEVA.airlock.cycleTime", time));
+			cycleTimeLabel.setText(String.format("%.1f",cycleTimeCache));
 		}
 
 		String innerDoorState = "";
-		if (eva.getAirlock().isInnerDoorLocked())
+		if (airlock.isInnerDoorLocked())
 			innerDoorState = LOCKED;
 		else {
 			innerDoorState = UNLOCKED;
@@ -311,11 +270,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		// Update innerDoorStateLabel
 		if (!innerDoorStateCache.equalsIgnoreCase(innerDoorState)) {
 			innerDoorStateCache = innerDoorState;
-			innerDoorStateLabel.setText(Msg.getString("BuildingPanelEVA.innerDoor.state", innerDoorState));
+			innerDoorStateLabel.setText(innerDoorState);
 		}
 
 		String outerDoorState = "";
-		if (eva.getAirlock().isOuterDoorLocked())
+		if (airlock.isOuterDoorLocked())
 			outerDoorState = LOCKED;
 		else {
 			outerDoorState = UNLOCKED;
@@ -324,7 +283,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		// Update outerDoorStateLabel
 		if (!outerDoorStateCache.equalsIgnoreCase(outerDoorState)) {
 			outerDoorStateCache = outerDoorState;
-			outerDoorStateLabel.setText(Msg.getString("BuildingPanelEVA.outerDoor.state", outerDoorState));
+			outerDoorStateLabel.setText(outerDoorState);
 		}
 
 		// Update occupant list
@@ -444,6 +403,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	 *
 	 * @param event the mouse event
 	 */
+	@Override
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open person window.
 		if (event.getClickCount() >= 2) {
@@ -462,42 +422,32 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		update();
 	}
 
+	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// Update panel
 		update();
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// Update panel
 		update();
 	}
 
+	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// Update panel
 		update();
 	}
 
 	@Override
-	public void clockPulse(ClockPulse pulse) {
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		// Update panel
-		update();
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Update panel
-		update();
-	}
-
 	public void destroy() {
-
+		super.destroy();
+		
 		innerDoorLabel = null;
 		outerDoorLabel = null;
 		occupiedLabel = null;

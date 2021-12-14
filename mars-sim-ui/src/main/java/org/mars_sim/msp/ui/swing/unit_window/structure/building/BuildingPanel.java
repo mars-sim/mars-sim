@@ -195,7 +195,7 @@ public class BuildingPanel extends JPanel {
 		functionListPanel.add(box);
 
 		// Prepare the general info panel
-		BuildingPanelGeneral buildingPanelGeneral = new BuildingPanelGeneral(building, desktop);
+		BuildingFunctionPanel buildingPanelGeneral = new BuildingPanelGeneral(building, desktop);
 		functionPanels.add(buildingPanelGeneral);
 		functionListPanel.add(buildingPanelGeneral);
 

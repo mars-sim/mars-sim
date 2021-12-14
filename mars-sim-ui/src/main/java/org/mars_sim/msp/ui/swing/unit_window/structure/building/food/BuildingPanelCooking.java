@@ -58,7 +58,7 @@ extends BuildingFunctionPanel {
 	}
 	
 	@Override
-	protected void buildUI(JPanel center, JPanel bottom) {
+	protected void buildUI(JPanel center) {
 		// Prepare label panel
 		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		center.add(labelPanel, BorderLayout.NORTH);
@@ -135,7 +135,7 @@ extends BuildingFunctionPanel {
 	 * @param quality 
 	 * @return grade
 	 */
-	public String computeGrade(double quality) {
+	private static String computeGrade(double quality) {
 		String grade = "";
 				
 		if (quality < -3)

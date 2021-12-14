@@ -45,8 +45,6 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelBots(settlement, desktop));
 
-		addTabPanel(new TabPanelBuildings(settlement, desktop));
-
 		addTabPanel(new TabPanelCooking(settlement, desktop));
 
 		addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));

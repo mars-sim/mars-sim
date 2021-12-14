@@ -7,10 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MouseInfo;
@@ -19,14 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.WindowConstants;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -37,15 +28,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.window.WebDialog;
 import com.alee.managers.style.StyleId;
 
@@ -203,106 +191,9 @@ public class PopUpUnitMenu extends WebPopupMenu {
 
 	            if (unit.getUnitType() == UnitType.VEHICLE
 	            		|| unit.getUnitType() == UnitType.PERSON
+		            	|| unit.getUnitType() == UnitType.BUILDING	
 	            		|| unit.getUnitType() == UnitType.ROBOT) {
 	            	desktop.openUnitWindow(unit, false);
-	            }
-
-	            else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
-
-	            }
-
-	            else if (unit.getUnitType() == UnitType.BUILDING) {
-	            	int newID = unit.getIdentifier();
-
-	            	if (!panels.isEmpty()) {
-		            	Iterator<Integer> i = panels.keySet().iterator();
-		    			while (i.hasNext()) {
-		    				int oldID = i.next();
-	        				WebInternalFrame f = panels.get(oldID);
-		            		if (newID == oldID && (f.isShowing() || f.isVisible())) {
-		            			f.dispose();
-		            			panels.remove(oldID);
-		            		}
-		            	}
-	            	}
-
-	               	Building building = (Building) unit;
-
-					final BuildingPanel buildingPanel = new BuildingPanel(true,
-							unit.getSettlement().getName(), building, desktop);
-
-//	                final WebDialog<?> d = new WebDialog<>(StyleId.dialogDecorated);
-//	                d.setModalityType(ModalityType.DOCUMENT_MODAL);//setModal(true);
-//	                d.setAlwaysOnTop(true);
-
-	                WebInternalFrame d = new WebInternalFrame(StyleId.internalframe,
-	                		unit.getSettlement().getName() + " - " + building,
-	                		true,  //resizable
-                            false, //not closable
-                            true, //not maximizable
-                            false); //iconifiable);
-
-//	                d.addInternalFrameListener(this);
-//					d.addWindowListener(new WindowAdapter() {
-//			            @Override
-//			            public void windowClosing(WindowEvent e) {
-//			            	panels.remove(unit.getIdentifier());
-//			            	d.dispose();
-//			            }
-//			            @Override
-//			            public void windowClosed(WindowEvent e) {
-//			            	panels.remove(unit.getIdentifier());
-//			            	d.dispose();
-//			            }
-//			        });
-
-//				    d.addFocusListener(new WindowFocusListener() {
-//						public void windowLostFocus(WindowEvent e) {
-//					    	//JWindow w = (JWindow) e.getSource();
-//					    	d.dispose();
-//					    	//w.dispose();
-//						}
-//						public void windowGainedFocus(WindowEvent e) {
-//						}
-//					});
-//	        		d.setIconImage(getIconImage());
-
-	                d.setIconifiable(false);
-	                d.setClosable(true);
-	        		d.setFrameIcon(MainWindow.getLanderIcon());
-	        		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-	        		WebPanel panel = new WebPanel(new BorderLayout(1, 1));
-	        		panel.setBorder(new MarsPanelBorder());
-	        		panel.setBorder(new EmptyBorder(1, 1, 1, 1));
-
-	        		panel.add(buildingPanel, BorderLayout.CENTER);
-
-	        		d.add(panel);
-	        		desktop.add(d);
-
-	    			d.setMaximumSize(new Dimension(WIDTH_2, HEIGHT_2));
-	    			d.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));
-					d.setSize(WIDTH_2, HEIGHT_2); // undecorated: 300, 335; decorated: 310, 370
-					d.setLayout(new FlowLayout());
-
-	            	// Make the buildingPanel to appear at the mouse cursor
-//	                Point location = MouseInfo.getPointerInfo().getLocation();
-//	                d.setLocation(location);
-
-					// Create compound border
-					Border border = new MarsPanelBorder();
-					Border margin = new EmptyBorder(1,1,1,1);
-					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
-
-	                // Make panel drag-able
-//	        		ComponentMover mover = new ComponentMover();
-//	        		mover.registerComponent(d);
-
-	                // Save this panel into the map
-	                panels.put(((Building)unit).getIdentifier(), d);
-
-	                d.setVisible(true);
 	            }
 	         }
 	    });

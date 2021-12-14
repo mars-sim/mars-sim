@@ -6,20 +6,17 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Font;
+import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JTextField;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * The BuildingFunctionPanel class is a panel representing a function for a
@@ -32,17 +29,6 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 	protected Building building;
 
 	private boolean isUIDone = false;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param building The building this panel is for.
-	 * @param desktop  The main desktop.
-	 * @deprecated
-	 */
-	public BuildingFunctionPanel(Building building, MainDesktopPane desktop) {
-		this("Unknown", building, desktop);
-	}
 	
 	/**
 	 * Constructor.
@@ -71,7 +57,7 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 //			titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 //			topContentPanel.add(titleLabel);
 
-			buildUI(centerContentPanel, bottomContentPanel);
+			buildUI(centerContentPanel);
 			
 			isUIDone = true;
 		}	
@@ -80,9 +66,8 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 	/**
 	 * Build the UI element using the 3 components.
 	 * @param centerContentPanel
-	 * @param bottomContentPanel
 	 */
-	protected void buildUI(JPanel centerContentPanel, JPanel bottomContentPanel) {
+	protected void buildUI(JPanel centerContentPanel) {
 		// TODO remove this once all building panels migrated
 		throw new UnsupportedOperationException("No build UI logic defined");
 	}
@@ -93,5 +78,41 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 	@Override
 	public void update() {
 		// Nothing to update by default
+	}
+
+	/**
+	 * Add a text field and label to a Panel. The layout should be Spring layout.
+	 * @param parent Parent panel
+	 * @param label The fixed label
+	 * @param content Initial content of the text field as an integer
+	 * @param tooltip Optional tooltip
+	 * @return The JTextField that can be updated.
+	 */
+	protected JTextField addTextField(JPanel parent, String label, int content, String tooltip) {
+		return addTextField(parent, label, Integer.toString(content), tooltip);
+	}
+	
+	/**
+	 * Add a text field and label to a Panel. The layout should be Spring layout.
+	 * @param parent Parent panel
+	 * @param label The fixed label
+	 * @param content Initial content of the text field
+	 * @param tooltip Optional tooltip
+	 * @return The JTextField that can be updated.
+	 */
+	protected JTextField addTextField(JPanel parent, String label, String content, String tooltip) {
+		parent.add(new WebLabel(label, WebLabel.RIGHT));
+						
+		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JTextField typeTF = new JTextField();
+		typeTF.setText(content);
+		typeTF.setEditable(false);
+		typeTF.setColumns(10);
+		if (tooltip != null) {
+			typeTF.setToolTipText(tooltip);
+		}
+		wrapper3.add(typeTF);
+		parent.add(wrapper3);
+		return typeTF;
 	}
 }

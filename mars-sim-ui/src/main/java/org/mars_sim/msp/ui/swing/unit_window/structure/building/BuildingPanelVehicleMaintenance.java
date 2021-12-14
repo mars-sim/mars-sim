@@ -6,21 +6,10 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -30,6 +19,17 @@ import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The BuildingPanelVehicleMaintenance class is a building function panel representing 
@@ -55,25 +55,23 @@ implements MouseListener {
 	public BuildingPanelVehicleMaintenance(VehicleMaintenance garage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(garage.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelVehicleMaintenance.title"), garage.getBuilding(), desktop);
 
 		// Initialize data members
 		this.garage = garage;
-
-		// Set panel layout
-		setLayout(new BorderLayout());
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		
-		// Create vehicle maintenance label
-		WebLabel vehicleMaintenanceLabel = new WebLabel(Msg.getString("BuildingPanelVehicleMaintenance.title"), WebLabel.CENTER);
-		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(vehicleMaintenanceLabel);
 
 		// Create vehicle number label
 		vehicleNumberCache = garage.getCurrentVehicleNumber();
@@ -89,7 +87,7 @@ implements MouseListener {
 
 		// Create vehicle list panel
 		WebPanel vehicleListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		add(vehicleListPanel, BorderLayout.CENTER);
+		center.add(vehicleListPanel, BorderLayout.CENTER);
 		vehicleListPanel.setOpaque(false);
 		vehicleListPanel.setBackground(new Color(0,0,0,128));
 		
@@ -117,6 +115,7 @@ implements MouseListener {
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
 		// Update vehicle list and vehicle mass label
 
@@ -136,6 +135,7 @@ implements MouseListener {
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */
+	@Override
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open vehicle window.
 		if (event.getClickCount() >= 2) {
@@ -146,8 +146,15 @@ implements MouseListener {
 		}
 	}
 
+	@Override
 	public void mousePressed(MouseEvent arg0) {}
+	
+	@Override
 	public void mouseReleased(MouseEvent arg0) {}
+	
+	@Override
 	public void mouseEntered(MouseEvent arg0) {}
+	
+	@Override
 	public void mouseExited(MouseEvent arg0) {}
 }

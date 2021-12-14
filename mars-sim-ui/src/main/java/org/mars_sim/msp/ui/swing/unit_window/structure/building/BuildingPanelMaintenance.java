@@ -39,12 +39,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -68,12 +66,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/** The time since last completed maintenance. */
 	private int lastCompletedTime;
 
-	/** The malfunctionable building. */
-	private Malfunctionable malfunctionable;
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
-	/** The Settlement instance. */
-	private Settlement settlement;
 	
 	/** The wear condition label. */
 	private WebLabel wearConditionLabel;
@@ -103,25 +97,21 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	public BuildingPanelMaintenance(Building malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(malfunctionable, desktop);
+		super(Msg.getString("BuildingPanelMaintenance.title"), malfunctionable, desktop);
 
 		// Initialize data members.
-		this.malfunctionable = malfunctionable;
-		this.settlement = malfunctionable.getSettlement();
 		manager = malfunctionable.getMalfunctionManager();
 		standardMaintParts = getStandardMaintParts(malfunctionable);
+	}
 	
-		// Set the layout
-		setLayout(new BorderLayout(1, 1));
-		
-		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 2, 1));
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+	
+		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 2, 1));
 		add(labelPanel, BorderLayout.NORTH);
-		
-		// Create maintenance label.
-		JLabel titleLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(titleLabel);
 		
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
@@ -166,7 +156,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		WebPanel tablePanel = new WebPanel();
 		tablePanel.add(partsPane);
 		
-		add(tablePanel, BorderLayout.CENTER);
+		center.add(tablePanel, BorderLayout.CENTER);
 
 		
 		UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
@@ -243,6 +233,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
 
 		// Update the wear condition label.
