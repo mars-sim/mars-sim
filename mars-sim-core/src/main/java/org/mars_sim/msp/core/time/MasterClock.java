@@ -149,6 +149,8 @@ public class MasterClock implements Serializable {
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
 
+	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	
 	static {
 		for (int i=0; i<MAX_SPEED + 1; i++) {
 			int ratio = (int) Math.pow(2, i);
@@ -164,9 +166,6 @@ public class MasterClock implements Serializable {
 	 */
 	public MasterClock(int userTimeRatio) {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
-
-		// Gets an instance of the SimulationConfig singleton
-		SimulationConfig simulationConfig = SimulationConfig.instance();
 
 		// Create a martian clock
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
@@ -857,7 +856,10 @@ public class MasterClock implements Serializable {
 		startClockListenerExecutor();
 
 		if (clockExecutor == null) {
-			clockExecutor = Executors.newFixedThreadPool(1,
+			int num = Math.min(1, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
+			if (num <= 0) num = 1;
+			logger.config("Setting up " + num + " thread(s) for clock executor.");
+			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 		}
 		clockExecutor.execute(clockThreadTask);
@@ -1025,9 +1027,13 @@ public class MasterClock implements Serializable {
 	 * Starts clock listener thread pool executor
 	 */
 	private void startClockListenerExecutor() {
-		if (listenerExecutor == null)
-			listenerExecutor = Executors.newFixedThreadPool(1,
+		if (listenerExecutor == null) {
+			int num = Math.min(1, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
+			if (num <= 0) num = 1;
+			logger.config("Setting up " + num + " thread(s) for clock listener.");
+			listenerExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
+		}
 	}
 
 	/**

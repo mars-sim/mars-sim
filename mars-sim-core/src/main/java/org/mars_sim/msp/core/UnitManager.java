@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitManager.java
- * @date 2021-08-28
+ * @date 2021-12-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,11 +63,11 @@ public class UnitManager implements Serializable, Temporal {
 	/** Flag true if the class has just been loaded. */
 	public boolean justLoaded = true;
 	/** List of unit manager listeners. */
-	private transient List<UnitManagerListener> listeners;
+	private transient Set<UnitManagerListener> listeners;
 
 	private transient ExecutorService executor;
 
-	private transient List<SettlementTask> settlementTaskList = new ArrayList<>();
+	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
@@ -78,7 +79,7 @@ public class UnitManager implements Serializable, Temporal {
 	private String originalBuild;
 
 	/** A map of all map display units (settlements and vehicles). */
-	private volatile List<Unit> displayUnits;
+	private volatile Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private volatile Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -122,7 +123,7 @@ public class UnitManager implements Serializable, Temporal {
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
 
-		listeners = new CopyOnWriteArrayList<>();
+		listeners = new HashSet<>();
 	}
 
 	/**
@@ -396,8 +397,8 @@ public class UnitManager implements Serializable, Temporal {
 	 * Sets up settlement tasks for executive service
 	 */
 	private void setupTasks() {
-		if (settlementTaskList == null || settlementTaskList.isEmpty()) {
-			settlementTaskList = new CopyOnWriteArrayList<>();
+		if (settlementTasks == null || settlementTasks.isEmpty()) {
+			settlementTasks = new HashSet<>();
 			lookupSettlement.values().forEach(s -> activateSettlement(s));
 		}
 	}
@@ -413,7 +414,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 
 		SettlementTask st = new SettlementTask(s);
-		settlementTaskList.add(st);
+		settlementTasks.add(st);
 	}
 
 	/**
@@ -447,12 +448,12 @@ public class UnitManager implements Serializable, Temporal {
 	private void runExecutor(ClockPulse pulse) {
 		setupExecutor();
 		setupTasks();
-		settlementTaskList.forEach(s -> s.setCurrentPulse(pulse));
+		settlementTasks.forEach(s -> s.setCurrentPulse(pulse));
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
 		try {
-			List<Future<String>> results = executor.invokeAll(settlementTaskList);
+			List<Future<String>> results = executor.invokeAll(settlementTasks);
 			for (Future<String> future : results) {
 				future.get();
 			}
@@ -531,9 +532,14 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());
 	}
 
+	/**
+	 * Adds the unit for display
+	 * 
+	 * @param unit
+	 */
 	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
-			displayUnits = new ArrayList<>();
+			displayUnits = new HashSet<>();
 
 		displayUnits.add(unit);
 	}
@@ -542,7 +548,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * Obtains the settlement and vehicle units for map display
 	 * @return
 	 */
-	public List<Unit> getDisplayUnits() {
+	public Set<Unit> getDisplayUnits() {
 		return displayUnits;
 	}
 
@@ -553,7 +559,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();
+			listeners = new HashSet<>();
 		}
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
@@ -567,7 +573,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();
+			listeners = new HashSet<>();
 		}
 		if (listeners.contains(oldListener)) {
 			listeners.remove(oldListener);
@@ -582,7 +588,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();
+			listeners = new HashSet<>();
 		}
 		synchronized (listeners) {
 			for (UnitManagerListener listener : listeners) {

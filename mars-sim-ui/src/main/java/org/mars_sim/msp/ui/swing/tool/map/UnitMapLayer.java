@@ -12,6 +12,7 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -65,7 +66,7 @@ abstract class UnitMapLayer implements MapLayer {
 		}
 
 		for (Unit unit : units) {
-			if (unit instanceof Vehicle) {
+			if (unit.getUnitType() == UnitType.VEHICLE) {
 				if (((Vehicle)unit).isOnAMission()) {
 					// Proceed to below to set cursor;
 				}

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.environment.TerrainElevation;
@@ -872,7 +873,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				
-				if (unit instanceof Vehicle) {
+				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOnAMission()) {
 						// Proceed to below to set cursor;
 					}
@@ -957,7 +958,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			while (i.hasNext()) {
 				Unit unit = i.next();
 
-				if (unit instanceof Vehicle) {
+				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOnAMission()) {
 						// Proceed to below to set cursor;
 					}
