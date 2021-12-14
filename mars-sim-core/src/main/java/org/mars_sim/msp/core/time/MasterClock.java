@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.DoubleSummaryStatistics;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -99,9 +100,9 @@ public class MasterClock implements Serializable {
 	private transient ExecutorService clockExecutor;
 
 	/** A list of clock listeners. */
-	private transient List<ClockListener> clockListeners;
+	private transient Set<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
-	private transient List<ClockListenerTask> clockListenerTasks;
+	private transient Set<ClockListenerTask> clockListenerTasks;
 
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
@@ -179,7 +180,7 @@ public class MasterClock implements Serializable {
 		uptimer = new UpTimer();
 
 		// Create listener list.
-		clockListeners = new CopyOnWriteArrayList<ClockListener>();
+		clockListeners = new HashSet<>();
 
 		// Calculate elapsedLast
 		timestampPulseStart();
@@ -259,7 +260,7 @@ public class MasterClock implements Serializable {
 	public final void addClockListener(ClockListener newListener) {
 		// if listeners list does not exist, create one
 		if (clockListeners == null)
-			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+			clockListeners = Collections.synchronizedSet(new HashSet<>());
 		// if the listeners list does not contain newListener, add it to the list
 		if (!clockListeners.contains(newListener))
 			clockListeners.add(newListener);
@@ -293,7 +294,7 @@ public class MasterClock implements Serializable {
 	public void addClockListenerTask(ClockListener listener) {
 		boolean hasIt = false;
 		if (clockListenerTasks == null)
-			clockListenerTasks = new CopyOnWriteArrayList<ClockListenerTask>();
+			clockListenerTasks = new HashSet<>();
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
@@ -386,9 +387,8 @@ public class MasterClock implements Serializable {
 		}
 		startClockListenerExecutor();
 
-
 		// Re-instantiate clockListeners
-		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		clockListeners = Collections.synchronizedSet(new HashSet<>());
 
 		setupClockListenerTask();
 
@@ -786,9 +786,9 @@ public class MasterClock implements Serializable {
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 		try {
-			for (ClockListenerTask s:clockListenerTasks) {
-				s.setCurrentPulse(pulse);
-				Future<String> result = listenerExecutor.submit(s);
+			for (ClockListenerTask c:new HashSet<>(clockListenerTasks)) {
+				c.setCurrentPulse(pulse);
+				Future<String> result = listenerExecutor.submit(c);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();
 			}
@@ -1105,23 +1105,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		sim = null;
-		marsClock = null;
-		initialMarsTime = null;
-		earthClock.destroy();
-		earthClock = null;
-		uptimer = null;
-		clockThreadTask = null;
-		listenerExecutor = null;
-		file = null;
-
-		clockListeners = null;
-	}
-
-	/**
 	 * How many pulses per second
 	 * @return
 	 */
@@ -1143,4 +1126,20 @@ public class MasterClock implements Serializable {
 		return ticksPerSecond;
 	}
 
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		sim = null;
+		marsClock = null;
+		initialMarsTime = null;
+		earthClock.destroy();
+		earthClock = null;
+		uptimer = null;
+		clockThreadTask = null;
+		listenerExecutor = null;
+		file = null;
+
+		clockListeners = null;
+	}
 }
