@@ -135,11 +135,11 @@ public class MainDesktopPane extends JDesktopPane
 		if (!soundPlayer.isVolumeDisabled())
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
-		unitWindows = new ArrayList<UnitWindow>();
+		unitWindows = new ArrayList<>();
 		// Add clock listener
 		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
-		toolWindows = new ArrayList<ToolWindow>();
+		toolWindows = new ArrayList<>();
 
 		prepareListeners();
 
@@ -679,6 +679,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
 
+
 			// Create new unit button in tool bar if necessary
 			if (mainWindow != null)
 				mainWindow.createUnitButton(unit);
@@ -713,7 +714,7 @@ public class MainDesktopPane extends JDesktopPane
 		UnitWindow result = null;
 
 		for (UnitWindow window : unitWindows) {
-			if (window.getUnit() == unit) {
+			if (window.getUnit().equals(unit)) {
 				result = window;
 			}
 		}
@@ -728,7 +729,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void disposeUnitWindow(UnitWindow window) {
 
 		if (window != null) {
-			unitWindows.remove(window);
+			boolean removed = unitWindows.remove(window);
 			window.dispose();
 
 			// Have main window dispose of unit button

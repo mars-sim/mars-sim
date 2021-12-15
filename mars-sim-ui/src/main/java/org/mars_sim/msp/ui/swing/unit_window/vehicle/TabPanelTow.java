@@ -155,14 +155,12 @@ public class TabPanelTow extends TabPanel {
 	 * Adds the towing text label to the towing label panel.
 	 */
 	private void addTowingTextLabel() {
-		try {
-			Component lastComponent = towingLabelPanel.getComponent(1);
-			if (lastComponent == towingButton) {
-				towingLabelPanel.remove(towingButton);
-				towingLabelPanel.add(towingTextLabel);
-			}
+		Component lastComponent = towingLabelPanel.getFirstComponent();
+		if ((lastComponent != null) && lastComponent == towingButton) {
+			towingLabelPanel.remove(towingButton);
+			towingLabelPanel.add(towingTextLabel);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {
+		else {
 			towingLabelPanel.add(towingTextLabel);
 		}
 	}
