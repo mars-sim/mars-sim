@@ -60,26 +60,26 @@ public class UnitManager implements Serializable, Temporal {
 	private static final int TYPE_MASK = (1 << (TYPE_BITS)) - 1;
 	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1;
 
+	// Data members
 	/** Flag true if the class has just been loaded. */
 	public boolean justLoaded = true;
-	/** List of unit manager listeners. */
-	private transient Set<UnitManagerListener> listeners;
-
-	private transient ExecutorService executor;
-
-	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
-
-	/** Map of equipment types and their numbers. */
-	private Map<String, Integer> unitCounts = new HashMap<>();
-
-	// Data members
+	/** Counter of unit identifiers. */
+	private int uniqueId = 0;
 	/** The commander's unique id . */
 	private int commanderID = -1;
 	/** The core engine's original build. */
 	private String originalBuild;
 
+		/** List of unit manager listeners. */
+	private transient Set<UnitManagerListener> listeners;
+
+	private transient ExecutorService executor;
+
+	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
+	/** Map of equipment types and their numbers. */
+	private Map<String, Integer> unitCounts = new HashMap<>();
 	/** A map of all map display units (settlements and vehicles). */
-	private volatile Set<Unit> displayUnits;
+	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
 	private volatile Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
@@ -104,11 +104,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	/** The instance of MarsSurface. */
 	private MarsSurface marsSurface;
-
-	/**
-	 * Counter of unit identifiers
-	 */
-	private int uniqueId = 0;
 
 	/**
 	 * Constructor.

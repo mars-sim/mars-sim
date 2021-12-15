@@ -86,6 +86,13 @@ public interface Worker extends Loggable, Serializable, EquipmentOwner {
 	public Vehicle getVehicle();
 
 	/**
+	 * Is the worker inside a vehicle in a garage
+	 * 
+	 * @return
+	 */
+	public boolean isInVehicleInGarage();
+	
+	/**
 	 * Is the worker in a settlement
 	 *
 	 * @return true if the worker in a settlement

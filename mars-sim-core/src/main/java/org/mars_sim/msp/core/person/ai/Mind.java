@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;
@@ -19,9 +19,9 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.structure.OverrideType;
@@ -201,24 +201,25 @@ public class Mind implements Serializable, Temporal {
 				// Cause of Issue#290
 				if (!Double.isFinite(newRemain) || (newRemain < 0)) {
 					// Likely to be a defect in a Task
-					logger.warning(person, "Calling '"
+					logger.warning(person, 20_000, "Calling '"
 							+ taskManager.getTaskName() + "' and return an invalid time " + newRemain);
 					return;
 				}
 				// Can not return more time than originally available
 				else if (newRemain > remainingTime) {
 					// Likely to be a defect in a Task or rounding problem
-					logger.warning(person, "'"
+					logger.warning(person, 20_000, "'"
 							+ taskManager.getTaskName() + "' and return a remaining time " + newRemain
 							+ " larger than the original " + remainingTime);
 					return;
 				}
 
 				// Safety check to track a repeating Task loop
-				if (callCount++ >= MAX_EXECUTE) {
-					logger.warning(person, "Calling '"
+				if (callCount >= MAX_EXECUTE) {
+					logger.warning(person, 20_000, "Calling '"
 							+ taskManager.getTaskName() + "' for "
 							+ callCount + " iterations.");
+					callCount++;
 					return;
 				}
 
@@ -262,7 +263,7 @@ public class Mind implements Serializable, Temporal {
 		}
 
 		if (hasActiveMission) {
-			if (mission instanceof Delivery) {
+			if (mission.getMissionType() == MissionType.DELIVERY) {
 				// In case of a delivery mission, the bot doesn't need to be onboard
 				if (mission.getPhase() != null) {
 					resumeMission(0);
@@ -272,9 +273,10 @@ public class Mind implements Serializable, Temporal {
 			else {
 				// If the mission vehicle has embarked but the person is not on board,
 				// then release the person from the mission
-				// TODO this logic fails because a Units coordinate can only be trusted when on the Surface.
+				
+				// NOTE: this logic fails because a Units coordinate can only be trusted when on the Surface.
 				// Maybe this should use TopContainer but would be better to identify
-				// if this Prson is on board
+				// if this Person is on board
 //				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
 //					mission.removeMember(person);
 //					logger.info(person, "Not boarded and taken out of " + mission + " mission.");

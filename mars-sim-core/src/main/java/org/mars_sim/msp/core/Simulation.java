@@ -10,16 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.NotActiveException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
-import java.io.OptionalDataException;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
-import java.io.WriteAbortedException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -120,6 +115,8 @@ public class Simulation implements ClockListener, Serializable {
 
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+	
+	public static final String DASHES = " ---------------------------------------------------------";
 	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
@@ -169,11 +166,6 @@ public class Simulation implements ClockListener, Serializable {
 	private boolean initialSimulationCreated = false;
 
 	private boolean changed = true;
-
-	/** Mission sol at the time of starting this sim. */
-	public static int MISSION_SOL = 0;
-	/** msols at the time of starting this sim. */
-	public static int MSOL_CACHE = 0;
 
 	/** The modified time stamp of the last saved sim */
 	private String lastSaveTimeStampMod;
@@ -521,8 +513,10 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock = (MasterClock) ois.readObject();
 
 			UnitSet.reinit(unitManager);
-		}
-		finally {
+			
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());
+		} finally {
 
 			if (ois != null) {
 				ois.close();
@@ -576,9 +570,9 @@ public class Simulation implements ClockListener, Serializable {
 		if (loadBuild == null)
 			loadBuild = "unknown";
 
-		logger.config(" --------------------------------------------------------------------");
+		logger.config(DASHES);
 		logger.config("                   Info on The Saved Simulation                      ");
-		logger.config(" --------------------------------------------------------------------");
+		logger.config(DASHES);
 		logger.config("                   Filename : " + filename);
 		logger.config("                       Path : " + path);
 		logger.config("                       Size : " + computeFileSize(file));
@@ -587,7 +581,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthClock().getTimeStampF4());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
 		logger.config("   Machine Local Time Stamp : " + masterClock.getEarthClock().getLastSavedLocalTime());
-		logger.config(" --------------------------------------------------------------------");
+		logger.config(DASHES);
 		if (Simulation.BUILD.equals(loadBuild)) {
 			logger.config(" Note : The two builds are identical.");
 		} else {
@@ -596,8 +590,8 @@ public class Simulation implements ClockListener, Serializable {
 				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
 		}
 
-		MISSION_SOL = masterClock.getMarsClock().getMissionSol();
-		MSOL_CACHE = masterClock.getMarsClock().getMillisolInt();
+		int MISSION_SOL = masterClock.getMarsClock().getMissionSol();
+		int MSOL_CACHE = masterClock.getMarsClock().getMillisolInt();
 
 		logger.config("  - - - - - - - - - Sol " + MISSION_SOL
 				+ " (Cont') - - - - - - - - - - - ");
@@ -925,24 +919,25 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("           File size : " + computeFileSize(file));
 			logger.config("Done saving. The simulation resumes.");
 
-		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
-		} catch (WriteAbortedException e) {
-			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());
-
-		} catch (OptionalDataException e) {
-			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when saving " + file + " : " + e.getMessage());
-
-		} catch (InvalidObjectException e) {
-			// Thrown when a restored object cannot be made valid.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());
-
-		} catch (NotActiveException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when saving " + file + " : " + e.getMessage());
-
-		} catch (StreamCorruptedException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when saving " + file + " : " + e.getMessage());
+//		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
+//		} catch (WriteAbortedException e) {
+//			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
+//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());
+//
+//		} catch (OptionalDataException e) {
+//			// Thrown by readObject when there is primitive data in the stream and an object is expected. 
+//			// The length field of the exception indicates the number of bytes that are available in the current block.
+//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when saving " + file + " : " + e.getMessage());
+//
+//		} catch (InvalidObjectException e) {
+//			// Thrown when a restored object cannot be made valid.
+//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());
+//
+//		} catch (NotActiveException e) {
+//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when saving " + file + " : " + e.getMessage());
+//
+//		} catch (StreamCorruptedException e) {
+//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when saving " + file + " : " + e.getMessage());
 
 		} catch (NotSerializableException e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
@@ -953,25 +948,20 @@ public class Simulation implements ClockListener, Serializable {
 		} catch (IOException e0) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
 
-			if (type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) {
-
-				if (file.exists() && !file.isDirectory()) {
-					// Backup the existing default.sim
-					Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
-				}
+			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) 
+				&& file.exists() && !file.isDirectory()) {
+				// Backup the existing default.sim
+				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
 
-			if (type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) {
-
-				if (file.exists() && !file.isDirectory()) {
-					// backup the existing default.sim
-					Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
-				}
+			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT)
+				&& file.exists() && !file.isDirectory()) {
+				// backup the existing default.sim
+				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
 			}
-
 		}
 
 		finally {
@@ -980,7 +970,6 @@ public class Simulation implements ClockListener, Serializable {
 				oos.close();
 
 			justSaved = true;
-
 		}
     }
 
@@ -1012,8 +1001,7 @@ public class Simulation implements ClockListener, Serializable {
 		sb.append("      Serializable object | Serialized Size");
 		sb.append("  | Object Size");
 		sb.append(System.lineSeparator());
-		sb.append(" ---------------------------------------------------------"
-				+ System.lineSeparator());
+		sb.append(DASHES + System.lineSeparator());
 		int max0 = 25;
 		int max1 = 10;
 
@@ -1083,8 +1071,7 @@ public class Simulation implements ClockListener, Serializable {
 			unit = SPACE + "MB";
 		}
 
-		sb.append(" ---------------------------------------------------------"
-				+ System.lineSeparator());
+		sb.append(DASHES + System.lineSeparator());
 
 		String name = "Total";
 		int size0 = max0 - name.length();

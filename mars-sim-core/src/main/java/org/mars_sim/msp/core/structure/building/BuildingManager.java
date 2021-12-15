@@ -1246,8 +1246,13 @@ public class BuildingManager implements Serializable {
 	 * @return building or null if none.
 	 */
 	public static Building getBuilding(Worker worker) {
+		
 		if (worker.isInSettlement()) {
 			return worker.getBuildingLocation();
+		}
+		
+		if (worker.isInVehicleInGarage()) {
+			return ((Vehicle)worker.getVehicle()).getGarage();
 		}
 		
 		return null;
