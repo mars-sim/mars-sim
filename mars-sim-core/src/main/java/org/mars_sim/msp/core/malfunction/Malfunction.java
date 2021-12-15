@@ -602,13 +602,14 @@ public class Malfunction implements Serializable {
 					}
 				}
 
-				if (numberNeeded > 0)
+				if (numberNeeded > 0) {
 					repairParts.put(id, numberNeeded);
+				}
 				else
 					repairParts.remove(id);
 			}
 		} else
-			throw new IllegalArgumentException("Part " + (Part) ItemResourceUtil.findItemResource(id) + " is not needed for repairs.");
+			throw new IllegalArgumentException("'" + ItemResourceUtil.findItemResourceName(id) + "' - Not needed for repairs.");
 	}
 
 	/**

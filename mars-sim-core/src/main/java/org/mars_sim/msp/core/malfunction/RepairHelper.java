@@ -42,14 +42,14 @@ public final class RepairHelper {
 		String deputy = malfunction.getDeputyRepairer(type);
 		String myName = repairer.getName();
 		if (chief == null) {
-			logger.fine(repairer, "Was appointed as the chief repairer handling the "
+			logger.fine(repairer, "Appointed as the chief repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
 			 malfunction.setChiefRepairer(type, myName);
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
-			logger.fine(repairer, "Was appointed as the deputy repairer handling the "
+			logger.fine(repairer, "Appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
@@ -80,10 +80,9 @@ public final class RepairHelper {
 			throw new IllegalArgumentException("malfunction is null");
 
 		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {
-			Integer part = item.getKey();
+			Integer id = item.getKey();
 			int number = item.getValue();
-			if (((EquipmentOwner)containerUnit).getItemResourceStored(part) < number) {
-//					(((Vehicle)unit).addItemDemand(part, number);
+			if (((EquipmentOwner)containerUnit).getItemResourceStored(id) < number) {
 				result = false;
 			}
 		}
@@ -96,6 +95,7 @@ public final class RepairHelper {
 	 *
 	 * @param containerUnit
 	 * @param malfunction
+	 * @return 
 	 */
 	public static void claimRepairParts(Unit containerUnit, Malfunction malfunction) {
 		Map<Integer, Integer> needed = malfunction.getRepairParts();
@@ -108,6 +108,7 @@ public final class RepairHelper {
 				Integer id = part.getKey();
 				int number = part.getValue();
 				((EquipmentOwner)containerUnit).retrieveItemResource(id, number);
+				// Add in the repair part
 				malfunction.repairWithParts(id, number, containerUnit);
 			}
 		}

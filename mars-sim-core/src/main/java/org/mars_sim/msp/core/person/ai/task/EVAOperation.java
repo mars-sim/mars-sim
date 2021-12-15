@@ -644,9 +644,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Set the outside location near a BoundedObject
+	 * 
 	 * @param basePoint
-	 *
-	 * @return A locaiton has been choosen.
+	 * @return A location has been chosen.
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
 

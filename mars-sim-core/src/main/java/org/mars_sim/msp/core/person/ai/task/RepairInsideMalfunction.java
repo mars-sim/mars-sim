@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -153,7 +154,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		double workTime = time;
-		if (worker instanceof Robot) {
+		if (worker.getUnitType() == UnitType.ROBOT) {
 			// A robot moves slower than a person and incurs penalty on workTime
 			workTime = time / 2;
 		}
