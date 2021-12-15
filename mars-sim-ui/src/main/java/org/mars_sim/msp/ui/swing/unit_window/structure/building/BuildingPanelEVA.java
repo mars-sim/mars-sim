@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -20,14 +19,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
@@ -169,17 +163,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  String.format("%.1f", airlock.getRemainingCycleTime()), null);
 
-		// Detials panels
-		UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
-		Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-		TitledBorder title = BorderFactory.createTitledBorder(
-	        		lowerEtched, " " + Msg.getString("BuildingPanelEVA.titledB.occupants") + " ");
-		Font titleFont = UIManager.getFont("TitledBorder.font");
-		title.setTitleFont(titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		occupantPanel.setBorder(title);
+		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
 		center.add(occupantPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for occupant list.
@@ -188,17 +174,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		occupantPanel.add(scrollPanel);
 
 		// Create occupant list
-		occupants = new JList<Person>(occupantListModel);
+		occupants = new JList<>(occupantListModel);
 		occupants.addMouseListener(this);
 		scrollPanel.setViewportView(occupants);
 
-		TitledBorder title1 = BorderFactory.createTitledBorder(
-	        		lowerEtched, " " + Msg.getString("BuildingPanelEVA.titledB.Reserved") + " ");
-		title1.setTitleFont(titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-
 		// Create reservation panel
 		WebPanel reservationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		reservationPanel.setBorder(title1);
+		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
 		center.add(reservationPanel, BorderLayout.SOUTH);
 
 		// Create scroll panel for occupant list.

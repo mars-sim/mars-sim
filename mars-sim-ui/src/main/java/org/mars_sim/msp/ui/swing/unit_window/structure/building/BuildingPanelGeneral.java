@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
@@ -51,28 +52,24 @@ extends BuildingFunctionPanel {
 		Dimension dim = new Dimension(110, 110);
 		Settlement settlement = building.getSettlement();
 		SettlementMapPanel mapPanel = new SettlementMapPanel(settlement, building);
+		mapPanel.setPreferredSize(dim);
 
 		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		svgPanel.setPreferredSize(dim);
 		svgPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		svgPanel.add(mapPanel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 3, 1));
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
-		addTextField(infoPanel, "Building Type: ", building.getBuildingType(), null);
+		addTextField(infoPanel, "Building Type:", building.getBuildingType(), null);
 
 		// Prepare dimension label
-		addTextField(infoPanel, "Dimension: ", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
+		addTextField(infoPanel, "Position:", building.getPosition().getShortFormat(), "According to the Settlement x[m] x y[m]");
+		addTextField(infoPanel, "Dimension:", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
 
 		// Prepare mass label
 		addTextField(infoPanel, "Base Mass:", building.getBaseMass() + " kg", "The base mass of this building");
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(infoPanel, 3, 2, // rows, cols
-				80, 1, // initX, initY
-				5, 5); // xPad, yPad
 	}
 }

@@ -64,15 +64,17 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
+
 		// Create scroll panel for malfunction list
 		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.NORTH);
+		addBorder(center, "Active Malfunctions");
+		
 		scrollPanel.setOpaque(false);
 		scrollPanel.setBackground(new Color(0, 0, 0, 128));
 		scrollPanel.getViewport().setOpaque(false);
 		scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));// 0, 0, 0, 0));
-		// scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create malfunction list main panel.
 		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));

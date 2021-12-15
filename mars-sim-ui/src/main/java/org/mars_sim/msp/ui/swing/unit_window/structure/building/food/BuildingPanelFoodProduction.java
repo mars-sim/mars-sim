@@ -43,7 +43,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -95,25 +94,23 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		// Prepare label panel
 		WebPanel labelPanel = new WebPanel();
-		labelPanel.setLayout(new GridLayout(2, 1, 0, 0));
+		labelPanel.setLayout(new GridLayout(2, 2, 0, 0));
 
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		WebLabel techLabel = new WebLabel("Tech Level: " + foodFactory.getTechLevel(), WebLabel.CENTER);
-		labelPanel.add(techLabel);
+		addTextField(labelPanel, "Tech Level:", foodFactory.getTechLevel(), null);
 
 		// Prepare processCapacity label
-		WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + foodFactory.getConcurrentProcesses(),
-				WebLabel.CENTER);
-		labelPanel.add(processCapacityLabel);
+		addTextField(labelPanel, "Process Capacity:", foodFactory.getConcurrentProcesses(), null);
+
 
 		// Create scroll pane for food production processes
 		scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
-//		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
+		addBorder(scrollPanel, "Preparation");
+		
 		// Create process list main panel
 		WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(processListMainPane);
@@ -133,7 +130,8 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		// Create interaction panel.
 		WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 10, 10));
-		add(interactionPanel, BorderLayout.SOUTH);
+		addBorder(interactionPanel, "Add Food");
+		center.add(interactionPanel, BorderLayout.SOUTH);
 
 		// Create new foodProduction process selection.
 		processComboBoxCache = getAvailableProcesses();

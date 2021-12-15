@@ -20,14 +20,13 @@ import java.util.Iterator;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -41,7 +40,7 @@ extends BuildingFunctionPanel
 implements MouseListener {
 
 	private VehicleMaintenance garage;
-	private WebLabel vehicleNumberLabel;
+	private JTextField vehicleNumberLabel;
 	private int vehicleNumberCache = 0;
 	private JList<Vehicle> vehicleList;
 	private DefaultListModel<Vehicle> vehicleListModel;
@@ -68,22 +67,20 @@ implements MouseListener {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create vehicle number label
 		vehicleNumberCache = garage.getCurrentVehicleNumber();
-		vehicleNumberLabel = new WebLabel(Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles",
-				vehicleNumberCache), WebLabel.CENTER);
-		labelPanel.add(vehicleNumberLabel);
+		vehicleNumberLabel = addTextField(labelPanel, Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles"),
+				vehicleNumberCache, null);
 
 		// Create vehicle capacity label
 		int vehicleCapacity = garage.getVehicleCapacity();
-		WebLabel vehicleCapacityLabel = new WebLabel(Msg.getString("BuildingPanelVehicleMaintenance.vehicleCapacity",
-				vehicleCapacity), WebLabel.CENTER);
-		labelPanel.add(vehicleCapacityLabel);	
+		addTextField(labelPanel, Msg.getString("BuildingPanelVehicleMaintenance.vehicleCapacity"),
+				vehicleCapacity, null);
 
 		// Create vehicle list panel
 		WebPanel vehicleListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -94,6 +91,7 @@ implements MouseListener {
 		// Create scroll panel for vehicle list
 		WebScrollPane vehicleScrollPanel = new WebScrollPane();
 		vehicleScrollPanel.setPreferredSize(new Dimension(160, 60));
+		addBorder(vehicleScrollPanel, "Vehicles");
 		vehicleListPanel.add(vehicleScrollPanel);
 		vehicleScrollPanel.setOpaque(false);
 		vehicleScrollPanel.setBackground(new Color(0,0,0,128));
@@ -102,12 +100,12 @@ implements MouseListener {
 		
 		// Create vehicle list model
 		vehicleListModel = new DefaultListModel<Vehicle>();
-		vehicleCache = new ArrayList<Vehicle>(garage.getVehicles());
+		vehicleCache = new ArrayList<>(garage.getVehicles());
 		Iterator<Vehicle> i = vehicleCache.iterator();
 		while (i.hasNext()) vehicleListModel.addElement(i.next());
 
 		// Create vehicle list
-		vehicleList = new JList<Vehicle>(vehicleListModel);
+		vehicleList = new JList<>(vehicleListModel);
 		vehicleList.addMouseListener(this);
 		vehicleScrollPanel.setViewportView(vehicleList);
 	}
@@ -119,15 +117,14 @@ implements MouseListener {
 	public void update() {
 		// Update vehicle list and vehicle mass label
 
-		if (!CollectionUtils.isEqualCollection(vehicleCache, garage.getVehicles())) {
-			vehicleCache = new ArrayList<Vehicle>(garage.getVehicles());
+		if (!vehicleCache.equals(garage.getVehicles())) {
+			vehicleCache = new ArrayList<>(garage.getVehicles());
 			vehicleListModel.clear();
 			Iterator<Vehicle> i = vehicleCache.iterator();
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
 
 			vehicleNumberCache = garage.getCurrentVehicleNumber();
-			vehicleNumberLabel.setText(Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles",
-					vehicleNumberCache));
+			vehicleNumberLabel.setText(Integer.toString(vehicleNumberCache));
 		}
 	}
 

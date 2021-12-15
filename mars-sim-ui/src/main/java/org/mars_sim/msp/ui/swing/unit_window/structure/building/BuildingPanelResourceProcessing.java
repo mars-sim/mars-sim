@@ -33,9 +33,6 @@ extends BuildingFunctionPanel {
 
 	// Data members
 	private ResourceProcessing processor;
-//	private List<WebLabel> processLabels;
-//	private ImageIcon greenDot;
-//	private ImageIcon redDot;
 
 	/**
 	 * Constructor.

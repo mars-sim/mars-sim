@@ -8,8 +8,10 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.FlowLayout;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -107,12 +109,21 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 		JTextField typeTF = new JTextField();
 		typeTF.setText(content);
 		typeTF.setEditable(false);
-		typeTF.setColumns(10);
+		typeTF.setColumns(15);
 		if (tooltip != null) {
 			typeTF.setToolTipText(tooltip);
 		}
 		wrapper3.add(typeTF);
 		parent.add(wrapper3);
 		return typeTF;
+	}
+
+	/**
+	 * Add a standard titled border
+	 * @param panel
+	 * @param title The title to display
+	 */
+	protected void addBorder(JComponent panel, String title) {
+		panel.setBorder(new TitledBorder(title));
 	}
 }

@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The InhabitableBuildingPanel class is a building function panel representing 
@@ -65,7 +67,7 @@ implements MouseListener {
 	@Override
 	protected void buildUI(JPanel center) {
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 3, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -81,6 +83,7 @@ implements MouseListener {
 
 		// Create inhabitant list panel
 		WebPanel inhabitantListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		addBorder(inhabitantListPanel, "Inhabitants");
 		center.add(inhabitantListPanel, BorderLayout.CENTER);
 
 		// Create inhabitant list model
@@ -92,6 +95,13 @@ implements MouseListener {
 		// Create inhabitant list
 		inhabitantList = new JList<>(inhabitantListModel);
 		inhabitantList.addMouseListener(this);
+		
+		// Create scroll panel for occupant list.
+		WebScrollPane scrollPanel1 = new WebScrollPane();
+		scrollPanel1.setPreferredSize(new Dimension(150, 100));
+		scrollPanel1.setViewportView(inhabitantList);
+
+		inhabitantListPanel.add(scrollPanel1);
 	}
 
 	/**

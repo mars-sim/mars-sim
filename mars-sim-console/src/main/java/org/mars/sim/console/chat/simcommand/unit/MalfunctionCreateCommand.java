@@ -87,7 +87,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 			List <Building> buildings = settlement.getBuildingManager().getBuildings();
 			List <String> names = new  ArrayList<>();
 			for (Building building : buildings) {
-				names.add(building.getName());
+				names.add(building.getNickName());
 			} 
 			int selectedBuilding = CommandHelper.getOptionInput(context, names, "Select a building in " + settlement.getName());
 			if (selectedBuilding >= 0) {

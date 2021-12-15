@@ -43,7 +43,7 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		WebPanel springPanel = new WebPanel(new GridLayout(3, 2, 3, 1));
-		add(springPanel, BorderLayout.NORTH);
+		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Demand
 		double powerDemand = building.getComputation().getPowerDemand();

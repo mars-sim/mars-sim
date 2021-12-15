@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -82,7 +81,7 @@ extends BuildingFunctionPanel {
 		WebTextArea specialtyTA = new WebTextArea();
 		specialtyTA.setEditable(false);
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
-		specialtyTA.setColumns(7);
+		specialtyTA.setColumns(15);
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
@@ -94,7 +93,7 @@ extends BuildingFunctionPanel {
 
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.add(specialtyTA);
-		specialtyTA.setBorder(new TitledBorder(Msg.getString("BuildingPanelResearch.namesOfSpecialties")));
+		addBorder(listPanel, Msg.getString("BuildingPanelResearch.namesOfSpecialties"));
 		center.add(listPanel, BorderLayout.CENTER);
 	}
 

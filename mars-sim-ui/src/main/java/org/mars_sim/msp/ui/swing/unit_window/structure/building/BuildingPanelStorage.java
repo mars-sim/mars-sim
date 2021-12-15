@@ -53,17 +53,12 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		WebPanel titlePanel = new WebPanel(new GridLayout(1, 1, 0, 5));
-		center.add(titlePanel, BorderLayout.NORTH);
-
-		WebLabel maxCapLabel = new WebLabel(Msg.getString("BuildingPanelStorage.maxCap"), WebLabel.CENTER);
-		titlePanel.add(maxCapLabel);
-
 		Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 
 		// Create resource storage panel.
 		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
-		center.add(resourceStoragePanel, BorderLayout.SOUTH);
+		addBorder(resourceStoragePanel, "Capacities");
+		center.add(resourceStoragePanel, BorderLayout.NORTH);
 
 		SortedSet<Integer> keys = new TreeSet<>(resourceStorage.keySet());
 		for (Integer resource : keys) {
