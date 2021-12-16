@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-15
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.construction;
 
 import java.io.Serializable;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -79,7 +79,7 @@ implements Serializable, LocalBoundedObject {
      * Constructor
      */
     public ConstructionSite(Settlement settlement) {
-    	super("A construction site", settlement.getCoordinates());
+    	super("A Construction Site", settlement.getCoordinates());
 
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
@@ -93,7 +93,7 @@ implements Serializable, LocalBoundedObject {
         buildingStage = null;
         undergoingConstruction = false;
         undergoingSalvage = false;
-        listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+        listeners = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
@@ -403,7 +403,7 @@ implements Serializable, LocalBoundedObject {
      */
     public final void addConstructionListener(ConstructionListener newListener) {
         if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+            listeners = Collections.synchronizedList(new ArrayList<>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
 
@@ -413,7 +413,7 @@ implements Serializable, LocalBoundedObject {
      */
     public final void removeConstructionListener(ConstructionListener oldListener) {
         if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+            listeners = Collections.synchronizedList(new ArrayList<>());
         if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
 
@@ -432,7 +432,7 @@ implements Serializable, LocalBoundedObject {
      */
     final void fireConstructionUpdate(String updateType, Object target) {
         if (listeners == null)
-            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+            listeners = Collections.synchronizedList(new ArrayList<>());
         synchronized(listeners) {
             Iterator<ConstructionListener> i = listeners.iterator();
             while (i.hasNext()) i.next().constructionUpdate(
@@ -440,23 +440,9 @@ implements Serializable, LocalBoundedObject {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder("Site");
-
-        ConstructionStage stage = getCurrentConstructionStage();
-        if (stage != null) {
-            result.append(": ").append(stage.getInfo().getName());
-            if (undergoingConstruction) result.append(" - Under Construction");
-            else if (undergoingSalvage) result.append(" - Under Salvage");
-            else if (hasUnfinishedStage()) {
-                if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
-                else result.append(" - Construction Unfinished");
-            }
-        }
-
-        return result.toString();
-    }
+	public void relocate() {
+		BuildingConstructionMission.positionNewSite(this);
+	}
 
     public ConstructionManager getConstructionManager() {
     	return constructionManager;
@@ -552,4 +538,21 @@ implements Serializable, LocalBoundedObject {
 		return false;
 	}
 
+	@Override
+    public String toString() {
+		StringBuilder result = new StringBuilder("Site");
+
+		ConstructionStage stage = getCurrentConstructionStage();
+		if (stage != null) {
+			result.append(": ").append(stage.getInfo().getName());
+			if (undergoingConstruction) result.append(" - Under Construction");
+			else if (undergoingSalvage) result.append(" - Under Salvage");
+			else if (hasUnfinishedStage()) {
+				if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
+				else result.append(" - Construction Unfinished");
+			}
+		}
+
+		return result.toString();
+	}
 }

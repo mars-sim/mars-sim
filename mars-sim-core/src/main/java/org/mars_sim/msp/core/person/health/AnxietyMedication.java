@@ -46,7 +46,7 @@ public class AnxietyMedication extends Medication implements Serializable {
         super.timePassing(pulse);
         
         // Reduce person's stress.
-        condition.setStress(condition.getStress() + (STRESS_REDUCTION * pulse.getElapsed()));
+        condition.addStress(STRESS_REDUCTION * pulse.getElapsed());
         
         return true;
     }

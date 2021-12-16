@@ -1458,23 +1458,21 @@ public abstract class Vehicle extends Unit
 			Mission mission = i.next();
 			if (!mission.isDone()) {
 				if (mission instanceof VehicleMission) {
-
 					if (((VehicleMission) mission).getVehicle() == this) {
 						return mission;
 					}
-
-
+					
 				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-					if (construction.getConstructionVehicles() != null) {
-						if (construction.getConstructionVehicles().contains(this)) {
-							return mission;
-						}
+					if (!construction.getConstructionVehicles().isEmpty() 
+						&& construction.getConstructionVehicles().contains(this)) {
+						return mission;
 					}
 
-				} else if (mission .getMissionType() == MissionType.BUILDING_SALVAGE) {
+				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (salvage.getConstructionVehicles().contains(this)) {
+					if (!salvage.getConstructionVehicles().isEmpty() 
+						&& salvage.getConstructionVehicles().contains(this)) {
 						return mission;
 					}
 				}
@@ -1531,16 +1529,16 @@ public abstract class Vehicle extends Unit
 
 				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-					if (construction.getConstructionVehicles() != null) {
-						if (construction.getConstructionVehicles().contains(this)) {
+					if (!construction.getConstructionVehicles().isEmpty()
+						 && construction.getConstructionVehicles().contains(this)) {
 							return true;
-						}
 					}
 
 				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (salvage.getConstructionVehicles().contains(this)) {
-						return true;
+					if (!salvage.getConstructionVehicles().isEmpty()
+						&& salvage.getConstructionVehicles().contains(this)) {
+							return true;
 					}
 				}
 			}

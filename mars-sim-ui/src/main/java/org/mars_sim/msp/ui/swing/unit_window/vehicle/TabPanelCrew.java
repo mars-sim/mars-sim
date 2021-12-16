@@ -25,13 +25,16 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -62,8 +65,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCrew.class.getName());
-
-	private WebLabel crewNumLabel;
 
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
@@ -111,14 +112,14 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCrew.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
-		topContentPanel.add(titlePanel);
+		topContentPanel.add(titlePanel, BorderLayout.NORTH);
 
 		// Create crew count panel
-		WebPanel crewCountPanel = new WebPanel(new SpringLayout()); //GridLayout(2, 1, 0, 0));
-		topContentPanel.add(crewCountPanel);
+		WebPanel crewCountPanel = new WebPanel(new SpringLayout());
+		topContentPanel.add(crewCountPanel, BorderLayout.CENTER);
 
 		// Create crew num header label
-		WebLabel crewNumHeader = new WebLabel(Msg.getString("TabPanelCrew.crew"), WebLabel.RIGHT); //$NON-NLS-1$
+		WebLabel crewNumHeader = new WebLabel(Msg.getString("TabPanelCrew.crewNum"), WebLabel.RIGHT); //$NON-NLS-1$
 		crewNumHeader.setToolTipText(Msg.getString("TabPanelCrew.crew.tooltip")); //$NON-NLS-1$
 		crewCountPanel.add(crewNumHeader);
 
@@ -126,8 +127,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 		crewNumTF = new WebTextField();
 		crewNumTF.setEditable(true);
-		crewNumTF.setColumns(4);
-//		crewNumTF.setAlignmentX(Component.CENTER_ALIGNMENT);
+		crewNumTF.setColumns(3);
 		crewNumTF.setText(crewNumCache + "");
 
 		WebPanel wrapper0 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -144,7 +144,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// Create crew capacity TF
 		WebTextField crewCapTF = new WebTextField();
 		crewCapTF.setEditable(true);
-		crewCapTF.setColumns(4);
+		crewCapTF.setColumns(3);
 		crewCapTF.setText(crewCapacityCache + "");
 
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -165,18 +165,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 		WebPanel crewButtonPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		crewButtonPanel.add(monitorButton);
-		topContentPanel.add(crewButtonPanel);
-
+		topContentPanel.add(crewButtonPanel, BorderLayout.SOUTH);
+		
 		// Create mission member panel
-		WebPanel memberPanel = new WebPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT));
-//		crewDisplayPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(memberPanel);
-
-		// Prepare member list panel
-		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
-		memberListPane.setPreferredSize(new Dimension(100, 150));
-		memberPanel.add(memberListPane, BorderLayout.CENTER);
-
+		WebPanel memberPanel = new WebPanel(new BorderLayout(0, 0));
+		centerContentPanel.add(memberPanel, BorderLayout.NORTH);
+		
 		// Create crew display title
 		WebPanel tableTitlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebLabel tableTitleLabel = new WebLabel("Mission Members", WebLabel.CENTER); //$NON-NLS-1$
@@ -186,8 +180,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 		// Create scroll panel for member list.
 		WebScrollPane memberScrollPane = new WebScrollPane();
-		// memberScrollPane.setPreferredSize(new Dimension(300, 250));
-		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
+		memberScrollPane.setPreferredSize(new Dimension(300, 300));
+		centerContentPanel.add(memberScrollPane, BorderLayout.CENTER);
 
 		// Create member table model.
 		memberTableModel = new MemberTableModel();
@@ -197,14 +191,17 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// Create member table.
 		memberTable = new ZebraJTable(memberTableModel);
 		TableStyle.setTableStyle(memberTable);
-		// memberTable.setPreferredSize(new Dimension(300, 250));
-		memberTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		memberTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		memberTable.getColumnModel().getColumn(0).setPreferredWidth(110);
+		memberTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		memberTable.setRowSelectionAllowed(true);
 		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		memberTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		memberScrollPane.setViewportView(memberTable);
 
-		// call it a click to display details button when user double clicks the table
+		// Call it a click to display details button when user double clicks the table
 		memberTable.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
 			}
@@ -272,7 +269,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	}
 
 	public void destroy() {
-		crewNumLabel = null;
 		crewNumTF = null;
 		memberTable = null;
 		memberTableModel = null;
@@ -295,7 +291,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		private MemberTableModel() {
 			mission = null;
-			members = new ArrayList<MissionMember>();
+			members = new ArrayList<>();
 		}
 
 		/**
@@ -365,7 +361,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		boolean boarded(MissionMember member) {
 			if (mission instanceof VehicleMission) {
 				Rover r = (Rover)(((VehicleMission)mission).getVehicle());
-				if (member instanceof Person) {
+				if (member.getUnitType() == UnitType.PERSON) {
 					if (r.isCrewmember((Person)member))
 						return true;
 				}

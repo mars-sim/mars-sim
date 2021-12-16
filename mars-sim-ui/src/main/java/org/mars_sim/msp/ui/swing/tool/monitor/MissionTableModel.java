@@ -400,14 +400,14 @@ public class MissionTableModel extends AbstractTableModel
 					} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 						BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-						if (constVehicles.size() > 0) {
+						if (!constVehicles.isEmpty()) {
 							Vehicle vehicle = constVehicles.get(0);
 							result = vehicle.getName();
 						}
-					} else if (mission .getMissionType() == MissionType.BUILDING_SALVAGE) {
+					} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 						BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
 						List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-						if (constVehicles.size() > 0) {
+						if (!constVehicles.isEmpty()) {
 							Vehicle vehicle = constVehicles.get(0);
 							result = vehicle.getName();
 						}

@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +58,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Call Function constructor.
 		super(THE_FUNCTION, building);
 
-		occupants = new ConcurrentLinkedQueue<Person>();
+		occupants = new HashSet<>();
 
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
@@ -83,7 +83,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Use Function constructor
 		super(THE_FUNCTION, building);
 
-		occupants = new ConcurrentLinkedQueue<Person>();
+		occupants = new HashSet<>();
 
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
@@ -184,7 +184,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return collection of occupants
 	 */
 	public Collection<Person> getOccupants() {
-		return new ConcurrentLinkedQueue<Person>(occupants);
+		return occupants;
 	}
 
 	/**
@@ -261,8 +261,7 @@ public class LifeSupport extends Function implements Serializable {
 				if (occupants != null) {
 					Iterator<Person> j = getOccupants().iterator();
 					while (j.hasNext()) {
-						PhysicalCondition condition = j.next().getPhysicalCondition();
-						condition.setStress(condition.getStress() + stressModifier);
+						j.next().getPhysicalCondition().addStress(stressModifier);
 					}
 				}
 			}
@@ -276,7 +275,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return powerRequired; // + heating.getFullPowerRequired());
+		return powerRequired;
 	}
 
 	@Override

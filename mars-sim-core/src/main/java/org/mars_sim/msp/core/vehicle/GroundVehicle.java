@@ -168,7 +168,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		else {
 			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
 
-			// Place the vehicle starting from near the settlement map center (0,0).
+			// Start from near the settlement map center (0,0).
 
 			int oX = 0;
 			int oY = 0;

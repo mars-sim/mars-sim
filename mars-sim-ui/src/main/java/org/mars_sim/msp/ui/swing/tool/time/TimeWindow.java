@@ -96,6 +96,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebStyledLabel earthTimeLabel;
 	/** label for Martian month. */
 	private WebLabel martianMonthHeaderLabel;
+	/** label for areocentric longitude. */
+	private WebLabel longLabel;
 	/** label for Northern hemisphere season. */
 	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
@@ -138,7 +140,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private MarsClock marsTime;
 	/** Earth Clock. */
 	private EarthClock earthTime;
-
+	/** OrbitInfo instance. */
+	private OrbitInfo orbitInfo;
+	
 	/** Arial font. */
 	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
 	/** Sans serif font. */
@@ -163,6 +167,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		masterClock = sim.getMasterClock();
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
+		orbitInfo = sim.getMars().getOrbitInfo();
+		
 		uptimer = masterClock.getUpTimer();
 
 		// Add this class to the master clock's listener
@@ -256,9 +262,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		&#8201; Thin tab space
 //		&#8194; En tab space
 //		&#8195; Em tab space
-		
-//		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
+			
+		// Create areocentric longitude header label
+		WebLabel longHeader = new WebLabel("Areocentric Longitude :",
+				WebLabel.RIGHT); //$NON-NLS-1$
+		hemiPane.add(longHeader);
 
+		// Create areocentric longitude label
+		longLabel = new WebLabel(" ", 
+				WebLabel.LEFT);
+		hemiPane.add(longLabel);
+		
 		// Create Northern season header label
 		WebLabel northernSeasonHeader = new WebLabel(Msg.getString("TimeWindow.northernHemisphere"),
 				WebLabel.RIGHT); //$NON-NLS-1$
@@ -281,8 +295,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(hemiPane,
-				2, 2, 		// rows, cols
-				45, 5,	// initX, initY
+				3, 2, 		// rows, cols
+				25, 5,	// initX, initY
 				7, 3);		// xPad, yPad
 
 		// Create Earth time panel
@@ -451,7 +465,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				setSeason();
 			}
 		}
-
+		
 		// Create average TPS label
 		double ave = masterClock.updateAverageTPS();
 		aveTPSLabel.setText(formatter2.format(ave));
@@ -482,10 +496,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * Set and update the season labels
 	 */
 	public void setSeason() {
-		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
 		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
 		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
-
+	
 		if (!northernSeasonCache.equals(northernSeason)) {
 			northernSeasonCache = northernSeason;
 
@@ -536,6 +549,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		updateTimeLabels();
 		// Update the calender
 		calendarDisplay.update();
+		// Update areocentric longitude
+		longLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");		
 	}
 
 	/**

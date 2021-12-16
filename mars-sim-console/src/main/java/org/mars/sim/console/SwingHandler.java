@@ -29,6 +29,8 @@ public class SwingHandler {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
+    private static final String BOOKMARK = "bookmark_";
+    
     private final SwingTextTerminal terminal;
     private final Object dataObject;
 
@@ -136,12 +138,12 @@ public class SwingHandler {
     public void execute() {
         int step = 0;
         while(step < tasks.size()) {
-            terminal.setBookmark("bookmark_" + step);
+            terminal.setBookmark(BOOKMARK + step);
             try {
                 tasks.get(step).run();
             } catch (ReadAbortedException e) {
                 if(step > 0) step--;
-                terminal.resetToBookmark("bookmark_" + step);
+                terminal.resetToBookmark(BOOKMARK + step);
                 continue;
             }
             step++;
@@ -152,12 +154,12 @@ public class SwingHandler {
     	// Remove the last task
     	if (tasks.size() > 1)
     		tasks.remove(0);
-        terminal.setBookmark("bookmark_" + 0);
+        terminal.setBookmark(BOOKMARK + 0);
         try {
             if (tasks.get(0) != null)
             	tasks.get(0).run();
         } catch (ReadAbortedException e) {
-            terminal.resetToBookmark("bookmark_" + 0);
+            terminal.resetToBookmark(BOOKMARK + 0);
         } catch (RuntimeException e) {
 			logger.severe(sourceName + ": RuntimeException detected: ");
         }

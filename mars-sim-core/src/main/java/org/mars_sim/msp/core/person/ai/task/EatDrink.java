@@ -613,8 +613,8 @@ public class EatDrink extends Task implements Serializable {
 			// Reduce person's stress over time from eating a cooked meal.
 			// This is in addition to normal stress reduction from eating task.
 			double stressModifier = STRESS_MODIFIER * (cookedMeal.getQuality() + 1D);
-			double newStress = pc.getStress() + (stressModifier * eatingTime);
-			pc.setStress(newStress);
+			double deltaStress = stressModifier * eatingTime;
+			pc.addStress(deltaStress);
 
 			// Add caloric energy from meal.
 			double caloricEnergyFoodAmount = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -849,8 +849,8 @@ public class EatDrink extends Task implements Serializable {
 					// Reduce person's stress after eating a prepared dessert.
 					// This is in addition to normal stress reduction from eating task.
 					double stressModifier = DESSERT_STRESS_MODIFIER * (nameOfDessert.getQuality() + 1D);
-					double newStress = pc.getStress() + (stressModifier * eatingTime);
-					pc.setStress(newStress);
+					double deltaStress = stressModifier * eatingTime;
+					pc.addStress(deltaStress);
 
 					// Add caloric energy from dessert.
 					double caloricEnergy = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -888,8 +888,7 @@ public class EatDrink extends Task implements Serializable {
 				new_thirst = THIRST_CEILING;
 			pc.setThirst(new_thirst);
 
-			double newStress = pc.getStress() - waterFinal;
-			pc.setStress(newStress);
+			pc.addStress(-waterFinal);
 		}
 	}
 
@@ -1054,8 +1053,8 @@ public class EatDrink extends Task implements Serializable {
 						// Reduce person's stress after eating an unprepared dessert.
 						// This is in addition to normal stress reduction from eating task.
 						double stressModifier = DESSERT_STRESS_MODIFIER;
-						double newStress = pc.getStress() + (stressModifier * eatingTime);
-						pc.setStress(newStress);
+						double deltaStress = stressModifier * eatingTime;
+						pc.addStress(deltaStress);
 
 						// Add caloric energy from dessert.
 						double caloricEnergy = proportion / dessertConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;

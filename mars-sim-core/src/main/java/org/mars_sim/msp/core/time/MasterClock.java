@@ -10,13 +10,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.DoubleSummaryStatistics;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -99,9 +102,9 @@ public class MasterClock implements Serializable {
 	private transient ExecutorService clockExecutor;
 
 	/** A list of clock listeners. */
-	private transient List<ClockListener> clockListeners;
+	private transient Collection<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
-	private transient List<ClockListenerTask> clockListenerTasks;
+	private transient Collection<ClockListenerTask> clockListenerTasks;
 
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
@@ -118,7 +121,7 @@ public class MasterClock implements Serializable {
 	private double minMilliSolPerPulse;
 	/** The maximum time span covered by each simulation pulse in millisols. */
 	private double maxMilliSolPerPulse;
-
+	/** How accurate is the timespan between the actual pulse rate and the calculated min & max pulse. */
 	private double accuracyBias;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
@@ -148,6 +151,8 @@ public class MasterClock implements Serializable {
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
 
+	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	
 	static {
 		for (int i=0; i<MAX_SPEED + 1; i++) {
 			int ratio = (int) Math.pow(2, i);
@@ -164,11 +169,9 @@ public class MasterClock implements Serializable {
 	public MasterClock(int userTimeRatio) {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
-		// Gets an instance of the SimulationConfig singleton
-		SimulationConfig simulationConfig = SimulationConfig.instance();
-
 		// Create a martian clock
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
+		
 		// Save a copy of the initial mars time
 		initialMarsTime = (MarsClock) marsClock.clone();
 
@@ -179,7 +182,7 @@ public class MasterClock implements Serializable {
 		uptimer = new UpTimer();
 
 		// Create listener list.
-		clockListeners = new CopyOnWriteArrayList<ClockListener>();
+		clockListeners = new HashSet<>();
 
 		// Calculate elapsedLast
 		timestampPulseStart();
@@ -259,11 +262,11 @@ public class MasterClock implements Serializable {
 	public final void addClockListener(ClockListener newListener) {
 		// if listeners list does not exist, create one
 		if (clockListeners == null)
-			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+			clockListeners = Collections.synchronizedSet(new HashSet<>());
 		// if the listeners list does not contain newListener, add it to the list
 		if (!clockListeners.contains(newListener))
 			clockListeners.add(newListener);
-		// will check if clockListenerTaskList already contain the newListener's task,
+		// Check if clockListenerTaskList already contain the newListener's task,
 		// if it doesn't, create one
 		addClockListenerTask(newListener);
 	}
@@ -276,11 +279,7 @@ public class MasterClock implements Serializable {
 	public final void removeClockListener(ClockListener oldListener) {
 		if (clockListeners != null && clockListeners.contains(oldListener))
 			clockListeners.remove(oldListener);
-//		 logger.config("just called clockListeners.remove(oldListener)");
-		// Check if clockListenerTaskList contain the newListener's task, if it does,
-		// delete it
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
-//		 logger.config("just get task");
 		if (task != null)
 			clockListenerTasks.remove(task);
 	}
@@ -291,22 +290,29 @@ public class MasterClock implements Serializable {
 	 * @param listener the clock listener task to add.
 	 */
 	public void addClockListenerTask(ClockListener listener) {
-		boolean hasIt = false;
 		if (clockListenerTasks == null)
-			clockListenerTasks = new CopyOnWriteArrayList<ClockListenerTask>();
+			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
+		if (!hasClockListener(listener)) {
+			clockListenerTasks.add(new ClockListenerTask(listener));
+		}
+	}
+
+	/**
+	 * Does it has the clock listener
+	 * 
+	 * @param listener
+	 * @return
+	 */
+	public boolean hasClockListener(ClockListener listener) {
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
 			if (c.getClockListener().equals(listener))
-				hasIt = true;
+				return true;
 		}
-		if (!hasIt) {
-			ClockListenerTask clt = new ClockListenerTask(listener);
-			clockListenerTasks.add(clt);
-//			logger.config(clt.getClockListener().getClass().getSimpleName() + "'s clock listener added.");
-		}
+		return false;
 	}
-
+	
 	/**
 	 * Retrieve the clock listener task instance, given its clock listener
 	 *
@@ -386,9 +392,8 @@ public class MasterClock implements Serializable {
 		}
 		startClockListenerExecutor();
 
-
 		// Re-instantiate clockListeners
-		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		clockListeners = Collections.synchronizedSet(new HashSet<>());
 
 		setupClockListenerTask();
 
@@ -638,7 +643,8 @@ public class MasterClock implements Serializable {
 					&& !listenerExecutor.isShutdown()) {
 					// Do the pulse
 					timestampPulseStart();
-
+					
+					// Update the uptimer
 					uptimer.updateTime(realElaspedMilliSec);
 
 					// Add time to the Earth clock.
@@ -786,9 +792,10 @@ public class MasterClock implements Serializable {
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 		try {
-			for (ClockListenerTask s:clockListenerTasks) {
-				s.setCurrentPulse(pulse);
-				Future<String> result = listenerExecutor.submit(s);
+			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
+			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {
+				c.setCurrentPulse(pulse);
+				Future<String> result = listenerExecutor.submit(c);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();
 			}
@@ -857,7 +864,10 @@ public class MasterClock implements Serializable {
 		startClockListenerExecutor();
 
 		if (clockExecutor == null) {
-			clockExecutor = Executors.newFixedThreadPool(1,
+			int num = Math.min(1, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
+			if (num <= 0) num = 1;
+			logger.config("Setting up " + num + " thread(s) for clock executor.");
+			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 		}
 		clockExecutor.execute(clockThreadTask);
@@ -1025,9 +1035,13 @@ public class MasterClock implements Serializable {
 	 * Starts clock listener thread pool executor
 	 */
 	private void startClockListenerExecutor() {
-		if (listenerExecutor == null)
-			listenerExecutor = Executors.newFixedThreadPool(1,
+		if (listenerExecutor == null) {
+			int num = Math.min(1, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
+			if (num <= 0) num = 1;
+			logger.config("Setting up " + num + " thread(s) for clock listener.");
+			listenerExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
+		}
 	}
 
 	/**
@@ -1105,23 +1119,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		sim = null;
-		marsClock = null;
-		initialMarsTime = null;
-		earthClock.destroy();
-		earthClock = null;
-		uptimer = null;
-		clockThreadTask = null;
-		listenerExecutor = null;
-		file = null;
-
-		clockListeners = null;
-	}
-
-	/**
 	 * How many pulses per second
 	 * @return
 	 */
@@ -1143,4 +1140,20 @@ public class MasterClock implements Serializable {
 		return ticksPerSecond;
 	}
 
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		sim = null;
+		marsClock = null;
+		initialMarsTime = null;
+		earthClock.destroy();
+		earthClock = null;
+		uptimer = null;
+		clockThreadTask = null;
+		listenerExecutor = null;
+		file = null;
+
+		clockListeners = null;
+	}
 }

@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructionUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-15
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.construction;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class ConstructionUtil {
 			int constructionSkill) {
 
 		List<ConstructionStageInfo> result = 
-				new ArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
+				new ArrayList<>(config.getConstructionStageInfoList(stageType));
 		Iterator<ConstructionStageInfo> i = result.iterator();
 		while (i.hasNext()) {
 			if (i.next().getArchitectConstructionSkill() > constructionSkill) i.remove();
@@ -154,7 +153,7 @@ public class ConstructionUtil {
 				ConstructionStageInfo.BUILDING);
 
 //		int resultSize = foundations.size() + frames.size() + buildings.size();
-		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
+		List<ConstructionStageInfo> result = new ArrayList<>();
 		result.addAll(foundations);
 		result.addAll(frames);
 		result.addAll(buildings);
@@ -196,7 +195,7 @@ public class ConstructionUtil {
 	 */
 	public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo) {
 
-		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
+		List<ConstructionStageInfo> result = new ArrayList<>();
 
 		String nextStageName = null;
 		if (ConstructionStageInfo.FOUNDATION.equals(stageInfo.getType())) 

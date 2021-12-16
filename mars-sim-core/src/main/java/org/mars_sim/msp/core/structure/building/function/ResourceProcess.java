@@ -195,8 +195,8 @@ public class ResourceProcess implements Serializable {
 		double time = pulse.getElapsed();
 		double level = productionLevel;
 
-		if ((level < 0D) || (level > 1D) || (time < 0D))
-			throw new IllegalArgumentException();
+		if ((level < 0D) || (level > 1D) || (time < SMALL_AMOUNT))
+			return;
 
 		if (runningProcess) {
 
@@ -216,8 +216,6 @@ public class ResourceProcess implements Serializable {
 				if (level > bottleneck)
 					level = bottleneck;
 
-				// logger.info(name + " production level: " + productionLevel);
-
 				// Input resources from inventory.
 				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
 				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
@@ -228,19 +226,21 @@ public class ResourceProcess implements Serializable {
 					double stored = settlement.getAmountResourceStored(resource);
 					if (stored > SMALL_AMOUNT) {	
 						if (resourceAmount > stored) {
-							logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
-								+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
+							logger.warning(settlement, 30_000, "Case A. Not enough '" + ResourceUtil.findAmountResourceName(resource)
+								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
+								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							setProcessRunning(false);
 							break;
-							// Note: create flag to indicate if which the input resource is missing
+							// Note: turn on a yellow flag and indicate which the input resource is missing
 						}
 						else {
 							settlement.retrieveAmountResource(resource, resourceAmount);
 						}
 					}
 					else {
-						logger.warning(settlement, 30_000, name + "Not enough input resource " + ResourceUtil.findAmountResourceName(resource)
-						+ ". Missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg");
+						logger.warning(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
+							+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
+							+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 						setProcessRunning(false);
 						break;
 					}
@@ -257,12 +257,13 @@ public class ResourceProcess implements Serializable {
 					
 					if (remainingCapacity > SMALL_AMOUNT) {
 						if (resourceAmount > remainingCapacity) {
-							logger.warning(settlement, 30_000, name + "Not enough storage or container space for storing output resource " 
+							logger.warning(settlement, 30_000, "Case C. Not enough space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ ". Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg of room");
+									+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
+									+ " kg of storage. Remaining cap: " + Math.round(remainingCapacity * 1000.0)/1000.0 + " kg.");
 							setProcessRunning(false);
 							break;
-							// Note: create flag to indicate if which the input resource is missing
+							// Note: turn on a yellow flag and indicate which the output resource is missing
 						}
 						else {
 							settlement.storeAmountResource(resource, resourceAmount);
@@ -270,9 +271,10 @@ public class ResourceProcess implements Serializable {
 						
 					}
 					else {
-						logger.warning(settlement, 30_000, name + "Not enough storage or container space for storing output resource " 
+						logger.warning(settlement, 30_000, "Case D. Not enough space for storing '" 
 								+ ResourceUtil.findAmountResourceName(resource)
-								+ ". Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg of room");
+								+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
+								+ " kg of storage.. Remaining cap: " + Math.round(remainingCapacity * 1000.0)/1000.0 + " kg.");
 						setProcessRunning(false);
 						break;
 					}

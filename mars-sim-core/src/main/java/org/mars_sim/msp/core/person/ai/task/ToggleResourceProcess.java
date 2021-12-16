@@ -297,7 +297,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double diff = 0;
 
 		if (inputValue > SMALL_AMOUNT)
-			diff = (outputValue - inputValue) / inputValue;
+			diff = (outputValue - inputValue) / Math.max(inputValue, 0.001);
 
 		// Subtract power required per millisol.
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;

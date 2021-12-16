@@ -361,7 +361,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			through evaporation.
 			-->
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process name="Grey Water Processor" power-required=".32" default="on">
+				<process name="Grey Water Processor" power-required=".32" default="off">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
 					<!-- See resources.xml -->
@@ -404,7 +404,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				20 kg black water and generate 17 kg grey water and
 				2 kg of toxic waste. There is a lost of 1 kg of water.
 -->
-				<process name="Black Water Processor" power-required=".315" default="on">
+				<process name="Black Water Processor" power-required=".315" default="off">
 					<input resource="black water" rate="20" ambient="false" />
 					<!-- Residual requirement for using chlorine in water treatment
 					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
@@ -449,7 +449,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
 				-->
-				<process name= "Solid Waste Management" power-required=".3" default="on">
+				<process name= "Solid Waste Management" power-required=".3" default="off">
 					<input resource="toxic waste" rate="4" ambient="false" />
 					<input resource="solid waste" rate="6" ambient="false" />
 					<output resource="fertilizer" rate="2" ambient="false" />
@@ -516,9 +516,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				4H2O : 21.6 kg/sol
 				-->
 				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
-				<!-- 33.6g imported from outside. 6g from storage
-					<input resource="carbon dioxide" rate="33.6" ambient="true" />
-					<input resource="carbon dioxide" rate="6" ambient="false" /-->
+				<!-- 33.6g imported from outside. 6g from storage -->
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
@@ -575,7 +573,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
-				<process name="Carbon Dioxide Pump" power-required=".4" default="on">
+				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
@@ -821,7 +819,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level="0.0">
 			<!-- CO2 pump will make use of Solid Oxide Electrolysis Cell: Yttria-Stabilized Zirconia (YSZ) -->
-				<process name="Carbon Dioxide Pump" power-required="1.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="1.0" default="off">
 					<input resource="carbon dioxide" rate="100.0" ambient="true" />
 					<output resource="carbon dioxide" rate="100.0" ambient="false" />
 				</process>
@@ -931,7 +929,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process name="Carbon Dioxide Pump" power-required="3.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="3.0" default="off">
 					<input resource="carbon dioxide" rate="300.0" ambient="true" />
 					<output resource="carbon dioxide" rate="300.0" ambient="false" />
 				</process>
@@ -1003,7 +1001,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="BIOLOGY" />
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="off">
 					<input resource="carbon dioxide" rate="50.0" ambient="true" />
 					<output resource="carbon dioxide" rate="50.0" ambient="false" />
 				</process>
@@ -1072,7 +1070,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process name="Carbon Dioxide Pump" power-required="3.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="3.0" default="off">
 					<input resource="carbon dioxide" rate="300.0" ambient="true" />
 					<output resource="carbon dioxide" rate="300.0" ambient="false" />
 				</process>
@@ -1191,7 +1189,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				analogue regolith and analyzed by ion chromatography.
 				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
 				and NO2- has 6.9 -->
-				<process name="Convert Regolith to Sand" power-required="2.0" default="on">
+				<process name="Convert Regolith to Sand" power-required="2.0" default="off">
 					<input resource="regolith" rate="100.0" ambient="false" />
 
 					<output resource="basaltic" rate="5.0" ambient="false" />
@@ -1206,7 +1204,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture).
-				<process name="Make Mortar from Regolith" power-required="2.0" default="on">
+				<process name="Make Mortar from Regolith" power-required="2.0" default="off">
 					<input resource="regolith" rate="83.0" ambient="false" />
 					<input resource="cement" rate="17.0" ambient="false" />
 
@@ -1215,7 +1213,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				-->
 
 				<!--  Extract various minerals from regolith -->
-				<process name="Extract Minerals from Regolith" power-required="1.0" default="on">
+				<process name="Extract Minerals from Regolith" power-required="1.0" default="off">
 					<input resource="regolith" rate="80.0" ambient="false" />
 
 					<output resource="aluminum oxide" rate="6.0" ambient="false" />
@@ -1225,7 +1223,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 <!--
-				<process name="Make Glass from Sand" power-required="1.0" default="on">
+				<process name="Make Glass from Sand" power-required="1.0" default="off">
 					<input resource="sand" rate="100.0" ambient="false" />
 					<input resource="sodium carbonate" rate="100.0" ambient="false" />
 
@@ -1236,7 +1234,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="glass" rate="50.0" ambient="false" />
 				</process>
 -->
-				<process name="Make Cement" power-required="0.5" default="on">
+				<process name="Make Cement" power-required="0.5" default="off">
 					<input resource="regolith" rate="80.0" ambient="false" />
 					<input resource="gypsum" rate="16.0" ambient="false" />
 					<input resource="aluminum oxide" rate="2.0" ambient="false" />
@@ -1259,7 +1257,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
 				12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
 				13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)-->
-				<process name="Mix Sulfur Concrete" power-required="1.0" default="on">
+				<process name="Mix Sulfur Concrete" power-required="1.0" default="off">
 					<input resource="sulfur" rate="25.0" ambient="false" />
 					<input resource="sand" rate="35.0" ambient="false" />
 					<input resource="cement" rate="60.0" ambient="false" />
@@ -1269,7 +1267,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Same as concrete mixing but using lime in place of cement. -->
-				<process name="Mix Limecrete" power-required="1.0" default="on">
+				<process name="Mix Limecrete" power-required="1.0" default="off">
 					<input resource="sulfur" rate="10.0" ambient="false" />
 					<input resource="sand" rate="40.0" ambient="false" />
 					<input resource="lime" rate="50.0" ambient="false" />
@@ -1287,7 +1285,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					 SiO2 - amorphous silica
 					 MgO:Si paste - Mg Silicate Hydrate (MSH) binder
 					 1. https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
-				<process name="Make MgO concrete" power-required="1.0" default="on">
+				<process name="Make MgO concrete" power-required="1.0" default="off">
 					<input resource="olivine" rate="63.0" ambient="false" />
 					<input resource="water" rate="9.0" ambient="false" />
 
@@ -1387,7 +1385,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 			    <!-- The grey water processor below is 3 times more powerful
 			         than the one fund in Lander Hab or Outpost Hub  -->
-				<process name="Grey Water Processor" power-required="1" default="on">
+				<process name="Grey Water Processor" power-required="1" default="off">
 					<input resource="grey water" rate="120.0" ambient="false" />
 					<input resource="chlorine" rate="1.5" ambient="false" />
 
@@ -1396,7 +1394,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				<!-- The black water processor below is 3 times more powerful
 				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name="Black Water Processor" power-required="0.8" default="on">
+				<process name="Black Water Processor" power-required="0.8" default="off">
 					<input resource="black water" rate="60" ambient="false" />
 					<input resource="chlorine" rate="0.3" ambient="false" />
 					<input resource="nitrospira spp" rate="0.06" ambient="false" />
@@ -1412,7 +1410,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- The Solid Waste Management below is 4 times more powerful
 				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name= "Solid Waste Management" power-required="1" default="on"
+				<process name= "Solid Waste Management" power-required="1" default="off"
 						 toggle-duration="30" toggle-periodicity="500">
 					<input resource="toxic waste" rate="16" ambient="false" />
 					<input resource="solid waste" rate="24" ambient="false" />
@@ -2855,7 +2853,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process name="Grey Water Processor" power-required=".32" default="on">
+				<process name="Grey Water Processor" power-required=".32" default="off">
 					<input resource="grey water" rate="40.0" ambient="false" />
 					<input resource="chlorine" rate="0.5" ambient="false" />
 
@@ -2863,7 +2861,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="solid waste" rate="2" ambient="false" />
 
 				</process>
-					<process name="Black Water Processor" power-required=".315" default="on">
+					<process name="Black Water Processor" power-required=".315" default="off">
 					<input resource="black water" rate="20" ambient="false" />
 					<input resource="chlorine" rate="0.1" ambient="false" />
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
@@ -2877,7 +2875,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="phosphorus" rate=".5" ambient="false" />
 				</process>
 
-				<process name= "Solid Waste Management" power-required=".3" default="on"
+				<process name= "Solid Waste Management" power-required=".3" default="off"
 							toggle-duration="30" toggle-periodicity="500">
 					<input resource="toxic waste" rate="4" ambient="false" />
 					<input resource="solid waste" rate="6" ambient="false" />
@@ -3196,7 +3194,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process name="Carbon Dioxide Pump" power-required="1.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="1.0" default="off">
 					<input resource="carbon dioxide" rate="100.0" ambient="true" />
 					<output resource="carbon dioxide" rate="100.0" ambient="false" />
 				</process>

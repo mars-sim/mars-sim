@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -66,7 +65,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		containerUnit = person.getTopContainerUnit();
 
-		if (!(containerUnit instanceof MarsSurface)) {
+		if (!(containerUnit.getUnitType() == UnitType.PLANET)) {
 			// Get the malfunctioning entity.
 			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(person)) {
 				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
@@ -89,9 +88,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 			// Can fail to get a path and Task will be Done
 			if (!isDone()) {
-	            if (person.isInside()) {
+//	            if (person.isInside()) {
 	            	setPhase(WALK_TO_OUTSIDE_SITE);
-	            }
+//	            }
 
 				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
 
@@ -225,11 +224,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			workTime += workTime * (.2D * mechanicSkill);
 
 		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
+			logger.info(worker, 10_000, "Repair parts for the malfunction'" + malfunction + "' were available. Proceeding to repair.");
 			RepairHelper.claimRepairParts(containerUnit, malfunction);
 		}
 
 		else {
-			logger.info(worker, "Repair parts not available for "
+			logger.info(worker, 10_000, "Repair parts not available for "
 					+ malfunction + " from " + containerUnit.getName() + ".");
 
         	if (worker.isOutside()) {
@@ -244,6 +244,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+			logger.info(worker, 10_000, "Performing EVA repair on malfunction'" + malfunction + "'.");
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 

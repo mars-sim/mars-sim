@@ -206,9 +206,12 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param vehicle Monitored vehicle Person objects.
 	 */
 	public PersonTableModel(Crewable vehicle) throws Exception {
+		
 		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
-				((Unit) vehicle).getName()), "PersonTableModel.countingPeople", //$NON-NLS-1$
-				columnNames, columnTypes);
+				((Unit)vehicle).getName()), 
+				"PersonTableModel.countingPeople", //$NON-NLS-1$
+				columnNames, 
+				columnTypes);
 
 		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;

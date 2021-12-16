@@ -4,16 +4,16 @@
  * @date 2021-08-28
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.BoundedObject;
@@ -104,6 +104,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public static final String ERV = "ERV";
 	public static final String GREENHOUSE = "Greenhouse";
 	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
+	public static final String INGROUND_GREENHOUSE = "Inground " + GREENHOUSE;
+	public static final String LARGE_GREENHOUSE = "large " + GREENHOUSE;
 	public static final String ARRAY = "Array";
 	public static final String TURBINE = "Turbine";
 	public static final String WELL = "Well";
@@ -116,7 +118,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** The volume of an airlock in cubic meters */
 	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
-	public static final double kW_EVA_HEATER = .5D; //
+	public static final double kWEvaHeater = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
@@ -148,7 +150,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	protected double powerNeededForEVAheater;
+	protected double powerNeededForEvaheater;
 
 
 	/** Type of building. */
@@ -211,20 +213,18 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getBounds(), manager);
 
 		this.bid = template.getID();
-//		this.manager = manager;
 		buildingType = template.getBuildingType();
 		settlement = manager.getSettlement();
 		settlementID = settlement.getIdentifier();
 
-		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
-		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
-			if (lifeSupport == null) {
-				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-				// Set up an inhabitable_building id for tracking composition of air
-				int id = manager.obtainNextInhabitableID();
-				setInhabitableID(id);
-			}
+		if (hasFunction(FunctionType.LIFE_SUPPORT)
+			&& lifeSupport == null) {
+			// Set the instance of life support
+			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
+			// Set up an inhabitable_building id for tracking composition of air
+			int id = manager.obtainNextInhabitableID();
+			setInhabitableID(id);
 		}
 	}
 
@@ -894,7 +894,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			result += power;
 		}
 
-		return result + powerNeededForEVAheater;
+		return result + powerNeededForEvaheater;
 	}
 
 	/**
@@ -1009,7 +1009,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return power (kW)
 	 */
 	public double getTotalPowerForEVA() {
-		return powerNeededForEVAheater;
+		return powerNeededForEvaheater;
 	}
 
 	/**
@@ -1023,8 +1023,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			eva = (EVA) getFunction(FunctionType.EVA);
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants().size();
-			powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress
-																	// statistically
+			// Note: Assuming (.5) half of people are doing EVA ingress statistically
+			powerNeededForEvaheater = num * kWEvaHeater * .5D; 
 		}
 		return num;
 	}
@@ -1040,7 +1040,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		int people = 0;
 
 		if (lifeSupport != null) {
-			people = lifeSupport.getOccupants().size();
+			people = lifeSupport.getOccupantNumber();
 		}
 
 		return people;
@@ -1053,16 +1053,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return
 	 */
 	public Collection<Person> getInhabitants() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
 		if (lifeSupport != null) {
-			for (Person occupant : lifeSupport.getOccupants()) {
-				if (!people.contains(occupant))
-					people.add(occupant);
-			}
+			return lifeSupport.getOccupants();
 		}
-
-		return people;
+		
+		return Collections.emptySet();
 	}
 
 	/**
@@ -1071,16 +1066,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return
 	 */
 	public Collection<Robot> getRobots() {
-		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
-
 		if (roboticStation != null) {
-			for (Robot occupant : roboticStation.getRobotOccupants()) {
-				if (!robots.contains(occupant))
-					robots.add(occupant);
-			}
+			return roboticStation.getRobotOccupants();
 		}
-
-		return robots;
+		
+		return Collections.emptySet();
 	}
 
 	/**
@@ -1091,11 +1081,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public Collection<Person> getAffectedPeople() {
 
-		Collection<Person> people = getInhabitants();
+		Collection<Person> people = new HashSet<>();
 		// Check all people in settlement.
 		Iterator<Person> i = settlement.getIndoorPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
+
+			if (person.getBuildingLocation() == this) {
+				people.add(person);
+			}
+
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this building.

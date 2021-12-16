@@ -793,7 +793,7 @@ public class BuildingConnectorManager implements Serializable {
 		} else if (Math.abs(buildingRelativePt.getX() - (building.getWidth() / -2D)) < SMALL_AMOUNT_COMPARISON) {
 			result = BuildingSide.RIGHT;
 		} else {
-			logger.severe("Building side could not be determined for point");
+			logger.severe(building, "Building side could not be determined for point");
 		}
 
 		return result;

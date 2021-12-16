@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GuideWindow.java
- * @date 2021-08-15
+ * @date 2021-12-14
  * @author Lars Naesbye Christensen
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.guide;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -63,8 +62,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	private JViewport viewPort;
 	/** The guide window URL. */
 	private URL guideURL;
-	/** The What's New URL. */
-	private URL whatsNewURL;
 	
 	private ImageIcon icon = new ImageIcon(GuideWindow.class.getResource(HOME_ICON));
 	
@@ -81,18 +78,14 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, desktop);
 
-		EventQueue.invokeLater(new Runnable(){
-	        public void run() {
-	        	init();            
-	        }
-	    });   
+		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
+		
+		// May use EventQueue.invokeLater()
+       	init();            
 	}
 	
 	public void init() {
-		
-		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
-		whatsNewURL = getClass().getResource(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
-				
+			
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.setSize(16, 16);
 		homeButton.addActionListener(this);
@@ -159,7 +152,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		// Pack window.
 		// WARNING: using pack() here will shrink the window to one line tall in swing mode
 
-		setURL(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
+		setURLString(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
 	}
 
     /**
@@ -184,9 +177,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     }
     
 	/**
-	 * Set a display URL .
+	 * Set a URL String for display.
 	 */
-	public void setURL(String fileloc) {
+	public void setURLString(String fileloc) {
 		if (htmlPane != null)
 			htmlPane.goToURL(getClass().getResource(fileloc));
 	}
@@ -242,7 +235,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		htmlPane = null;
 		viewPort = null;
 		guideURL = null;
-		whatsNewURL = null;
 		homeButton = null;
 		backButton = null;
 		forwardButton = null;

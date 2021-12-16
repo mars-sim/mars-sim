@@ -347,20 +347,16 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 					}
 				} else if (currentMission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission constructionMission = (BuildingConstructionMission) currentMission;
-					List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-					if (constVehicles != null)
-						if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-							Vehicle vehicle = constVehicles.get(0);
-							getDesktop().openUnitWindow(vehicle, false);
-						}
+					if (!constructionMission.getConstructionVehicles().isEmpty()) {
+						Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
+						getDesktop().openUnitWindow(vehicle, false);
+					}
 				} else if (currentMission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvageMission = (BuildingSalvageMission) currentMission;
-					List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-					if (constVehicles != null)
-						if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-							Vehicle vehicle = constVehicles.get(0);
-							getDesktop().openUnitWindow(vehicle, false);
-						}
+					if (!salvageMission.getConstructionVehicles().isEmpty()) {
+						Vehicle vehicle = salvageMission.getConstructionVehicles().get(0);
+						getDesktop().openUnitWindow(vehicle, false);
+					}
 				}
 			}
 		});
@@ -788,41 +784,37 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			// Display first of mission's list of construction vehicles.
 			BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 			List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-			if (constVehicles != null)
-				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-					Vehicle vehicle = constVehicles.get(0);
-					vehicleButton.setText(vehicle.getName());
-					vehicleButton.setVisible(true);
-					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(
-							Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-					vehicle.addUnitListener(this);
-					currentVehicle = vehicle;
-				}
+			if (!constVehicles.isEmpty()) {
+				Vehicle vehicle = constVehicles.get(0);
+				vehicleButton.setText(vehicle.getName());
+				vehicleButton.setVisible(true);
+				vehicleStatusLabel.setText(vehicle.printStatusTypes());
+				speedLabel.setText(
+						Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				vehicle.addUnitListener(this);
+				currentVehicle = vehicle;
+			}
 		} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 			// Display first of mission's list of construction vehicles.
 			BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
 			List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-			if (constVehicles != null)
-				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-					Vehicle vehicle = constVehicles.get(0);
-					vehicleButton.setText(vehicle.getName());
-					vehicleButton.setVisible(true);
-					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(
-							Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-					vehicle.addUnitListener(this);
-					currentVehicle = vehicle;
-				}
+			if (!constVehicles.isEmpty()) {
+				Vehicle vehicle = constVehicles.get(0);
+				vehicleButton.setText(vehicle.getName());
+				vehicleButton.setVisible(true);
+				vehicleStatusLabel.setText(vehicle.printStatusTypes());
+				speedLabel.setText(
+						Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				vehicle.addUnitListener(this);
+				currentVehicle = vehicle;
+			}
 		}
-
+			// NOTE: do NOT clear the vehicle info. Leave the info there for future viewing
 //			if (!isVehicle) {
-//				// NOTE: do NOT clear the vehicle info. Leave the info there for future viewing
-//
 //				// Clear vehicle info.
 //				vehicleButton.setVisible(false);
 //				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$

@@ -419,7 +419,7 @@ public class PhysicalCondition implements Serializable {
 			if (person.isInSettlement()) {
 				double stressFactor = person.getSettlement().getStressFactor(time);
 				// Update stress
-				setStress(stress + stressFactor);
+				addStress(stressFactor);
 			}
 
 			// Note: Normal bodily function consume a minute amount of energy
@@ -915,6 +915,15 @@ public class PhysicalCondition implements Serializable {
 				stress = 0D;
 			// person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
 		}
+	}
+	
+	/**
+	 * Adds the person's stress level.
+	 *
+	 * @param deltaStress
+	 */
+	public void addStress(double deltaStress) {
+		stress += deltaStress;
 	}
 
 	/**

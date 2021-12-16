@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -609,7 +608,11 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 * @return list of construction vehicles.
 	 */
 	public List<GroundVehicle> getConstructionVehicles() {
-		return Collections.unmodifiableList(constructionVehicles);
+		if (constructionVehicles != null && !constructionVehicles.isEmpty()) {
+			return new ArrayList<>(constructionVehicles);
+		} 
+		
+		return new ArrayList<>();
 	}
 
 	/**

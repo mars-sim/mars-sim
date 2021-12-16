@@ -394,7 +394,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 				if (tt > -40 && tt < 40 && id != -1) {
 
-					int numPeople = b.getInhabitants().size();
+					int numPeople = b.getNumPeople();
 
 					double t = C_TO_K + tt;
 

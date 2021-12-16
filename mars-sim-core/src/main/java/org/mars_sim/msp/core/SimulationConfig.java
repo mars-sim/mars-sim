@@ -69,7 +69,6 @@ public class SimulationConfig implements Serializable {
 
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
 
-
 	/** The version.txt denotes the xml build version. */
 	public static final String VERSION_FILE = "version.txt";
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */
@@ -104,37 +103,37 @@ public class SimulationConfig implements Serializable {
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 
-	private static final String BASE_TIME_RATIO = "base-time-ratio";
+	private static final String ACCURACY_BIAS = "accuracy-bias";
 	private static final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
 	private static final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
-	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
-
-	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
-	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
-	private static final String ACCURACY_BIAS = "accuracy-bias";
-
+	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
+	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
+	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
+	private static final String BASE_TIME_RATIO = "base-time-ratio";
 	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
 
-	private transient double tr = 0;
-
-	private transient int[] data = new int[] { 0, 0, 0, 0 };
-
 	private transient String marsStartDate = null;
-
 	private transient String earthStartDate = null;
 
+	private double accuracyBias = 0;
+	private double maxSimulatedPulse = 0;
+	private double minSimulatedPulse = 0;
+	
+	private int defaultTimePulse = 0; 
+	private int baseTimeRatio = 0;
+	private int autosaveInterval = 0;
+	private int averageTransitTime = 0;
+	private int unusedCores = 0;	
+	
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Members
 	 * -----------------------------------------------------------------------------
 	 */
-
-	/** DOM documents. */
-	private transient Document simulationDoc;
 
 	// Subset configuration classes
 	private transient PartConfig partConfig;
@@ -157,7 +156,6 @@ public class SimulationConfig implements Serializable {
 	private transient MealConfig mealConfig;
 	private transient RobotConfig robotConfig;
 	private transient QuotationConfig quotationConfig;
-
 	//private transient ExperimentConfig experimentConfig;
 	private transient ScienceConfig scienceConfig;
 
@@ -212,10 +210,22 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public void loadConfig() {
-		if (simulationDoc != null) {
-			return;
-		}
 
+		// Load simulation document
+		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
+		obtainMarsStartDateTime(simulationDoc);
+		obtainEarthStartDateTime(simulationDoc);
+		
+		obtainAccuracyBias(simulationDoc);
+		obtainMinSimulatedPulse(simulationDoc);
+		obtainMaxSimulatedPulse(simulationDoc);
+		
+		obtainDefaultPulsePeriod(simulationDoc);
+		obtainTimeRatio(simulationDoc);
+		obtainUnusedCores(simulationDoc);
+		obtainAverageTransitTime(simulationDoc);
+		obtainAutosaveInterval(simulationDoc);
+		
 		checkXMLFileVersion();
 
 		try {
@@ -232,7 +242,6 @@ public class SimulationConfig implements Serializable {
 	 * objects should be immutable.
 	 */
 	public void reloadConfig() {
-		simulationDoc = null;
 		loadConfig();
 	}
 
@@ -480,7 +489,7 @@ public class SimulationConfig implements Serializable {
 	 * @param child Value element
 	 * @return String value found
 	 */
-	private String findValue(String parent, String child) {
+	private String findValue(Document simulationDoc, String parent, String child) {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(parent);
 		Element timeRatioEL = timeConfig.getChild(child);
@@ -492,8 +501,8 @@ public class SimulationConfig implements Serializable {
 		return str;
 	}
 
-	private int loadIntValue(String parent, String child) {
-		String str = findValue(parent, child);
+	private int loadIntValue(Document simulationDoc, String parent, String child) {
+		String str = findValue(simulationDoc, parent, child);
 		int i = 0;
 		try {
 			i = Integer.parseInt(str.trim());
@@ -506,8 +515,8 @@ public class SimulationConfig implements Serializable {
 		return i;
 	}
 
-	private double loadDoubleValue(String parent, String child) {
-		String str = findValue(parent, child);
+	private double loadDoubleValue(Document simulationDoc, String parent, String child) {
+		String str = findValue(simulationDoc, parent, child);
 		double d = 0;
 		try {
 			d = Double.valueOf(str.trim()).doubleValue();
@@ -532,18 +541,15 @@ public class SimulationConfig implements Serializable {
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getTimeRatio() {
-		if (tr != 0) {
-			return tr;
-		}
+	public int getTimeRatio() {
+		return baseTimeRatio;
+	}
 
-		else {
-			double d = loadDoubleValue(TIME_CONFIGURATION, BASE_TIME_RATIO);
-			if (d <= 16 && d >= 2048)
-				throw new IllegalStateException("time_ratio must be between 16.0 and 2048.0");
-			tr = d;
-			return d;
-		}
+	public void obtainTimeRatio(Document simulationDoc) {
+		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, BASE_TIME_RATIO);
+		if (d < 16 && d > 2048)
+			throw new IllegalStateException(BASE_TIME_RATIO + " must be between 16 and 2048");
+		baseTimeRatio = d;
 	}
 
 	/**
@@ -553,12 +559,15 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getMinSimulatedPulse() {
-		double result = loadDoubleValue(TIME_CONFIGURATION, MIN_SIMULATED_PULSE);
+		return minSimulatedPulse;
+	}
 
-		if (result <= 0)
+	public void obtainMinSimulatedPulse(Document simulationDoc) {
+		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MIN_SIMULATED_PULSE);
+		if (d <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MIN_SIMULATED_PULSE
-					                        + " must be greater then zero");
-		return result;
+                    	+ " must be greater then zero");
+		minSimulatedPulse = d;
 	}
 
 	/**
@@ -568,53 +577,68 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getMaxSimulatedPulse() {
-		double result = loadDoubleValue(TIME_CONFIGURATION, MAX_SIMULATED_PULSE);
+		return maxSimulatedPulse;
+	}
 
-		if (result <= 0)
+	public void obtainMaxSimulatedPulse(Document simulationDoc) {
+		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MAX_SIMULATED_PULSE);
+		if (d <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MAX_SIMULATED_PULSE
-					                        + " must be greater then zero");
-		return result;
+                    	+ " must be greater then zero");
+		maxSimulatedPulse = d;
 	}
 
 	/**
-	 * Load the accuracy bias. Must be between 0 -> 10.
+	 * Load the accuracy bias. Must be between 0.0 -> 1.0
+	 * 
 	 * @return
 	 */
 	public double getAccuracyBias() {
-		double result = loadDoubleValue(TIME_CONFIGURATION, ACCURACY_BIAS);
+		return accuracyBias;
+	}
 
-		if ((result < 0) || (result > 10)) {
+	public void obtainAccuracyBias(Document simulationDoc) {
+		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, ACCURACY_BIAS);
+		if (d < 0 || d > 1)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + ACCURACY_BIAS
-					                        + " must be between 0 & 10");
-		}
-		return result;
+                    	+ " must be between 0.0 & 1.0");
+		accuracyBias = d;
 	}
 
 	/**
 	 * Load the default elapsed time for each pulse. Must be positive.
+	 * 
 	 * @return Millisec
 	 */
 	public int getDefaultPulsePeriod() {
-		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_TIME_PULSE);
+		return defaultTimePulse;
+	}
 
-		if (result <= 0)
+	public void obtainDefaultPulsePeriod(Document simulationDoc) {
+		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_TIME_PULSE);
+		if (d <= 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_TIME_PULSE
-					                        + " must be greater then zero");
-		return result;
+                    	+ " must be greater then zero");
+		defaultTimePulse = d;
 	}
 
 
 	/**
-	 * The difference between number of cores and Simulation threads created, i.e. unused cores. Must be positive.
-	 * @return Millisec
+	 * The difference between number of cores in the machine and the simulation threads created, 
+	 * i.e. the unused cores. Must be positive.
+	 * 
+	 * @return # of cores
 	 */
 	public int getUnusedCores() {
-		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_UNUSEDCORES);
+		return unusedCores;
+	}
 
-		if (result < 0)
+	public void obtainUnusedCores(Document simulationDoc) {
+		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_UNUSEDCORES);
+		if (d < 0)
 			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_UNUSEDCORES
-					                        + " cannot be negative");
-		return result;
+                    	+ " must be greater then zero");
+		unusedCores = d;
 	}
 
 	/**
@@ -624,15 +648,16 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getEarthStartDateTime() {
-		if (earthStartDate == null) {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element date = timeConfig.getChild(EARTH_START_DATE_TIME);
-			earthStartDate = date.getAttributeValue(VALUE);
-			if ((earthStartDate == null) || earthStartDate.trim().length() == 0)
-				throw new IllegalStateException("Earth start date time must not be blank.");
-		}
 		return earthStartDate;
+	}
+	
+	public void obtainEarthStartDateTime(Document simulationDoc) {		
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element date = timeConfig.getChild(EARTH_START_DATE_TIME);
+		earthStartDate = date.getAttributeValue(VALUE);
+		if ((earthStartDate == null) || earthStartDate.trim().length() == 0)
+			throw new IllegalStateException("Earth start date time must not be blank.");
 	}
 
 	/**
@@ -642,16 +667,16 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getMarsStartDateTime() {
-		if (marsStartDate == null) {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element date = timeConfig.getChild(MARS_START_DATE_TIME);
-			marsStartDate = date.getAttributeValue(VALUE);
-			if ((marsStartDate == null) || marsStartDate.trim().length() == 0)
-				throw new IllegalStateException("Mars start date time must not be blank.");
-		}
-
 		return marsStartDate;
+	}
+			
+	public void obtainMarsStartDateTime(Document simulationDoc) {		
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element date = timeConfig.getChild(MARS_START_DATE_TIME);
+		marsStartDate = date.getAttributeValue(VALUE);
+		if ((marsStartDate == null) || marsStartDate.trim().length() == 0)
+			throw new IllegalStateException("Mars start date time must not be blank.");
 	}
 
 	/**
@@ -660,7 +685,7 @@ public class SimulationConfig implements Serializable {
 	 * @param value
 	 */
 	public void setAutosaveInterval(int value) {
-		data[2] = value;
+		autosaveInterval = value;
 	}
 
 	/**
@@ -670,17 +695,14 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if value is null or empty.
 	 */
 	public int getAutosaveInterval() {
-		if (data[2] != 0) {
-			return data[2];
-		}
+		return autosaveInterval;
+	}
 
-		else {
-			int d = loadIntValue(TIME_CONFIGURATION, AUTOSAVE_INTERVAL);
-			if (d < 1 || d > 1440)
-				throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
-			data[2] = d;
-			return d;
-		}
+	public void obtainAutosaveInterval(Document simulationDoc) {
+		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_INTERVAL);
+		if (d < 1 || d > 360)
+			throw new IllegalStateException("autosave_interval must be between 1 and 360.");
+		autosaveInterval = d;
 	}
 
 	/**
@@ -690,17 +712,14 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if value is null or empty.
 	 */
 	public int getAverageTransitTime() {
-		if (data[3] != 0) {
-			return data[3];
-		}
-
-		else {
-			int d = loadIntValue(TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME);
-			if (d < 0 || d > 430)
-				throw new IllegalStateException("average-transit-time must be between 0 and 430.");
-			data[3] = d;
-			return d;
-		}
+		return averageTransitTime;
+	}
+	
+	public void obtainAverageTransitTime(Document simulationDoc) {
+		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME);
+		if (d < 0 || d > 430)
+			throw new IllegalStateException("average-transit-time must be between 0 and 430.");
+		averageTransitTime = d;
 	}
 
 	/**
@@ -1030,7 +1049,7 @@ public class SimulationConfig implements Serializable {
 		File f = getBundledXML(filename);
 		if (f != null) {
 			try {
-			    SAXBuilder builder = new SAXBuilder();//null, null, null);
+			    SAXBuilder builder = new SAXBuilder();
 			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 				return builder.build(f);
@@ -1053,8 +1072,6 @@ public class SimulationConfig implements Serializable {
 	private void loadDefaultConfiguration() {
 		raFactory = new ReportingAuthorityFactory();
 
-		// Load simulation document
-		simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 		// Load subset configuration classes.
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
@@ -1080,5 +1097,4 @@ public class SimulationConfig implements Serializable {
 
 		logger.config("Done loading all xml config files.");
 	}
-
 }

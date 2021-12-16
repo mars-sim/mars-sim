@@ -990,18 +990,24 @@ public class MainDesktopPane extends JDesktopPane
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-		// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
+		// Note 1: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 		// centered for javaFX mode in Windows PC (but not in other platform)
-
-		if (mode == GameMode.COMMAND) {
-			// Open the time window for the Commander Mode
-			openToolWindow(TimeWindow.NAME);
-			openToolWindow(CommanderWindow.NAME);
-		}
-
-		else {
-			openToolWindow(GuideWindow.NAME);
-		}
+		
+		// Note 2: SwingUtilities.invokeLater allows sufficient time for all tool windows
+		// to be created so that when calling openToolWindow, the tool windows
+		// would be available by then
+		SwingUtilities.invokeLater(() ->
+			{
+			if (mode == GameMode.COMMAND) {
+				// Open the time window for the Commander Mode
+				openToolWindow(TimeWindow.NAME);
+				openToolWindow(CommanderWindow.NAME);
+			}
+	
+			else {
+				openToolWindow(GuideWindow.NAME);
+			}
+		});
 	}
 
 	/**

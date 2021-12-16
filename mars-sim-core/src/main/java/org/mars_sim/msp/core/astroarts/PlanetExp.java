@@ -631,6 +631,8 @@ public class PlanetExp {
 		case Planet.NEPTUNE:
 		case Planet.PLUTO:
 			return getPosExp3(planetNo, atime.getT2());
+		 default:
+		    break;			
 		}
 		return null;
 	}

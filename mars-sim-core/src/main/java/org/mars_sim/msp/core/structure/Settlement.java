@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -308,7 +307,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
 	/** The settlement's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement;
+	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	/** The map of mission modifiers. */
@@ -316,11 +315,11 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
 	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
-	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
+	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new HashMap<>();
 
 	/** The last 20 mission scores */
 	private List<Double> missionScores;
@@ -445,7 +444,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
 
-		allowTradeMissionSettlements = new ConcurrentHashMap<>();
+		allowTradeMissionSettlements = new HashMap<>();
 	}
 
 
@@ -509,7 +508,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		thermalSystem = new ThermalSystem(this);
 
 		// Initialize scientific achievement.
-		scientificAchievement = new HashMap<ScienceType, Double>(0);
+		scientificAchievement = new EnumMap<>(ScienceType.class);
 
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
@@ -586,7 +585,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	private Map<Building, List<Building>> createAdjacentBuildingMap() {
 		if (adjacentBuildingMap == null)
-			adjacentBuildingMap = new ConcurrentHashMap<>();
+			adjacentBuildingMap = new HashMap<>();
 		for (Building b : buildingManager.getBuildings()) {
 			List<Building> connectors = createAdjacentBuildings(b);
 			adjacentBuildingMap.put(b, connectors);
@@ -1250,7 +1249,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		int msol = marsClock.getMillisolInt();
 
 		if (resourceStat == null)
-			resourceStat = new ConcurrentHashMap<>();
+			resourceStat = new HashMap<>();
 
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
@@ -1262,12 +1261,12 @@ public class Settlement extends Structure implements Serializable, Temporal,
 				msolMap = todayMap.get(resourceType);
 			}
 			else {
-				msolMap = new ConcurrentHashMap<>();
+				msolMap = new HashMap<>();
 			}
 		}
 		else {
-			msolMap = new ConcurrentHashMap<>();
-			todayMap = new ConcurrentHashMap<>();
+			msolMap = new HashMap<>();
+			todayMap = new HashMap<>();
 		}
 
 		msolMap.put(msol, newAmount);
@@ -1376,7 +1375,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 	private void refreshResourceStat() {
 		if (resourceStat == null)
-			resourceStat = new ConcurrentHashMap<>();
+			resourceStat = new HashMap<>();
 		// Remove the resourceStat map data from 12 sols ago
 		if (resourceStat.size() > RESOURCE_STAT_SOLS)
 			resourceStat.remove(0);
