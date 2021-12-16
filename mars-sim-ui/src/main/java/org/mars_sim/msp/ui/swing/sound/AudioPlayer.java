@@ -209,7 +209,7 @@ public class AudioPlayer implements ClockListener {
 	 * 
 	 * @param filepath the file path to the music track.
 	 */
-	public void playMusic(String filepath) {
+	public static void playMusic(String filepath) {
 		if (!isMusicMute()) {
 			loadMusic(filepath);
 		}
@@ -220,11 +220,13 @@ public class AudioPlayer implements ClockListener {
 	 * 
 	 * @param filepath the file path to the music track.
 	 */
-	public void loadMusic(String filepath) {
+	public static void loadMusic(String filepath) {
 		if (musicTracks.contains(filepath) && filepath != null) {
 			currentMusic = obtainOGGMusicTrack(filepath);
-			currentMusic.determineGain(currentMusicVol);
-			currentMusic.loop();
+			if (currentMusic != null) {
+				currentMusic.determineGain(currentMusicVol);
+				currentMusic.loop();
+			}
 		}
 	}
 
@@ -378,7 +380,7 @@ public class AudioPlayer implements ClockListener {
 	 * 
 	 * @return true if mute.
 	 */
-	public boolean isMusicMute() {
+	public static boolean isMusicMute() {
 		if (currentMusic == null || currentMusicVol <= 0)  {
 			return true;
 		}
@@ -457,7 +459,7 @@ public class AudioPlayer implements ClockListener {
 	/**
 	 * Picks a new music track to play
 	 */
-	public void pickANewTrack() {
+	public static void pickANewTrack() {
 		int rand = 0;
 		// At the start of the sim, refrain from playing the last few tracks due to
 		// their sudden loudness
@@ -597,6 +599,5 @@ public class AudioPlayer implements ClockListener {
 		currentSoundClip = null;
 		currentMusic = null;
 		musicTracks = null;
-		playedTracks = null;
 	}
 }

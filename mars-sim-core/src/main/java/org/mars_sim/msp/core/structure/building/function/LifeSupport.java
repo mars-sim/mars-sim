@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,7 +58,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Call Function constructor.
 		super(THE_FUNCTION, building);
 
-		occupants = new HashSet<Person>();
+		occupants = new HashSet<>();
 
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
@@ -84,7 +83,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Use Function constructor
 		super(THE_FUNCTION, building);
 
-		occupants = new ConcurrentLinkedQueue<Person>();
+		occupants = new HashSet<>();
 
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
@@ -277,7 +276,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return powerRequired; // + heating.getFullPowerRequired());
+		return powerRequired;
 	}
 
 	@Override

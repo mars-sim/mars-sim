@@ -315,8 +315,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		calculateMissionCapacity(MAX_PEOPLE);
 
-		Iterator<MissionMember> i = members.iterator();
-
+//		Iterator<MissionMember> i = members.iterator();
 //		while (i.hasNext()) {
 //			MissionMember member = i.next();
 //			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -737,11 +736,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			
 			// 75% chance of assigning task, otherwise allow break.
 			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
-				&& member.getUnitType() == UnitType.PERSON) {
-				Person person = (Person) member;
-				if (ConstructBuilding.canConstruct(person, site)) {
-					assignTask(person, new ConstructBuilding(person, stage, site, constructionVehicles));
-				}
+				&& member.getUnitType() == UnitType.PERSON
+				&& ConstructBuilding.canConstruct((Person) member, site)) {
+					assignTask((Person) member, new ConstructBuilding((Person) member, stage, site, constructionVehicles));
 			}
 		}
 

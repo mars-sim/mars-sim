@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -1117,11 +1116,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					localGroup = new HashSet<>(building.getLifeSupport().getOccupants());
+					localGroup = building.getLifeSupport().getOccupants();
 				}
 			}
 		} else if (isInVehicle()) {
-			localGroup = new HashSet<>(((Crewable) getVehicle()).getCrew());
+			localGroup = ((Crewable) getVehicle()).getCrew();
 		}
 
 		if (localGroup == null) {

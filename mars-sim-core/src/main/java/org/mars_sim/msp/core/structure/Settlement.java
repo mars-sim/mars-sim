@@ -307,7 +307,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
 	/** The settlement's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement;
+	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	/** The map of mission modifiers. */
@@ -508,7 +508,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		thermalSystem = new ThermalSystem(this);
 
 		// Initialize scientific achievement.
-		scientificAchievement = new HashMap<>(0);
+		scientificAchievement = new EnumMap<>(ScienceType.class);
 
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);

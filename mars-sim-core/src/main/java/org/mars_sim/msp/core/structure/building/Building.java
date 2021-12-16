@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +118,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** The volume of an airlock in cubic meters */
 	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
-	public static final double kWEVAHeater = .5D;
+	public static final double kWEvaHeater = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
@@ -149,7 +150,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	protected double powerNeededForEVAheater;
+	protected double powerNeededForEvaheater;
 
 
 	/** Type of building. */
@@ -893,7 +894,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			result += power;
 		}
 
-		return result + powerNeededForEVAheater;
+		return result + powerNeededForEvaheater;
 	}
 
 	/**
@@ -1008,7 +1009,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return power (kW)
 	 */
 	public double getTotalPowerForEVA() {
-		return powerNeededForEVAheater;
+		return powerNeededForEvaheater;
 	}
 
 	/**
@@ -1023,7 +1024,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
-			powerNeededForEVAheater = num * kWEVAHeater * .5D; 
+			powerNeededForEvaheater = num * kWEvaHeater * .5D; 
 		}
 		return num;
 	}
@@ -1056,7 +1057,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return lifeSupport.getOccupants();
 		}
 		
-		return new HashSet<>();
+		return Collections.emptySet();
 	}
 
 	/**
@@ -1069,7 +1070,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return roboticStation.getRobotOccupants();
 		}
 		
-		return new HashSet<>();
+		return Collections.emptySet();
 	}
 
 	/**
