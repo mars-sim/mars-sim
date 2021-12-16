@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -96,6 +97,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private Coordinates destinationLocationCache;
     private Settlement destinationSettlementCache;
 
+	private MissionManager missionManager;
+
     /**
      * Constructor
      *
@@ -108,6 +111,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 	
         vehicle = (Vehicle) unit;
 
+        missionManager = desktop.getSimulation().getMissionManager();
 	}
 
 	public boolean isUIDone() {

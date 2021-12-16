@@ -42,7 +42,7 @@ extends BuildingFunctionPanel {
 	public BuildingPanelStorage(Storage storage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelStorage.title"), storage.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelStorage.tabTitle"), Msg.getString("BuildingPanelStorage.title"), storage.getBuilding(), desktop);
 		
 		this.storage = storage;
 	}

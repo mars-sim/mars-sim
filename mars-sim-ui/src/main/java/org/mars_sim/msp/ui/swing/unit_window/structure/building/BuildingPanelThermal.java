@@ -49,7 +49,8 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
-		super(Msg.getString("BuildingPanelThermal.title"), furnace.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelThermal.tabTitle"), Msg.getString("BuildingPanelThermal.title"),
+			  furnace.getBuilding(), desktop);
 
 		this.furnace = furnace;
 		this.building = furnace.getBuilding();
