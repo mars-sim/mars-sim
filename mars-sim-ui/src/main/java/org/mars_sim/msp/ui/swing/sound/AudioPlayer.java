@@ -66,7 +66,7 @@ public class AudioPlayer implements ClockListener {
 	public AudioPlayer(MainDesktopPane desktop) {
 
 		// Add AudioPlayer to MasterClock's clock listener
-		masterClock.addClockListener(this);
+		desktop.getSimulation().getMasterClock().addClockListener(this);
 	
 		if (!isVolumeDisabled) {
 			loadMusicTracks();

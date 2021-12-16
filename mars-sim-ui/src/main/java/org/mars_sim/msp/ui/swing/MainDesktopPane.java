@@ -116,18 +116,18 @@ public class MainDesktopPane extends JDesktopPane
 	private MainWindow mainWindow;
 	private EventTableModel eventTableModel;
 
-	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
+	private Simulation sim;
 
 	/**
 	 * Constructor 1.
 	 *
 	 * @param mainWindow the main outer window
 	 */
-	public MainDesktopPane(MainWindow mainWindow) {
+	public MainDesktopPane(MainWindow mainWindow, Simulation sim) {
 		super();
 
 		this.mainWindow = mainWindow;
+		this.sim = sim;
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
@@ -283,7 +283,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void prepareListeners() {
 		// Attach UnitManagerListener to desktop
-		unitManager = sim.getUnitManager();
+		UnitManager unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(this);
 
 		// Add addUnitListener()
@@ -977,6 +977,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * Caches the creation of settlements for speeding up loading time
 	 */
 	public void cacheSettlementUnitWindow() {
+		UnitManager unitManager = sim.getUnitManager();
 		if (mode == GameMode.COMMAND)
 			openUnitWindow(unitManager.getCommanderSettlement(), true, false);
 		else {

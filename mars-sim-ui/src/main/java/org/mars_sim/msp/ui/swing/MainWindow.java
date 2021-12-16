@@ -226,11 +226,10 @@ extends JComponent implements ClockListener {
 
 	private static SplashWindow splashWindow;
 
-	private static Simulation sim = Simulation.instance();
-	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
-	private static MasterClock masterClock;
-	private static EarthClock earthClock;
-	private static MarsClock marsClock;
+	private Simulation sim;
+	private MasterClock masterClock;
+	private EarthClock earthClock;
+	private MarsClock marsClock;
 
 	private static InteractiveTerm interactiveTerm;
 
@@ -239,7 +238,9 @@ extends JComponent implements ClockListener {
 	 *
 	 * @param cleanUI true if window should display a clean UI.
 	 */
-	public MainWindow(boolean cleanUI) {
+	public MainWindow(boolean cleanUI, Simulation sim) {
+		this.sim = sim;
+		
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
 		} else {
@@ -300,8 +301,6 @@ extends JComponent implements ClockListener {
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
-		logger.config("Do you want to use the last saved screen configuration ?");
-		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
 		
 		if (cleanUI) {
 			useDefaultScreenConfig(screenWidth, screenHeight);
@@ -310,22 +309,18 @@ extends JComponent implements ClockListener {
 			askScreenConfig(screenWidth, screenHeight);
 		}
 		
-		try {
-			// Set up MainDesktopPane
-			desktop = new MainDesktopPane(this);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e);
-		}
+
+		// Set up MainDesktopPane
+		desktop = new MainDesktopPane(this, sim);
 
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 
-		try {
-			// Set up other elements
-			init();
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e);
-		}
+		// Set up other elements
+		masterClock = sim.getMasterClock();
+		earthClock = masterClock.getEarthClock();
+		marsClock = masterClock.getMarsClock();
+		init();
 
 		// Show frame
 		frame.setVisible(true);
@@ -347,6 +342,10 @@ extends JComponent implements ClockListener {
 	 * @param screenHeight
 	 */
 	private void askScreenConfig(int screenWidth, int screenHeight) {
+
+		logger.config("Do you want to use the last saved screen configuration ?");
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
+		
 		int reply = JOptionPane.showConfirmDialog(frame,
 				"Do you want to use the last saved screen configuration", 
 				"Screen Configuration", 
@@ -707,14 +706,6 @@ extends JComponent implements ClockListener {
 		// Add overlay
 		mainPane.add(overlay, BorderLayout.CENTER);
 
-		// Initialize data members
-		if (earthClock == null) {
-			if (masterClock == null)
-				masterClock = sim.getMasterClock();
-			earthClock = masterClock.getEarthClock();
-			marsClock = masterClock.getMarsClock();
-		}
-
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this);
 
@@ -1029,13 +1020,7 @@ extends JComponent implements ClockListener {
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				if (earthClock == null || marsClock == null) {
-					if (masterClock == null)
-						masterClock = sim.getMasterClock();
 
-					earthClock = masterClock.getEarthClock();
-					marsClock = masterClock.getMarsClock();
-				}
 
 				// Increment both the earth and mars clocks
 				incrementClocks();
@@ -1469,8 +1454,5 @@ extends JComponent implements ClockListener {
 		solLabel = null;
 		bottomPane = null;
 		mainPane = null;
-		sim = null;
-		masterClock = null;
-		earthClock = null;
 	}
 }
