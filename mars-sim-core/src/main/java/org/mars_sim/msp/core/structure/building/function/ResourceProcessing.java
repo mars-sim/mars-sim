@@ -166,14 +166,14 @@ public class ResourceProcessing extends Function implements Serializable {
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
 
-				ResourceProcess rp = i.next();
+//				ResourceProcess rp = i.next();
 //				if (resetInterval) {
 //					rp.setInterval(processInterval);
 //					resetInterval = false;
 //				}
-
-				// 	Note: need to reduce processResources since it takes up 32% of all cpu utilization
-				rp.processResources(pulse, productionLevel, getBuilding().getSettlement());
+//				rp.processResources(pulse, productionLevel, getBuilding().getSettlement());
+				
+				i.next().processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
 		}
 		return valid;

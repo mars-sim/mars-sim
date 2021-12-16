@@ -56,8 +56,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static final Logger logger = Logger.getLogger(TimeWindow.class.getName());
-
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 	/** the execution time label string */

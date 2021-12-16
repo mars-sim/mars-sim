@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CompositionOfAir.java
- * @date 2021-10-21
+ * @date 2021-12-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -19,11 +18,11 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The CompositionOfAir class accounts for the composition of air of each
@@ -34,12 +33,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
-//	private static final String GREENHOUSE = "greenhouse";
+//	private static SimLogger logger = SimLogger.getLogger(CompositionOfAir.class.getName());
 
 	public static final double C_TO_K = 273.15;
 
@@ -47,7 +41,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
 //	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
-
 //	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = .05;
 
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
@@ -135,6 +128,8 @@ public class CompositionOfAir implements Serializable, Temporal {
 	/** The settlement ID */
 	private int settlementID;
 
+	/** The time accumulated [in millisols] for each crop update call. */
+	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 	/** Oxygen consumed by a person [kg/millisol] */
 	private double o2Consumed;
 	/** CO2 expelled by a person [kg/millisol] */
@@ -202,7 +197,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 	public CompositionOfAir(Settlement settlement) {
 
 		settlementID = settlement.getIdentifier();
-//		System.out.println("1. CompositionOfAir for " + settlement + " " + settlementID);
+
 		personConfig = simulationConfig.getPersonConfig();
 
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
@@ -233,7 +228,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 		int size = settlement.getBuildingManager().getNumInhabitables();
 		sizeCache = size;
 
-//		System.out.println(settlement.getBuildingManager() + " size : " + size);
 		// CO2, H2O, N2, O2, Ar2, He, CH4...
 		// numGases = 5;
 
@@ -265,15 +259,13 @@ public class CompositionOfAir implements Serializable, Temporal {
 		// double t = 22.5 + C_TO_K ;
 
 		List<Building> buildings = settlement.getBuildingManager().getBuildingsWithLifeSupport();
-//		System.out.println("buildings size : " + buildings.size());
+
 		for (Building b : buildings) {
 
 			int id = b.getInhabitableID();
 			if (id != -1) {
 				double t = C_TO_K + b.getCurrentTemperature();
 				double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
-
-//				System.out.println(size + " : " + buildings.size() + " : " + b + " : " + id);
 
 				fixedVolume[id] = vol;
 
@@ -343,7 +335,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		int num = newList.size();
 
 		// For each time interval
-		calculateGasExchange(pulse.getElapsed(), newList, num);
+		calculateGasExchange(pulse, newList, num);
 
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -372,25 +364,33 @@ public class CompositionOfAir implements Serializable, Temporal {
 	/**
 	 * Calculate the gas exchange that happens in an given interval of time
 	 *
-	 * @param time      interval in millisols
+	 * @param pulse      ClockPulse
 	 * @param buildings a list of buildings
 	 * @param size       numbers of buildings
 	 */
-	private void calculateGasExchange(double time, List<Building> buildings, int size) {
-//		int size = buildings.size();
+	private void calculateGasExchange(ClockPulse pulse, List<Building> buildings, int size) {
+		double time = pulse.getElapsed();
+		accumulatedTime += time;
 
-		double o2 = o2Consumed * time;
-		double cO2 = cO2Expelled * time;
-		double moisture = moistureExpelled * time;
-		// double h2o = (h2oConsumed - moistureExpelled) * time;
+		double processInterval = pulse.getMasterClock().getScaleFactor();
 
-		// Part 1 : calculate for each gas the partial pressure and # of moles
-		for (Building b : buildings) {
+		if (accumulatedTime >= processInterval) {
+//			logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
+//					+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
+//					+ "  processInterval: " + processInterval);
 
-			double tt = b.getCurrentTemperature();
-			int id = b.getInhabitableID();
+			accumulatedTime = accumulatedTime - processInterval;
 
-//			for (int id = 0; id < size; id++) {
+			double o2 = o2Consumed * time;
+			double cO2 = cO2Expelled * time;
+			double moisture = moistureExpelled * time;
+			// double h2o = (h2oConsumed - moistureExpelled) * time;
+	
+			// Part 1 : calculate for each gas the partial pressure and # of moles
+			for (Building b : buildings) {
+	
+				double tt = b.getCurrentTemperature();
+				int id = b.getInhabitableID();
 
 				if (tt > -40 && tt < 40 && id != -1) {
 
@@ -458,15 +458,13 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 					}
 				}
-//			}
-		}
+			}
 
 		// Part 2
 		// calculate for each building the total pressure, total # of moles and
 		// percentage of composition
 //		for (Building b : buildings) {
 //			int id = b.getInhabitableID();
-
 			for (int id = 0; id < size; id++) {
 
 				double sum_p = 0, sum_nm = 0, sum_m = 0;// , sum_t = 0;
@@ -500,7 +498,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 					// + "'s percent : " + Math.round(percent [gas][id]*100.0)/100.0);
 				}
 			}
-//		}
+		}
 	}
 
 	/**
@@ -553,12 +551,14 @@ public class CompositionOfAir implements Serializable, Temporal {
 							// save the future effort
 							int ar = getGasID(gas);
 
-							if (d_mass > 0)
-								Storage.retrieveAnResource(d_mass, ar, b.getSettlement(), true);
+							if (d_mass > 0) {
+								b.getSettlement().retrieveAmountResource(ar, d_mass);
+							}
 							else { // too much gas, need to recapture it; d_mass is less than 0
 								double recaptured = -d_mass * GAS_CAPTURE_EFFICIENCY;
-								if (recaptured > 0)
-									Storage.storeAnResource(recaptured, ar, b.getSettlement(), sourceName + "::monitorAir");
+								if (recaptured > 0) {
+									b.getSettlement().storeAmountResource(ar, recaptured);								
+								}						
 							}
 
 							double new_m = mass[gas][id] + d_mass;
@@ -800,14 +800,15 @@ public class CompositionOfAir implements Serializable, Temporal {
 		if (isReleasing) {
 			new_moles = old_moles + d_moles;
 			new_mass = old_mass + d_mass;
-			if (d_mass > 0)
-				Storage.retrieveAnResource(d_mass, ar, b.getSettlement(), true);
+			if (d_mass > 0) {
+				b.getSettlement().retrieveAmountResource(ar, d_mass);
+			}
 		} else { // recapture
 			new_moles = old_moles - d_moles;
 			new_mass = old_mass - d_mass;
-			if (d_mass > 0)
-				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar, b.getSettlement(),
-						sourceName + "::pumpOrRecaptureGas");
+			if (d_mass > 0) {
+				b.getSettlement().storeAmountResource(ar, d_mass * GAS_CAPTURE_EFFICIENCY);	
+			}
 		}
 
 		if (new_moles < 0)
