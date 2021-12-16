@@ -374,21 +374,20 @@ public class MissionManager implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (!mission.isDone()) {
-				if (mission instanceof VehicleMission) {
-					if (((VehicleMission) mission).getVehicle() == vehicle) {
-						result = mission;
-					}
-				} else if (mission instanceof BuildingConstructionMission) {
+				if (mission instanceof VehicleMission
+					&& ((VehicleMission) mission).getVehicle() == vehicle) {
+					result = mission;
+				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-					if (construction.getConstructionVehicles() != null) {
-						if (construction.getConstructionVehicles().contains(vehicle)) {
+					if (!construction.getConstructionVehicles().isEmpty()
+						&& construction.getConstructionVehicles().contains(vehicle)) {
 							result = mission;
-						}
 					}
-				} else if (mission instanceof BuildingSalvageMission) {
+				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (salvage.getConstructionVehicles().contains(vehicle)) {
-						result = mission;
+					if (!salvage.getConstructionVehicles().isEmpty()
+						&& salvage.getConstructionVehicles().contains(vehicle)) {
+							result = mission;
 					}
 				}
 			}

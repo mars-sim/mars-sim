@@ -370,6 +370,16 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a info message. Message timeout is predefined.
+	 * @param location
+	 * @param actor
+	 * @param string
+	 */
+	public void info(Unit location, Loggable actor, long timeBetweenLogs, String string) {
+		log(location, actor, Level.INFO, timeBetweenLogs, string, null);
+	}
+	
+	/**
 	 * log directly without formatting
 	 * @param message
 	 */

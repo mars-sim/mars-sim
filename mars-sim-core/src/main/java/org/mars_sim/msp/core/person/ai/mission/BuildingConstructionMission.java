@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -41,7 +39,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -87,11 +84,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 	public final static int FIRST_AVAILABLE_SOL = 1000;
 
+	private static final double ASSIGN_PERCENT = 75D;
+	
 	private static final double SMALL_AMOUNT = 0.001D;
-
 	/** Time (millisols) required to prepare construction site for stage. */
 	private static final double SITE_PREPARE_TIME = 100D;
-
 	// Default distance between buildings for construction.
 	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
 
@@ -414,7 +411,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 						// Set initial length value that may be modified later.
 						site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 
-					positionNewSite(site);//, stageInfo, bestConstructionSkill);
+					positionNewSite(site);
 				}
 
 				else {
@@ -663,7 +660,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * @param member the mission member performing the phase.
 	 */
 	private void prepareSitePhase(MissionMember member) {
-		logger.info(settlement, member + "was preparing a construction site");
+		logger.info(settlement, member, 20_000, "Preparing a construction site '" + site.getDescription() + ".");
 		// Load all available materials needed for construction.
 		if (!site.getStageInfo().getType().equals(ConstructionStageInfo.FOUNDATION))
 			loadAvailableConstructionMaterials();
@@ -717,7 +714,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				settlement.retrieveItemResource(part, numberLoading);
 				// Add tracking demand
 //				inv.addItemDemand(part, numberLoading);
-
 				stage.addParts(part, numberLoading);
 			}
 		}
@@ -747,25 +743,23 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		}
 
 		if (!getPhaseEnded()) {
-
+			// Assign construction task to member.
+			
 			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(75D)) {
-
-				// Assign construction task to member.
-				// TODO Refactor.
+			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)) {
 				if (member.getUnitType() == UnitType.PERSON) {
 					Person person = (Person) member;
 					if (ConstructBuilding.canConstruct(person, site)) {
 						assignTask(person, new ConstructBuilding(person, stage, site, constructionVehicles));
 					}
 				}
-//                else if (member instanceof Robot) {
+                else {
 //                    Robot robot = (Robot) member;
 //                    if (ConstructBuilding.canConstruct(robot, site)) {
 //                        assignTask(robot, new ConstructBuilding(robot, stage,
 //                                site, constructionVehicles));
 //                    }
-//                }
+                }
 			}
 		}
 
@@ -817,7 +811,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
-		Map<Integer, Number> resources = new HashMap<Integer, Number>();
+		Map<Integer, Number> resources = new HashMap<>();
 
 		// Add construction LUV attachment parts.
 		if (luvAttachmentParts != null) {
@@ -902,16 +896,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * @return list of construction vehicles.
 	 */
 	public List<GroundVehicle> getConstructionVehicles() {
-		// System.out.println("starting BuildingConstructionMission's
-		// getConstructionVehicles()");
-		// 2015-12-28 Added checking for null
-		if (constructionVehicles != null) {
-			if (!constructionVehicles.isEmpty())
-				return new ArrayList<GroundVehicle>(constructionVehicles);
-			else
-				return null;
-		} else
-			return null;
+		if (constructionVehicles != null && !constructionVehicles.isEmpty()) {
+			return new ArrayList<>(constructionVehicles);
+		} 
+		
+		return new ArrayList<>();
 	}
 
 	@Override

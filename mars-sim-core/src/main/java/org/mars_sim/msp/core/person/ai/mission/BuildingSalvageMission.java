@@ -609,7 +609,12 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 * @return list of construction vehicles.
 	 */
 	public List<GroundVehicle> getConstructionVehicles() {
-		return Collections.unmodifiableList(constructionVehicles);
+		if (constructionVehicles != null && !constructionVehicles.isEmpty()) {
+			return new ArrayList<>(constructionVehicles);
+		} 
+		
+		return new ArrayList<>();
+//		return Collections.unmodifiableList(constructionVehicles);
 	}
 
 	/**
