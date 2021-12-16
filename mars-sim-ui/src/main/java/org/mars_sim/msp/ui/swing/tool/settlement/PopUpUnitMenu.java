@@ -33,6 +33,8 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -40,6 +42,7 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.structure.ConstructionSitesPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
@@ -63,7 +66,7 @@ public class PopUpUnitMenu extends WebPopupMenu {
 
 	private static Map<Integer, WebInternalFrame> panels = new ConcurrentHashMap<>();
 
-	private WebMenuItem itemOne, itemTwo, itemThree;
+	private WebMenuItem itemOne, itemTwo, itemThree, itemFour;
     private Unit unit;
     private Settlement settlement;
 	private MainDesktopPane desktop;
@@ -73,13 +76,20 @@ public class PopUpUnitMenu extends WebPopupMenu {
     	desktop = swindow.getDesktop();
     	this.settlement = swindow.getMapPanel().getSettlement();
 
+    	// Description
     	itemOne = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+    	// Details
         itemTwo = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+        // Relocate
         itemThree = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
+        // Manual
+        itemFour = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemFour"));
+        
         itemOne.setForeground(new Color(139,69,19));
         itemTwo.setForeground(new Color(139,69,19));
         itemThree.setForeground(new Color(139,69,19));
-
+        itemFour.setForeground(new Color(139,69,19));
+        
         if (unit.getUnitType() == UnitType.PERSON) {
         	add(itemTwo); // Details
         	buildItemTwo(unit);
@@ -93,17 +103,25 @@ public class PopUpUnitMenu extends WebPopupMenu {
             buildItemTwo(unit);
             buildItemThree(unit);
         }
-        // Note: for buildings and construction sites
+
+        else if (unit.getUnitType() == UnitType.BUILDING) {
+        	add(itemOne); // Description
+        	add(itemTwo); // Details
+        	buildItemOne(unit);
+            buildItemTwo(unit);
+        }
+        // Note: for construction sites
         else { // if (unit.getUnitType() == UnitType.CONSTRUCTION) {
         	add(itemOne); // Description
         	add(itemTwo); // Details
+        	add(itemFour); // Manual Rel
 //        	// Note : how to implement itemFour in such a way as to
         	// enable the use of arrow to move the construction site ?
         	buildItemOne(unit);
             buildItemTwo(unit);
-//          // Implement buildItemFour(unit);
+            buildItemFour(unit);
         }
-
+        
      // Note: for JavaFX, determine what the GraphicsDevice can support.
 //        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 //        GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -152,13 +170,19 @@ public class PopUpUnitMenu extends WebPopupMenu {
                 	type = Conversion.capitalize(vehicle.getVehicleTypeString());
                 	name = Conversion.capitalize(vehicle.getName());
                 }
-                else {
+                else if (unit.getUnitType() == UnitType.BUILDING) {
                 	Building building = (Building) unit;
                 	description = building.getDescription();
                 	type = building.getBuildingType();
                 	name = building.getNickName();
                 }
-
+                else {
+                	ConstructionSite site = (ConstructionSite) unit;
+                	description = site.getStageInfo().getName();
+                	type = site.getStageInfo().getType();
+                	name = site.getName();
+                }
+                
 				d.setSize(WIDTH_1, HEIGHT_1);
 		        d.setResizable(false);
 
@@ -208,7 +232,61 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	            }
 
 	            else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
+	            	int newID = unit.getIdentifier();
 
+	            	if (!panels.isEmpty()) {
+		            	Iterator<Integer> i = panels.keySet().iterator();
+		    			while (i.hasNext()) {
+		    				int oldID = i.next();
+	        				WebInternalFrame f = panels.get(oldID);
+		            		if (newID == oldID && (f.isShowing() || f.isVisible())) {
+		            			f.dispose();
+		            			panels.remove(oldID);
+		            		}
+		            	}
+	            	}
+	            	
+	               	ConstructionSite site = (ConstructionSite) unit;
+
+	               	ConstructionManager manager = settlement.getConstructionManager();
+	               	
+					final ConstructionSitesPanel sitePanel = new ConstructionSitesPanel(manager);
+        
+	                WebInternalFrame d = new WebInternalFrame(StyleId.internalframe,
+	                		unit.getSettlement().getName() + " - " + site,
+	                		true,  //resizable
+                            false, //not closable
+                            true, //not maximizable
+                            false); //iconifiable);
+
+	                d.setIconifiable(false);
+	                d.setClosable(true);
+	        		d.setFrameIcon(MainWindow.getLanderIcon());
+	        		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+	        		WebPanel panel = new WebPanel(new BorderLayout(1, 1));
+	        		panel.setBorder(new MarsPanelBorder());
+	        		panel.setBorder(new EmptyBorder(1, 1, 1, 1));
+
+	        		panel.add(sitePanel, BorderLayout.CENTER);
+
+	        		d.add(panel);
+	        		desktop.add(d);
+
+	    			d.setMaximumSize(new Dimension(WIDTH_2, HEIGHT_2));
+	    			d.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));
+					d.setSize(WIDTH_2, HEIGHT_2); // undecorated: 300, 335; decorated: 310, 370
+					d.setLayout(new FlowLayout());
+
+					// Create compound border
+					Border border = new MarsPanelBorder();
+					Border margin = new EmptyBorder(1,1,1,1);
+					d.getRootPane().setBorder(new CompoundBorder(border, margin));
+
+	                // Save this panel into the map
+	                panels.put(site.getIdentifier(), d);
+
+	                d.setVisible(true);
 	            }
 
 	            else if (unit.getUnitType() == UnitType.BUILDING) {
@@ -300,13 +378,12 @@ public class PopUpUnitMenu extends WebPopupMenu {
 //	        		mover.registerComponent(d);
 
 	                // Save this panel into the map
-	                panels.put(((Building)unit).getIdentifier(), d);
+	                panels.put(building.getIdentifier(), d);
 
 	                d.setVisible(true);
 	            }
 	         }
 	    });
-
     }
 
     /**
@@ -323,6 +400,22 @@ public class PopUpUnitMenu extends WebPopupMenu {
             }
         });
 	}
+	
+    /**
+     * Builds item four
+     *
+     * @param unit
+     */
+	public void buildItemFour(final Unit unit) {
+        itemFour.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+	            ConstructionSite site = (ConstructionSite) unit;
+	            site.relocate();
+	    		repaint();
+            }
+        });
+	}
+	
 
 	/**
 	 * Sets the icon image for the main window.

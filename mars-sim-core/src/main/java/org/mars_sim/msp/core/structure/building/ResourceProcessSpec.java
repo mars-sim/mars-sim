@@ -34,8 +34,8 @@ public class ResourceProcessSpec implements Serializable {
 	private Map<Integer, Double> maxWasteOutputResourceRates;
 
 	// Cache some aggregate values
-	private transient Set<Integer> inputResources;
-	private transient Set<Integer> outputResources;
+	private Set<Integer> inputResources;
+	private Set<Integer> outputResources;
 
 	/** The minimum period of time in millisols the process must stay on or off. */
 	private int togglePeriodicity = 200;

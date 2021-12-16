@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,6 +45,7 @@ extends JPanel {
 		add(titlePanel, BorderLayout.NORTH);
 
 		JLabel titleLabel = new JLabel("Constructed Buildings");
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
 
 		// Create scroll panel for the outer table panel.

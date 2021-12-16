@@ -87,7 +87,7 @@ implements Serializable {
 		if ((settlementSalvageValueCacheTime == null) || 
 				(MarsClock.getTimeDiff(currentTime, settlementSalvageValueCacheTime) > 1000D)) {
 			if (settlementSalvageValueCache == null) 
-				settlementSalvageValueCache = new HashMap<Integer, Double>();
+				settlementSalvageValueCache = new HashMap<>();
 			settlementSalvageValueCache.clear();
 			settlementSalvageValueCacheTime = (MarsClock) currentTime.clone();
 		}

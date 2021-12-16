@@ -88,7 +88,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			double inputInventoryLimit = 1D;
-			Iterator<Integer> iii = new HashSet<>(process.getInputResources()).iterator();
+			Iterator<Integer> iii = process.getInputResources().iterator();
 		    while (iii.hasNext()) {
 		    	int resource = iii.next();
 				if (!process.isAmbientInputResource(resource)) {

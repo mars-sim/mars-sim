@@ -66,26 +66,16 @@ extends TabPanel {
 		ConstructionManager manager = settlement.getConstructionManager();
 
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePanel);
+		topContentPanel.add(titlePanel, BorderLayout.NORTH);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelConstruction.label"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePanel.add(titleLabel);
 
-		JPanel mainContentPanel = new JPanel(new GridLayout(2, 1));
-		centerContentPanel.add(mainContentPanel, BorderLayout.CENTER);
-
-		sitesPanel = new ConstructionSitesPanel(manager);
-		mainContentPanel.add(sitesPanel);
-
-		buildingsPanel = new ConstructedBuildingsPanel(manager);
-		mainContentPanel.add(buildingsPanel);
-
-		// Create bottom panel.
-		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		bottomPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(bottomPanel, BorderLayout.SOUTH);
+		// Create override panel.
+		JPanel overridePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(overridePanel, BorderLayout.CENTER);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelConstruction.checkbox.overrideConstructionAndSalvage")); //$NON-NLS-1$
@@ -96,7 +86,16 @@ extends TabPanel {
 			}
 		});
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.CONSTRUCTION));
-		bottomPanel.add(overrideCheckbox);
+		overridePanel.add(overrideCheckbox);
+		
+		JPanel mainContentPanel = new JPanel(new GridLayout(2, 1));
+		centerContentPanel.add(mainContentPanel, BorderLayout.CENTER);
+
+		sitesPanel = new ConstructionSitesPanel(manager);
+		mainContentPanel.add(sitesPanel);
+
+		buildingsPanel = new ConstructedBuildingsPanel(manager);
+		mainContentPanel.add(buildingsPanel);
 	}
 
 	/**

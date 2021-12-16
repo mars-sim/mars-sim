@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.LineBreakPanel;
 
 import com.alee.laf.panel.WebPanel;
@@ -66,20 +67,20 @@ public class UnitInfoPanel extends WebPanel {
 		setSize(PopUpUnitMenu.WIDTH_1 - 10, PopUpUnitMenu.HEIGHT_1 - 10); 
 		setMaximumSize(PopUpUnitMenu.WIDTH_1 - 10, PopUpUnitMenu.HEIGHT_1 - 10); 
 		
-		String type = "Building Type: ";
+		String type = "Type: ";
 		String description = "Descripion: ";
 //		String text = unitName + "\n\n" 
 //					+ type + "\n" + unitType + "\n\n"
 //					+ description + "\n" + unitDescription + "\n\n";
 		
     	List<String> list = new ArrayList<>();
-    	list.add(unitName);
+    	list.add(Conversion.capitalize(unitName));
     	list.add(" \n");
     	list.add(type);
-    	list.add(unitType);
+    	list.add(Conversion.capitalize(unitType));
     	list.add(" \n");
     	list.add(description);
-    	list.add(unitDescription);
+    	list.add(Conversion.capitalize(unitDescription));
     	list.add(" \n");
     	
     	LineBreakPanel lineBreakPanel = new LineBreakPanel(list);

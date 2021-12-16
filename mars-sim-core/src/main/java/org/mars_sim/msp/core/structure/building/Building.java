@@ -104,6 +104,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public static final String ERV = "ERV";
 	public static final String GREENHOUSE = "Greenhouse";
 	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
+	public static final String INGROUND_GREENHOUSE = "Inground " + GREENHOUSE;
+	public static final String LARGE_GREENHOUSE = "large " + GREENHOUSE;
 	public static final String ARRAY = "Array";
 	public static final String TURBINE = "Turbine";
 	public static final String WELL = "Well";
