@@ -135,11 +135,11 @@ public class MainDesktopPane extends JDesktopPane
 		if (!soundPlayer.isVolumeDisabled())
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
-		unitWindows = new ArrayList<UnitWindow>();
+		unitWindows = new ArrayList<>();
 		// Add clock listener
 		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
-		toolWindows = new ArrayList<ToolWindow>();
+		toolWindows = new ArrayList<>();
 
 		prepareListeners();
 
@@ -632,61 +632,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
-		UnitWindow tempWindow = null;
-
-		for (UnitWindow window : unitWindows) {
-			if (window.getUnit() == unit) {
-				tempWindow = window;
-			}
-		}
-
-		if (tempWindow != null) {
-			if (tempWindow.isClosed()) {
-				add(tempWindow, 0);
-			}
-		}
-
-		else {
-			// Create new window for unit.
-			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
-
-			add(tempWindow, 0);
-			tempWindow.pack();
-
-			// Set internal frame listener
-			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
-
-			if (initialWindow) {
-				// Put window in configured position on desktop.
-				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
-			} else {
-				// Put window in random position on desktop.
-				tempWindow.setLocation(0, 0);//getRandomLocation(tempWindow));
-			}
-
-			// Add unit window to unit windows
-			unitWindows.add(tempWindow);
-
-			// Create new unit button in tool bar if necessary
-			if (mainWindow != null)
-				mainWindow.createUnitButton(unit);
-		}
-
-		tempWindow.setVisible(true);
-
-		// Correct window becomes selected
-		try {
-			tempWindow.setSelected(true);
-			tempWindow.moveToFront();
-		} catch (java.beans.PropertyVetoException e) {
-		}
-
-		// Play sound
-		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-		if (soundFilePath != null && soundFilePath.length() != 0) {
-			soundPlayer.playSound(soundFilePath);
-		}
-
+		openUnitWindow(unit, initialWindow, true);
 	}
 
 	/**
@@ -733,6 +679,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
 
+
 			// Create new unit button in tool bar if necessary
 			if (mainWindow != null)
 				mainWindow.createUnitButton(unit);
@@ -767,7 +714,7 @@ public class MainDesktopPane extends JDesktopPane
 		UnitWindow result = null;
 
 		for (UnitWindow window : unitWindows) {
-			if (window.getUnit() == unit) {
+			if (window.getUnit().equals(unit)) {
 				result = window;
 			}
 		}
@@ -782,7 +729,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void disposeUnitWindow(UnitWindow window) {
 
 		if (window != null) {
-			unitWindows.remove(window);
+			boolean removed = unitWindows.remove(window);
 			window.dispose();
 
 			// Have main window dispose of unit button
@@ -1090,6 +1037,13 @@ public class MainDesktopPane extends JDesktopPane
 		return isConstructingSite;
 	}
 
+	/**
+	 * Get a reference to teh SImulation being displayed
+	 * @return
+	 */
+	public Simulation getSimulation() {
+		return sim;
+	}
 
 	@Override // @Override needed for Main window
 	public void unitUpdate(UnitEvent event) {
@@ -1148,12 +1102,6 @@ public class MainDesktopPane extends JDesktopPane
 		if (time > 0 && !mainWindow.isIconified()) {
 			updateWindows();
 		}
-
-		// hasFocus() is always false
-		// isFocusable() is always true
-		// isEnabled() is always true
-		// isVisible() is always true
-		// isShowing() is always true
 	}
 
 	@Override

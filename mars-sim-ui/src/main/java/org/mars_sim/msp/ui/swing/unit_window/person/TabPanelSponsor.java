@@ -87,7 +87,7 @@ extends TabPanel {
 		JTextField sponsorTF = new JTextField();
 		ReportingAuthority sponsor = person.getReportingAuthority();
 		if (sponsor != null) {
-		    sponsorTF.setText(sponsor.getCode()); 
+		    sponsorTF.setText(sponsor.getName()); 
 			TooltipManager.setTooltip (sponsorTF, 
 					sponsor.getDescription(),
 					TooltipWay.down);

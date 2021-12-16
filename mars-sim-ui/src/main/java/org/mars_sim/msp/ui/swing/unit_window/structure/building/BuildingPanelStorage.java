@@ -7,11 +7,12 @@ setPowerDemand * Mars Simulation Project
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -31,6 +32,8 @@ import com.alee.laf.panel.WebPanel;
 public class BuildingPanelStorage
 extends BuildingFunctionPanel {
 
+	private Storage storage;
+
 	/**
 	 * Constructor.
 	 * @param storage the storage building function.
@@ -39,29 +42,25 @@ extends BuildingFunctionPanel {
 	public BuildingPanelStorage(Storage storage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(storage.getBuilding(), desktop);
-
-		setLayout(new BorderLayout(0, 0));
-
-		// Create storage label.
-		WebLabel storageLabel = new WebLabel(Msg.getString("BuildingPanelStorage.title"), WebLabel.CENTER);
-		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
-
-		WebPanel titlePanel = new WebPanel(new GridLayout(2, 1, 0, 5));
-		add(titlePanel, BorderLayout.NORTH);
-		titlePanel.add(storageLabel);
-
-		WebLabel maxCapLabel = new WebLabel(Msg.getString("BuildingPanelStorage.maxCap"), WebLabel.CENTER);
-		titlePanel.add(maxCapLabel);
+		super(Msg.getString("BuildingPanelStorage.title"), storage.getBuilding(), desktop);
+		
+		this.storage = storage;
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
 
 		Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 
 		// Create resource storage panel.
 		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
-		add(resourceStoragePanel, BorderLayout.CENTER);
+		addBorder(resourceStoragePanel, "Capacities");
+		center.add(resourceStoragePanel, BorderLayout.NORTH);
 
-		SortedSet<Integer> keys = new TreeSet<Integer>(resourceStorage.keySet());
+		SortedSet<Integer> keys = new TreeSet<>(resourceStorage.keySet());
 		for (Integer resource : keys) {
 			// Create resource label.
 			WebLabel resourceLabel = new WebLabel(
@@ -73,18 +72,5 @@ extends BuildingFunctionPanel {
 			WebLabel capacityLabel = new WebLabel((int) capacity + " kg", WebLabel.RIGHT);
 			resourceStoragePanel.add(capacityLabel);
 		}
-	}
-
-	@Override
-	public void update() {
-		// Storage capacity doesn't change so nothing to update.
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		// take care to avoid null exceptions
-
 	}
 }

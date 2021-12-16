@@ -9,16 +9,16 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import javax.swing.event.ChangeEvent;
 
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
 import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
 
 
 /**
@@ -42,24 +42,72 @@ public class BuildingWindow extends UnitWindow {
         super(desktop, building, false);
 
         // Add tab panels
-        addTopPanel(new LocationTabPanel(building, desktop));
-        addTabPanel(new MaintenanceTabPanel(building, desktop));
+        addTopPanel(new BuildingPanelGeneral(building, desktop));
+        addTabPanel(new BuildingPanelMaintenance(building, desktop));
+        addTabPanel(new BuildingPanelMalfunctionable(building, desktop));
+		addTabPanel(new BuildingPanelPower(building, desktop));
+        
+        for (Function f : building.getFunctions()) {
+        	switch (f.getFunctionType()) {
+        	case LIVING_ACCOMMODATIONS:
+            	addTabPanel( new BuildingPanelLiving(building.getLivingAccommodations(), desktop));
+            	break;
+			case ASTRONOMICAL_OBSERVATION:
+				addTabPanel( new BuildingPanelAstronomicalObservation(building.getAstronomicalObservation(), desktop));
+				break;
+			case COMPUTATION:
+				addTabPanel( new BuildingPanelComputation(building.getComputation(), desktop));
+				break;
+			case COOKING:
+	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
+				break;
+			case EVA:
+				addTabPanel( new BuildingPanelEVA(building.getEVA(), desktop));
+				break;
+			case FARMING:
+	        	addTabPanel( new BuildingPanelFarming(building.getFarming(), desktop));
+				break;
+			case FISHERY:
+				addTabPanel( new BuildingPanelFishery(building.getFishery(), desktop));
+				break;
+			case FOOD_PRODUCTION:
+				addTabPanel( new BuildingPanelFoodProduction(building.getFoodProduction(), desktop));
+				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
+				break;
+			case GROUND_VEHICLE_MAINTENANCE:
+				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), desktop));
+				break;
+			case LIFE_SUPPORT:
+				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), desktop));
+				break;
+			case MANUFACTURE:
+				addTabPanel( new BuildingPanelManufacture(building.getManufacture(), desktop));
+				break;
+			case MEDICAL_CARE:
+				addTabPanel( new BuildingPanelMedicalCare(building.getMedical(), desktop));
+				break;
+			case POWER_STORAGE:
+				addTabPanel( new BuildingPanelPowerStorage(building.getPowerStorage(), desktop));
+				break;
+			case RESEARCH:
+				addTabPanel( new BuildingPanelResearch(building.getResearch(), desktop));
+				break;
+			case RESOURCE_PROCESSING:
+				addTabPanel( new BuildingPanelResourceProcessing(building.getResourceProcessing(), desktop));
+				break;
+			case STORAGE:
+				addTabPanel( new BuildingPanelStorage(building.getStorage(), desktop));
+				break;
+			case THERMAL_GENERATION:
+				addTabPanel(new BuildingPanelThermal(building.getThermalGeneration(), desktop));
+				break;
+			default:
+				break;
+        	}
 
-        // Add tabs for each supported Function
-    }
-
-    /**
-     * Updates this window.
-     */
-    public void update() {
-        super.update();
-
-        // Check if building has been salvaged.
-        //Building building = (Building) getUnit();
-        //if (!salvaged && building.isSalvaged()) {
-        //    addTabPanel(new SalvageTabPanel(building, desktop));
-        //    salvaged = true;
-        //}
+        }
+         
+    	sortTabPanels();
     }
 
     @Override

@@ -200,7 +200,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		this.settlement = settlement;
 		this.building = building;
 
-		mapLayers = new ArrayList<SettlementMapLayer>(1);
+		mapLayers = new ArrayList<>(1);
 		mapLayers.add(new StructureMapLayer(this));
 
 		// Set preferred size.

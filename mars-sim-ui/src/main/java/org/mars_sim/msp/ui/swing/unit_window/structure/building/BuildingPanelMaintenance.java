@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,22 +27,16 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -68,12 +60,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/** The time since last completed maintenance. */
 	private int lastCompletedTime;
 
-	/** The malfunctionable building. */
-	private Malfunctionable malfunctionable;
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
-	/** The Settlement instance. */
-	private Settlement settlement;
 	
 	/** The wear condition label. */
 	private WebLabel wearConditionLabel;
@@ -103,31 +91,26 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	public BuildingPanelMaintenance(Building malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(malfunctionable, desktop);
+		super(Msg.getString("BuildingPanelMaintenance.title"), malfunctionable, desktop);
 
 		// Initialize data members.
-		this.malfunctionable = malfunctionable;
-		this.settlement = malfunctionable.getSettlement();
 		manager = malfunctionable.getMalfunctionManager();
 		standardMaintParts = getStandardMaintParts(malfunctionable);
+	}
 	
-		// Set the layout
-		setLayout(new BorderLayout(1, 1));
-		
-		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 2, 1));
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+	
+		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 2, 1));
 		add(labelPanel, BorderLayout.NORTH);
-		
-		// Create maintenance label.
-		JLabel titleLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(titleLabel);
 		
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
 		wearConditionLabel = new WebLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 				JLabel.CENTER);
-//		wearConditionLabel.setPadding(5, 5, 5, 5);
 		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		labelPanel.add(wearConditionLabel);
 
@@ -162,22 +145,10 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		
 		// Create the parts panel
 		WebScrollPane partsPane = new WebScrollPane();
-
 		WebPanel tablePanel = new WebPanel();
 		tablePanel.add(partsPane);
-		
-		add(tablePanel, BorderLayout.CENTER);
-
-		
-		UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
-		Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-		TitledBorder title = BorderFactory.createTitledBorder(
-	        		lowerEtched, " " + Msg.getString("BuildingPanelMaintenance.tableBorder") + " ");
-//	      title.setTitleJustification(TitledBorder.RIGHT);
-		Font titleFont = UIManager.getFont("TitledBorder.font");
-		title.setTitleFont(titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-		
-		tablePanel.setBorder(title);
+		center.add(tablePanel, BorderLayout.CENTER);
+		addBorder(tablePanel, Msg.getString("BuildingPanelMaintenance.tableBorder"));
 		
 		// Create the parts table model
 		tableModel = new PartTableModel();
@@ -185,9 +156,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		// Create the parts table
 		table = new ZebraJTable(tableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(220, 125));
-		table.setRowSelectionAllowed(true);// .setCellSelectionEnabled(true);
+		table.setRowSelectionAllowed(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        table.getSelectionModel().addListSelectionListener(this);
 		partsPane.setViewportView(table);
 
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
@@ -208,33 +178,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer2);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer2);
 
-
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
-
-		// Add a mouse listener to hear for double-clicking a part (rather than single
-		// click using valueChanged()
-//        table.addMouseListener(new MouseAdapter() {
-//		    public void mousePressed(MouseEvent me) {
-//		    	JTable table =(JTable) me.getSource();
-//		        Point p = me.getPoint();
-//		        int row = table.rowAtPoint(p);
-//		        int col = table.columnAtPoint(p);
-//		        if (me.getClickCount() == 2) {
-//		            if (row > 0 && col > 0) {
-//		    		    String name = ((Equipment)table.getValueAt(row, 1)).getName();
-////    		    		System.out.println("name : " + name + "   row : " + row);
-//		    		    for (Part p : partList) {
-////	    		    		System.out.println("nickname : " + e.getName());
-//		    		    	if (p.getName().equalsIgnoreCase(name)) {
-////		    		    		System.out.println("name : " + name + "   nickname : " + e.getName());
-//				    		    desktop.openUnitWindow(p, false);
-//		    		    	}
-//		    		    } 	    			
-//		    	    }
-//		        }
-//		    }
-//		});
 
 		// Added setTableStyle()
 		TableStyle.setTableStyle(table);
@@ -243,6 +188,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
 
 		// Update the wear condition label.

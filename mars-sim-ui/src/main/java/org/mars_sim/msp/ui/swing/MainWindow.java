@@ -156,8 +156,6 @@ extends JComponent implements ClockListener {
 	private static JFrame frame;
 	/** The lander hab icon. */
 	private static Icon landerIcon;
-	/** The Mars icon. */
-	private static Icon marsIcon;
 	/** The Telescope icon. */
 	private static Icon telescopeIcon;
 
@@ -868,20 +866,17 @@ extends JComponent implements ClockListener {
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
 	}
-
-	public Icon getMarsIcon() {
-		return marsIcon;
-	}
-
+	
 	public Icon getTelescopeIcon() {
+		if (telescopeIcon == null) {
+			telescopeIcon = new LazyIcon("telescope").getIcon();
+		}
 		return telescopeIcon;
 	}
 
-
 	public void createStarMapButton() {
 		starMap = new WebButton();
-		marsIcon = new LazyIcon("telescope").getIcon();
-		starMap.setIcon(marsIcon);
+		starMap.setIcon(telescopeIcon);
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 
 		starMap.addActionListener(new ActionListener() {

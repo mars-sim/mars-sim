@@ -13,9 +13,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
@@ -109,7 +109,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 */
 	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
 		// Use JInternalFrame constructor
-		super(unit.getName(), false, true, false, true);
+		super(unit.getNickName(), false, true, false, true);
 
 		// Initialize data members
 		this.desktop = desktop;
@@ -130,10 +130,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
 		}
-//		else if (unit instanceof Equipment) {
-//			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
-//			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
-//		}
 
 		this.setIconifiable(false);
 
@@ -142,7 +138,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	private void initializeUI() {
 
-		tabPanels = new ArrayList<TabPanel>();
+		tabPanels = new ArrayList<>();
 
 		// Create main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -365,16 +361,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		label.setIcon(imageIcon);
 	}
 
-	/**
-	 * Gets the image from the location
-	 *
-	 * @param imageLocation
-	 * @return
-	 */
-	public Image getImage(String imageLocation) {
-		return ImageLoader.getNewIcon(imageLocation).getImage();
-	}
-
 	/*
 	 * Updates the status of an unit
 	 */
@@ -474,7 +460,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * Sorts tab panels.
 	 */
 	protected void sortTabPanels() {
-		tabPanels.stream().sorted((t1, t2) -> t2.getTabTitle().compareTo(t1.getTabTitle()));
+		tabPanels = tabPanels.stream()
+				.sorted((t1, t2) -> t1.getTabTitle().compareTo(t2.getTabTitle()))
+				.collect(Collectors.toList());
 		tabPanels.forEach(panel -> {
 			tabPane.addTab(panel.getTabTitle(), panel.getTabIcon(), panel, null);// panel.getTabToolTip());
 		});
@@ -505,8 +493,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			}
 		}
 
-		setTitle(unit.getName());
-
 		if (unit.getUnitType() == UnitType.PERSON) {
 			statusUpdate((Person)unit);
 		}
@@ -516,7 +502,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	@Override
     public String getName() {
 		if (unit != null && unit.getName() != null)
-			return unit.getName() +"'s unit window";
+			return unit.getNickName() +"'s unit window";
 		return null;
     }
 
