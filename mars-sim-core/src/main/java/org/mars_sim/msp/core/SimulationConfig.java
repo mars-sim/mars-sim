@@ -128,6 +128,7 @@ public class SimulationConfig implements Serializable {
 	private int autosaveInterval = 0;
 	private int averageTransitTime = 0;
 	private int unusedCores = 0;	
+	private transient boolean loaded = false;
 	
 	/*
 	 * -----------------------------------------------------------------------------
@@ -210,7 +211,12 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public void loadConfig() {
-
+		if (loaded) {
+			logger.warning("Loadconfig called more than once. Ignored");
+			return;
+		}
+		loaded = true;
+		
 		// Load simulation document
 		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 		obtainMarsStartDateTime(simulationDoc);

@@ -242,8 +242,9 @@ public class SimulationBuilder {
 
 	/**
 	 * Uses the previously defines options and start the required Simulation
+	 * @return The new simulation started
 	 */
-	public void start() {
+	public Simulation start() {
 		Version version = java.lang.Runtime.version();
 		logger.config("-----------------------------------------------------------");
 		logger.config("    Java Version Full String = "+version);
@@ -305,6 +306,8 @@ public class SimulationBuilder {
 		}
 
 		sim.startClock(false);
+		
+		return sim;
 	}
 
 	/**

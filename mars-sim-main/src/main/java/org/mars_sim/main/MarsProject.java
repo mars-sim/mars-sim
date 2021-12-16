@@ -53,11 +53,14 @@ public class MarsProject {
 	private static final String GENERATEHELP = "html";
 	private static final String SITEEDITOR = "editor";
 	private static final String NEW = "new";
+	private static final String CLEANUI = "cleanui";
 	
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
 	
 	private boolean useNew = false;
+	
+	private boolean useCleanUI = false;
 	
 	private boolean useSiteEditor;
 
@@ -65,7 +68,7 @@ public class MarsProject {
 
 	private SimulationBuilder builder;
 
-	private Simulation sim = Simulation.instance();
+	private Simulation sim;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -93,31 +96,12 @@ public class MarsProject {
 				JOptionPane.YES_NO_OPTION);
         if (reply == JOptionPane.YES_OPTION) {
 			logger.config("You choose Yes. Go straight starting a new default simulation in Sandbox Mode.");	
-			
-			quickStart();
-			
 			return true;
         }
         
         return false;
 	}
-	
-	/**
-	 * Quick start
-	 * 
-	 * @return
-	 */
-	public void quickStart() {
-		// Build and run the simulator
-		builder.start();
-		// Start the wait layer
-		InteractiveTerm.startLayer();
-		// Start beryx console
-		startConsoleThread();
-		// Start main window
-		setupMainWindow(true);
-	}
-	
+
 	/**
 	 * Parses the argument and start the simulation.
 	 * 
@@ -132,12 +116,6 @@ public class MarsProject {
 
 		// Do it
 		try {
-			if (useNew) {
-				logger.config("Quick starting the default scenario in Sandbox Mode.");
-				quickStart();
-				return;
-			}
-			
 			if (useGUI) {
 				// Start the splash window
 				if (!useSiteEditor) {
@@ -160,7 +138,7 @@ public class MarsProject {
 				startScenarioEditor(builder);
 			}
 			// Get user choices if there is no template defined or a preload
-			else if (!builder.isFullyDefined()) {
+			else if (!builder.isFullyDefined() && !useNew) {
 
 				if (checkDialogBox())
 					return;
@@ -187,7 +165,7 @@ public class MarsProject {
 			}
 
 			// Build and run the simulator
-			builder.start();
+			sim = builder.start();
 
 			// Start the wait layer
 			InteractiveTerm.startLayer();
@@ -196,7 +174,7 @@ public class MarsProject {
 			startConsoleThread();
 
 			if (useGUI) {
-				setupMainWindow(false);
+				setupMainWindow(useCleanUI);
 			}
 		}
 		catch(Exception e) {
@@ -224,6 +202,8 @@ public class MarsProject {
 				.desc("Disable the audio").build());
 		options.addOption(Option.builder(NOGUI)
 				.desc("Disable the main UI").build());
+		options.addOption(Option.builder(CLEANUI)
+				.desc("Disable loading stored UI configurations").build());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").build());
 		options.addOption(Option.builder(GENERATEHELP)
@@ -249,6 +229,9 @@ public class MarsProject {
 			}
 			if (line.hasOption(NEW)) {
 				useNew = true;
+			}
+			if (line.hasOption(CLEANUI)) {
+				useCleanUI = true;
 			}
 			if (line.hasOption(SITEEDITOR)) {
 				useSiteEditor = true;
@@ -379,7 +362,7 @@ public class MarsProject {
 				TimeUnit.MILLISECONDS.sleep(250);
 				if (!sim.isUpdating()) {
 					logger.config("Starting the Main Window...");
-					new MainWindow(cleanUI).stopLayerUI();
+					new MainWindow(cleanUI, sim).stopLayerUI();
 					break;
 				}
 	        } catch (InterruptedException e) {
