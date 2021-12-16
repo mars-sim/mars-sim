@@ -365,7 +365,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
 		((Settlement)getContainerUnit()).removeOwnedRobot(this);
-
 		isInoperable = true;
 		// Set home town
 		setAssociatedSettlement(-1);
@@ -375,12 +374,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	void setInoperable() {
 		// set description for this robot
 		super.setDescription(INOPERABLE);
-
 		botMind.setInactive();
-
 		toBeSalvaged();
 	}
 
+	public boolean isOperable() {
+		return !isInoperable;
+	}
+	
 	/**
 	 * robot can take action with time passing
 	 *

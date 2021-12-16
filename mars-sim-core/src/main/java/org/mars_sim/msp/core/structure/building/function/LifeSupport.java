@@ -261,8 +261,7 @@ public class LifeSupport extends Function implements Serializable {
 				if (occupants != null) {
 					Iterator<Person> j = getOccupants().iterator();
 					while (j.hasNext()) {
-						PhysicalCondition condition = j.next().getPhysicalCondition();
-						condition.setStress(condition.getStress() + stressModifier);
+						j.next().getPhysicalCondition().addStress(stressModifier);
 					}
 				}
 			}

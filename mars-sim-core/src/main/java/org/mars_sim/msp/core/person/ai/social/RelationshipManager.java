@@ -506,8 +506,7 @@ public class RelationshipManager implements Serializable {
 			stressModifier -= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
 
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
-		PhysicalCondition condition = person.getPhysicalCondition();
-		condition.setStress(condition.getStress() + stressModifier);
+		person.getPhysicalCondition().addStress(stressModifier);
 	}
 
 	/**
