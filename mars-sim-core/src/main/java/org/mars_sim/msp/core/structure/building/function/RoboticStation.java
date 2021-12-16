@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.robot.Robot;
@@ -36,8 +36,6 @@ public class RoboticStation extends Function implements Serializable {
 	private int sleepers;
 	private int occupantCapacity;
 
-//	private double powerRequired;
-
 	private Collection<Robot> robotOccupants;
 
 	/**
@@ -50,12 +48,9 @@ public class RoboticStation extends Function implements Serializable {
 		// Call Function constructor.
 		super(FunctionType.ROBOTIC_STATION, building);
 
-		robotOccupants = new ConcurrentLinkedQueue<Robot>();
+		robotOccupants = new HashSet<>();
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
-//		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
-		// this.occupantCapacity = occupantCapacity;
-		// this.powerRequired = powerRequired;
 
 		slots = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.ROBOTIC_STATION);
 	}
@@ -138,41 +133,6 @@ public class RoboticStation extends Function implements Serializable {
 	}
 
 	/**
-	 * Calculate the power for robots.
-	 * 
-	 * @param time amount of time passing (millisols)
-	 * @throws Exception if error in power usage.
-	 */
-	private void powerUsage(double millisols) {
-//        Settlement settlement = getBuilding().getBuildingManager()
-//                .getSettlement();
-//        double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
-//        double energyUsageSettlement = energyPerRobot * settlement.getNumBots();
-//        double buildingProportionCap = (double) slots / (double) settlement.getRobotCapacity();
-//        double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
-
-//        Inventory inv = getBuilding().getSettlementInventory();
-//        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-//        double waterUsed = powerUsageBuilding;
-//        double waterAvailable = inv.getAmountResourceStored(water, false);
-//        inv.addDemandTotalRequest(water);
-//        if (waterUsed > waterAvailable)
-//            waterUsed = waterAvailable;
-//        inv.retrieveAmountResource(water, waterUsed);
-//       	inv.addDemandAmount(water, waterUsed);
-//
-//        AmountResource wasteWater = AmountResource
-//                .findAmountResource("waste water");
-//        double wasteWaterProduced = waterUsed;
-//        double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
-//                wasteWater, false, false);
-//        if (wasteWaterProduced > wasteWaterCapacity)
-//            wasteWaterProduced = wasteWaterCapacity;
-//        inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
-//        inv.addSupplyAmount(wasteWater, wasteWaterProduced);
-	}
-
-	/**
 	 * Time passing for the building.
 	 * 
 	 * @param time amount of time passing (in millisols)
@@ -215,7 +175,7 @@ public class RoboticStation extends Function implements Serializable {
 	 * @return collection of robotOccupants
 	 */
 	public Collection<Robot> getRobotOccupants() {
-		return new ConcurrentLinkedQueue<Robot>(robotOccupants);
+		return robotOccupants;
 	}
 
 	public int getRobotOccupantNumber() {

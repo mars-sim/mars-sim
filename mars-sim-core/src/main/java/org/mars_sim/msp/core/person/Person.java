@@ -1117,11 +1117,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					localGroup = new ConcurrentLinkedQueue<>(building.getLifeSupport().getOccupants());
+					localGroup = new HashSet<>(building.getLifeSupport().getOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
-			localGroup = new ConcurrentLinkedQueue<>(((Crewable) getVehicle()).getCrew());
+			localGroup = new HashSet<>(((Crewable) getVehicle()).getCrew());
 		}
 
 		if (localGroup == null) {

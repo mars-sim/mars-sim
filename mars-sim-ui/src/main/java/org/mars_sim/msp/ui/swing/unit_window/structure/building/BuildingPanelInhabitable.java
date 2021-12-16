@@ -98,7 +98,7 @@ implements MouseListener {
 
 		// Create inhabitant list model
 		inhabitantListModel = new DefaultListModel<Person>();
-		inhabitantCache = new ArrayList<Person>(inhabitable.getOccupants());
+		inhabitantCache = new ArrayList<Person>();
 		Iterator<Person> i = inhabitantCache.iterator();
 		while (i.hasNext()) inhabitantListModel.addElement(i.next());
 

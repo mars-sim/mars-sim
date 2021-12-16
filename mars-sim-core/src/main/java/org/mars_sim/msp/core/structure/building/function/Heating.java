@@ -382,7 +382,7 @@ implements Serializable {
 		}
 		
 		// (1b) CALCULATE HEAT GAIN BY PEOPLE
-		double heatGainOccupants = HEAT_DISSIPATED_PER_PERSON * building.getInhabitants().size() ;
+		double heatGainOccupants = HEAT_DISSIPATED_PER_PERSON * building.getNumPeople();
 		// the energy required to heat up the in-rush of the new martian air
 		//if (isGreenhouse) System.out.println(building.getNickName() + "'s heatGainOccupants : " + Math.round(heatGainOccupants*10_000D)/10_000D + " kBTU/Hr");
 		

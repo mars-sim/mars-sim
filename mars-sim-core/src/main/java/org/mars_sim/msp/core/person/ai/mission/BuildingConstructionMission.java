@@ -311,21 +311,20 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		this.settlement = settlement;
 		this.constructionVehicles = vehicles;
 
-		int bestConstructionSkill = 0;
+//		int bestConstructionSkill = 0;
 
 		calculateMissionCapacity(MAX_PEOPLE);
 
 		Iterator<MissionMember> i = members.iterator();
 
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-
-
-			if (constructionSkill > bestConstructionSkill) {
-				bestConstructionSkill = constructionSkill;
-			}
-		}
+//		while (i.hasNext()) {
+//			MissionMember member = i.next();
+//			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+//
+//			if (constructionSkill > bestConstructionSkill) {
+//				bestConstructionSkill = constructionSkill;
+//			}
+//		}
 
 		ConstructionManager manager = settlement.getConstructionManager();
 
@@ -502,6 +501,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 */
 	public void reserveConstructionVehicles() {
 		if (stage != null) {
+			// Construct a new list of construction vehicles
 			constructionVehicles = new ArrayList<>();
 			Iterator<ConstructionVehicleType> j = stage.getInfo().getVehicles().iterator();
 			while (j.hasNext()) {
@@ -524,7 +524,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * Retrieve LUV attachment parts from the settlement.
 	 */
 	public void retrieveConstructionLUVParts() {
-		logger.fine("calling retrieveConstructionLUVParts()");
 		if (stage != null) {
 			luvAttachmentParts = new ArrayList<>();
 			int vehicleIndex = 0;
@@ -593,7 +592,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
                 usable = vehicle.isVehicleReady();
 
-				if (((Crewable) vehicle).getCrewNum() > 0)// || ((Crewable) vehicle).getRobotCrewNum() > 0)
+				if (((Crewable) vehicle).getCrewNum() > 0)
 					usable = false;
 
 				if (usable)
@@ -627,30 +626,21 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
-			// System.out.println("performPhase() : in SELECT_SITE_PHASE");
 			selectSitePhase(member);
 		} else if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			// System.out.println("performPhase() : in PREPARE_SITE_PHASE");
 			prepareSitePhase(member);
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-			// System.out.println("performPhase() : in CONSTRUCTION_PHASE");
 			constructionPhase(member);
 		}
 	}
 
 	private void selectSitePhase(MissionMember member) {
-		// System.out.println("at selectSitePhase(MissionMember member)");
 		selectSitePhase();
-		// waiting for the site to be selected by mars-simmers
 	}
 
 	public void selectSitePhase() {
-		// Reserve construction vehicles.
-		// reserveConstructionVehicles();
 		// Retrieve construction LUV attachment parts.
 		retrieveConstructionLUVParts();
-		// System.out.println("starting selectSitePhase() and calling
-		// setPhaseEnded(true);");
 		setPhaseEnded(true);
 	}
 
@@ -746,20 +736,12 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// Assign construction task to member.
 			
 			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)) {
-				if (member.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) member;
-					if (ConstructBuilding.canConstruct(person, site)) {
-						assignTask(person, new ConstructBuilding(person, stage, site, constructionVehicles));
-					}
+			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
+				&& member.getUnitType() == UnitType.PERSON) {
+				Person person = (Person) member;
+				if (ConstructBuilding.canConstruct(person, site)) {
+					assignTask(person, new ConstructBuilding(person, stage, site, constructionVehicles));
 				}
-                else {
-//                    Robot robot = (Robot) member;
-//                    if (ConstructBuilding.canConstruct(robot, site)) {
-//                        assignTask(robot, new ConstructBuilding(robot, stage,
-//                                site, constructionVehicles));
-//                    }
-                }
 			}
 		}
 
@@ -961,12 +943,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	/**
 	 * Determines and sets the position of a new construction site.
 	 *
-	 * @param site                the new construction site.
-	 * @param foundationStageInfo the site's foundation stage info.
-	 * @param constructionSkill   the mission starter's construction skill.
+	 * @param site the new construction site.
 	 */
 	public static void positionNewSite(ConstructionSite site) {
-//		ConstructionStageInfo foundationStageInfo, int constructionSkill) {
 
 		boolean goodPosition = false;
 

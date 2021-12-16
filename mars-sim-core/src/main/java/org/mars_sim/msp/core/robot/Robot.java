@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -42,9 +41,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
@@ -560,11 +556,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					localRobotGroup = new ConcurrentLinkedQueue<Robot>(building.getRoboticStation().getRobotOccupants());
+					localRobotGroup = new HashSet<>(building.getRoboticStation().getRobotOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
-			localRobotGroup = new ConcurrentLinkedQueue<Robot>(((Crewable) getVehicle()).getRobotCrew());
+			localRobotGroup = new HashSet<>(((Crewable) getVehicle()).getRobotCrew());
 		}
 
 		if (localRobotGroup == null) {
@@ -627,34 +623,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return person collection
 	 */
-	// TODO: associate each bot with its owner
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
-		// Check all people.
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			Task task = person.getMind().getTaskManager().getTask();
-
-			// Add all people maintaining this equipment.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
-			}
-
-			// Add all people repairing this equipment.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
-			}
-		}
-
-		return people;
+		return getBuildingLocation().getAffectedPeople();
+		// TODO: associate each bot with its owner
 	}
 
 	/**

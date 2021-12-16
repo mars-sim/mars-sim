@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -58,7 +59,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Call Function constructor.
 		super(THE_FUNCTION, building);
 
-		occupants = new ConcurrentLinkedQueue<Person>();
+		occupants = new HashSet<Person>();
 
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
@@ -184,7 +185,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return collection of occupants
 	 */
 	public Collection<Person> getOccupants() {
-		return new ConcurrentLinkedQueue<Person>(occupants);
+		return occupants;
 	}
 
 	/**
