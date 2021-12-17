@@ -113,7 +113,7 @@ public class TendGreenhouse extends Task implements Serializable {
 						acceptedTask = TENDING;
 				}
 	
-				logger.info(farmBuilding, worker, 10_000, "Accepted the task of " + acceptedTask.getName() + ".");
+//				logger.info(farmBuilding, worker, 10_000, "Accepted the task of " + acceptedTask.getName() + ".");
 				
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
@@ -240,18 +240,16 @@ public class TendGreenhouse extends Task implements Serializable {
 			remainingTime = time - (usedTime / mod);
 		}
 		
-		logger.log(farmBuilding, worker, Level.INFO, 10_000,
-				"mod: " + mod +
-				"  time: " + time +
-				"  workTime: " + workTime +
-				"  usedTime: " + usedTime + 
-				"  modRemainingTime: " + modRemainingTime +				
-				"  remainingTime: " + remainingTime +
-				"  TimeCompleted: " + getTimeCompleted() +
-				"  duration: " + getDuration()
-//				"  phaseTimeCompleted: " + phaseTimeCompleted +
-//				"  phaseTimeRequired: " + phaseTimeRequired				
-				);
+//		logger.log(farmBuilding, worker, Level.INFO, 10_000,
+//				"mod: " + mod +
+//				"  time: " + time +
+//				"  workTime: " + workTime +
+//				"  usedTime: " + usedTime + 
+//				"  modRemainingTime: " + modRemainingTime +				
+//				"  remainingTime: " + remainingTime +
+//				"  TimeCompleted: " + getTimeCompleted() +
+//				"  duration: " + getDuration()		
+//				);
 		
 		return remainingTime;
 	}

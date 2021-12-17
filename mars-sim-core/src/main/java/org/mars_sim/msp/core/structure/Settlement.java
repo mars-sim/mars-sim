@@ -328,9 +328,12 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private Set<OverrideType> processOverrides = new HashSet<>();
 	/** The set of disabled missions. */
 	private Set<MissionType> disabledMissions = new HashSet<>();
-	/** The set of available airlocks. */
-	private Set<Integer> availableAirlocks = new HashSet<>();
-
+//	/** The set of available airlocks. */
+//	private Set<Integer> availableAirlocks = new HashSet<>();
+	/** The set of available pressurized/pressurizing airlocks. */
+	private Set<Integer> availablePAirlocks = new HashSet<>();
+	/** The set of available depressurized/depressurizing airlocks. */
+	private Set<Integer> availableDAirlocks = new HashSet<>();
 	/** The settlement's list of citizens. */
 	private Set<Person> citizens;
 	/** The settlement's list of owned robots. */
@@ -1709,17 +1712,25 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * Gets the closest available airlock to a person.
 	 *
 	 * @param person the person.
+	 * @param ingress is the person ingressing ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestAvailableAirlock(Person person) {
+	public Airlock getClosestAvailableAirlock(Person person, boolean ingress) {
 
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
-		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
+//		BuildingManager manager = buildingManager;
+		Set<Integer> bldgs = null;
+		if (ingress) {
+			bldgs = availableDAirlocks;
+		}
+		else {
+			bldgs = availablePAirlocks;
+		}
+		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
+			Building building = unitManager.getBuildingByID(i.next());
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
@@ -1745,9 +1756,10 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @param person    the person.
 	 * @param pos Position to search
+	 * @param ingress is the person ingressing ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos) {
+	public Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
 		Building currentBuilding = BuildingManager.getBuilding(worker);
 
 		if (currentBuilding == null) {
@@ -1757,7 +1769,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			return null;
 		}
 
-		return getAirlock(currentBuilding, pos);
+		return getAirlock(currentBuilding, pos, ingress);
 	}
 
 	/**
@@ -1766,16 +1778,25 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 *
 	 * @param currentBuilding
 	 * @param pos Position for search
+	 * @param ingress is the person ingressing ?
 	 * @return
 	 */
-	private Airlock getAirlock(Building currentBuilding, LocalPosition pos) {
+	private Airlock getAirlock(Building currentBuilding, LocalPosition pos, boolean ingress) {
 		Airlock result = null;
 
 		// Search the closest of the buildings
 		double leastDistance = Double.MAX_VALUE;
 
-		for(int id: availableAirlocks) {
-			Building building = unitManager.getBuildingByID(id);
+		Set<Integer> bldgs = null;
+		if (ingress) {
+			bldgs = availableDAirlocks;
+		}
+		else {
+			bldgs = availablePAirlocks;
+		}
+		Iterator<Integer> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Building building = unitManager.getBuildingByID(i.next());
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
@@ -1804,7 +1825,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	public void checkAvailableAirlocks() {
 		List<Building> pressurizedBldgs = new ArrayList<>();
 		List<Building> depressurizedBldgs = new ArrayList<>();
-		List<Building> selectedPool = new ArrayList<>();
+//		List<Building> selectedPool = new ArrayList<>();
 
 		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
@@ -1814,23 +1835,23 @@ public class Settlement extends Structure implements Serializable, Temporal,
 				depressurizedBldgs.add(airlockBdg);
 		}
 
-		if (pressurizedBldgs.size() > 1) {
-			selectedPool = pressurizedBldgs;
+		if (!pressurizedBldgs.isEmpty()) {
+			trackAirlocks(pressurizedBldgs, true);
 		}
 
-		else if (pressurizedBldgs.size() == 1) {
-			selectedPool.addAll(pressurizedBldgs);
+		if (!depressurizedBldgs.isEmpty()) {
+			trackAirlocks(depressurizedBldgs, false);
 		}
-
-		else if (depressurizedBldgs.size() > 1) {
-			selectedPool = depressurizedBldgs;
-		}
-
-		else if (depressurizedBldgs.size() == 1) {
-			selectedPool.addAll(depressurizedBldgs);
-		}
-
-		for (Building building : selectedPool) {
+	}
+		
+	/**
+	 * Categorize the state of the airlocks
+	 * 
+	 * @param bldgs
+	 * @param pressurized
+	 */
+	public void trackAirlocks(List<Building> bldgs, boolean pressurized) {	
+		for (Building building : bldgs) {
 			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 			int id = building.getIdentifier();
@@ -1838,13 +1859,27 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
 			if (!chamberFull || !reservationFull) {
-				if (!availableAirlocks.contains(id)) {
-					availableAirlocks.add(id);
+				if (pressurized) {
+					if (!availablePAirlocks.contains(id)) {
+						availablePAirlocks.add(id);
+					}
+				}
+				else {
+					if (!availableDAirlocks.contains(id)) {
+						availableDAirlocks.add(id);
+					}
 				}
 			}
 			else {
-				if (availableAirlocks.contains(id)) {
-					availableAirlocks.remove(id);
+				if (pressurized) {
+					if (availablePAirlocks.contains(id)) {
+						availablePAirlocks.remove(id);
+					}
+				}
+				else {
+					if (!availableDAirlocks.contains(id)) {
+						availableDAirlocks.add(id);
+					}
 				}
 			}
 		}

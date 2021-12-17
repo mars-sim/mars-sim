@@ -63,7 +63,7 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 	            return 0;
 
 	        // Check if an airlock is available
-	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	        if (EVAOperation.getWalkableAvailableEgressAirlock(person) == null)
 	    		return 0;
 
 	        // Check if it is night time.

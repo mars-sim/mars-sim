@@ -349,6 +349,8 @@ public abstract class Airlock implements Serializable {
 
 		if (result) {
 			// Add the person's ID to the occupant ID list
+			// Define occupants as being in zone 1, 2, and 3.
+			// Being in zone 0 and 4 are not considered an airlock occupant.
 			occupantIDs.add(id);
 		}
 
@@ -854,6 +856,25 @@ public abstract class Airlock implements Serializable {
 			if (transitioning)
 				addTime(time);
 
+			// Self-Correction
+			// If this person is not physically in this airlock, remove his id 
+			for (int id: occupantIDs) {
+				Person p = unitManager.getPersonByID(id);
+				Building b = p.getBuildingLocation();
+				if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+					occupantIDs.remove(id);
+				}
+				else if (b.getEVA().getAirlock() != this) {
+					occupantIDs.remove(id);
+				}
+				
+				// Being in zone 0 and 4 are not considered an airlock occupant.
+				if (getZoneOccupants(0).contains(id)
+					|| getZoneOccupants(4).contains(id)) {
+					occupantIDs.remove(id);
+				}
+			}
+		
 			if (operatorID.equals(Integer.valueOf(-1))) {
 				if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
 					// Choose a pool of candidates from a particular zone and elect an operator

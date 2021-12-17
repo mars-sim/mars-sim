@@ -61,7 +61,7 @@ public class MaintenanceEVAMeta extends MetaTask {
         if (person.isInSettlement()) {
         	
             // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+            if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 	    		return 0;
 
             // Check if it is night time.

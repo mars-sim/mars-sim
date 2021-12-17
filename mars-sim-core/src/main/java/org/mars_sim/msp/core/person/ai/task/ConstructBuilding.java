@@ -141,7 +141,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	public static boolean canConstruct(Person person, ConstructionSite site) {
 
 		// Check if person can exit the settlement airlock.
-		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getPosition());
+		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getPosition(), false);
 		if (airlock != null) {
 			if (!ExitAirlock.canExitAirlock(person, airlock))
 				return false;

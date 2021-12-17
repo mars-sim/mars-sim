@@ -103,7 +103,7 @@ implements Serializable {
 
         // Get an available airlock in a settlement
      	if (person.isInSettlement()) {
-	        airlock = getWalkableAvailableAirlock(person);
+	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
 			    endTask();
 			    return;

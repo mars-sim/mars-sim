@@ -50,7 +50,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
         if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 1000))
         	return 0;
         
-        if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)
+        if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 			return 0;
         		
         if (person.isInVehicle()) {

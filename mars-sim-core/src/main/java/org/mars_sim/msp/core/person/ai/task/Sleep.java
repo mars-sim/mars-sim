@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -88,7 +88,6 @@ public class Sleep extends Task implements Serializable {
 		}
 
 		else {
-
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
@@ -103,7 +102,7 @@ public class Sleep extends Task implements Serializable {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
+				logger.info(person, 20_000, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 		}
@@ -111,7 +110,6 @@ public class Sleep extends Task implements Serializable {
 
 	public Sleep(Robot robot) {
 		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
-
 
 		// Initialize phase
 		addPhase(SLEEPING_MODE);
@@ -137,9 +135,9 @@ public class Sleep extends Task implements Serializable {
 		if (person != null) {
 			if (getPhase() == null)
 				throw new IllegalArgumentException("Task phase is null");
-			else if (SLEEPING.equals(getPhase())) {
+			else if (SLEEPING.equals(getPhase()))
 				return sleepingPhase(time);
-			} else
+			else
 				return time;
 		}
 
@@ -176,6 +174,7 @@ public class Sleep extends Task implements Serializable {
 //				endSubTask();
 
 			PhysicalCondition pc = person.getPhysicalCondition();
+			
 			CircadianClock circadian = person.getCircadianClock();
 
 			pc.recoverFromSoreness(.05);
@@ -209,7 +208,6 @@ public class Sleep extends Task implements Serializable {
 			pc.setFatigue(newFatigue);
 
 			circadian.setAwake(false);
-
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);
 
@@ -233,28 +231,23 @@ public class Sleep extends Task implements Serializable {
 				// NOTE: if power is below a certain threshold, go to robotic station for
 				// recharge, else stay at the same place
 
-				// If currently in a building with a robotic station, go to a station activity
-				// spot.
-				// boolean atStation = false;
+				// If currently in a building with a robotic station, 
+				// go to a station activity spot.
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (currentBuilding != null) {
-//					if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
-						RoboticStation station = currentBuilding.getRoboticStation();
-						if (station.getSleepers() < station.getSlots()) {
-							station.addSleeper();
+					RoboticStation station = currentBuilding.getRoboticStation();
+					if (station != null && station.getSleepers() < station.getSlots()) {
+						station.addSleeper();
 
-							// Check if robot is currently at an activity spot for the robotic station.
-							if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
-								// Walk to an available activity spot.
-								walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
-							}
+						// Check if robot is currently at an activity spot for the robotic station.
+						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
+							// Walk to an available activity spot.
+							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
 						}
-//					}
+					}
 				} else {
-					// if (!atStation) {
 					Building building = getAvailableRoboticStationBuilding(robot);
 					if (building != null) {
-
 						RoboticStation station = building.getRoboticStation();
 						if (station != null) {
 							// NOTE: see https://github.com/mars-sim/mars-sim/issues/22

@@ -471,10 +471,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	private void createPieChart() {
 		MonitorModel model = getSelected().getModel();
-		int column = ColumnSelector.createPieSelector(desktop, model);
-
-		if (column >= 0) {
-			addTab(new PieChartTab(model, column));
+		if (model != null) {
+			int column = ColumnSelector.createPieSelector(desktop, model);
+			if (column >= 0) {
+				addTab(new PieChartTab(model, column));
+			}
 		}
 	}
 
@@ -491,7 +492,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			logger.severe("No tab selected.");
 			return null;
 		}
-
 	}
 
 	public int getSelectedTab() {
@@ -504,7 +504,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void updateTab() {
 		// SwingUtilities.updateComponentTreeUI(this);
 		MonitorTab selectedTab = getSelected();
-		MonitorTab newTab = null;
+		if (selectedTab == null)
+			return;
 		MonitorModel model = selectedTab.getModel();
 		TableTab tableTab = null;
 		JTable table = null;
@@ -519,7 +520,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		buttonFilter.setEnabled(false);
 
 		try {
-
+			MonitorTab newTab = null;
 			if (selectedTab instanceof UnitTab) {
 				// Enable these buttons
 				buttonMap.setEnabled(true);
@@ -836,7 +837,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			createBarChart();
 		} else if (source == this.buttonRemoveTab) {
 			MonitorTab selected = getSelected();
-			if (!selected.getMandatory()) {
+			if (selected != null && !selected.getMandatory()) {
 				removeTab(getSelected());
 			}
 		} else if (source == this.buttonDetails) {
