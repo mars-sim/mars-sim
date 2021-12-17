@@ -229,6 +229,15 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Gets the number of people reserved
+	 *
+	 * @return
+	 */
+	public int getReservedNum() {
+		return reservationMap.size();
+	}
+	
+	/**
 	 * Gets the reservation map
 	 *
 	 * @return

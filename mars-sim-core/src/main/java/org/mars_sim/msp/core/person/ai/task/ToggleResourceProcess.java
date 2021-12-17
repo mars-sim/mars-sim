@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -200,9 +201,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
 			double bestDiff = 0D;
-			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				// In this building, select the best resource to compete
@@ -341,14 +341,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		double result = 0D;
 
-		Iterator<Integer> i = null;
+		Set<Integer> set = null;
 		if (input)
-			i = process.getInputResources().iterator();
+			set = process.getInputResources();
 		else
-			i = process.getOutputResources().iterator();
+			set = process.getOutputResources();
 
-		while (i.hasNext()) {
-			int resource = i.next();
+		for (int resource: set) {
 			boolean useResource = !input || !process.isAmbientInputResource(resource);
             if (!input && process.isWasteOutputResource(resource)) {
 				useResource = false;

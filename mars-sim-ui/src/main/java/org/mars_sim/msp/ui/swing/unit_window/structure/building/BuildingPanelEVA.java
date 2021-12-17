@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2021-11-28
+ * @date 2021-12-17
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
@@ -44,7 +43,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 
-//	private int capCache;
 	private int innerDoorCache;
 	private int outerDoorCache;
 	private int occupiedCache;
@@ -56,7 +54,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
 
-//	private WebLabel capLabel;
 	private JTextField innerDoorLabel;
 	private JTextField outerDoorLabel;
 	private JTextField occupiedLabel;
@@ -67,7 +64,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
 
-	private ListModel occupantListModel;
+	private OccupantListModel occupantListModel;
 	private ReservationListModel reservationListModel;
 	private JList<Person> occupants;
 	private JList<Person> reservationList;
@@ -98,7 +95,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		unitManager = desktop.getSimulation().getUnitManager();
 
 		// Create occupant list model
-		occupantListModel = new ListModel();
+		occupantListModel = new OccupantListModel();
 
 		// Create reservation list model
 		reservationListModel = new ReservationListModel();
@@ -223,7 +220,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 
 		// Update operatorLabel
-		if (!operatorCache.equals(eva.getOperatorName())) {
+		if (!operatorCache.equalsIgnoreCase(eva.getOperatorName())) {
 			operatorCache = eva.getOperatorName();
 			operatorLabel.setText(operatorCache);
 		}
@@ -270,36 +267,36 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		// Update occupant list
 		if (occupantListModel != null)
-			occupantListModel.update();
+			occupantListModel.updateList();
 		if (scrollPanel != null)
 			scrollPanel.validate();
 
 		// Update reservation list
 		if (reservationListModel != null)
-			reservationListModel.update();
+			reservationListModel.updateList();
 	}
 
 	/**
 	 * List model for airlock occupant.
 	 */
-	private class ListModel extends AbstractListModel<Person> {
-
+	private class OccupantListModel extends AbstractListModel<Person> {
 
 		private List<Integer> intList;
 
-		private ListModel() {
-
+		private OccupantListModel() {
 			intList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
 			Collections.sort(intList);
 		}
 
 		@Override
 		public Person getElementAt(int index) {
-
+			// Need to update intList or else sometimes ArrayIndexOutOfBoundsException
+			intList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
+			Collections.sort(intList);
+			
 			Person result = null;
 
-			int size = getSize(); //buildingAirlock.getAllInsideOccupants().size();
-
+			int size = getSize();
 			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
 				result = unitManager.getPersonByID(intList.get(index));
 			}
@@ -309,13 +306,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		@Override
 		public int getSize() {
-			return buildingAirlock.getAllInsideOccupants().size(); //getNumOccupants();
+			return buildingAirlock.getNumOccupants();
 		}
 
 		/**
-		 * Update the population list model.
+		 * Update the list model.
 		 */
-		public void update() {
+		public void updateList() {
 
 			List<Integer> newIntList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
 			Collections.sort(newIntList);
@@ -345,11 +342,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		@Override
 		public Person getElementAt(int index) {
-
+			// Need to update intList or else sometimes ArrayIndexOutOfBoundsException
+			intList = new ArrayList<>(airlock.getReserved());
+			Collections.sort(intList);
+			
 			Person result = null;
 
 			int size = getSize();
-
 			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
 				result = unitManager.getPersonByID(intList.get(index));
 			}
@@ -359,13 +358,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		@Override
 		public int getSize() {
-			return airlock.getReserved().size();
+			return airlock.getReservedNum();
 		}
 
 		/**
-		 * Update the population list model.
+		 * Update the list model.
 		 */
-		public void update() {
+		public void updateList() {
 
 			List<Integer> newIntList = new ArrayList<>(airlock.getReserved());
 			Collections.sort(newIntList);

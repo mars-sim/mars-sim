@@ -501,10 +501,11 @@ public class BuildingAirlock extends Airlock {
 
 	/**
 	 * Gets the total number of people occupying the area between the inner and outer door (namely, zone 1, 2, and 3)
-	 *
-	 * @return a list of occupants
+	 * Excluding zone 0 and zone 4
+	 * 
+	 * @return number of occupants
 	 */
-	public int getInsideTotalNum() {
+	public int getNumOccupants() {
 		int result = 0;
 		for (Integer p : insideExteriorDoorMap.values()) {
 			if (!p.equals(-1))
@@ -690,16 +691,6 @@ public class BuildingAirlock extends Airlock {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
-	 *
-	 * @return the number of occupants
-	 */
-	@Override
-	public int getNumOccupants() {
-		return getInsideTotalNum();
 	}
 
 	/**

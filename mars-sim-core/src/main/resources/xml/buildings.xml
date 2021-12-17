@@ -3071,11 +3071,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<EVA capacity="8">
+			<!-- <EVA capacity="8">
 				<center-position xloc="0.0" yloc="1.0"/>
 				<interior-position xloc="0.0" yloc=".5"/>
 				<exterior-position xloc="0.0" yloc="10.0"/>
-			</EVA>
+			</EVA> -->
 			<ground-vehicle-maintenance capacity="2" >
 				<parking>
                 	<parking-location xloc="4.5" yloc="-3.2" />
