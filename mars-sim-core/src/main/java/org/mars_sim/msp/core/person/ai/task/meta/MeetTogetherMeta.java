@@ -1,13 +1,12 @@
 /*
  * Mars Simulation Project
  * MeetTogetherMeta.java
- * @date 2021-09-27
+ * @date 2021-12-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;

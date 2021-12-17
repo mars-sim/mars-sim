@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 // see discussions on Airlocks for Mars Colony at
@@ -87,11 +88,11 @@ public abstract class Airlock implements Serializable {
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 
-	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
-    private Set<Integer> occupantIDs;
-
 	/** The person currently operating the airlock. */
     private Integer operatorID;
+
+	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
+    private Set<Integer> occupantIDs;
 
 	/** People waiting for the airlock by the inner door. */
     private Set<Integer> awaitingInnerDoor;
@@ -856,45 +857,50 @@ public abstract class Airlock implements Serializable {
 	 * Time passing for airlock. Check for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
 	 *
-	 * @param time amount of time (in millisols)
+	 * @param pulse
 	 */
-	public void timePassing(double time) {
+	public void timePassing(ClockPulse pulse) {
 
 		if (activated) {
 
-			if (transitioning)
+			double time = pulse.getElapsed();
+			
+			if (transitioning) {
 				addTime(time);
+			}
 
-			// Self-Correction
-			// If this person is not physically in this airlock, remove his id 
-			for (int id: occupantIDs) {
-				Person p = unitManager.getPersonByID(id);
-				Building b = p.getBuildingLocation();
-				if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-					occupantIDs.remove(id);
+			if (pulse.isNewMSol()) {
+				// Self-Correction
+				// If this person is not physically in this airlock, remove his id
+				for (int id: occupantIDs) {
+					Person p = unitManager.getPersonByID(id);
+					Building b = p.getBuildingLocation();
+					if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+						occupantIDs.remove(id);
+					}
+					else if (b.getEVA().getAirlock() != this) {
+						occupantIDs.remove(id);
+					}
+					
+					// Being in zone 0 and 4 are not considered an airlock occupant.
+					if (getZoneOccupants(0).contains(id)
+						|| getZoneOccupants(4).contains(id)) {
+						occupantIDs.remove(id);
+					}
 				}
-				else if (b.getEVA().getAirlock() != this) {
-					occupantIDs.remove(id);
+			
+				if (operatorID.equals(Integer.valueOf(-1))) {
+					if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
+						// Choose a pool of candidates from a particular zone and elect an operator
+						electAnOperator(getOperatorPool());
+					}
 				}
-				
-				// Being in zone 0 and 4 are not considered an airlock occupant.
-				if (getZoneOccupants(0).contains(id)
-					|| getZoneOccupants(4).contains(id)) {
-					occupantIDs.remove(id);
-				}
-			}
-		
-			if (operatorID.equals(Integer.valueOf(-1))) {
-				if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
-					// Choose a pool of candidates from a particular zone and elect an operator
-					electAnOperator(getOperatorPool());
-				}
-			}
-			else {
-				// The airlock has an existing operator
-				if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {
-					// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
-					electAnOperator(getOperatorPool());
+				else {
+					// The airlock has an existing operator
+					if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {
+						// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
+						electAnOperator(getOperatorPool());
+					}
 				}
 			}
 		}

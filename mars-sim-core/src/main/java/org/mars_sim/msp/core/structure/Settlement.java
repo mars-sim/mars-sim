@@ -71,7 +71,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -3204,12 +3203,12 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
 	 * @param now Current time
 	 */
-	private void doCropsNeedTending(ClockPulse now) {
+	private void doCropsNeedTending(ClockPulse pulse) {
 
-		int msol = now.getMarsTime().getMillisolInt();
+		int msol = pulse.getMarsTime().getMillisolInt();
 
 		// Check for the day rolling over
-		if (now.isNewSol() || (millisolCache + 5) < msol) {
+		if (pulse.isNewSol() || (millisolCache + 5) < msol) {
 			millisolCache = msol;
 			cropsNeedingTendingCache = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {

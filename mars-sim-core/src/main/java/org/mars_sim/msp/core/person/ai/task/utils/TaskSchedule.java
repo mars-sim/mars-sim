@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -272,8 +271,6 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 
-					if (marsClock == null)
-						marsClock = Simulation.instance().getMasterClock().getMarsClock();
 					int now = marsClock.getMillisolInt();
 					
 					boolean isOnShiftNow = isShiftHour(now);
@@ -343,8 +340,6 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isPersonAtStartOfWorkShift() {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int now = marsClock.getMillisolInt();
 
 		if (currentShiftType == ShiftType.ON_CALL) {
@@ -381,8 +376,6 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isTimeAtStartOfAShift(int missionWindow) {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int now = marsClock.getMillisolInt();
 		
 		if ((now == 1000 || now >= A_START) && now <= A_START + missionWindow)
@@ -446,7 +439,14 @@ public class TaskSchedule implements Serializable {
 		person.getAssociatedSettlement().assignWorkShift(person, person.getAssociatedSettlement().getPopulationCapacity());
 	}
 
-
+	/**
+	 * Initializes instances
+	 *
+	 * @param mc {@link MarsClock}
+	 */
+	public static void initializeInstances(MarsClock mc) {
+		marsClock = mc;
+	}
 
 	public void destroy() {
 		person = null;

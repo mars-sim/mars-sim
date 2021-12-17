@@ -150,7 +150,7 @@ implements Serializable {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			airlock.timePassing(pulse.getElapsed());
+			airlock.timePassing(pulse);
 		}
 		return valid;
 	}
