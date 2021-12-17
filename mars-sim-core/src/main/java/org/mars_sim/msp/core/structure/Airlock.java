@@ -854,6 +854,48 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Removes the occupant ids
+	 */
+	public void removeID() {
+		// If this person is not physically in this airlock, remove his id
+		for (int id: occupantIDs) {
+			Person p = unitManager.getPersonByID(id);
+			Building b = p.getBuildingLocation();
+			if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				occupantIDs.remove(id);
+			}
+			else if (b.getEVA().getAirlock() != this) {
+				occupantIDs.remove(id);
+			}
+			
+			// Being in zone 0 and 4 are not considered an airlock occupant.
+			if (getZoneOccupants(0).contains(id)
+				|| getZoneOccupants(4).contains(id)) {
+				occupantIDs.remove(id);
+			}
+		}
+	}
+	
+	/**
+	 * Check the airlock operator
+	 */
+	public void checkOperator() {
+		if (operatorID.equals(Integer.valueOf(-1))) {
+			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
+				// Choose a pool of candidates from a particular zone and elect an operator
+				electAnOperator(getOperatorPool());
+			}
+		}
+		else {
+			// The airlock has an existing operator
+			if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {
+				// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
+				electAnOperator(getOperatorPool());
+			}
+		}
+	}
+	
+	/**
 	 * Time passing for airlock. Check for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
 	 *
@@ -870,38 +912,10 @@ public abstract class Airlock implements Serializable {
 			}
 
 			if (pulse.isNewMSol()) {
-				// Self-Correction
-				// If this person is not physically in this airlock, remove his id
-				for (int id: occupantIDs) {
-					Person p = unitManager.getPersonByID(id);
-					Building b = p.getBuildingLocation();
-					if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-						occupantIDs.remove(id);
-					}
-					else if (b.getEVA().getAirlock() != this) {
-						occupantIDs.remove(id);
-					}
-					
-					// Being in zone 0 and 4 are not considered an airlock occupant.
-					if (getZoneOccupants(0).contains(id)
-						|| getZoneOccupants(4).contains(id)) {
-						occupantIDs.remove(id);
-					}
-				}
-			
-				if (operatorID.equals(Integer.valueOf(-1))) {
-					if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
-						// Choose a pool of candidates from a particular zone and elect an operator
-						electAnOperator(getOperatorPool());
-					}
-				}
-				else {
-					// The airlock has an existing operator
-					if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {
-						// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
-						electAnOperator(getOperatorPool());
-					}
-				}
+				// Check occupants
+				removeID();
+				// Check the airlock operator
+				checkOperator();
 			}
 		}
 	}

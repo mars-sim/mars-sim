@@ -1,13 +1,10 @@
-/**
+/*
  * Mars Simulation Project
  * ClockPulse.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.time;
-
-import org.mars_sim.msp.core.Simulation;
 
 public class ClockPulse {
 	/**
@@ -45,20 +42,17 @@ public class ClockPulse {
 	 */
 	private long id;
 	
-
-	private Simulation context;
-
 	/**
 	 * Create a pulse defining a step forward in the simulation.
 	 * @param sim Context of the simulation being advanced
 	 * @param id Unique pulse ID. Sequential.
-	 * @param elapsed This must be a finate & positive number.
+	 * @param elapsed This must be a final & positive number.
 	 * @param marsTime
 	 * @param earthTime
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 */
-	ClockPulse(Simulation sim, long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
+	ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
 			boolean newSol, boolean newMSol) {
 		super();
 		
@@ -66,7 +60,6 @@ public class ClockPulse {
 			throw new IllegalArgumentException("Elapsed time must be positive : " + elapsed);
 		}
 		
-		this.context = sim;
 		this.id = id;
 		this.time = elapsed;
 		this.marsTime = marsTime;
@@ -103,9 +96,4 @@ public class ClockPulse {
 	public EarthClock getEarthTime() {
 		return earthTime;
 	}
-
-	public Simulation getContext() {
-		return context;
-	}
-	
 }

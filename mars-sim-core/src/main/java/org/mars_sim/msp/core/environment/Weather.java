@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Weather.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -785,7 +785,7 @@ public class Weather implements Serializable, Temporal {
 	 * @param probability
 	 * @param L_s_int
 	 */
-	private void createDustDevils(double probability, double L_s) {
+	private void createDustDevils(double probability, double ls) {
 		List<Settlement> settlements = new ArrayList<>(sim.getUnitManager().getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
@@ -809,7 +809,7 @@ public class Weather implements Serializable, Temporal {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					logger.info(s, "On L_s = " + Math.round(L_s * 100.0) / 100.0
+					logger.info(s, "On L_s = " + Math.round(ls * 100.0) / 100.0
 									+ ", " + ds.getName()); 
 
 				}
