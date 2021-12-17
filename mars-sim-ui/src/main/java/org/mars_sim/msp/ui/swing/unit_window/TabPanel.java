@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -33,6 +34,10 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
+	protected static DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
+	protected static DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
+	protected static DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
+	
 	private String tabTitle;
 	private String tabToolTip;
 	

@@ -75,12 +75,9 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean isPaused = false;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
-	/** The cache for accumulating millisols up to a limit before sending out an clock pulse. */
-	private transient double timeCache;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
-	/** The counts for ui pulses. */
-	private transient int count;
+
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 
@@ -715,7 +712,9 @@ public class MasterClock implements Serializable {
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
-
+		private double timeCache = 0;
+		private int count = 0;
+		private long lastUIPulse = 0;
 		private ClockPulse currentPulse;
 		private ClockListener listener;
 
@@ -741,11 +740,16 @@ public class MasterClock implements Serializable {
 					timeCache += currentPulse.getElapsed();
 					count++;
 
-					if (count > UI_COUNT) {
+					// One UI Pulse per X seconds
+					long timeNow = System.currentTimeMillis();
+					if ((timeNow - lastUIPulse) > 1000L) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
+						//logger.info("UI Update pulse " + timeNow  + " for " + listener);
 						listener.uiPulse(timeCache);
 						// Reset count
 						count = 0;
+						lastUIPulse = timeNow;
+						
 						// Reset timeRatioCache
 						timeCache = 0;
 					}

@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,11 +96,6 @@ extends TabPanel {
 	private BuildingManager manager;
 	private CompositionOfAir air;
 
-	private static DecimalFormat fmt3 = new DecimalFormat("0.000");//Msg.getString("decimalFormat3")); //$NON-NLS-1$
-	private static DecimalFormat fmt2 = new DecimalFormat("0.00");//Msg.getString("decimalFormat2")); //$NON-NLS-1$
-	private static DecimalFormat fmt1 = new DecimalFormat("0.0");//Msg.getString("decimalFormat1")); //$NON-NLS-1$
-
-
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -150,7 +144,7 @@ extends TabPanel {
 		WebLabel t_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), WebLabel.RIGHT);
 		topPanel.add(t_label);
 		averageTemperatureCache = settlement.getTemperature();
-		averageTemperatureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), WebLabel.LEFT); //$NON-NLS-1$
+		averageTemperatureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", DECIMAL_PLACES2.format(averageTemperatureCache)), WebLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(averageTemperatureLabel);
 		
 		WebLabel p_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.indoorPressure.title"), WebLabel.RIGHT);
@@ -183,31 +177,31 @@ extends TabPanel {
 		WebLabel co2 = new WebLabel(Msg.getString("TabPanelAirComposition.cO2.title"), WebLabel.RIGHT);
 		gasPanel.add(co2);
 		cO2Cache = getOverallComposition(0);
-		cO2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt3.format(cO2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
+		cO2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", DECIMAL_PLACES3.format(cO2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(cO2Label);
 
 		WebLabel ar = new WebLabel(Msg.getString("TabPanelAirComposition.ar.title"), WebLabel.RIGHT);
 		gasPanel.add(ar);
 		arCache = getOverallComposition(1);
-		arLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(arCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
+		arLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", DECIMAL_PLACES2.format(arCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(arLabel);
 		
 		WebLabel n2 = new WebLabel(Msg.getString("TabPanelAirComposition.n2.title"), WebLabel.RIGHT);
 		gasPanel.add(n2);
 		n2Cache = getOverallComposition(2);
-		n2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt1.format(n2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
+		n2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", DECIMAL_PLACES1.format(n2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(n2Label);
 
 		WebLabel o2 = new WebLabel(Msg.getString("TabPanelAirComposition.o2.title"), WebLabel.RIGHT);
 		gasPanel.add(o2);
 		o2Cache = getOverallComposition(3);
-		o2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(o2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
+		o2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", DECIMAL_PLACES2.format(o2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(o2Label);
 
 		WebLabel h2O = new WebLabel(Msg.getString("TabPanelAirComposition.h2O.title"), WebLabel.RIGHT);
 		gasPanel.add(h2O);
 		h2OCache = getOverallComposition(4);
-		h2OLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(h2OCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
+		h2OLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", DECIMAL_PLACES2.format(h2OCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(h2OLabel);
 		gasPanel.add(new WebLabel(""));
 		gasPanel.add(new WebLabel(""));
@@ -446,7 +440,7 @@ extends TabPanel {
 				cO2Cache = cO2;
 				cO2Label.setText(
 					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
-					fmt3.format(cO2Cache))+"   "
+					DECIMAL_PLACES3.format(cO2Cache))+"   "
 					);
 			}
 
@@ -455,7 +449,7 @@ extends TabPanel {
 				arCache = ar;
 				arLabel.setText(
 					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
-					fmt2.format(ar))+"   "
+					DECIMAL_PLACES2.format(ar))+"   "
 					);
 			}
 			
@@ -465,7 +459,7 @@ extends TabPanel {
 				n2Cache = n2;
 				n2Label.setText(
 					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
-					fmt1.format(n2))+"   "
+					DECIMAL_PLACES1.format(n2))+"   "
 					);
 			}
 
@@ -476,7 +470,7 @@ extends TabPanel {
 				o2Cache = o2;
 				o2Label.setText(
 					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
-					fmt2.format(o2Cache))+"   "
+					DECIMAL_PLACES2.format(o2Cache))+"   "
 					);
 			}
 
@@ -485,7 +479,7 @@ extends TabPanel {
 				h2OCache = h2O;
 				h2OLabel.setText(
 					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
-					fmt2.format(h2O))+"   "
+					DECIMAL_PLACES2.format(h2O))+"   "
 					);
 			}
 			
@@ -494,7 +488,7 @@ extends TabPanel {
 				averageTemperatureCache = averageTemperature;
 				averageTemperatureLabel.setText(
 					Msg.getString("TabPanelAirComposition.label.averageTemperature",  //$NON-NLS-1$
-					fmt2.format(averageTemperatureCache)
+					DECIMAL_PLACES2.format(averageTemperatureCache)
 					));
 			}
 			
@@ -778,9 +772,9 @@ extends TabPanel {
 		settlement = null;
 		manager = null;
 		air = null;
-		fmt3 = null;
-		fmt2 = null;
-		fmt1 = null;
+		DECIMAL_PLACES3 = null;
+		DECIMAL_PLACES2 = null;
+		DECIMAL_PLACES1 = null;
 
 	}
 }

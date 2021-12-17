@@ -6,45 +6,29 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.util.Collection;
 
-import javax.swing.AbstractListModel;
-import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-//import org.mars_sim.msp.ui.swing.tool.monitor.personTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * This is a tab panel for robots.
  */
 @SuppressWarnings("serial")
-public class TabPanelBots extends TabPanel implements MouseListener, ActionListener {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
+public class TabPanelBots extends TabPanel {
 
 	private int robotNumCache;
 	private int robotCapacityCache;
@@ -52,13 +36,11 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 	private Settlement settlement;
 
-	private WebLabel robotNumLabel;
-	private WebLabel robotCapLabel;
-	private WebLabel robotIndoorLabel;
+	private JTextField robotNumLabel;
+	private JTextField robotCapLabel;
+	private JTextField robotIndoorLabel;
+	private UnitListPanel<Robot> robotList;
 
-	private RobotListModel robotListModel;
-	private JList<Robot> robotList;
-	private WebScrollPane robotScrollPanel;
 
 	/**
 	 * Constructor.
@@ -73,52 +55,26 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 				unit, desktop);
 
 		settlement = (Settlement) unit;
-
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePane);
-
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelBots.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		titlePane.add(titleLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
-//		countPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(countPanel);
+		WebPanel countPanel = new WebPanel(new SpringLayout());
+		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create robot num label
-		WebLabel robotNumHeader = new WebLabel(Msg.getString("TabPanelBots.associated"), WebLabel.RIGHT); // $NON-NLS-1$
-		countPanel.add(robotNumHeader);
-
 		robotNumCache = settlement.getNumBots();
-		robotNumLabel = new WebLabel("" + robotNumCache, WebLabel.LEFT); // $NON-NLS-1$
-		countPanel.add(robotNumLabel);
+		robotNumLabel = addTextField(countPanel, Msg.getString("TabPanelBots.associated"), robotNumCache, null); // $NON-NLS-1$
 
 		// Create robot indoor label
-		WebLabel robotIndoorHeader = new WebLabel(Msg.getString("TabPanelBots.indoor"), WebLabel.RIGHT); // $NON-NLS-1$
-		countPanel.add(robotIndoorHeader);
-
 		robotIndoorCache = settlement.getNumBots();
-		robotIndoorLabel = new WebLabel("" + robotIndoorCache, WebLabel.LEFT);
-		countPanel.add(robotIndoorLabel);
+		robotIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelBots.indoor"), robotIndoorCache, null);
 
 		// Create robot capacity label
-		WebLabel robotCapHeader = new WebLabel(Msg.getString("TabPanelBots.capacity"), WebLabel.RIGHT); // $NON-NLS-1$
-		countPanel.add(robotCapHeader);
-
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = new WebLabel("" + robotCapacityCache, WebLabel.LEFT); // $NON-NLS-1$
-		countPanel.add(robotCapLabel);
+		robotCapLabel = addTextField(countPanel, Msg.getString("TabPanelBots.capacity"), robotCapacityCache, null); // $NON-NLS-1$
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
@@ -126,52 +82,27 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 				5, 2); // xPad, yPad
 
 		// Create spring layout robot display panel
-		WebPanel robotDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
-//		robotDisplayPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(robotDisplayPanel);
-
-		// Create scroll panel for robot list.
-		robotScrollPanel = new WebScrollPane();
-		robotScrollPanel.setPreferredSize(new Dimension(120, 250));
-		robotDisplayPanel.add(robotScrollPanel);
-
-		// Create robot list model
-		robotListModel = new RobotListModel(settlement);
-
-		// Create robot list
-		robotList = new JList<Robot>(robotListModel);
-		robotList.addMouseListener(this);
-		robotScrollPanel.setViewportView(robotList);
-
-		// Create robot monitor button
-		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.addActionListener(this);
-		monitorButton.setToolTipText(Msg.getString("TabPanelBots.tooltip.monitor")); //$NON-NLS-1$
-
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		buttonPane.setPreferredSize(new Dimension(25, 25));
-		buttonPane.add(monitorButton);
-
-		robotDisplayPanel.add(buttonPane);
-
-		// Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(robotDisplayPanel, 2, 1, // rows, cols
-				30, 10, // initX, initY
-				10, 10); // xPad, yPad
+		robotList = new UnitListPanel<Robot>(desktop) {
+			@Override
+			protected Collection<Robot> getData() {
+				return settlement.getRobots();
+			}
+			
+		};
+		addBorder(robotList, "Robots");
+		content.add(robotList, BorderLayout.CENTER);
 	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-
 		// Update robot num
 		if (robotNumCache != settlement.getNumBots()) {
 			robotNumCache = settlement.getNumBots();
 			robotNumLabel.setText("" + robotNumCache);
+			robotIndoorLabel.setText("" + robotNumCache);
 		}
 
 		// Update robot capacity
@@ -181,111 +112,15 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		}
 
 		// Update robot list
-		robotListModel.update();
-		robotScrollPanel.validate();
-	}
-
-	/**
-	 * List model for settlement robot.
-	 */
-	private class RobotListModel extends AbstractListModel<Robot> {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		private Settlement settlement;
-		private List<Robot> robotList;
-
-		private RobotListModel(Settlement settlement) {
-			this.settlement = settlement;
-
-			robotList = new ArrayList<Robot>(settlement.getRobots());
-			Collections.sort(robotList);
-		}
-
-		@Override
-		public Robot getElementAt(int index) {
-
-			Robot result = null;
-
-			if ((index >= 0) && (index < robotList.size())) {
-				result = robotList.get(index);
-			}
-
-			return result;
-		}
-
-		@Override
-		public int getSize() {
-			return robotList.size();
-		}
-
-		/**
-		 * Update the robot list model.
-		 */
-		public void update() {
-
-			if (!robotList.containsAll(settlement.getRobots()) || !settlement.getRobots().containsAll(robotList)) {
-
-				List<Robot> oldRobotList = robotList;
-
-				List<Robot> tempRobotList = new ArrayList<Robot>(settlement.getRobots());
-				Collections.sort(tempRobotList);
-
-				robotList = tempRobotList;
-				fireContentsChanged(this, 0, getSize());
-
-				oldRobotList.clear();
-			}
-		}
-	}
-
-	/**
-	 * Action event occurs.
-	 *
-	 * @param event the action event
-	 */
-	public void actionPerformed(ActionEvent event) {
-		// If the robot monitor button was pressed, create tab in monitor tool.
-		// desktop.addModel(new RobotTableModel((Settlement) unit, false));
-	}
-
-	/**
-	 * Mouse clicked event occurs.
-	 *
-	 * @param event the mouse event
-	 */
-	public void mouseClicked(MouseEvent event) {
-
-		// If double-click, open robot window.
-		if (event.getClickCount() >= 2) {
-			Robot robot = (Robot) robotList.getSelectedValue();
-			if (robot != null) {
-				desktop.openUnitWindow(robot, false);
-			}
-		}
-	}
-
-	public void mousePressed(MouseEvent event) {
-	}
-
-	public void mouseReleased(MouseEvent event) {
-	}
-
-	public void mouseEntered(MouseEvent event) {
-	}
-
-	public void mouseExited(MouseEvent event) {
+		robotList.update();
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
-		robotNumLabel = null;
-		robotCapLabel = null;
-		robotListModel = null;
+		super.destroy();
 		robotList = null;
-		robotScrollPanel = null;
 	}
 }

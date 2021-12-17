@@ -27,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -51,6 +52,8 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
 
+	private static SimLogger logger = SimLogger.getLogger(UnitWindow.class.getName());
+	
 	public static final int WIDTH = 530;
 	public static final int HEIGHT = 620;
 
@@ -90,7 +93,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	private List<TabPanel> tabPanels;
 	/** The center panel. */
 	private JTabbedPane tabPane;
-//	private JideTabbedPane tabPanel;
 
 	/** The cache for the currently selected TabPanel. */
 	private TabPanel oldTab;
@@ -158,19 +160,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
 //		}
 
-//		int theme = 0;
-//		if (mainScene != null) {
-//			theme = MainScene.getTheme();
-//			if (themeCache != theme) {
-//				themeCache = theme;
-//				// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
-//				// pale grey : Color(214,217,223) = D6D9DF
-//				// pale mud : (193, 191, 157) = C1BF9D
-//			}
-//		}
-//
-//		else
-//			theme = 7;
 
 //		if (unit instanceof Person) {
 
@@ -262,69 +251,22 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			// factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
 		}
 
-//		com.jidesoft.plaf.LookAndFeelFactory.installJideExtension(com.jidesoft.plaf.LookAndFeelFactory.OFFICE2003_STYLE);
-//		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
-
-//		if (MainWindow.OS.contains("linux")) {
-//			try {
-//				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//			} catch (ClassNotFoundException e) {
-//			} catch (InstantiationException e) {
-//			} catch (IllegalAccessException e) {
-//			} catch (UnsupportedLookAndFeelException e) {
-//			}
-//
-//			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
-//		}
-//
-//		else
-//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
-
-//		logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
-
-//		tabPanel = new JideTabbedPane();
-////		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-//		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
-//		tabPanel.setBorder(null);
-//
-//		tabPanel.setBoldActiveTab(true);
-//		tabPanel.set2SelectedTabOnWheel(true);
-//		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
-//
-//		// Setting foreground color for tab text.
-//		tabPanel.setForeground(Color.DARK_GRAY);
-//		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPane = new WebTabbedPane(WebTabbedPane.LEFT, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
-//		tabPane.setPreferredSize(new Dimension(WIDTH - 50, HEIGHT - 40));
 		if (unit.getUnitType() == UnitType.PERSON) {
-//			setMaximumSize(new Dimension(WIDTH, HEIGHT + 25));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
 		}
 		else if (unit.getUnitType() == UnitType.SETTLEMENT) {
-//			setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 40));
 		}
 		else  { //if (unit instanceof Vehicle) {
-//			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
 		}
-//		else if (unit instanceof Equipment) {
-////			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
-//			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
-//		}
-
-//		tabPane.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.tabbedpane);
-//		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-//		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
-//		Color bk = tabPane.getBackground();
-//		UIManager.put("TabbedPane.tabAreaBackground", bk);//ColorUIResource.RED);
 
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				TabPanel newTab = getSelected();
-//				System.out.println("oldTab : " + oldTab + "    newTab : " + newTab);
 				if (!newTab.isUIDone()) {
 					if (oldTab == null || newTab != oldTab) {
 						oldTab = newTab;
@@ -484,10 +426,12 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	public void update() {
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
-			if (tabPanel.isVisible() && tabPanel.isShowing() && tabPanel.isUIDone()) { //
-				SwingUtilities.invokeLater(() ->
-					tabPanel.update()
-				);
+			if (tabPanel.isVisible() && tabPanel.isShowing() && tabPanel.isUIDone()) { 
+				//logger.info(unit, "Update tab " + tabPanel);
+				//SwingUtilities.invokeLater(() ->
+				// Calling directly removes the change of ConcurrentMidifications
+				tabPanel.update();
+				//);
 			}
 		}
 
