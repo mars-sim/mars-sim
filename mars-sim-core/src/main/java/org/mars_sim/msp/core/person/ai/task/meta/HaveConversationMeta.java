@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
@@ -34,8 +33,6 @@ public class HaveConversationMeta extends MetaTask {
             "Task.description.haveConversation"); //$NON-NLS-1$
     
     private static final double VALUE = 0.1;
-    
-    private static MarsClock marsClock;
     
     public HaveConversationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -151,11 +148,6 @@ public class HaveConversationMeta extends MetaTask {
 	        }
         }
 
-        // Effort-driven task modifier.
-//        result *= person.getPerformanceRating();
-
-        if (marsClock == null)
-        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
     	int now = marsClock.getMillisolInt();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
@@ -167,10 +159,6 @@ public class HaveConversationMeta extends MetaTask {
         if (result < 1) 
         	result = 0;
         
-//        if (result > 30)
-//        	LogConsolidated.log(Level.INFO, 0, sourceName,
-//        			person + " " + Math.round(result*100.0)/100.0);
-    
         return result;
     }
 }

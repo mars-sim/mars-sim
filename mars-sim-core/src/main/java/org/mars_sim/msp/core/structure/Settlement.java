@@ -157,8 +157,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
-	/** The cache for the msol. */
-	private transient int msolCache = 0;
 
 	/** The settlement sampling resources. */
 	public static final int[] samplingResources;
@@ -1061,8 +1059,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (msolCache != msol && msol >= 10 && msol != 1000) {
-			msolCache = msol;
+		if (pulse.isNewMSol() && msol >= 10 && msol != 1000) {
 
 			// Initialize tasks at the start of the sim only
 			if (justLoaded) {
@@ -3209,15 +3206,14 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 */
 	private void doCropsNeedTending(ClockPulse now) {
 
-		int m = now.getMarsTime().getMillisolInt();
+		int msol = now.getMarsTime().getMillisolInt();
 
 		// Check for the day rolling over
-		if (now.isNewSol() || (millisolCache + 5) < m) {
-			millisolCache = m;
+		if (now.isNewSol() || (millisolCache + 5) < msol) {
+			millisolCache = msol;
 			cropsNeedingTendingCache = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-				Farming farm = b.getFarming();
-				cropsNeedingTendingCache += farm.getNumNeedTending();
+				cropsNeedingTendingCache += b.getFarming().getNumNeedTending();
 			}
 		}
 	}

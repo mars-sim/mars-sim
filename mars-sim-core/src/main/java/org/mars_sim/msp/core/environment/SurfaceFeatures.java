@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -14,13 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -33,7 +34,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
+//	private static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
 
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
@@ -58,7 +59,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
 	// the integer form of millisol
-	private int msolCache;
+//	private int msolCache;
 
 	// non static instances
 	private MineralMap mineralMap;
@@ -75,6 +76,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/** The cache value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> irradianceCache;
 
+	private MasterClock masterClock;
 	private MarsClock currentTime;
 
 	private TerrainElevation terrainElevation;
@@ -94,7 +96,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		this.orbitInfo = orbitInfo;
 		this.weather = weather;
 		this.currentTime = marsClock;
-
+		this.masterClock = Simulation.instance().getMasterClock();	
+		
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
@@ -283,17 +286,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (location == null)
 			return 0;
 
-		int msol = currentTime.getMillisolInt();
-
-		if (msolCache != msol) {
-			msolCache = msol;
+		if (masterClock.getClockPulse().isNewMSol()) {
 
 			if (!currentIrradiance.isEmpty()) {
 				irradianceCache = currentIrradiance;
 				// Clear the current cache value of solar irradiance of all settlements
 				currentIrradiance.clear();
 			}
-//			logger.info("msolCache: " + msolCache + "   msol: " + msol);
 
 			// If location is not in cache, calculate the solar irradiance
 			double G_h = calculateSolarIrradiance(location);

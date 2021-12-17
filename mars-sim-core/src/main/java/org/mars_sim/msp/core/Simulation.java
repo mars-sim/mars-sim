@@ -400,7 +400,7 @@ public class Simulation implements ClockListener, Serializable {
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
-		RadiationExposure.initializeInstances(marsClock);
+		RadiationExposure.initializeInstances(masterClock, marsClock);
 
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -675,7 +675,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager, relationshipManager);
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-		RadiationExposure.initializeInstances(marsClock);
+		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock);
 		HealthProblem.initializeInstances(medicalManager, eventManager);

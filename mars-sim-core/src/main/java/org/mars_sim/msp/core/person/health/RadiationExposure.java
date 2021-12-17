@@ -200,10 +200,6 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
-	private int msolsCache;
-
-	private boolean repeated;
-
 	private boolean isSick;
 
 	// <Radiation Shielding>
@@ -227,7 +223,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	private Person person;
 
 	private static MarsClock marsClock;
-
+	private static MasterClock masterClock;
 
 	public RadiationExposure(Person person) {
 		this.person = person;
@@ -448,20 +444,10 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @return true if radiation is detected
 	 */
 	public boolean isRadiationDetected(double time) {
-
-		int msols = marsClock.getMillisolInt();
-
-		if (msolsCache == msols)
-			repeated = true;
-
-		msolsCache = msols;
-
+		
 		// Check every RADIATION_CHECK_FREQ (in millisols)
-		if (!repeated && msols % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
-			// Use repeated to avoid calculating the exposure over and over when the time
-			// ratio is low
-			// and millisols iterates very slowly and gives the same value.
-			repeated = true;
+		if (masterClock.getClockPulse().isNewMSol() 
+			&& marsClock.getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
 
 			double totalExposure = 0;
 			double exposure = 0;
@@ -580,8 +566,9 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(MarsClock c1) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1) {
 		marsClock = c1;
+		masterClock = c0;
 	}
 
 

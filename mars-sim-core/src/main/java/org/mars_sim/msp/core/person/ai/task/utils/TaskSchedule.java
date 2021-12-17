@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskSchedule.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * This class represents the task schedule of a person.
@@ -57,7 +58,8 @@ public class TaskSchedule implements Serializable {
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
-
+	private static MarsClock marsClock;
+	
 	/**
 	 * Constructor for TaskSchedule
 	 *
@@ -270,8 +272,10 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 
-					int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
-
+					if (marsClock == null)
+						marsClock = Simulation.instance().getMasterClock().getMarsClock();
+					int now = marsClock.getMillisolInt();
+					
 					boolean isOnShiftNow = isShiftHour(now);
 					boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
 
@@ -339,7 +343,9 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isPersonAtStartOfWorkShift() {
-		int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		int now = marsClock.getMillisolInt();
 
 		if (currentShiftType == ShiftType.ON_CALL) {
 			return true; //isTimeAtStartOfAShift(missionWindow);
@@ -375,8 +381,10 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isTimeAtStartOfAShift(int missionWindow) {
-		int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
-
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		int now = marsClock.getMillisolInt();
+		
 		if ((now == 1000 || now >= A_START) && now <= A_START + missionWindow)
 			return true;
 

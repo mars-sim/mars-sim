@@ -17,9 +17,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -113,6 +111,8 @@ public class MasterClock implements Serializable {
 	public boolean canPauseTime = false;
 	/** Sol day on the last fireEvent. */
 	private int lastSol = -1;
+	/** The last millisol integer on the last fireEvent. */
+	private int lastMSol = 0;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
 	/** Number of millisols covered in the last pulse. */
@@ -147,7 +147,9 @@ public class MasterClock implements Serializable {
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
-
+	/** The clock pulse. */
+	private transient ClockPulse currentPulse;
+	
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
 
@@ -716,7 +718,6 @@ public class MasterClock implements Serializable {
 	 */
 	public class ClockListenerTask implements Callable<String>{
 
-		private ClockPulse currentPulse;
 		private ClockListener listener;
 
 		public ClockListener getClockListener() {
@@ -725,10 +726,6 @@ public class MasterClock implements Serializable {
 
 		private ClockListenerTask(ClockListener listener) {
 			this.listener = listener;
-		}
-
-		public void setCurrentPulse(ClockPulse pulse) {
-			this.currentPulse = pulse;
 		}
 
 		@Override
@@ -778,6 +775,13 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	public void fireClockPulse(double time) {
+		// Identify if it's a new Millisol integer
+		int currentMSol = marsClock.getMillisolInt();
+		boolean isNewMSol = false;
+		if (lastMSol != currentMSol) {
+			lastMSol = currentMSol;
+			isNewMSol = true;
+		}
 		// Identify if it's a new Sol
 		int currentSol = marsClock.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
@@ -788,13 +792,13 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		ClockPulse pulse = new ClockPulse(sim, newPulseId, time, marsClock, earthClock, this, isNewSol);
+		currentPulse = new ClockPulse(sim, newPulseId, time, marsClock, earthClock, this, isNewSol, isNewMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 		try {
 			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
 			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {
-				c.setCurrentPulse(pulse);
+	
 				Future<String> result = listenerExecutor.submit(c);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();
@@ -1140,6 +1144,15 @@ public class MasterClock implements Serializable {
 		return ticksPerSecond;
 	}
 
+	/**
+	 * Gets the clock pulse
+	 * 
+	 * @return
+	 */
+	public ClockPulse getClockPulse() {
+		return currentPulse;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

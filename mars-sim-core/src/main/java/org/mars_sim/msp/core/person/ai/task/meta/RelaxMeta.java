@@ -81,8 +81,8 @@ public class RelaxMeta extends MetaTask{
             
 
             // Modify probability if during person's work shift.
-            int millisols = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            int now = marsClock.getMillisolInt();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
             if (isShiftHour) {
                 result*= WORK_SHIFT_MODIFIER;
             }

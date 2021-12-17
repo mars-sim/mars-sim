@@ -31,6 +31,11 @@ public class ClockPulse {
 	private boolean newSol;
 
 	/**
+	 * Has this pulse crossed into a new millisol integer
+	 */
+	private boolean newMSol;
+	
+	/**
 	 * Time back on Earth
 	 */
 	private EarthClock earthTime;
@@ -39,6 +44,7 @@ public class ClockPulse {
 	 * Pulse id
 	 */
 	private long id;
+	
 
 	private Simulation context;
 
@@ -52,7 +58,8 @@ public class ClockPulse {
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 */
-	ClockPulse(Simulation sim, long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
+	ClockPulse(Simulation sim, long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
+			boolean newSol, boolean newMSol) {
 		super();
 		
 		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
@@ -66,6 +73,7 @@ public class ClockPulse {
 		this.earthTime = earthTime;
 		this.master = master;
 		this.newSol = newSol;
+		this.newMSol = newMSol;
 	}
 
 	public long getId() {
@@ -87,7 +95,11 @@ public class ClockPulse {
 	public boolean isNewSol() {
 		return newSol;
 	}
-
+	
+	public boolean isNewMSol() {
+		return newMSol;
+	}
+	
 	public EarthClock getEarthTime() {
 		return earthTime;
 	}
