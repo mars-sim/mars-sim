@@ -614,7 +614,7 @@ public class EatDrink extends Task implements Serializable {
 			// This is in addition to normal stress reduction from eating task.
 			double stressModifier = STRESS_MODIFIER * (cookedMeal.getQuality() + 1D);
 			double deltaStress = stressModifier * eatingTime;
-			pc.addStress(deltaStress);
+			pc.addStress(-deltaStress);
 
 			// Add caloric energy from meal.
 			double caloricEnergyFoodAmount = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -850,7 +850,7 @@ public class EatDrink extends Task implements Serializable {
 					// This is in addition to normal stress reduction from eating task.
 					double stressModifier = DESSERT_STRESS_MODIFIER * (nameOfDessert.getQuality() + 1D);
 					double deltaStress = stressModifier * eatingTime;
-					pc.addStress(deltaStress);
+					pc.addStress(-deltaStress);
 
 					// Add caloric energy from dessert.
 					double caloricEnergy = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -1054,7 +1054,7 @@ public class EatDrink extends Task implements Serializable {
 						// This is in addition to normal stress reduction from eating task.
 						double stressModifier = DESSERT_STRESS_MODIFIER;
 						double deltaStress = stressModifier * eatingTime;
-						pc.addStress(deltaStress);
+						pc.addStress(-deltaStress);
 
 						// Add caloric energy from dessert.
 						double caloricEnergy = proportion / dessertConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;

@@ -66,8 +66,6 @@ public class MarsProject {
 
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
-	private SimulationBuilder builder;
-
 	private Simulation sim;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -110,7 +108,7 @@ public class MarsProject {
 	public void parseArgs(String[] args) {
 		logger.config("List of input args : " + Arrays.toString(args));
 		
-		builder = new SimulationBuilder();
+		SimulationBuilder builder = new SimulationBuilder();
 
 		checkOptions(builder, args);
 
