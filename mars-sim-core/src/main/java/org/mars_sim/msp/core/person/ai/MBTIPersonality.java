@@ -383,18 +383,17 @@ public class MBTIPersonality implements Serializable {
 		if (p == null) return; // TODO: why getting NPE when loading from a sim ?
 		
 		Collection<Person> localGroup = p.getLocalGroup();
-		PhysicalCondition condition = p.getPhysicalCondition();
 
 		// Introverts reduce stress when alone.
 		if (isIntrovert() && localGroup.isEmpty()) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-			condition.addStress(-solitudeStressModifier);
+			p.getPhysicalCondition().addStress(-solitudeStressModifier);
 		}
 
 		// Extroverts reduce stress when with company.
 		if (isExtrovert() && !localGroup.isEmpty()) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-			condition.addStress(-companyStressModifier);
+			p.getPhysicalCondition().addStress(-companyStressModifier);
 		}
 
 	}

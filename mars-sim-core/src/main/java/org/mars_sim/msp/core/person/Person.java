@@ -1320,6 +1320,28 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return getMind().getTaskManager().getTaskDescription(false);
 	}
 
+	public boolean isRestingTask() {
+		String des = getTaskDescription().toLowerCase();
+		// Check if a person is performing low aerobic tasks
+    	return (des.contains("eat")
+            || des.contains("drink")
+            || des.contains("meet")
+            || des.contains("relax")
+            || des.contains("rest")
+            || des.contains("sleep")
+            || des.contains("study")
+            || des.contains("compil")
+            || des.contains("lab")
+            || des.contains("connect")
+            || des.contains("convers")
+            || des.contains("dream")
+            || des.contains("listen")
+            || des.contains("invit")
+            || des.contains("meet")
+            || des.contains("teach"));
+    	
+	}
+    
 	public String getTaskPhase() {
 		if (getMind().getTaskManager().getPhase() != null)
 		return getMind().getTaskManager().getPhase().getName();
