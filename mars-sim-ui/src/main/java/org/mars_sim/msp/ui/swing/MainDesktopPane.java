@@ -309,9 +309,8 @@ public class MainDesktopPane extends JDesktopPane
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() throws Exception {
-		if (toolWindows != null)
-			toolWindows.clear();
-
+		synchronized (toolWindows) {
+		
 		// Prepare Commander Window
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
@@ -415,8 +414,10 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(resupplyWindow);
 //		logger.config("toolWindows.add(resupplyWindow)");
-	}
 
+		}
+	}
+	
 	/*
 	 * * Creates announcement windows & transportWizard
 	 */
@@ -437,9 +438,11 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return the tool window
 	 */
 	public ToolWindow getToolWindow(String toolName) {
-		for (ToolWindow w: toolWindows) {
-			if (toolName.equals(w.getToolName()))
-				return w;
+		synchronized (toolWindows) {
+			for (ToolWindow w: toolWindows) {
+				if (toolName.equals(w.getToolName()))
+					return w;
+			}
 		}
 		return null;
 	}

@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,10 +118,6 @@ public class TabPanelPowerGrid extends TabPanel {
 
 	private List<Building> buildings;
 
-	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
-	private static DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
-//	private static DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
-
 	/**
 	 * Constructor.
 	 * 
@@ -174,7 +169,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(powerGeneratedLabel);
 
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGeneratedTF = new WebTextField(formatter.format(powerGeneratedCache) + kW);
+		powerGeneratedTF = new WebTextField(DECIMAL_PLACES1.format(powerGeneratedCache) + kW);
 		powerGeneratedTF.setEditable(false);
 		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper1.add(powerGeneratedTF);
@@ -187,7 +182,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(powerUsedLabel);
 
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerUsedTF = new WebTextField(formatter.format(powerUsedCache) + kW);
+		powerUsedTF = new WebTextField(DECIMAL_PLACES1.format(powerUsedCache) + kW);
 		powerUsedTF.setEditable(false);
 		powerUsedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper2.add(powerUsedTF);
@@ -201,7 +196,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStorageCapacityTF = new WebTextField(formatter.format(energyStorageCapacityCache) + kWh);
+		energyStorageCapacityTF = new WebTextField(DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh);
 		energyStorageCapacityTF.setEditable(false);
 		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper3.add(energyStorageCapacityTF);
@@ -214,7 +209,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(energyStoredLabel);
 
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStoredTF = new WebTextField(formatter.format(energyStoredCache) + kWh);
+		energyStoredTF = new WebTextField(DECIMAL_PLACES1.format(energyStoredCache) + kWh);
 		energyStoredTF.setEditable(false);
 		energyStoredTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper4.add(energyStoredTF);
@@ -231,7 +226,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(electricEfficiencyLabel);
 
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarCellEfficiencyTF = new WebTextField(formatter2.format(solarCellEfficiencyCache * 100D) + PERCENT);
+		solarCellEfficiencyTF = new WebTextField(DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT);
 		solarCellEfficiencyTF.setEditable(false);
 		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper5.add(solarCellEfficiencyTF);
@@ -245,7 +240,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerInfoPanel.add(solarPowerDegradRateLabel);
 
 		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new WebTextField(formatter2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL);
+		degradRateTF = new WebTextField(DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
 		degradRateTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper6.add(degradRateTF);
@@ -385,7 +380,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		double gen = powerGrid.getGeneratedPower();
 		if (powerGeneratedCache != gen) {
 			powerGeneratedCache = gen;
-			powerGeneratedTF.setText(formatter.format(powerGeneratedCache) + kW);
+			powerGeneratedTF.setText(DECIMAL_PLACES1.format(powerGeneratedCache) + kW);
 		}
 
 		// Update power used TF.
@@ -393,28 +388,28 @@ public class TabPanelPowerGrid extends TabPanel {
 		if (powerUsedCache != req) {
 			double average = .5 * (powerUsedCache + req);
 			powerUsedCache = req;
-			powerUsedTF.setText(formatter.format(average) + kW);
+			powerUsedTF.setText(DECIMAL_PLACES1.format(average) + kW);
 		}
 
 		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredEnergyCapacity();
 		if (energyStorageCapacityCache != cap) {
 			energyStorageCapacityCache = cap;
-			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache) + kWh);
+			energyStorageCapacityTF.setText(DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh);
 		}
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		if (energyStoredCache != store) {
 			energyStoredCache = store;
-			energyStoredTF.setText(formatter.format(energyStoredCache) + kWh);
+			energyStoredTF.setText(DECIMAL_PLACES1.format(energyStoredCache) + kWh);
 		}
 
 		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(formatter2.format(eff * 100D) + PERCENT);
+			solarCellEfficiencyTF.setText(DECIMAL_PLACES2.format(eff * 100D) + PERCENT);
 		}
 		// Update power table.
 		powerTableModel.update();
@@ -569,7 +564,10 @@ public class TabPanelPowerGrid extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		powerTable = null;
 		powerGeneratedLabel = null;
 		powerUsedLabel = null;
@@ -585,12 +583,8 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerScrollPane = null;
 
 		checkbox = null;
-		formatter = null;
-		formatter2 = null;
-//		formatter3 = null;
 		powerTableModel = null;
 		powerGrid = null;
-//		config = null;
 		manager = null;
 		powerSources = null;
 		buildings = null;

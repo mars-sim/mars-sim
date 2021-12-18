@@ -170,8 +170,8 @@ implements MouseListener {
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                6, 2, //rows, cols
-		                                65, 5,        //initX, initY
-		                                3, 1);       //xPad, yPad
+		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
 		WebPanel southPanel = new WebPanel(new BorderLayout());
 		center.add(southPanel, BorderLayout.SOUTH);

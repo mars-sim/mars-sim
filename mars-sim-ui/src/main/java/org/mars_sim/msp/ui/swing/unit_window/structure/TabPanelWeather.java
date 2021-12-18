@@ -109,8 +109,6 @@ extends TabPanel {
 	private static OrbitInfo orbitInfo;
 
 	private static DecimalFormat fmt = new DecimalFormat("##0");
-	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
-	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
     /**
      * Constructor.
@@ -435,7 +433,7 @@ extends TabPanel {
     }
 
     public String getAirPressureString(double value) {
-    	return fmt2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
+    	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
     }
 
     public double getAirPressure() {
@@ -443,7 +441,7 @@ extends TabPanel {
     }
 
     public String getWindSpeedString(double value) {
-    	return fmt2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
     }
 
     public double getWindSpeed() {
@@ -463,7 +461,7 @@ extends TabPanel {
      }
 
     public String getOpticalDepthString(double value) {
-     	return fmt2.format(value);
+     	return DECIMAL_PLACES2.format(value);
     }
 
     public double getZenithAngle() {
@@ -471,7 +469,7 @@ extends TabPanel {
      }
 
     public String getZenithAngleString(double value) {
-     	return fmt2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
     }
 
     public double getSolarDeclination() {
@@ -479,7 +477,7 @@ extends TabPanel {
      }
 
     public String getSolarDeclinationString(double value) {
-     	return fmt2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
     }
 
     public double getAirDensity() {
@@ -487,7 +485,7 @@ extends TabPanel {
     }
 
     public String getAirDensityString(double value) {
-     	return fmt2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+     	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
     }
 
     public double getSolarIrradiance() {
@@ -495,7 +493,7 @@ extends TabPanel {
       }
 
      public String getSolarIrradianceString(double value) {
-      	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+      	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
      }
 
 	private String getLatitudeString() {
@@ -644,16 +642,5 @@ extends TabPanel {
     	weatherLabel = null;
 
     	locationCache = null;
-    	weather = null;
-    	surfaceFeatures = null;
-    	masterClock = null;
-    	orbitInfo = null;
-
-//    	stormWin = null;
-
-    	fmt = null;
-    	//fmt1 = null;
-    	fmt2 = null;
-
     }
 }

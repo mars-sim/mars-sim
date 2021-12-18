@@ -109,7 +109,6 @@ public class TabPanelManufacture extends TabPanel {
 	}
 	
 	public void initializeUI() {
-		uiDone = true;
 		
 		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -244,6 +243,8 @@ public class TabPanelManufacture extends TabPanel {
 		});
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
 		interactionPanel.add(overrideCheckbox);
+
+		uiDone = true;
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {

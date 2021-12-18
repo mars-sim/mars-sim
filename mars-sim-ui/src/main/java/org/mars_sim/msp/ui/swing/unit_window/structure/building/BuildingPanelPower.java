@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -44,9 +43,6 @@ extends BuildingFunctionPanel {
 	private JTextField statusTF;
 	private JTextField producedTF;
 	private JTextField usedTF;
-	
-	/** Decimal formatter. */
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelPower.decimalFormat")); //$NON-NLS-1$
 
 	/** The power status cache. */
 	private PowerMode powerStatusCache;
@@ -86,7 +82,7 @@ extends BuildingFunctionPanel {
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
 			producedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerProduced"),
-									  formatter.format(powerCache) + kW, null);
+									  DECIMAL_PLACES1.format(powerCache) + kW, null);
 		}
 
 		// Prepare power used label.
@@ -96,20 +92,20 @@ extends BuildingFunctionPanel {
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
 		usedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerUsed"),
-								formatter.format(usedCache) + kW, null);
+													DECIMAL_PLACES1.format(usedCache) + kW, null);
 		
 		//Lay out the spring panel.
 		if (isProducer) {
 			SpringUtilities.makeCompactGrid(springPanel,
 		                                3, 2, //rows, cols
-		                                75, 10,        //initX, initY
-		                                3, 1);       //xPad, yPad
+		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 		}
 		else {
 			SpringUtilities.makeCompactGrid(springPanel,
                     2, 2, //rows, cols
-                    75, 10,        //initX, initY
-                    3, 1);       //xPad, yPad
+                    INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+                    XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 		}
 	}
 
@@ -132,7 +128,7 @@ extends BuildingFunctionPanel {
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
-				producedTF.setText(formatter.format(powerCache) + kW); //$NON-NLS-1$
+				producedTF.setText(DECIMAL_PLACES1.format(powerCache) + kW); //$NON-NLS-1$
 			}
 		}
 
@@ -145,7 +141,7 @@ extends BuildingFunctionPanel {
 		
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedTF.setText(formatter.format(usedCache) + kW); //$NON-NLS-1$
+			usedTF.setText(DECIMAL_PLACES1.format(usedCache) + kW); //$NON-NLS-1$
 		}
 	}
 	
@@ -157,7 +153,6 @@ extends BuildingFunctionPanel {
 		super.destroy();
 		
 		// take care to avoid null exceptions
-		formatter = null;
 		statusTF = null;
 		producedTF = null;
 		usedTF = null;

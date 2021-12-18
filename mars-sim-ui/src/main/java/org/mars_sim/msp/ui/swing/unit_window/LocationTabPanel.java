@@ -714,9 +714,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		}
 
 		updateLocationBanner();
-
-		checkTheme(false);
-
 	}
 
 	/**

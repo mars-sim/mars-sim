@@ -255,11 +255,7 @@ public class TabPanelCooking extends TabPanel {
 			public String getToolTipText(java.awt.event.MouseEvent e) {
 				String personName = null;
 				MarsClock time = null;
-				java.awt.Point p = e.getPoint();
-//				int rowIndex = rowAtPoint(p);
-//				int colIndex = columnAtPoint(p);
-//
-//				java.util.List<CookedMeal> meals;
+
 				StringBuilder result = new StringBuilder("<html>");
 
 				try {

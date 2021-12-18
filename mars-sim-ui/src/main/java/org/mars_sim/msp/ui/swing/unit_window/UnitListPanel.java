@@ -66,6 +66,7 @@ public abstract class UnitListPanel<T extends Unit> extends WebPanel {
 		
 		// Create scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
+
 		if (dim != null) {
 			scrollPanel.setPreferredSize(dim);
 		}

@@ -8,17 +8,18 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
@@ -63,7 +64,7 @@ public class TabPanelPopulation extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		WebPanel countPanel = new WebPanel(new GridLayout(2, 2, 3, 1));
+		WebPanel countPanel = new WebPanel(new SpringLayout());
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create population indoor label
@@ -76,6 +77,10 @@ public class TabPanelPopulation extends TabPanel {
 		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelPopulation.capacity"),
 											   populationCapacityCache, null);
 
+		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
+				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
+		
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(populationDisplayPanel, Msg.getString("TabPanelPopulation.TitledBorder"));

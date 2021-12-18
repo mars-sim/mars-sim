@@ -91,8 +91,6 @@ extends TabPanel {
 	private JTable healthProblemTable;
 	private JTable sleepTable;
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
-
 	/** The Person instance. */
 	private Person person = null;
 	

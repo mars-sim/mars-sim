@@ -72,7 +72,7 @@ public class TabPanelMaintenance extends TabPanel {
 		super("Maint", null, "Maintenance", unit, desktop);
 
 		settlement = (Settlement) unit;
-
+		malfunctionsList = new ArrayList<>();
 	}
 	
 	public boolean isUIDone() {
@@ -80,7 +80,6 @@ public class TabPanelMaintenance extends TabPanel {
 	}
 	
 	public void initializeUI() {
-		uiDone = true;
 		
 		// Create topPanel.
 		WebPanel topPanel = new WebPanel(new GridLayout(2, 1));
@@ -139,6 +138,7 @@ public class TabPanelMaintenance extends TabPanel {
 		malfunctionsOuterListPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
 
 		populateMalfunctionsList();
+		uiDone = true;
 	}
 
 	/**
@@ -165,10 +165,7 @@ public class TabPanelMaintenance extends TabPanel {
 		malfunctionsListPanel.removeAll();
 
 		// Populate the list.
-		if (malfunctionsList == null)
-			malfunctionsList = new ArrayList<Malfunction>();
-		else
-			malfunctionsList.clear();
+		malfunctionsList.clear();
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();// getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
@@ -216,7 +213,6 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Check if malfunctions list has changed.
 		if (!CollectionUtils.isEqualCollection(malfunctionsList, tempMalfunctions)) {		
-//		if (!malfunctionsList.equals(tempMalfunctions)) {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
 //			malfunctionsListPanel.validate();

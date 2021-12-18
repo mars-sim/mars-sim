@@ -34,9 +34,16 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
+	// Default Decimal formatter
 	protected static DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
 	protected static DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
 	protected static DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
+	
+	// Default values for any top level Spring panel holding values
+	protected static final int INITY_DEFAULT = 5;
+	protected static final int INITX_DEFAULT = 75;
+	protected static final int YPAD_DEFAULT = 1;
+	protected static final int XPAD_DEFAULT = 5;
 	
 	private String tabTitle;
 	private String tabToolTip;

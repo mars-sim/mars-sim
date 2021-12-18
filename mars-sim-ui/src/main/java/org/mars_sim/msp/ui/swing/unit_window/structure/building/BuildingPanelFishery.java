@@ -7,15 +7,15 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
  * The BuildingPanelFishery class is a building function panel for
@@ -24,9 +24,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelFishery
 extends BuildingFunctionPanel {
-
-	/** Decimal formatter. */
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelFishery.decimalFormat")); //$NON-NLS-1$
 
 	// Caches
 	private int numFish;
@@ -52,7 +49,7 @@ extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		JPanel labelPanel = new JPanel(new GridLayout(3, 2, 3, 1));
+		JPanel labelPanel = new JPanel(new SpringLayout());
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		addTextField(labelPanel, Msg.getString("BuildingPanelFishery.tankSize"), tank.getTankSize(), null);
@@ -64,7 +61,12 @@ extends BuildingFunctionPanel {
 				
 		weedMass = tank.getWeedMass();	
 		weedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.weedMass"),
-								 formatter.format(weedMass), null);
+								 DECIMAL_PLACES1.format(weedMass), null);
+		
+		SpringUtilities.makeCompactGrid(labelPanel,
+                3, 2, //rows, cols
+                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 	}
 
 	/**
@@ -81,7 +83,7 @@ extends BuildingFunctionPanel {
 		double newWeedMass = tank.getWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;
-			weedLabel.setText(formatter.format(weedMass));
+			weedLabel.setText(DECIMAL_PLACES1.format(weedMass));
 		}
 	}
 }

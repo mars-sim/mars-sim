@@ -82,8 +82,8 @@ public class TabPanelAssociatedPeople extends TabPanel{
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				1, 10, // initX, initY
-				5, 2); // xPad, yPad
+				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		populationList = new UnitListPanel<Person>(desktop) {
 			@Override

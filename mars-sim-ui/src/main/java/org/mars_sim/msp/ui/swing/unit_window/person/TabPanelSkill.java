@@ -7,23 +7,22 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -31,8 +30,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
@@ -43,14 +40,6 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
-	/** The Person instance. */
-	private Person person = null;
-	/** The Robot instance. */
-	private Robot robot = null;
 	
 	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
@@ -70,19 +59,12 @@ extends TabPanel {
 			person, desktop
 		);
 
-		this.person = person;
-		
 		// Create skill table model
 		skillTableModel = new SkillTableModel(person);
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
 
 	/**
-	 * Constructor 2.
+	 * Constructor 1.
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
@@ -95,37 +77,16 @@ extends TabPanel {
 			robot, desktop
 		);
 
-		this.robot = robot;
-		
 		// Create skill table model
 		skillTableModel = new SkillTableModel(robot);
-
 	}
-	
-	public void initializeUI() {
-		uiDone = true;
 
-		// Create skill table model
-        if (unit instanceof Person) {
-    		skillTableModel = new SkillTableModel(person);
-        }
-        else if (unit instanceof Robot) {
-    		skillTableModel = new SkillTableModel(robot);
-        }
-
-		// Create skill label panel.
-		WebPanel skillLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(skillLabelPanel);
-
-		// Create skill label
-		WebLabel skillLabel = new WebLabel(Msg.getString("TabPanelSkill.label"), WebLabel.CENTER); //$NON-NLS-1$
-		skillLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		skillLabelPanel.add(skillLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Create skill scroll panel
 		WebScrollPane skillScrollPanel = new WebScrollPane();
-//		skillScrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(skillScrollPanel);
+		content.add(skillScrollPanel);
 
 		// Create skill table
 		skillTable = new ZebraJTable(skillTableModel);
@@ -157,10 +118,7 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+	public void update() {		
 		if (skillTable != null) {
 			TableStyle.setTableStyle(skillTable);
 			skillTableModel.update();
@@ -182,24 +140,14 @@ extends TabPanel {
 		private Map<String, Integer> exps;
 		private List<String> skillNames;
 
-		private SkillTableModel(Unit unit) {
-			Person person = null;
-	        Robot robot = null;
+		private SkillTableModel(Worker unit) {
 
-	        if (unit instanceof Person) {
-	         	person = (Person) unit;
-	         	skillManager = person.getSkillManager();
-	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
-	        	skillManager = robot.getSkillManager();
-	        }
+	        skillManager = unit.getSkillManager();
 
 			levels = skillManager.getSkillLevelMap();
 			exps = skillManager.getSkillDeltaExpMap();
 			times = skillManager.getSkillTimeMap();
 			skillNames = skillManager.getKeyStrings();
-
 		}
 
 		public int getRowCount() {
