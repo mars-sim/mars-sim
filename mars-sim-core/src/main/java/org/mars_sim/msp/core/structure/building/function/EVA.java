@@ -130,11 +130,11 @@ implements Serializable {
 	}
 	
 	public int getNumEmptied() {
-		return airlockCapacity - airlock.getNumOccupants();
+		return airlockCapacity - airlock.getNumInChamber();
 	}
 	
-	public int getNumOccupied() {
-		return airlock.getNumOccupants();
+	public int getNumInChamber() {
+		return airlock.getNumInChamber();
 	}
 	
 	public String getOperatorName() {

@@ -864,32 +864,33 @@ public class Cooking extends Function implements Serializable {
 		if (!qualityMap.isEmpty())
 			qualityMap.clear();
 
-
-		// TODO: turn this into a task
+		// TODO: turn this into a task a person can do
 		cleanUpKitchen();
 	}
 
 	/**
 	 * Cleans up the kitchen with cleaning agent and water.
+	 * TODO: turn this into a task that a person should do
 	 */
 	private void cleanUpKitchen() {
-		// TODO: turn this into a task
-		boolean cleaning0 = false;
-		if (cleaningAgentPerSol * .1 > MIN)
-			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, ResourceUtil.NaClOID, building.getSettlement(), true);
-		boolean cleaning1 = false;
-		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, ResourceUtil.waterID, building.getSettlement(), true);
-			building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, cleaningAgentPerSol * 5);
-		}
+		
+		double amountAgent = cleaningAgentPerSol;		 
+		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NaClOID, amountAgent);
 
-		if (cleaning0)
-			cleanliness = cleanliness + .05;
+		double amountWater = 10 * amountAgent;
+		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, amountWater);
+		
+		// Track water consumption
+		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
+		
+		// Modify cleanliness
+		if (lackingAgent <= 0)
+			cleanliness = cleanliness + .1;
 		else
-			cleanliness = cleanliness - .025;
+			cleanliness = cleanliness - .1;
 
-		if (cleaning1)
-			cleanliness = cleanliness + .075;
+		if (lackingWater <= 0)
+			cleanliness = cleanliness + .05;
 		else
 			cleanliness = cleanliness - .05;
 

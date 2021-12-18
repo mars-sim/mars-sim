@@ -74,12 +74,12 @@ public class BuildingAirlock extends Airlock {
 
         activitySpotMap  = new HashMap<>();
 
-        // Determine airlock interior position.
+        // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
         insideInteriorDoorMap = buildDoorMap(interiorPos, building, 0.3, 0.6, 0.5);
         outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.6, 0.5);
 
-        // Determine airlock exterior position.
+        // Determine airlock outer/exterior door position.
         airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorPos, building);
         insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.5);
         outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.5);
@@ -656,6 +656,17 @@ public class BuildingAirlock extends Airlock {
 		}
 	}
 
+
+    /**
+     * Gets the exact number of occupants who are within the chamber
+     * 
+     * @return
+     */
+    public int getNumInChamber() {
+    	loadEVAActivitySpots();
+    	return activitySpotMap.size();
+    }
+    
     @Override
     public LocalPosition getAvailableAirlockPosition() {
         return airlockInsidePos;

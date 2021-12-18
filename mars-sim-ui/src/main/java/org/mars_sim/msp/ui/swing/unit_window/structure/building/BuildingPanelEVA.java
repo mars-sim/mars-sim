@@ -142,7 +142,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		// Create occupiedLabel
 		occupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.occupied"),
-									 eva.getNumOccupied(), null);
+									 eva.getNumInChamber(), null);
 
 		// Create emptyLabel
 		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
@@ -208,8 +208,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 
 		// Update occupiedLabel
-		if (occupiedCache != eva.getNumOccupied()) {
-			occupiedCache = eva.getNumOccupied();
+		if (occupiedCache != eva.getNumInChamber()) {
+			occupiedCache = eva.getNumInChamber();
 			occupiedLabel.setText(Integer.toString(occupiedCache));
 		}
 

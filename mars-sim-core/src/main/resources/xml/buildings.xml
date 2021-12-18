@@ -735,10 +735,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- This building has an airlock and changing room for EVA operations. -->
 			<!--         capacity : the number of people who can use the airlock at once. -->
 			<!--       xloc, yloc : the relative X/Y location inside the airlock. -->
-			<!--    interior-xloc : the relative X location inside the building. -->
-			<!--    interior-yloc : the relative Y location inside the building. -->
-			<!--    exterior-xloc : the relative X location outside the building. -->
-			<!--    exterior-yloc : the relative Y location outside the building. -->
+			<!--    interior-position : the inner or inteior door position of the airlock. -->
+			<!--    exterior-position : the outer or exterior door position of the airlock. -->
 			<EVA capacity="4">
 				<center-position xloc="1.0" yloc="0.0"/>
 				<interior-position xloc="-1.3" yloc="0.0"/>
