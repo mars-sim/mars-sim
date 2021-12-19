@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessing.java
- * @date 2021-10-21
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -34,12 +34,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	public static final String SABATIER = "sabatier";
 	
 	public static final double PROCESS_MAX_VALUE = 100D;
-
-	/** Does The interval of time [in millisols] need a reset ? */
-	private static volatile boolean resetInterval = true;
-	/** The interval of time [in millisols] between each resource processing call. */
-	private static volatile double processInterval = 1.0;
-
 
 	private double powerDownProcessingLevel;
 

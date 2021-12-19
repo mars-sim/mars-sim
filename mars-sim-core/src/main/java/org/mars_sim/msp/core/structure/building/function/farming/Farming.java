@@ -921,7 +921,7 @@ public class Farming extends Function implements Serializable {
 	private boolean growCropTissue(Research lab, CropSpec type, Worker worker) {
 		String cropName = type.getName();
 		String tissueName = cropName + TISSUE_CULTURE;
-		// TODO: re-tune the amount of tissue culture not just based on the edible
+		// NOTE: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
 		boolean isDone = false;
@@ -934,26 +934,32 @@ public class Farming extends Function implements Serializable {
 		boolean hasIt = lab.hasTissueCulture(tissueName);
 		if (!hasIt) {
 			lab.markChecked(tissueName);
-			// TODO: ask trader to barter the tissue culture from other settlements
+
 			if (amountAvailable == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
-				double amount = building.getSettlement().getAmountResourceStored(cropID);
-				// TODO : Check for the health condition
-				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;// * RandomUtil.getRandomInt(5, 15);
-
-				if (amount > amountExtracted) {
-					// assume extracting an arbitrary 5 to 15% of the mass of crop will be developed
-					// into tissue culture
-					boolean canExtract = retrieve(amountExtracted, cropID, true);
-					// store the tissues
-					if (canExtract && amountExtracted > 0) {
-						store(amountExtracted, tissueID, "Farming::growCropTissue");
-						logger.log(building, worker, Level.FINE, 3_000,
+				// Note: Should check for the health condition of a crop
+				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;
+				// Assume extracting an arbitrary 5 to 15% of the mass of a healthy crop (not a fixed amount)
+				// and make it into tissue culture
+				double lacking = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
+				if (lacking != amountExtracted) {
+					// Store the tissues
+					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lacking);
+					logger.log(building, worker, Level.INFO, 10_000,
 								"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
-								+ " in stock. Extracted " + amountExtracted
-								+ " kg from its crop in Botany lab.");
-						isDone = true;
-					}
+								+ " in stock. Extracted " + (amountExtracted - lacking)
+								+ " kg from its adult crop samples.");
+					isDone = true;
+				}
+				else {
+					logger.log(building, worker, Level.INFO, 10_000,
+							"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
+							+ " in stock. Cloned it from cryofreeze samples.");
+					
+					// For now, allow the tissue culture to be grown from backup samples
+					// In future, need to barter trade from neighboring settlement to obtain it.
+					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lacking);
+					isDone = true;
 				}
 			}
 		}

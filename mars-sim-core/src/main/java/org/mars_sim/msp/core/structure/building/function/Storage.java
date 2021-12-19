@@ -300,18 +300,18 @@ public class Storage extends Function implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Retrieves a resource or test if a resource is available
-	 *
-	 * @param name
-	 * @param requestedAmount
-	 * @param inv
-	 * @param isRetrieving
-	 * @return true if the full amount can be retrieved.
-	 */
-	public static boolean retrieveAnResource(double requestedAmount, String name, ResourceHolder rh, boolean isRetrieving) {
-		return retrieveAnResource(requestedAmount, ResourceUtil.findIDbyAmountResourceName(name), rh, isRetrieving);
-	}
+//	/**
+//	 * Retrieves a resource or test if a resource is available
+//	 *
+//	 * @param name
+//	 * @param requestedAmount
+//	 * @param inv
+//	 * @param isRetrieving
+//	 * @return true if the full amount can be retrieved.
+//	 */
+//	public static boolean retrieveAnResource(double requestedAmount, String name, ResourceHolder rh, boolean isRetrieving) {
+//		return retrieveAnResource(requestedAmount, ResourceUtil.findIDbyAmountResourceName(name), rh, isRetrieving);
+//	}
 
 	/**
 	 * Retrieves a resource or test if a resource is available

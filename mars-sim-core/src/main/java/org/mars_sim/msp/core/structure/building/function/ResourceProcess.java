@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * ResourceProcess.java
- * @date 2021-10-20
+ * @date 2021-12-18
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;

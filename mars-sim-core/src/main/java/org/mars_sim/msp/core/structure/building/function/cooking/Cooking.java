@@ -898,7 +898,6 @@ public class Cooking extends Function implements Serializable {
 			cleanliness = 1;
 		else if (cleanliness < -1)
 			cleanliness = -1;
-
 	}
 
 	/**

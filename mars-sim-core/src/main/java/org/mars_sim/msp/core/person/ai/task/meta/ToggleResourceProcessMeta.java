@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2021-09-20
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -102,22 +102,13 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				}
 
 				double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
-				
-//				logger.info(building, 20_000, "@Meta " + name + " diff: " + Math.round(diff * 1000.0)/1000.0);
-				
+							
 				double baseProb = diff * FACTOR;
 				if (baseProb > FACTOR) {
 					baseProb = FACTOR;
 				}
 				result += baseProb;
-
-				// Note: No need to check if it has life support since it can now be remotely toggled.
-//                if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-//                    // Factor in building crowding and relationship factors.
-//                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, resourceProcessBuilding);
-//                    result *= TaskProbabilityUtil.getRelationshipModifier(person, resourceProcessBuilding);
-//                }
-                
+        
     			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
     			result *= multiple;
 

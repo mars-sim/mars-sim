@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2021-11-28
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
@@ -258,39 +257,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		return result;
 	}
-
-//	/**
-//	 * Gets the resource process that needs toggling.
-//	 *
-//	 * @param person the person.
-//	 * @return the resource process to toggle or null if none.
-//	 */
-//	public ResourceProcess selectResourceProcess(Person person) {
-//		ResourceProcess result = null;
-//
-//		Settlement settlement = person.getSettlement();
-//		if (settlement != null) {
-//			BuildingManager manager = settlement.getBuildingManager();
-//			double bestDiff = 0D;
-//			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
-//			while (i.hasNext()) {
-//				Building building = i.next();
-//				// In this building, select the best resource to compete
-//				ResourceProcess process0 = getResourceProcess(building);
-//				if (process0 != null && process0.isToggleAvailable()) {
-//					double diff = getResourcesValueDiff(settlement, process0);
-//					if (diff > bestDiff) {
-//						bestDiff = diff;
-//						result = process0;
-//						resourceProcessBuilding = building;
-//					}
-//				}
-//			}
-//		}
-//
-//		return result;
-//	}
-
 
 	/**
 	 * Gets the resources value diff between inputs and outputs for a resource
