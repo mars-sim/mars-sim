@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,8 +65,6 @@ public class MaintenanceTabPanel extends TabPanel {
     public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Maint", null, "Maintenance", unit, desktop);
-
-		this.unit = unit;
 	}
 	
 	public boolean isUIDone() {
@@ -77,13 +74,13 @@ public class MaintenanceTabPanel extends TabPanel {
 	public void initializeUI() {
 		uiDone = true;
 		
-        Malfunctionable malfunctionable = (Malfunctionable) unit;
+        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
         // Create maintenance label.
   		JPanel mpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
-        maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        maintenanceLabel.setFont(TITLE_FONT);
   		mpanel.add(maintenanceLabel);
         topContentPanel.add(mpanel);
 
@@ -167,7 +164,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		if (!uiDone)
 			initializeUI();
 		
-        Malfunctionable malfunctionable = (Malfunctionable) unit;
+        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
         // Update the wear condition label.
@@ -243,7 +240,7 @@ public class MaintenanceTabPanel extends TabPanel {
      */
 	// 2015-03-06 Reformatted part list and capitalized part.getName()
     private String getPartsString(boolean useHtml) {
-    	Malfunctionable malfunctionable = (Malfunctionable) unit;
+    	Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         StringBuilder buf = new StringBuilder("Needed Parts: ");
 
     	Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();

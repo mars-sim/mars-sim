@@ -44,13 +44,10 @@ public class TabPanelGeneral extends TabPanel {
 
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 	
-	private static final Font SERIF_BOLD_14 = new Font("Serif", Font.BOLD, 14);
 	private static final Font SERIF_PLAIN_14 = new Font("Serif", Font.PLAIN, 14);
 	private static final Font SERIF_PLAIN_12 = new Font("Serif", Font.PLAIN, 12);
 	private static final Font MONOSPACED_PLAIN_12 = new Font("Monospaced", Font.PLAIN, 12);
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
+
 	
 	/** The Person instance. */
 	private Person person;
@@ -76,112 +73,39 @@ public class TabPanelGeneral extends TabPanel {
 		person = (Person) unit;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		// Create general panel.
-		JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(generalLabelPanel);
-
-		// Prepare general label
-		JLabel generalLabel = new JLabel(Msg.getString("TabPanelGeneral.label"), JLabel.CENTER); //$NON-NLS-1$
-		generalLabel.setFont(SERIF_BOLD_14);
-		generalLabelPanel.add(generalLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(7, 2, 0, 0));
-//		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
-
-		// 1. Prepare gender name label
-		JLabel genderNameLabel = new JLabel(Msg.getString("TabPanelGeneral.gender"), JLabel.RIGHT); //$NON-NLS-1$
-//		genderNameLabel.setSize(5, 2);
-		infoPanel.add(genderNameLabel);
+		JPanel infoPanel = new JPanel(new SpringLayout());
+		content.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare gender textfield
 		String gender = person.getGender().getName();
-		JTextField genderTF = new JTextField(Conversion.capitalize(gender));
-		genderTF.setEditable(false);
-		genderTF.setColumns(12);
-		//JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
-		infoPanel.add(genderTF);
-
-		// 2. Prepare birthdate and age name label
-		JLabel birthNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthDate"), JLabel.RIGHT); //$NON-NLS-1$
-		birthNameLabel.setSize(5, 2);
-		infoPanel.add(birthNameLabel);
-
-		birthDate = person.getBirthDate();
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), Conversion.capitalize(gender), null);
 		
 		// Prepare birthdate and age textfield
 		String birthdate = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-
-		birthDateTF = new JTextField(birthdate);
-		birthDateTF.setEditable(false);
-		birthDateTF.setColumns(12);
-		infoPanel.add(birthDateTF);
-
-		// 3. Prepare birth location name label
-		JLabel birthLocationNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthLocation"), JLabel.RIGHT); //$NON-NLS-1$
-		birthLocationNameLabel.setSize(5, 2);
-		infoPanel.add(birthLocationNameLabel);
+		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthdate, null);
 
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
-		//JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
-		JTextField birthLocationTF = new JTextField(Conversion.capitalize(birthLocation));
-		birthLocationTF.setEditable(false);
-		birthLocationTF.setColumns(12);
-		infoPanel.add(birthLocationTF);
-
-		// 4. Prepare country name label
-		JLabel countryNameLabel = new JLabel(Msg.getString("TabPanelGeneral.country"), JLabel.RIGHT); //$NON-NLS-1$
-		countryNameLabel.setSize(5, 2);
-		infoPanel.add(countryNameLabel);
-
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), Conversion.capitalize(birthLocation), null);		
+		
 		// Prepare birth location textfield
 		String country = person.getCountry();
-		JTextField countryTF = new JTextField(Conversion.capitalize(country));
-		countryTF.setEditable(false);
-		countryTF.setColumns(15);
-		infoPanel.add(countryTF);
-
-		// 5. Prepare weight name label
-		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.RIGHT); //$NON-NLS-1$
-		weightNameLabel.setSize(5, 2);
-		infoPanel.add(weightNameLabel);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), Conversion.capitalize(country), null);
 
 		// Prepare weight textfield
-		double baseMass = Math.round(person.getBaseMass()*10.0)/10.0;
-		//JLabel weightLabel = new JLabel(Msg.getString("TabPanelGeneral.kilograms",baseMass), JLabel.RIGHT); //$NON-NLS-1$
-		JTextField weightTF = new JTextField(Msg.getString("TabPanelGeneral.kilograms", baseMass));
-		weightTF.setEditable(false);
-		weightTF.setColumns(12);
-		infoPanel.add(weightTF);
-
-		// 6. Prepare height name label
-		JLabel heightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.height"), JLabel.RIGHT); //$NON-NLS-1$
-		heightNameLabel.setSize(5, 2);
-		infoPanel.add(heightNameLabel);
-
-		// Prepare height textfield
-		double baseHeight = Math.round(person.getHeight()*10.0)/10.0;
-		//JLabel heightLabel = new JLabel(Msg.getString("TabPanelGeneral.centimeters", baseHeight), JLabel.RIGHT); //$NON-NLS-1$
-		JTextField heightTF = new JTextField(Msg.getString("TabPanelGeneral.centimeters", baseHeight));
-		heightTF.setEditable(false);
-		heightTF.setColumns(12);
-		infoPanel.add(heightTF);
-
-		// 7. Prepare BMI name label
-		JLabel BMINameLabel = new JLabel(Msg.getString("TabPanelGeneral.bmi"), JLabel.RIGHT); //$NON-NLS-1$
-		BMINameLabel.setSize(5, 2);
-		infoPanel.add(BMINameLabel);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"),
+				  							  DECIMAL_KG.format(person.getBaseMass()), null);
+		
+		// Prepare height name label
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), 
+					 DECIMAL_PLACES1.format(person.getHeight()) + " m", null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
@@ -196,24 +120,12 @@ public class TabPanelGeneral extends TabPanel {
 		if (BMI > 34.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
 		if (BMI > 39.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
 
-		JTextField BMITF = new JTextField(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
-				Math.round(BMI*100.0)/100.0,	weightClass));
-		BMITF.setEditable(false);
-		BMITF.setColumns(12);
-		infoPanel.add(BMITF);
-
+		String BMItext = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
+				Math.round(BMI*100.0)/100.0, weightClass);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.bmi"), BMItext, null);
+		
 		// Prepare loading cap label
-		JLabel loadCapLabel = new JLabel(Msg.getString("TabPanelGeneral.loadCap"), JLabel.RIGHT); //$NON-NLS-1$
-		loadCapLabel.setSize(5, 2);
-		infoPanel.add(loadCapLabel);
-
-		// Prepare loading textfield
-		double load = person.getCarryingCapacity();
-//		System.out.println(person.getName() + " can carry " + load + " kg.");
-		JTextField loadCapTF = new JTextField(Math.round(load*10.0)/10.0 + " kg");
-		loadCapTF.setEditable(false);
-		loadCapTF.setColumns(10);
-		infoPanel.add(loadCapTF);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), DECIMAL_KG.format(person.getCarryingCapacity()), null);
 		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,
@@ -227,8 +139,6 @@ public class TabPanelGeneral extends TabPanel {
 		createMBTI(p);
 		// Create the text area for displaying the Big Five scores
 		createBigFive();
-
-		
 	}
 	
 	
@@ -237,58 +147,16 @@ public class TabPanelGeneral extends TabPanel {
 	 * 
 	 * @param p an instance of MBTIPersonality
 	 */
-	public void createMBTI(MBTIPersonality p) {
+	private void createMBTI(MBTIPersonality p) {
 		
 		int ie = p.getIntrovertExtrovertScore();
 		int ns = p.getScores().get(1);
 		int ft = p.getScores().get(2);
 		int jp = p.getScores().get(3);
-		
-//		StringBuffer sb = new StringBuffer();
-//		String ieStr = "";
-//		String nsStr = "";
-//		String ftStr = "";
-//		String jpStr = "";
-//		String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
-//		String thinsp = "&thinsp;";
+
 		
 		String[] types = new String[4];
 		int[] scores = new int[4];
-		
-//		if (ie < 51) {
-//			ieStr = thinsp + "Introvert : " + ie + "<br>" ;
-//			
-//			types[0] = ieStr;
-//		}
-//		else
-//			ieStr = thinsp + "Extrovert : " + (ie-50) + "<br>" ;
-//		
-//		if (ns < 51)
-//			nsStr = thinsp + thinsp + "Intuitive : " + ns + "<br>" ;
-//		else
-//			nsStr = thinsp + thinsp + thinsp + "Sensing : " + (ns-50) + "<br>" ;
-//		
-//		if (ft < 51)
-//			ftStr =thinsp + thinsp + thinsp + thinsp + "Feeling : " + ft + "<br>" ;
-//		else
-//			ftStr = thinsp + thinsp + "Thinking : " + (ft-50) + "<br>" ;
-//
-//		
-//		if (jp < 51)
-//			jpStr = thinsp + thinsp + thinsp + "Judging : " + jp + "<br>" ;
-//		else
-//			jpStr = "Perceiving : " + (jp-50) + "<br>" ;
-//		
-//		String notestr = "<br> Note : intensity range<br>" + thinsp + thinsp + thinsp + thinsp + "from 1 to 50<br>";
-//		
-//		sb.append("<html>").append(ieStr).append(nsStr).append(ftStr).append(jpStr).append(notestr).append("</html>");
-//		
-////		&nbsp; - non-breakable space
-////		&ensp; - en space
-////		&emsp; - em space
-////		&thinsp; - thin space
-//		
-//		mbtiTF.setToolTipText(sb.toString());
 		
 		// Prepare MBTI text area
 		WebTextArea ta = new WebTextArea();
@@ -383,14 +251,8 @@ public class TabPanelGeneral extends TabPanel {
 	/**
 	 * Create the text area for the Big Five
 	 */
-	public void createBigFive() {
+	private void createBigFive() {
 		PersonalityTraitManager p = person.getMind().getTraitManager();
-		
-//		int o = p.getPersonalityTrait(PersonalityTraitType.OPENNESS);
-//		int c = p.getPersonalityTrait(PersonalityTraitType.CONSCIENTIOUSNESS);
-//		int e = p.getPersonalityTrait(PersonalityTraitType.EXTRAVERSION); //getIntrovertExtrovertScore();
-//		int a = p.getPersonalityTrait(PersonalityTraitType.AGREEABLENESS);
-//		int n = p.getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		
 		String[] types = new String[5];
 		int[] scores = new int[5];
@@ -443,8 +305,6 @@ public class TabPanelGeneral extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
 		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
 		

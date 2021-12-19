@@ -14,6 +14,8 @@ import java.awt.Font;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -48,8 +50,6 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelFavorite
 extends TabPanel {
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	/** The Preference Table. */	
 	private JTable table;
 	/** The Preference Table Model. */	
@@ -75,27 +75,16 @@ extends TabPanel {
 
 		person = (Person) unit;
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+
+	@Override
+	protected void buildUI(JPanel content) {
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+		content.add(topPanel, BorderLayout.NORTH);
 		
-		// Create Favorite label panel.
-		WebPanel favoriteLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(favoriteLabelPanel);
-
-		// Prepare  Favorite label
-		WebLabel favoriteLabel = new WebLabel(Msg.getString("TabPanelFavorite.label"), WebLabel.CENTER); //$NON-NLS-1$
-		favoriteLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		favoriteLabelPanel.add(favoriteLabel);
-
 		// Prepare SpringLayout for info panel.
-		WebPanel infoPanel = new WebPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
-//		infoPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(infoPanel, BorderLayout.NORTH);
+		WebPanel infoPanel = new WebPanel(new SpringLayout());
+		topPanel.add(infoPanel);
 
 		// Prepare main dish name label
 		WebLabel mainDishNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.mainDish"), WebLabel.RIGHT); //$NON-NLS-1$
@@ -165,7 +154,7 @@ extends TabPanel {
 
 		// Create label panel.
 		WebPanel labelPanel = new WebPanel(new BorderLayout(0, 0));
-		centerContentPanel.add(labelPanel, BorderLayout.NORTH);
+		topPanel.add(labelPanel);
 		
 		// Create preference title label
 		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.CENTER); //$NON-NLS-1$
@@ -177,8 +166,7 @@ extends TabPanel {
 //		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
-		centerContentPanel.add(scrollPane, BorderLayout.CENTER);
+		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
@@ -202,20 +190,7 @@ extends TabPanel {
 		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
-
 	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
-		TableStyle.setTableStyle(table);
-	}
-
 
 	/**
 	 * Internal class used as model for the skill table.
@@ -226,22 +201,6 @@ extends TabPanel {
 		private Preference manager;
 		private List<String> scoreStringList;
 		private Map<String, Integer> scoreStringMap;
-
-		//ImageIcon icon = new ImageIcon("image.gif");
-
-		//String blush = ":blush:";
-		//String frown = ":frowning:";
-		//String ok = ":neutral_face:";//":expressionless";
-		//String smiley = "\uf118";
-		//String frowno = "\uf119";
-		
-//        byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
-//        byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
-//        byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
-
-//        String smileyStr = new String(smileyBytes, Charset.forName("UTF-8"));
-//        String neutralStr = new String(neutralBytes, Charset.forName("UTF-8"));
-//        String cryStr = new String(cryBytes, Charset.forName("UTF-8"));
 
 		private PreferenceTableModel(Unit unit) {
 
@@ -292,10 +251,6 @@ extends TabPanel {
 			else
 				return null;
 		}
-
-		public void update() {
-
-		}
 	}
 
 	/**
@@ -328,12 +283,6 @@ extends TabPanel {
 				WebLabel cell = (WebLabel) theResult;
 				cell.setText((String)value);
 			}
-
-//			WebTableHeader tableHeader = table.getTableHeader();
-//		    if (tableHeader != null) {
-//		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-//		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-//		    }
 
 			return theResult;
 		}

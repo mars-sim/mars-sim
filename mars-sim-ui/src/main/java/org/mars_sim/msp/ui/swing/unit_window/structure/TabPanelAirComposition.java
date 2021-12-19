@@ -133,7 +133,7 @@ extends TabPanel {
 		topContentPanel.add(titlePanel);
 
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelAirComposition.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		titlePanel.add(titleLabel);
 
 		// Prepare the top panel using spring layout.

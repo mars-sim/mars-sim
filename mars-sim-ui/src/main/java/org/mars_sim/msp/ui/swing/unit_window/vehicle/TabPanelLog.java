@@ -33,7 +33,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
@@ -57,7 +56,6 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelLog extends TabPanel {
 
 	private static final String SOL = "   Sol ";
-	private static final String WHITESPACES = "   ";
 	
 	// Data members
 	private int selectedSolCache;
@@ -113,12 +111,12 @@ public class TabPanelLog extends TabPanel {
 		uiDone = true;
 		
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = getSimulation().getMasterClock().getMarsClock();
 		
 		// Create towing label.
 		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelLog.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		panel.add(titleLabel);
 		topContentPanel.add(panel, BorderLayout.NORTH);
 		
@@ -232,8 +230,7 @@ public class TabPanelLog extends TabPanel {
 		});
 		
 		// Create schedule table model
-		if (unit instanceof Vehicle)
-			scheduleTableModel = new ScheduleTableModel((Vehicle) unit);
+		scheduleTableModel = new ScheduleTableModel(vehicle);
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();

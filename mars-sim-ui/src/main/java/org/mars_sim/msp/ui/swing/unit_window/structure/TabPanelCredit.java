@@ -8,12 +8,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -38,16 +37,11 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelCredit
 extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -72,30 +66,15 @@ extends TabPanel {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		// Prepare credit label panel.
-		WebPanel creditLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(creditLabelPanel);
-
-		// Prepare credit label.
-		WebLabel creditLabel = new WebLabel(Msg.getString("TabPanelCredit.label"), WebLabel.CENTER); //$NON-NLS-1$
-		creditLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//creditLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		creditLabelPanel.add(creditLabel);
+	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for the outer table panel.
 		WebScrollPane creditScrollPanel = new WebScrollPane();
 		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
-		centerContentPanel.add(creditScrollPanel);
+		content.add(creditScrollPanel);
 
 		// Prepare credit table model.
-		CreditTableModel creditTableModel = new CreditTableModel((Settlement) unit);
+		CreditTableModel creditTableModel = new CreditTableModel(settlement);
 
 		// Prepare credit table.
 		creditTable = new ZebraJTable(creditTableModel);
@@ -134,9 +113,6 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-
 		TableStyle.setTableStyle(creditTable);
 	}
 
@@ -273,22 +249,12 @@ extends TabPanel {
 				);
 			}
 		}
-
-//		/*
-//		 * Prepare for deletion.
-//		 *
-//		 */
-//		public void destroy() {
-//			manager.removeListener(this);
-//			settlements = null;
-//			thisSettlement = null;
-//		}
-
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		creditTable = null;
 	}

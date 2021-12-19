@@ -118,7 +118,7 @@ public class TabPanelManufacture extends TabPanel {
 
 		// Create manufacture label.
 		JLabel label = new JLabel(Msg.getString("TabPanelManufacture.label"), JLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
+		label.setFont(TITLE_FONT);
 		// label.setForeground(new Color(102, 51, 0)); // dark brown
 		topPane.add(label);
 

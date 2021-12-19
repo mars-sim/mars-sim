@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -49,10 +48,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelResourceProcesses
 extends TabPanel {
 
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -83,32 +78,18 @@ extends TabPanel {
 		settlement = (Settlement) unit;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		mgr = settlement.getBuildingManager();
 		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		size = buildings.size();
-
-		// Prepare resource processes label panel.
-		JPanel resourceProcessesLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(resourceProcessesLabelPanel);
-
-		// Prepare esource processes label.
-		JLabel resourceProcessesLabel = new JLabel(Msg.getString("TabPanelResourceProcesses.label"), JLabel.CENTER); //$NON-NLS-1$
-		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		resourceProcessesLabelPanel.add(resourceProcessesLabel);
 
 		// Create scroll panel for the outer table panel.
 		processesScrollPane = new JScrollPane();
 		processesScrollPane.setPreferredSize(new Dimension(220, 280));
 		// increase vertical mousewheel scrolling speed for this one
 		processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(processesScrollPane,BorderLayout.CENTER);
+		content.add(processesScrollPane,BorderLayout.CENTER);
 
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
@@ -118,7 +99,7 @@ extends TabPanel {
 
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(overrideCheckboxPane,BorderLayout.SOUTH);
+		content.add(overrideCheckboxPane,BorderLayout.NORTH);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
@@ -155,9 +136,6 @@ extends TabPanel {
 
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		// Check if building list has changed.
 		List<Building> newBuildings = selectBuildingsWithRP();
 		int newSize = buildings.size();
@@ -193,7 +171,7 @@ extends TabPanel {
 	 * @param override the resource process override flag.
 	 */
 	private void setResourceProcessOverride(boolean override) {
-		Settlement settlement = (Settlement) unit;
+		Settlement settlement = (Settlement) getUnit();
 		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
 	}
 
@@ -309,13 +287,15 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		buildings = null;
 		processesScrollPane = null;
 		processListPanel = null;
 		overrideCheckbox = null;
 		settlement = null;
 		mgr = null;
-	}
-	
+	}	
 }

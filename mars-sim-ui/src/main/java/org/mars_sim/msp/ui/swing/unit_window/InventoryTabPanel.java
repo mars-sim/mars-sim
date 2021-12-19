@@ -93,7 +93,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
-        this.unit = unit;
 	}
 
 	public boolean isUIDone() {
@@ -109,7 +108,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         // Create inventory label
         WebLabel titleLabel = new WebLabel("Inventory", WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
         inventoryLabelPanel.add(titleLabel);
 
         // Create inventory content panel
@@ -122,7 +121,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(resourcesPanel);
 
         // Create resources table model
-        resourceTableModel = new ResourceTableModel();
+        resourceTableModel = new ResourceTableModel(getUnit());
 
         // Create resources table
         resourceTable = new ZebraJTable(resourceTableModel);
@@ -166,7 +165,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(itemPanel);
 
         // Create item table model
-        itemTableModel = new ItemTableModel();
+        itemTableModel = new ItemTableModel(getUnit());
 
         // Create item table
         itemTable = new ZebraJTable(itemTableModel);
@@ -200,7 +199,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(equipmentPanel);
 
         // Create equipment table model
-        equipmentTableModel = new EquipmentTableModel();
+        equipmentTableModel = new EquipmentTableModel(getUnit());
 
         // Create equipment table
         equipmentTable = new ZebraJTable(equipmentTableModel);
@@ -238,7 +237,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					int row = equipmentTable.rowAtPoint(p);
 					Equipment e = (Equipment)equipmentTable.getValueAt(row, 1);
 					if (e != null) {
-						desktop.openUnitWindow(e, false);
+						getDesktop().openUnitWindow(e, false);
 					}
 				}
 		    }
@@ -302,7 +301,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-        private ResourceTableModel() {
+		private Unit unit;
+
+        private ResourceTableModel(Unit unit) {
+        	this.unit = unit;
         	loadResources(keys, resources, capacity);
         }
 
@@ -398,9 +400,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public void update() {
-    		List<Resource> newResourceKeys = new ArrayList<Resource>();
-			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
-    		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
+    		List<Resource> newResourceKeys = new ArrayList<>();
+			Map<Resource, Number> newResources = new HashMap<>();
+    		Map<Resource, Number> newCapacity = new HashMap<>();
 
     		loadResources(newResourceKeys, newResources, newCapacity);
 
@@ -431,7 +433,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Double> mtbf = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-        private ItemTableModel() {
+		private Unit unit;
+
+        private ItemTableModel(Unit unit) {
+        	this.unit = unit;
         	loadItems(keys, resources, reliabilities, mtbf);
         }
 
@@ -531,8 +536,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public void update() {
-        	List<Resource> newResourceKeys = new ArrayList<Resource>();
-        	Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+        	List<Resource> newResourceKeys = new ArrayList<>();
+        	Map<Resource, Number> newResources = new HashMap<>();
 			Map<Resource, Double> newReliabilities = new HashMap<>();
 			Map<Resource, Double> newMTBF = new HashMap<>();
 
@@ -567,12 +572,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<String, String> contentOwner = new HashMap<>();
 		private Map<String, Double> mass = new HashMap<>();
 
+		private Unit unit;
+
 
 		/**
 		 * hidden constructor.
 		 * @param inventory {@link Inventory}
 		 */
-		public EquipmentTableModel() {
+		public EquipmentTableModel(Unit unit) {
+			this.unit = unit;
 			loadModel(equipmentList, types, contentOwner, mass);
 		}
 

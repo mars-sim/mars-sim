@@ -106,7 +106,7 @@ public class TabPanelEVA extends TabPanel {
         content.add(occupantPanel, BorderLayout.CENTER);
 
         // Create occupant list, new Dimension(150, 100)
-        occupants = new UnitListPanel<Person>(desktop) {
+        occupants = new UnitListPanel<>(getDesktop()) {
 
 			@Override
 			protected Collection<Person> getData() {

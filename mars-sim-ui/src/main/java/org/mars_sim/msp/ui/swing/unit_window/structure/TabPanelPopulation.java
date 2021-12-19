@@ -87,7 +87,7 @@ public class TabPanelPopulation extends TabPanel {
 		content.add(populationDisplayPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for population list. new Dimension(200, 250)
-		populationList = new UnitListPanel<Person>(desktop) {
+		populationList = new UnitListPanel<>(getDesktop()) {
 			@Override
 			protected Collection<Person> getData() {
 				return settlement.getIndoorPeople();

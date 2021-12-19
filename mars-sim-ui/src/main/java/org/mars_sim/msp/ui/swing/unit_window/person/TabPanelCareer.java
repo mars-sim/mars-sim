@@ -158,7 +158,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Prepare title label
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCareer.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		titleLabel.setFont(TITLE_FONT);
 		labelPanel.add(titleLabel);
 
 		Mind mind = person.getMind();
@@ -618,7 +618,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-
+		MainDesktopPane desktop = getDesktop();
+		
 		if (source == roleComboBox) {
 			RoleType selectedRole = RoleType.getType((String) roleComboBox.getSelectedItem());
 			int box = -1;
@@ -743,18 +744,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 	}
 
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		table = null;
 		jobLabel = null;
-//		roleTF = null;
-		desktop = null;
 		jobChangeLabel = null;
 		ratingLabel = null;
 		jobComboBox = null;
 		roleComboBox = null;
 		jobHistoryTableModel = null;
 		starRater = null;
-		marsClock = null;
 	}
 
 	/**

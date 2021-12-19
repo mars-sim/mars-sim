@@ -153,13 +153,14 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Prepare label
 		WebLabel label = new WebLabel(Msg.getString("TabPanelSchedule.label"), WebLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 14));
+		label.setFont(TITLE_FONT);
 		labelPanel.add(label);
 
 		// Create the button panel.
 		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(buttonPane);// , BorderLayout.NORTH);
 
+		Unit unit = getUnit();
 		if (unit instanceof Person) {
 
 			shiftType = taskSchedule.getShiftType();
@@ -588,8 +589,6 @@ public class TabPanelSchedule extends TabPanel {
 		person = null;
 		robot = null;
 		taskSchedule = null;
-		desktop = null;
-
 	}
 
 }

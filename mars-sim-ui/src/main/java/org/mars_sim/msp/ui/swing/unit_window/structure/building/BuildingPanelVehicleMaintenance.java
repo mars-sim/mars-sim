@@ -71,7 +71,7 @@ extends BuildingFunctionPanel {
 				vehicleCapacity, null);
 
 		// Create vehicle list panel
-		vehicleList = new UnitListPanel<Vehicle>(desktop, new Dimension(160, 60)) {
+		vehicleList = new UnitListPanel<>(getDesktop(), new Dimension(160, 60)) {
 
 			@Override
 			protected Collection<Vehicle> getData() {

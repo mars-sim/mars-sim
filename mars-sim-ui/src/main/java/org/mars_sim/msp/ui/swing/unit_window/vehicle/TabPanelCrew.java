@@ -220,7 +220,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			        int index = memberTable.getSelectedRow();
 	    			Person selectedPerson = (Person) memberTableModel.getMemberAtIndex(index);
 	    			if (selectedPerson != null)
-	    				desktop.openUnitWindow(selectedPerson, false);
+	    				getDesktop().openUnitWindow(selectedPerson, false);
 		        }
 			}
 		});
@@ -235,7 +235,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		if (!uiDone)
 			initializeUI();
 
-		Vehicle vehicle = (Vehicle) unit;
+		Vehicle vehicle = (Vehicle) getUnit();
 		Crewable crewable = (Crewable) vehicle;
 		Mission newMission = vehicle.getMission();
 		if (mission != newMission) {
@@ -259,16 +259,19 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the crew monitor button was pressed, create tab in monitor tool.
-		Vehicle vehicle = (Vehicle) unit;
+		Vehicle vehicle = (Vehicle) getUnit();
 		Crewable crewable = (Crewable) vehicle;
 		try {
-			desktop.addModel(new PersonTableModel(crewable));
+			getDesktop().addModel(new PersonTableModel(crewable));
 		} catch (Exception e) {
 			logger.severe("PersonTableModel cannot be added.");
 		}
 	}
 
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		crewNumTF = null;
 		memberTable = null;
 		memberTableModel = null;

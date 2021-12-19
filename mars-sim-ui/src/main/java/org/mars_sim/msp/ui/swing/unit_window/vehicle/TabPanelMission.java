@@ -189,6 +189,8 @@ extends TabPanel {
 //		buttonPanel.setBorder(new MarsPanelBorder());
 		memberListPanel.add(buttonPanel);
 
+		Unit unit = getUnit();
+		
 		// Create mission tool button
 		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
@@ -234,7 +236,7 @@ extends TabPanel {
 		if (!uiDone)
 			initializeUI();
 
-		Vehicle vehicle = (Vehicle) unit;
+		Vehicle vehicle = (Vehicle) getUnit();
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		if (mission != null) {

@@ -69,7 +69,7 @@ extends TabPanel {
 		topContentPanel.add(titlePanel, BorderLayout.NORTH);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelConstruction.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePanel.add(titleLabel);
 

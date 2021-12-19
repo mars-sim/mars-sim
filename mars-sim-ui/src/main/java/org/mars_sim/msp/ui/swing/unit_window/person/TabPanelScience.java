@@ -170,8 +170,7 @@ public class TabPanelScience extends TabPanel {
 		achievementLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		achievementLabelPane.add(achievementLabel);
 
-		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
-		String totalAchievementString = formatter.format(person.getTotalScientificAchievement());
+		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
 		totalAchievementLabel = new JLabel(
 				Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString), JLabel.CENTER); //$NON-NLS-1$
 		achievementLabelPane.add(totalAchievementLabel);
@@ -254,7 +253,7 @@ public class TabPanelScience extends TabPanel {
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		if (selectedStudyIndex >= 0) {
 			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			((ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
+			((ScienceWindow) getDesktop().getToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
 			getDesktop().openToolWindow(ScienceWindow.NAME);
 		}
 	}

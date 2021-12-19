@@ -139,7 +139,7 @@ extends TabPanel {
 
 		// Prepare health label
 		WebLabel healthLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
-		healthLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		healthLabel.setFont(TITLE_FONT);
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -45,8 +46,6 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -74,26 +73,17 @@ public class TabPanelMaintenance extends TabPanel {
 		settlement = (Settlement) unit;
 		malfunctionsList = new ArrayList<>();
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
+
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		// Create topPanel.
 		WebPanel topPanel = new WebPanel(new GridLayout(2, 1));
-		centerContentPanel.add(topPanel);
+		content.add(topPanel, BorderLayout.CENTER);
 
 		// Create maintenance panel.
 		WebPanel maintenancePanel = new WebPanel(new BorderLayout());
 		topPanel.add(maintenancePanel);
-
-		// Create maintenance label.
-		WebLabel titleLabel = new WebLabel("Building Maintenance", WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		maintenancePanel.add(titleLabel, BorderLayout.NORTH);
 
 		// Create scroll pane for maintenance list panel.
 		maintenanceScrollPane = new WebScrollPane();
@@ -138,7 +128,6 @@ public class TabPanelMaintenance extends TabPanel {
 		malfunctionsOuterListPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
 
 		populateMalfunctionsList();
-		uiDone = true;
 	}
 
 	/**
@@ -184,12 +173,11 @@ public class TabPanelMaintenance extends TabPanel {
 	/**
 	 * Update the tab panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		// Check if building list has changed.
-		List<Building> tempBuildings = ((Settlement) unit).getBuildingManager().getSortedBuildings();
+		List<Building> tempBuildings = ((Settlement) getUnit()).getBuildingManager().getSortedBuildings();
 		if (!tempBuildings.equals(buildingsList)) {
 			// Populate maintenance list.
 			populateMaintenanceList();

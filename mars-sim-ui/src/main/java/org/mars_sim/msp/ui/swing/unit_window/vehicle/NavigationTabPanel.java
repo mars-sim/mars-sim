@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,7 +123,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		// Create tht title label.
 		WebPanel titlePanel = new WebPanel(new FlowLayout());
 		WebLabel titleLabel = new WebLabel(Msg.getString("NavigationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		titlePanel.add(titleLabel);
 		topContentPanel.add(titlePanel);
 		
@@ -376,8 +375,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     public void update() {
 		if (!uiDone)
 			initializeUI();
-		
-        Vehicle vehicle = (Vehicle) unit;
 
         // Update driver button if necessary.
         boolean driverChange = false;
@@ -560,7 +557,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      */
     public void actionPerformed(ActionEvent event) {
         JComponent source = (JComponent) event.getSource();
-
+        MainDesktopPane desktop = getDesktop();
+        
         // If center map button is pressed, center navigator tool
         // at destination location.
         if (source == centerMapButton) {

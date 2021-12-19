@@ -82,7 +82,7 @@ public class TabPanelBots extends TabPanel {
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create spring layout robot display panel
-		robotList = new UnitListPanel<Robot>(desktop) {
+		robotList = new UnitListPanel<>(getDesktop()) {
 			@Override
 			protected Collection<Robot> getData() {
 				return settlement.getRobots();

@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -131,7 +130,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TaskManager taskManager = null;
 
 		DeathInfo deathInfo = null;
-
+		Unit unit = getUnit();
 		if (unit instanceof Person) {
 			person = (Person) unit;
 			mind = person.getMind();
@@ -152,7 +151,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		// Prepare activity label
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelActivity.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		titleLabel.setFont(TITLE_FONT);
 		activityLabelPanel.add(titleLabel);
 
 		// Prepare activity panel
@@ -480,7 +479,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TaskManager taskManager = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;
-
+		Unit unit = getUnit();
+		
 		if (unit instanceof Person) {
 			person = (Person) unit;
 			mind = person.getMind();
@@ -702,7 +702,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 			boolean dead = false;
 			DeathInfo deathInfo = null;
-
+			Unit unit = getUnit();
 			if (unit instanceof Person) {
 				Person person = (Person) unit;
 				Mind mind = person.getMind();
@@ -718,7 +718,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 							getDesktop().openToolWindow(MissionWindow.NAME, mind.getMission());
 						} else if (source == monitorButton) {
 							try {
-								desktop.addModel(new PersonTableModel(mind.getMission()));
+								getDesktop().addModel(new PersonTableModel(mind.getMission()));
 							} catch (Exception e) {
 								logger.severe("PersonTableModel cannot be added.");
 							}

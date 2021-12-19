@@ -244,7 +244,7 @@ extends TabPanel {
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		if (selectedStudyIndex >= 0) {
 			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			((ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
+			((ScienceWindow) getDesktop().getToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
 			getDesktop().openToolWindow(ScienceWindow.NAME);
 		}
 	}
@@ -272,7 +272,7 @@ extends TabPanel {
 			this.settlement = settlement;
 
 			// Get all studies the settlement is primary for.
-			studies = desktop.getSimulation().getScientificStudyManager().getAllStudies(settlement);
+			studies = getSimulation().getScientificStudyManager().getAllStudies(settlement);
 		}
 
 		/**
@@ -352,7 +352,7 @@ extends TabPanel {
 		 * Updates the table model.
 		 */
 		private void update() {
-			List<ScientificStudy> newStudies = desktop.getSimulation().getScientificStudyManager().getAllStudies(settlement);
+			List<ScientificStudy> newStudies = getSimulation().getScientificStudyManager().getAllStudies(settlement);
 			if (!newStudies.equals(studies)) studies = newStudies;
 			fireTableDataChanged();
 		}

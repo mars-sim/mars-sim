@@ -79,7 +79,7 @@ public class TabPanelBots extends TabPanel {
 		content.add(crewDisplayPanel, BorderLayout.CENTER);
 
 		// Create crew list
-		crewList = new UnitListPanel<Robot>(desktop, new Dimension(175, 100)) {
+		crewList = new UnitListPanel<>(getDesktop(), new Dimension(175, 100)) {
 			@Override
 			protected Collection<Robot> getData() {
 				return crewable.getRobotCrew();

@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -20,7 +19,6 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,7 +28,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -56,8 +53,6 @@ extends TabPanel {
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
 	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -69,7 +64,6 @@ extends TabPanel {
 	private JButton monitorButton;
 	private JCheckBox overrideCheckbox;
 
-	private static MissionManager missionManager;
 
 	/**
 	 * Constructor.
@@ -89,29 +83,13 @@ extends TabPanel {
 		this.settlement = settlement;
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		missionManager = Simulation.instance().getMissionManager();
-
-		// Create label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
-
-		// Create settlement missions label.
-		JLabel label = new JLabel(Msg.getString("TabPanelMissions.label"), JLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
-		//label.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(label);
+	@Override
+	protected void buildUI(JPanel content) {
+		MissionManager missionManager = getSimulation().getMissionManager();
 
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());
-//		centerPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(centerPanel, BorderLayout.CENTER);
+		content.add(centerPanel, BorderLayout.CENTER);
 
 		// Create mission list panel.
 		JPanel missionListPanel = new JPanel();
@@ -176,8 +154,7 @@ extends TabPanel {
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		bottomPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(bottomPanel, BorderLayout.SOUTH);
+		content.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelMissions.checkbox.overrideMissionCreation")); //$NON-NLS-1$
@@ -193,12 +170,8 @@ extends TabPanel {
 
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		// Get all missions for the settlement.
-		//MissionManager manager = Simulation.instance().getMissionManager();
-		List<Mission> missions = missionManager.getMissionsForSettlement(settlement);
+		List<Mission> missions = getSimulation().getMissionManager().getMissionsForSettlement(settlement);
 
 		// Update mission list if necessary.
 		if (!missions.equals(missionsCache)) {
@@ -224,7 +197,6 @@ extends TabPanel {
 	private void openMissionTool() {
 		Mission mission = (Mission) missionList.getSelectedValue();
 		if (mission != null) {
-//			((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
 			getDesktop().openToolWindow(MissionWindow.NAME, mission);
 		}
 	}
@@ -255,7 +227,10 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		settlement = null;
 		missionsCache = null;
 		missionListModel = null;
@@ -263,6 +238,5 @@ extends TabPanel {
 		missionButton = null;
 		monitorButton = null;
 		overrideCheckbox = null;
-		missionManager = null;
 	}
 }

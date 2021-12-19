@@ -85,7 +85,7 @@ public class TabPanelAssociatedPeople extends TabPanel{
 				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
-		populationList = new UnitListPanel<Person>(desktop) {
+		populationList = new UnitListPanel<>(getDesktop()) {
 			@Override
 			protected Collection<Person> getData() {
 				return settlement.getAllAssociatedPeople();

@@ -71,7 +71,7 @@ public class BuildingPanelInhabitable
 
 
 		// Create inhabitant list panel
-		inhabitantListPanel = new UnitListPanel<Person>(desktop, new Dimension(150, 100)) {
+		inhabitantListPanel = new UnitListPanel<>(getDesktop(), new Dimension(150, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return inhabitable.getOccupants();

@@ -59,7 +59,8 @@ extends TabPanel
 		content.add(vehiclePanel);
 
 		// Parked Vehicles
-		parkedVehicles = new UnitListPanel<Vehicle>(desktop, new Dimension(175, 200)) {
+		MainDesktopPane desktop = getDesktop();
+		parkedVehicles = new UnitListPanel<>(desktop, new Dimension(175, 200)) {
 			@Override
 			protected Collection<Vehicle> getData() {
 				return settlement.getParkedVehicles();
@@ -69,7 +70,7 @@ extends TabPanel
 		vehiclePanel.add(parkedVehicles);
 
 		// Mission vehicles
-		missionVehicles = new UnitListPanel<Vehicle>(desktop, new Dimension(175, 200)) {
+		missionVehicles = new UnitListPanel<>(desktop, new Dimension(175, 200)) {
 			@Override
 			protected Collection<Vehicle> getData() {
 				return settlement.getMissionVehicles();

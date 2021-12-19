@@ -148,7 +148,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
 		center.add(occupantPanel, BorderLayout.CENTER);
 
-		// Create occupant list , 
+		// Create occupant list 
+		MainDesktopPane desktop = getDesktop();
 		occupants = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
 			@Override
 			protected Collection<Person> getData() {

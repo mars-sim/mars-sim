@@ -24,6 +24,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -34,11 +35,16 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
+	// Font used in tab panel title
+	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
+	
 	// Default Decimal formatter
 	protected static DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
 	protected static DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
 	protected static DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
+	protected static DecimalFormat DECIMAL_KG = new DecimalFormat("0.0 kg");
 	
+
 	// Default values for any top level Spring panel holding values
 	protected static final int INITY_DEFAULT = 5;
 	protected static final int INITX_DEFAULT = 75;
@@ -54,8 +60,8 @@ public abstract class TabPanel extends JScrollPane {
 	protected JPanel topContentPanel;
 	protected JPanel centerContentPanel;
 	
-	protected Unit unit;
-	protected MainDesktopPane desktop;
+	private Unit unit;
+	private MainDesktopPane desktop;
 	private boolean isUIDone = false;
 	private String description;
 
@@ -139,7 +145,7 @@ public abstract class TabPanel extends JScrollPane {
 			// Create label in top panel
 			String topLabel = (description != null ? description : getTabTitle());
 			WebLabel titleLabel = new WebLabel(topLabel, WebLabel.CENTER);
-			titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
+			titleLabel.setFont(TITLE_FONT);
 			
 			JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			labelPanel.add(titleLabel);
@@ -198,7 +204,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * 
 	 * @return desktop.
 	 */
-	public MainDesktopPane getDesktop() {
+	protected MainDesktopPane getDesktop() {
 		return desktop;
 	}
 
@@ -207,8 +213,16 @@ public abstract class TabPanel extends JScrollPane {
 	 * 
 	 * @return unit.
 	 */
-	public Unit getUnit() {
+	protected Unit getUnit() {
 		return unit;
+	}
+	
+	/**
+	 * Get the simulation being monitored.
+	 * @return
+	 */
+	protected Simulation getSimulation() {
+		return desktop.getSimulation();
 	}
 	
 	@Override

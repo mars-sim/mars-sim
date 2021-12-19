@@ -57,7 +57,7 @@ public class NotesTabPanel extends TabPanel{
 		notesPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		content.add(notesPanel);
 		
-		notesCache = unit.getNotes();
+		notesCache = getUnit().getNotes();
 		
 		textArea = new WebTextArea(StyleId.textareaDecorated);
 		notesPanel.add(textArea);
@@ -75,7 +75,7 @@ public class NotesTabPanel extends TabPanel{
 	@Override
 	public void update() {
 		String notes = textArea.getText();
-		
+		Unit unit = getUnit();
 		if (notes == null || notes.equals("")) {
 			textArea.setInputPrompt(ENTER_HERE);
 			notesCache = "";

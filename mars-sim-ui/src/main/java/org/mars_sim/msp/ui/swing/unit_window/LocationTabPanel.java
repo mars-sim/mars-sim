@@ -98,7 +98,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 	private static Environment mars;
 	private static TerrainElevation terrainElevation;
-	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;
 
 	/**
@@ -111,14 +110,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		// Use the TabPanel constructor
 		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
-		this.unit = unit;
-
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();
 		topContainerCache = unit.getTopContainerUnit();
 
 		if (masterClock == null)
-			masterClock = sim.getMasterClock();
+			masterClock = getSimulation().getMasterClock();
 
 		masterClock.addClockListener(this);
 	}
@@ -128,8 +125,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	}
 
 	public void initializeUI() {
-		uiDone = true;
 
+		Unit unit = getUnit();
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
@@ -143,7 +140,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
-		mapPanel = desktop.getSettlementWindow().getMapPanel();
+		mapPanel = getDesktop().getSettlementWindow().getMapPanel();
 
 		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
 
@@ -152,7 +149,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		topContentPanel.add(titlePane);
 
 		WebLabel titleLabel = new WebLabel(Msg.getString("LocationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
@@ -199,7 +196,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		northPanel.add(lcdLat);
 
 		if (mars == null)
-			mars = Simulation.instance().getMars();
+			mars = getSimulation().getMars();
 		if (terrainElevation == null)
 			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
@@ -277,14 +274,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		lcdText.setLcdText(locationStringCache);
 
 		// Pause the location lcd text the sim is pause
-        lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
+        lcdText.setLcdTextScrolling(!getSimulation().getMasterClock().isPaused());
 
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
-		updateLocationBanner();
+		updateLocationBanner(unit);
 
 		checkTheme(true);
-
+		uiDone = true;
 	}
 
 	public void checkTheme(boolean firstRun) {
@@ -385,7 +382,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	}
 
 	public void personUpdate(Person p) {
-
+		MainDesktopPane desktop = getDesktop();
+		
 		if (p.isInSettlement()) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -474,6 +472,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	}
 
 	public void robotUpdate(Robot r) {
+		MainDesktopPane desktop = getDesktop();
 
 		if (r.isInSettlement()) {
 			desktop.openToolWindow(SettlementWindow.NAME);
@@ -548,6 +547,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	}
 
 	public void vehicleUpdate(Vehicle v) {
+		MainDesktopPane desktop = getDesktop();
+
 		if (v.getSettlement() != null) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 			combox.setSelectedItem(v.getSettlement());
@@ -565,11 +566,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			desktop.openToolWindow(NavigatorWindow.NAME);
 //			if (mainScene != null)
 //				Platform.runLater(() -> mainScene.openMinimap());
-			desktop.centerMapGlobe(unit.getCoordinates());
+			desktop.centerMapGlobe(getUnit().getCoordinates());
 		}
 	}
 
 	public void equipmentUpdate(Equipment e) {
+		MainDesktopPane desktop = getDesktop();
+
 		if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -638,6 +641,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 			update();
 
+			Unit unit = getUnit();
 			if (unit.getUnitType() == UnitType.PERSON) {
 				personUpdate((Person) unit);
 			}
@@ -664,6 +668,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		if (!uiDone)
 			initializeUI();
 
+		Unit unit = getUnit();
+		
 		// If unit's location has changed, update location display.
 		// TODO: if a person goes outside the settlement for servicing an equipment
 		// does the coordinate (down to how many decimal) change?
@@ -695,7 +701,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
-			double elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates())
+			double elevationCache = Math.round(terrainElevation.getMOLAElevation(location)
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);
@@ -713,13 +719,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			topContainerCache = topContainer;
 		}
 
-		updateLocationBanner();
+		updateLocationBanner(unit);
 	}
 
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */
-	public void updateLocationBanner() {
+	private void updateLocationBanner(Unit unit) {
 
 		String loc = unit.getLocationTag().getExtendedLocation();
 
@@ -732,7 +738,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		containerCache = null;
 		topContainerCache = null;
 		terrainElevation = null;

@@ -47,8 +47,8 @@ extends BuildingFunctionPanel {
 	 */
 	public BuildingPanelPreparingDessert(PreparingDessert kitchen, MainDesktopPane desktop) {
 
-		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelPreparingDessert.title"), kitchen.getBuilding(), desktop);
+		// Use BuildingFunctionPanel constructor. Have a shoter label
+		super("Desserts", Msg.getString("BuildingPanelPreparingDessert.title"), kitchen.getBuilding(), desktop);
 
 		// Initialize data members
 		this.kitchen = kitchen;

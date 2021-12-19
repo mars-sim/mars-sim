@@ -69,7 +69,7 @@ public class TabPanelTow extends TabPanel {
 		panel.add(titleLabel);
 		topContentPanel.add(panel);
 		
-
+		Unit unit = getUnit();
 		if (unit instanceof Towing) {
 
 			// Create towing label panel.
@@ -204,6 +204,7 @@ public class TabPanelTow extends TabPanel {
 		if (!uiDone)
 			initializeUI();
 		
+		Unit unit = getUnit();
 		if (unit instanceof Towing) {
 			// Update towing button or towing text label as necessary.
 			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();

@@ -77,7 +77,7 @@ public class TabPanelGoods extends TabPanel {
 
 		// Prepare goods label.
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelGoods.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(TITLE_FONT);
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		goodsLabelPanel.add(titleLabel);
 
@@ -89,7 +89,7 @@ public class TabPanelGoods extends TabPanel {
 		centerContentPanel.add(goodsScrollPane);
 
 		// Prepare goods table model.
-		goodsTableModel = new GoodsTableModel(((Settlement) unit).getGoodsManager());
+		goodsTableModel = new GoodsTableModel(((Settlement) getUnit()).getGoodsManager());
 
 		// Prepare goods table.
 		goodsTable = new ZebraJTable(goodsTableModel);
