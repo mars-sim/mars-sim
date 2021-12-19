@@ -101,22 +101,20 @@ public class EVASuit extends Equipment
 	private static final double WEAR_LIFETIME = 334_000;
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
-
-	private static double min_o2_pressure;
+	/** The ratio of CO2 expelled to O2 breathed in. */
+	private static final double GAS_RATIO;
+	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
+	private static final double MIN_O2_PRESSURE;
 	/** The full O2 partial pressure if at full tank. */
-	private static double fullO2PartialPressure;
+	private static final double fullO2PartialPressure;
 	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
-	private static double massO2NominalLimit;
+	private static final double massO2NominalLimit;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
-	private static double massO2MinimumLimit;
+	private static final double massO2MinimumLimit;
+	
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
-	/** The average amount of carbon dioxide expelled by a person on each millisol for high metabolic activities. */
-	private static double co2Expelled;
-	/** The average amount of oxygen breathed in by a person on each millisol for high metabolic activities. */
-	private static double o2Consumed;
-	/** The ratio of CO2 expelled to O2 breathed in. */
-	private static double ratioCO2ToO2;
+
 
 	// Data members
 	/** The equipment's malfunction manager. */
@@ -133,18 +131,18 @@ public class EVASuit extends Equipment
 		 }
 
 //		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-		 o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D;
-		 co2Expelled = personConfig.getCO2ExpelledRate() / 1000D;
-		 ratioCO2ToO2 = co2Expelled / o2Consumed;
+		 double o2Consumed = personConfig.getHighO2ConsumptionRate();
+		 double co2Expelled = personConfig.getCO2ExpelledRate();
+		 GAS_RATIO = co2Expelled / o2Consumed;
 
-		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
+		 MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
 
 		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
 				 / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
 
-		 massO2MinimumLimit = min_o2_pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
+		 massO2MinimumLimit = MIN_O2_PRESSURE / fullO2PartialPressure * OXYGEN_CAPACITY;
 
-		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
+		 massO2NominalLimit = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit;
 
 		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
 		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
@@ -152,7 +150,7 @@ public class EVASuit extends Equipment
 				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
 		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
 				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - Suit target pressure");
-		 logger.config("                 Minimum O2 : " + Math.round(min_o2_pressure*100.0)/100.0 + " kPa -> "
+		 logger.config("                 Minimum O2 : " + Math.round(MIN_O2_PRESSURE*100.0)/100.0 + " kPa -> "
 				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - Safety limit");
 
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
@@ -291,7 +289,7 @@ public class EVASuit extends Equipment
 //			}
 
 			double p = getAirPressure();
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
@@ -335,7 +333,7 @@ public class EVASuit extends Equipment
 
 		oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
 
-		double carbonDioxideProvided = ratioCO2ToO2 * (oxygenTaken - oxygenLacking);
+		double carbonDioxideProvided = GAS_RATIO * (oxygenTaken - oxygenLacking);
 		storeAmountResource(CO2_ID, carbonDioxideProvided);
 
 		return oxygenTaken - oxygenLacking;// * (malfunctionManager.getOxygenFlowModifier() / 100D);

@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -130,7 +132,7 @@ public abstract class Airlock implements Serializable {
 
 		operatorID = Integer.valueOf(-1);
 
-		occupantIDs = Collections.synchronizedSet(new HashSet<>());
+		occupantIDs = ConcurrentHashMap.newKeySet();
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 
@@ -868,7 +870,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void checkOccupantIDs() {
 		// If this person is not physically in this airlock, remove his id
-		for (int id: occupantIDs) {
+		Iterator<Integer> i = occupantIDs.iterator();
+		while (i.hasNext()) {
+			int id = i.next();
 			Building b = unitManager.getPersonByID(id).getBuildingLocation();
 			if (b != null) {
 				if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
@@ -1058,13 +1062,9 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isInAnyZone(int id) {
-		if (occupantIDs.contains(id)) {
-			return true;
-		}
-		if (awaitingInnerDoor.contains(id)) {
-			return true;
-		}
-		if (awaitingOuterDoor.contains(id)) {
+		if (occupantIDs.contains(id)
+			|| awaitingInnerDoor.contains(id)
+			|| awaitingOuterDoor.contains(id)) {
 			return true;
 		}
 		

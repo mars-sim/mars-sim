@@ -850,23 +850,8 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double oxygenTaken) {
-//		double oxygenLacking = 0;
-
-//		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
-
 		// Note: do NOT retrieve O2 here since calculateGasExchange() in
 		// CompositionOfAir is doing it for all inhabitants once per frame.
-
-//		oxygenLacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-//		addAmountDemand(OXYGEN_ID, oxygenTaken);
-
-//		double carbonDioxideProvided = ratio * (oxygenTaken - oxygenLacking);
-
-		// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
-		// is doing it for all inhabitants once per frame.
-
-//		storeAmountResource(CO2_ID, carbonDioxideProvided);
-
 		return oxygenTaken;
 	}
 

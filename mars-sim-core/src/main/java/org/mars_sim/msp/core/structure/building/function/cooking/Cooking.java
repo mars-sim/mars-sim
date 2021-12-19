@@ -864,13 +864,13 @@ public class Cooking extends Function implements Serializable {
 		if (!qualityMap.isEmpty())
 			qualityMap.clear();
 
-		// TODO: turn this into a task a person can do
+		// NOTE: turn this into a task a person can do
 		cleanUpKitchen();
 	}
 
 	/**
 	 * Cleans up the kitchen with cleaning agent and water.
-	 * TODO: turn this into a task that a person should do
+	 * NOTE: turn this into a task that a person should do
 	 */
 	private void cleanUpKitchen() {
 		

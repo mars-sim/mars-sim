@@ -91,21 +91,18 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 	public static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 	public static final int ICE_ID = ResourceUtil.iceID;
-
+	
+	/** The ratio of the amount of oxygen inhaled to the amount of carbon dioxide expelled. */
+	private static final double GAS_RATIO;
+	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi) */
+	private static final double MIN_O2_PRESSURE;
+	
 	// Data members
 	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
 	/** The rover's capacity for robot crew members. */
 	private int robotCrewCapacity = 0;
 
-	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
-	private double min_o2_pressure;
-	/** The full O2 partial pressure if at full tank. */
-	private double fullO2PartialPressure;
-	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
-	private double massO2NominalLimit;
-	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
-	private double massO2MinimumLimit;
 	/** The capacity of O2 in this rover (kg)  */
 	private double oxygenCapacity;
 	/** The rover's internal air pressure. */
@@ -114,6 +111,12 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private double temperature = 0; //NORMAL_TE
 	/** The rover's total crew internal volume. */
 	private double cabinAirVolume;
+	/** The full O2 partial pressure if at full tank. */
+	private double fullO2PartialPressure;
+	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
+	private double massO2NominalLimit;
+	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
+	private double massO2MinimumLimit;
 
 	/** The rover's lab activity spots. */
 	private List<LocalPosition> labActivitySpots;
@@ -136,6 +139,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The light utility vehicle currently docked at the rover. */
 	private LightUtilityVehicle luv;
 
+	static {
+		double o2Consumed = simulationConfig.getPersonConfig().getHighO2ConsumptionRate();
+		double cO2Expelled = simulationConfig.getPersonConfig().getCO2ExpelledRate();
+		GAS_RATIO = cO2Expelled/o2Consumed;
+		
+		MIN_O2_PRESSURE = simulationConfig.getPersonConfig().getMinSuitO2Pressure();
+	}
+	
 	/**
 	 * Constructs a Rover object at a given settlement
 	 *
@@ -151,8 +162,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		robotOccupants = new UnitSet<>();
 
 		// Set crew capacity
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
+		VehicleSpec spec = simulationConfig.getVehicleConfiguration().getVehicleSpec(type);
 		crewCapacity = spec.getCrewSize();
 		robotCrewCapacity = crewCapacity;
 
@@ -160,12 +170,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
 		oxygenCapacity = spec.getCargoCapacity(LifeSupportInterface.OXYGEN);
 
-		min_o2_pressure = SimulationConfig.instance().getPersonConfig().getMinSuitO2Pressure();
 		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS
 				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
-		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
-		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit*10_000.0)/10_000.0;
-
+		massO2MinimumLimit = Math.round(MIN_O2_PRESSURE / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
+		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit*10_000.0)/10_000.0;
+		
 		// Construct sick bay.
 		if (spec.hasSickbay()) {
 			sickbay = new SickBay(this, spec.getSickbayTechLevel(),
@@ -449,7 +458,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 //			result = false;
 
 		double p = getAirPressure();
-		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
+		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
 			logger.log(this, Level.WARNING, 60_000,
 					"Out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D
 					+ " kPa detected.");
@@ -500,6 +509,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double oxygenTaken) {
+		// Future: Adopt calculateGasExchange() in CompositionOfAir 
+		// for retrieving O2 here
 		double lacking = 0;
 
 		Vehicle v = null;
@@ -510,19 +521,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				v = getTowingVehicle();
 
 				lacking = v.retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				v.storeAmountResource(CO2_ID, oxygenTaken - lacking);
+				v.storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
 			}
 
 			else if (isInSettlement()) {
 				lacking = getSettlement().retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-				getSettlement().storeAmountResource(CO2_ID, oxygenTaken - lacking);
+				getSettlement().storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
 			}
 		}
 
 		else {
 
 			lacking = retrieveAmountResource(OXYGEN_ID, oxygenTaken);
-			storeAmountResource(CO2_ID, oxygenTaken - lacking);
+			storeAmountResource(CO2_ID, GAS_RATIO * (oxygenTaken - lacking));
 		}
 
 		return oxygenTaken - lacking; // * (malfunctionManager.getOxygenFlowModifier() / 100D);

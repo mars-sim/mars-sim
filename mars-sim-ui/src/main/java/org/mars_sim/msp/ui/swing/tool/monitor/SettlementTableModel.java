@@ -69,7 +69,8 @@ public class SettlementTableModel extends UnitTableModel {
 //	private final static int MORTAR = 14;
 	private final static int CEMENT = 15;
 
-
+	private static int TYPE = -1;
+	
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 16;
 	/** Names of Columns. */
@@ -154,7 +155,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * simulation.
 	 */
 	public SettlementTableModel() throws Exception {
-		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
+		super("Mars", "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
 //		if (GameManager.mode == GameMode.COMMAND)
@@ -165,6 +166,7 @@ public class SettlementTableModel extends UnitTableModel {
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
+		TYPE = 0;
 	}
 
 	/**
@@ -182,6 +184,8 @@ public class SettlementTableModel extends UnitTableModel {
 
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
+		
+		TYPE = 1;
 	}
 
 	/**
@@ -486,6 +490,10 @@ public class SettlementTableModel extends UnitTableModel {
 		return Math.round(settlement.getAmountResourceStored(resource) * 100.0) / 100.0;
 	}
 
+	public int getType() {
+		return TYPE;
+	}
+	
 	/**
 	 * Prepares the model for deletion.
 	 */

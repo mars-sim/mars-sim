@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -71,12 +70,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	private static final int STATUS_HEIGHT = 25;
 	private static final int WIDTH = 1366;
-	private static final int HEIGHT = 512;
+	private static final int HEIGHT = 480;
 
 	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// Added an custom icon for each tab
-	public static final String BASE_ICON = Msg.getString("icon.base"); //$NON-NLS-1$
+	public static final String COLONY_ICON = Msg.getString("icon.colony"); //$NON-NLS-1$
+	public static final String MARS_ICON = Msg.getString("icon.mars"); //$NON-NLS-1$
 	public static final String BOT_ICON = Msg.getString("icon.bot"); //$NON-NLS-1$
 	public static final String MISSION_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
 	public static final String VEHICLE_ICON = Msg.getString("icon.vehicle"); //$NON-NLS-1$
@@ -97,20 +97,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String BAR_ICON = Msg.getString("icon.bar"); //$NON-NLS-1$
 	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
 
-
 	// Data members
-	private boolean allSettlements = false;
-
 	private WebTabbedPane tabsSection;
 	// Note: may use JideTabbedPane instead
-
 	private WebLabel rowCount;
-
 	/** Tab showing historical events. */
 	private EventTab eventsTab;
-
-//	private MonitorTab oldTab = null;
-
 	private WebButton buttonPie;
 	private WebButton buttonBar;
 	private WebButton buttonRemoveTab;
@@ -122,16 +114,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	/** Settlement Combo box */
 	private WebComboBox settlementListBox;
-
-	private MainWindow mainWindow;
-
 	private WebPanel statusPanel;
 
 	private JTable table;
 	private JTable rowTable;
-
-//	private Searchable searchable;
-//	private SearchableBar searchBar;
 
 	private Settlement selectedSettlement;
 	private List<Settlement> settlementList;
@@ -144,8 +130,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
 		super(TITLE, desktop);
-
-		mainWindow = desktop.getMainWindow();
 
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout(5, 5));
@@ -221,19 +205,25 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void addAllTabs() {
 		// Add tabs into the table
 		try {
+			if (getSettlements().size() > 1) {
+				addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
+			}
+
+			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
+			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
 			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement), true, BOT_ICON));
+			
+			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
+			
 			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
+			
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
+			
 			addTab(new FoodInventoryTab(this));
 			addTab(new TradeTab(this));
 			addTab(new MissionTab(this));
-			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, BASE_ICON));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
-			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
-
-			// People from each settlement
-			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
 
 		} catch (Exception e) {
 			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
@@ -506,6 +496,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		MonitorTab selectedTab = getSelected();
 		if (selectedTab == null)
 			return;
+		
+		int index = tabsSection.indexOfComponent(selectedTab);
+		// if it's the all settlements tab, exit 
+		if (index == 0)
+			return;
+		
 		MonitorModel model = selectedTab.getModel();
 		TableTab tableTab = null;
 		JTable table = null;
@@ -527,7 +523,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonDetails.setEnabled(true);
 
 				UnitTableModel unitTableModel = (UnitTableModel)model;
-//				unitTableModel.clear();
 
 				if (model instanceof RobotTableModel) {
 					unitTableModel = new RobotTableModel(selectedSettlement);
@@ -539,7 +534,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				}
 				else if (model instanceof SettlementTableModel) {
 					unitTableModel = new SettlementTableModel(selectedSettlement);
-					newTab = new UnitTab(this, unitTableModel, true, BASE_ICON);
+					newTab = new UnitTab(this, unitTableModel, true, COLONY_ICON);
 				}
 				else if (model instanceof VehicleTableModel) {
 					unitTableModel = new VehicleTableModel(selectedSettlement);
@@ -739,7 +734,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void addTab(MonitorTab newTab) {
 		tabsSection.addTab("", newTab.getIcon(), newTab,  newTab.getName());
-		logger.config("Just added " + newTab.getName() + " Tab in Monitor Tool.");
+//		logger.config("Just added " + newTab.getName() + " Tab in Monitor Tool.");
 	}
 
 	/**
@@ -868,19 +863,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		buttonMissions = null;
 		buttonFilter = null;
 		buttonProps = null;
-
 		desktop = null;
-
-		mainWindow = null;
-
 		statusPanel = null;
-
 		table = null;
 		rowTable = null;
-
-//		searchable = null;
-//		searchBar = null;
-
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
