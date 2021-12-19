@@ -64,9 +64,9 @@ public class TendGreenhouse extends Task implements Serializable {
 	// Data members
 	/** The greenhouse the person is tending. */
 	private Farming greenhouse;
-	/** The building where the greenhouse the person is tending. */
-	private Building farmBuilding;
-
+	/** The task accepted for the duration. */
+	private TaskPhase acceptedTask;
+	
 	/**
 	 * Constructor.
 	 *
@@ -74,7 +74,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public TendGreenhouse(Person person) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 20D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 10D);
 
 		if (person.isOutside()) {
 			endTask();
@@ -82,39 +82,42 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		farmBuilding = getAvailableGreenhouse(person);
+		Building farmBuilding = getAvailableGreenhouse(person);
 
 		if (farmBuilding != null) {
 
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			this.walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
+			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 
-			TaskPhase newTaskPhase = null;
-			int rand = RandomUtil.getRandomInt(20);
-
-			if (rand == 0)
-				newTaskPhase = INSPECTING;
-
-			else if (rand == 1)
-				newTaskPhase = CLEANING;
-
-			else if (rand == 2)
-				newTaskPhase = SAMPLING;
-
-			else if (rand == 3)
-				newTaskPhase = GROWING_TISSUE;
-
-			else {
-				if (greenhouse.getNumCrops2Plant() > 0)
-					newTaskPhase = TRANSFERRING_SEEDLING;
-				else
-					newTaskPhase = TENDING;
+			if (acceptedTask == null) {
+				int rand = RandomUtil.getRandomInt(20);
+	
+				if (rand == 0)
+					acceptedTask = INSPECTING;
+	
+				else if (rand == 1)
+					acceptedTask = CLEANING;
+	
+				else if (rand == 2)
+					acceptedTask = SAMPLING;
+	
+				else if (rand == 3)
+					acceptedTask = GROWING_TISSUE;
+	
+				else {
+					if (greenhouse.getNumCrops2Plant() > 0)
+						acceptedTask = TRANSFERRING_SEEDLING;
+					else
+						acceptedTask = TENDING;
+				}
+	
+//				logger.info(farmBuilding, worker, 10_000, "Accepted the task of " + acceptedTask.getName() + ".");
+				
+				addPhase(acceptedTask);
+				setPhase(acceptedTask);
 			}
-
-			addPhase(newTaskPhase);
-			setPhase(newTaskPhase);
 		}
 		else {
 			logger.log(person, Level.WARNING, 0, "Could not find a greenhouse to tend.");
@@ -138,7 +141,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		farmBuilding = getAvailableGreenhouse(robot);
+		Building farmBuilding = getAvailableGreenhouse(robot);
 		if (farmBuilding != null) {
 			greenhouse = farmBuilding.getFarming();
 
@@ -185,12 +188,14 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double tendingPhase(double time) {
 
-		double workTime = time;
+		double workTime = 0;
 
 		if (isDone()) {
 			return time;
 		}
 
+		Building farmBuilding = greenhouse.getBuilding();
+		
 		// Check if greenhouse has malfunction.
 		if (farmBuilding.getMalfunctionManager() != null && farmBuilding.getMalfunctionManager().hasMalfunction()) {
 			endTask();
@@ -199,26 +204,25 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		double mod = 0;
 
-		if (worker instanceof Person) {
-			mod = 6D;
+		if (worker.getUnitType() == UnitType.PERSON) {
+			mod = 2D;
 		}
 
-		else {//if (robot != null) {
-			mod = 4D;
+		else {
+			mod = 1D;
 		}
 
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
 		if (greenhouseSkill <= 0) {
-			mod += RandomUtil.getRandomDouble(.25);
+			mod *= RandomUtil.getRandomDouble(.5, 1.0);
 		} else {
-			mod += RandomUtil.getRandomDouble(.25) + 1.25 * greenhouseSkill;
+			mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
 		}
 
-		workTime *= mod;
+		workTime = time * mod;
 
-		// Divided by mod to get back any leftover real time
-		double remainingTime = greenhouse.addWork(workTime, this, worker);
+		double modRemainingTime = greenhouse.addWork(workTime, this, worker);
 
 		// Add experience
 		addExperience(time);
@@ -226,12 +230,28 @@ public class TendGreenhouse extends Task implements Serializable {
 		// Check for accident in greenhouse.
 		checkForAccident(farmBuilding, time, 0.005D);
 
-		if (remainingTime > 0) {
-			// Scale it back to the. Calculate used time
-			double usedTime = workTime - remainingTime;
-			return time - (usedTime / mod);
+		// Calculate used time
+		double usedTime = workTime - modRemainingTime;
+		
+		double remainingTime = 0;
+		
+		if (modRemainingTime > 0) {
+			// Divided by mod to get back any leftover real time
+			remainingTime = time - (usedTime / mod);
 		}
-		return 0;
+		
+//		logger.log(farmBuilding, worker, Level.INFO, 10_000,
+//				"mod: " + mod +
+//				"  time: " + time +
+//				"  workTime: " + workTime +
+//				"  usedTime: " + usedTime + 
+//				"  modRemainingTime: " + modRemainingTime +				
+//				"  remainingTime: " + remainingTime +
+//				"  TimeCompleted: " + getTimeCompleted() +
+//				"  duration: " + getDuration()		
+//				);
+		
+		return remainingTime;
 	}
 
 	public void setCropDescription(Crop needyCrop) {
@@ -253,7 +273,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (greenhouse.checkBotanyLab(type, worker))  {
 
-			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Growing "
+			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, "Growing "
 					+ type.getName() + Farming.TISSUE_CULTURE
 					+ " in the botany lab.", null);
 			return 0;
@@ -340,7 +360,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					Conversion.capitalize(type.getName()) + Farming.TISSUE_CULTURE
 						+ " for lab work"));
 
-				logger.log(farmBuilding, worker, Level.INFO, 30_000,
+				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
 						"Sampling " + type.getName() + Farming.TISSUE_CULTURE
 						+ " in the botany lab.", null);
 			}

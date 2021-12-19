@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -40,11 +41,11 @@ public class Environment implements Serializable, Temporal {
 	 * @param clock The Mars clock
 	 * @throws Exception if Mars could not be constructed.
 	 */
-	public Environment(MarsClock clock) {
+	public Environment(Simulation sim, MarsClock clock) {
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo(clock);
 		// Initialize weather
-		weather = new Weather(clock, orbitInfo);
+		weather = new Weather(sim, clock, orbitInfo);
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures(clock, orbitInfo, weather);
 		// Cyclic dependency !!!!

@@ -188,7 +188,6 @@ implements MouseListener {
 
 		// Prepare crop table
 		WebTable cropTable = new WebTable(cropTableModel){
-			private static final long serialVersionUID = 1L;
 
 			public Component prepareRenderer(TableCellRenderer renderer,int Index_row, int Index_col) {
 			                Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
@@ -228,7 +227,8 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
-
+		cropTable.setAutoCreateRowSorter(true);
+		
 		TableStyle.setTableStyle(cropTable);
 		tableScrollPanel.setViewportView(cropTable);
 
@@ -271,10 +271,10 @@ implements MouseListener {
 
        	// Set up crop combo box model.
 		List<String> nameList = cropConfig.getCropTypeNames();
-		cropCache = new ArrayList<String>(nameList);
-		comboBoxModel = new DefaultComboBoxModel<String>();
+		cropCache = new ArrayList<>(nameList);
+		comboBoxModel = new DefaultComboBoxModel<>();
 
-		tooltipArray = new ArrayList<String>();
+		tooltipArray = new ArrayList<>();
 
 		Iterator<String> i = cropCache.iterator();
 		int j = 0;
@@ -286,7 +286,7 @@ implements MouseListener {
 		}
 
 		// Create comboBox.
-		comboBox = new JComboBoxMW<String>(comboBoxModel);
+		comboBox = new JComboBoxMW<>(comboBoxModel);
 
 		// Use tooltip to display the crop parameters for each crop in the combobox
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
@@ -319,7 +319,7 @@ implements MouseListener {
 		// Create list model
 		listModel = new ListModel();
 		// Create list
-		list = new JList<String>(listModel);
+		list = new JList<>(listModel);
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {

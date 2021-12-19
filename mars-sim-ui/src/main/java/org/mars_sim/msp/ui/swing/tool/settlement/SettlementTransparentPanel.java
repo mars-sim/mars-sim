@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @date 2021-12-07
+ * @date 2021-12-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -79,7 +80,7 @@ public class MBTIPersonality implements Serializable {
 	/** The person's MBTI */
 	public MBTIType mbtiType;
 
-	private static Map<MBTIType, String> descriptor;
+	private static EnumMap<MBTIType, String> descriptor;
 	
 	// Add four MBTI scores
 	public static final int INTROVERSION_EXTRAVERSION = 0;
@@ -117,7 +118,7 @@ public class MBTIPersonality implements Serializable {
 	}
 	
 	static {
-		descriptor = new HashMap<>();
+		descriptor = new EnumMap<>(MBTIType.class);
 		descriptor.put(MBTIType.ISTP, "Analyzer");
 		descriptor.put(MBTIType.ISTJ, "Inspector");
 		descriptor.put(MBTIType.ISFP, "Supporter");
@@ -382,18 +383,17 @@ public class MBTIPersonality implements Serializable {
 		if (p == null) return; // TODO: why getting NPE when loading from a sim ?
 		
 		Collection<Person> localGroup = p.getLocalGroup();
-		PhysicalCondition condition = p.getPhysicalCondition();
 
 		// Introverts reduce stress when alone.
-		if (isIntrovert() && (localGroup.size() == 0)) {
+		if (isIntrovert() && localGroup.isEmpty()) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-			condition.addStress(-solitudeStressModifier);
+			p.getPhysicalCondition().addStress(-solitudeStressModifier);
 		}
 
 		// Extroverts reduce stress when with company.
-		if (isExtrovert() && (localGroup.size() > 0)) {
+		if (isExtrovert() && !localGroup.isEmpty()) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-			condition.addStress(-companyStressModifier);
+			p.getPhysicalCondition().addStress(-companyStressModifier);
 		}
 
 	}

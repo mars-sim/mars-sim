@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2021-11-28
+ * @date 2021-12-17
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
@@ -36,7 +35,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 
-//	private int capCache;
 	private int innerDoorCache;
 	private int outerDoorCache;
 	private int occupiedCache;
@@ -48,7 +46,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
 
-//	private WebLabel capLabel;
 	private JTextField innerDoorLabel;
 	private JTextField outerDoorLabel;
 	private JTextField occupiedLabel;
@@ -58,7 +55,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JTextField cycleTimeLabel;
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
-
 
 	private UnitListPanel<Person> occupants;
 	private UnitListPanel<Person> reservationList;
@@ -120,7 +116,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create occupiedLabel
 		occupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.occupied"),
-									 eva.getNumOccupied(), null);
+									 eva.getNumInChamber(), null);
 
 		// Create emptyLabel
 		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
@@ -188,8 +184,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 
 		// Update occupiedLabel
-		if (occupiedCache != eva.getNumOccupied()) {
-			occupiedCache = eva.getNumOccupied();
+		if (occupiedCache != eva.getNumInChamber()) {
+			occupiedCache = eva.getNumInChamber();
 			occupiedLabel.setText(Integer.toString(occupiedCache));
 		}
 
@@ -200,7 +196,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 
 		// Update operatorLabel
-		if (!operatorCache.equals(eva.getOperatorName())) {
+		if (!operatorCache.equalsIgnoreCase(eva.getOperatorName())) {
 			operatorCache = eva.getOperatorName();
 			operatorLabel.setText(operatorCache);
 		}
@@ -249,7 +245,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		occupants.update();
 		reservationList.update();
 	}
-
 
 	@Override
 	public void destroy() {

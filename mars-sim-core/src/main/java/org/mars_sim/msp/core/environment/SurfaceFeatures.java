@@ -1,23 +1,23 @@
-/**
+/*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -33,7 +33,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
+	// May add back SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName())
 
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
@@ -57,23 +57,20 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
-	// the integer form of millisol
-	private int msolCache;
+	private boolean isNewMSol;
 
 	// non static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 
 	/** The locations that have been explored and/or mined. */
-	private List<ExploredLocation> exploredLocations;
+	private volatile List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
-	private Map<Coordinates, Double> opticalDepthMap;
-//	/** The last 20 values of solar irradiance by Coordinate and by Sol. */
-//	private Map<Coordinates, Map<Integer, List<Double>>> irradianceMap;
+	private volatile Map<Coordinates, Double> opticalDepthMap;
 	/** The most recent value of solar irradiance by Coordinate. */
-	private Map<Coordinates, Double> currentIrradiance;
+	private volatile Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
-	private Map<Coordinates, Double> irradianceCache;
+	private volatile Map<Coordinates, Double> irradianceCache;
 
 	private MarsClock currentTime;
 
@@ -81,8 +78,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Weather weather;
 	private OrbitInfo orbitInfo;
 
-//	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private static List<Landmark> landmarks = null;
+	
 	private static MissionManager missionManager;
 
 	/**
@@ -94,16 +91,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		this.orbitInfo = orbitInfo;
 		this.weather = weather;
 		this.currentTime = marsClock;
-
+	
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
-		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
-//		sites = new ConcurrentHashMap<>();
+		exploredLocations = new ArrayList<>(); // will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
-		irradianceCache = new ConcurrentHashMap<>();
-		currentIrradiance = new ConcurrentHashMap<>();
-		opticalDepthMap = new ConcurrentHashMap<>();
+		irradianceCache = new HashMap<>();
+		currentIrradiance = new HashMap<>();
+		opticalDepthMap = new HashMap<>();
 
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
@@ -182,16 +178,22 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return result;
 	}
 
+	/**
+	 * Gets the optical depth due to the martian dust
+	 * 
+	 * @param location
+	 * @return
+	 */
 	public double getOpticalDepth(Coordinates location) {
 		if (opticalDepthMap.containsKey(location))
 			return opticalDepthMap.get(location);
 		else {
-			return computeOpticalDepth(location); // opticalDepthStartingValue
+			return computeOpticalDepth(location);
 		}
 	}
 
 	/***
-	 * Computes the optical depth of the martian dust
+	 * Computes the optical depth due to the martian dust
 	 *
 	 * @param location
 	 * @return tau
@@ -238,7 +240,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 
 	/**
-	 * Gets the trend (positive if increasing, negative if decreasing)
+	 * Gets the trend (positive if getting bright, negative if getting dark)
 	 *
 	 * @param location
 	 * @return a number
@@ -283,17 +285,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (location == null)
 			return 0;
 
-		int msol = currentTime.getMillisolInt();
-
-		if (msolCache != msol) {
-			msolCache = msol;
+		if (isNewMSol) {
 
 			if (!currentIrradiance.isEmpty()) {
 				irradianceCache = currentIrradiance;
 				// Clear the current cache value of solar irradiance of all settlements
 				currentIrradiance.clear();
 			}
-//			logger.info("msolCache: " + msolCache + "   msol: " + msol);
 
 			// If location is not in cache, calculate the solar irradiance
 			double G_h = calculateSolarIrradiance(location);
@@ -659,6 +657,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
+		isNewMSol = pulse.isNewMSol();
+		
 		// Is this needed ? Mining Mission unreserves the site when it completes
 		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.
@@ -671,7 +671,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				boolean goodMission = false;
 
 				for(Mission mission : missionManager.getMissions()) {
-					if (mission instanceof Mining) {
+					if (mission.getMissionType() == MissionType.MINING) {
 						if (site.equals(((Mining) mission).getMiningSite())) {
 							goodMission = true;
 						}

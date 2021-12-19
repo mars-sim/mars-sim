@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -288,7 +289,7 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 
-		environment = new Environment(marsClock);
+		environment = new Environment(this, marsClock);
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
 
@@ -316,7 +317,10 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.setUnitManager(unitManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		// Initialize instances in TaskSchedule
+		TaskSchedule.initializeInstances(marsClock);
 	}
 
 	/**
@@ -343,7 +347,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-		environment = new Environment(marsClock);
+		environment = new Environment(this, marsClock);
 		orbit = new OrbitInfo(marsClock);
 
 		missionManager = new MissionManager();
@@ -370,9 +374,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Build objects
 		unitManager.addUnit(marsSurface);
 
-		// Initialize the Airlock instance
+		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-
+		// Initialize instances in TaskSchedule
+		TaskSchedule.initializeInstances(marsClock);
+		
 		// Gets the MarsSurface instance
 		Unit.setUnitManager(unitManager);
 
@@ -400,7 +406,7 @@ public class Simulation implements ClockListener, Serializable {
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
-		RadiationExposure.initializeInstances(marsClock);
+		RadiationExposure.initializeInstances(masterClock, marsClock);
 
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -641,8 +647,12 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		// Gets he MarsClock instance
 		EarthClock earthClock = masterClock.getEarthClock();
-		// Re-initialize the Airlock instance
+
+		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		// Initialize instances in TaskSchedule
+		TaskSchedule.initializeInstances(marsClock);
+		
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
 		SurfaceFeatures.initializeInstances(missionManager, simulationConfig.getLandmarkConfiguration());
@@ -675,7 +685,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager, relationshipManager);
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-		RadiationExposure.initializeInstances(marsClock);
+		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock);
 		HealthProblem.initializeInstances(medicalManager, eventManager);

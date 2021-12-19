@@ -311,9 +311,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 				// Get closest airlock building at settlement.
 				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
 				if (s != null) {
-					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity());
+					interiorObject = (Building)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					if (interiorObject == null)
-						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
+						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					logger.log(person, Level.FINE, 4_000,
 							"Found " + ((Building)interiorObject).getNickName()
 							+ " as the closet building with an airlock to enter.");
@@ -675,14 +675,15 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param person the person.
 	 * @param        double xLocation the destination's X location.
 	 * @param        double yLocation the destination's Y location.
+	 * @param ingress is the person ingressing ?
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos) {
+	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
 		Airlock result = null;
 
 		Settlement s = worker.getSettlement();
 		if (s != null) {
-			result = s.getClosestWalkableAvailableAirlock(worker, pos);
+			result = s.getClosestWalkableAvailableAirlock(worker, pos, ingress);
 		}
 
 		else if (worker.isInVehicle()) {
@@ -700,12 +701,25 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * the person's current location.
 	 *
 	 * @param person the person.
+	 * ?
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getWalkableAvailableAirlock(Worker worker) {
-		return getClosestWalkableAvailableAirlock(worker, worker.getPosition());
+	public static Airlock getWalkableAvailableAirlock(Worker worker, boolean ingress) {
+		return getClosestWalkableAvailableAirlock(worker, worker.getPosition(), ingress);
 	}
 
+	/**
+	 * Gets an available airlock for egress to a given location that has a walkable path from
+	 * the person's current location.
+	 *
+	 * @param person the person.
+	 * ?
+	 * @return airlock or null if none available
+	 */
+	public static Airlock getWalkableAvailableEgressAirlock(Worker worker) {
+		return getClosestWalkableAvailableAirlock(worker, worker.getPosition(), false);
+	}
+	
 	/**
 	 * Unload any held Equipment back to a Vehicle
 	 * @param destination

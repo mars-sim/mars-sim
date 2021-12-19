@@ -126,7 +126,7 @@ public class Walk extends Task implements Serializable {
 
 					if (goodEVASuit) {
 						// Walk to nearest emergency airlock in settlement.
-						Airlock airlock = settlement.getClosestAvailableAirlock(person);
+						Airlock airlock = settlement.getClosestAvailableAirlock(person, true);
 						if (airlock != null) {
 							targetObject = (LocalBoundedObject) airlock.getEntity();
 							walkToSettlement = true;
@@ -285,7 +285,7 @@ public class Walk extends Task implements Serializable {
 				MissionMember member = i.next();
 				if (member != person) {
 					if (member.isInSettlement()) {
-						result = member.getSettlement().getClosestAvailableAirlock(person);
+						result = member.getSettlement().getClosestAvailableAirlock(person, true);
 					} else if (member.isInVehicle()) {
 						Vehicle vehicle = member.getVehicle();
 						if (vehicle instanceof Airlockable) {
@@ -306,7 +306,7 @@ public class Walk extends Task implements Serializable {
 			while (i.hasNext() && (result == null)) {
 				Settlement settlement = i.next();
 				if (person.getCoordinates().equals(settlement.getCoordinates())) {
-					result = settlement.getClosestAvailableAirlock(person);
+					result = settlement.getClosestAvailableAirlock(person, true);
 				}
 			}
 		}

@@ -137,7 +137,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		
 		updateButtons();
 		
-		setResizable(false);
+		setResizable(true);
 		setMaximizable(true);
 		setVisible(true);
 	

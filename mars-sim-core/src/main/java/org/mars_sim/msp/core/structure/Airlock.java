@@ -9,11 +9,14 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -25,6 +28,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 // see discussions on Airlocks for Mars Colony at
@@ -87,11 +91,11 @@ public abstract class Airlock implements Serializable {
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 
-	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
-    private Set<Integer> occupantIDs;
-
 	/** The person currently operating the airlock. */
     private Integer operatorID;
+
+	/** People currently within airlock's zone 1, 2 and 3 only (but NOT zone 0 and 4). */
+    private Set<Integer> occupantIDs;
 
 	/** People waiting for the airlock by the inner door. */
     private Set<Integer> awaitingInnerDoor;
@@ -128,7 +132,7 @@ public abstract class Airlock implements Serializable {
 
 		operatorID = Integer.valueOf(-1);
 
-		occupantIDs = new HashSet<>();
+		occupantIDs = ConcurrentHashMap.newKeySet();
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 
@@ -228,6 +232,15 @@ public abstract class Airlock implements Serializable {
 		return reservationMap.keySet();
 	}
 
+	/**
+	 * Gets the number of people reserved
+	 *
+	 * @return
+	 */
+	public int getReservedNum() {
+		return reservationMap.size();
+	}
+	
 	/**
 	 * Gets the reservation map
 	 *
@@ -349,6 +362,8 @@ public abstract class Airlock implements Serializable {
 
 		if (result) {
 			// Add the person's ID to the occupant ID list
+			// Define occupants as being in zone 1, 2, and 3.
+			// Being in zone 0 and 4 are not considered an airlock occupant.
 			occupantIDs.add(id);
 		}
 
@@ -564,22 +579,31 @@ public abstract class Airlock implements Serializable {
      */
     public abstract Set<Integer> getZoneOccupants(int zone);
 
+    /**
+     * Gets the exact number of occupants who are within the chamber
+     * 
+     * @return
+     */
+    public abstract int getNumInChamber();
+    
 	/**
 	 * Obtains a prioritized pool of candidates from a particular zone
 	 *
 	 * return a pool of candidates
 	 */
 	private Set<Integer> getOperatorPool() {
-		Set<Integer> pool = new HashSet<>();
-
+		
 		if (!occupantIDs.isEmpty()) {
 			// Priority 1 : zone 2 - inside the chambers
 			return occupantIDs;
 		}
 		else {
 			// Priority 2 : zone 3 - on the inside of the outer door
-			pool = getZoneOccupants(3);
-
+			Set<Integer> pool = getZoneOccupants(3);
+			if (!pool.isEmpty()) {
+				return pool;
+			}
+			
 			// Priority 3 : zone 1 - on the inside of the inner door
 			if (pool.isEmpty()) {
 				pool = getZoneOccupants(1);
@@ -587,17 +611,16 @@ public abstract class Airlock implements Serializable {
 
 			// Priority 4 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
 			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty()) {
-				pool = awaitingOuterDoor;
+				return awaitingOuterDoor;
 			}
 
 			// Priority 3 : zone 0 - on the outside of the inner door, thus at awaitingInnerDoor
 			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
 				return awaitingInnerDoor;
 			}
+			
+			return pool;
 		}
-
-
-		return pool;
 	}
 
 	/**
@@ -607,20 +630,22 @@ public abstract class Airlock implements Serializable {
 	 */
 	private void electAnOperator(Set<Integer> pool) {
 
-		// Select a person to become the operator
-		Person selected = null;
-		Integer selectedID = Integer.valueOf(-1);
-
 		int size = pool.size();
 
+		if (size == 0)
+			return;
+		
 		if (size == 1) {
-			List<Integer> list = new ArrayList<>(pool);
-			int id = list.get(0);
+			int id = new ArrayList<>(pool).get(0);
 			operatorID = Integer.valueOf(id);
-			selected = getPersonByID(id);
+			logger.log(getPersonByID(id), Level.FINE, 4_000,
+					"Acted as the airlock operator.");
 		}
 
-		else if (size > 1) {
+		else {
+			Integer selectedID = Integer.valueOf(-1);
+			Person selected = null;
+
 			int evaExp = -1;
 			int evaLevel = -1;
 			for (Integer id : pool) {
@@ -631,7 +656,7 @@ public abstract class Airlock implements Serializable {
 					selectedID = id;
 				}
 
-				else if (level == evaExp) {
+				else if (level == evaLevel) {
 					int exp = p.getSkillManager().getSkillExp(SkillType.EVA_OPERATIONS);
 					if (exp > evaExp) {
 						selected = p;
@@ -641,7 +666,6 @@ public abstract class Airlock implements Serializable {
 			}
 
 			operatorID = selectedID;
-
 			logger.log(selected, Level.FINE, 4_000,
 					"Stepped up becoming the airlock operator.");
 		}
@@ -842,30 +866,73 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Check the occupants'id
+	 */
+	public void checkOccupantIDs() {
+		// If this person is not physically in this airlock, remove his id
+		Iterator<Integer> i = occupantIDs.iterator();
+		while (i.hasNext()) {
+			int id = i.next();
+			Building b = unitManager.getPersonByID(id).getBuildingLocation();
+			if (b != null) {
+				if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+					occupantIDs.remove(id);
+				}
+				else if (b.getEVA().getAirlock() != this) {
+					occupantIDs.remove(id);
+				}
+			}
+			
+			// Being in zone 0 or 4 is not considered an airlock occupant.
+			if (getZoneOccupants(0).contains(id)
+				|| getZoneOccupants(4).contains(id)) {
+				occupantIDs.remove(id);
+			}
+		}
+	}
+	
+	/**
+	 * Check the airlock operator
+	 */
+	public void checkOperator() {
+		// If no one is being assigned as an operator
+		if (operatorID.equals(Integer.valueOf(-1))) { 
+			// Choose a pool of candidates from a particular zone and elect an operator
+			electAnOperator(getOperatorPool());
+		}
+		// If the airlock already has an existing operator,
+		else {
+			
+			// Check to see if he's still inside or has left the airlock
+			if (!isInAnyZone(operatorID)) {
+				operatorID = Integer.valueOf(-1);
+			}
+			
+			electAnOperator(getOperatorPool());
+		}
+	}
+	
+	/**
 	 * Time passing for airlock. Check for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
 	 *
-	 * @param time amount of time (in millisols)
+	 * @param pulse
 	 */
-	public void timePassing(double time) {
+	public void timePassing(ClockPulse pulse) {
 
 		if (activated) {
 
-			if (transitioning)
+			double time = pulse.getElapsed();
+			
+			if (transitioning) {
 				addTime(time);
-
-			if (operatorID.equals(Integer.valueOf(-1))) {
-				if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
-					// Choose a pool of candidates from a particular zone and elect an operator
-					electAnOperator(getOperatorPool());
-				}
 			}
-			else {
-				// The airlock has an existing operator
-				if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {
-					// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
-					electAnOperator(getOperatorPool());
-				}
+
+			if (pulse.isNewMSol()) {
+				// Check occupants
+				checkOccupantIDs();
+				// Check the airlock operator
+				checkOperator();
 			}
 		}
 	}
@@ -887,7 +954,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if given person is currently in the airlock.
+	 * Checks if given person is currently in the airlock zone 1, 2, or 3.
 	 *
 	 * @param p the person to be checked
 	 * @return true if person is in airlock
@@ -989,6 +1056,21 @@ public abstract class Airlock implements Serializable {
 		return occupantIDs;
 	}
 
+	/**
+	 * Is this person's id in any zones (0 to 4)
+	 * @param id
+	 * @return
+	 */
+	public boolean isInAnyZone(int id) {
+		if (occupantIDs.contains(id)
+			|| awaitingInnerDoor.contains(id)
+			|| awaitingOuterDoor.contains(id)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Gets a collection of occupants' ids
 	 *

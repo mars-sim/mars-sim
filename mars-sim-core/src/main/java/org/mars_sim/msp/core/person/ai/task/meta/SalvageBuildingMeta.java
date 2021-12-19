@@ -57,7 +57,7 @@ public class SalvageBuildingMeta extends MetaTask {
         	return 0;
         
         // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+        if (EVAOperation.getWalkableAvailableAirlock(person, false) == null) {
             return 0;
         }
 

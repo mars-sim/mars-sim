@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Weather.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-17
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -12,13 +12,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -54,18 +51,7 @@ public class Weather implements Serializable, Temporal {
 
 	private static final int MILLISOLS_PER_UPDATE = 5; // one update per x millisols
 
-	private int msols;
-
-	private int checkStorm = 0;
-
-	/** The cache value of sol since the start of sim. */
-	private int solCache = 0;
-
-	private int lSCache = 0;
-
 	private static final double DX = 255D * Math.PI / 180D - Math.PI;
-
-
 	
 	// Opportunity Rover landed at coordinates 1.95 degrees south, 354.47 degrees
 	// east.
@@ -83,15 +69,18 @@ public class Weather implements Serializable, Temporal {
 	// A day is 1000 MSol so take 20 samples
 	private static final int MSOL_PER_SAMPLE = 1000/20;
 
-	private double dailyVariationAirPressure = RandomUtil.getRandomDouble(.01); // tentatively only
-	// TODO: compute the true dailyVariationAirPressure by the end of the day
+	private boolean isNewSol = true;
 
 	private int newStormID = 1;
 
+	private int checkStorm = 0;
+	// Note: compute the true dailyVariationAirPressure by the end of the day	
+	private double dailyVariationAirPressure = RandomUtil.getRandomDouble(.01); // tentatively only
+	
 	// Singleton only updated in one method
 	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap = new HashMap<>();
 	
-	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
+	private List<Coordinates> coordinateList = new ArrayList<>();
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
 	private transient Map<Coordinates, Double> airPressureCacheMap;
@@ -106,8 +95,11 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	
 	private MarsClock marsClock;
+	
+	private Simulation sim;
 
-	public Weather(MarsClock clock, OrbitInfo orbitInfo) {
+	public Weather(Simulation sim, MarsClock clock, OrbitInfo orbitInfo) {
+		this.sim = sim; 
 		this.marsClock = clock;
 		this.orbitInfo = orbitInfo;
 	}
@@ -155,7 +147,7 @@ public class Weather implements Serializable, Temporal {
 		double newSpeed = -1;
 
 		if (windSpeedCacheMap == null)
-			windSpeedCacheMap = new ConcurrentHashMap<>();
+			windSpeedCacheMap = new HashMap<>();
 
 		// On sol 214 in this list of Viking wind speeds, 25.9 m/sec (93.24 km/hr) was
 		// recorded.
@@ -168,16 +160,15 @@ public class Weather implements Serializable, Temporal {
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
 		double rand = RandomUtil.getRandomDouble(.75);
-		
+
 		if (windSpeedCacheMap.containsKey(location)) {
-			// check for the passing of each day
-			int newSol = marsClock.getMissionSol();
 			double currentSpeed = windSpeedCacheMap.get(location);
-			if (solCache != newSol) {
+			
+			// check for the passing of each day
+			if (isNewSol) {
 				Settlement focus = CollectionUtils.findSettlement(location);
 				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
-				if (ds != null)
-				{
+				if (ds != null) {
 					double dustSpeed = ds.getSpeed();
 					switch (ds.getType()) {
 						case DUST_DEVIL:
@@ -258,7 +249,7 @@ public class Weather implements Serializable, Temporal {
 		int newDir = RandomUtil.getRandomInt(359);
 
 		if (windDirCacheMap == null)
-			windDirCacheMap = new ConcurrentHashMap<>();
+			windDirCacheMap = new HashMap<>();
 
 		if (windDirCacheMap.containsKey(location))
 			// TODO: should the ratio of the weight of the past direction and present
@@ -303,10 +294,10 @@ public class Weather implements Serializable, Temporal {
 
 		// Lazy instantiation of airPressureCacheMap.
 		if (airPressureCacheMap == null) {
-			airPressureCacheMap = new ConcurrentHashMap<>();
+			airPressureCacheMap = new HashMap<>();
 		}
 
-		if (msols % MILLISOLS_PER_UPDATE == 1) {
+		if (marsClock.getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
 			double newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
 			return newP;
@@ -373,10 +364,10 @@ public class Weather implements Serializable, Temporal {
 
 		// Lazy instantiation of temperatureCacheMap.
 		if (temperatureCacheMap == null) {
-			temperatureCacheMap = new ConcurrentHashMap<>();
+			temperatureCacheMap = new HashMap<>();
 		}
 
-		if (msols % MILLISOLS_PER_UPDATE == 0) {
+		if (marsClock.getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
 			return newT;
@@ -532,7 +523,7 @@ public class Weather implements Serializable, Temporal {
 
 			double windDt = 0;
 			if (windSpeedCacheMap == null)
-				windSpeedCacheMap = new ConcurrentHashMap<>();
+				windSpeedCacheMap = new HashMap<>();
 
 			if (windSpeedCacheMap.containsKey(location))
 				windDt = 10.0 / (1 + Math.exp(-.15 * windSpeedCacheMap.get(location)));
@@ -554,7 +545,7 @@ public class Weather implements Serializable, Temporal {
 			
 			double previousTemperature = 0;
 			if (temperatureCacheMap == null) {
-				temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
+				temperatureCacheMap = new HashMap<>();
 			}
 
 			if (temperatureCacheMap.containsKey(location)) {
@@ -618,12 +609,12 @@ public class Weather implements Serializable, Temporal {
 	 */
 	public boolean timePassing(ClockPulse pulse) {
 
-		MarsClock marsTime = pulse.getMarsTime();
-
+		isNewSol = pulse.isNewSol();
+		
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-		msols = marsTime.getMillisolInt();
-		int remainder = msols % MSOL_PER_SAMPLE;
-		if (pulse.isNewSol() || remainder == 0) {
+		int msol = marsClock.getMillisolInt();
+		int remainder = msol % MSOL_PER_SAMPLE;
+		if (isNewSol || remainder == 0) {
 			coordinateList.forEach(location -> {
 				
 				MSolDataLogger<DailyWeather> dailyRecordMap = null;				
@@ -647,7 +638,7 @@ public class Weather implements Serializable, Temporal {
 		}
 
 		// check for the passing of each day
-		if (pulse.isNewSol()) {
+		if (isNewSol) {
 	
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
@@ -663,11 +654,9 @@ public class Weather implements Serializable, Temporal {
 			double lS = Math.round(orbitInfo.getL_s() * 10.0) / 10.0;
 			int lSint = (int) lS;
 
-			if (lSCache != lSint) {
-				lSCache = lSint;
-				if (lSint == 230)
-					// reset the counter once a year
-					checkStorm = 0;
+			if (lSint == 230) {
+				// reset the counter once a year
+				checkStorm = 0;
 			}
 
 			// Arbitrarily assume
@@ -677,7 +666,7 @@ public class Weather implements Serializable, Temporal {
 			// By doing curve-fitting a cosine curve
 			// (5% - .05%)/2 = 2.475
 
-			double probability = -2.475 * Math.cos(lSCache * Math.PI / 180D - DX) + (2.475 + .05);
+			double probability = -2.475 * Math.cos(lS * Math.PI / 180D - DX) + (2.475 + .05);
 			// probability is 5% at max
 			double size = dustStorms.size();
 			// Artificially limit the # of dust storm to 10
@@ -687,18 +676,17 @@ public class Weather implements Serializable, Temporal {
 
 				// All of the observed storms have begun within 50-60 degrees of Ls of
 				// perihelion (Ls ~ 250);
-				createDustDevils(pulse.getContext(), probability, lS, marsTime);
+				createDustDevils(probability, lS);
 			}
 
 			else if (dustStorms.size() <= 20 && checkStorm < 200) {
 
-				createDustDevils(pulse.getContext(), probability, lS, marsTime);
+				createDustDevils(probability, lS);
 			}
 
 			checkOnDustStorms();
 			
 			// computeDailyVariationAirPressure();
-			solCache = pulse.getMarsTime().getMissionSol();
 		}
 		return true;
 	}
@@ -797,9 +785,8 @@ public class Weather implements Serializable, Temporal {
 	 * @param probability
 	 * @param L_s_int
 	 */
-	private void createDustDevils(Simulation sim, double probability, double L_s, MarsClock marsTime) {
-		UnitManager unitManager = sim.getUnitManager();
-		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
+	private void createDustDevils(double probability, double ls) {
+		List<Settlement> settlements = new ArrayList<>(sim.getUnitManager().getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
@@ -822,7 +809,7 @@ public class Weather implements Serializable, Temporal {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					logger.info(s, "On L_s = " + Math.round(L_s * 100.0) / 100.0
+					logger.info(s, "On L_s = " + Math.round(ls * 100.0) / 100.0
 									+ ", " + ds.getName()); 
 
 				}

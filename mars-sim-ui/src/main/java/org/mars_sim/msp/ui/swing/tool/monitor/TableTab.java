@@ -208,9 +208,6 @@ abstract class TableTab extends MonitorTab {
 			};
 		}
 
-		// Apply sorting for multiple columns
-//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
 		// Enable use of RowFilter with Swingbits
 		// see https://github.com/eugener/oxbow/wiki/Table-Filtering
 		// TableRowFilterSupport.forTable(table).apply();
@@ -231,7 +228,12 @@ abstract class TableTab extends MonitorTab {
 		scroller.setCorner(WebScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
+		
+		// setAutoCreateRowSorter() and MultisortTableHeaderCellRenderer would cause no tab to be created
+//		table.setAutoCreateRowSorter(true);
+		// Apply sorting for multiple columns
+//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		
 		TableStyle.setTableStyle(table);
 
 		add(scroller, BorderLayout.CENTER);
@@ -244,7 +246,7 @@ abstract class TableTab extends MonitorTab {
 			adjustColumnWidth(table);
 			// Note: may need to use SwingUtilities.invokeLater(() -> adjustColumnWidth(table))
 			// Update the selected row after each sorting
-			table.setUpdateSelectionOnSort(false);
+			table.setUpdateSelectionOnSort(true);
 		}
 	}
 

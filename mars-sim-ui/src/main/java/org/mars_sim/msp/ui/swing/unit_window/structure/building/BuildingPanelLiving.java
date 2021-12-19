@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelLiving.java
- * @version 3.2.0 2021-06-20
+ * @Date 2021-12-18
  * @author Manny Kung
  */
 

@@ -145,7 +145,7 @@ implements Serializable {
     public static boolean canSalvage(Person person) {
 
         // Check if person can exit the settlement airlock.
-        Airlock airlock = getWalkableAvailableAirlock(person);
+        Airlock airlock = getWalkableAvailableEgressAirlock(person);
         if (airlock != null) {
             if(!ExitAirlock.canExitAirlock(person, airlock))
             	return false;

@@ -32,16 +32,11 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(CompositionOfAir.class.getName());
 
 	public static final double C_TO_K = 273.15;
 
 	private static final double AIRLOCK_VOLUME_IN_LITER =
 			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
-
-//	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
-//	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = .05;
 
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
@@ -181,8 +176,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	private double[][] standardMoles;
 
-//	private BuildingManager buildingManager;
-
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static PersonConfig personConfig;
@@ -229,7 +222,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 		sizeCache = size;
 
 		// CO2, H2O, N2, O2, Ar2, He, CH4...
-		// numGases = 5;
 
 		percent = new double[numGases][size];
 		partialPressure = new double[numGases][size];
@@ -422,7 +414,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 //							+ "  " + mass.length + " x " + mass[0].length);
 
 					for (int gas = 0; gas < numGases; gas++) {
-//						System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : gas (" + gas  + ")   out of " + buildings.size());
 
 						double molecularMass = getMolecularMass(gas);
 
@@ -463,8 +454,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		// Part 2
 		// calculate for each building the total pressure, total # of moles and
 		// percentage of composition
-//		for (Building b : buildings) {
-//			int id = b.getInhabitableID();
+
 			for (int id = 0; id < size; id++) {
 
 				double sum_p = 0, sum_nm = 0, sum_m = 0;// , sum_t = 0;
@@ -488,7 +478,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 //		}
 		// Part 3
 		// calculate for each building the percent composition
-//		for (Building b : buildings) {
 			for (int id = 0; id < size; id++) {
 				// calculate for each gas the % composition
 				for (int gas = 0; gas < numGases; gas++) {

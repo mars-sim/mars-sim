@@ -238,7 +238,7 @@ public class LifeSupport extends Function implements Serializable {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			if (occupants != null && occupants.size() > 0) {
+			if (occupants != null && !occupants.isEmpty()) {
 				// Make sure all occupants are actually in settlement inventory.
 				// If not, remove them as occupants.
 				Iterator<Person> i = occupants.iterator();

@@ -61,7 +61,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of fatigue threshold [millisols]. */
 	public static final int FATIGUE_THRESHOLD = 500;
 	/** The amount of stress threshold [millisols]. */
-	public static final int STRESS_THRESHOLD = 50;
+	public static final int STRESS_THRESHOLD = 65;
 
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
@@ -83,7 +83,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for fatigue. */
 	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for stress. */
-	private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
+	private static final double STRESS_PERFORMANCE_MODIFIER = .001D;
 	/** Performance modifier for energy. */
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
@@ -324,16 +324,12 @@ public class PhysicalCondition implements Serializable {
 	private void initializeHealthIndices() {
 		// Set up random physical healt index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
-
 //		fatigue = RandomUtil.getRandomRegressionInteger(50);
-		stress = RandomUtil.getRandomRegressionInteger(30);
-
+		stress = RandomUtil.getRandomRegressionInteger(20);
 		hunger = RandomUtil.getRandomRegressionInteger(200);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (200 - hunger) * 100;
-
 		performance = 1.0D - (50 - fatigue) * .002 - (50 - stress) * .002 - (200 - hunger) * .002;
-
 	}
 
 	/**
@@ -377,6 +373,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
 		if (alive) {
+			
 			double time = pulse.getElapsed();
 
 			// Check once a day only
@@ -384,17 +381,42 @@ public class PhysicalCondition implements Serializable {
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
 			}
+			
+			// Check once per msol (millisol integer)
+			if (pulse.isNewMSol()) {
+				// Calculate performance and most serious illness.
+				recalculatePerformance();
+				// Update radiation counter
+				radiation.timePassing(pulse);
+				
+				// Get stress factor due to settlement overcrowding
+				if (person.isInSettlement()) {
+					// Note: this stress factor is different from LifeSupport's timePassing's
+					//       stress modifier for each particular building
+					double stressFactor = person.getSettlement().getStressFactor(time);
+					// Update stress
+					addStress(stressFactor);
+				}
+				
+				int msol = pulse.getMarsTime().getMillisolInt();
+				if (msol % 7 == 0) {
 
-			// Check if a person is performing low aerobic tasks as such "teach", "walk", "yoga"
-            restingTask = person.getTaskDescription().toLowerCase().contains("eat")
-                    || person.getTaskDescription().toLowerCase().contains("drink")
-                    || person.getTaskDescription().toLowerCase().contains("meet")
-                    || person.getTaskDescription().toLowerCase().contains("relax")
-                    || person.getTaskDescription().toLowerCase().contains("rest")
-                    || person.getTaskDescription().toLowerCase().contains("sleep");
+					// Update starvation
+					checkStarvation(hunger);
+					// Update dehydration
+					checkDehydration(thirst);
+					
+					// Check for mental breakdown if person is at high stress
+					
+					// Check if person is at very high fatigue may collapse.
+
+					if (!isRadiationPoisoned)
+						checkRadiationPoisoning(time);
+				}
+			}
 
             double currentO2Consumption;
-			if (restingTask)
+			if (person.isRestingTask())
 				currentO2Consumption = personConfig.getLowO2ConsumptionRate();
 			else
 				currentO2Consumption = personConfig.getNominalO2ConsumptionRate();
@@ -402,8 +424,6 @@ public class PhysicalCondition implements Serializable {
 			// Check life support system
 			checkLifeSupport(time, currentO2Consumption, support);
 
-			// Update radiation counter
-			radiation.timePassing(pulse);
 			// Update the existing health problems
 			checkHealth(pulse);
 			// Update thirst
@@ -412,39 +432,6 @@ public class PhysicalCondition implements Serializable {
 			setFatigue(fatigue + time);
 			// Update hunger
 			setHunger(hunger + time * bodyMassDeviation);
-
-			// Note: this stress factor is different from LifeSupport's timePassing's
-			//       stress modifier for each particular building
-			// Get stress factor due to settlement overcrowding
-			if (person.isInSettlement()) {
-				double stressFactor = person.getSettlement().getStressFactor(time);
-				// Update stress
-				addStress(stressFactor);
-			}
-
-			// Note: Normal bodily function consume a minute amount of energy
-			// even if a person does not perform any tasks
-			// Note: removing this as reduce energy is already handled
-			// in the TaskManager and people are always performing tasks
-			// unless dead. - Scott
-			// reduceEnergy(time);
-
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % 7 == 0) {
-
-				// Update starvation
-				checkStarvation(hunger);
-				// Update dehydration
-				checkDehydration(thirst);
-				// Check for mental breakdown if person is at high stress,
-				// Check if person is at very high fatigue may collapse.
-
-				if (!isRadiationPoisoned)
-					checkRadiationPoisoning(time);
-			}
-
-			// Calculate performance and most serious illness.
-			recalculatePerformance();
 		}
 	}
 
@@ -918,7 +905,7 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
-	 * Adds the person's stress level.
+	 * Adds to a person's stress level.
 	 *
 	 * @param deltaStress
 	 */
@@ -1452,8 +1439,8 @@ public class PhysicalCondition implements Serializable {
 		serious = null;
 
 		// Check the existing problems. find most serious problem and how it
-		// affects performance. This is the performace baseline
-		for(HealthProblem problem : problems) {
+		// affects performance. This is the performance baseline
+		for (HealthProblem problem : problems) {
 			double factor = problem.getPerformanceFactor();
 			if (factor < maxPerformance) {
 				maxPerformance = factor;
@@ -1488,8 +1475,8 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High stress reduces performance.
-		if (stress > 90D) {
-			tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER / 2;
+		if (stress > 70D) {
+			tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER / 8;
 		} else if (stress > 50D) {
 			tempPerformance -= (stress - 50D) * STRESS_PERFORMANCE_MODIFIER / 4;
 		}

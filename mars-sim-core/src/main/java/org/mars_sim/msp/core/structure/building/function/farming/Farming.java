@@ -560,7 +560,7 @@ public class Farming extends Function implements Serializable {
 		double t = workTime;
 		Crop needyCropCache = null;
 		Crop needyCrop = getNeedyCrop(needyCropCache);
-		// NOTE: redesign addWork() to check on each food crop
+		// NOTE: Redesign addWork() to check on each food crop
 		while (needyCrop != null && t > MIN) {
 			// WARNING : ensure timeRemaining gets smaller
 			// or else creating an infinite loop

@@ -206,9 +206,19 @@ extends Airlock {
 		else if (zone == 1 || zone == 3)
 			return new HashSet<>();
 
+		// if in zone 2
 		return getOccupants();
     }
 
+    /**
+     * Gets the exact number of occupants who are within the chamber
+     * 
+     * @return
+     */
+    public int getNumInChamber() {
+    	return getNumOccupants();
+    }
+    
 	/**
 	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
 	 *
@@ -218,7 +228,7 @@ extends Airlock {
 	public int getNumOccupants() {
 		return getOccupants().size();
 	}
-
+    
 	/**
 	 * Gets a collection of occupants' ids
 	 *
