@@ -69,7 +69,7 @@ public class SettlementTableModel extends UnitTableModel {
 //	private final static int MORTAR = 14;
 	private final static int CEMENT = 15;
 
-	private static int TYPE = -1;
+	private int type = -1;
 	
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 16;
@@ -155,7 +155,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * simulation.
 	 */
 	public SettlementTableModel() throws Exception {
-		super("Mars", "SettlementTableModel.countingSettlements", //$NON-NLS-2$
+		super("All Settlements", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
 
 //		if (GameManager.mode == GameMode.COMMAND)
@@ -166,7 +166,7 @@ public class SettlementTableModel extends UnitTableModel {
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
-		TYPE = 0;
+		type = 0;
 	}
 
 	/**
@@ -176,8 +176,8 @@ public class SettlementTableModel extends UnitTableModel {
 	 * @param settlement
 	 */
 	public SettlementTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("SettlementTableModel.tabName"),
-				"SettlementTableModel.countingSettlements", //$NON-NLS-2$
+		super(Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
+				"SettlementTableModel.countingSettlements", 
 				columnNames, columnTypes);
 
 		addUnit(settlement);
@@ -185,7 +185,7 @@ public class SettlementTableModel extends UnitTableModel {
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 		
-		TYPE = 1;
+		type = 1;
 	}
 
 	/**
@@ -491,7 +491,7 @@ public class SettlementTableModel extends UnitTableModel {
 	}
 
 	public int getType() {
-		return TYPE;
+		return type;
 	}
 	
 	/**

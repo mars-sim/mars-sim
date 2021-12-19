@@ -33,11 +33,10 @@ public class ResourceProcess implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
-
+	/** Flag for change. */
+	private boolean flag;
+	/** is this process running ? */
 	private boolean runningProcess;
-
-//	/** The interval of time [in millisols] between each crop update call. */
-//	private double processInterval = 1.0;
 	/** The time accumulated [in millisols] for each crop update call. */
 	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
@@ -107,14 +106,34 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
+	 * Checks if the process has been flagged for change.
+	 *
+	 * @return true if the process has been flagged for change.
+	 */
+	public boolean isFlagged() {
+		return flag;
+	}
+
+	/**
+	 * Flag the process for change.
+	 *
+	 * @param value true if the flag is true.
+	 */
+	public void setFlag(boolean value) {
+		flag = value;
+	}
+	
+	/**
 	 * Adds work time to toggling the process on or off.
 	 *
 	 * @param time the amount (millisols) of time to add.
+	 * @return true if done
 	 */
-	public void addToggleWorkTime(double time) {
+	public boolean addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
 		if (toggleRunningWorkTime >= definition.getToggleDuration()) {
 			toggleRunningWorkTime = 0D;
+			
 			runningProcess = !runningProcess;
 			if (runningProcess) {
 				logger.fine("Done turning on " + name);
@@ -124,7 +143,11 @@ public class ResourceProcess implements Serializable {
 
 			// Reset for next toggle
 			resetToggleTime(marsClock.getMissionSol(), marsClock.getMillisolInt());
+			
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**

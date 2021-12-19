@@ -1168,8 +1168,8 @@ public abstract class Vehicle extends Unit
 			malfunctionManager.timePassing(pulse);
 		}
 
-		if (haveStatusType(StatusType.MALFUNCTION)) {
-			if (malfunctionManager.getMalfunctions().size() == 0)
+		if (haveStatusType(StatusType.MALFUNCTION)
+			&& malfunctionManager.getMalfunctions().size() == 0) {
 				removeStatus(StatusType.MALFUNCTION);
 		}
 

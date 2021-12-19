@@ -106,11 +106,11 @@ public class EVASuit extends Equipment
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
 	private static final double MIN_O2_PRESSURE;
 	/** The full O2 partial pressure if at full tank. */
-	private static final double fullO2PartialPressure;
+	private static final double FULL_O2_PARTIAL_PRESSURE;
 	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
-	private static final double massO2NominalLimit;
+	private static final double MASS_O2_NOMINAL_LIMIT;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
-	private static final double massO2MinimumLimit;
+	private static final double MASS_O2_MINIMUM_LIMIT;
 	
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
@@ -137,21 +137,21 @@ public class EVASuit extends Equipment
 
 		 MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
 
-		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
+		 FULL_O2_PARTIAL_PRESSURE = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
 				 / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
 
-		 massO2MinimumLimit = MIN_O2_PRESSURE / fullO2PartialPressure * OXYGEN_CAPACITY;
+		 MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
 
-		 massO2NominalLimit = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit;
+		 MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 
 		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
 		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
-		 logger.config("               Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 + " kPa -> "
+		 logger.config("               Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 + " kPa -> "
 				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
 		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - Suit target pressure");
+				 		+ Math.round(MASS_O2_NOMINAL_LIMIT*10_000.0)/10_000.0  + " kg - Suit target pressure");
 		 logger.config("                 Minimum O2 : " + Math.round(MIN_O2_PRESSURE*100.0)/100.0 + " kPa -> "
-				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - Safety limit");
+				 		+ Math.round(MASS_O2_MINIMUM_LIMIT*10_000.0)/10_000.0  + " kg - Safety limit");
 
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
 			// 20.7  kPa -> 0.3107 kg
@@ -264,7 +264,7 @@ public class EVASuit extends Equipment
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 //			String name = getOwner().getName();
-			if (getAmountResourceStored(OXYGEN_ID) <= massO2MinimumLimit) {
+			if (getAmountResourceStored(OXYGEN_ID) <= MASS_O2_MINIMUM_LIMIT) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
@@ -378,7 +378,7 @@ public class EVASuit extends Equipment
 
 		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
-		if (oxygenLeft < massO2NominalLimit) {
+		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;

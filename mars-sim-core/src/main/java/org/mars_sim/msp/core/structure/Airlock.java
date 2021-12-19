@@ -9,14 +9,13 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -132,7 +131,7 @@ public abstract class Airlock implements Serializable {
 
 		operatorID = Integer.valueOf(-1);
 
-		occupantIDs = ConcurrentHashMap.newKeySet();
+		occupantIDs = new CopyOnWriteArraySet<>();
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 
@@ -1062,13 +1061,9 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isInAnyZone(int id) {
-		if (occupantIDs.contains(id)
+		return (occupantIDs.contains(id)
 			|| awaitingInnerDoor.contains(id)
-			|| awaitingOuterDoor.contains(id)) {
-			return true;
-		}
-		
-		return false;
+			|| awaitingOuterDoor.contains(id));
 	}
 	
 	/**

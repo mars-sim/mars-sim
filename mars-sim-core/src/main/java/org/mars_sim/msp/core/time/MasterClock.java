@@ -732,7 +732,7 @@ public class MasterClock implements Serializable {
 		public String call() throws Exception {
 			if (sim.isDoneInitializing() && !isPaused) {
 				try {
-					// The most important job for CLockListener is to send a clock pulse to listener
+					// The most important job for ClockListener is to send a clock pulse to listener
 					// gets updated.
 					listener.clockPulse(currentPulse);
 					timeCache += currentPulse.getElapsed();

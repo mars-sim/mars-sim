@@ -14,7 +14,8 @@ package org.mars_sim.msp.core.time;
 public interface Temporal {
 
 	/**
-	 * Time has advanced.
+	 * Advances the time.
+	 * 
 	 * @param pulse The advancement of time.
 	 * @return Was the pulse applied.
 	 */

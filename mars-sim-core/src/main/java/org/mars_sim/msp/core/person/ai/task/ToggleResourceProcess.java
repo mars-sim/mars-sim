@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +65,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** True if the finished phase of the process has been completed. */
 	private boolean isFinished = false;
 
-	/** The resource process to toggle. */
+	/** The resource process to be toggled. */
 	private ResourceProcess process;
 	/** The building the resource process is in. */
 	private Building resourceProcessBuilding;
@@ -74,48 +75,54 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 *
 	 * @param person the person performing the task.
 	 */
-	public ToggleResourceProcess(Person person) {
+	public ToggleResourceProcess(Person person, Building resourceProcessBuilding, ResourceProcess process) {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 5D + RandomUtil.getRandomInt(5));
+        this.resourceProcessBuilding = resourceProcessBuilding;
+        this.process = process;
 
+        if (!process.isFlagged()) {
+        	end("'" + process.getProcessName() + "' was no longer flagged for change.");
+        }
+        
         if (person.isInSettlement()) {
-
-			process = selectResourceProcess(person);
-			if (process != null) {
-				// Copy the current state of this process running
-				toBeToggledOn = !process.isProcessRunning();
-
-				if (!toBeToggledOn) {
-					setName(NAME_OFF);
-					setDescription(NAME_OFF);
-				}
-				else {
-					setDescription(NAME_ON);
-				}
-
-				ResourceProcessing rp = resourceProcessBuilding.getResourceProcessing();
-    			if (rp != null) {
-    				walkToResourceBldg(resourceProcessBuilding);
-    			}
-
-				else {
-	                // Looks for management function for toggling resource process.
-					checkManagement();
-				}
-
-				addPhase(TOGGLING);
-				addPhase(FINISHED);
-
-				setPhase(TOGGLING);
-	        }
-	        else {
-	        	end("No Resource Process space available.");
-	        }
+        	setupResourceProcess();
         }
         else {
         	end("Not in Settlement.");
         }
 	}
 
+	/**
+	 * Sets up the resource process
+	 */
+	private void setupResourceProcess() {
+		// Copy the current state of this process running
+		boolean state = !process.isProcessRunning();
+
+		if (!state) {
+			setName(NAME_OFF);
+			setDescription(NAME_OFF);
+		}
+		else {
+			setDescription(NAME_ON);
+		}
+
+		ResourceProcessing rp = resourceProcessBuilding.getResourceProcessing();
+		if (rp != null) {
+			walkToResourceBldg(resourceProcessBuilding);
+		}
+
+		else {
+            // Looks for management function for toggling resource process.
+			checkManagement();
+		}
+
+		addPhase(TOGGLING);
+		addPhase(FINISHED);
+
+		setPhase(TOGGLING);
+	}
+	
 	/**
 	 * Check if any management function is available
 	 */
@@ -194,11 +201,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * needs toggling.
 	 *
 	 * @param person the person.
-	 * @return building with resource process to toggle, or null if none.
+	 * @return SimpleEntry containing the building with the resource process to toggle, or null if none.
 	 */
-	public static Building getResourceProcessingBuilding(Person person) {
-		Building result = null;
-
+	public static SimpleEntry<Building, ResourceProcess> getResourceProcessingBuilding(Person person) {
+		Building building0 = null;
+		ResourceProcess process0 = null;
+		
 		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
 			double bestDiff = 0D;
@@ -207,17 +215,18 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				Building building = i.next();
 				// In this building, select the best resource to compete
 				ResourceProcess process = getResourceProcess(building);
-				if (process != null && process.isToggleAvailable()) {
+				if (process != null && process.isToggleAvailable() && !process.isFlagged()) {
 					double diff = getResourcesValueDiff(settlement, process);
 					if (diff > bestDiff) {
 						bestDiff = diff;
-						result = building;
+						building0 = building;
+						process0 = process;
 					}
 				}
 			}
 		}
 
-		return result;
+		return new SimpleEntry<>(building0, process0);
 	}
 
 	/**
@@ -250,37 +259,37 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets the resource process that needs toggling.
-	 *
-	 * @param person the person.
-	 * @return the resource process to toggle or null if none.
-	 */
-	public ResourceProcess selectResourceProcess(Person person) {
-		ResourceProcess result = null;
-
-		Settlement settlement = person.getSettlement();
-		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
-			double bestDiff = 0D;
-			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				// In this building, select the best resource to compete
-				ResourceProcess process0 = getResourceProcess(building);
-				if (process0 != null && process0.isToggleAvailable()) {
-					double diff = getResourcesValueDiff(settlement, process0);
-					if (diff > bestDiff) {
-						bestDiff = diff;
-						result = process0;
-						resourceProcessBuilding = building;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
+//	/**
+//	 * Gets the resource process that needs toggling.
+//	 *
+//	 * @param person the person.
+//	 * @return the resource process to toggle or null if none.
+//	 */
+//	public ResourceProcess selectResourceProcess(Person person) {
+//		ResourceProcess result = null;
+//
+//		Settlement settlement = person.getSettlement();
+//		if (settlement != null) {
+//			BuildingManager manager = settlement.getBuildingManager();
+//			double bestDiff = 0D;
+//			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
+//			while (i.hasNext()) {
+//				Building building = i.next();
+//				// In this building, select the best resource to compete
+//				ResourceProcess process0 = getResourceProcess(building);
+//				if (process0 != null && process0.isToggleAvailable()) {
+//					double diff = getResourcesValueDiff(settlement, process0);
+//					if (diff > bestDiff) {
+//						bestDiff = diff;
+//						result = process0;
+//						resourceProcessBuilding = building;
+//					}
+//				}
+//			}
+//		}
+//
+//		return result;
+//	}
 
 
 	/**
@@ -437,19 +446,17 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	private double togglingPhase(double time) {
 
+		// Check if the process has already been completed by another person.
+		if (process.isProcessRunning() == toBeToggledOn) {
+			setPhase(FINISHED);
+		}
+		
 		double perf = person.getPerformanceRating();
 		// If person is incapacitated, enter airlock.
 		if (perf == 0D) {
 			// reset it to 10% so that he can walk inside
 			person.getPhysicalCondition().setPerformanceFactor(.1);
 			end(": poor performance in " + process.getProcessName());
-		}
-
-		if (isDone()) {
-			// if the work has been accomplished (it takes some finite amount of time to
-			// finish the task
-			endTask();
-			return time;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -463,19 +470,24 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		}
 
 		// Add work to the toggle process.
-		process.addToggleWorkTime(workTime);
+		if (process.addToggleWorkTime(workTime)) {
+			toBeToggledOn = !process.isProcessRunning();
+			setPhase(FINISHED);
+		}
 
 		// Add experience points
 		addExperience(time);
 
-		// Check if the process has already been completed by another person.
-		if (process.isProcessRunning() == toBeToggledOn) {
-			setPhase(FINISHED);
-		}
-
 		// Check if an accident happens during the manual toggling.
 		if (resourceProcessBuilding != null) {
 			checkForAccident(resourceProcessBuilding, time, 0.005D);
+		}
+		
+		if (isDone()) {
+			// if the work has been accomplished (it takes some finite amount of time to
+			// finish the task
+			endTask();
+			return time;
 		}
 
 		return 0;
@@ -488,7 +500,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double finishedPhase(double time) {
-
+				
 		if (!isFinished) {
 			String toggle = OFF;
 			if (toBeToggledOn) {
@@ -499,6 +511,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				process.setProcessRunning(false);
 			}
 
+			// Reset the change flag to false
+			process.setFlag(false);
+			
 			if (resourceProcessBuilding != null) {
 				logger.log(person.getSettlement(), person, Level.INFO, 1_000,
 						   "Manually turned " + toggle + " " + process.getProcessName()
@@ -511,10 +526,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					       + " in " + person.getBuildingLocation().getNickName()
 					       + ".");
 			}
+			
 			// Only need to run the finished phase once and for all
 			isFinished = true;
 		}
-
+		
 		return 0D;
 	}
 
