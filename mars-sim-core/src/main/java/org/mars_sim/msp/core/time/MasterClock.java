@@ -300,7 +300,7 @@ public class MasterClock implements Serializable {
 	 * @param listener
 	 * @return
 	 */
-	public boolean hasClockListener(ClockListener listener) {
+	private boolean hasClockListener(ClockListener listener) {
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
@@ -315,7 +315,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param listener the clock listener
 	 */
-	public ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
+	private ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
 		if (clockListenerTasks != null) {
 			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 			while (i.hasNext()) {
@@ -709,7 +709,6 @@ public class MasterClock implements Serializable {
 	public class ClockListenerTask implements Callable<String>{
 		private double timeCache = 0;
 		private long lastUIPulse = 0;
-		private ClockPulse currentPulse;
 
 		private ClockListener listener;
 
@@ -795,8 +794,7 @@ public class MasterClock implements Serializable {
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 		try {
 			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
-			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {
-	
+			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {				
 				Future<String> result = listenerExecutor.submit(c);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();

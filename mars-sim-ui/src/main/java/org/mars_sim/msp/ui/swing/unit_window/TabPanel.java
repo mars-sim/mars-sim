@@ -126,12 +126,10 @@ public abstract class TabPanel extends JScrollPane {
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
-//		Border border = new MarsPanelBorder();
 		Border margin = new EmptyBorder(5,5,5,5);
 		
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 10));
-//		centerContentPanel.setBorder(new CompoundBorder(border, margin));
 		centerContentPanel.setBorder(margin);
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 	}
@@ -198,7 +196,6 @@ public abstract class TabPanel extends JScrollPane {
 		// No updated required
 	}
 
-	
 	/**
 	 * Gets the main desktop.
 	 * 
