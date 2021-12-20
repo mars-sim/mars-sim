@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * TabPanelCredit.java
- * @date 2021-08-28
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.Dimension;
@@ -66,6 +65,7 @@ extends TabPanel {
 
 	}
 
+	@Override
 	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for the outer table panel.

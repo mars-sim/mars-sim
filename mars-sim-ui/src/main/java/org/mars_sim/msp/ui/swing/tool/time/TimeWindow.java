@@ -76,8 +76,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private static final String GMT = " (GMT) ";
 
 	// Data members
-	private int solElapsedCache = 0;
-
 	private String northernSeasonTip ="";
 	private String northernSeasonCache = "";
 	private String southernSeasonTip = "";
@@ -451,12 +449,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		updateTimeLabels();
 	}
 
+	/**
+	 * Update various time labels
+	 */
 	public void updateTimeLabels() {
 
-		if (marsTime != null) {
-			int solElapsed = marsTime.getMissionSol();
-			if (solElapsedCache != solElapsed) {
-				solElapsedCache = solElapsed;
+		if (marsTime != null && masterClock != null) {
+			if (masterClock.getClockPulse().isNewSol()) {
 				String mn = marsTime.getMonthName();
 				if (mn != null)
 					SwingUtilities.invokeLater(() -> martianMonthHeaderLabel.setText("Month of " + mn));
@@ -464,29 +463,31 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 		}
 		
-		// Create average TPS label
+		// Update average TPS label
 		double ave = masterClock.updateAverageTPS();
 		aveTPSLabel.setText(formatter2.format(ave));
 
-		// Create execution time label
+		// Update execution time label
 		long execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
 
-		// Create sleep time label
+		// Update sleep time label
 		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel.setText(sleepTime + MS);
 
-		// Create mars pulse label
+		// Update pulse width label
 		double pulseTime = masterClock.getMarsPulseTime();
 		marsPulseLabel.setText(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS);
 
-		double actualTR = masterClock.getActualRatio();
-
-		actuallTRLabel.setText((int)actualTR + "x");
-
+		// Update Preferred TR label
 		int prefTR = (int)masterClock.getPreferredTR();
 		preferredTRLabel.setText(prefTR + "x");
 
+		// Update actual TR label
+		double actualTR = masterClock.getActualRatio();
+		actuallTRLabel.setText((int)actualTR + "x");
+
+		// Update time compression label
 		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));
 	}
 
@@ -540,10 +541,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	}
 
 	/**
-	 * Update the calendar, the time ratio and time compression labels via ui pulse
+	 * Update the calendar, the areocentric longitude and the time labels via ui pulse
 	 */
 	public void updateSlowLabels() {
-		// Update the two time labels
+		// Update the time labels
 		updateTimeLabels();
 		// Update the calender
 		calendarDisplay.update();

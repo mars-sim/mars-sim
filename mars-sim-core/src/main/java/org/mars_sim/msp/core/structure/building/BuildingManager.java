@@ -496,22 +496,13 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a collection of buildings.
+	 * Gets a collection of alphanumerically sorted buildings.
 	 *
-	 * @return collection of buildings
+	 * @return collection of alphanumerically sorted buildings
 	 */
 	public List<Building> getSortedBuildings() {
 		return buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 	}
-
-//	/**
-//	 * Gets the settlement's collection of buildings (in their nicknames)
-//	 *
-//	 * @return collection of buildings (in their nicknames)
-//	 */
-//	public List<Building> getBuildingsNickNames() {
-//		return new CopyOnWriteArrayList<Building>(buildingsNickNames);
-//	}
 
 	/**
 	 * Gets a list of settlement's buildings with Robotic Station function

@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -18,10 +17,12 @@ import javax.swing.event.InternalFrameEvent;
 public class UnitWindowListener extends InternalFrameAdapter {
 
     // Data members
-    private MainDesktopPane desktop; // Main desktop pane that holds unit windows.
+	// Main desktop pane that holds unit windows.
+    private MainDesktopPane desktop; 
 
-    /** Constructs a UnitWindowListener object
-     *  @param desktop the desktop pane
+    /** 
+     * Constructs a UnitWindowListener object
+     * @param desktop the desktop pane
      */
     public UnitWindowListener(MainDesktopPane desktop) {
         this.desktop = desktop;

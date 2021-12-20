@@ -1042,7 +1042,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Get a reference to teh SImulation being displayed
+	 * Get a reference to the Simulation being displayed
 	 * @return
 	 */
 	public Simulation getSimulation() {

@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelAssociatedPeople.java
  * @date 2021-12-06
@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Collection;
 
 import javax.swing.JPanel;
@@ -85,7 +86,7 @@ public class TabPanelAssociatedPeople extends TabPanel{
 				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
-		populationList = new UnitListPanel<>(getDesktop()) {
+		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
 			@Override
 			protected Collection<Person> getData() {
 				return settlement.getAllAssociatedPeople();

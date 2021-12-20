@@ -1,12 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelBots.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Collection;
 
 import javax.swing.JPanel;
@@ -82,7 +83,7 @@ public class TabPanelBots extends TabPanel {
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create spring layout robot display panel
-		robotList = new UnitListPanel<>(getDesktop()) {
+		robotList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
 			@Override
 			protected Collection<Robot> getData() {
 				return settlement.getRobots();

@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
@@ -20,13 +19,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.label.WebLabel;
@@ -40,10 +44,10 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 12);
 	
 	// Default Decimal formatter
-	protected static DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
-	protected static DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
-	protected static DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
-	protected static DecimalFormat DECIMAL_KG = new DecimalFormat("0.0 kg");
+	protected static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
+	protected static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
+	protected static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
+	protected static final DecimalFormat DECIMAL_KG = new DecimalFormat("0.0 kg");
 	
 
 	// Default values for any top level Spring panel holding values
@@ -52,10 +56,13 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final int YPAD_DEFAULT = 1;
 	protected static final int XPAD_DEFAULT = 5;
 	
+	private boolean isUIDone = false;
+	
+	private String description;
 	private String tabTitle;
 	private String tabToolTip;
 	
-	private Icon tabIcon;
+	private transient Icon tabIcon;
 	
 	// These can be made private once all tabs converted
 	private JPanel topContentPanel;
@@ -63,8 +70,7 @@ public abstract class TabPanel extends JScrollPane {
 	
 	private Unit unit;
 	private MainDesktopPane desktop;
-	private boolean isUIDone = false;
-	private String description;
+
 
 	/**
 	 * Constructor
@@ -102,7 +108,7 @@ public abstract class TabPanel extends JScrollPane {
 		this.unit = unit;
 		this.desktop = desktop;
 
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
 			this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
 		}
@@ -143,7 +149,7 @@ public abstract class TabPanel extends JScrollPane {
 		if (!isUIDone) {
 			// Create label in top panel
 			String topLabel = (description != null ? description : getTabTitle());
-			WebLabel titleLabel = new WebLabel(topLabel, WebLabel.CENTER);
+			WebLabel titleLabel = new WebLabel(topLabel, SwingConstants.CENTER);
 			titleLabel.setFont(TITLE_FONT);
 			
 			JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -218,11 +224,41 @@ public abstract class TabPanel extends JScrollPane {
 	
 	/**
 	 * Get the simulation being monitored.
+	 * 
 	 * @return
 	 */
 	protected Simulation getSimulation() {
 		return desktop.getSimulation();
 	}
+	
+	
+	/**
+	 * Gets the environment instance.
+	 * 
+	 * @return
+	 */
+	protected Environment getMars() {
+		return getSimulation().getMars();
+	}
+	
+	/**
+	 * Gets the master clock instance.
+	 * 
+	 * @return
+	 */
+	protected MasterClock getMasterClock() {
+		return getSimulation().getMasterClock();
+	}
+	
+	/**
+	 * Gets the mars clock instance.
+	 * 
+	 * @return
+	 */
+	protected MarsClock getMarsClock() {
+		return getMasterClock().getMarsClock();
+	}
+
 	
 	@Override
 	public  String toString() {
@@ -261,7 +297,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @return The JTextField that can be updated.
 	 */
 	protected JTextField addTextField(JPanel parent, String label, String content, String tooltip) {
-		parent.add(new WebLabel(label, WebLabel.RIGHT));
+		parent.add(new WebLabel(label, SwingConstants.RIGHT));
 						
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField typeTF = new JTextField();

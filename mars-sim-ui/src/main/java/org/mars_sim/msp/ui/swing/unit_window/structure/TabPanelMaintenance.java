@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelMaintenance.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -46,7 +46,6 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
-	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -59,7 +58,9 @@ public class TabPanelMaintenance extends TabPanel {
 	private List<Building> buildingsList;
 	private List<Malfunction> malfunctionsList;
 	
-
+	private static final Font FONT_16 = new Font("Serif", Font.BOLD, 16);
+	private static final Font FONT_14 = new Font("Serif", Font.BOLD, 14);
+	
 	/**
 	 * Constructor.
 	 * 
@@ -105,7 +106,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Create malfunctions label.
 		WebLabel malfunctionsLabel = new WebLabel("Building Malfunctions", WebLabel.CENTER);
-		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		malfunctionsLabel.setFont(FONT_16);
 		// malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
 
@@ -297,7 +298,7 @@ public class TabPanelMaintenance extends TabPanel {
 //			setBorder(new MarsPanelBorder());
 
 			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
-			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
+			buildingLabel.setFont(FONT_14);
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
@@ -451,7 +452,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare the building label.
 			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
-			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
+			buildingLabel.setFont(FONT_14);
 			add(buildingLabel);
 
 			// Prepare the malfunction label.

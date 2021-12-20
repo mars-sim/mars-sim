@@ -1,6 +1,8 @@
-/**
+/*
  * Mars Simulation Project
- * UnitListPanBarry Evans
+ * UnitListPanel.java
+ * @date 2021-12-20
+ * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window;
 

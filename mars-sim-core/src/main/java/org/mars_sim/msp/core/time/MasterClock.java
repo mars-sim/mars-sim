@@ -456,6 +456,7 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Sets the user preferred time ratio
+	 * 
 	 * @param value
 	 */
 	public void setPreferredTR(int value) {
@@ -477,6 +478,9 @@ public class MasterClock implements Serializable {
 //		Farming.setInterval(scale);
 	}
 
+	/**
+	 * Gets the scale factor
+	 */
 	public double getScaleFactor() {
 		return scaleFactor;
 	}
@@ -741,7 +745,7 @@ public class MasterClock implements Serializable {
 					long timeNow = System.currentTimeMillis();
 					if ((timeNow - lastUIPulse) > UI_MIN) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
-						//logger.info("UI Update pulse " + timeNow  + " for " + listener);
+						// Check for logger.info("UI Update pulse " + timeNow  + " for " + listener)
 						listener.uiPulse(timeCache);
 						// Reset count
 						lastUIPulse = timeNow;
@@ -1127,6 +1131,7 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * How many pulses per second
+	 * 
 	 * @return
 	 */
 	public double getPulsesPerSecond() {

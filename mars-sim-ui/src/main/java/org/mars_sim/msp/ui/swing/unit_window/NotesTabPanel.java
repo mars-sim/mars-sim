@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * NotesTabPanel.java
- * @date 2021-09-20
+ * @date 2021-12-20
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
@@ -25,12 +24,10 @@ import com.alee.managers.style.StyleId;
 /**
  * The NotesTabPanel is a tab panel for recording commander's notes regarding this unit
  */
+@SuppressWarnings("serial")
 public class NotesTabPanel extends TabPanel{
 
 	private static final String ENTER_HERE = "Enter Here";
-
-	/** default serial id. */
-	private static final long serialVersionUID = 12L;
 
 	/** The cache for notes. */
 	private String notesCache = "";

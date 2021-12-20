@@ -85,7 +85,6 @@ extends TabPanel {
 
 	@Override
 	protected void buildUI(JPanel content) {
-		MissionManager missionManager = getSimulation().getMissionManager();
 
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());
@@ -94,6 +93,14 @@ extends TabPanel {
 		// Create mission list panel.
 		JPanel missionListPanel = new JPanel();
 		centerPanel.add(missionListPanel, BorderLayout.CENTER);
+
+		buildScrollPanel(centerPanel, missionListPanel);
+		buildButtonPanel(centerPanel);
+		buildBottomPanel(content);
+	}
+		
+	public void buildScrollPanel(JPanel centerPanel, JPanel missionListPanel) {
+		MissionManager missionManager = getSimulation().getMissionManager();
 
 		// Create mission scroll panel.
 		JScrollPane missionScrollPanel = new JScrollPane();
@@ -118,7 +125,9 @@ extends TabPanel {
 			}
 		});
 		missionScrollPanel.setViewportView(missionList);
-
+	}
+	
+	private void buildButtonPanel(JPanel centerPanel) {
 		// Create button panel.
 		JPanel buttonPanel = new JPanel(new BorderLayout());
 		buttonPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
@@ -151,7 +160,9 @@ extends TabPanel {
 			}
 		});
 		innerButtonPanel.add(monitorButton);
-
+	}
+	
+	private void buildBottomPanel(JPanel content) {
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		content.add(bottomPanel, BorderLayout.SOUTH);

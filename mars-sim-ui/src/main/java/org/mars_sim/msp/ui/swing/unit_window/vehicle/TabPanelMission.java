@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
- * MissionTabPanel.java
- * @date 2021-12-06
+ * TabPanelMission.java
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
@@ -70,8 +69,6 @@ extends TabPanel {
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
 
-	private static MissionManager missionManager;
-
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
@@ -93,8 +90,7 @@ extends TabPanel {
 
 	@Override
 	protected void buildUI(JPanel topContentPanel) {
-
-		missionManager = getSimulation().getMissionManager();
+		MissionManager missionManager = getSimulation().getMissionManager();
 
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
@@ -158,7 +154,7 @@ extends TabPanel {
 		memberListPanel.add(memberScrollPanel);
 
 		// Create member list model
-		memberListModel = new DefaultListModel<MissionMember>();
+		memberListModel = new DefaultListModel<>();
 		if (mission != null) memberCache = mission.getMembers();
 		else memberCache = new ConcurrentLinkedQueue<>();
 		Iterator<MissionMember> i = memberCache.iterator();
@@ -226,7 +222,7 @@ extends TabPanel {
 	@Override
 	public void update() {
 		Vehicle vehicle = (Vehicle) getUnit();
-		Mission mission = missionManager.getMissionForVehicle(vehicle);
+		Mission mission = getSimulation().getMissionManager().getMissionForVehicle(vehicle);
 
 		if (mission != null) {
 		    missionCache = mission.getDescription();
@@ -254,7 +250,7 @@ extends TabPanel {
 		    tempCollection = mission.getMembers();
 		}
 		else {
-		    tempCollection = new ConcurrentLinkedQueue<MissionMember>();
+		    tempCollection = new ConcurrentLinkedQueue<>();
 		}
 		if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
 			memberCache = tempCollection;

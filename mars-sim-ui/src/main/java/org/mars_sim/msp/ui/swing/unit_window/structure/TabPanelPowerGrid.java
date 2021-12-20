@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
@@ -135,38 +134,38 @@ public class TabPanelPowerGrid extends TabPanel {
 		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());
 		topContentPanel.add(powerInfoPanel);
 
-		// Prepare power generated label.
+		// Prepare power generated tf.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
 		powerGeneratedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerGenerated"),
 										DECIMAL_PLACES1.format(powerGeneratedCache) + kW,
 										Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip"));
 
-		// Prepare power used label.
+		// Prepare power used tf.
 		powerUsedCache = powerGrid.getRequiredPower();
 		powerUsedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerUsed"),
 								   DECIMAL_PLACES1.format(powerUsedCache) + kW,
 								   Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip"));
 
-		// Prepare power storage capacity label.
+		// Prepare power storage capacity tf.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
 		energyStorageCapacityTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
 											   DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh,
 											   Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip"));
 
-		// Prepare power stored label.
+		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
 		energyStoredTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalEnergyStored"),
 									  DECIMAL_PLACES1.format(energyStoredCache) + kWh,
 									  Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip"));
 
-		// 2015-05-08 Added eff_electric_label
+		// Create solar cell eff tf
 		solarCellEfficiencyCache = getAverageEfficiency();
 		solarCellEfficiencyTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
 											 DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
 											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 
-		// Create degradation rate label.
+		// Create degradation rate tf.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
 		addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
 									DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
@@ -291,6 +290,7 @@ public class TabPanelPowerGrid extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
 		if (!uiDone)
 			initializeUI();

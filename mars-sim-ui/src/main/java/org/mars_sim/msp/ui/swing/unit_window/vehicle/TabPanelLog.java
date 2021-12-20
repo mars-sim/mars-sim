@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelLog.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
@@ -75,7 +74,6 @@ public class TabPanelLog extends TabPanel {
 	private DefaultComboBoxModel<Integer> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
-	
 	private List<Integer> solList;
 	private Map<Integer, List<MSolDataItem<Set<StatusType>>>> allStatuses;
 	private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
@@ -83,8 +81,6 @@ public class TabPanelLog extends TabPanel {
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
 	
-	private static MarsClock marsClock;
-
 	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
@@ -102,8 +98,6 @@ public class TabPanelLog extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 		
-		if (marsClock == null)
-			marsClock = getSimulation().getMasterClock().getMarsClock();
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 		
@@ -119,11 +113,11 @@ public class TabPanelLog extends TabPanel {
 
 	    // Lay out the spring panel.
 	    SpringUtilities.makeCompactGrid(springPanel,
-	     		                                2, 2, //rows, cols
+	     		                               2, 2, //rows, cols
 	     		                               50, 10,        //initX, initY
 	    		                               7, 7);       //xPad, yPad     	
 		
-		todayInteger = marsClock.getMissionSol();
+		todayInteger = getMarsClock().getMissionSol();
 		solList = new CopyOnWriteArrayList<>();
 
 		allStatuses = vehicle.getVehicleLog();
@@ -218,14 +212,13 @@ public class TabPanelLog extends TabPanel {
 			TableStyle.setTableStyle(table);
 		}
 		
-		
 		// Update the odometer reading
 		odometerTF.setText(DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
 				
 		// Update distance last maintenance 
 		maintTF.setText(DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
 				
-		todayInteger = marsClock.getMissionSol();
+		todayInteger = getMarsClock().getMissionSol();
 
 		allStatuses = vehicle.getVehicleLog();
 		oneDayStatuses = allStatuses.get(todayInteger);
@@ -247,8 +240,7 @@ public class TabPanelLog extends TabPanel {
 				if (comboBoxModel.getIndexOf(s) == -1) {
 					comboBoxModel.addElement(s);
 				}
-			}
-			
+			}		
 			
 			// Update the solList comboBox
 			solBox.setModel(comboBoxModel);
@@ -450,6 +442,5 @@ public class TabPanelLog extends TabPanel {
 		solList = null;
 		table = null;
 		scheduleTableModel = null;
-	}
-	
+	}	
 }

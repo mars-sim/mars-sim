@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelSponsorship.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -35,8 +35,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * sponsor and its objective.
  */
 @SuppressWarnings("serial")
-public class TabPanelSponsorship
-extends TabPanel {
+public class TabPanelSponsorship extends TabPanel {
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -124,7 +123,7 @@ extends TabPanel {
 		
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
-		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		ta.setColumns(7);
 		ta.setBorder(new MarsPanelBorder());
 		panel.add(ta);

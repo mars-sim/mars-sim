@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * TabPanelWeather.java
- * @date 2021-09-20
+ * @date 2021-12-20
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
@@ -21,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -43,9 +41,6 @@ import com.alee.laf.text.WebTextField;
 @SuppressWarnings("serial")
 public class TabPanelWeather
 extends TabPanel {
-	
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
 
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
@@ -94,11 +89,11 @@ extends TabPanel {
 
 	private Coordinates locationCache;
 
-	private static Weather weather;
-	private static SurfaceFeatures surfaceFeatures;
-	private static MasterClock masterClock;
-	private static OrbitInfo orbitInfo;
-
+	private Weather weather = getMars().getWeather();
+	private SurfaceFeatures surfaceFeatures = getMars().getSurfaceFeatures();
+	private OrbitInfo orbitInfo = getMars().getOrbitInfo();
+	private MasterClock masterClock = getSimulation().getMasterClock();
+	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	
     /**
@@ -112,12 +107,6 @@ extends TabPanel {
     			null,
     			Msg.getString("TabPanelWeather.tooltip"), //$NON-NLS-1$
     			unit, desktop);
-
-		Simulation sim = desktop.getSimulation();
-		masterClock = sim.getMasterClock();
-        weather = sim.getMars().getWeather();
-        surfaceFeatures = sim.getMars().getSurfaceFeatures();
-        orbitInfo = sim.getMars().getOrbitInfo();
 	}
 	
 	@Override

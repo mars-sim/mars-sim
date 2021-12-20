@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @date 2021-08-28
+ * @date 2021-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -171,7 +171,6 @@ extends TabPanel {
 	 * @param override the resource process override flag.
 	 */
 	private void setResourceProcessOverride(boolean override) {
-		Settlement settlement = (Settlement) getUnit();
 		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
 	}
 

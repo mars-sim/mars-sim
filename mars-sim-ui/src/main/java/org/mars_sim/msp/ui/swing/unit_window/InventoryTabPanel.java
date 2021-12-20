@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2021-10-21
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
@@ -65,8 +64,6 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
 	private static final String WHITESPACE = "  ";
 
 	private final DecimalFormat formatter0 = new DecimalFormat("#,###,###,###");

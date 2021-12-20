@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * UnitWindow.java
- * @date 2021-08-28
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
@@ -20,14 +19,12 @@ import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -52,8 +49,6 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
 
-	private static SimLogger logger = SimLogger.getLogger(UnitWindow.class.getName());
-	
 	public static final int WIDTH = 530;
 	public static final int HEIGHT = 620;
 
@@ -66,7 +61,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	private static final String ONE_SPACE = " ";
 	private static final String TWO_SPACES = "  ";
-	private static final String DEAD = "Dead";
 	private static final String SHIFT_FROM = " Shift :  (From ";
 	private static final String TO = " to ";
 	private static final String MILLISOLS = " millisols)";
@@ -326,13 +320,13 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			oldJobString = townString;
 			if (townString.length() > 40)
 				townString = townString.substring(0, 40);
-			townLabel.setText(TWO_SPACES + townString);// , JLabel.CENTER);
+			townLabel.setText(TWO_SPACES + townString);
 		}
 
 		String jobString = p.getMind().getJob().getName();
 		if (!oldJobString.equals(jobString)) {
 			oldJobString = jobString;
-			jobLabel.setText(TWO_SPACES + jobString);// , JLabel.CENTER);
+			jobLabel.setText(TWO_SPACES + jobString);
 		}
 
 		String roleString = p.getRole().getType().getName();
@@ -427,11 +421,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
 			if (tabPanel.isVisible() && tabPanel.isShowing() && tabPanel.isUIDone()) { 
-				//logger.info(unit, "Update tab " + tabPanel);
-				//SwingUtilities.invokeLater(() ->
-				// Calling directly removes the change of ConcurrentMidifications
+				// Instead of using SwingUtilities.invokeLater, 
+				// calling directly removes the change of ConcurrentMidifications
 				tabPanel.update();
-				//);
 			}
 		}
 
@@ -457,7 +449,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @return Monitor tab being displayed.
 	 */
 	public TabPanel getSelected() {
-		// SwingUtilities.updateComponentTreeUI(this);
+		// Not using SwingUtilities.updateComponentTreeUI(this)
 		TabPanel selected = null;
 		int selectedIdx = tabPane.getSelectedIndex();
 		if ((selectedIdx != -1) && (selectedIdx < tabPanels.size()))

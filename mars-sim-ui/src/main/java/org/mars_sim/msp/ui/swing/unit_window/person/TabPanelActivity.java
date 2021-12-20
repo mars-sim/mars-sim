@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * TabPanelActivity.java
- * @date 2021-12-06
+ * @date 2021-12-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
@@ -18,6 +17,7 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -105,9 +105,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				null, Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
-		} else if (unit instanceof Robot) {
+		} else {
 			robot = (Robot) unit;
 		}
 
@@ -124,13 +124,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		DeathInfo deathInfo = null;
 		Unit unit = getUnit();
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
 			mind = person.getMind();
 			taskManager = mind.getTaskManager();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-		} else if (unit instanceof Robot) {
+		} else {
 			robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			taskManager = botMind.getBotTaskManager();
@@ -462,12 +462,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		DeathInfo deathInfo = null;
 		Unit unit = getUnit();
 		
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
 			mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();// .isDeclaredDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-		} else if (unit instanceof Robot) {
+		} else {
 			robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
@@ -684,7 +684,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			boolean dead = false;
 			DeathInfo deathInfo = null;
 			Unit unit = getUnit();
-			if (unit instanceof Person) {
+			if (unit.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) unit;
 				Mind mind = person.getMind();
 				dead = person.getPhysicalCondition().isDead();
@@ -706,7 +706,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 						}
 					}
 				}
-			} else if (unit instanceof Robot) {
+			} else {
 				Robot robot = (Robot) unit;
 				BotMind botMind = robot.getBotMind();
 				dead = robot.getSystemCondition().isInoperable();

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelVehicles.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -25,9 +25,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
  * The TabPanelVehicles is a tab panel for parked vehicles and vehicles on mission.
  */
 @SuppressWarnings("serial")
-public class TabPanelVehicles
-extends TabPanel
-{
+public class TabPanelVehicles extends TabPanel {
 
 	/** The Settlement instance. */
 	private Settlement settlement;
