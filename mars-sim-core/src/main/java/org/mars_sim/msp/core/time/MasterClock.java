@@ -45,7 +45,7 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 
-	public static final int MAX_SPEED = 14;
+	public static final int MAX_SPEED = 11;
 
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
@@ -90,9 +90,8 @@ public class MasterClock implements Serializable {
 	private volatile long executionTime;
 	/** The target simulation time ratio. */
 	private volatile int targetTR = 0;
-	/** The user's desire simulation time ratio. */
-	private volatile int userTR = 0;
-
+	/** The user's preferred simulation time ratio. */
+	private volatile int preferredTR = 0;
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -200,7 +199,7 @@ public class MasterClock implements Serializable {
 		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
 		BASE_TR = (int)simulationConfig.getTimeRatio();
 		targetTR = BASE_TR;
-		userTR = BASE_TR;
+		preferredTR = BASE_TR;
 
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
@@ -456,10 +455,18 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return ratio
 	 */
-	public int getUserTR() {
-		return userTR;
+	public int getPreferredTR() {
+		return preferredTR;
 	}
 
+	/**
+	 * Sets the user preferred time ratio
+	 * @param value
+	 */
+	public void setPreferredTR(int value) {
+		preferredTR = value;
+	}
+	
 	/**
 	 * Set the new scale factor
 	 */
@@ -519,7 +526,7 @@ public class MasterClock implements Serializable {
 							sleepTime = maxWaitTimeBetweenPulses;
 						}
 						if (sleepTime > 3000) {
-							if (userTR > targetTR) {
+							if (preferredTR > targetTR) {
 								// Multiply by 2
 								targetTR = targetTR << 1;
 							}
@@ -888,7 +895,7 @@ public class MasterClock implements Serializable {
 		int newTR = targetTR * 2;
 		if (newTR > trArray[trArray.length - 1])
 			newTR = trArray[trArray.length - 1];
-		userTR = newTR;
+		preferredTR = newTR;
 
 		compareTPS(newTR, true);
 	}
@@ -901,7 +908,7 @@ public class MasterClock implements Serializable {
 		int newTR = targetTR >> 1;
 		if (newTR < 1)
 			newTR = 1;
-		userTR = newTR;
+		preferredTR = newTR;
 
 		compareTPS(newTR, false);
 	}
@@ -910,7 +917,7 @@ public class MasterClock implements Serializable {
 	 * Check if the speed is optimal
 	 */
 	public void checkSpeed() {
-		if (userTR > targetTR) {
+		if (preferredTR > targetTR) {
 			// Multiply by 2
 			targetTR = targetTR << 1;
 			logger.config("Attempting to increase targetTR to " + targetTR + ".");
