@@ -9,14 +9,14 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -60,10 +60,6 @@ extends TabPanel {
 	private static final String kW = " kW";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
-
-	// Data cache
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -87,9 +83,6 @@ extends TabPanel {
 	private WebCheckBox checkbox;
 
 	private WebTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
-	
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("decimalFormat1"));//TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
-	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
 	
 	/** Table model for heat info. */
 	private HeatTableModel heatTableModel;
@@ -120,26 +113,17 @@ extends TabPanel {
 		settlement = (Settlement) unit;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
 		buildings = manager.getBuildingsWithThermal();
 
-		// Prepare heating System label panel.
-		WebPanel thermalSystemLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(thermalSystemLabelPanel);
-
-		// Prepare heating System label.
-		WebLabel thermalSystemLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.label"), WebLabel.CENTER); //$NON-NLS-1$
-		thermalSystemLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		thermalSystemLabelPanel.add(thermalSystemLabel);
-
+		JPanel topContentPanel = new JPanel();
+		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
+		content.add(topContentPanel, BorderLayout.NORTH);
+		
 		// Prepare heat info panel.
 		WebPanel heatInfoPanel = new WebPanel(new SpringLayout());
 		topContentPanel.add(heatInfoPanel);
@@ -151,7 +135,7 @@ extends TabPanel {
 		heatInfoPanel.add(heatGenLabel);
 
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		heatGenTF = new WebTextField(formatter.format(heatGenCache) + kW);
+		heatGenTF = new WebTextField(DECIMAL_PLACES1.format(heatGenCache) + kW);
 		heatGenTF.setEditable(false);
 		heatGenTF.setPreferredSize(new Dimension(120, 24));
 		wrapper1.add(heatGenTF);
@@ -164,7 +148,7 @@ extends TabPanel {
 		heatInfoPanel.add(powerGenLabel);
 
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGenTF = new WebTextField(formatter.format(powerGenCache) + kW);
+		powerGenTF = new WebTextField(DECIMAL_PLACES1.format(powerGenCache) + kW);
 		powerGenTF.setEditable(false);
 		powerGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerGenTF);
@@ -176,7 +160,7 @@ extends TabPanel {
 		heatInfoPanel.add(effElectricHeat);
 
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		electricEffTF = new WebTextField(formatter.format(eff_electric_Heating*100D) + PERCENT);
+		electricEffTF = new WebTextField(DECIMAL_PLACES1.format(eff_electric_Heating*100D) + PERCENT);
 		electricEffTF.setEditable(false);
 		electricEffTF.setPreferredSize(new Dimension(120, 24));
 		wrapper3.add(electricEffTF);
@@ -188,7 +172,7 @@ extends TabPanel {
 		heatInfoPanel.add(effSolarHeat);
 
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarEffTF = new WebTextField(formatter2.format(eff_solar_heat*100D) + PERCENT);
+		solarEffTF = new WebTextField(DECIMAL_PLACES2.format(eff_solar_heat*100D) + PERCENT);
 		solarEffTF.setEditable(false);
 		solarEffTF.setPreferredSize(new Dimension(120, 24));
 		wrapper4.add(solarEffTF);
@@ -201,7 +185,7 @@ extends TabPanel {
 		heatInfoPanel.add(degradRateLabel);
 
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		cellDegradTF = new WebTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
+		cellDegradTF = new WebTextField(DECIMAL_PLACES2.format(degradRate*100D) + PERCENT_PER_SOL);
 		cellDegradTF.setEditable(false);
 		cellDegradTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(cellDegradTF);
@@ -227,7 +211,7 @@ extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		heatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		heatScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(heatScrollPane,BorderLayout.CENTER);
+		content.add(heatScrollPane,BorderLayout.CENTER);
 		
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
@@ -334,10 +318,9 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		TableStyle.setTableStyle(heatTable);
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
@@ -346,8 +329,7 @@ extends TabPanel {
 		if (heatGenCache != heat) {
 			heatGenCache = heat;
 			heatGenTF.setText(
-				//Msg.getString("TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
-				formatter2.format(heatGenCache) + kW
+					DECIMAL_PLACES2.format(heatGenCache) + kW
 				);
 		}
 
@@ -355,8 +337,7 @@ extends TabPanel {
 		if (powerGenCache != power) {
 			powerGenCache = power;
 			powerGenTF.setText(
-				//Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
-				formatter2.format(power) + kW
+					DECIMAL_PLACES2.format(power) + kW
 				);
 		}
 
@@ -364,8 +345,7 @@ extends TabPanel {
 		if (eheatCache != eheat) {
 			eheatCache = eheat;
 			electricEffTF.setText(
-				//Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency",  //$NON-NLS-1$
-				formatter2.format(eheat) + PERCENT
+					DECIMAL_PLACES2.format(eheat) + PERCENT
 				);
 		}
 
@@ -373,32 +353,9 @@ extends TabPanel {
 		if (epowerCache != epower) {
 			epowerCache = epower;
 			solarEffTF.setText(
-				//Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  //$NON-NLS-1$
-				formatter2.format(epower) + PERCENT
+					DECIMAL_PLACES2.format(epower) + PERCENT
 				);
 		}
-		
-		// CANNOT USE thermalSystem class to compute the individual building heat usage
-		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
-		// Update heat Gen label.
-
-//		// Update heat storage capacity label.
-//		if (thermalStorageCapacityCache != thermalSystem.getStoredHeatCapacity()) {
-//			thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
-//			thermalStorageCapacityLabel.setText(Msg.getString(
-//				"TabPanelThermalSystem.heatStorageCapacity", //$NON-NLS-1$
-//				formatter.format(thermalStorageCapacityCache)
-//			));
-//		}
-//
-//		// Update heat stored label.
-//		if (heatStoredCache != thermalSystem.getStoredHeat()) {
-//			heatStoredCache = thermalSystem.getStoredHeat();
-//			heatStoredLabel.setText(Msg.getString(
-//				"TabPanelThermalSystem.totalHeatStored", //$NON-NLS-1$
-//				formatter.format(heatStoredCache)
-//			));
-//		}
 
 		// Update thermal control table.
 		heatTableModel.update();
@@ -522,7 +479,10 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		heatGenLabel = null;	
 		powerGenLabel = null;	
 		effSolarHeat = null;	
@@ -535,8 +495,6 @@ extends TabPanel {
 		electricEffTF = null;
 		solarEffTF = null;
 		cellDegradTF = null;
-		formatter = null;
-		formatter2 = null;
 		heatTableModel = null;
 		thermalSystem = null;
 		settlement = null;

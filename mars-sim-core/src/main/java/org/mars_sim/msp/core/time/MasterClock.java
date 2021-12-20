@@ -7,12 +7,10 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,7 +54,7 @@ public class MasterClock implements Serializable {
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
 	/** The frequency of updating the ui. */
-	private static final int UI_COUNT = 4;
+	private static final long UI_MIN = 1000L;
 	/** The base value of time ratio from simulation.xml. */
 	private static int BASE_TR;
 	/** The multiplier value that relates TPS to upper TR. */
@@ -73,12 +71,9 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean isPaused = false;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
-	/** The cache for accumulating millisols up to a limit before sending out an clock pulse. */
-	private transient double timeCache;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
-	/** The counts for ui pulses. */
-	private transient int count;
+
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 
@@ -304,7 +299,7 @@ public class MasterClock implements Serializable {
 	 * @param listener
 	 * @return
 	 */
-	public boolean hasClockListener(ClockListener listener) {
+	private boolean hasClockListener(ClockListener listener) {
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
@@ -319,7 +314,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param listener the clock listener
 	 */
-	public ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
+	private ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
 		if (clockListenerTasks != null) {
 			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 			while (i.hasNext()) {
@@ -686,13 +681,8 @@ public class MasterClock implements Serializable {
 		if (saveType != SaveType.NONE) {
 			try {
 				sim.saveSimulation(saveType, file);
-			} catch (NullPointerException e) {
-				logger.log(Level.SEVERE,
-						"NullPointerException. Could not save the simulation: ", e);
-			} catch (IOException e) {
-				logger.log(Level.SEVERE,
-						"IOException. Could not save the simulation: ", e);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				logger.log(Level.SEVERE,
 						"Exception. Could not save the simulation: ", e);
 			}
@@ -724,6 +714,8 @@ public class MasterClock implements Serializable {
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
+		private double timeCache = 0;
+		private long lastUIPulse = 0;
 
 		private ClockListener listener;
 
@@ -733,6 +725,7 @@ public class MasterClock implements Serializable {
 
 		private ClockListenerTask(ClockListener listener) {
 			this.listener = listener;
+			this.lastUIPulse = System.currentTimeMillis();
 		}
 
 		@Override
@@ -743,18 +736,22 @@ public class MasterClock implements Serializable {
 					// gets updated.
 					listener.clockPulse(currentPulse);
 					timeCache += currentPulse.getElapsed();
-					count++;
 
-					if (count > UI_COUNT) {
+					// One UI Pulse per X seconds
+					long timeNow = System.currentTimeMillis();
+					if ((timeNow - lastUIPulse) > UI_MIN) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
+						//logger.info("UI Update pulse " + timeNow  + " for " + listener);
 						listener.uiPulse(timeCache);
 						// Reset count
-						count = 0;
+						lastUIPulse = timeNow;
+						
 						// Reset timeRatioCache
 						timeCache = 0;
 					}
 
-				} catch (ConcurrentModificationException e) {
+				}
+				catch (Exception e) {
 					logger.log(Level.SEVERE, "Can't send out clock pulse: ", e);
 				}
 			}
@@ -804,8 +801,7 @@ public class MasterClock implements Serializable {
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 		try {
 			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
-			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {
-	
+			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {				
 				Future<String> result = listenerExecutor.submit(c);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				result.get();

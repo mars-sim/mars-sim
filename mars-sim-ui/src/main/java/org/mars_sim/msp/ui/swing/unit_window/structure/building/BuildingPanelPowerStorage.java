@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,10 +37,7 @@ extends BuildingFunctionPanel {
 	private double storedCache;
 	
 	private PowerStorage storage;
-	
-	private DecimalFormat formatter = new DecimalFormat("0.0");
 
-	
 	/**
 	 * Constructor.
 	 * @param storage The power storage building function.
@@ -67,34 +63,34 @@ extends BuildingFunctionPanel {
 		// Create capacity label.
 		capacityCache = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;;
 		capTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.cap"),
-							 formatter.format(capacityCache) + kWh, null);
+							 DECIMAL_PLACES1.format(capacityCache) + kWh, null);
 		
 		// Create stored label.
-		storedCache = Math.round(storage.getkWattHourStored() *10.0)/10.0;;
+		storedCache = storage.getkWattHourStored();
 		storedTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.stored"),
-								storedCache + kWh, null);
+									DECIMAL_PLACES1.format(storedCache) + kWh, null);
 		
 		SpringUtilities.makeCompactGrid(springPanel,
                 2, 2, 			//rows, cols
-                75, 10,        //initX, initY
-                3, 1);       //xPad, yPad
+                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 	}
 
 	@Override
 	public void update() {
 
 		// Update capacity label if necessary.
-		double newCapacity = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;
+		double newCapacity = storage.getCurrentMaxCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
-			capTF.setText(capacityCache + kWh);
+			capTF.setText(DECIMAL_PLACES1.format(capacityCache) + kWh);
 		}
 
 		// Update stored label if necessary.
-		double newStored = Math.round(storage.getkWattHourStored() *10.0)/10.0;
+		double newStored = storage.getkWattHourStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
-			storedTF.setText(storedCache + kWh);
+			storedTF.setText(DECIMAL_PLACES1.format(storedCache) + kWh);
 		}    
 	}
 	
@@ -109,6 +105,5 @@ extends BuildingFunctionPanel {
 		storedTF = null;
 		capTF = null;
 		storage = null;
-		formatter = null;
 	}
 }

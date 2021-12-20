@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -23,17 +22,19 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
@@ -48,16 +49,13 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
 
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
 
 	private static final String SOL = "   Sol ";
-	private static final String WHITESPACES = "   ";
 	
 	// Data members
 	private int selectedSolCache;
@@ -71,8 +69,8 @@ public class TabPanelLog extends TabPanel {
 	private JTable table;
 	private JComboBoxMW<Integer> solBox;
 	
-	private WebTextField odometerTF;
-	private WebTextField maintTF;
+	private JTextField odometerTF;
+	private JTextField maintTF;
 	
 	private DefaultComboBoxModel<Integer> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
@@ -81,9 +79,6 @@ public class TabPanelLog extends TabPanel {
 	private List<Integer> solList;
 	private Map<Integer, List<MSolDataItem<Set<StatusType>>>> allStatuses;
 	private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -104,56 +99,24 @@ public class TabPanelLog extends TabPanel {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		
-		// Create towing label.
-		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelLog.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		panel.add(titleLabel);
-		topContentPanel.add(panel, BorderLayout.NORTH);
+			marsClock = getSimulation().getMasterClock().getMarsClock();
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 		
         // Create spring layout dataPanel
         WebPanel springPanel = new WebPanel(new SpringLayout());
-		topContentPanel.add(springPanel, BorderLayout.CENTER);
-		
-	    WebLabel odometerLabel = new WebLabel(Msg.getString("TabPanelLog.label.odometer"), WebLabel.RIGHT);
-	    odometerLabel.setOpaque(false);
-	    odometerLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-	    springPanel.add(odometerLabel);
+        northPanel.add(springPanel);
 
-		WebPanel wrapper = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
-		odometerTF = new WebTextField(Math.round(vehicle.getOdometerMileage()*100.0)/100.0 + "");
-		odometerTF.setEditable(false);
-		odometerTF.setColumns(8);
-		odometerTF.setOpaque(false);
-		odometerTF.setFont(new Font("Serif", Font.PLAIN, 12));
-	    wrapper.add(odometerTF);
-	    springPanel.add(wrapper);
-	        
-	    WebLabel maintLabel = new WebLabel(Msg.getString("TabPanelLog.label.maintDist"), WebLabel.RIGHT);
-	    maintLabel.setOpaque(false);
-	    maintLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-	    springPanel.add(maintLabel);
+		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
+								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), null);
 
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
-		maintTF = new WebTextField(Math.round(vehicle.getDistanceLastMaintenance()*100.0)/100.0 + "");
-		maintTF.setEditable(false);
-		maintTF.setColumns(8);
-		maintTF.setOpaque(false);
-		maintTF.setFont(new Font("Serif", Font.PLAIN, 12));
-	    wrapper1.add(maintTF);
-	    springPanel.add(wrapper1);
-	    
+		maintTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.maintDist"),
+				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), null);
+
 	    // Lay out the spring panel.
 	    SpringUtilities.makeCompactGrid(springPanel,
 	     		                                2, 2, //rows, cols
@@ -161,7 +124,7 @@ public class TabPanelLog extends TabPanel {
 	    		                               7, 7);       //xPad, yPad     	
 		
 		todayInteger = marsClock.getMissionSol();
-		solList = new CopyOnWriteArrayList<Integer>();
+		solList = new CopyOnWriteArrayList<>();
 
 		allStatuses = vehicle.getVehicleLog();
 		oneDayStatuses = allStatuses.get(todayInteger);
@@ -170,17 +133,10 @@ public class TabPanelLog extends TabPanel {
 			if (!solList.contains(i))
 				solList.add(i);
 		}
-		
-//		for (int key : allStatuses.keySet()) {
-//			solList.add(key);
-//		}
-//		
-//		if (!solList.contains(today))
-//			solList.add(today);
 
 		// Create comboBoxModel
 		Collections.sort(solList, Collections.reverseOrder());
-		comboBoxModel = new DefaultComboBoxModel<Integer>();
+		comboBoxModel = new DefaultComboBoxModel<>();
 		// Using internal iterator in lambda expression
 		solList.forEach(s -> comboBoxModel.addElement(s));
 
@@ -196,29 +152,14 @@ public class TabPanelLog extends TabPanel {
 				
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		solPanel.add(solBox);
-		centerContentPanel.add(solPanel, BorderLayout.NORTH);
+        northPanel.add(solPanel);
 				
 		Box box = Box.createHorizontalBox();
-		centerContentPanel.add(box, BorderLayout.CENTER);
+		northPanel.add(box);
 		
-		box.add(Box.createHorizontalGlue());
+        content.add(northPanel, BorderLayout.NORTH);
 
-//		if (solBox.getSelectedItem() == null) {
-//			solBox.setSelectedItem(today);
-//			selectedSol = (int) today;
-//		}
-//		else {
-//			selectedSol = (int) solBox.getSelectedItem();
-//		}
-//
-////		solBox.setSelectedItem((Integer) 1);
-//		solBox.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				selectedSol = (int) solBox.getSelectedItem();
-////				if ((int)selectedSol == today)
-//			}
-//		});
-		
+		box.add(Box.createHorizontalGlue());
 		selectedSol = (Integer) solBox.getSelectedItem();
 		
 		if (selectedSol == null)
@@ -232,13 +173,11 @@ public class TabPanelLog extends TabPanel {
 		});
 		
 		// Create schedule table model
-		if (unit instanceof Vehicle)
-			scheduleTableModel = new ScheduleTableModel((Vehicle) unit);
+		scheduleTableModel = new ScheduleTableModel(vehicle);
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
-//		scrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(scrollPanel);
+		content.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);
@@ -271,9 +210,7 @@ public class TabPanelLog extends TabPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		int t = -1;
 
 		if (theme != t) {
@@ -283,10 +220,10 @@ public class TabPanelLog extends TabPanel {
 		
 		
 		// Update the odometer reading
-		odometerTF.setText(Math.round(vehicle.getOdometerMileage()*100.0)/100.0 + "");
+		odometerTF.setText(DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
 				
 		// Update distance last maintenance 
-		maintTF.setText(Math.round(vehicle.getDistanceLastMaintenance()*100.0)/100.0 + "");
+		maintTF.setText(DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
 				
 		todayInteger = marsClock.getMissionSol();
 
@@ -304,9 +241,6 @@ public class TabPanelLog extends TabPanel {
 			}
 					
 			Collections.sort(solList, Collections.reverseOrder());
-			
-//			DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
-//			solList.forEach(s -> newComboBoxModel.addElement(s));
 
 			for (int s : solList) {
 				// Check if this element exist
@@ -500,7 +434,10 @@ public class TabPanelLog extends TabPanel {
 	/**
 	 * Prepares for deletion.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		if (solBox != null)
 			solBox.removeAllItems();
 		if (comboBoxModel != null)

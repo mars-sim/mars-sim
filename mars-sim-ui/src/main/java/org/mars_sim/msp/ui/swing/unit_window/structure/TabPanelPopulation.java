@@ -6,70 +6,38 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 
 /**
  * This is a tab panel for population information.
  */
 @SuppressWarnings("serial")
-public class TabPanelPopulation
-extends TabPanel
-implements MouseListener, ActionListener {
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TabPanelPopulation.class.getName());
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
+public class TabPanelPopulation extends TabPanel {
 
 	/** The Settlement instance. */
 	private Settlement settlement;
 
-	private JLabel populationIndoorLabel;
-	private JLabel populationCapacityLabel;
+	private JTextField populationIndoorLabel;
+	private JTextField populationCapacityLabel;
 
-	private PopulationListModel populationListModel;
-	private JList<Person> populationList;
-	private JScrollPane populationScrollPanel;
+	private UnitListPanel<Person> populationList;
 
 	private int populationIndoorCache;
 	private int populationCapacityCache;
@@ -92,91 +60,47 @@ implements MouseListener, ActionListener {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePane);
-
-		JLabel heading = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
-		heading.setFont(new Font("Serif", Font.BOLD, 16));
-		//heading.setForeground(new Color(102, 51, 0)); // dark brown
-		titlePane.add(heading);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
-//		countPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(countPanel);
+		WebPanel countPanel = new WebPanel(new SpringLayout());
+		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create population indoor label
-		WebLabel populationIndoorHeader = new WebLabel(Msg.getString("TabPanelPopulation.indoor"),
-				WebLabel.RIGHT); // $NON-NLS-1$
-		countPanel.add(populationIndoorHeader);
-
 		populationIndoorCache = settlement.getIndoorPeopleCount();
-		populationIndoorLabel = new WebLabel(populationIndoorCache + "", WebLabel.LEFT);
-		countPanel.add(populationIndoorLabel);
+		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelPopulation.indoor"),
+											 populationIndoorCache, null);
 
 		// Create population capacity label
-		WebLabel populationCapacityHeader = new WebLabel(Msg.getString("TabPanelPopulation.capacity"),
-				WebLabel.RIGHT); // $NON-NLS-1$
-		countPanel.add(populationCapacityHeader);
-
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
-		countPanel.add(populationCapacityLabel);
+		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelPopulation.capacity"),
+											   populationCapacityCache, null);
 
-		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
-				5, 10, // initX, initY
-				5, 2); // xPad, yPad
-
-        UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
-        Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-        TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelPopulation.TitledBorder") + " ");
-//      title.setTitleJustification(TitledBorder.RIGHT);
-        Font titleFont = UIManager.getFont("TitledBorder.font");
-        title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));
-
+				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
+		
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		populationDisplayPanel.setBorder(title);
-		topContentPanel.add(populationDisplayPanel);
+		addBorder(populationDisplayPanel, Msg.getString("TabPanelPopulation.TitledBorder"));
+		content.add(populationDisplayPanel, BorderLayout.CENTER);
 
-		// Create scroll panel for population list.
-		populationScrollPanel = new JScrollPane();
-		populationScrollPanel.setPreferredSize(new Dimension(200, 250));
-		populationDisplayPanel.add(populationScrollPanel);
-
-		// Create population list model
-		populationListModel = new PopulationListModel(settlement);
-
-		// Create population list
-		populationList = new JList<Person>(populationListModel);
-		populationList.addMouseListener(this);
-		populationScrollPanel.setViewportView(populationList);
-
-		// Create population monitor button
-		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.addActionListener(this);
-		monitorButton.setToolTipText(Msg.getString("TabPanelPopulation.tooltip.monitor")); //$NON-NLS-1$
-		populationDisplayPanel.add(monitorButton);
-
+		// Create scroll panel for population list. new Dimension(200, 250)
+		populationList = new UnitListPanel<>(getDesktop()) {
+			@Override
+			protected Collection<Person> getData() {
+				return settlement.getIndoorPeople();
+			}
+		};
+		populationDisplayPanel.add(populationList);
 	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
-		Settlement settlement = (Settlement) unit;
 
 		int num = settlement.getIndoorPeopleCount();
 		// Update indoor num
@@ -193,108 +117,17 @@ implements MouseListener, ActionListener {
 		}
 
 		// Update population list
-		populationListModel.update();
-		populationScrollPanel.validate();
+		populationList.update();
 	}
-
-	/**
-	 * List model for settlement population.
-	 */
-	private class PopulationListModel extends AbstractListModel<Person> {
-
-	    /** default serial id. */
-	    private static final long serialVersionUID = 1L;
-
-	    private Settlement settlement;
-	    private List<Person> populationList;
-
-	    private PopulationListModel(Settlement settlement) {
-	        this.settlement = settlement;
-
-	        populationList = new ArrayList<Person>(settlement.getIndoorPeople());
-	        Collections.sort(populationList);
-	    }
-
-        @Override
-        public Person getElementAt(int index) {
-
-            Person result = null;
-
-            if ((index >= 0) && (index < populationList.size())) {
-                result = populationList.get(index);
-            }
-
-            return result;
-        }
-
-        @Override
-        public int getSize() {
-            return populationList.size();
-        }
-
-        /**
-         * Update the population list model.
-         */
-        public void update() {
-
-            if (!populationList.containsAll(settlement.getIndoorPeople()) ||
-                    !settlement.getIndoorPeople().containsAll(populationList)) {
-
-                List<Person> oldPopulationList = populationList;
-
-                List<Person> tempPopulationList = new ArrayList<Person>(settlement.getIndoorPeople());
-                Collections.sort(tempPopulationList);
-
-                populationList = tempPopulationList;
-                fireContentsChanged(this, 0, getSize());
-
-                oldPopulationList.clear();
-            }
-        }
-	}
-
-	/**
-	 * Action event occurs.
-	 * @param event the action event
-	 */
-	public void actionPerformed(ActionEvent event) {
-		// If the population monitor button was pressed, create tab in monitor tool.
-		try {
-			desktop.addModel(new PersonTableModel((Settlement) unit, false));
-		} catch (Exception e) {
-			logger.severe("PersonTableModel cannot be added.");
-		}
-	}
-
-	/**
-	 * Mouse clicked event occurs.
-	 * @param event the mouse event
-	 */
-	public void mouseClicked(MouseEvent event) {
-
-		// If double-click, open person window.
-		if (event.getClickCount() >= 2) {
-			Person person = (Person) populationList.getSelectedValue();
-			if (person != null) {
-				desktop.openUnitWindow(person, false);
-			}
-		}
-	}
-
-	public void mousePressed(MouseEvent event) {}
-	public void mouseReleased(MouseEvent event) {}
-	public void mouseEntered(MouseEvent event) {}
-	public void mouseExited(MouseEvent event) {}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
 		populationIndoorLabel = null;
 		populationCapacityLabel = null;
-		populationListModel = null;
 		populationList = null;
-		populationScrollPanel = null;
 	}
-
 }

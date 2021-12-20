@@ -27,13 +27,11 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
+
 	/** The heat status textfield. */
 	private JTextField statusTF;
 	/** The heat production textfield. */
 	private JTextField producedTF;
-	
-	/** Decimal formatter. */
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelThermal.decimalFormat")); //$NON-NLS-1$
 
 	// Caches
 	/** The heat status cache. */
@@ -49,7 +47,8 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
-		super(Msg.getString("BuildingPanelThermal.title"), furnace.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelThermal.tabTitle"), Msg.getString("BuildingPanelThermal.title"),
+			  furnace.getBuilding(), desktop);
 
 		this.furnace = furnace;
 		this.building = furnace.getBuilding();
@@ -72,12 +71,12 @@ extends BuildingFunctionPanel {
 		
 		productionCache = furnace.getGeneratedHeat();		
 		producedTF = addTextField(infoPanel, Msg.getString("BuildingPanelThermal.heatProduced"),
-								  formatter.format(productionCache) + " kW", "The heat production of this building");
+								  DECIMAL_PLACES1.format(productionCache) + " kW", "The heat production of this building");
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
-				80, 5, // initX, initY
-				5, 1); // xPad, yPad
+				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 	}
 
 	/**
@@ -94,7 +93,7 @@ extends BuildingFunctionPanel {
 		double newProductionCache = furnace.getGeneratedHeat();
 		if (productionCache != newProductionCache) {
 			productionCache = newProductionCache;
-			producedTF.setText(formatter.format(productionCache) + " kW");
+			producedTF.setText(DECIMAL_PLACES1.format(productionCache) + " kW");
 		}
 	}
 }

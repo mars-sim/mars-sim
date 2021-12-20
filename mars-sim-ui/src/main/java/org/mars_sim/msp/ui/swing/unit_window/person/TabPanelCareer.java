@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -76,7 +77,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private int solRatingSubmitted = -1;
 
 	/** Is UI constructed. */
-	private boolean uiDone = false;
 	private boolean firstNotification = true;
 	private boolean printLog;
 	private boolean printLog2;
@@ -107,7 +107,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private Person person;
 	private Settlement settlement;
 
-	private final Font sansSerif12 = new Font("SansSerif", Font.ITALIC, 12);
 	private final Font courierNew12 = new Font("Courier New", Font.ITALIC, 12);
 
 	private static MarsClock marsClock;
@@ -142,31 +141,22 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		}
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 
 		boolean dead = false;
 		DeathInfo deathInfo = null;
 
 		// Prepare label panel
-		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
-
-		// Prepare title label
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCareer.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		labelPanel.add(titleLabel);
+		JPanel northPanel = new JPanel(new BorderLayout());
+		content.add(northPanel, BorderLayout.NORTH);
 
 		Mind mind = person.getMind();
 		dead = person.getPhysicalCondition().isDead();
 		deathInfo = person.getPhysicalCondition().getDeathDetails();
 
 		WebPanel firstPanel = new WebPanel(new BorderLayout());
-		topContentPanel.add(firstPanel, BorderLayout.NORTH);
+		northPanel.add(firstPanel, BorderLayout.NORTH);
 
 		// Prepare job spring panel
 		WebPanel topSpringPanel = new WebPanel(new SpringLayout());
@@ -242,7 +232,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				5, 1); // xPad, yPad
 
 		WebPanel ratingPanel = new WebPanel(new BorderLayout());
-		topContentPanel.add(ratingPanel, BorderLayout.CENTER);
+		northPanel.add(ratingPanel, BorderLayout.CENTER);
 
 		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 
@@ -329,12 +319,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Prepare job title panel
 		WebPanel jobHistoryPanel = new WebPanel(new BorderLayout(0, 0));
-		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
+		content.add(jobHistoryPanel, BorderLayout.CENTER);
 
 		// Prepare job title label
 		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
 		// historyLabel.setBounds(0, 0, width, height);
-		historyLabel.setFont(sansSerif12);
+		historyLabel.setFont(SUBTITLE_FONT);
 		historyLabel.setPadding(7, 0, 1, 0);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
@@ -369,11 +359,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
-
+		
 		TableStyle.setTableStyle(table);
 		update();
 		jobHistoryTableModel.update();
-
 	}
 
 	/*
@@ -569,9 +558,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		TableStyle.setTableStyle(table);
 
 		boolean dead = false;
@@ -618,7 +604,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-
+		MainDesktopPane desktop = getDesktop();
+		
 		if (source == roleComboBox) {
 			RoleType selectedRole = RoleType.getType((String) roleComboBox.getSelectedItem());
 			int box = -1;
@@ -743,18 +730,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 	}
 
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		table = null;
 		jobLabel = null;
-//		roleTF = null;
-		desktop = null;
 		jobChangeLabel = null;
 		ratingLabel = null;
 		jobComboBox = null;
 		roleComboBox = null;
 		jobHistoryTableModel = null;
 		starRater = null;
-		marsClock = null;
 	}
 
 	/**

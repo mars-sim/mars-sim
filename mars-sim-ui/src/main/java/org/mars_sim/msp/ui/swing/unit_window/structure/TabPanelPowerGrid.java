@@ -10,16 +10,16 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -46,10 +46,8 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.checkbox.WebCheckBox;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
 
 /**
  * This is a tab panel for a settlement's power grid information.
@@ -84,23 +82,12 @@ public class TabPanelPowerGrid extends TabPanel {
 	private Settlement settlement;
 	
 	private JTable powerTable;
-	/** The total power generated label. */
-	private WebLabel powerGeneratedLabel;
-	/** The total power used label. */
-	private WebLabel powerUsedLabel;
-	/** The total power storage capacity label. */
-	private WebLabel energyStorageCapacityLabel;
-	/** The total power stored label. */
-	private WebLabel energyStoredLabel;
-	/** The power efficiency label. */
-	private WebLabel electricEfficiencyLabel;
 
-	private WebTextField powerGeneratedTF;
-	private WebTextField powerUsedTF;
-	private WebTextField energyStorageCapacityTF;
-	private WebTextField energyStoredTF;
-	private WebTextField solarCellEfficiencyTF;
-	private WebTextField degradRateTF;
+	private JTextField powerGeneratedTF;
+	private JTextField powerUsedTF;
+	private JTextField energyStorageCapacityTF;
+	private JTextField energyStoredTF;
+	private JTextField solarCellEfficiencyTF;
 
 	private WebScrollPane powerScrollPane;
 
@@ -111,17 +98,11 @@ public class TabPanelPowerGrid extends TabPanel {
 	/** The settlement's power grid. */
 	private PowerGrid powerGrid;
 
-//	private BuildingConfig config;
-
 	private BuildingManager manager;
 
 	private List<PowerSource> powerSources;
 
 	private List<Building> buildings;
-
-	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
-	private static DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
-//	private static DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 
 	/**
 	 * Constructor.
@@ -133,6 +114,7 @@ public class TabPanelPowerGrid extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
+				Msg.getString("TabPanelPowerGrid.label"),
 				null, Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
@@ -140,27 +122,14 @@ public class TabPanelPowerGrid extends TabPanel {
 
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
+	@Override
+	protected void buildUI(JPanel content) {
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
-//		config = SimulationConfig.instance().getBuildingConfiguration();
 		buildings = manager.getBuildingsWithPowerGeneration();
 
-		// Prepare power grid label panel.
-		WebPanel powerGridLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(powerGridLabelPanel);
-
-		// Prepare power grid label.
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		powerGridLabelPanel.add(titleLabel);
+		JPanel topContentPanel = new JPanel(new BorderLayout());
+		content.add(topContentPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout power info panel.
 		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());
@@ -168,87 +137,40 @@ public class TabPanelPowerGrid extends TabPanel {
 
 		// Prepare power generated label.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
-		powerGeneratedLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"), WebLabel.RIGHT); //$NON-NLS-1$
-		powerGeneratedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip")); //$NON-NLS-1$
-		powerInfoPanel.add(powerGeneratedLabel);
-
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGeneratedTF = new WebTextField(formatter.format(powerGeneratedCache) + kW);
-		powerGeneratedTF.setEditable(false);
-		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));
-		wrapper1.add(powerGeneratedTF);
-		powerInfoPanel.add(wrapper1);
+		powerGeneratedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerGenerated"),
+										DECIMAL_PLACES1.format(powerGeneratedCache) + kW,
+										Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip"));
 
 		// Prepare power used label.
 		powerUsedCache = powerGrid.getRequiredPower();
-		powerUsedLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed"), WebLabel.RIGHT); //$NON-NLS-1$
-		powerUsedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip")); //$NON-NLS-1$
-		powerInfoPanel.add(powerUsedLabel);
-
-		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerUsedTF = new WebTextField(formatter.format(powerUsedCache) + kW);
-		powerUsedTF.setEditable(false);
-		powerUsedTF.setPreferredSize(new Dimension(120, 24));
-		wrapper2.add(powerUsedTF);
-		powerInfoPanel.add(wrapper2);
+		powerUsedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerUsed"),
+								   DECIMAL_PLACES1.format(powerUsedCache) + kW,
+								   Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip"));
 
 		// Prepare power storage capacity label.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
-		energyStorageCapacityLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), //$NON-NLS-1$
-				WebLabel.RIGHT);
-		energyStorageCapacityLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip")); //$NON-NLS-1$
-		powerInfoPanel.add(energyStorageCapacityLabel);
-
-		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStorageCapacityTF = new WebTextField(formatter.format(energyStorageCapacityCache) + kWh);
-		energyStorageCapacityTF.setEditable(false);
-		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));
-		wrapper3.add(energyStorageCapacityTF);
-		powerInfoPanel.add(wrapper3);
+		energyStorageCapacityTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
+											   DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh,
+											   Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip"));
 
 		// Prepare power stored label.
 		energyStoredCache = powerGrid.getStoredEnergy();
-		energyStoredLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalEnergyStored"), WebLabel.RIGHT); //$NON-NLS-1$
-		energyStoredLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip")); //$NON-NLS-1$
-		powerInfoPanel.add(energyStoredLabel);
-
-		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStoredTF = new WebTextField(formatter.format(energyStoredCache) + kWh);
-		energyStoredTF.setEditable(false);
-		energyStoredTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
-		wrapper4.add(energyStoredTF);
-		powerInfoPanel.add(wrapper4);
+		energyStoredTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalEnergyStored"),
+									  DECIMAL_PLACES1.format(energyStoredCache) + kWh,
+									  Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip"));
 
 		// 2015-05-08 Added eff_electric_label
 		solarCellEfficiencyCache = getAverageEfficiency();
-		electricEfficiencyLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), WebLabel.RIGHT); //$NON-NLS-1$
-		electricEfficiencyLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
-		// ("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a
-		// single junction solar cell is only 33.7%. "
-		// + "For a tandem structure or multi-junction p-n cells, the limit can be as
-		// high as ~68% for unconcentrated sunlight.</p></html>");
-		powerInfoPanel.add(electricEfficiencyLabel);
+		solarCellEfficiencyTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
+											 DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
+											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
-		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarCellEfficiencyTF = new WebTextField(formatter2.format(solarCellEfficiencyCache * 100D) + PERCENT);
-		solarCellEfficiencyTF.setEditable(false);
-		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
-		wrapper5.add(solarCellEfficiencyTF);
-		powerInfoPanel.add(wrapper5);
 
 		// Create degradation rate label.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		WebLabel solarPowerDegradRateLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), //$NON-NLS-1$
-				WebLabel.RIGHT);
-		solarPowerDegradRateLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
-		powerInfoPanel.add(solarPowerDegradRateLabel);
-
-		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new WebTextField(formatter2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL);
-		degradRateTF.setEditable(false);
-		degradRateTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
-		wrapper6.add(degradRateTF);
-		powerInfoPanel.add(wrapper6);
+		addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
+									DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
+									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
 		// Create override check box panel.
 		WebPanel checkboxPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -271,7 +193,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		powerScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(powerScrollPane, BorderLayout.CENTER);
+		content.add(powerScrollPane, BorderLayout.CENTER);
 
 		// Prepare power table model.
 		powerTableModel = new PowerTableModel(settlement);
@@ -309,11 +231,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
-
-		// Add resourcesSearchable
-//		TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
-//		searchable.setPopupTimeout(5000);
-//		searchable.setCaseSensitive(false);
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(powerInfoPanel, 6, 2, // rows, cols
@@ -384,7 +301,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		double gen = powerGrid.getGeneratedPower();
 		if (powerGeneratedCache != gen) {
 			powerGeneratedCache = gen;
-			powerGeneratedTF.setText(formatter.format(powerGeneratedCache) + kW);
+			powerGeneratedTF.setText(DECIMAL_PLACES1.format(powerGeneratedCache) + kW);
 		}
 
 		// Update power used TF.
@@ -392,28 +309,28 @@ public class TabPanelPowerGrid extends TabPanel {
 		if (powerUsedCache != req) {
 			double average = .5 * (powerUsedCache + req);
 			powerUsedCache = req;
-			powerUsedTF.setText(formatter.format(average) + kW);
+			powerUsedTF.setText(DECIMAL_PLACES1.format(average) + kW);
 		}
 
 		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredEnergyCapacity();
 		if (energyStorageCapacityCache != cap) {
 			energyStorageCapacityCache = cap;
-			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache) + kWh);
+			energyStorageCapacityTF.setText(DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh);
 		}
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		if (energyStoredCache != store) {
 			energyStoredCache = store;
-			energyStoredTF.setText(formatter.format(energyStoredCache) + kWh);
+			energyStoredTF.setText(DECIMAL_PLACES1.format(energyStoredCache) + kWh);
 		}
 
 		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(formatter2.format(eff * 100D) + PERCENT);
+			solarCellEfficiencyTF.setText(DECIMAL_PLACES2.format(eff * 100D) + PERCENT);
 		}
 		// Update power table.
 		powerTableModel.update();
@@ -568,28 +485,21 @@ public class TabPanelPowerGrid extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		powerTable = null;
-		powerGeneratedLabel = null;
-		powerUsedLabel = null;
-		energyStorageCapacityLabel = null;
-		energyStoredLabel = null;
-		electricEfficiencyLabel = null;
 		powerGeneratedTF = null;
 		powerUsedTF = null;
 		energyStorageCapacityTF = null;
 		energyStoredTF = null;
 		solarCellEfficiencyTF = null;
-		degradRateTF = null;
 		powerScrollPane = null;
 
 		checkbox = null;
-		formatter = null;
-		formatter2 = null;
-//		formatter3 = null;
 		powerTableModel = null;
 		powerGrid = null;
-//		config = null;
 		manager = null;
 		powerSources = null;
 		buildings = null;

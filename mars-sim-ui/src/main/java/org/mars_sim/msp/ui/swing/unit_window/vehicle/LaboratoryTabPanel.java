@@ -11,6 +11,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
@@ -23,7 +25,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextArea;
 
@@ -32,16 +33,12 @@ import com.alee.laf.text.WebTextArea;
  */
 @SuppressWarnings("serial")
 public class LaboratoryTabPanel extends TabPanel {
-
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Rover instance. */
 	private Rover rover;
 	
 	/** The number of researchers label. */
-	private WebLabel researchersLabel;
+	private JTextField researchersLabel;
 
 	// Data cache
 	/** The number of researchers cache. */
@@ -60,58 +57,31 @@ public class LaboratoryTabPanel extends TabPanel {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-
+	@Override
+	protected void buildUI(JPanel content) {
 		Lab lab = rover.getLab();
 		
 		// Prepare laboratory panel
 		WebPanel laboratoryPanel = new WebPanel(new BorderLayout());
-		topContentPanel.add(laboratoryPanel);
-		
-		// Prepare name panel
-		WebPanel titlePanel = new WebPanel();
-		laboratoryPanel.add(titlePanel, BorderLayout.NORTH);
-
-		// Prepare laboratory label
-		WebLabel titleLabel = new WebLabel("Laboratory", WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titlePanel.add(titleLabel);
+		content.add(laboratoryPanel, BorderLayout.NORTH);
 		
 		// Prepare the top panel using spring layout.
 		WebPanel springPanel = new WebPanel(new SpringLayout());
-//		springPanel.setPadding(10, 0, 0, 0);
 		laboratoryPanel.add(springPanel, BorderLayout.CENTER);
 		
-		// Prepare label panel
-//		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1));
-//		laboratoryPanel.add(labelPanel, BorderLayout.CENTER);
-
 		// Prepare researcher number label
-		WebLabel headerLabel0 = new WebLabel("Number of Researchers : ", WebLabel.CENTER);
-		springPanel.add(headerLabel0);
-		
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = new WebLabel("" + researchersCache, WebLabel.CENTER);
-		springPanel.add(researchersLabel);
+		researchersLabel = addTextField(springPanel, "Number of Researchers:", researchersCache, null);
 
 		// Prepare researcher capacityLabel
-		WebLabel headerLabel1 = new WebLabel("Researcher Capacity : ", WebLabel.CENTER);
-		springPanel.add(headerLabel1);
-		
-		WebLabel researcherCapacityLabel = new WebLabel("" + lab.getLaboratorySize(),
-				WebLabel.CENTER);
-		springPanel.add(researcherCapacityLabel);
+		addTextField(springPanel, "Researcher Capacity:", lab.getLaboratorySize(), null);
+
 
         // Lay out the spring panel.
      	SpringUtilities.makeCompactGrid(springPanel,
      		                                2, 2, //rows, cols
      		                               90, 10,        //initX, initY
-    		                               10, 4);       //xPad, yPad
+    		                               XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 				
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
@@ -135,9 +105,7 @@ public class LaboratoryTabPanel extends TabPanel {
 				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
-		// Prepare specialties label
-//		WebLabel specialtiesLabel = new WebLabel("Specialties : ", WebLabel.CENTER);
-//		listPanel.add(specialtiesLabel, BorderLayout.NORTH);		
+		// Prepare specialties label	
 		laboratoryPanel.add(listPanel, BorderLayout.SOUTH);
 		
 		// For each specialty, add specialty name panel.
@@ -152,10 +120,8 @@ public class LaboratoryTabPanel extends TabPanel {
 	/**
 	 * Update this panel
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		Lab lab = rover.getLab();
 
 		// Update researchers label if necessary.
@@ -164,9 +130,12 @@ public class LaboratoryTabPanel extends TabPanel {
 			researchersLabel.setText("" + researchersCache);
 		}
 	}
-	
+
+	@Override
 	public void destroy() {
-	    researchersLabel = null; 
+	    super.destroy();
+	    
+		researchersLabel = null; 
 	    rover = null;
 	}
 }

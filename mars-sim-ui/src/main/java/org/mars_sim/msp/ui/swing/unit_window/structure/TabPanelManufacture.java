@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,10 +62,6 @@ public class TabPanelManufacture extends TabPanel {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TabPanelManufacture.class.getName());
 
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -98,30 +92,15 @@ public class TabPanelManufacture extends TabPanel {
 	public TabPanelManufacture(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
+				Msg.getString("TabPanelManufacture.label"),
 				null, Msg.getString("TabPanelManufacture.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
 		settlement = (Settlement) unit;
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
-		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		// Create topPanel.
-		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(topPane);
-
-		// Create manufacture label.
-		JLabel label = new JLabel(Msg.getString("TabPanelManufacture.label"), JLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
-		// label.setForeground(new Color(102, 51, 0)); // dark brown
-		topPane.add(label);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for manufacture list pane.
 		manufactureScrollPane = new JScrollPane();
@@ -129,7 +108,7 @@ public class TabPanelManufacture extends TabPanel {
 		manufactureScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		manufactureScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
-		centerContentPanel.add(manufactureScrollPane);
+		content.add(manufactureScrollPane, BorderLayout.CENTER);
 
 		// Prepare manufacture outer list pane.
 		JPanel manufactureOuterListPane = new JPanel(new BorderLayout(0, 0));
@@ -155,7 +134,7 @@ public class TabPanelManufacture extends TabPanel {
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-		topContentPanel.add(interactionPanel);
+		content.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create new building selection.
 		buildingComboBoxCache = getManufacturingBuildings();
@@ -295,9 +274,7 @@ public class TabPanelManufacture extends TabPanel {
 
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		// Update processes if necessary.
 		List<ManufactureProcess> processes = getManufactureProcesses();
 		List<SalvageProcess> salvages = getSalvageProcesses();
@@ -655,7 +632,10 @@ public class TabPanelManufacture extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		settlement = null;
 		manufactureListPane = null;
 		manufactureScrollPane = null;

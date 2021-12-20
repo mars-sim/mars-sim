@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -32,9 +33,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -45,7 +43,6 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;
@@ -57,7 +54,7 @@ import eu.hansolo.steelseries.tools.LcdColor;
 /**
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationTabPanel extends TabPanel implements ActionListener, ClockListener {
+public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -72,9 +69,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	private static final String S = "S";
 	private static final String E = "E";
 	private static final String W = "W";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	private int themeCache;
 
@@ -98,8 +92,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 	private static Environment mars;
 	private static TerrainElevation terrainElevation;
-	private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;
 
 	/**
 	 * Constructor.
@@ -111,25 +103,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		// Use the TabPanel constructor
 		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
-		this.unit = unit;
-
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();
 		topContainerCache = unit.getTopContainerUnit();
-
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		masterClock.addClockListener(this);
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
+	@Override
+	protected void buildUI(JPanel content) {
+		Unit unit = getUnit();
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
@@ -141,26 +122,17 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		}
 
 		if (terrainElevation == null)
-			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
+			terrainElevation = getSimulation().getMars().getSurfaceFeatures().getTerrainElevation();
 
-		mapPanel = desktop.getSettlementWindow().getMapPanel();
+		mapPanel = getDesktop().getSettlementWindow().getMapPanel();
 
 		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
-
-		// Initialize location header.
-		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePane);
-
-		WebLabel titleLabel = new WebLabel(Msg.getString("LocationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		titlePane.add(titleLabel);
 
 		// Create location panel
 		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
 		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
-		topContentPanel.add(locationPanel);
+		content.add(locationPanel);
 
 		// Initialize location cache
 		locationCache = new Coordinates(unit.getCoordinates());
@@ -199,7 +171,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		northPanel.add(lcdLat);
 
 		if (mars == null)
-			mars = Simulation.instance().getMars();
+			mars = getSimulation().getMars();
 		if (terrainElevation == null)
 			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
@@ -239,6 +211,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 		northPanel.add(locatorPane);
 
+		JPanel lcdPanel = new JPanel();
 		lcdLong = new DisplaySingle();
 		// lcdLong.setCustomLcdForeground(getForeground());
 		lcdLong.setLcdUnitString(dir_E_W);
@@ -249,17 +222,23 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(2);
-		lcdLong.setSize(new Dimension(150, 45));
-		lcdLong.setMaximumSize(new Dimension(150, 45));
-		lcdLong.setPreferredSize(new Dimension(150, 45));
+		lcdLong.setSize(new Dimension(120, 45));
+		lcdLong.setMaximumSize(new Dimension(120, 45));
+		lcdLong.setPreferredSize(new Dimension(120, 45));
 		lcdLong.setVisible(true);
-		northPanel.add(lcdLong);
+		lcdPanel.add(lcdLong);
+		northPanel.add(lcdPanel);
 
+
+		JPanel gaugePanel = new JPanel();
 		gauge = new DisplayCircular();
-
+		gauge.setSize(new Dimension(120, 120));
+		gauge.setMaximumSize(new Dimension(120, 120));
+		gauge.setPreferredSize(new Dimension(120, 120));
 		setGauge(gauge, elevationCache);
-
-		locationPanel.add(gauge, BorderLayout.CENTER);
+		gaugePanel.add(gauge);
+		
+		locationPanel.add(gaugePanel, BorderLayout.CENTER);
 
 		lcdText = new DisplaySingle();
 		lcdText.setLcdInfoString("Last Known Position");
@@ -277,14 +256,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		lcdText.setLcdText(locationStringCache);
 
 		// Pause the location lcd text the sim is pause
-        lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
+        lcdText.setLcdTextScrolling(true);
 
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
-		updateLocationBanner();
+		updateLocationBanner(unit);
 
 		checkTheme(true);
-
 	}
 
 	public void checkTheme(boolean firstRun) {
@@ -307,7 +285,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 //		}
 	}
 
-	public void setGauge(DisplayCircular gauge, double elevationCache) {
+	private void setGauge(DisplayCircular gauge, double elevationCache) {
 
 		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars
 		// areoid (a reference datum similar to Earth's sea level). The lowest point is
@@ -384,8 +362,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 	}
 
-	public void personUpdate(Person p) {
-
+	private void personUpdate(Person p) {
+		MainDesktopPane desktop = getDesktop();
+		
 		if (p.isInSettlement()) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -473,7 +452,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		}
 	}
 
-	public void robotUpdate(Robot r) {
+	private void robotUpdate(Robot r) {
+		MainDesktopPane desktop = getDesktop();
 
 		if (r.isInSettlement()) {
 			desktop.openToolWindow(SettlementWindow.NAME);
@@ -547,7 +527,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		}
 	}
 
-	public void vehicleUpdate(Vehicle v) {
+	private void vehicleUpdate(Vehicle v) {
+		MainDesktopPane desktop = getDesktop();
+
 		if (v.getSettlement() != null) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 			combox.setSelectedItem(v.getSettlement());
@@ -565,11 +547,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			desktop.openToolWindow(NavigatorWindow.NAME);
 //			if (mainScene != null)
 //				Platform.runLater(() -> mainScene.openMinimap());
-			desktop.centerMapGlobe(unit.getCoordinates());
+			desktop.centerMapGlobe(getUnit().getCoordinates());
 		}
 	}
 
-	public void equipmentUpdate(Equipment e) {
+	private void equipmentUpdate(Equipment e) {
+		MainDesktopPane desktop = getDesktop();
+
 		if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -638,6 +622,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 
 			update();
 
+			Unit unit = getUnit();
 			if (unit.getUnitType() == UnitType.PERSON) {
 				personUpdate((Person) unit);
 			}
@@ -661,9 +646,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
+		Unit unit = getUnit();
+		
 		// If unit's location has changed, update location display.
 		// TODO: if a person goes outside the settlement for servicing an equipment
 		// does the coordinate (down to how many decimal) change?
@@ -695,7 +679,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
-			double elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates())
+			double elevationCache = Math.round(terrainElevation.getMOLAElevation(location)
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);
@@ -713,16 +697,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 			topContainerCache = topContainer;
 		}
 
-		updateLocationBanner();
-
-		checkTheme(false);
-
+		updateLocationBanner(unit);
 	}
 
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */
-	public void updateLocationBanner() {
+	private void updateLocationBanner(Unit unit) {
 
 		String loc = unit.getLocationTag().getExtendedLocation();
 
@@ -735,12 +716,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		containerCache = null;
 		topContainerCache = null;
 		terrainElevation = null;
 		locationCache = null;
-//		mainScene = null;
 		locatorButton = null;
 		lcdLong = null;
 		lcdLat = null;
@@ -748,24 +731,4 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 		gauge = null;
 
 	}
-
-	@Override
-	public void clockPulse(ClockPulse currentPulse) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Pause the location lcd text the sim is pause
-        if (lcdText != null)
-        	lcdText.setLcdTextScrolling(!isPaused);
-	}
-
 }

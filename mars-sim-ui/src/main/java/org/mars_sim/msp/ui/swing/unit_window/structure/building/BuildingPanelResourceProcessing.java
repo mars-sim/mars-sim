@@ -42,7 +42,8 @@ extends BuildingFunctionPanel {
 	public BuildingPanelResourceProcessing(ResourceProcessing processor, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelResourceProcessing.title"), processor.getBuilding(), desktop);
+		super(Msg.getString("BuildingPanelResourceProcessing.tabTitle"), Msg.getString("BuildingPanelResourceProcessing.title"),
+			  processor.getBuilding(), desktop);
 
 		// Initialize variables.
 		this.processor = processor;

@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -25,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -57,7 +56,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -73,9 +71,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 	private final DecimalFormat formatter0 = new DecimalFormat("#,###,###,###");
 	private final DecimalFormat formatter2 = new DecimalFormat("#,###,###,###.##");
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
@@ -93,28 +88,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
-        this.unit = unit;
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-        // Create inventory label panel.
-        WebPanel inventoryLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-        topContentPanel.add(inventoryLabelPanel);
-
-        // Create inventory label
-        WebLabel titleLabel = new WebLabel("Inventory", WebLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        inventoryLabelPanel.add(titleLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
         // Create inventory content panel
         WebPanel inventoryContentPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
-        centerContentPanel.add(inventoryContentPanel, BorderLayout.CENTER);
+        content.add(inventoryContentPanel, BorderLayout.CENTER);
 
         // Create resources panel
         WebScrollPane resourcesPanel = new WebScrollPane();
@@ -122,7 +103,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(resourcesPanel);
 
         // Create resources table model
-        resourceTableModel = new ResourceTableModel();
+        resourceTableModel = new ResourceTableModel(getUnit());
 
         // Create resources table
         resourceTable = new ZebraJTable(resourceTableModel);
@@ -166,7 +147,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(itemPanel);
 
         // Create item table model
-        itemTableModel = new ItemTableModel();
+        itemTableModel = new ItemTableModel(getUnit());
 
         // Create item table
         itemTable = new ZebraJTable(itemTableModel);
@@ -200,7 +181,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(equipmentPanel);
 
         // Create equipment table model
-        equipmentTableModel = new EquipmentTableModel();
+        equipmentTableModel = new EquipmentTableModel(getUnit());
 
         // Create equipment table
         equipmentTable = new ZebraJTable(equipmentTableModel);
@@ -238,7 +219,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					int row = equipmentTable.rowAtPoint(p);
 					Equipment e = (Equipment)equipmentTable.getValueAt(row, 1);
 					if (e != null) {
-						desktop.openUnitWindow(e, false);
+						getDesktop().openUnitWindow(e, false);
 					}
 				}
 		    }
@@ -252,9 +233,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /**
      * Updates the info on this panel.
      */
+	@Override
     public void update() {
-		if (!uiDone)
-			initializeUI();
 
         resourceTableModel.update();
         itemTableModel.update();
@@ -302,7 +282,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-        private ResourceTableModel() {
+		private Unit unit;
+
+        private ResourceTableModel(Unit unit) {
+        	this.unit = unit;
         	loadResources(keys, resources, capacity);
         }
 
@@ -398,9 +381,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public void update() {
-    		List<Resource> newResourceKeys = new ArrayList<Resource>();
-			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
-    		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
+    		List<Resource> newResourceKeys = new ArrayList<>();
+			Map<Resource, Number> newResources = new HashMap<>();
+    		Map<Resource, Number> newCapacity = new HashMap<>();
 
     		loadResources(newResourceKeys, newResources, newCapacity);
 
@@ -431,7 +414,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Double> mtbf = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-        private ItemTableModel() {
+		private Unit unit;
+
+        private ItemTableModel(Unit unit) {
+        	this.unit = unit;
         	loadItems(keys, resources, reliabilities, mtbf);
         }
 
@@ -531,8 +517,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public void update() {
-        	List<Resource> newResourceKeys = new ArrayList<Resource>();
-        	Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+        	List<Resource> newResourceKeys = new ArrayList<>();
+        	Map<Resource, Number> newResources = new HashMap<>();
 			Map<Resource, Double> newReliabilities = new HashMap<>();
 			Map<Resource, Double> newMTBF = new HashMap<>();
 
@@ -567,12 +553,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<String, String> contentOwner = new HashMap<>();
 		private Map<String, Double> mass = new HashMap<>();
 
+		private Unit unit;
+
 
 		/**
 		 * hidden constructor.
 		 * @param inventory {@link Inventory}
 		 */
-		public EquipmentTableModel() {
+		public EquipmentTableModel(Unit unit) {
+			this.unit = unit;
 			loadModel(equipmentList, types, contentOwner, mass);
 		}
 
@@ -698,7 +687,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		// take care to avoid null exceptions
 		resourceTableModel = null;
 		equipmentTableModel = null;

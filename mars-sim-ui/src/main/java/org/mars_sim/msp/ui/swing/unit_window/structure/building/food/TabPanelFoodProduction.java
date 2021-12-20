@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,8 +62,6 @@ public class TabPanelFoodProduction extends TabPanel {
 	private static final Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
 
 	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -103,25 +99,10 @@ public class TabPanelFoodProduction extends TabPanel {
 
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void initializeUI() {
-		uiDone = true;
+	protected void buildUI(JPanel content) {
 		
 		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		// Create topPanel.
-		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(topPane);
-
-		// Create foodProduction label.
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelFoodProduction.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		topPane.add(titleLabel);
 
 		// Create scroll panel for foodProduction list pane.
 		foodProductionScrollPane = new JScrollPane();
@@ -129,7 +110,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		foodProductionScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		foodProductionScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		foodProductionScrollPane.setPreferredSize(new Dimension(220, 215));
-		centerContentPanel.add(foodProductionScrollPane);
+		content.add(foodProductionScrollPane, BorderLayout.CENTER);
 
 		// Prepare foodProduction outer list pane.
 		JPanel foodProductionOuterListPane = new JPanel(new BorderLayout(0, 0));
@@ -149,7 +130,7 @@ public class TabPanelFoodProduction extends TabPanel {
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-		topContentPanel.add(interactionPanel);
+		content.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create new building selection.
 		buildingComboBoxCache = getFoodProductionBuildings();
@@ -223,8 +204,6 @@ public class TabPanelFoodProduction extends TabPanel {
 		});
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
 		interactionPanel.add(overrideCheckbox);
-
-		// setVisible(true);
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
@@ -272,8 +251,6 @@ public class TabPanelFoodProduction extends TabPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
 		
 		// Update processes if necessary.
 		List<FoodProductionProcess> processes = getFoodProductionProcesses();
@@ -507,7 +484,10 @@ public class TabPanelFoodProduction extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		settlement = null;
 		foodProductionListPane = null;
 		foodProductionScrollPane = null;
@@ -519,6 +499,5 @@ public class TabPanelFoodProduction extends TabPanel {
 		processSelectionCache = null;
 		newProcessButton = null;
 		overrideCheckbox = null;
-
 	}
 }

@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +31,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
@@ -40,9 +38,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  */
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
     private int wearConditionCache; // The cached value for the wear condition.
     private int lastCompletedTime; // The time since last completed maintenance.
@@ -65,32 +60,21 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Maint", null, "Maintenance", unit, desktop);
-
-		this.unit = unit;
+        super("Maint", Msg.getString("MaintenanceTabPanel.title"), null, "Maintenance", unit, desktop);
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
-        Malfunctionable malfunctionable = (Malfunctionable) unit;
+    @Override
+    protected void buildUI(JPanel content) {
+        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
-        // Create maintenance label.
-  		JPanel mpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
-        maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
-  		mpanel.add(maintenanceLabel);
-        topContentPanel.add(mpanel);
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
         // Create maintenance panel
         JPanel maintenancePanel = new JPanel(new GridLayout(6, 1, 0, 0));
-        maintenancePanel.setBorder(new MarsPanelBorder());
-        topContentPanel.add(maintenancePanel);
+        northPanel.add(maintenancePanel);
+        content.add(northPanel, BorderLayout.NORTH);
 
         // Create wear condition label.
         wearConditionCache = (int) Math.round(manager.getWearCondition());
@@ -128,8 +112,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Prepare malfunction panel
         JPanel malfunctionPanel = new JPanel(new BorderLayout(0, 0));
-//        malfunctionPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(malfunctionPanel, BorderLayout.CENTER);
+        content.add(malfunctionPanel, BorderLayout.CENTER);
 
         // Create malfunctions label
         JLabel malfunctionsLabel = new JLabel("Malfunctions", JLabel.CENTER);
@@ -163,11 +146,9 @@ public class MaintenanceTabPanel extends TabPanel {
     /**
      * Update this panel
      */
+    @Override
     public void update() {
-		if (!uiDone)
-			initializeUI();
-		
-        Malfunctionable malfunctionable = (Malfunctionable) unit;
+        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
         // Update the wear condition label.
@@ -243,7 +224,7 @@ public class MaintenanceTabPanel extends TabPanel {
      */
 	// 2015-03-06 Reformatted part list and capitalized part.getName()
     private String getPartsString(boolean useHtml) {
-    	Malfunctionable malfunctionable = (Malfunctionable) unit;
+    	Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         StringBuilder buf = new StringBuilder("Needed Parts: ");
 
     	Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();

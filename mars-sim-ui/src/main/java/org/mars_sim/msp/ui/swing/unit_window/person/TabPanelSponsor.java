@@ -7,8 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,9 +32,6 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelSponsor
 extends TabPanel {
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -57,30 +52,15 @@ extends TabPanel {
 		person = (Person) unit;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
-		// Create general label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
-
-		// Prepare general label
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsor.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		labelPanel.add(titleLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
-//		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		JPanel infoPanel = new JPanel(new SpringLayout());
+		content.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare sponsor name label
 		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsor.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		//sponsorNameLabel.setSize(2, 2);
 		infoPanel.add(sponsorNameLabel);
 
 		// Prepare sponsor label
@@ -122,16 +102,5 @@ extends TabPanel {
 		                                2, 2, //rows, cols
 		                                20, 10,        //initX, initY
 		                                10, 4);       //xPad, yPad
-	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-
-		// Fill in as we have more to update on this panel.
 	}
 }

@@ -7,11 +7,10 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -28,8 +27,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
@@ -38,12 +35,6 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelAttribute
 extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
-	/** The Person instance. */
-	private Worker worker;
 	
 	private AttributeTableModel attributeTableModel;
 	private JTable attributeTable;
@@ -62,7 +53,6 @@ extends TabPanel {
 			person,
 			desktop
 		);
-		this.worker = person;
 	}
 
 	/**
@@ -79,32 +69,17 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-		this.worker = robot;
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-
-		// Create attribute label panel.
-		WebPanel attributeLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(attributeLabelPanel);
-
-		// Create attribute label
-		WebLabel attributeLabel = new WebLabel(Msg.getString("TabPanelAttribute.label"), WebLabel.CENTER); //$NON-NLS-1$
-		attributeLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		attributeLabelPanel.add(attributeLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Create attribute scroll panel
 		WebScrollPane attributeScrollPanel = new WebScrollPane();
-//		attributeScrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(attributeScrollPanel);
+		content.add(attributeScrollPanel);
 
 		// Create attribute table model
-		attributeTableModel = new AttributeTableModel(worker);
+		attributeTableModel = new AttributeTableModel((Worker) getUnit());
 		
 		// Create attribute table
 		attributeTable = new ZebraJTable(attributeTableModel); //new JTable(attributeTableModel);//
@@ -112,7 +87,6 @@ extends TabPanel {
 		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
 		attributeTable.setRowSelectionAllowed(true);
-//		attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		
 		attributeScrollPanel.setViewportView(attributeTable);
 
@@ -127,8 +101,6 @@ extends TabPanel {
 
         TableStyle.setTableStyle(attributeTable);
         update();
-        
-        //attributeTableModel.update();
 	}
 
 	/**
@@ -136,13 +108,11 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		TableStyle.setTableStyle(attributeTable);
 		attributeTableModel.update();
 	}
 
+	@Override
 	public void destroy() {
 		attributeTableModel = null;
 		attributeTable = null;

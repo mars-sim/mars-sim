@@ -11,12 +11,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
@@ -29,7 +27,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.text.WebTextArea;
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -40,9 +37,6 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelSponsorship
 extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -64,37 +58,22 @@ extends TabPanel {
 		this.settlement = settlement;
 		
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
-		// Create general label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
 
-		// Prepare general label
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsorship.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		labelPanel.add(titleLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
 		JPanel infoPanel = new JPanel(new SpringLayout());
-//		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		content.add(infoPanel, BorderLayout.NORTH);
 		
 		// Prepare sponsor name label
 		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		//sponsorNameLabel.setSize(2, 2);
 		infoPanel.add(sponsorNameLabel);
 
 		// Prepare sponsor label
 		JTextField sponsorTF = new JTextField();
 		ReportingAuthority ra = settlement.getSponsor();
-		sponsorTF.setText(ra.getCode()); 
+		sponsorTF.setText(ra.getName()); 
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
@@ -112,7 +91,6 @@ extends TabPanel {
 		JTextField objectiveTF = new JTextField();
 		String objective = settlement.getSponsor().getMissionAgenda().getObjectiveName();
 		
-		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);
 		objectiveTF.setColumns(16);
@@ -142,10 +120,7 @@ extends TabPanel {
 		                                10, 4);       //xPad, yPad
 		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		TitledBorder border = BorderFactory.createTitledBorder(null, "Mission Agendas",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font(Font.MONOSPACED, Font.BOLD, 14), java.awt.Color.darkGray);
-		panel.setBorder(border);
+		addBorder(panel, "Mission Agendas");
 		
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
@@ -159,18 +134,6 @@ extends TabPanel {
 				.map(MissionSubAgenda::getDescription)
 				.collect(Collectors.joining("\n")));
 
-		centerContentPanel.add(panel, BorderLayout.CENTER);
-		
-	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-
-		// Fill in as we have more to update on this panel.
+		content.add(panel, BorderLayout.CENTER);
 	}
 }

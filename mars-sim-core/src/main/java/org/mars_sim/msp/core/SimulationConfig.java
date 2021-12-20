@@ -305,9 +305,7 @@ public class SimulationConfig implements Serializable {
 				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {
 				    if ((buildText = buffer.readLine()) != null) {
 				    	// If the version.txt's build version tag is the same as the core engine's
-					    if (buildText.equals(Simulation.BUILD)) {
-					    	sameBuild = true;
-					    }
+				    	sameBuild = buildText.equals(Simulation.BUILD);
 				    }
 				} catch (FileNotFoundException e) {
 		          	logger.log(Level.SEVERE, "Cannot find version.txt : " + e.getMessage());
@@ -335,16 +333,13 @@ public class SimulationConfig implements Serializable {
 		else if (sameBuild)
 			logger.config("The version.txt has the same BUILD " + buildText
 					+ " as the core engine's.");
-		else if (!hasNonDigit(buildText))
-			logger.config("The version.txt in your home xml folder shows BUILD " + buildText
-					+ ". The core engine uses BUILD " + Simulation.BUILD + ".");
 		else {
 			logger.config("The version.txt is invalid.");
 			invalid = true;
 		}
 
 		if (xmlDirExist) {
-			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {
+			if (!versionFileExist || buildText.equals("") || !sameBuild) {
 				try {
 					if (versionFileExist && !buildText.equals("") && !invalid) {
 						String s0 = backupDir + File.separator + buildText;
@@ -452,25 +447,6 @@ public class SimulationConfig implements Serializable {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
 		}
-	}
-
-	/**
-	 * Checks if the string contains non-digits
-	 *
-	 * @param name
-	 * @return true if it contains non-digits
-	 */
-	private boolean hasNonDigit(String name) {
-		if (name != null) {
-		    char[] chars = name.toCharArray();
-
-		    for (char c : chars) {
-		        if(!Character.isDigit(c)) {
-		            return true;
-		        }
-		    }
-		}
-	    return false;
 	}
 
 	/*

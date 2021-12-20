@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,7 +34,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -58,9 +56,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelOrganization extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -117,6 +112,8 @@ public class TabPanelOrganization extends TabPanel {
 
 	private Map<Person, PersonListener> listeners  = new HashMap<>();
 
+	private LocalUnitManagerListener unitManagerListener;
+
 	/**
 	 * Constructor.
 	 *
@@ -132,31 +129,15 @@ public class TabPanelOrganization extends TabPanel {
 		settlement = (Settlement) unit;
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		UnitManager unitManager = Simulation.instance().getUnitManager();
-		LocalUnitManagerListener unitManagerListener = new LocalUnitManagerListener();
+	@Override
+	protected void buildUI(JPanel content) {
+		UnitManager unitManager = getSimulation().getUnitManager();
+		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-
-		// Create label panel.
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePanel);
-
-		// Prepare label
-		JLabel tlabel = new JLabel(Msg.getString("TabPanelStructure.title"), JLabel.CENTER); //$NON-NLS-1$
-		tlabel.setFont(new Font("Serif", Font.BOLD, 16));
-		// tlabel.setForeground(new Color(102, 51, 0)); // dark brown
-		titlePanel.add(tlabel);
 
 		// Prepare info panel.
 		infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
-//		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		content.add(infoPanel, BorderLayout.NORTH);
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -171,32 +152,17 @@ public class TabPanelOrganization extends TabPanel {
 		tree = new JTree(root);
 		tree.setVisibleRowCount(8);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		//Listen for when the selection changes.
-//	    tree.addTreeSelectionListener(new MyTreeModelListener());
-
-		// Use treeSearchable
-//		TreeSearchable searchable = SearchableUtils.installSearchable(tree);
-//		searchable.setPopupTimeout(5000);
-//		searchable.setCaseSensitive(false);
 
 		defaultTreeModel = new DefaultTreeModel(root);
 		tree.setModel(defaultTreeModel);
 
-		centerContentPanel.add(new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+		content.add(new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 
 		buildTreeNodes();
 
 		initNodes();
 	}
-
-//	ImageIcon leafIcon = createImageIcon("images/middle.gif");
-//	if (leafIcon != null) {
-//	    DefaultTreeCellRenderer renderer =
-//	        new DefaultTreeCellRenderer();
-//	    renderer.setLeafIcon(leafIcon);
-//	    tree.setCellRenderer(renderer);
-//	}
 
 	/**
 	 * Track tree changes
@@ -221,7 +187,7 @@ public class TabPanelOrganization extends TabPanel {
 	    }
 	}
 
-	public void initNodes() {
+	protected void initNodes() {
 
 		constructNodes();
 
@@ -507,7 +473,7 @@ public class TabPanelOrganization extends TabPanel {
 						if (node.getUserObject() instanceof Person) {
 							Person person = (Person) node.getUserObject();
 							if (person != null) {
-								desktop.openUnitWindow(person, false);
+								getDesktop().openUnitWindow(person, false);
 							}
 
 //							update();
@@ -553,26 +519,6 @@ public class TabPanelOrganization extends TabPanel {
 				return c;
 			}
 		});
-	}
-
-//	public Person findPerson(String name) {
-//		// Person person = null;
-//		Collection<Person> people = settlement.getIndoorPeople();
-//		// List<Person> peopleList = new ArrayList<Person>(people);
-//		Person person = (Person) people.stream().filter(p -> p.getName() == name);
-//
-//		return person;
-//	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-
-		// Check if anyone has a role change.
 	}
 
 
@@ -688,7 +634,13 @@ public class TabPanelOrganization extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
+		UnitManager unitManager = getSimulation().getUnitManager();
+		unitManager.removeUnitManagerListener(unitManagerListener);
+		
 		// take care to avoid null exceptions
 		settlement = null;
 		infoPanel = null;

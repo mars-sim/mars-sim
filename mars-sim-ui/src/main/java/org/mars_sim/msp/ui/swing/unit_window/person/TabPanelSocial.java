@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -31,8 +31,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
@@ -43,10 +41,6 @@ public class TabPanelSocial
 extends TabPanel
 implements ListSelectionListener {
 
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -71,25 +65,13 @@ implements ListSelectionListener {
 		this.person = person;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		// Create relationship label panel.
-		WebPanel relationshipLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(relationshipLabelPanel);
-
-		// Create relationship label
-		WebLabel relationshipLabel = new WebLabel(Msg.getString("TabPanelSocial.label"), WebLabel.CENTER); //$NON-NLS-1$
-		relationshipLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		relationshipLabelPanel.add(relationshipLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
 		// Create relationship scroll panel
 		WebScrollPane relationshipScrollPanel = new WebScrollPane();
 //		relationshipScrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(relationshipScrollPanel);
+		content.add(relationshipScrollPanel, BorderLayout.CENTER);
 
 		// Create relationship table model
 		relationshipTableModel = new RelationshipTableModel(person);
@@ -117,7 +99,7 @@ implements ListSelectionListener {
 		        if (me.getClickCount() == 2) {
 		            if (row > 0 && col > 0) {
 		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 1);  			
-		    			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
+		    			if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson, false);
 		    	    }
 		        }
 		    }
@@ -144,10 +126,6 @@ implements ListSelectionListener {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
-		TableStyle.setTableStyle(relationshipTable);
 		relationshipTableModel.update();
 	}
 
@@ -156,7 +134,6 @@ implements ListSelectionListener {
 	 * @param e the event that characterizes the change.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		TableStyle.setTableStyle(relationshipTable);
 		relationshipTableModel.update();
 		//int index = relationshipTable.getSelectedRow();
         //if (index > 0) {

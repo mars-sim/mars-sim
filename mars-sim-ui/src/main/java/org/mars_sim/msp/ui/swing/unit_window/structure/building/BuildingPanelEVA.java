@@ -7,31 +7,23 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
-import javax.swing.AbstractListModel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 
 /**
@@ -39,7 +31,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseListener {
+public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 
@@ -64,18 +56,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
 
-	private OccupantListModel occupantListModel;
-	private ReservationListModel reservationListModel;
-	private JList<Person> occupants;
-	private JList<Person> reservationList;
-	private WebScrollPane scrollPanel;
-	private WebScrollPane scrollPanel1;
+	private UnitListPanel<Person> occupants;
+	private UnitListPanel<Person> reservationList;
 
 	private EVA eva;
 	private BuildingAirlock buildingAirlock;
-	private Airlock airlock;
-
-	private UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -89,16 +74,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		// Initialize data members
 		this.eva = eva;
-		this.airlock = eva.getAirlock();
 		this.buildingAirlock = (BuildingAirlock)eva.getAirlock();
-
-		unitManager = desktop.getSimulation().getUnitManager();
-
-		// Create occupant list model
-		occupantListModel = new OccupantListModel();
-
-		// Create reservation list model
-		reservationListModel = new ReservationListModel();
 	}
 	
 	/**
@@ -108,10 +84,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(9, 2, 3, 1));
+		WebPanel labelPanel = new WebPanel(new SpringLayout());
 		center.add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create outerDoorLabel
 		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
@@ -154,42 +128,44 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		// Create airlockStateLabel
 		airlockStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
-										 airlock.getState().toString(), null);
+										 buildingAirlock.getState().toString(), null);
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-									  String.format("%.1f", airlock.getRemainingCycleTime()), null);
-
+									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
+		SpringUtilities.makeCompactGrid(labelPanel,
+                9, 2, //rows, cols
+                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
+                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
+		
+		
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
 		center.add(occupantPanel, BorderLayout.CENTER);
 
-		// Create scroll panel for occupant list.
-		scrollPanel = new WebScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(150, 100));
-		occupantPanel.add(scrollPanel);
-
-		// Create occupant list
-		occupants = new JList<>(occupantListModel);
-		occupants.addMouseListener(this);
-		scrollPanel.setViewportView(occupants);
+		// Create occupant list 
+		MainDesktopPane desktop = getDesktop();
+		occupants = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(buildingAirlock.getAllInsideOccupants());
+			}
+		};
+		occupantPanel.add(occupants);
 
 		// Create reservation panel
 		WebPanel reservationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
 		center.add(reservationPanel, BorderLayout.SOUTH);
 
-		// Create scroll panel for occupant list.
-		scrollPanel1 = new WebScrollPane();
-		scrollPanel1.setPreferredSize(new Dimension(150, 100));
-		reservationPanel.add(scrollPanel1);
-
-		// Create reservation list
-		reservationList = new JList<>(reservationListModel);
-		reservationList.addMouseListener(this);
-		scrollPanel1.setViewportView(reservationList);
-
+		reservationList = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(buildingAirlock.getReserved());
+			}		
+		};	
+		reservationPanel.add(reservationList);
 	}
 
 	@Override
@@ -226,21 +202,21 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 
 		// Update airlockStateLabel
-		String state = airlock.getState().toString();
+		String state = buildingAirlock.getState().toString();
 		if (!airlockStateCache.equalsIgnoreCase(state)) {
 			airlockStateCache = state;
 			airlockStateLabel.setText(state);
 		}
 
 		// Update cycleTimeLabel
-		double time = airlock.getRemainingCycleTime();
+		double time = buildingAirlock.getRemainingCycleTime();
 		if (cycleTimeCache != time) {
 			cycleTimeCache = time;
-			cycleTimeLabel.setText(String.format("%.1f",cycleTimeCache));
+			cycleTimeLabel.setText(DECIMAL_PLACES1.format(cycleTimeCache));
 		}
 
 		String innerDoorState = "";
-		if (airlock.isInnerDoorLocked())
+		if (buildingAirlock.isInnerDoorLocked())
 			innerDoorState = LOCKED;
 		else {
 			innerDoorState = UNLOCKED;
@@ -253,7 +229,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 
 		String outerDoorState = "";
-		if (airlock.isOuterDoorLocked())
+		if (buildingAirlock.isOuterDoorLocked())
 			outerDoorState = LOCKED;
 		else {
 			outerDoorState = UNLOCKED;
@@ -266,189 +242,18 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 
 		// Update occupant list
-		if (occupantListModel != null)
-			occupantListModel.updateList();
-		if (scrollPanel != null)
-			scrollPanel.validate();
-
-		// Update reservation list
-		if (reservationListModel != null)
-			reservationListModel.updateList();
-	}
-
-	/**
-	 * List model for airlock occupant.
-	 */
-	private class OccupantListModel extends AbstractListModel<Person> {
-
-		private List<Integer> intList;
-
-		private OccupantListModel() {
-			intList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
-			Collections.sort(intList);
-		}
-
-		@Override
-		public Person getElementAt(int index) {
-			// Need to update intList or else sometimes ArrayIndexOutOfBoundsException
-			intList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
-			Collections.sort(intList);
-			
-			Person result = null;
-
-			int size = getSize();
-			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
-				result = unitManager.getPersonByID(intList.get(index));
-			}
-
-			return result;
-		}
-
-		@Override
-		public int getSize() {
-			return buildingAirlock.getNumOccupants();
-		}
-
-		/**
-		 * Update the list model.
-		 */
-		public void updateList() {
-
-			List<Integer> newIntList = new ArrayList<>(buildingAirlock.getAllInsideOccupants());
-			Collections.sort(newIntList);
-
-			if (!intList.equals(newIntList)
-					|| !intList.containsAll(newIntList)
-					|| !newIntList.containsAll(intList)) {
-
-				intList = newIntList;
-
-				fireContentsChanged(this, 0, getSize());
-			}
-		}
-	}
-
-	/**
-	 * Reservation List model for airlock reservation.
-	 */
-	private class ReservationListModel extends AbstractListModel<Person> {
-
-		private List<Integer> intList;
-
-		private ReservationListModel() {
-			intList = new ArrayList<>(airlock.getReserved());
-			Collections.sort(intList);
-		}
-
-		@Override
-		public Person getElementAt(int index) {
-			// Need to update intList or else sometimes ArrayIndexOutOfBoundsException
-			intList = new ArrayList<>(airlock.getReserved());
-			Collections.sort(intList);
-			
-			Person result = null;
-
-			int size = getSize();
-			if (!intList.isEmpty() && index >= 0 && index < size && size > 0) {
-				result = unitManager.getPersonByID(intList.get(index));
-			}
-
-			return result;
-		}
-
-		@Override
-		public int getSize() {
-			return airlock.getReservedNum();
-		}
-
-		/**
-		 * Update the list model.
-		 */
-		public void updateList() {
-
-			List<Integer> newIntList = new ArrayList<>(airlock.getReserved());
-			Collections.sort(newIntList);
-
-			if (!intList.equals(newIntList)
-					|| !intList.containsAll(newIntList)
-					|| !newIntList.containsAll(intList)) {
-
-				intList = newIntList;
-
-				fireContentsChanged(this, 0, getSize());
-			}
-		}
-	}
-	/**
-	 * Mouse clicked event occurs.
-	 *
-	 * @param event the mouse event
-	 */
-	@Override
-	public void mouseClicked(MouseEvent event) {
-		// If double-click, open person window.
-		if (event.getClickCount() >= 2) {
-			Person person = (Person) occupants.getSelectedValue();
-			if (person != null) {
-				desktop.openUnitWindow(person, false);
-			}
-
-			Person person1 = (Person) reservationList.getSelectedValue();
-			if (person1 != null) {
-				desktop.openUnitWindow(person1, false);
-			}
-		}
-
-		// Update panel
-		update();
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// Update panel
-		update();
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// Update panel
-		update();
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// Update panel
-		update();
+		occupants.update();
+		reservationList.update();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
-		
-		innerDoorLabel = null;
-		outerDoorLabel = null;
-		occupiedLabel = null;
-		emptyLabel = null;
-		operatorLabel = null;
-		airlockStateLabel = null;
-		cycleTimeLabel = null;
-		innerDoorStateLabel = null;
-		outerDoorStateLabel = null;
-
-		occupantListModel = null;
-		reservationListModel = null;
 
 		occupants = null;
-		scrollPanel = null;
-		scrollPanel1 = null;
-
+		reservationList = null;
+		
 		eva = null;
-		airlock = null;
 		buildingAirlock = null;
 	}
 }
-

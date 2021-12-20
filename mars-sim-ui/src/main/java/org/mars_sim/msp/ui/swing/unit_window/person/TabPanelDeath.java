@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,8 +52,6 @@ public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Person instance. */
 	private Person person = null;
@@ -79,29 +76,14 @@ implements ActionListener {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	protected void buildUI(JPanel content) {
 			
 		PhysicalCondition condition = person.getPhysicalCondition();
 		DeathInfo death = condition.getDeathDetails();
 
-		// Create death info label panel.
-		JPanel deathInfoLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(deathInfoLabelPanel);
-
-		// Prepare death info label
-		JLabel deathInfoLabel = new JLabel(Msg.getString("TabPanelDeath.label"), JLabel.LEFT); //$NON-NLS-1$
-		deathInfoLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		deathInfoLabelPanel.add(deathInfoLabel);
-
 		// Prepare death label panel
 		JPanel deathLabelPanel = new JPanel(new SpringLayout());//GridLayout(3, 2, 0, 0));
-//		deathLabelPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(deathLabelPanel, BorderLayout.NORTH);
+		content.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
 		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), JLabel.LEFT); //$NON-NLS-1$
@@ -146,39 +128,31 @@ implements ActionListener {
 		SpringUtilities.makeCompactGrid(deathLabelPanel,
 		                                3, 2, //rows, cols
 		                                50, 5,        //initX, initY
-		                                10, 1);       //xPad, yPad
+		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
 		// Prepare bottom content panel
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(5, 5));
-		centerContentPanel.add(bottomContentPanel, BorderLayout.CENTER);
+		content.add(bottomContentPanel, BorderLayout.CENTER);
 
 		JPanel innerPanel = new JPanel();//new FlowLayout(FlowLayout.CENTER));
 		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
-//		innerPanel.setBorder(new MarsPanelBorder());
 		bottomContentPanel.add(innerPanel, BorderLayout.CENTER);
 
 		// Prepare location label panel
 		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//locationLabelPanel.setSize(300, 50);
-		//locationLabelPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-		//locationLabelPanel.setBorder(new MarsPanelBorder());
-		//bottomContentPanel.add(locationLabelPanel, BorderLayout.CENTER);
 		innerPanel.add(locationLabelPanel);
 
 		// Prepare center map button
 		final ImageIcon centerIcon = new LazyIcon("center").getIcon();
 		WebButton centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon);
-//		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);
 		TooltipManager.setTooltip (centerMapButton, Msg.getString("TabPanelDeath.tooltip.centerMap"), TooltipWay.down);
-		//centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap")); //$NON-NLS-1$
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label
 		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", JLabel.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
-		//locationPanel.add(locationLabelPanel);
 
 		if (death.getContainerUnit() != null) {
 			// Prepare top container button
@@ -236,7 +210,6 @@ implements ActionListener {
 
 		// Prepare empty panel
 		JPanel lastWordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//bottomContentPanel.add(lastWordPanel, BorderLayout.NORTH);
 		innerPanel.add(lastWordPanel);
 
 		JLabel label2 = new JLabel(Msg.getString("TabPanelDeath.lastWord")); //$NON-NLS-1$
@@ -253,25 +226,16 @@ implements ActionListener {
 		lastWordTA.setCaretPosition(0);
 		JScrollPane scrollPane = new JScrollPane(lastWordTA);
 		lastWordPanel.add(scrollPane);
-
-	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
 	}
 
 	/**
 	 * Action event occurs.
 	 * @param event the action event
 	 */
+	@Override
 	public void actionPerformed(ActionEvent event) {
 		// Update navigator tool.
-		desktop.centerMapGlobe(unit.getCoordinates());
+		getDesktop().centerMapGlobe(getUnit().getCoordinates());
 	}
 }
 
