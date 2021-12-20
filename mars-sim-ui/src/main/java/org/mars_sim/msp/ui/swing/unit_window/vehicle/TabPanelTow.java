@@ -6,11 +6,15 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -35,8 +39,6 @@ public class TabPanelTow extends TabPanel {
 	private WebLabel towedTextLabel;
 	private WebButton towedButton;
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -55,27 +57,17 @@ public class TabPanelTow extends TabPanel {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-			
-		// Create towing label.
-		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelTow.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		panel.add(titleLabel);
-		topContentPanel.add(panel);
+	@Override
+	protected void buildUI(JPanel content) {
+		JPanel mainPane = new JPanel();
+		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+		content.add(mainPane, BorderLayout.NORTH);
 		
-		Unit unit = getUnit();
-		if (unit instanceof Towing) {
+		if (vehicle instanceof Towing) {
 
 			// Create towing label panel.
 			towingLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//			towingLabelPanel.setBorder(new MarsPanelBorder());
-			topContentPanel.add(towingLabelPanel);
+			mainPane.add(towingLabelPanel);
 			
 			// Create towing label.
 			WebLabel towLabel = new WebLabel("  " + Msg.getString("TabPanelTow.towing"), WebLabel.CENTER); //$NON-NLS-1$
@@ -86,7 +78,7 @@ public class TabPanelTow extends TabPanel {
 			towingButton = new WebButton();
 			towingButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					getDesktop().openUnitWindow(((Towing) getUnit()).getTowedVehicle(), false);
+					getDesktop().openUnitWindow(((Towing) vehicle).getTowedVehicle(), false);
 				}
 			});
 
@@ -95,7 +87,7 @@ public class TabPanelTow extends TabPanel {
 			towingTextLabel.setFont(font);
 			
 			// Add the towing button or towing text label depending on the situation.
-			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();
+			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
 			if (towedVehicle != null) {
 				towingButton.setText(towedVehicle.getName());
 				addTowingButton();
@@ -103,12 +95,9 @@ public class TabPanelTow extends TabPanel {
 			else addTowingTextLabel();
 		}
 
-		Vehicle vehicle = (Vehicle) unit;
-
 		// Create towed label panel.
 		towedLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		towedLabelPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(towedLabelPanel);
+		mainPane.add(towedLabelPanel);
 
 		// Create towed label.
 		WebLabel towedLabel = new WebLabel(Msg.getString("TabPanelTow.towedBy"), WebLabel.CENTER); //$NON-NLS-1$
@@ -119,7 +108,7 @@ public class TabPanelTow extends TabPanel {
 		towedButton = new WebButton();
 		towedButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				getDesktop().openUnitWindow(((Vehicle) getUnit()).getTowingVehicle(), false);
+				getDesktop().openUnitWindow(vehicle.getTowingVehicle(), false);
 			}
 		});
 
@@ -200,14 +189,11 @@ public class TabPanelTow extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
-		Unit unit = getUnit();
-		if (unit instanceof Towing) {
+		if (vehicle instanceof Towing) {
 			// Update towing button or towing text label as necessary.
-			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();
+			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
 			if (towedVehicle != null) {
 				towingButton.setText(towedVehicle.getName());
 				addTowingButton();
@@ -216,7 +202,7 @@ public class TabPanelTow extends TabPanel {
 		}
 
 		// Update towed button or towed text label as necessary.
-		Vehicle towingVehicle = ((Vehicle) unit).getTowingVehicle();
+		Vehicle towingVehicle = vehicle.getTowingVehicle();
 		if (towingVehicle != null) {
 			towedButton.setText(towingVehicle.getName());
 			addTowedButton();
@@ -224,7 +210,10 @@ public class TabPanelTow extends TabPanel {
 		else addTowedTextLabel();
 	}
 	
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		towingLabelPanel = null; 
 		towingTextLabel = null; 
 		towingButton = null; 

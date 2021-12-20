@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -67,9 +67,6 @@ extends TabPanel {
 	private String missionPhaseCache = null;
 	private Collection<MissionMember> memberCache;
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
 
@@ -84,6 +81,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelMission.mission"),
 			null,
 			Msg.getString("TabPanelMission.tooltip"), //$NON-NLS-1$
 			vehicle, desktop
@@ -93,31 +91,24 @@ extends TabPanel {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
+	@Override
+	protected void buildUI(JPanel topContentPanel) {
 
-	public void initializeUI() {
-		uiDone = true;
-
-		missionManager = Simulation.instance().getMissionManager();
+		missionManager = getSimulation().getMissionManager();
 
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		// Prepare mission top panel
 		WebPanel missionTopPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		addBorder(missionTopPanel, "missionTopPanel");
+
 //		missionTopPanel.setBorder(new MarsPanelBorder());
 		missionTopPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		topContentPanel.add(missionTopPanel);
+		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
 		WebPanel missionPanel = new WebPanel(new BorderLayout(0, 0));
 		missionTopPanel.add(missionPanel);
-
-		// Prepare mission title label.
-		WebLabel missionTitleLabel = new WebLabel(Msg.getString("TabPanelMission.mission"), WebLabel.CENTER); //$NON-NLS-1$
-		missionTitleLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		missionPanel.add(missionTitleLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
 		if (mission != null) missionCache = mission.getDescription();
@@ -125,7 +116,7 @@ extends TabPanel {
 		if (missionCache != null) missionTextArea.setText(missionCache);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
-		missionPanel.add(new WebScrollPane(missionTextArea), BorderLayout.CENTER);
+		missionPanel.add(new WebScrollPane(missionTextArea), BorderLayout.NORTH);
 
 		// Prepare mission phase panel
 		WebPanel missionPhasePanel = new WebPanel(new BorderLayout(0, 0));
@@ -134,9 +125,10 @@ extends TabPanel {
 
 		// Prepare mission phase label
 		WebLabel missionPhaseLabel = new WebLabel(Msg.getString("TabPanelMission.missionPhase"), WebLabel.CENTER); //$NON-NLS-1$
-		missionPhaseLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		missionPhaseLabel.setFont(TITLE_FONT);
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
-
+		missionTopPanel.add(missionPhasePanel);
+		
 		// Prepare mission phase text area
 		if (mission != null) missionPhaseCache = mission.getPhaseDescription();
 		missionPhaseTextArea = new WebTextArea(2, 20);
@@ -149,7 +141,7 @@ extends TabPanel {
 		WebPanel missionBottomPanel = new WebPanel(new BorderLayout(0, 0));
 //		missionBottomPanel.setBorder(new MarsPanelBorder());
 		missionBottomPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		topContentPanel.add(missionBottomPanel);
+		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
 		// Prepare member label
 		WebLabel memberLabel = new WebLabel(Msg.getString("TabPanelMission.members"), WebLabel.CENTER); //$NON-NLS-1$
@@ -158,8 +150,7 @@ extends TabPanel {
 
 		// Prepare member list panel
 		WebPanel memberListPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-//		memberListPanel.setBorder(new MarsPanelBorder());
-		missionBottomPanel.add(memberListPanel, BorderLayout.SOUTH);
+		missionBottomPanel.add(memberListPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for member list.
 		WebScrollPane memberScrollPanel = new WebScrollPane();
@@ -169,12 +160,12 @@ extends TabPanel {
 		// Create member list model
 		memberListModel = new DefaultListModel<MissionMember>();
 		if (mission != null) memberCache = mission.getMembers();
-		else memberCache = new ConcurrentLinkedQueue<MissionMember>();
+		else memberCache = new ConcurrentLinkedQueue<>();
 		Iterator<MissionMember> i = memberCache.iterator();
 		while (i.hasNext()) memberListModel.addElement(i.next());
 
 		// Create member list
-		memberList = new JList<MissionMember>(memberListModel);
+		memberList = new JList<>(memberListModel);
 		// memberList.addMouseListener(this);
 		memberList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
@@ -232,10 +223,8 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		Vehicle vehicle = (Vehicle) getUnit();
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
@@ -281,7 +270,10 @@ extends TabPanel {
 		monitorButton.setEnabled(mission != null);
 	}
 
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		missionTextArea = null;
 		missionPhaseTextArea = null;
 		memberListModel = null;
@@ -289,6 +281,5 @@ extends TabPanel {
 		missionButton = null;
 		monitorButton = null;
 		memberCache = null;
-		missionManager = null;
 	}
 }

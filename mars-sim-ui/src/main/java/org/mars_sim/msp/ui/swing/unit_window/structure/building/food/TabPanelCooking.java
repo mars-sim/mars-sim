@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
@@ -45,7 +45,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
@@ -65,9 +64,6 @@ public class TabPanelCooking extends TabPanel {
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
-	// Data Members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	private int numRow = 0;
 	private int dayCache = 1;
@@ -98,11 +94,11 @@ public class TabPanelCooking extends TabPanel {
 	private double dessertsReplenishmentCache = 0;
 
 	/** The number of cooks label. */
-	private JLabel numCooksLabel;
+	private JTextField numCooksLabel;
 	private int numCooksCache = 0;
 
 	/** The cook capacity label. */
-	private JLabel cookCapacityLabel;
+	private JTextField cookCapacityLabel;
 	private int cookCapacityCache = 0;
 
 	private Settlement settlement;
@@ -123,15 +119,10 @@ public class TabPanelCooking extends TabPanel {
 				unit, desktop);
 
 		settlement = (Settlement) unit;
+	}
 
-	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
 		while (i.hasNext()) {
@@ -160,45 +151,24 @@ public class TabPanelCooking extends TabPanel {
 			}
 		}
 		
-		// Prepare title panel.
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePane);
-		
-		// Prepare title label.
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		titlePane.add(titleLabel);
+		JPanel northPanel = new JPanel(new BorderLayout());
+		content.add(northPanel, BorderLayout.NORTH);
 			
 		JPanel topPanel = new JPanel(new SpringLayout()); //new GridLayout(4, 1, 0, 0));
-		topContentPanel.add(topPanel);
+		northPanel.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare cook number label
-		JLabel cooksHeader = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks"),
-				WebLabel.RIGHT); // $NON-NLS-1$
-		topPanel.add(cooksHeader);
-		
-		numCooksLabel = new JLabel(numCooksCache + "", JLabel.LEFT);
-		topPanel.add(numCooksLabel);
-
-		// Prepare cook capacity label
-		JLabel cookCapacityHeader = new JLabel(Msg.getString("TabPanelCooking.cookCapacity"),
-				WebLabel.RIGHT); // $NON-NLS-1$
-		topPanel.add(cookCapacityHeader);
-		
-		cookCapacityLabel = new JLabel(cookCapacityCache +"", JLabel.LEFT); //$NON-NLS-1$
-		topPanel.add(cookCapacityLabel);
+		numCooksLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.numberOfCooks"), numCooksCache, null);
+		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, null); //$NON-NLS-1$
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(topPanel, 2, 2, // rows, cols
-				5, 10, // initX, initY
+				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
 				5, 2); // xPad, yPad
 		
 		// Prepare cooking label panel.
-		JPanel cookingLabelPanel = new JPanel(new BorderLayout());
-		topContentPanel.add(cookingLabelPanel);
-		
 		JPanel splitPanel = new JPanel(new GridLayout(1, 2, 0, 0));
-		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
+		northPanel.add(splitPanel, BorderLayout.CENTER);
 
 		// Add TitledBorder
 		JPanel d = new JPanel(new GridLayout(3, 1, 0, 0));
@@ -243,7 +213,7 @@ public class TabPanelCooking extends TabPanel {
 		scrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(scrollPane, BorderLayout.CENTER);
+		content.add(scrollPane, BorderLayout.CENTER);
 
 		// Prepare cooking table model.
 		cookingTableModel = new CookingTableModel(settlement);
@@ -304,11 +274,8 @@ public class TabPanelCooking extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
-	// Called by TabPanel whenever the Cooking tab is opened
+	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-		
 		// Update cooking table.
 		TableStyle.setTableStyle(table);
 
@@ -317,7 +284,7 @@ public class TabPanelCooking extends TabPanel {
 		updateDesserts();
 	}
 
-	public void updateMeals() {
+	private void updateMeals() {
 		int numCooks = 0;
 		int cookCapacity = 0;
 		int availableMeals = 0;
@@ -373,7 +340,7 @@ public class TabPanelCooking extends TabPanel {
 		}
 	}
 
-	public void updateDesserts() {
+	private void updateDesserts() {
 
 		int availableDesserts = 0;
 		int dessertsToday = 0;

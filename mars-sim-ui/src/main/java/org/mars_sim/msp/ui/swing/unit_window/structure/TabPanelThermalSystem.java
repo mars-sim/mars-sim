@@ -9,14 +9,14 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -60,10 +60,6 @@ extends TabPanel {
 	private static final String kW = " kW";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
-
-	// Data cache
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -117,26 +113,17 @@ extends TabPanel {
 		settlement = (Settlement) unit;
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
 		buildings = manager.getBuildingsWithThermal();
 
-		// Prepare heating System label panel.
-		WebPanel thermalSystemLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(thermalSystemLabelPanel);
-
-		// Prepare heating System label.
-		WebLabel thermalSystemLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.label"), WebLabel.CENTER); //$NON-NLS-1$
-		thermalSystemLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		thermalSystemLabelPanel.add(thermalSystemLabel);
-
+		JPanel topContentPanel = new JPanel();
+		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
+		content.add(topContentPanel, BorderLayout.NORTH);
+		
 		// Prepare heat info panel.
 		WebPanel heatInfoPanel = new WebPanel(new SpringLayout());
 		topContentPanel.add(heatInfoPanel);
@@ -224,7 +211,7 @@ extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		heatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		heatScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(heatScrollPane,BorderLayout.CENTER);
+		content.add(heatScrollPane,BorderLayout.CENTER);
 		
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
@@ -331,10 +318,9 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		TableStyle.setTableStyle(heatTable);
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
@@ -493,7 +479,10 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		heatGenLabel = null;	
 		powerGenLabel = null;	
 		effSolarHeat = null;	

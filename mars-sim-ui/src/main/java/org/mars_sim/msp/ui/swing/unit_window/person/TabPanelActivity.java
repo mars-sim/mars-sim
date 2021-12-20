@@ -14,6 +14,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -37,7 +39,6 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextArea;
 import com.alee.managers.tooltip.TooltipManager;
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipWay;
 
 /**
@@ -55,9 +56,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); // " (at the Moment
 																									// of Death)" ;
 	private static final String NONE = "None ";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	/** current task text cache */
 	private String taskTextCache = "";
@@ -115,13 +113,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
+	@Override
+	protected void buildUI(JPanel content) {
 		boolean dead = false;
 
 		Mind mind = null;
@@ -145,18 +138,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
-		// Prepare activity label panel
-		WebPanel activityLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(activityLabelPanel);
-
-		// Prepare activity label
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelActivity.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		activityLabelPanel.add(titleLabel);
-
 		// Prepare activity panel
 		WebPanel activityPanel = new WebPanel(new BorderLayout(0, 0));
-		centerContentPanel.add(activityPanel);
+		content.add(activityPanel, BorderLayout.NORTH);
 
 		// Prepare task top panel
 		WebPanel taskTopPanel = new WebPanel(new GridLayout(6, 1, 0, 0));
@@ -469,9 +453,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		Person person = null;
 		Robot robot = null;
 		Mind mind = null;

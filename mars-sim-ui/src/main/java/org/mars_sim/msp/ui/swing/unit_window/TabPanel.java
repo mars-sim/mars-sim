@@ -37,6 +37,7 @@ public abstract class TabPanel extends JScrollPane {
 
 	// Font used in tab panel title
 	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
+	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 12);
 	
 	// Default Decimal formatter
 	protected static DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
@@ -57,8 +58,8 @@ public abstract class TabPanel extends JScrollPane {
 	private Icon tabIcon;
 	
 	// These can be made private once all tabs converted
-	protected JPanel topContentPanel;
-	protected JPanel centerContentPanel;
+	private JPanel topContentPanel;
+	private JPanel centerContentPanel;
 	
 	private Unit unit;
 	private MainDesktopPane desktop;
@@ -134,7 +135,7 @@ public abstract class TabPanel extends JScrollPane {
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 	}
 
-	public boolean isUIDone() {
+ 	public boolean isUIDone() {
 		return isUIDone;
 	}
 	
@@ -160,8 +161,9 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param centerContentPanel
 	 */
 	protected void buildUI(JPanel centerContentPanel) {
-			throw new UnsupportedOperationException("Build UI not implemented yet");
+		throw new UnsupportedOperationException("Build UI not implemented yet");
 	}
+	
 	/**
 	 * Gets the tab title.
 	 *
@@ -280,6 +282,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(new TitledBorder(title));
+		panel.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION,
+										 SUBTITLE_FONT, null));
 	}
 }

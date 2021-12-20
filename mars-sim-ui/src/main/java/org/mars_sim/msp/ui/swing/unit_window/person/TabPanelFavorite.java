@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +55,6 @@ extends TabPanel {
 	private PreferenceTableModel tableModel;
 	/** The Person instance. */
 	private Person person = null;
-	
-//	private Font font = new Font("SansSerif", Font.ITALIC, 12);
 
 	/**
 	 * Constructor.
@@ -158,7 +155,7 @@ extends TabPanel {
 		
 		// Create preference title label
 		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.CENTER); //$NON-NLS-1$
-		preferenceLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		preferenceLabel.setFont(SUBTITLE_FONT);
 		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
 		
 		// Create scroll panel

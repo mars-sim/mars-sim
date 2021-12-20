@@ -11,12 +11,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
@@ -29,7 +27,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.text.WebTextArea;
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -94,7 +91,6 @@ extends TabPanel {
 		JTextField objectiveTF = new JTextField();
 		String objective = settlement.getSponsor().getMissionAgenda().getObjectiveName();
 		
-		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);
 		objectiveTF.setColumns(16);
@@ -124,10 +120,7 @@ extends TabPanel {
 		                                10, 4);       //xPad, yPad
 		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		TitledBorder border = BorderFactory.createTitledBorder(null, "Mission Agendas",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font(Font.MONOSPACED, Font.BOLD, 14), java.awt.Color.darkGray);
-		panel.setBorder(border);
+		addBorder(panel, "Mission Agendas");
 		
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);

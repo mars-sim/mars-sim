@@ -45,7 +45,6 @@ public class TabPanelGeneral extends TabPanel {
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 	
 	private static final Font SERIF_PLAIN_14 = new Font("Serif", Font.PLAIN, 14);
-	private static final Font SERIF_PLAIN_12 = new Font("Serif", Font.PLAIN, 12);
 	private static final Font MONOSPACED_PLAIN_12 = new Font("Monospaced", Font.PLAIN, 12);
 
 	
@@ -85,11 +84,12 @@ public class TabPanelGeneral extends TabPanel {
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), Conversion.capitalize(gender), null);
 		
 		// Prepare birthdate and age textfield
-		String birthdate = Msg.getString(
+		birthDate = person.getBirthDate();
+		String birthTxt = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthdate, null);
+		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
 
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
@@ -131,14 +131,14 @@ public class TabPanelGeneral extends TabPanel {
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                8, 2, //rows, cols
 		                                50, 10,        //initX, initY
-		                                10, 3);       //xPad, yPad
+		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 		
 		MBTIPersonality p = person.getMind().getMBTI();
 
 		// Create the text area for displaying the MBTI scores
-		createMBTI(p);
+		createMBTI(p, content);
 		// Create the text area for displaying the Big Five scores
-		createBigFive();
+		createBigFive(content);
 	}
 	
 	
@@ -147,7 +147,7 @@ public class TabPanelGeneral extends TabPanel {
 	 * 
 	 * @param p an instance of MBTIPersonality
 	 */
-	private void createMBTI(MBTIPersonality p) {
+	private void createMBTI(MBTIPersonality p, JPanel content) {
 		
 		int ie = p.getIntrovertExtrovertScore();
 		int ns = p.getScores().get(1);
@@ -188,11 +188,11 @@ public class TabPanelGeneral extends TabPanel {
 		descriptorLabel.setFont(SERIF_PLAIN_14);
 		listPanel.add(descriptorLabel, BorderLayout.SOUTH);
 		
-		centerContentPanel.add(listPanel, BorderLayout.CENTER);
+		content.add(listPanel, BorderLayout.CENTER);
 		
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " MBTI Scores",
 				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-				SERIF_PLAIN_12, Color.darkGray);
+				SUBTITLE_FONT, Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
 		
@@ -251,7 +251,7 @@ public class TabPanelGeneral extends TabPanel {
 	/**
 	 * Create the text area for the Big Five
 	 */
-	private void createBigFive() {
+	private void createBigFive(JPanel content) {
 		PersonalityTraitManager p = person.getMind().getTraitManager();
 		
 		String[] types = new String[5];
@@ -276,11 +276,11 @@ public class TabPanelGeneral extends TabPanel {
 		listPanel.setSize(110, 150);
 		listPanel.add(ta);
 
-		centerContentPanel.add(listPanel, BorderLayout.SOUTH);
+		content.add(listPanel, BorderLayout.SOUTH);
 		
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " Big Five Scores",
 				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-				SERIF_PLAIN_12, Color.darkGray);
+				SUBTITLE_FONT, Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
     

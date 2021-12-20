@@ -71,15 +71,17 @@ extends BuildingFunctionPanel {
 				vehicleCapacity, null);
 
 		// Create vehicle list panel
-		vehicleList = new UnitListPanel<>(getDesktop(), new Dimension(160, 60)) {
+		vehicleList = new UnitListPanel<>(getDesktop(), new Dimension(260, 60)) {
 
 			@Override
 			protected Collection<Vehicle> getData() {
 				return garage.getVehicles();
 			}
 		};
+		JPanel vehiclePanel = new JPanel();
+		vehiclePanel.add(vehicleList);
 		addBorder(vehicleList, "Vehicles");
-		center.add(vehicleList, BorderLayout.CENTER);
+		center.add(vehiclePanel, BorderLayout.CENTER);
 	}
 
 	/**

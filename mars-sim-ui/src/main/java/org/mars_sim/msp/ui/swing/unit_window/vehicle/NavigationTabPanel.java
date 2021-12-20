@@ -13,13 +13,13 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -54,21 +53,19 @@ import com.alee.managers.style.StyleId;
 public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     private static final Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
-
-    private static DecimalFormat formatter = new DecimalFormat("0.0");
     
     private WebButton driverButton;
     private WebButton centerMapButton;
     private WebButton destinationButton;
     
-    private WebLabel statusLabel;
-    private WebLabel beaconLabel;
-    private WebLabel speedLabel;
-    private WebLabel elevationLabel;
-    private WebLabel destinationLatitudeLabel;
-    private WebLabel destinationLongitudeLabel;
-    private WebLabel remainingDistanceLabel;
-    private WebLabel etaLabel;
+    private JTextField statusLabel;
+    private JTextField beaconLabel;
+    private JTextField speedLabel;
+    private JTextField elevationLabel;
+    private JTextField destinationLatitudeLabel;
+    private JTextField destinationLongitudeLabel;
+    private JTextField remainingDistanceLabel;
+    private JTextField etaLabel;
     private WebLabel destinationTextLabel;
     
     private JPanel destinationLabelPanel;
@@ -78,7 +75,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     // Data cache
 	/** Is UI constructed. */
-	private boolean uiDone = false;
     private boolean beaconCache;
     
     private double speedCache;
@@ -106,32 +102,20 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      */
     public NavigationTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Navigation", null, "Navigation", unit, desktop);
+        super("Navigation", Msg.getString("NavigationTabPanel.title"), null, "Navigation", unit, desktop);
 	
         vehicle = (Vehicle) unit;
 
         missionManager = desktop.getSimulation().getMissionManager();
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-
-		// Create tht title label.
-		WebPanel titlePanel = new WebPanel(new FlowLayout());
-		WebLabel titleLabel = new WebLabel(Msg.getString("NavigationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		titlePanel.add(titleLabel);
-		topContentPanel.add(titlePanel);
+    @Override
+    protected void buildUI(JPanel content) {
 		
         // Prepare graphic display panel
         WebPanel graphicDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-        graphicDisplayPanel.setBorder(new MarsPanelBorder());
         graphicDisplayPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-        topContentPanel.add(graphicDisplayPanel);
+        content.add(graphicDisplayPanel, BorderLayout.NORTH);
 
         // Prepare direction display panel
         WebPanel directionDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 1, 1));
@@ -153,7 +137,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
    
 		// Prepare the main panel for housing the driving  spring layout.
 		WebPanel mainPanel = new WebPanel(new BorderLayout());
-		topContentPanel.add(mainPanel);	
+		content.add(mainPanel, BorderLayout.CENTER);	
 		
 		// Prepare the destination panel for housing the center map button, the destination header label, and the coordinates
 		WebPanel destinationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -231,35 +215,23 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		WebPanel destinationSpringPanel = new WebPanel(new SpringLayout());
 		destinationSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
-		
-        // Prepare latitude header label.
-        WebLabel latitudeHeaderLabel = new WebLabel("     Destination Latitude :", WebLabel.RIGHT);
-        destinationSpringPanel.add(latitudeHeaderLabel);
         
         // Prepare destination latitude label.
         String latitudeString = "";
-        if (destinationLocationCache != null) latitudeString =
-            destinationLocationCache.getFormattedLatitudeString();
-        destinationLatitudeLabel = new WebLabel("" + latitudeString, WebLabel.LEFT);
-        destinationSpringPanel.add(destinationLatitudeLabel);
-        
-        // Prepare longitude header label.
-        WebLabel longitudeHeaderLabel = new WebLabel("Destination Longitude :", WebLabel.RIGHT);
-        destinationSpringPanel.add(longitudeHeaderLabel);
-        
+        if (destinationLocationCache != null) {
+        	latitudeString = destinationLocationCache.getFormattedLatitudeString();
+        }
+        destinationLatitudeLabel = addTextField(destinationSpringPanel, "Destination Latitude :", latitudeString, null);
+
         // Prepare destination longitude label.
         String longitudeString = "";
         if (destinationLocationCache != null) longitudeString =
             destinationLocationCache.getFormattedLongitudeString();
-        destinationLongitudeLabel = new WebLabel("" + longitudeString, WebLabel.LEFT);
-        destinationSpringPanel.add(destinationLongitudeLabel);
+        destinationLongitudeLabel = addTextField(destinationSpringPanel, "Destination Longitude :", longitudeString, null);
 
-        // Prepare distance header label.
-        WebLabel distanceHeaderLabel = new WebLabel("Remaining Distance :", WebLabel.RIGHT);
-        destinationSpringPanel.add(distanceHeaderLabel);
-        
         // Prepare distance label.
-        if ((mission != null) && (mission instanceof VehicleMission) &&
+        String distanceText;
+		if ((mission != null) && (mission instanceof VehicleMission) &&
                 ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	try {
         		remainingDistanceCache = ((VehicleMission) mission).getEstimatedTotalRemainingDistance();
@@ -267,18 +239,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting estimated total remaining distance.");
         	}
-        	remainingDistanceLabel = new WebLabel(formatter.format(remainingDistanceCache) + " km", WebLabel.LEFT);
+        	distanceText = DECIMAL_PLACES1.format(remainingDistanceCache) + " km";
         }
         else {
         	remainingDistanceCache = 0D;
-        	remainingDistanceLabel = new WebLabel("", WebLabel.LEFT);
+        	distanceText = "";
         }
-        destinationSpringPanel.add(remainingDistanceLabel);
-
-        // Prepare ETA header label.
-        WebLabel etaHeaderLabel = new WebLabel("ETA :", WebLabel.RIGHT);
-        destinationSpringPanel.add(etaHeaderLabel);
-        
+        remainingDistanceLabel = addTextField(destinationSpringPanel, "Remaining Distance :", distanceText, null);
+ 
         // Prepare ETA label.
         if ((mission != null) && (mission instanceof VehicleMission) &&
                 (((VehicleMission) mission).getLegETA() != null)) {
@@ -286,65 +254,31 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         else 
         	etaCache = "";
-        
-        etaLabel = new WebLabel("" + etaCache, WebLabel.LEFT);
-        destinationSpringPanel.add(etaLabel);
-
-        // Lay out the spring panel.
-     	SpringUtilities.makeCompactGrid(destinationSpringPanel,
-     		                                4, 2, //rows, cols
-     		                               30, 10,        //initX, initY
-    		                               10, 4);       //xPad, yPad
-        
-     	
-       	// Prepare the driving spring layout.
-		WebPanel drivingSpringPanel = new WebPanel(new SpringLayout());
-		drivingSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
-		mainPanel.add(drivingSpringPanel, BorderLayout.SOUTH);  
-        
-        // Prepare status header label
-        WebLabel statusHeaderLabel = new WebLabel("Status :", WebLabel.RIGHT);
-        drivingSpringPanel.add(statusHeaderLabel);
+        etaLabel = addTextField(destinationSpringPanel, "ETA :", etaCache, null);
         
         // Prepare status label
-        statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
-        drivingSpringPanel.add(statusLabel);
+        statusLabel = addTextField(destinationSpringPanel, "Status :", vehicle.printStatusTypes(), null);
            
-        // Prepare beacon header label
-        WebLabel beaconHeaderLabel = new WebLabel("        Emergency Beacon :", WebLabel.RIGHT);
-        drivingSpringPanel.add(beaconHeaderLabel);
-        
         // Prepare beacon label
         beaconCache = vehicle.isBeaconOn();
         String beaconString;
         if (beaconCache) beaconString = "On";
         else beaconString = "Off";
-        beaconLabel = new WebLabel("" + beaconString, WebLabel.LEFT);
-        drivingSpringPanel.add(beaconLabel);
+        beaconLabel = addTextField(destinationSpringPanel, "Emergency Beacon :", beaconString, null);
 
-        // Prepare speed header label
-        WebLabel speedHeaderLabel = new WebLabel("Speed :", WebLabel.RIGHT);
-        drivingSpringPanel.add(speedHeaderLabel);
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = new WebLabel(formatter.format(speedCache) + " km/h", WebLabel.LEFT);
-        drivingSpringPanel.add(speedLabel);
-        
-        // Prepare elevation header label for vehicle
-        WebLabel elevationHeaderLabel = new WebLabel("Elevation :", WebLabel.RIGHT);
-        drivingSpringPanel.add(elevationHeaderLabel);
+        speedLabel = addTextField(destinationSpringPanel, "Speed :", DECIMAL_PLACES1.format(speedCache) + " km/h", null);
         
         // Prepare elevation label for vehicle       	     
         elevationCache = vehicle.getElevation();
-        elevationLabel = new WebLabel("" + formatter.format(elevationCache) +
-            " km", WebLabel.LEFT);
-        drivingSpringPanel.add(elevationLabel, BorderLayout.SOUTH);
+        elevationLabel = addTextField(destinationSpringPanel, "Elevation :", DECIMAL_PLACES1.format(elevationCache) +
+            " km", null);
         
         // Prepare driver label
         WebLabel driverLabel = new WebLabel("Driver :", WebLabel.RIGHT);
-//                driverLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        drivingSpringPanel.add(driverLabel);
+        destinationSpringPanel.add(driverLabel);
         
         // Prepare driver button and add it if vehicle has driver.
         driverCache = vehicle.getOperator();
@@ -359,23 +293,21 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare driver panel
         WebPanel driverPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         driverPanel.add(driverButton);
-        drivingSpringPanel.add(driverPanel);
+        destinationSpringPanel.add(driverPanel);
             
         // Lay out the spring panel.
-     	SpringUtilities.makeCompactGrid(drivingSpringPanel,
-     		                                5, 2, //rows, cols
+     	SpringUtilities.makeCompactGrid(destinationSpringPanel,
+     		                                9, 2, //rows, cols
      		                                30, 10,        //initX, initY
-     		                                10, 4);       //xPad, yPad
+     		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
     }
 
     /**
      * Updates the info on this panel.
      */
+    @Override
     public void update() {
-		if (!uiDone)
-			initializeUI();
-
         // Update driver button if necessary.
         boolean driverChange = false;
         if (driverCache == null) {
@@ -406,14 +338,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update speed label
         if (speedCache != vehicle.getSpeed()) {
             speedCache = vehicle.getSpeed();
-            speedLabel.setText("" + formatter.format(speedCache) + " km/h");
+            speedLabel.setText(DECIMAL_PLACES1.format(speedCache) + " km/h");
         }
 
         // Update elevation label.
         double currentElevation = vehicle.getElevation();
         if (elevationCache != currentElevation) {
             elevationCache = currentElevation;
-            elevationLabel.setText(formatter.format(elevationCache) + " km");
+            elevationLabel.setText(DECIMAL_PLACES1.format(elevationCache) + " km");
         }
 
         Mission mission = missionManager.getMissionForVehicle(vehicle);
@@ -484,7 +416,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	try {
         		if (remainingDistanceCache != vehicleMission.getEstimatedTotalRemainingDistance()) {
         			remainingDistanceCache = vehicleMission.getEstimatedTotalRemainingDistance();
-        			remainingDistanceLabel.setText("" + formatter.format(remainingDistanceCache) + " km");
+        			remainingDistanceLabel.setText(DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
         		}
         	}
         	catch (Exception e) {
@@ -573,8 +505,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (source == driverButton) desktop.openUnitWindow((Unit) driverCache, false);
     }
     
+    @Override
 	public void destroy() {
-		formatter = null; 
+    	super.destroy();
+    	
 	    driverButton = null; 
 	    statusLabel = null; 
 	    beaconLabel = null; 

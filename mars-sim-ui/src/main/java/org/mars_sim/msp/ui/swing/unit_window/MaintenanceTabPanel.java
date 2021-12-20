@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
@@ -39,9 +38,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  */
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
     private int wearConditionCache; // The cached value for the wear condition.
     private int lastCompletedTime; // The time since last completed maintenance.
@@ -64,30 +60,21 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Maint", null, "Maintenance", unit, desktop);
+        super("Maint", Msg.getString("MaintenanceTabPanel.title"), null, "Maintenance", unit, desktop);
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
+    @Override
+    protected void buildUI(JPanel content) {
         Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
-        // Create maintenance label.
-  		JPanel mpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
-        maintenanceLabel.setFont(TITLE_FONT);
-  		mpanel.add(maintenanceLabel);
-        topContentPanel.add(mpanel);
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
         // Create maintenance panel
         JPanel maintenancePanel = new JPanel(new GridLayout(6, 1, 0, 0));
-        maintenancePanel.setBorder(new MarsPanelBorder());
-        topContentPanel.add(maintenancePanel);
+        northPanel.add(maintenancePanel);
+        content.add(northPanel, BorderLayout.NORTH);
 
         // Create wear condition label.
         wearConditionCache = (int) Math.round(manager.getWearCondition());
@@ -125,8 +112,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Prepare malfunction panel
         JPanel malfunctionPanel = new JPanel(new BorderLayout(0, 0));
-//        malfunctionPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(malfunctionPanel, BorderLayout.CENTER);
+        content.add(malfunctionPanel, BorderLayout.CENTER);
 
         // Create malfunctions label
         JLabel malfunctionsLabel = new JLabel("Malfunctions", JLabel.CENTER);
@@ -160,10 +146,8 @@ public class MaintenanceTabPanel extends TabPanel {
     /**
      * Update this panel
      */
+    @Override
     public void update() {
-		if (!uiDone)
-			initializeUI();
-		
         Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 

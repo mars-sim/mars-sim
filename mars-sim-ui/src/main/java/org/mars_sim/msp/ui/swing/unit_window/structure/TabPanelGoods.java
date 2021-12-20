@@ -7,10 +7,9 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.List;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -29,17 +28,12 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelGoods extends TabPanel {
 
 	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -54,7 +48,8 @@ public class TabPanelGoods extends TabPanel {
 	public TabPanelGoods(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelGoods.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelGoods.title"),
+			Msg.getString("TabPanelGoods.label"),
 			null,
 			Msg.getString("TabPanelGoods.tooltip"), //$NON-NLS-1$
 			unit, desktop
@@ -64,29 +59,15 @@ public class TabPanelGoods extends TabPanel {
 
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
-		// Prepare goods label panel.
-		WebPanel goodsLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(goodsLabelPanel);
-
-		// Prepare goods label.
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelGoods.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		goodsLabelPanel.add(titleLabel);
-
-		// Create scroll panel for the outer table panel.
+ 		// Create scroll panel for the outer table panel.
 		WebScrollPane goodsScrollPane = new WebScrollPane();
 		goodsScrollPane.setPreferredSize(new Dimension(250, 300));
 		// increase vertical mousewheel scrolling speed for this one
 		goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(goodsScrollPane);
+		content.add(goodsScrollPane);
 
 		// Prepare goods table model.
 		goodsTableModel = new GoodsTableModel(((Settlement) getUnit()).getGoodsManager());
@@ -131,9 +112,6 @@ public class TabPanelGoods extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-		
 		TableStyle.setTableStyle(goodsTable);
 		goodsTableModel.update();
 	}
@@ -211,7 +189,10 @@ public class TabPanelGoods extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		goodsTable = null;
 		goodsTableModel = null;
 	}

@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -58,11 +58,7 @@ extends TabPanel {
 	private static final String CAREER = "Career";
 	private static final String S4 = "%4d";
 	private static final String S6 = "%6d";
-	
-	// Data cache
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
+
 	private static int theme;
 	private int fatigueCache;
 	private int thirstCache;
@@ -97,8 +93,6 @@ extends TabPanel {
 	/** The PhysicalCondition instance. */
 	private PhysicalCondition condition;
 
-	private Font font = new Font("SansSerif", Font.ITALIC, 12);
-	
 	
 	protected String[] radiationToolTips = {
 		    "Exposure Interval",
@@ -115,6 +109,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelHealth.label"),
 			null,
 			Msg.getString("TabPanelHealth.tooltip"), //$NON-NLS-1$
 			unit, desktop
@@ -122,31 +117,18 @@ extends TabPanel {
 
 		person = (Person) unit;
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		condition = person.getPhysicalCondition();
-		//PhysicalCondition condition = ((Person) unit).getPhysicalCondition();
 		
-		// Create health label panel.
-		WebPanel healthLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(healthLabelPanel, BorderLayout.NORTH);
-
-		// Prepare health label
-		WebLabel healthLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
-		healthLabel.setFont(TITLE_FONT);
-		healthLabelPanel.add(healthLabel);
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
 		// Prepare condition panel
 		WebPanel conditionPanel = new WebPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
-//		conditionPanel.setBorder(new MarsPanelBorder());
-		//conditionPanel.setSize(180, 60);
-		topContentPanel.add(conditionPanel, BorderLayout.CENTER);
+		northPanel.add(conditionPanel);
 
 		// Prepare fatigue name label
 		WebLabel fatigueNameLabel = new WebLabel(Msg.getString("TabPanelHealth.fatigue"), WebLabel.RIGHT); //$NON-NLS-1$
@@ -218,13 +200,11 @@ extends TabPanel {
 		
 
 		// Prepare SpringLayout for info panel.
-		WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
-//		infoPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(springPanel, BorderLayout.SOUTH);
+		WebPanel springPanel = new WebPanel(new SpringLayout());
+		northPanel.add(springPanel);
 		
 		// Prepare sleep hour name label
 		WebLabel sleepHrLabel = new WebLabel(Msg.getString("TabPanelFavorite.sleepHour"), WebLabel.RIGHT); //$NON-NLS-1$
-//		sleepLabel.setFont(font);
 		springPanel.add(sleepHrLabel);
 
 		// Checks the two best sleep hours
@@ -256,16 +236,21 @@ extends TabPanel {
 		                                120, 10,        //initX, initY
 		                                7, 3);       //xPad, yPad
 	
+		content.add(northPanel, BorderLayout.NORTH);
 		
+		// Panel of vertical tables
+        JPanel tablesPanel = new JPanel();
+        tablesPanel.setLayout(new BoxLayout(tablesPanel, BoxLayout.Y_AXIS));
+		content.add(tablesPanel, BorderLayout.CENTER);
+
 		// Add radiation dose info
 		// Prepare radiation panel
 		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));
-//		radiationPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(radiationPanel, BorderLayout.NORTH);
+		tablesPanel.add(radiationPanel);
 
 		// Prepare radiation label
 		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), WebLabel.CENTER); //$NON-NLS-1$
-		radiationLabel.setFont(font);
+		radiationLabel.setFont(SUBTITLE_FONT);
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.radiation.tooltip"), TooltipWay.down); //$NON-NLS-1$
 			 
@@ -278,25 +263,7 @@ extends TabPanel {
 
 		// Create radiation table
 		radiationTable = new ZebraJTable(radiationTableModel);
-//		{
-		    // Implement radiation table header tool tips
-//		    protected JTableHeader createDefaultTableHeader() {
-//		        return new JTableHeader(columnModel) {
-//		            public String getToolTipText(MouseEvent e) {
-//		                //String tip = null;
-//		                java.awt.Point p = e.getPoint();
-//		                int index = columnModel.getColumnIndexAtX(p.x);
-//		                if (index > -1) {
-//			                int realIndex = columnModel.getColumn(index).getModelIndex();
-//			                return radiationToolTips[realIndex];
-//		            	}
-//		                else {
-//		                	return Msg.getString("TabPanelHealth.tooltip");
-//		                }
-//		            }
-//		        };
-//		    }		        
-//		};
+
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -315,25 +282,15 @@ extends TabPanel {
 
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// Add setTableStyle()
 		TableStyle.setTableStyle(radiationTable);
-
-
-		// Prepare table panel.
-		WebPanel tablePanel = new WebPanel(new GridLayout(3, 1));
-		centerContentPanel.add(tablePanel, BorderLayout.SOUTH);
 
 		// Prepare sleep time panel
 		WebPanel sleepPanel = new WebPanel(new BorderLayout(0, 0));
-//		sleepPanel.setBorder(new MarsPanelBorder());
-		tablePanel.add(sleepPanel);
+		tablesPanel.add(sleepPanel);
 
 		// Prepare sleep time label
 		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleep"), WebLabel.CENTER); //$NON-NLS-1$
-		sleepLabel.setFont(font);
+		sleepLabel.setFont(SUBTITLE_FONT);
 		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
 
 		// Prepare sleep time scroll panel
@@ -358,21 +315,17 @@ extends TabPanel {
 		
 		// Add sorting
 		sleepTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        // 	sleepTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
 		TableStyle.setTableStyle(sleepTable);
 		
 
 		// Prepare health problem panel
 		WebPanel healthProblemPanel = new WebPanel(new BorderLayout(0, 0));
-//		healthProblemPanel.setBorder(new MarsPanelBorder());
-		tablePanel.add(healthProblemPanel);
+		tablesPanel.add(healthProblemPanel);
 
 		// Prepare health problem label
 		WebLabel healthProblemLabel = new WebLabel(Msg.getString("TabPanelHealth.healthProblems"), WebLabel.CENTER); //$NON-NLS-1$
 		healthProblemLabel.setPadding(7, 0, 0, 0);
-		healthProblemLabel.setFont(font);
+		healthProblemLabel.setFont(SUBTITLE_FONT);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
@@ -384,27 +337,23 @@ extends TabPanel {
 
 		// Create health problem table
 		healthProblemTable = new ZebraJTable(healthProblemTableModel);
-		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
+		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
 
 		// Add sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        // 	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
 		TableStyle.setTableStyle(healthProblemTable);
 		
 		
 		// Prepare medication panel.
 		WebPanel medicationPanel = new WebPanel(new BorderLayout());
-//		medicationPanel.setBorder(new MarsPanelBorder());
-		tablePanel.add(medicationPanel);
+		tablesPanel.add(medicationPanel);
 
 		// Prepare medication label.
 		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
 		medicationLabel.setPadding(7, 0, 0, 0);
-		medicationLabel.setFont(font);
+		medicationLabel.setFont(SUBTITLE_FONT);
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
@@ -416,17 +365,14 @@ extends TabPanel {
 
 		// Prepare medication table.
 		medicationTable = new ZebraJTable(medicationTableModel);
-		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
+		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
 
 		// Add sorting
 		medicationTable.setAutoCreateRowSorter(true);
-       //if (!MainScene.OS.equals("linux")) {
-        //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		TableStyle.setTableStyle(medicationTable);
 
+		TableStyle.setTableStyle(medicationTable);
 	}
 
 
@@ -435,9 +381,6 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		int t = 0;//MainScene.getTheme();		
 		if (theme != t) {
 			theme = t;

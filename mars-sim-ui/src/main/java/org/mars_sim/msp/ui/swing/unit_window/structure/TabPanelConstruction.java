@@ -8,13 +8,11 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,8 +28,7 @@ public class TabPanelConstruction
 extends TabPanel {
 
 	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
+
 	/** The Settlement instance. */
 	private Settlement settlement;
 	private ConstructionSitesPanel sitesPanel;
@@ -56,26 +53,14 @@ extends TabPanel {
 
 	}
 	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		ConstructionManager manager = settlement.getConstructionManager();
 
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePanel, BorderLayout.NORTH);
-
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelConstruction.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		titlePanel.add(titleLabel);
-
 		// Create override panel.
 		JPanel overridePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(overridePanel, BorderLayout.CENTER);
+		content.add(overridePanel, BorderLayout.NORTH);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelConstruction.checkbox.overrideConstructionAndSalvage")); //$NON-NLS-1$
@@ -89,7 +74,7 @@ extends TabPanel {
 		overridePanel.add(overrideCheckbox);
 		
 		JPanel mainContentPanel = new JPanel(new GridLayout(2, 1));
-		centerContentPanel.add(mainContentPanel, BorderLayout.CENTER);
+		content.add(mainContentPanel, BorderLayout.CENTER);
 
 		sitesPanel = new ConstructionSitesPanel(manager);
 		mainContentPanel.add(sitesPanel);
@@ -108,9 +93,6 @@ extends TabPanel {
 
 	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-		
 		sitesPanel.update();
 		buildingsPanel.update();
 
@@ -122,7 +104,10 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		settlement = null;
 		sitesPanel = null;
 		buildingsPanel = null;

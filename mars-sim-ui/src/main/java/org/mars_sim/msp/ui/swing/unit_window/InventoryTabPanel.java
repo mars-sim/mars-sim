@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -25,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -57,7 +56,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
@@ -73,9 +71,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 	private final DecimalFormat formatter0 = new DecimalFormat("#,###,###,###");
 	private final DecimalFormat formatter2 = new DecimalFormat("#,###,###,###.##");
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
@@ -95,25 +90,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         super("Inventory", null, "Inventory", unit, desktop);
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-        // Create inventory label panel.
-        WebPanel inventoryLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-        topContentPanel.add(inventoryLabelPanel);
-
-        // Create inventory label
-        WebLabel titleLabel = new WebLabel("Inventory", WebLabel.CENTER);
-		titleLabel.setFont(TITLE_FONT);
-        inventoryLabelPanel.add(titleLabel);
+	@Override
+	protected void buildUI(JPanel content) {
 
         // Create inventory content panel
         WebPanel inventoryContentPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
-        centerContentPanel.add(inventoryContentPanel, BorderLayout.CENTER);
+        content.add(inventoryContentPanel, BorderLayout.CENTER);
 
         // Create resources panel
         WebScrollPane resourcesPanel = new WebScrollPane();
@@ -251,9 +233,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /**
      * Updates the info on this panel.
      */
+	@Override
     public void update() {
-		if (!uiDone)
-			initializeUI();
 
         resourceTableModel.update();
         itemTableModel.update();
@@ -706,7 +687,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		// take care to avoid null exceptions
 		resourceTableModel = null;
 		equipmentTableModel = null;

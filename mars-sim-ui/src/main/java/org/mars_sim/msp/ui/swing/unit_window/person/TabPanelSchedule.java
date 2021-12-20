@@ -25,13 +25,13 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -63,9 +63,6 @@ public class TabPanelSchedule extends TabPanel {
 
 	private static final String SOL = "  Sol ";
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
@@ -113,6 +110,7 @@ public class TabPanelSchedule extends TabPanel {
 	public TabPanelSchedule(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelSchedule.title"), //$NON-NLS-1$
+				Msg.getString("TabPanelSchedule.label"),
 				null, Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
@@ -123,17 +121,12 @@ public class TabPanelSchedule extends TabPanel {
 			robot = (Robot) unit;
 		}
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void initializeUI() {
-		uiDone = true;
+
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = getSimulation().getMasterClock().getMarsClock();
 		
 //		this.desktop = desktop;
 		isRealTimeUpdate = true;
@@ -147,18 +140,8 @@ public class TabPanelSchedule extends TabPanel {
 			taskManager = robot.getTaskManager();
 		}
 
-		// Create label panel.
-		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
-
-		// Prepare label
-		WebLabel label = new WebLabel(Msg.getString("TabPanelSchedule.label"), WebLabel.CENTER); //$NON-NLS-1$
-		label.setFont(TITLE_FONT);
-		labelPanel.add(label);
-
 		// Create the button panel.
 		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(buttonPane);// , BorderLayout.NORTH);
 
 		Unit unit = getUnit();
 		if (unit instanceof Person) {
@@ -188,8 +171,10 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		WebPanel topPanel = new WebPanel(new BorderLayout());
-		centerContentPanel.add(topPanel, BorderLayout.NORTH);
+		content.add(topPanel, BorderLayout.NORTH);
+		topPanel.add(buttonPane, BorderLayout.NORTH);
 
+		
 //		today = taskSchedule.getSolCache();
 		today = marsClock.getMissionSol();
 		
@@ -280,7 +265,7 @@ public class TabPanelSchedule extends TabPanel {
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
 //		scrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(scrollPanel);
+		content.add(scrollPanel);
 
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);
@@ -330,9 +315,7 @@ public class TabPanelSchedule extends TabPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+
 		int t = -1;
 
 		if (theme != t) {
@@ -570,7 +553,10 @@ public class TabPanelSchedule extends TabPanel {
 	/**
 	 * Prepares for deletion.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		if (solBox != null)
 			solBox.removeAllItems();
 		if (comboBoxModel != null)

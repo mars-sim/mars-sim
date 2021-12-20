@@ -9,12 +9,10 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -54,10 +52,6 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelScience extends TabPanel {
 
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
 	/** The Person instance. */
 	private Person person = null;
 
@@ -78,35 +72,21 @@ public class TabPanelScience extends TabPanel {
 	public TabPanelScience(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
+				Msg.getString("TabPanelScience.label"),
 				null, Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
 				person, desktop);
 
 		this.person = person;
 	}
 
-	public boolean isUIDone() {
-		return uiDone;
-	}
-
-	public void initializeUI() {
-		uiDone = true;
-
-		// Create the title panel.
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePane);
-
-		// Create the title label.
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelScience.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		titlePane.add(titleLabel);
-
+	@Override
+	protected void buildUI(JPanel content) {
 		// Create the main panel.
 		JPanel mainPane = new JPanel(new GridLayout(2, 1, 0, 0));
-		centerContentPanel.add(mainPane);
+		content.add(mainPane);
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-//		studiesPane.setBorder(new MarsPanelBorder());
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
@@ -115,7 +95,6 @@ public class TabPanelScience extends TabPanel {
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();
-//		studyScrollPane.setBorder(new MarsPanelBorder());
 		studyScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
@@ -123,7 +102,6 @@ public class TabPanelScience extends TabPanel {
 		studyTableModel = new StudyTableModel(person);
 		studyTable = new ZebraJTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-//		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -167,7 +145,7 @@ public class TabPanelScience extends TabPanel {
 
 		// Create the achievement label.
 		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
-		achievementLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		achievementLabel.setFont(TITLE_FONT);
 		achievementLabelPane.add(achievementLabel);
 
 		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
@@ -177,7 +155,6 @@ public class TabPanelScience extends TabPanel {
 
 		// Create the achievement scroll panel.
 		JScrollPane achievementScrollPane = new JScrollPane();
-//		achievementScrollPane.setBorder(new MarsPanelBorder());
 		achievementScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 
@@ -205,9 +182,6 @@ public class TabPanelScience extends TabPanel {
 
 	@Override
 	public void update() {
-		if (!uiDone)
-			initializeUI();
-
 		TableStyle.setTableStyle(studyTable);
 		TableStyle.setTableStyle(achievementTable);
 
@@ -232,8 +206,7 @@ public class TabPanelScience extends TabPanel {
 
 		// Update total achievement label.
 		Person person = (Person) getUnit();
-		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
-		String totalAchievementString = formatter.format(person.getTotalScientificAchievement());
+		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
 		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
 	}
 

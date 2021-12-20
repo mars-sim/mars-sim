@@ -39,10 +39,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 @SuppressWarnings("serial")
 public class SalvageTabPanel extends TabPanel {
 
-    // Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
+
     private String finishTimeString;
     private JLabel finishTimeLabel;
     private PartTableModel partTableModel;
@@ -56,21 +53,17 @@ public class SalvageTabPanel extends TabPanel {
         // Use the TabPanel constructor
         super("Salvage", null, "Salvage Info", unit, desktop);
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
-		
+
+    @Override
+    protected void buildUI(JPanel content) {
+    	
 		Unit unit = getUnit();
         Salvagable salvageItem = (Salvagable) unit;
         SalvageInfo salvageInfo = salvageItem.getSalvageInfo();
-        
+
         // Create the salvage header panel.
         JPanel salvageHeaderPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
-        topContentPanel.add(salvageHeaderPanel);
+        content.add(salvageHeaderPanel);
         
         // Create the salvage header label.
         JLabel salvageHeaderLabel = new JLabel(unit.getName() + " has been salvaged.", JLabel.CENTER);
@@ -78,7 +71,7 @@ public class SalvageTabPanel extends TabPanel {
         
         // Create the salvage info panel.
         JPanel salvageInfoPanel = new JPanel(new BorderLayout(0, 0));
-        topContentPanel.add(salvageInfoPanel);
+        content.add(salvageInfoPanel);
         
         // Create the time panel.
         JPanel timePanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -117,7 +110,7 @@ public class SalvageTabPanel extends TabPanel {
         // Create the parts panel.
         JPanel partsPanel = new JPanel(new BorderLayout(0, 10));
         partsPanel.setBorder(new MarsPanelBorder());
-        topContentPanel.add(partsPanel);
+        content.add(partsPanel);
         
         // Create the parts label.
         JLabel partsLabel = new JLabel("Salvaged Parts", JLabel.CENTER);

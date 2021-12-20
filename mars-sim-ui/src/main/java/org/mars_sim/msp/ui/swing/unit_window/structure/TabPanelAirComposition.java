@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -51,10 +53,6 @@ extends TabPanel {
 
 	// default logger.
 	//private static final Logger logger = Logger.getLogger(TabPanelAirComposition.class.getName());
-
-	// Data cache
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	private int numBuildingsCache;
 	
@@ -114,13 +112,9 @@ extends TabPanel {
 		settlement = (Settlement) unit;
 
 	}
-	
-	public boolean isUIDone() {
-		return uiDone;
-	}
-	
-	public void initializeUI() {
-		uiDone = true;
+
+	@Override
+	protected void buildUI(JPanel content) {
 		
 		manager = settlement.getBuildingManager();
 		air = settlement.getCompositionOfAir();
@@ -128,17 +122,12 @@ extends TabPanel {
 		buildingsCache = manager.getBuildingsWithLifeSupport();
 		numBuildingsCache = buildingsCache.size();
 
-		// Prepare label panel.
-		WebPanel titlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(titlePanel);
-
-		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelAirComposition.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
-		titlePanel.add(titleLabel);
-
+		JPanel topContentPanel = new JPanel();
+		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
+		content.add(topContentPanel, BorderLayout.NORTH);
+		
 		// Prepare the top panel using spring layout.
 		WebPanel topPanel = new WebPanel(new SpringLayout());
-		//topPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(topPanel);
 
 		WebLabel t_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), WebLabel.RIGHT);
@@ -160,7 +149,6 @@ extends TabPanel {
 		                                10, 1);       //xPad, yPad
 		
 		WebPanel gasesPanel = new WebPanel(new GridLayout(2,1));
-//		gasesPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(gasesPanel); 
 		
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
@@ -171,7 +159,6 @@ extends TabPanel {
 		gasesPanel.add(gasTitle);
 
 		WebPanel gasPanel = new WebPanel(new SpringLayout());
-		//gasPanel.setBorder(new MarsPanelBorder());
 		gasesPanel.add(gasPanel);
 
 		WebLabel co2 = new WebLabel(Msg.getString("TabPanelAirComposition.cO2.title"), WebLabel.RIGHT);
@@ -296,7 +283,7 @@ extends TabPanel {
 		// scrollPane.setPreferredSize(new Dimension(257, 230));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(scrollPane,BorderLayout.CENTER);
+		content.add(scrollPane,BorderLayout.CENTER);
 
 		tableModel = new TableModel(settlement);
 		table = new ZebraJTable(tableModel);
@@ -335,18 +322,6 @@ extends TabPanel {
 
 	}
 
-//	/**
-//	 * Sets .
-//	 * @param value true or false.
-//
-//	private void setMetric(boolean value) {
-//		if (value)
-//			buildings = manager.getSortedBuildings();
-//		else
-//			buildings = manager.getBuildingsWithThermal();
-//		tableModel.update();
-//	}
-	
 	public double getOverallComposition(int gas) {
 		double result = 0;
 		int size = buildingsCache.size();
@@ -422,10 +397,9 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-		if (!uiDone)
-			this.initializeUI();
-		
+
 		List<Building> buildings = manager.getBuildingsWithLifeSupport();
 		int numBuildings = buildings.size();
 
@@ -750,7 +724,10 @@ extends TabPanel {
 	/**
 	 * Prepare object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
+		super.destroy();
+		
 		buildingsCache = null;
 		o2Label = null;
 		cO2Label = null;
