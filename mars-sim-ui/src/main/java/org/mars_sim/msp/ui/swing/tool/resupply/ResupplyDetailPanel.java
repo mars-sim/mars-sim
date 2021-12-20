@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @date 2021-09-20
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -59,8 +59,6 @@ public class ResupplyDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
-//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
-
 	// Data members
 	private Resupply resupply;
 	private WebLabel destinationValueLabel;
@@ -75,9 +73,7 @@ implements ClockListener, HistoricalEventListener {
 	private static MasterClock masterClock;
 	
 	private MainDesktopPane desktop;
-//	private MainScene mainScene;
-	
-//	private double timeCache = 0;
+
 	private int solsToArrival = -1;
 	
 	/**
@@ -89,7 +85,6 @@ implements ClockListener, HistoricalEventListener {
 		super();
 
 		this.desktop = desktop;
-//		this.mainScene = desktop.getMainScene();
 		
 		masterClock = Simulation.instance().getMasterClock();
 		currentTime = masterClock.getMarsClock();
@@ -111,7 +106,7 @@ implements ClockListener, HistoricalEventListener {
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
 		// Create the spring panel.
-		WebPanel springPane = new WebPanel(new SpringLayout());//GridLayout(6, 1, 3, 3));
+		WebPanel springPane = new WebPanel(new SpringLayout());
 		infoPane.add(springPane, BorderLayout.CENTER);
 
 		// Create destination panel.
@@ -123,7 +118,7 @@ implements ClockListener, HistoricalEventListener {
 		springPane.add(destinationTitleLabel);
 
 		// Create destination value label.
-		destinationValueLabel = new WebLabel("", WebLabel.CENTER);
+		destinationValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(destinationValueLabel);
 
 		// Create state panel.
@@ -135,19 +130,19 @@ implements ClockListener, HistoricalEventListener {
 		springPane.add(stateTitleLabel);
 
 		// Create state value label.
-		stateValueLabel = new WebLabel("", WebLabel.CENTER);
+		stateValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(stateValueLabel);
 
 		// Create launch date panel.
 		//WebPanel launchDatePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(launchDatePane);
 
-		// reate launch date title label.
+		// Create launch date title label.
 		WebLabel launchDateTitleLabel = new WebLabel("Launch Date : ", WebLabel.RIGHT);
 		springPane.add(launchDateTitleLabel);
 
-		// 2016-11-23  Create launch date value label.
-		launchDateValueLabel = new WebLabel("", WebLabel.CENTER);
+		// Create launch date value label.
+		launchDateValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(launchDateValueLabel);
 
 		// Create arrival date panel.
@@ -159,7 +154,7 @@ implements ClockListener, HistoricalEventListener {
 		springPane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
-		arrivalDateValueLabel = new WebLabel("", WebLabel.CENTER);
+		arrivalDateValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(arrivalDateValueLabel);
 
 		// Create time arrival panel.
@@ -171,7 +166,7 @@ implements ClockListener, HistoricalEventListener {
 		springPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
-		timeArrivalValueLabel = new WebLabel("", WebLabel.CENTER);
+		timeArrivalValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(timeArrivalValueLabel);
 
 		// Create immigrants panel.
@@ -183,15 +178,14 @@ implements ClockListener, HistoricalEventListener {
 		springPane.add(immigrantsTitleLabel);
 
 		// Create immigrants value label.
-		immigrantsValueLabel = new WebLabel("", WebLabel.CENTER);
+		immigrantsValueLabel = new WebLabel("", WebLabel.LEFT);
 		springPane.add(immigrantsValueLabel);
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPane,
-		                                6, 2, //rows, cols
-		                                20, 5,        //initX, initY
-		                                20, 2);       //xPad, yPad
-
+						6, 2, //rows, cols
+						30, 10, // initX, initY
+						7, 3); // xPad, yPad
 
 		// Create the outer supply panel.
 		WebPanel outerSupplyPane = new WebPanel(new BorderLayout(0, 0));
@@ -654,7 +648,6 @@ implements ClockListener, HistoricalEventListener {
 	private void updateTimeToArrival() {
 		String timeArrival = "---";
 		solsToArrival = -1;
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
@@ -689,7 +682,6 @@ implements ClockListener, HistoricalEventListener {
 	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
-			//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
@@ -708,7 +700,7 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub	
+		// Nothing
 	}
 	
 	@Override
@@ -720,8 +712,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
-		
+		// Nothing
 	}
 	
 	/**
@@ -729,8 +720,6 @@ implements ClockListener, HistoricalEventListener {
 	 */
 	public void destroy() {
 		resupply = null;
-//		Simulation.instance().getEventManager().removeListener(this);
-//		Simulation.instance().getMasterClock().removeClockListener(this);
 
 		destinationValueLabel = null;
 		stateValueLabel = null;
@@ -741,9 +730,6 @@ implements ClockListener, HistoricalEventListener {
 		innerSupplyPane = null;
 		currentTime = null;
 		masterClock = null;
-		
 		desktop = null;
-
 	}
-	
 }

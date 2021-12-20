@@ -734,7 +734,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void addTab(MonitorTab newTab) {
 		tabsSection.addTab("", newTab.getIcon(), newTab,  newTab.getName());
-//		logger.config("Just added " + newTab.getName() + " Tab in Monitor Tool.");
 	}
 
 	/**

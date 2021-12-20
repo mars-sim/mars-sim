@@ -147,7 +147,6 @@ public class TabPanelPowerGrid extends TabPanel {
 								   DECIMAL_PLACES1.format(powerUsedCache) + kW,
 								   Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip"));
 
-
 		// Prepare power storage capacity label.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
 		energyStorageCapacityTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
@@ -232,11 +231,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
-
-		// Add resourcesSearchable
-//		TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
-//		searchable.setPopupTimeout(5000);
-//		searchable.setCaseSensitive(false);
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(powerInfoPanel, 6, 2, // rows, cols

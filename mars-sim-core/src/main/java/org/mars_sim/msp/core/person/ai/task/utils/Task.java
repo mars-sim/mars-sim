@@ -219,7 +219,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			this.eventTarget = this.person;
 		}
 
-		else if (worker instanceof Robot) {
+		else {
 			this.robot = (Robot) worker;
 			this.id = this.robot.getIdentifier();
 			this.eventTarget = this.robot;
@@ -593,7 +593,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			}
 
-			else if (robot != null) {
+			else {
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (robot.getPerformanceRating() == 0D)) {
 					endTask();
@@ -1049,7 +1049,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(person);
-		} else if (robot != null) {
+		} else {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(robot);
 		}
@@ -1097,7 +1097,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(person);
-		} else if (robot != null) {
+		} else {
 			// Find available activity spot in building.
 			settlementLoc = f.getAvailableActivitySpot(robot);
 		}
@@ -1213,7 +1213,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					}
 				}
 			}
-		} else if (robot != null) {
+		} else {
 			// Check all crew members other than robot doing task.
 			Iterator<Robot> i = rover.getRobotCrew().iterator();
 			while (i.hasNext()) {
@@ -1302,7 +1302,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					walkToRandomLocInRover((Rover) person.getVehicle(), allowFail);
 				}
 			}
-		} else if (robot != null) {
+		} else {
 			// If robot is in a settlement, walk to random building.
 			if (robot.isInSettlement()) {
 				walkToAssignedDutyLocation(robot, false);
@@ -1355,7 +1355,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			walkingTask = Walk.createWalkingTask(person, settlementLoc, 0, interiorObject);
 		}
-		else if (robot != null) {
+		else {
 			walkingTask = Walk.createWalkingTask(robot, settlementLoc, interiorObject);
 		}
 		

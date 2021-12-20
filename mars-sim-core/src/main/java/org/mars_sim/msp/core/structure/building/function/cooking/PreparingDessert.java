@@ -385,24 +385,27 @@ public class PreparingDessert extends Function implements Serializable {
 
 	/**
 	 * Cleans up the kitchen with cleaning agent and water.
+	 * NOTE: turn this into a task that a person should do
 	 */
 	private void cleanUpKitchen() {
-		boolean cleaning0 = false;
-		if (cleaningAgentPerSol * .1 > MIN)
-			cleaning0 = retrieve(cleaningAgentPerSol * .1, NaClOID, true);
-		boolean cleaning1 = false;
-		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = retrieve(cleaningAgentPerSol * 5, waterID, true);
-			building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_DESSERT, cleaningAgentPerSol * 5);
-		}
+		
+		double amountAgent = cleaningAgentPerSol;		 
+		double lackingAgent = building.getSettlement().retrieveAmountResource(ResourceUtil.NaClOID, amountAgent);
 
-		if (cleaning0)
-			cleanliness = cleanliness + .05;
+		double amountWater = 10 * amountAgent;
+		double lackingWater = building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, amountWater);
+		
+		// Track water consumption
+		building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_DESSERT, amountWater - lackingWater);
+		
+		// Modify cleanliness
+		if (lackingAgent <= 0)
+			cleanliness = cleanliness + .1;
 		else
-			cleanliness = cleanliness - .025;
+			cleanliness = cleanliness - .1;
 
-		if (cleaning1)
-			cleanliness = cleanliness + .075;
+		if (lackingWater <= 0)
+			cleanliness = cleanliness + .05;
 		else
 			cleanliness = cleanliness - .05;
 
@@ -410,7 +413,6 @@ public class PreparingDessert extends Function implements Serializable {
 			cleanliness = 1;
 		else if (cleanliness < -1)
 			cleanliness = -1;
-
 	}
 
 	/**

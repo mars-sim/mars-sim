@@ -360,7 +360,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create the target time ratio label
 		WebLabel prefTRHeader = new WebLabel(Msg.getString("TimeWindow.prefTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(prefTRHeader, "User-preferred target time ratio", TooltipWay.down);
-		int prefTR = (int)masterClock.getUserTR();
+		int prefTR = (int)masterClock.getPreferredTR();
 		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
 		preferredTRLabel.setFont(monospacedFont);
 
@@ -484,7 +484,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		actuallTRLabel.setText((int)actualTR + "x");
 
-		int prefTR = (int)masterClock.getUserTR();
+		int prefTR = (int)masterClock.getPreferredTR();
 		preferredTRLabel.setText(prefTR + "x");
 
 		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));

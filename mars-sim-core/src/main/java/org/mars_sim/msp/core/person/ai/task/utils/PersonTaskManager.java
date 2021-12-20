@@ -157,7 +157,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 
 		// Create new taskProbCache
-		taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+		taskProbCache = new HashMap<>(mtList.size());
 		totalProbCache = 0D;
 
 		// Determine probabilities.

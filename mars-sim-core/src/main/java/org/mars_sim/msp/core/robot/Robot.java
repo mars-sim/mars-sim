@@ -396,7 +396,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
 			if (health.timePassing(pulse.getElapsed())) {
-
 				// Mental changes with time passing.
 				if (botMind != null)
 					botMind.timePassing(pulse);

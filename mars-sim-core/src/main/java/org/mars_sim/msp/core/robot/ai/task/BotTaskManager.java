@@ -113,7 +113,7 @@ implements Serializable {
 		List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 
 		// Create new taskProbCache
-		taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
+		taskProbCache = new ConcurrentHashMap<>(mtList.size());
 		totalProbCache = 0D;
 
 		// Determine probabilities.

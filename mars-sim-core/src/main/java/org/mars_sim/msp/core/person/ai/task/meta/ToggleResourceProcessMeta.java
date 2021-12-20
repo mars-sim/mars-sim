@@ -1,10 +1,12 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2021-09-20
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
+
+import java.util.AbstractMap.SimpleEntry;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -16,7 +18,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 
@@ -33,6 +34,11 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 	private static final double FACTOR = 10_000D;
 
+	/** The resource process to be toggled. */
+	private ResourceProcess process;
+	/** The building the resource process is in. */
+	private Building resourceProcessBuilding;
+	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -41,7 +47,25 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 	@Override
 	public Task constructInstance(Person person) {
-		return new ToggleResourceProcess(person);
+
+		if (resourceProcessBuilding == null || process == null) {
+			SimpleEntry<Building, ResourceProcess> entry = ToggleResourceProcess.getResourceProcessingBuilding(person);
+			resourceProcessBuilding = entry.getKey();
+			process = entry.getValue();
+		}
+		
+		if (resourceProcessBuilding != null || process != null) {
+			// Set the change flag to true
+			process.setFlag(true);
+			
+			ToggleResourceProcess task = new ToggleResourceProcess(person, resourceProcessBuilding, process);
+			// Set the instance to null
+			process = null;
+			resourceProcessBuilding = null;
+			return task;
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -51,6 +75,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 		// Note: A person can now remotely toggle the resource process
 		// instead of having to do an EVA outside.
+		
 		// Question: are there circumstances when a person still
 		// has to go outside ?
 		
@@ -63,10 +88,11 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				return 0;
 			}
 			
-			Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
+			SimpleEntry<Building, ResourceProcess> entry = ToggleResourceProcess.getResourceProcessingBuilding(person);
+			resourceProcessBuilding = entry.getKey();
+			process = entry.getValue();
 			
-			if (building != null) {
-				ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
+			if (resourceProcessBuilding != null || process != null) {
 
 				String name = process.getProcessName();
 
@@ -76,21 +102,13 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				}
 
 				double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
-				
-//				logger.info(building, 20_000, "@Meta " + name + " diff: " + Math.round(diff * 1000.0)/1000.0);
-				
+							
 				double baseProb = diff * FACTOR;
 				if (baseProb > FACTOR) {
 					baseProb = FACTOR;
 				}
 				result += baseProb;
-
-                if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-                    // Factor in building crowding and relationship factors.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                }
-                
+        
     			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
     			result *= multiple;
 

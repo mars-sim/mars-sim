@@ -35,6 +35,7 @@ public class SpeedCommand extends ChatCommand {
             if ((1 <= newSpeed) && (newSpeed <= MasterClock.MAX_SPEED)) {
             	int ratio = (int) Math.pow(2, newSpeed);
             	clock.setTargetTR(ratio);
+            	clock.setPreferredTR(ratio);
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
             }
         }

@@ -1,17 +1,16 @@
 /*
  * Mars Simulation Project
  * ArrivingSettlementDetailPanel.java
- * @date 2021-09-20
+ * @date 2021-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -28,6 +27,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 import com.alee.laf.label.WebLabel;
@@ -41,8 +41,6 @@ public class ArrivingSettlementDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
-//	private static final int PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
-
 	// Data members
 	private WebLabel nameValueLabel;
 	private WebLabel stateValueLabel;
@@ -55,12 +53,10 @@ implements ClockListener, HistoricalEventListener {
 	private ArrivingSettlement arrivingSettlement;
 	
 	private MainDesktopPane desktop;
-//	private MainScene mainScene;
 	
 	private static MarsClock currentTime;
 	private static MasterClock masterClock;
 	
-//	private double timeCache = 0;
 	private int solsToArrival = -1;
 	
 	/**
@@ -71,17 +67,12 @@ implements ClockListener, HistoricalEventListener {
 		// Use WebPanel constructor.
 		super();
 		this.desktop = desktop;
-//		this.mainScene = desktop.getMainScene();
-		
+	
 		masterClock = Simulation.instance().getMasterClock();
 		currentTime = masterClock.getMarsClock();
 		
 		setLayout(new BorderLayout(0, 10));
 		setBorder(new MarsPanelBorder());
-
-		// Create the info panel.
-		WebPanel infoPane = new WebPanel(new BorderLayout());
-		add(infoPane, BorderLayout.NORTH);
 
 		// Create the title label.
 		WebLabel titleLabel = new WebLabel(
@@ -90,95 +81,101 @@ implements ClockListener, HistoricalEventListener {
 		);
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
-		infoPane.add(titleLabel, BorderLayout.NORTH);
+		add(titleLabel, BorderLayout.NORTH);
 
-		// Create the info2 panel.
-		WebPanel info2Pane = new WebPanel(new GridLayout(7, 1, 5, 5));
-		infoPane.add(info2Pane, BorderLayout.CENTER);
+		// Create the info panel.
+		WebPanel infoPane = new WebPanel(new SpringLayout());
+		add(infoPane, BorderLayout.CENTER);
 
 		// Create name panel.
-		WebPanel namePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(namePane);
+//		WebPanel namePane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(namePane);
 
 		// Create name title label.
-		WebLabel nameTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.name"), WebLabel.LEFT); //$NON-NLS-1$
-		namePane.add(nameTitleLabel);
+		WebLabel nameTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.name"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(nameTitleLabel);
 
 		// Create name value label.
 		nameValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		namePane.add(nameValueLabel);
+		infoPane.add(nameValueLabel);
 
 		// Create state panel.
-		WebPanel statePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(statePane);
+//		WebPanel statePane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(statePane);
 
 		// Create state title label.
-		WebLabel stateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.state"), WebLabel.LEFT); //$NON-NLS-1$
-		statePane.add(stateTitleLabel);
+		WebLabel stateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.state"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(stateTitleLabel);
 
 		// Create state value label.
 		stateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		statePane.add(stateValueLabel);
+		infoPane.add(stateValueLabel);
 
 		// Create template panel.
-		WebPanel templatePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(templatePane);
+//		WebPanel templatePane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(templatePane);
 
 		// Create template title label.
-		WebLabel templateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), WebLabel.LEFT); //$NON-NLS-1$
-		templatePane.add(templateTitleLabel);
+		WebLabel templateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(templateTitleLabel);
 
 		// Create template value label.
 		templateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		templatePane.add(templateValueLabel);
+		infoPane.add(templateValueLabel);
 
 		// Create population panel.
-		WebPanel populationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(populationPane);
+//		WebPanel populationPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(populationPane);
 
 		// Create population title label.
-		WebLabel populationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), WebLabel.LEFT); //$NON-NLS-1$
-		populationPane.add(populationTitleLabel);
+		WebLabel populationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(populationTitleLabel);
 
 		// Create population value label.
 		populationValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		populationPane.add(populationValueLabel);
+		infoPane.add(populationValueLabel);
 
 		// Create arrival date panel.
-		WebPanel arrivalDatePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(arrivalDatePane);
+//		WebPanel arrivalDatePane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(arrivalDatePane);
 
 		// Create arrival date title label.
-		WebLabel arrivalDateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), WebLabel.LEFT); //$NON-NLS-1$
-		arrivalDatePane.add(arrivalDateTitleLabel);
+		WebLabel arrivalDateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
 		arrivalDateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		arrivalDatePane.add(arrivalDateValueLabel);
+		infoPane.add(arrivalDateValueLabel);
 
 		// Create time arrival panel.
-		WebPanel timeArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(timeArrivalPane);
+//		WebPanel timeArrivalPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(timeArrivalPane);
 
 		// Create time arrival title label.
-		WebLabel timeArrivalTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), WebLabel.LEFT); //$NON-NLS-1$
-		timeArrivalPane.add(timeArrivalTitleLabel);
+		WebLabel timeArrivalTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
 		timeArrivalValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		timeArrivalPane.add(timeArrivalValueLabel);
+		infoPane.add(timeArrivalValueLabel);
 
 		// Create location panel.
-		WebPanel locationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(locationPane);
+//		WebPanel locationPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//		infoPane.add(locationPane);
 
 		// Create location title label.
-		WebLabel locationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.location"), WebLabel.LEFT); //$NON-NLS-1$
-		locationPane.add(locationTitleLabel);
+		WebLabel locationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.location"), WebLabel.RIGHT); //$NON-NLS-1$
+		infoPane.add(locationTitleLabel);
 
 		// Create location value label.
 		locationValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
-		locationPane.add(locationValueLabel);
+		infoPane.add(locationValueLabel);
+
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(infoPane, 
+						7, 2, // rows, cols
+						30, 10, // initX, initY
+						7, 3); // xPad, yPad
 
 		// Set as clock listener.
 		masterClock.addClockListener(this);
@@ -299,7 +296,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub	
+		// Nothing
 	}
 	
 	@Override
@@ -311,8 +308,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
-		
+		// NOTHING
 	}
 	
 	/**

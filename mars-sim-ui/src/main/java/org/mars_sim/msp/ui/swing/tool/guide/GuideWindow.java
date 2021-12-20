@@ -136,7 +136,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		mainPane.add(scrollPane,  BorderLayout.CENTER);
 		
 		updateButtons();
-		
+	
 		setResizable(true);
 		setMaximizable(true);
 		setVisible(true);
