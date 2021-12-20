@@ -163,8 +163,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare spring layout power info panel.
-		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());// GridLayout(6, 2, 0, 0));
-//		powerInfoPanel.setBorder(new MarsPanelBorder());
+		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated label.
@@ -176,7 +175,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		powerGeneratedTF = new WebTextField(formatter.format(powerGeneratedCache) + kW);
 		powerGeneratedTF.setEditable(false);
-		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
+		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));
 		wrapper1.add(powerGeneratedTF);
 		powerInfoPanel.add(wrapper1);
 
@@ -189,7 +188,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		powerUsedTF = new WebTextField(formatter.format(powerUsedCache) + kW);
 		powerUsedTF.setEditable(false);
-		powerUsedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
+		powerUsedTF.setPreferredSize(new Dimension(120, 24));
 		wrapper2.add(powerUsedTF);
 		powerInfoPanel.add(wrapper2);
 
@@ -203,7 +202,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		energyStorageCapacityTF = new WebTextField(formatter.format(energyStorageCapacityCache) + kWh);
 		energyStorageCapacityTF.setEditable(false);
-		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
+		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));
 		wrapper3.add(energyStorageCapacityTF);
 		powerInfoPanel.add(wrapper3);
 
