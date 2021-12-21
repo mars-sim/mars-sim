@@ -1107,7 +1107,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Gets the person's local group of people (in building or rover)
 	 *
-	 * @return collection of people in person's location.
+	 * @return collection of people in person's location. The collectino incldues the Person
 	 */
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = null;
@@ -1125,9 +1125,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		if (localGroup == null) {
 			localGroup = Collections.emptyList();
-		}
-		else if (localGroup.contains(this)) {
-			localGroup.remove(this);
 		}
 		return localGroup;
 	}

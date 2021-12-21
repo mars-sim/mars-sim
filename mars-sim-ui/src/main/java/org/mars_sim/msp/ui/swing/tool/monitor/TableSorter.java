@@ -244,12 +244,10 @@ public class TableSorter extends AbstractTableModel
      * @return Value of cell.
      */
     public Object getValueAt(int aRow, int aColumn) {
-    	try {
+    	if (indexes.length > aRow) {
     		return sourceModel.getValueAt(indexes[aRow], aColumn);
     	}
-    	catch (Exception e) {
-    		return null;
-    	}
+    	return null;
     }
 
     /**
