@@ -136,16 +136,11 @@ public class MainDesktopPane extends JDesktopPane
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
 		unitWindows = new ArrayList<>();
-		// Add clock listener
-		sim.getMasterClock().addClockListener(this);
+
 		// Prepare tool windows.
 		toolWindows = new ArrayList<>();
 
 		prepareListeners();
-
-		// Note: without using SwingUtilities.invokeLater, 
-		// GuideWindow will not load up
-//		init();
 		
 		SwingUtilities.invokeLater(() -> init());
 	}
@@ -185,6 +180,9 @@ public class MainDesktopPane extends JDesktopPane
 
 		// Setup announcement window
 		prepareAnnouncementWindow();
+		
+		// Add clock listener with a minimum duration of 1s
+		sim.getMasterClock().addClockListener(this, 1000L);
 	}
 
 	/**
@@ -732,12 +730,15 @@ public class MainDesktopPane extends JDesktopPane
 	public void disposeUnitWindow(UnitWindow window) {
 
 		if (window != null) {
-			boolean removed = unitWindows.remove(window);
+			unitWindows.remove(window);
 			window.dispose();
 
 			// Have main window dispose of unit button
 			if (mainWindow != null)
 				mainWindow.disposeUnitButton(window.getUnit());
+			
+			// Lastly destory the window
+			window.destroy();
 		}
 	}
 
@@ -784,29 +785,6 @@ public class MainDesktopPane extends JDesktopPane
 //		runToolWindowExecutor();
 	}
 
-	/**
-	 * Clear the desktop
-	 */
-	public void clearDesktop() {
-
-		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
-
-		toolWindows.clear();
-
-		for (UnitWindow window : unitWindows) {
-			window.dispose();
-			if (mainWindow != null)
-				mainWindow.disposeUnitButton(window.getUnit());
-			window.destroy();
-		}
-		unitWindows.clear();
-
-		for (ToolWindow window : toolWindows) {
-			window.dispose();
-			window.destroy();
-		}
-		toolWindows.clear();
-	}
 
 	/**
 	 * Resets all windows on the desktop. Disposes of all unit windows and tool
@@ -1121,6 +1099,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void destroy() {
 		sim.getMasterClock().removeClockListener(this);
+		
 		logger = null;
 		mode = null;
 		if (unitWindows != null) {

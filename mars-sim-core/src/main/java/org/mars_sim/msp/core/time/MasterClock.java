@@ -53,8 +53,6 @@ public class MasterClock implements Serializable {
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
-	/** The frequency of updating the ui. */
-	private static final long UI_MIN = 1000L;
 	/** The base value of time ratio from simulation.xml. */
 	private static int BASE_TR;
 	/** The multiplier value that relates TPS to upper TR. */
@@ -66,40 +64,38 @@ public class MasterClock implements Serializable {
 
 	// Data members
 	/** Runnable flag. */
-	private transient volatile boolean keepRunning = false;
+	private transient boolean keepRunning = false;
 	/** Pausing clock. */
-	private transient volatile boolean isPaused = false;
+	private transient boolean isPaused = false;
 	/** Flag for ending the simulation program. */
-	private transient volatile boolean exitProgram;
+	private transient boolean exitProgram;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 
 	/** Mode for saving a simulation. */
-	private transient volatile SaveType saveType = SaveType.NONE;
+	private transient SaveType saveType = SaveType.NONE;
 
 	/** The scale factor for updating process and crop update calls. */
-	private volatile double scaleFactor;
+	private double scaleFactor;
 	/** The current simulation time ratio. */
-	private volatile double actualTR = 0;
+	private double actualTR = 0;
 	/** The time taken to execute one frame in the game loop */
-	private volatile long executionTime;
+	private long executionTime;
 	/** The target simulation time ratio. */
-	private volatile int targetTR = 0;
+	private int targetTR = 0;
 	/** The user's preferred simulation time ratio. */
-	private volatile int preferredTR = 0;
+	private int preferredTR = 0;
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
 	private transient ExecutorService clockExecutor;
 
-	/** A list of clock listeners. */
-	private transient Collection<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
 	private transient Collection<ClockListenerTask> clockListenerTasks;
 
 	/** The file to save or load the simulation. */
-	private transient volatile File file;
+	private transient File file;
 
 	/** Is pausing millisol in use. */
 	public boolean canPauseTime = false;
@@ -177,9 +173,6 @@ public class MasterClock implements Serializable {
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
 
-		// Create listener list.
-		clockListeners = new HashSet<>();
-
 		// Calculate elapsedLast
 		timestampPulseStart();
 
@@ -251,20 +244,25 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Adds a clock listener
+	 * Adds a clock listener. A minumum duratino can be specified which throttles how many
+	 * pulses the listener receives. If the duration is set to zero then all Pulses are distributed.
+	 * 
+	 * If the duration is positive then pulses will be skipped to ensure a pulse is not delivered any 
+	 * quicker than the min duration. The delivered Pulse will have the full elapsed times including
+	 * the skipped Pulses.
+	 * 
 	 *
 	 * @param newListener the listener to add.
+	 * @Param minDuration The minimum duration in milliseconds between pulses.
 	 */
-	public final void addClockListener(ClockListener newListener) {
-		// if listeners list does not exist, create one
-		if (clockListeners == null)
-			clockListeners = Collections.synchronizedSet(new HashSet<>());
-		// if the listeners list does not contain newListener, add it to the list
-		if (!clockListeners.contains(newListener))
-			clockListeners.add(newListener);
+	public final void addClockListener(ClockListener newListener, long minDuration) {
 		// Check if clockListenerTaskList already contain the newListener's task,
 		// if it doesn't, create one
-		addClockListenerTask(newListener);
+		if (clockListenerTasks == null)
+			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
+		if (!hasClockListenerTask(newListener)) {
+			clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
+		}
 	}
 
 	/**
@@ -273,23 +271,10 @@ public class MasterClock implements Serializable {
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeClockListener(ClockListener oldListener) {
-		if (clockListeners != null && clockListeners.contains(oldListener))
-			clockListeners.remove(oldListener);
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
-		if (task != null)
+		if (task != null) {
+			logger.config("Remove clock listener " + oldListener);
 			clockListenerTasks.remove(task);
-	}
-
-	/**
-	 * Adds a clock listener task
-	 *
-	 * @param listener the clock listener task to add.
-	 */
-	public void addClockListenerTask(ClockListener listener) {
-		if (clockListenerTasks == null)
-			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
-		if (!hasClockListener(listener)) {
-			clockListenerTasks.add(new ClockListenerTask(listener));
 		}
 	}
 
@@ -299,7 +284,7 @@ public class MasterClock implements Serializable {
 	 * @param listener
 	 * @return
 	 */
-	private boolean hasClockListener(ClockListener listener) {
+	private boolean hasClockListenerTask(ClockListener listener) {
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
@@ -377,23 +362,18 @@ public class MasterClock implements Serializable {
 	/**
 	 * Resets the clock listener thread
 	 */
-	public void resetClockListeners() {
+	private void resetClockListeners() {
 		// If the clockListenerExecutor is not working, need to restart it
-//		LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
+		logger.warning("The Clock Thread has died. Restarting...");
 
 		// Re-instantiate clockListenerExecutor
 		if (listenerExecutor != null) {
 			listenerExecutor.shutdown();
 			listenerExecutor = null;
 		}
+		
+		// Restart executor, listener tasks are still in place
 		startClockListenerExecutor();
-
-		// Re-instantiate clockListeners
-		clockListeners = Collections.synchronizedSet(new HashSet<>());
-
-		setupClockListenerTask();
-
-		addClockListenerTask(sim);
 	}
 
 
@@ -702,34 +682,22 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Looks at the clock listener list and checks if each listener has already had
-	 * a corresponding task in the clock listener task list.
-	 */
-	public void setupClockListenerTask() {
-		clockListeners.forEach(t -> {
-			// Check if it has a corresponding task or not,
-			// if it doesn't, create a task for t
-			addClockListenerTask(t);
-		});
-	}
-
-
-	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
 		private double timeCache = 0;
-		private long lastUIPulse = 0;
-
+		private long lastPulseDelivered = 0;
 		private ClockListener listener;
+		private long minDuration;
 
 		public ClockListener getClockListener() {
 			return listener;
 		}
 
-		private ClockListenerTask(ClockListener listener) {
+		private ClockListenerTask(ClockListener listener, long minDuration) {
 			this.listener = listener;
-			this.lastUIPulse = System.currentTimeMillis();
+			this.minDuration = minDuration;
+			this.lastPulseDelivered = System.currentTimeMillis();
 		}
 
 		@Override
@@ -743,12 +711,12 @@ public class MasterClock implements Serializable {
 
 					// One UI Pulse per X seconds
 					long timeNow = System.currentTimeMillis();
-					if ((timeNow - lastUIPulse) > UI_MIN) {
+					if ((timeNow - lastPulseDelivered) > minDuration) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
 						// Check for logger.info("UI Update pulse " + timeNow  + " for " + listener)
 						listener.uiPulse(timeCache);
 						// Reset count
-						lastUIPulse = timeNow;
+						lastPulseDelivered = timeNow;
 						
 						// Reset timeRatioCache
 						timeCache = 0;
@@ -782,7 +750,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param time
 	 */
-	public void fireClockPulse(double time) {
+	private void fireClockPulse(double time) {
 		// Identify if it's a new Millisol integer
 		int currentMSol = marsClock.getMillisolInt();
 		boolean isNewMSol = false;
@@ -875,8 +843,7 @@ public class MasterClock implements Serializable {
 		startClockListenerExecutor();
 
 		if (clockExecutor == null) {
-			int num = Math.min(1, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
-			if (num <= 0) num = 1;
+			int num = 1; // Should only have 1 thread updating the time
 			logger.config("Setting up " + num + " thread(s) for clock executor.");
 			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
@@ -1038,8 +1005,8 @@ public class MasterClock implements Serializable {
 	 * @param isPaused
 	 * @param showPane
 	 */
-	public void firePauseChange(boolean isPaused, boolean showPane) {
-		clockListeners.forEach(cl -> cl.pauseChange(isPaused, showPane));
+	private void firePauseChange(boolean isPaused, boolean showPane) {
+		clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
 	}
 
 	/**
@@ -1165,7 +1132,6 @@ public class MasterClock implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		sim = null;
 		marsClock = null;
 		initialMarsTime = null;
 		earthClock.destroy();
@@ -1174,7 +1140,5 @@ public class MasterClock implements Serializable {
 		clockThreadTask = null;
 		listenerExecutor = null;
 		file = null;
-
-		clockListeners = null;
 	}
 }

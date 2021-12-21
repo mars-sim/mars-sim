@@ -128,8 +128,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
 	private final DecimalFormat formatter3 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
-	/** Simulation instance */
-	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
 	/** Martian Clock. */
@@ -158,8 +156,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	
 		// Set window resizable to false.
 		setResizable(false);
+		
 		// Initialize data members
-		sim = Simulation.instance();
+		Simulation sim = desktop.getSimulation();
 		masterClock = sim.getMasterClock();
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
@@ -168,7 +167,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		uptimer = masterClock.getUpTimer();
 
 		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
+		masterClock.addClockListener(this, 1000L);
 
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());

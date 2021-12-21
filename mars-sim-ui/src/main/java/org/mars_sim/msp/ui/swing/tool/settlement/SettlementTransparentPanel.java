@@ -208,19 +208,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
 
-	private static Weather weather;
-	private static SurfaceFeatures surfaceFeatures;
-	private static OrbitInfo orbitInfo;
-
-	private static MasterClock masterClock;
-	private static MarsClock marsClock;
-
-	private static final Simulation sim = Simulation.instance();
-
-	private static final UnitManager unitManager = sim.getUnitManager();
+	private Weather weather;
+	private SurfaceFeatures surfaceFeatures;
+	private OrbitInfo orbitInfo;
+	private UnitManager unitManager;
 
 	private static DecimalFormat fmt = new DecimalFormat("##0");
-	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
 	private Font sunFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
@@ -229,17 +222,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         this.mapPanel = mapPanel;
         this.desktop = desktop;
 
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		marsClock = masterClock.getMarsClock();
-
-		masterClock.addClockListener(this);
+        Simulation sim = desktop.getSimulation();
+        this.unitManager = sim.getUnitManager();
+        
+		MasterClock masterClock = sim.getMasterClock();
+		masterClock.addClockListener(this, 1000L);
 
         Environment mars = sim.getMars();
-        weather = mars.getWeather();
-        surfaceFeatures = mars.getSurfaceFeatures();
-        orbitInfo = mars.getOrbitInfo();
+        this.weather = mars.getWeather();
+        this.surfaceFeatures = mars.getSurfaceFeatures();
+        this.orbitInfo = mars.getOrbitInfo();
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
@@ -1260,7 +1252,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 			// Add addUnitListener
 			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
 				i.next().addUnitListener(this);
@@ -1336,7 +1328,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 			unitManager.removeUnitManagerListener(this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
 				i.next().removeUnitListener(this);
@@ -1396,6 +1388,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	@Override
 	public void uiPulse(double time) {
 		if (isVisible() || isShowing()) {
+			// THis can be removed once uiPulse is collapsed into timePulse
+			MarsClock marsClock = desktop.getSimulation().getMasterClock().getMarsClock();
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 
 				Settlement s = (Settlement) settlementListBox.getSelectedItem();
@@ -1467,6 +1461,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * Prepare class for deletion.
 	 */
 	public void destroy() {
+		desktop.getSimulation().getMasterClock().removeClockListener(this);
+		
 		mapPanel = null;
 		settlementCBModel.destroy();
 		desktop = null;

@@ -27,10 +27,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
@@ -76,14 +74,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	private MainDesktopPane desktop;
 
-//	private Graphics dbg;
-//	private Image dbImage = null;
-	// private long refreshRate;
-	
-
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
-
-	
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
 		this.desktop = desktop;
@@ -93,7 +83,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// newFixedThreadPool(1); //
 		executor = Executors.newSingleThreadExecutor();
 
-		masterClock.addClockListener(this);
+		// Update the map from the clock once a second
+		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 
 		// this.refreshRate = refreshRate;
 
@@ -107,7 +98,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		map = surfMap;
 		mapError = false;
 		wait = false;
-		mapLayers = new CopyOnWriteArrayList<MapLayer>();
+		mapLayers = new CopyOnWriteArrayList<>();
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
@@ -563,7 +554,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	 */
 	public void destroy() {
 		// Remove clock listener.
-		masterClock.removeClockListener(this);
+		desktop.getSimulation().getMasterClock().removeClockListener(this);
 		mapLayers = null;
 //		centerCoords = null; // may create NPE when ending the sim
 		executor = null;

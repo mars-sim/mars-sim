@@ -427,7 +427,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param autosaveDefault True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
-		masterClock.addClockListener(this);
+		masterClock.addClockListener(this, 0);
 
 		this.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
@@ -1159,7 +1159,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void proceed(boolean isPause) {
 		if (masterClock != null) {
-			masterClock.addClockListener(this);
+			masterClock.addClockListener(this, 0);
 			if (!isPause) masterClock.setPaused(false, false);
 			masterClock.restart();
 		}

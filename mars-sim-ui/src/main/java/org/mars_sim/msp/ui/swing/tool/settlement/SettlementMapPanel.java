@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -95,10 +93,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	private Font font = new Font("SansSerif", Font.BOLD, 11);
 
-	private static Simulation sim;
-	private static UnitManager unitManager;
-	private static MasterClock masterClock;
-
 	/**
 	 * Constructor 1 A panel for displaying a settlement map.
 	 */
@@ -107,12 +101,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
 
-		if (sim == null)
-			sim = Simulation.instance();
-
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-
+		UnitManager unitManager = desktop.getSimulation().getUnitManager();
 		if (!unitManager.getSettlements().isEmpty())
 			settlement = (Settlement) unitManager.getSettlements().toArray()[0];
 
@@ -131,9 +120,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		showVehicleLabels = false;
 		showRobotLabels = false;
 		showDaylightLayer = false; // turn off by default
-		selectedBuilding = new HashMap<Settlement, Building>();
-		selectedPerson = new HashMap<Settlement, Person>();
-		selectedRobot = new HashMap<Settlement, Robot>();
+		selectedBuilding = new HashMap<>();
+		selectedPerson = new HashMap<>();
+		selectedRobot = new HashMap<>();
 	}
 
 	public void createUI() {
@@ -146,10 +135,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		setForeground(Color.ORANGE);
 
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		masterClock.addClockListener(this);
+		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 
 		detectMouseMovement();
 		setFocusable(true);
@@ -1237,9 +1223,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 */
 	public void destroy() {
 		// Remove clock listener.
-		if (masterClock != null)
-			masterClock.removeClockListener(this);
+		desktop.getSimulation().getMasterClock().removeClockListener(this);
 
+		settlementTransparentPanel.destroy();
+		
 		menu = null;
 		settlement = null;
 		selectedPerson = null;
@@ -1254,7 +1241,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		mapLayers = null;
 		selectedRobot = null;
-//		mainScene = null;
 		building = null;
 		settlementTransparentPanel = null;
 

@@ -17,11 +17,8 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -30,7 +27,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 /**
  * A class to dispatch playback of OGG files to OGGSoundClip.
  */
-public class AudioPlayer implements ClockListener {
+public class AudioPlayer {
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
@@ -60,14 +57,13 @@ public class AudioPlayer implements ClockListener {
 	private static int playTimes = 0;
 	private static int numTracks;
 	
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	private MasterClock masterClock;
 
 
 	public AudioPlayer(MainDesktopPane desktop) {
 
-		// Add AudioPlayer to MasterClock's clock listener
-		desktop.getSimulation().getMasterClock().addClockListener(this);
-	
+		masterClock = desktop.getSimulation().getMasterClock();
+		
 		if (!isVolumeDisabled) {
 			loadMusicTracks();
 			loadSoundEffects();
@@ -567,32 +563,6 @@ public class AudioPlayer implements ClockListener {
 	public int getNumTracks() {
 		return numTracks;
 	}
-
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-//		if (isPaused) {
-//			if (!isMusicMute())
-//				muteMusic();
-//			if (!isSoundEffectMute())
-//				muteSoundEffect();
-//		} else {
-//			unmuteMusic();
-//			unmuteSoundEffect();
-//		}
-	}
-
 	
 	public void destroy() {
 		allSoundClips = null;

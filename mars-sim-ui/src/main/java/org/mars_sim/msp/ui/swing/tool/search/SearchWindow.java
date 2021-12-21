@@ -30,6 +30,7 @@ import javax.swing.event.DocumentListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
@@ -119,6 +120,8 @@ extends ToolWindow {
 	/** Button to execute the search of the selected unit. */
 	private WebButton searchButton;
 
+	private UnitManager unitManager;
+
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the desktop pane
@@ -127,6 +130,7 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
+		unitManager = desktop.getSimulation().getUnitManager();
 	
 		// Initialize locks
 		lockUnitList = false;

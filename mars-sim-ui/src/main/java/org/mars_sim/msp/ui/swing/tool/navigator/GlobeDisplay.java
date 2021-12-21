@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
@@ -131,10 +130,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 */
 	private int rightWidth = positionMetrics.stringWidth(longitude);
 	
-	private static MainDesktopPane desktop;
-	private static SurfaceFeatures surfaceFeatures;
-	private static MasterClock masterClock;
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private MainDesktopPane desktop;
+	private SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
@@ -145,9 +142,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {// , int width, int height) {
 
-//		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-//		this.mainScene = desktop.getMainScene();
 
 		// Initialize data members
 		this.globalWidth = GLOBE_BOX_WIDTH;
@@ -159,11 +154,10 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		// starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
-		masterClock = Simulation.instance().getMasterClock();
-		masterClock.addClockListener(this);
+		MasterClock masterClock = desktop.getSimulation().getMasterClock();
+		masterClock.addClockListener(this, 1000L);
 
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		surfaceFeatures = desktop.getSimulation().getMars().getSurfaceFeatures();
 
 		// Set component size
 		setPreferredSize(new Dimension(globalWidth, globalHeight));
@@ -198,17 +192,10 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		public Dragger (NavigatorWindow navwin) {
 			this.navwin = navwin;
 	    }
-		
-//		@Override
-//		public void mouseMoved(MouseEvent e) {
-//			navwin.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-//		}
-//		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			// System.out.println("mousepressed X = " + e.getX());
-			// System.out.println(" Y = " + e.getY());
 			dragx = e.getX();
 			dragy = e.getY();
 
@@ -578,10 +565,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * @param g graphics context
 	 */
 	protected void drawUnits(Graphics2D g) {
-//	    Graphics2D g = (Graphics2D) gg;
-//		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
+		UnitManager unitManager = desktop.getSimulation().getUnitManager();
 		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
@@ -622,9 +607,6 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * @param g graphics context
 	 */
 	protected void drawCrossHair(Graphics2D g) {
-//	    Graphics2D g = (Graphics2D) gg;
-//		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 		g.setColor(Color.orange);
 
@@ -638,23 +620,13 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		}
 		// If not USGS map, use large crosshairs.
 		else {
-			// g.drawRect(57, 57, 33, 33);
-			// g.drawLine(0, 74, 56, 74);
-			// g.drawLine(90, 74, 149, 74);
-			// g.drawLine(74, 0, 74, 57);
-			// g.drawLine(74, 90, 74, 149);
 
 			g.drawRect(118, 118, 66, 66);
 			g.drawLine(0, 150, 117, 150);
 			g.drawLine(184, 150, 299, 150);
 			g.drawLine(150, 20, 150, 117);
 			g.drawLine(150, 185, 150, 300);
-
-//			g.drawRect(105, 105, 53, 53);
-//			g.drawLine(0, 137, 104, 137);
-//			g.drawLine(171, 137, 273, 137);
-//			g.drawLine(137, 0, 137, 104);
-//			g.drawLine(137, 172, 137, 274);		
+	
 		}
 
 		// use prepared font
@@ -675,8 +647,6 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		int latPosition = ((leftWidth - latWidth) / 2) + 25;
 		int longPosition = 275 - rightWidth + ((rightWidth - longWidth) / 2);
 
-		// g.drawString(latString, latPosition, 142);
-		// g.drawString(longString, longPosition, 142);
 		g.drawString(latString, latPosition, 50);
 		g.drawString(longString, longPosition, 50);
 
@@ -733,10 +703,6 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		}
 	}
 
-	// public void setJustLoaded(boolean value) {
-	// justLoaded = true;
-	// }
-
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		// TODO Auto-generated method stub
@@ -783,11 +749,10 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * Prepare globe for deletion.
 	 */
 	public void destroy() {
+		MasterClock masterClock = desktop.getSimulation().getMasterClock();
 		masterClock.removeClockListener(this);
 		removeMouseListener(dragger);
 		dragger = null;
-		masterClock = null;
-		unitManager = null;
 		surfaceFeatures = null;
 		desktop  = null;
 

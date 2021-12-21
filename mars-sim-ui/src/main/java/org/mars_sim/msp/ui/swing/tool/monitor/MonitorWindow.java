@@ -38,6 +38,7 @@ import javax.swing.event.TableModelListener;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -122,6 +123,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private Settlement selectedSettlement;
 	private List<Settlement> settlementList;
 
+	private UnitManager unitManager;
+
 	/**
 	 * Constructor.
 	 *
@@ -131,6 +134,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Use TableWindow constructor
 		super(TITLE, desktop);
 
+		unitManager = desktop.getSimulation().getUnitManager();
+		
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout(5, 5));
 		mainPane.setBorder(new MarsPanelBorder());
@@ -850,6 +855,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	/**
 	 * Prepare tool window for deletion.
 	 */
+	@Override
 	public void destroy() {
 		tabsSection = null;
 		rowCount = null;

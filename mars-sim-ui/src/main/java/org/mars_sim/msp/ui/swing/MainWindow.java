@@ -707,7 +707,7 @@ extends JComponent implements ClockListener {
 		mainPane.add(overlay, BorderLayout.CENTER);
 
 		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
+		masterClock.addClockListener(this, 1000L);
 
 		// Create Earth date text field
 		createEarthDate();

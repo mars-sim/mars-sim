@@ -460,7 +460,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/**
 	 * Prepares unit window for deletion.
 	 */
-	public void destroy() {
+	public void destroy() {		
 		statusPanel = null;
 		if (tabPanels != null)
 			tabPanels.clear();

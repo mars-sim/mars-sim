@@ -177,8 +177,8 @@ implements ClockListener, HistoricalEventListener {
 						30, 10, // initX, initY
 						7, 3); // xPad, yPad
 
-		// Set as clock listener.
-		masterClock.addClockListener(this);
+		// Set as clock listener for a rate of 1 pulse per 2 seconds
+		masterClock.addClockListener(this, 2000L);
 
 		// Set as historical event listener.
 		Simulation.instance().getEventManager().addListener(this);

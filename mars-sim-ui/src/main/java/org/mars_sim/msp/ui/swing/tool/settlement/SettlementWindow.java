@@ -18,7 +18,6 @@ import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
@@ -68,15 +67,13 @@ public class SettlementWindow extends ToolWindow {
 
 	/** The status bar. */
 	private WebStatusBar statusBar;
-	/** The main desktop. */
-	private MainDesktopPane desktop;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
 	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 
 	/** static MarsClock instance. */
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -86,10 +83,8 @@ public class SettlementWindow extends ToolWindow {
 	public SettlementWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-		this.desktop = desktop;
 
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = desktop.getSimulation().getMasterClock().getMarsClock();
 
 //			// setTitleName(null);
 //			// Remove title bar
@@ -194,14 +189,6 @@ public class SettlementWindow extends ToolWindow {
 		return mapPanel;
 	}
 
-	/**
-	 * Gets the main desktop panel for this tool.
-	 *
-	 * @return main desktop panel.
-	 */
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
 
 	public String format0(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);
