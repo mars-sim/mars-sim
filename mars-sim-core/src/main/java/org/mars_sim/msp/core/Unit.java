@@ -221,7 +221,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * What logical UnitType of this object in terms of the management. This is NOT
-	 * a direct mapping to the concreate subclass of Unit since some logical
+	 * a direct mapping to the concrete subclass of Unit since some logical
 	 * UnitTypes can have multiple implementation, e.g. Equipment.
 	 *
 	 * @return
@@ -384,7 +384,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		location = newLocation;
-
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 

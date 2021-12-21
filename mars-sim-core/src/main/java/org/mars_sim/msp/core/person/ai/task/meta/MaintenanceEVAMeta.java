@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -58,7 +59,9 @@ public class MaintenanceEVAMeta extends MetaTask {
     public double getProbability(Person person) {
         double result = 0D;
   
-        if (person.isInSettlement()) {
+    	Settlement settlement = person.getSettlement();
+        
+        if (settlement != null) {
         	
             // Check if an airlock is available
             if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
@@ -84,9 +87,7 @@ public class MaintenanceEVAMeta extends MetaTask {
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
             	return 0;
-            
-        	Settlement settlement = person.getSettlement();
-    	
+            	
         	// Check for radiation events
         	boolean[] exposed = settlement.getExposed();
 
@@ -103,7 +104,7 @@ public class MaintenanceEVAMeta extends MetaTask {
                     
                     boolean isStructure = (entity instanceof Structure);	
                     boolean uninhabitableBuilding = false;
-                    if (entity instanceof Building)
+                    if (entity.getUnitType() == UnitType.BUILDING)
                         uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
                     
                     if (!isStructure && !uninhabitableBuilding)

@@ -4,7 +4,7 @@
  * @date 2021-12-15
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.structure;
+package org.mars_sim.msp.core.air;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;

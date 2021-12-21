@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.CompositionOfAir;
+import org.mars_sim.msp.core.air.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;

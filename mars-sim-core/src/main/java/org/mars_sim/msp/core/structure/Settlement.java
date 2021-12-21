@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.air.CompositionOfAir;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;

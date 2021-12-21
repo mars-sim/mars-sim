@@ -97,8 +97,6 @@ extends TabPanel {
 		// Prepare mission top panel
 		WebPanel missionTopPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
 		addBorder(missionTopPanel, "missionTopPanel");
-
-//		missionTopPanel.setBorder(new MarsPanelBorder());
 		missionTopPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
@@ -135,7 +133,6 @@ extends TabPanel {
 
 		// Prepare mission bottom panel
 		WebPanel missionBottomPanel = new WebPanel(new BorderLayout(0, 0));
-//		missionBottomPanel.setBorder(new MarsPanelBorder());
 		missionBottomPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
@@ -187,7 +184,6 @@ extends TabPanel {
 				Vehicle vehicle = (Vehicle) unit;
 				Mission mission = missionManager.getMissionForVehicle(vehicle);
 				if (mission != null) {
-//					((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
 					getDesktop().openToolWindow(MissionWindow.NAME, mission);
 				}
 			}

@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.mars_sim.msp.core.air.CompositionOfAir;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Environment;
@@ -68,7 +69,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;

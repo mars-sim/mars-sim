@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -888,7 +889,7 @@ public class BuildingManager implements Serializable {
 		Robot robot = null;
 		Settlement s = unitManager.getSettlementByID(settlementID);
 		BuildingManager manager = s.getBuildingManager();
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
 
 			List<Building> list = manager.getBuildingsWithLifeSupport()
@@ -911,7 +912,7 @@ public class BuildingManager implements Serializable {
 
 		}
 
-		else if (unit instanceof Robot) {
+		else {
 			robot = (Robot) unit;
 			// find robot type
 			RobotType robotType = robot.getRobotType();
@@ -1301,7 +1302,7 @@ public class BuildingManager implements Serializable {
 
 	public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
@@ -1366,7 +1367,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static List<Building> getChattyBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 		for (Building building : buildingList) {
 			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = building.getLifeSupport();
@@ -1409,7 +1410,7 @@ public class BuildingManager implements Serializable {
 		Person person = null;
 		Robot robot = null;
 
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
 			Building currentBuilding = BuildingManager.getBuilding(person);
 			if (currentBuilding != null) {
@@ -1424,7 +1425,7 @@ public class BuildingManager implements Serializable {
 					}
 				}
 			}
-		} else if (unit instanceof Robot) {
+		} else {
 			robot = (Robot) unit;
 			Building currentBuilding = BuildingManager.getBuilding(robot);
 			if (currentBuilding != null) {
@@ -1457,7 +1458,7 @@ public class BuildingManager implements Serializable {
 	public static void addPersonOrRobotToBuilding(Worker unit, Building building) {
 		if (building != null) {
 			try {
-				if (unit instanceof Person) {
+				if (unit.getUnitType() == UnitType.PERSON) {
 					Person person = (Person) unit;
 					LifeSupport lifeSupport = building.getLifeSupport();
 
@@ -1468,7 +1469,7 @@ public class BuildingManager implements Serializable {
 					}
 				}
 
-				else if (unit instanceof Robot) {
+				else {
 					Robot robot = (Robot) unit;
 					RoboticStation roboticStation = building.getRoboticStation();
 
@@ -1501,7 +1502,7 @@ public class BuildingManager implements Serializable {
 				// Add person to random location within building.
 				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
-				if (unit instanceof Person) {
+				if (unit.getUnitType() == UnitType.PERSON) {
 					Person person = (Person) unit;
 					LifeSupport lifeSupport = building.getLifeSupport();
 
@@ -1513,7 +1514,7 @@ public class BuildingManager implements Serializable {
 					}
 				}
 
-				else if (unit instanceof Robot) {
+				else {
 					Robot robot = (Robot) unit;
 					RoboticStation roboticStation = building.getRoboticStation();
 
