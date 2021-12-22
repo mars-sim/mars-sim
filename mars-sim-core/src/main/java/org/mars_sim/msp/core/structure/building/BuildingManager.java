@@ -912,14 +912,14 @@ public class BuildingManager implements Serializable {
 			manager = s.getBuildingManager();
 		}
 		
-		List<Building> list = manager.getBuildingsWithLifeSupport()
-				.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+		List<Building> list = manager.getBuildingsWithLifeSupport();
+		
+		list = list.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 				.collect(Collectors.toList());
 
 		if (list.isEmpty()) {
-			list = manager.getBuildingsWithLifeSupport()
-					.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-					.collect(Collectors.toList());
+			logger.warning(person, "No inhabitable buildings available (except the astronomy observator if available.");
+			return;
 		}
 
 		Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
@@ -930,7 +930,7 @@ public class BuildingManager implements Serializable {
 		}
 
 		else {
-			logger.warning(person, "No inhabitable buildings available");
+			logger.warning(person, "No inhabitable buildings available.");
 		}
 	}
 
