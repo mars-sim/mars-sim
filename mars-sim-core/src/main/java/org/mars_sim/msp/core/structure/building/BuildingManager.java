@@ -867,7 +867,7 @@ public class BuildingManager implements Serializable {
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			addPersonOrRobotToBuildingRandomLocation(p, building);
+			addPersonToBuildingRandomLocation(p, building);
 		}
 
 		else {
@@ -925,8 +925,8 @@ public class BuildingManager implements Serializable {
 		Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
 
 		if (building != null) {
-			// Add the person to a random building loc
-			addPersonOrRobotToBuildingRandomLocation(person, building);
+			// Add the person to a building loc
+			addPersonToBuildingRandomLocation(person, building);
 		}
 
 		else {
@@ -952,54 +952,67 @@ public class BuildingManager implements Serializable {
 			manager = s.getBuildingManager();
 		}
 		
-		// find robot type
-		RobotType robotType = robot.getRobotType();
-		FunctionType function = robotType.getDefaultFunction();
+		FunctionType function = robot.getRobotType().getDefaultFunction();
 
 		List<Building> functionBuildings = manager.getBuildings(function);
 		Building destination = null;
 
 		// Note: if the function is robotic-station, go through the list and remove
-		// hallways
-		// since we don't want robots to stay in a hallway
+		// hallways since we don't want robots to stay in a hallway
 		List<Building> validBuildings = new ArrayList<>();
 		for (Building bldg : functionBuildings) {
 			RoboticStation roboticStation = bldg.getRoboticStation();
-			// remove hallway, tunnel, observatory
 			if (roboticStation != null) {
-				if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-					// do nothing
-				} else if (function == FunctionType.FARMING) {
-					if (bldg.getBuildingType().toLowerCase().contains(Building.GREENHOUSE)) {
+				String type = bldg.getBuildingType();
+				// Do not add hallway, tunnel, observatory
+				if (type.equalsIgnoreCase(Building.HALLWAY)
+						|| type.equalsIgnoreCase(Building.TUNNEL)
+						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+					continue;
+				} 
+				
+				if (function == FunctionType.FARMING) {
+					if (type.toLowerCase().contains(Building.GREENHOUSE)) {
 						validBuildings.add(bldg);
+						continue;
 					}
-				} else if (function == FunctionType.MANUFACTURE) {
-					if (bldg.getBuildingType().equalsIgnoreCase(Building.WORKSHOP)
-							|| bldg.getBuildingType().equalsIgnoreCase(Building.MANUFACTURING)
-							|| bldg.getBuildingType().equalsIgnoreCase(Building.MACHINERY)) {
+				} 
+				
+				if (function == FunctionType.MANUFACTURE) {
+					if (type.equalsIgnoreCase(Building.WORKSHOP)
+							|| type.equalsIgnoreCase(Building.MANUFACTURING)
+							|| type.equalsIgnoreCase(Building.MACHINERY)) {
 						validBuildings.add(bldg);
+						continue;
 					}
-				} else if (function == FunctionType.COOKING) {
-					if (bldg.getBuildingType().equalsIgnoreCase(Building.LOUNGE)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.LANDER_HAB)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.OUTPOST_HUB)) {
+				} 
+				
+				if (function == FunctionType.COOKING) {
+					if (type.equalsIgnoreCase(Building.LOUNGE)
+						|| type.equalsIgnoreCase(Building.LANDER_HAB)
+						|| type.equalsIgnoreCase(Building.OUTPOST_HUB)) {
 						validBuildings.add(bldg);
+						continue;
 					}
-				} else if (function == FunctionType.MEDICAL_CARE) {
-					if (bldg.getBuildingType().equalsIgnoreCase(Building.INFIRMARY)
-							|| bldg.getBuildingType().toLowerCase().contains(Building.MEDICAL)) {
+				} 
+				
+				if (function == FunctionType.MEDICAL_CARE) {
+					if (type.equalsIgnoreCase(Building.INFIRMARY)
+							|| type.toLowerCase().contains(Building.MEDICAL)) {
 						validBuildings.add(bldg);
+						continue;
 					}
-				} else if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
-					if (bldg.getBuildingType().toLowerCase().contains(Building.GARAGE)) {
+				} 
+				
+				if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+					if (type.toLowerCase().contains(Building.GARAGE)) {
 						validBuildings.add(bldg);
+						continue;
 					}
-				} else { // if there is no specialized buildings,
-							// then add general purpose buildings like "Lander Hab"
-					validBuildings.add(bldg);
-				}
+				} 
+				// if there is no specialized buildings,
+				// then add general purpose buildings like "Lander Hab"
+				validBuildings.add(bldg);
 			}
 		}
 
@@ -1007,33 +1020,45 @@ public class BuildingManager implements Serializable {
 		if (validBuildings.size() >= 1) {
 			int rand = RandomUtil.getRandomInt(validBuildings.size() - 1);
 			destination = validBuildings.get(rand);
-			addPersonOrRobotToBuildingRandomLocation(robot, destination);
+			addRobotToBuildingRandomLocation(robot, destination);
 		}
 
 		else {
-			List<Building> validBuildings1 = new ArrayList<>();
-			List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
-			for (Building bldg : stations) {
-				// remove hallway, tunnel, observatory
-				if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-						|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-					// do nothing
-				} else {
-					validBuildings1.add(bldg);
-				}
-			}
-			// Randomly pick one of the buildings
-			if (!validBuildings1.isEmpty()) {
-				int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
-				destination = validBuildings1.get(rand);
-			}
-			else {
-				int rand = RandomUtil.getRandomInt(stations.size() - 1);
-				destination = stations.get(rand);
-			}
-			addPersonOrRobotToBuildingRandomLocation(robot, destination);
+			findABuilding(robot, manager);
 		}
+	}
+	
+	/**
+	 * Finds a building to add the robot.
+	 * 
+	 * @param robot
+	 * @param manager
+	 */
+	public static void findABuilding(Robot robot, BuildingManager manager) {
+		Building destination = null;
+		List<Building> validBuildings1 = new ArrayList<>();
+		List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
+		for (Building bldg : stations) {
+			String type = bldg.getBuildingType();
+			// Do not add hallway, tunnel, observatory
+			if (type.equalsIgnoreCase(Building.HALLWAY)
+					|| type.equalsIgnoreCase(Building.TUNNEL)
+					|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+				// do nothing
+			} else {
+				validBuildings1.add(bldg);
+			}
+		}
+		// Randomly pick one of the buildings
+		if (!validBuildings1.isEmpty()) {
+			int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
+			destination = validBuildings1.get(rand);
+		}
+		else {
+			int rand = RandomUtil.getRandomInt(stations.size() - 1);
+			destination = stations.get(rand);
+		}
+		addRobotToBuildingRandomLocation(robot, destination);
 	}
 
 	/**
@@ -1256,16 +1281,6 @@ public class BuildingManager implements Serializable {
 			int size = list.size();
 			int rand = RandomUtil.getRandomInt(size-1);
 			return list.get(rand);
-//			for (Building garageBuilding : list) {
-//				try {
-//					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-//					if (garage != null) {
-//						return garageBuilding;
-//					}
-//				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getAGarage(settlement) : " + e.getMessage());
-//				}
-//			}
 		}
 		return null;
 	}
@@ -1529,48 +1544,75 @@ public class BuildingManager implements Serializable {
 
 
 	/**
-	 * Adds the person to the building at a random location if possible.
+	 * Adds a unit to the building at a random location if possible.
 	 *
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
+	 * @param unit   the unit to add.
+	 * @param building the building to add the unit to.
 	 */
 	public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building) {
 		if (building != null) {
-			try {
-				// Add person to random location within building.
-				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+			if (unit.getUnitType() == UnitType.PERSON) {
+				addPersonToBuildingRandomLocation((Person) unit, building);
+			}
 
-				if (unit.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) unit;
-					LifeSupport lifeSupport = building.getLifeSupport();
-
-					if (!lifeSupport.containsOccupant(person)) {
-						lifeSupport.addPerson(person);
-
-						person.setPosition(settlementLoc);
-						person.setCurrentBuilding(building);
-					}
-				}
-
-				else {
-					Robot robot = (Robot) unit;
-					RoboticStation roboticStation = building.getRoboticStation();
-
-					if (!roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-
-						robot.setPosition(settlementLoc);
-						robot.setCurrentBuilding(building);
-					}
-				}
-			} catch (Exception e) {
-				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
+			else {
+				addRobotToBuildingRandomLocation((Robot) unit, building);
 			}
 		} else {
 			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
 		}
 	}
+	
+	/**
+	 * Adds the person to the building at a random location if possible.
+	 *
+	 * @param person   the person to add.
+	 * @param building the building to add the person to.
+	 */
+	public static void addPersonToBuildingRandomLocation(Person person, Building building) {
+		try {
+			// Add person to random location within building.
+			LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
+			LifeSupport lifeSupport = building.getLifeSupport();
+
+			if (!lifeSupport.containsOccupant(person)) {
+				lifeSupport.addPerson(person);
+
+				person.setPosition(settlementLoc);
+				person.setCurrentBuilding(building);
+			}
+
+		} catch (Exception e) {
+			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
+		}
+	}
+
+	/**
+	 * Adds the robot to the building at a random location if possible.
+	 *
+	 * @param robot   the robot to add.
+	 * @param building the building to add the robot to.
+	 */
+	public static void addRobotToBuildingRandomLocation(Robot robot, Building building) {
+		try {
+			// Add robot to random location within building.
+			LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+
+			RoboticStation roboticStation = building.getRoboticStation();
+
+			if (!roboticStation.containsRobotOccupant(robot)) {
+				roboticStation.addRobot(robot);
+
+				robot.setPosition(settlementLoc);
+				robot.setCurrentBuilding(building);
+			}
+
+		} catch (Exception e) {
+			logger.log(building, robot, Level.SEVERE, 2000, "Could not be added.", e);
+		}
+	}
+	
 	/**
 	 * Removes the person from a building if possible.
 	 *
@@ -1580,7 +1622,6 @@ public class BuildingManager implements Serializable {
 	public static void removePersonFromBuilding(Person person, Building building) {
 		if (building != null) {
 			try {
-
 				LifeSupport lifeSupport = building.getLifeSupport();
 
 				if (lifeSupport.containsOccupant(person)) {
@@ -1588,10 +1629,9 @@ public class BuildingManager implements Serializable {
 
 					person.setCurrentBuilding(null);
 				}
-
-
 			} catch (Exception e) {
-				logger.log(building, person, Level.SEVERE, 2000, "could not be removed", e);
+				logger.log(building, person, Level.SEVERE, 2000, 
+						"could not be removed", e);
 			}
 		} else {
 			logger.log(person, Level.SEVERE, 2000, "Building is null.");
@@ -1607,7 +1647,6 @@ public class BuildingManager implements Serializable {
 	public static void removeRobotFromBuilding(Robot robot, Building building) {
 		if (building != null) {
 			try {
-
 				RoboticStation roboticStation = building.getRoboticStation();
 
 				if (roboticStation.containsRobotOccupant(robot)) {
@@ -1615,13 +1654,11 @@ public class BuildingManager implements Serializable {
 
 					robot.setCurrentBuilding(null);
 				}
-
 			} catch (Exception e) {
 				logger.log(building, robot, Level.SEVERE, 2000,
 						   " could not be removed", e);
 			}
 		} else {
-//			throw new IllegalStateException("Building is null");
 			logger.log(robot, Level.SEVERE, 2000, "building is null.");
 		}
 	}
