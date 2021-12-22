@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -971,48 +970,48 @@ public class BuildingManager implements Serializable {
 					continue;
 				} 
 				
-				if (function == FunctionType.FARMING) {
-					if (type.toLowerCase().contains(Building.GREENHOUSE)) {
+				switch (function) {
+					case FARMING:
+						if (type.toLowerCase().contains(Building.GREENHOUSE)) {
+							validBuildings.add(bldg);
+						}
+						break;
+						
+					case MANUFACTURE:
+						if (type.equalsIgnoreCase(Building.WORKSHOP)
+								|| type.equalsIgnoreCase(Building.MANUFACTURING)
+								|| type.equalsIgnoreCase(Building.MACHINERY)) {
+							validBuildings.add(bldg);
+						}
+						break;		
+					
+					case COOKING:
+						if (type.equalsIgnoreCase(Building.LOUNGE)
+								|| type.equalsIgnoreCase(Building.LANDER_HAB)
+								|| type.equalsIgnoreCase(Building.OUTPOST_HUB)) {
+							validBuildings.add(bldg);
+						}
+						break;		
+	
+					case MEDICAL_CARE:
+						if (type.equalsIgnoreCase(Building.INFIRMARY)
+								|| type.equalsIgnoreCase(Building.MEDICAL)) {
+							validBuildings.add(bldg);
+						}
+						break;	
+						
+					case GROUND_VEHICLE_MAINTENANCE:
+						if (type.equalsIgnoreCase(Building.GARAGE)) {
+							validBuildings.add(bldg);
+						}
+						break;	
+						
+					default:
+						// if there is no specialized buildings,
+						// then add general purpose buildings like "Lander Hab"
 						validBuildings.add(bldg);
-						continue;
-					}
-				} 
-				
-				if (function == FunctionType.MANUFACTURE) {
-					if (type.equalsIgnoreCase(Building.WORKSHOP)
-							|| type.equalsIgnoreCase(Building.MANUFACTURING)
-							|| type.equalsIgnoreCase(Building.MACHINERY)) {
-						validBuildings.add(bldg);
-						continue;
-					}
-				} 
-				
-				if (function == FunctionType.COOKING) {
-					if (type.equalsIgnoreCase(Building.LOUNGE)
-						|| type.equalsIgnoreCase(Building.LANDER_HAB)
-						|| type.equalsIgnoreCase(Building.OUTPOST_HUB)) {
-						validBuildings.add(bldg);
-						continue;
-					}
-				} 
-				
-				if (function == FunctionType.MEDICAL_CARE) {
-					if (type.equalsIgnoreCase(Building.INFIRMARY)
-							|| type.toLowerCase().contains(Building.MEDICAL)) {
-						validBuildings.add(bldg);
-						continue;
-					}
-				} 
-				
-				if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
-					if (type.toLowerCase().contains(Building.GARAGE)) {
-						validBuildings.add(bldg);
-						continue;
-					}
-				} 
-				// if there is no specialized buildings,
-				// then add general purpose buildings like "Lander Hab"
-				validBuildings.add(bldg);
+						break;	
+				}
 			}
 		}
 
