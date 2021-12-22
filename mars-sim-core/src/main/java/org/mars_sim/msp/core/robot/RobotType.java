@@ -82,7 +82,7 @@ public enum RobotType {
 			return FunctionType.MANUFACTURE;
 			
 		case DELIVERYBOT:
-			return FunctionType.ROBOTIC_STATION;
+			return FunctionType.GROUND_VEHICLE_MAINTENANCE;
 			
 		case GARDENBOT:
 			return FunctionType.FARMING;

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -951,79 +952,29 @@ public class BuildingManager implements Serializable {
 			manager = s.getBuildingManager();
 		}
 		
-		FunctionType function = robot.getRobotType().getDefaultFunction();
+		final FunctionType function = robot.getRobotType().getDefaultFunction();
 
-		List<Building> functionBuildings = manager.getBuildings(function);
-		Building destination = null;
+		final List<Building> functionBuildings = manager.getBuildings(function);
 
-		// Note: if the function is robotic-station, go through the list and remove
-		// hallways since we don't want robots to stay in a hallway
-		List<Building> validBuildings = new ArrayList<>();
+		Collections.shuffle(functionBuildings);
 		for (Building bldg : functionBuildings) {
 			RoboticStation roboticStation = bldg.getRoboticStation();
 			if (roboticStation != null) {
+				Building destination = null;
 				String type = bldg.getBuildingType();
-				// Do not add hallway, tunnel, observatory
+				// Do not add robot to hallway, tunnel, or observatory
 				if (type.equalsIgnoreCase(Building.HALLWAY)
 						|| type.equalsIgnoreCase(Building.TUNNEL)
 						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 					continue;
 				} 
 				
-				switch (function) {
-					case FARMING:
-						if (type.toLowerCase().contains(Building.GREENHOUSE)) {
-							validBuildings.add(bldg);
-						}
-						break;
-						
-					case MANUFACTURE:
-						if (type.equalsIgnoreCase(Building.WORKSHOP)
-								|| type.equalsIgnoreCase(Building.MANUFACTURING)
-								|| type.equalsIgnoreCase(Building.MACHINERY)) {
-							validBuildings.add(bldg);
-						}
-						break;		
-					
-					case COOKING:
-						if (type.equalsIgnoreCase(Building.LOUNGE)
-								|| type.equalsIgnoreCase(Building.LANDER_HAB)
-								|| type.equalsIgnoreCase(Building.OUTPOST_HUB)) {
-							validBuildings.add(bldg);
-						}
-						break;		
-	
-					case MEDICAL_CARE:
-						if (type.equalsIgnoreCase(Building.INFIRMARY)
-								|| type.equalsIgnoreCase(Building.MEDICAL)) {
-							validBuildings.add(bldg);
-						}
-						break;	
-						
-					case GROUND_VEHICLE_MAINTENANCE:
-						if (type.equalsIgnoreCase(Building.GARAGE)) {
-							validBuildings.add(bldg);
-						}
-						break;	
-						
-					default:
-						// if there is no specialized buildings,
-						// then add general purpose buildings like "Lander Hab"
-						validBuildings.add(bldg);
-						break;	
+				if (bldg.hasFunction(function)) {
+					destination = bldg;
+					addRobotToBuildingRandomLocation(robot, destination);
+					break;
 				}
 			}
-		}
-
-		// Randomly pick one of the buildings
-		if (validBuildings.size() >= 1) {
-			int rand = RandomUtil.getRandomInt(validBuildings.size() - 1);
-			destination = validBuildings.get(rand);
-			addRobotToBuildingRandomLocation(robot, destination);
-		}
-
-		else {
-			findABuilding(robot, manager);
 		}
 	}
 	
@@ -1033,7 +984,7 @@ public class BuildingManager implements Serializable {
 	 * @param robot
 	 * @param manager
 	 */
-	public static void findABuilding(Robot robot, BuildingManager manager) {
+	public static void addToRandomBuilding(Robot robot, BuildingManager manager) {
 		Building destination = null;
 		List<Building> validBuildings1 = new ArrayList<>();
 		List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
