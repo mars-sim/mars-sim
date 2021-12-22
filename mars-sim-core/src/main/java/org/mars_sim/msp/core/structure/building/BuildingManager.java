@@ -909,7 +909,6 @@ public class BuildingManager implements Serializable {
 			else {
 				logger.warning(person, "No inhabitable buildings available");
 			}
-
 		}
 
 		else {
@@ -933,30 +932,30 @@ public class BuildingManager implements Serializable {
 					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
 							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
 							|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-						// functionBuildings.remove(bldg); // will cause ConcurrentModificationException
+						// do nothing
 					} else if (function == FunctionType.FARMING) {
-						if (bldg.getBuildingType().toLowerCase().contains("greenhouse")) {
+						if (bldg.getBuildingType().toLowerCase().contains(Building.GREENHOUSE)) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.MANUFACTURE) {
-						if (bldg.getBuildingType().equalsIgnoreCase("workshop")
-								|| bldg.getBuildingType().equalsIgnoreCase("manufacturing shed")
-								|| bldg.getBuildingType().equalsIgnoreCase("machinery hab")) {
+						if (bldg.getBuildingType().equalsIgnoreCase(Building.WORKSHOP)
+								|| bldg.getBuildingType().equalsIgnoreCase(Building.MANUFACTURING)
+								|| bldg.getBuildingType().equalsIgnoreCase(Building.MACHINERY)) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.COOKING) {
-						if (bldg.getBuildingType().equalsIgnoreCase("lounge")
-							|| bldg.getBuildingType().equalsIgnoreCase("lander hab")
-							|| bldg.getBuildingType().equalsIgnoreCase("outpost hub")) {
+						if (bldg.getBuildingType().equalsIgnoreCase(Building.LOUNGE)
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.LANDER_HAB)
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.OUTPOST_HUB)) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.MEDICAL_CARE) {
-						if (bldg.getBuildingType().equalsIgnoreCase("infirmary")
-								|| bldg.getBuildingType().toLowerCase().contains("medical")) {
+						if (bldg.getBuildingType().equalsIgnoreCase(Building.INFIRMARY)
+								|| bldg.getBuildingType().toLowerCase().contains(Building.MEDICAL)) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
-						if (bldg.getBuildingType().toLowerCase().contains("garage")) {
+						if (bldg.getBuildingType().toLowerCase().contains(Building.GARAGE)) {
 							validBuildings.add(bldg);
 						}
 					} else { // if there is no specialized buildings,
@@ -980,20 +979,22 @@ public class BuildingManager implements Serializable {
 					// remove hallway, tunnel, observatory
 					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
 							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
-						// stations.remove(bldg);// will cause ConcurrentModificationException
+							|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+						// do nothing
 					} else {
-						validBuildings1.add(bldg); // do nothing
+						validBuildings1.add(bldg);
 					}
 				}
 				// Randomly pick one of the buildings
-				if (validBuildings1.size() >= 1) {
+				if (!validBuildings1.isEmpty()) {
 					int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
 					destination = validBuildings1.get(rand);
 				}
+				else {
+					int rand = RandomUtil.getRandomInt(stations.size() - 1);
+					destination = stations.get(rand);
+				}
 				addPersonOrRobotToBuildingRandomLocation(robot, destination);
-				// throw new IllegalStateException("No inhabitable buildings available for " +
-				// unit.getName());
 			}
 		}
 	}

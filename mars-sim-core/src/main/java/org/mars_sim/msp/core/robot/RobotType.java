@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RobotType.java
- * @date 2021-12-05
+ * @date 2021-12-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;
@@ -15,14 +15,14 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public enum RobotType {
 
-	CHEFBOT(Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
-	CONSTRUCTIONBOT(Msg.getString("RobotType.constructionBot")), //$NON-NLS-1$
-	DELIVERYBOT(Msg.getString("RobotType.deliveryBot")), //$NON-NLS-1$ )
-	GARDENBOT(Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
-	MAKERBOT(Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
-	MEDICBOT(Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
-	REPAIRBOT(Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
-	UNKNOWN(Msg.getString("unknown")); //$NON-NLS-1$
+	CHEFBOT				(Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
+	CONSTRUCTIONBOT		(Msg.getString("RobotType.constructionBot")), //$NON-NLS-1$
+	DELIVERYBOT			(Msg.getString("RobotType.deliveryBot")), //$NON-NLS-1$ )
+	GARDENBOT			(Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
+	MAKERBOT			(Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
+	MEDICBOT			(Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
+	REPAIRBOT			(Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
+	UNKNOWN				(Msg.getString("unknown")); //$NON-NLS-1$
 
 	private String name;
 
@@ -32,7 +32,7 @@ public enum RobotType {
 	}
 
 	/**
-	 * an internationalized translation for display in user interface.
+	 * Returns the internationalized name for display in user interface.
 	 *
 	 * @return {@link String}
 	 */
@@ -40,9 +40,13 @@ public enum RobotType {
 		return this.name;
 	}
 
+	/**
+	 * Returns the display name.
+	 *
+	 * @return {@link String}
+	 */
 	public String getDisplayName() {
 		return this.name;
-		// return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 	}
 
 	public static RobotType valueOfIgnoreCase(String s) {
@@ -51,6 +55,8 @@ public enum RobotType {
 
 	/**
 	 * Gets an array of internationalized robot type in alphabetical order.
+	 * 
+	 * @return a string array
 	 */
 	public static String[] getNames() {
 		List<String> list = new ArrayList<String>();
@@ -64,7 +70,8 @@ public enum RobotType {
 	/**
 	 * What is the default Function for a Robot Type.
 	 * Not sure this is the best place for this implementation.
-	 * @return
+	 * 
+	 * @return FunctionType
 	 */
 	public FunctionType getDefaultFunction() {
 		switch (this) {
