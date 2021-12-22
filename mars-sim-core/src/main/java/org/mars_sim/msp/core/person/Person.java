@@ -241,8 +241,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Set the container unit
 		setContainerUnit(settlement);
 
-		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		// Add to a random building
+		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
 	}
@@ -296,9 +296,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * Initialize field data and class
 	 */
 	public void initialize() {
-		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
-		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		// WARNING: setAssociatedSettlement(settlement) may cause suffocation 
+		// Reloading from a saved sim
+		
+		// Add to a random building
+		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
 		// Set up the time stamp for the person
 		calculateBirthDate(earthClock);
 		// Create favorites
