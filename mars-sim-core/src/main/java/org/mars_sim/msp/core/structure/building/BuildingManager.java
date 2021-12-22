@@ -963,13 +963,10 @@ public class BuildingManager implements Serializable {
 				Building destination = null;
 				String type = bldg.getBuildingType();
 				// Do not add robot to hallway, tunnel, or observatory
-				if (type.equalsIgnoreCase(Building.HALLWAY)
+				if (!(type.equalsIgnoreCase(Building.HALLWAY)
 						|| type.equalsIgnoreCase(Building.TUNNEL)
-						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-					continue;
-				} 
-				
-				if (bldg.hasFunction(function)) {
+						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+						&& bldg.hasFunction(function)) {
 					destination = bldg;
 					addRobotToBuildingRandomLocation(robot, destination);
 					break;
