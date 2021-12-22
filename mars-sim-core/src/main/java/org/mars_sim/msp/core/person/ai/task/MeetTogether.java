@@ -166,8 +166,10 @@ implements Serializable {
             	relationship = relationshipManager.addRelationship(candidate, inviter, Relationship.COMMUNICATION_MEETING);
             }
 
-            double currentOpinion = relationship.getPersonOpinion(inviter);
-            relationship.setPersonOpinion(inviter, currentOpinion + RandomUtil.getRandomDouble(1));
+            if (relationship != null) {
+	            double currentOpinion = relationship.getPersonOpinion(inviter);
+	            relationship.setPersonOpinion(inviter, currentOpinion + RandomUtil.getRandomDouble(1));
+            }
         }
     }
     

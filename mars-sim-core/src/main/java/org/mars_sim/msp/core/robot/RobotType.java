@@ -4,7 +4,6 @@
  * @date 2021-12-05
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.robot;
 
 import java.util.ArrayList;

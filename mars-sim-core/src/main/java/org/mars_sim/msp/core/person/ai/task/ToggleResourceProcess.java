@@ -49,7 +49,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
 
-	private static final double SMALL_AMOUNT = 0.0000001;
+	private static final double SMALL_AMOUNT = 0.0001;
 	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
@@ -75,7 +75,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public ToggleResourceProcess(Person person, Building resourceProcessBuilding, ResourceProcess process) {
-        super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 5D + RandomUtil.getRandomInt(5));
+        super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 10D);
         this.resourceProcessBuilding = resourceProcessBuilding;
         this.process = process;
 
@@ -271,8 +271,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = 0;
 
-		if (inputValue > SMALL_AMOUNT)
-			diff = (outputValue - inputValue) / Math.max(inputValue, 0.001);
+		if (inputValue < SMALL_AMOUNT) {
+			diff = outputValue;
+		}
+		else
+			diff = (outputValue - inputValue) / inputValue;
 
 		// Subtract power required per millisol.
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;

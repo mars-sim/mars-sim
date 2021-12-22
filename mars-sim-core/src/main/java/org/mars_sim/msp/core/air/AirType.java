@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.air;
 
 public enum AirType {
-	TIER_0_101kPa,
-	TIER_1_60kPa,
-	TIER_2_34kPa,
-	TIER_3_26kPa,
-	TIER_4_17kPa
+	TIER_0, // 101kPa
+	TIER_1, // 60kPa
+	TIER_2, // 34kPa
+	TIER_3, // 26kPa
+	TIER_4 // 17kPa
 }

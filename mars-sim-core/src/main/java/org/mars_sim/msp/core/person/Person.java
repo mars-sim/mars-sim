@@ -1334,7 +1334,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
             || des.contains("dream")
             || des.contains("listen")
             || des.contains("invit")
-            || des.contains("meet")
             || des.contains("teach"));
     	
 	}
