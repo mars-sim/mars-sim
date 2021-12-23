@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RequestMedicalTreatmentMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the RequestMedicalTreatment task.
@@ -60,17 +61,17 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
         if (person.isOutside())
         	return 0;
         
-        if (person.getPhysicalCondition().getProblems().size() == 0)
+        if (person.getPhysicalCondition().getProblems().isEmpty())
         	return 0;
         
         // Get person's medical skill level.
-//        int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+        int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
         // Get the best medical skill level of local people.
         int bestMedicalSkill = getBestLocalMedicalSkill(person);
 
         // Determine all the person's health problems that need treatment.
-        List<HealthProblem> problemsNeedingTreatment = new ArrayList<HealthProblem>();
+        List<HealthProblem> problemsNeedingTreatment = new ArrayList<>();
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
         while (i.hasNext()) {
             HealthProblem problem = i.next();
@@ -86,16 +87,15 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
                         canTreat = true;
                     }
 
-//                    // Check if person can treat the health problem himself/herself.
-//                    boolean selfTreat = false;
-//                    if (treatment.getSelfAdminister()) {
-//                        if (personMedicalSkill >= treatment.getSkill()) {
-//                            result += VALUE;
-//                            selfTreat = true;
-//                        }
-//                    }
+                    // Check if person can treat the health problem himself/herself.
+                    boolean selfTreat = false;
+                    if (treatment.getSelfAdminister()
+                        && personMedicalSkill >= treatment.getSkill()) {
+                    	result += VALUE;
+                    	selfTreat = true;
+                    }
 
-                    if (canTreat) {// && !selfTreat) {
+                    if (canTreat && !selfTreat) {
                         problemsNeedingTreatment.add(problem);
                     }
                 }
@@ -148,7 +148,7 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
      */
     private List<MedicalAid> getAvailableMedicalAids(Person person) {
 
-        List<MedicalAid> result = new ArrayList<MedicalAid>();
+        List<MedicalAid> result = new ArrayList<>();
 
         if (person.isInSettlement()) {
             result = getAvailableMedicalAidsAtSettlement(person);
@@ -167,7 +167,7 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
      */
     private List<MedicalAid> getAvailableMedicalAidsAtSettlement(Person person) {
 
-        List<MedicalAid> result = new ArrayList<MedicalAid>();
+        List<MedicalAid> result = new ArrayList<>();
 
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
@@ -199,9 +199,9 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
      */
     private List<MedicalAid> getAvailableMedicalAidsInVehicle(Person person) {
 
-        List<MedicalAid> result = new ArrayList<MedicalAid>();
+        List<MedicalAid> result = new ArrayList<>();
 
-        if (person.getVehicle() instanceof Rover) {
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();

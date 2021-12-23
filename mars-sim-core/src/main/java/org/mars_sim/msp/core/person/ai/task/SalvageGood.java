@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
@@ -72,7 +71,7 @@ implements Serializable {
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
 		if (manufactureBuilding != null) {
-			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
+			workshop = manufactureBuilding.getManufacture();
 
 			// Walk to manufacturing workshop.
 			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
@@ -175,7 +174,7 @@ implements Serializable {
 		SkillManager skillManager = person.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
@@ -204,12 +203,12 @@ implements Serializable {
 	private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList,
 			int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.requiresSalvagingWork(skill)) {
 				result.add(building);
 			}
@@ -227,7 +226,7 @@ implements Serializable {
 	private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList,
 			int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -257,7 +256,7 @@ implements Serializable {
 
 		boolean result = false;
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		Iterator<SalvageProcess> i = manufacturingFunction.getSalvageProcesses().iterator();
 		while (i.hasNext()) {
 			SalvageProcess process = i.next();
@@ -280,13 +279,13 @@ implements Serializable {
 	private static List<Building> getHighestManufacturingTechLevelBuildings(
 			List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = manufacturingFunction.getTechLevel();
 			}
@@ -295,7 +294,7 @@ implements Serializable {
 		Iterator<Building> j = buildingList.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -395,7 +394,7 @@ implements Serializable {
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();
 
-			Map<SalvageProcessInfo, Double> processValues = new HashMap<SalvageProcessInfo, Double>();
+			Map<SalvageProcessInfo, Double> processValues = new HashMap<>();
 			Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
 					techLevel, skillLevel).iterator();
 			while (i.hasNext()) {

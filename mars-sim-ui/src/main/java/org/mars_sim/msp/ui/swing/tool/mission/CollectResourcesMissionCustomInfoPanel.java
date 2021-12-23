@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -58,8 +60,9 @@ implements UnitListener {
 
 		// Create content panel.
 		WebPanel collectionPanel = new WebPanel(new SpringLayout());
+		collectionPanel.setBorder(BorderFactory.createTitledBorder("Resource Collected - Aboard Vehicle"));
 		add(collectionPanel, BorderLayout.CENTER);
-
+				
 		amountLabels = new WebLabel[resourceIds.length];
 		
 		for (int i=0; i<resourceIds.length; i++) {
@@ -80,13 +83,14 @@ implements UnitListener {
 		SpringUtilities.makeCompactGrid(collectionPanel,
 				resourceIds.length, 2, // rows, cols
 				100, 5, // initX, initY
-				30, 4); // xPad, yPad
+				20, 4); // xPad, yPad
 	}
 
 
 	@Override
 	public void updateMission(Mission mission) {
-		if (mission instanceof CollectResourcesMission) {
+		if (mission.getMissionType() == MissionType.COLLECT_ICE
+				|| mission.getMissionType() == MissionType.COLLECT_REGOLITH) {
 			// Remove as unit listener to any existing rovers.
 			if (missionRover != null) {
 				missionRover.removeUnitListener(this);

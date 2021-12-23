@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * ClockUtils.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.core.environment.OrbitInfo;
 /**
  * The ClockUtils class stores methods for clock related computation
  */
-
 public class ClockUtils implements Serializable {
 
 	private static final long serialVersionUID = 65465354252L;

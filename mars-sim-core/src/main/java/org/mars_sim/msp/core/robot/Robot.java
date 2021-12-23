@@ -182,7 +182,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Set the container unit
 //		setContainerUnit(settlement);
 		// Put robot in proper building.
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		BuildingManager.addRobotToRandomBuilding(this, associatedSettlementID);
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);

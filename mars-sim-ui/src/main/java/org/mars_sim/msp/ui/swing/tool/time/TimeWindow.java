@@ -586,12 +586,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// logger.info("TimeWindow : calling pauseChange()");
-		if (!isPaused) {
-			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-				// update the slow labels
-				updateDateLabels();
-			}
+		if (!isPaused && desktop.isToolWindowOpen(TimeWindow.NAME)) {
+			// update the slow labels
+			updateDateLabels();
+
 		}
 	}
 

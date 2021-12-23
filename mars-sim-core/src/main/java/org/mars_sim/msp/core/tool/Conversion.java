@@ -1,31 +1,23 @@
 /**
  * Mars Simulation Project
  * Conversion.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.tool;
 
 public class Conversion {
 
 	public Conversion() {
-
 	}
+	
+		// Convert nameStr down into an array
+		// Create new String at each whitespace
 
-//	public void capitalize(String nameStr) {
-//
-//		// convert nameStr down into an array
-//		// create new String at each whitespace
-//
-//		// at each word, do
-//
-//		String word = null;
-//		word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
-//
-//		// convert the array back to one single String
-//
-//	}
+		// At each word, 
+		// Do this: String word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase()
+
+		// Convert the array back to one single String
 
 	/**
 	 * Checks if the initial of the string is a vowel
@@ -64,16 +56,14 @@ public class Conversion {
 			return titleCase.toString().replaceAll("eVA", "EVA");
 		} else
 			return null;
-//		
-//		StringBuilder s = new StringBuilder();
-//		if (!input.substring(0, 3).equals("EVA")) {
-//			s.append(input.substring(0, 1).toLowerCase());
-//			s.append(input.substring(1, input.length()));
-//		}
-//
-//		return s.toString();
 	}
 
+	/**
+	 * Capitalizes the first letter of each word in the input phase
+	 * 
+	 * @param input The input phase
+	 * @return The modified phase
+	 */
 	public static String capitalize0(String input) {
 	    StringBuilder titleCase = new StringBuilder();
 	    boolean nextTitleCase = true;
@@ -160,7 +150,13 @@ public class Conversion {
 			return null;
 	}
 
-	
+	/**
+	 * Is this character an integer ?
+	 * 
+	 * @param s
+	 * @param radix
+	 * @return
+	 */
 	public static boolean isInteger(String s, int radix) {
 	    if(s.isEmpty()) return false;
 	    for(int i = 0; i < s.length(); i++) {
@@ -204,6 +200,18 @@ public class Conversion {
 		return true;
 	}
 
+	/**
+	 * Maps a number to an alphabet
+	 *
+	 * @param a number
+	 * @return a String
+	 */
+	public static String getCharForNumber(int i) {
+		// Do note delete. Will use it
+		// NOTE: i must be > 1, if i = 0, return null
+		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
+	}
+	
     public static void main(String[] args) {
 			new Conversion();
 			
@@ -211,6 +219,4 @@ public class Conversion {
 			String result = capitalize(testString);
 			System.out.println(result);
     }
-    
-	
 }

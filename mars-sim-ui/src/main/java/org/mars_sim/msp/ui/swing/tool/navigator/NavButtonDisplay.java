@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NavButtonDisplay.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -17,12 +17,11 @@ import java.awt.event.MouseListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-
-import com.alee.extended.WebComponent;
-import com.alee.managers.style.StyleId;
 
 /** 
  * The NavButtonDisplay class is a component that displays and
@@ -31,7 +30,7 @@ import com.alee.managers.style.StyleId;
  */
 @SuppressWarnings("serial")
 public class NavButtonDisplay
-extends WebComponent
+extends JComponent
 implements MouseListener {
 
 	/** default logger. */
@@ -86,7 +85,9 @@ implements MouseListener {
 		lightUpButtons[6] = ImageLoader.getImage(Msg.getString("img.nav.plus.south")); //$NON-NLS-1$
 		lightUpButtons[7] = ImageLoader.getImage(Msg.getString("img.nav.plus.east")); //$NON-NLS-1$
 		lightUpButtons[8] = ImageLoader.getImage(Msg.getString("img.nav.plus.west")); //$NON-NLS-1$
-
+		
+		// NOTE: Replace MediaTracker with faster method
+		// Use BufferedImage image = ImageIO.read() ? 
 		MediaTracker mtrack = new MediaTracker(this);
 
 		mtrack.addImage(navMain, 0);
@@ -248,23 +249,5 @@ implements MouseListener {
 			}
 		}
 		return -1;
-	}
-
-	@Override
-	public StyleId getDefaultStyleId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateUI() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getUIClassID() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

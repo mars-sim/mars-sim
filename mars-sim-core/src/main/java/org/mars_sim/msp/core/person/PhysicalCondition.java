@@ -595,6 +595,7 @@ public class PhysicalCondition implements Serializable {
 			// 100 kJ is the lowest possible energy level
 			kJoules = 100D;
 		}
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 
 	/**
@@ -636,7 +637,7 @@ public class PhysicalCondition implements Serializable {
 		if (kJoules > personalMaxEnergy * 1.5) {
 			kJoules = personalMaxEnergy * 1.5;
 		}
-
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 
 	/**
@@ -658,9 +659,10 @@ public class PhysicalCondition implements Serializable {
 			p = 1D;
 		else if (p < 0)
 			p = 0;
-		if (performance != p)
+		if (performance != p) {
 			performance = p;
-		// person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+		}
 	}
 
 	/**
@@ -675,14 +677,14 @@ public class PhysicalCondition implements Serializable {
 			f = 0;
 
 		fatigue = f;
-		// person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 	}
 
 	public void setThirst(double t) {
 		if (t > 4000)
 			t = 4000;
 		thirst = t;
-		// person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 
 	/**
@@ -900,7 +902,7 @@ public class PhysicalCondition implements Serializable {
 				stress = 0D;
 			else if (Double.isNaN(stress))
 				stress = 0D;
-			// person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+			person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
 		}
 	}
 	
@@ -911,6 +913,12 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void addStress(double deltaStress) {
 		stress += deltaStress;
+		if (stress > 100D)
+			stress = 100D;
+		else if (stress < 0D)
+			stress = 0D;
+		else if (Double.isNaN(stress))
+			stress = 0D;
 	}
 
 	/**

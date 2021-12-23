@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,7 +38,6 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -867,13 +867,13 @@ public class BuildingManager implements Serializable {
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			addPersonOrRobotToBuildingRandomLocation(p, building);
+			addPersonToBuildingRandomLocation(p, building);
 		}
 
 		else {
 			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
-			addToRandomBuilding(p, settlementID);
+			addPersonToRandomBuilding(p, settlementID);
 		}
 	}
 
@@ -885,117 +885,127 @@ public class BuildingManager implements Serializable {
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
 	public static void addToRandomBuilding(Unit unit, int settlementID) {
-		Person person = null;
-		Robot robot = null;
-		Settlement s = unitManager.getSettlementByID(settlementID);
-		BuildingManager manager = s.getBuildingManager();
 		if (unit.getUnitType() == UnitType.PERSON) {
-			person = (Person) unit;
+			addPersonToRandomBuilding((Person) unit, settlementID);
+		}
+		
+		else {
+			addRobotToRandomBuilding((Robot) unit, settlementID);
+		}
+	}
+	
+	/**
+	 * Adds a person to a random inhabitable building within a settlement.
+	 *
+	 * @param unit       the person to add.
+	 * @param settlementID the settlement to find a building.
+	 * @throws BuildingException if person cannot be added to any building.
+	 */
+	public static void addPersonToRandomBuilding(Person person, int settlementID) {
+		BuildingManager manager = null;
+		Settlement s = unitManager.getSettlementByID(settlementID);
+		if (s == null) {
+			logger.warning(person, "Invalid settlement id.");
+			return;
+		}
+		else {
+			manager = s.getBuildingManager();
+		}
+		
+		List<Building> list = manager.getBuildingsWithLifeSupport();
+		
+		list = list.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+				.collect(Collectors.toList());
 
-			List<Building> list = manager.getBuildingsWithLifeSupport()
-					.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-					.collect(Collectors.toList());
+		if (list.isEmpty()) {
+			logger.warning(person, "No inhabitable buildings available (except the astronomy observator if available.");
+			return;
+		}
 
-			if (list.size() == 0)
-				return;
+		Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
 
-			Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
-
-			if (building != null) {
-				// Add the person to a random building loc
-				addPersonOrRobotToBuildingRandomLocation(person, building);
-			}
-
-			else {
-				logger.warning(person, "No inhabitable buildings available");
-			}
-
+		if (building != null) {
+			// Add the person to a building loc
+			addPersonToBuildingRandomLocation(person, building);
 		}
 
 		else {
-			robot = (Robot) unit;
-			// find robot type
-			RobotType robotType = robot.getRobotType();
-			FunctionType function = robotType.getDefaultFunction();
+			logger.warning(person, "No inhabitable buildings available.");
+		}
+	}
 
-			List<Building> functionBuildings = manager.getBuildings(function);
+	/**
+	 * Adds a robot to a random inhabitable building within a settlement.
+	 *
+	 * @param unit       the robot to add.
+	 * @param settlementID the settlement to find a building.
+	 * @throws BuildingException if robot cannot be added to any building.
+	 */
+	public static void addRobotToRandomBuilding(Robot robot, int settlementID) {
+		BuildingManager manager = null;
+		Settlement s = unitManager.getSettlementByID(settlementID);
+		if (s == null) {
+			logger.warning(robot, "Invalid settlement id.");
+			return;
+		}
+		else {
+			manager = s.getBuildingManager();
+		}
+		
+		final FunctionType function = robot.getRobotType().getDefaultFunction();
 
-			Building destination = null;
+		final List<Building> functionBuildings = manager.getBuildings(function);
 
-			// Note: if the function is robotic-station, go through the list and remove
-			// hallways
-			// since we don't want robots to stay in a hallway
-			List<Building> validBuildings = new ArrayList<>();
-			for (Building bldg : functionBuildings) {
-				RoboticStation roboticStation = bldg.getRoboticStation();
-				// remove hallway, tunnel, observatory
-				if (roboticStation != null) {
-					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-							|| bldg.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-						// functionBuildings.remove(bldg); // will cause ConcurrentModificationException
-					} else if (function == FunctionType.FARMING) {
-						if (bldg.getBuildingType().toLowerCase().contains("greenhouse")) {
-							validBuildings.add(bldg);
-						}
-					} else if (function == FunctionType.MANUFACTURE) {
-						if (bldg.getBuildingType().equalsIgnoreCase("workshop")
-								|| bldg.getBuildingType().equalsIgnoreCase("manufacturing shed")
-								|| bldg.getBuildingType().equalsIgnoreCase("machinery hab")) {
-							validBuildings.add(bldg);
-						}
-					} else if (function == FunctionType.COOKING) {
-						if (bldg.getBuildingType().equalsIgnoreCase("lounge")
-							|| bldg.getBuildingType().equalsIgnoreCase("lander hab")
-							|| bldg.getBuildingType().equalsIgnoreCase("outpost hub")) {
-							validBuildings.add(bldg);
-						}
-					} else if (function == FunctionType.MEDICAL_CARE) {
-						if (bldg.getBuildingType().equalsIgnoreCase("infirmary")
-								|| bldg.getBuildingType().toLowerCase().contains("medical")) {
-							validBuildings.add(bldg);
-						}
-					} else if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
-						if (bldg.getBuildingType().toLowerCase().contains("garage")) {
-							validBuildings.add(bldg);
-						}
-					} else { // if there is no specialized buildings,
-								// then add general purpose buildings like "Lander Hab"
-						validBuildings.add(bldg);
-					}
+		Collections.shuffle(functionBuildings);
+		for (Building bldg : functionBuildings) {
+			RoboticStation roboticStation = bldg.getRoboticStation();
+			if (roboticStation != null) {
+				Building destination = null;
+				String type = bldg.getBuildingType();
+				// Do not add robot to hallway, tunnel, or observatory
+				if (!(type.equalsIgnoreCase(Building.HALLWAY)
+						|| type.equalsIgnoreCase(Building.TUNNEL)
+						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+						&& bldg.hasFunction(function)) {
+					destination = bldg;
+					addRobotToBuildingRandomLocation(robot, destination);
+					break;
 				}
-			}
-
-			// Randomly pick one of the buildings
-			if (validBuildings.size() >= 1) {
-				int rand = RandomUtil.getRandomInt(validBuildings.size() - 1);
-				destination = validBuildings.get(rand);
-				addPersonOrRobotToBuildingRandomLocation(robot, destination);
-			}
-
-			else {
-				List<Building> validBuildings1 = new ArrayList<>();
-				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
-				for (Building bldg : stations) {
-					// remove hallway, tunnel, observatory
-					if (bldg.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-							|| bldg.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
-						// stations.remove(bldg);// will cause ConcurrentModificationException
-					} else {
-						validBuildings1.add(bldg); // do nothing
-					}
-				}
-				// Randomly pick one of the buildings
-				if (validBuildings1.size() >= 1) {
-					int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
-					destination = validBuildings1.get(rand);
-				}
-				addPersonOrRobotToBuildingRandomLocation(robot, destination);
-				// throw new IllegalStateException("No inhabitable buildings available for " +
-				// unit.getName());
 			}
 		}
+	}
+	
+	/**
+	 * Finds a building to add the robot.
+	 * 
+	 * @param robot
+	 * @param manager
+	 */
+	public static void addToRandomBuilding(Robot robot, BuildingManager manager) {
+		Building destination = null;
+		List<Building> validBuildings1 = new ArrayList<>();
+		List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
+		for (Building bldg : stations) {
+			String type = bldg.getBuildingType();
+			// Do not add hallway, tunnel, observatory
+			if (type.equalsIgnoreCase(Building.HALLWAY)
+					|| type.equalsIgnoreCase(Building.TUNNEL)
+					|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+				// do nothing
+			} else {
+				validBuildings1.add(bldg);
+			}
+		}
+		// Randomly pick one of the buildings
+		if (!validBuildings1.isEmpty()) {
+			int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
+			destination = validBuildings1.get(rand);
+		}
+		else {
+			int rand = RandomUtil.getRandomInt(stations.size() - 1);
+			destination = stations.get(rand);
+		}
+		addRobotToBuildingRandomLocation(robot, destination);
 	}
 
 	/**
@@ -1218,16 +1228,6 @@ public class BuildingManager implements Serializable {
 			int size = list.size();
 			int rand = RandomUtil.getRandomInt(size-1);
 			return list.get(rand);
-//			for (Building garageBuilding : list) {
-//				try {
-//					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-//					if (garage != null) {
-//						return garageBuilding;
-//					}
-//				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getAGarage(settlement) : " + e.getMessage());
-//				}
-//			}
 		}
 		return null;
 	}
@@ -1491,48 +1491,75 @@ public class BuildingManager implements Serializable {
 
 
 	/**
-	 * Adds the person to the building at a random location if possible.
+	 * Adds a unit to the building at a random location if possible.
 	 *
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
+	 * @param unit   the unit to add.
+	 * @param building the building to add the unit to.
 	 */
 	public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building) {
 		if (building != null) {
-			try {
-				// Add person to random location within building.
-				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+			if (unit.getUnitType() == UnitType.PERSON) {
+				addPersonToBuildingRandomLocation((Person) unit, building);
+			}
 
-				if (unit.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) unit;
-					LifeSupport lifeSupport = building.getLifeSupport();
-
-					if (!lifeSupport.containsOccupant(person)) {
-						lifeSupport.addPerson(person);
-
-						person.setPosition(settlementLoc);
-						person.setCurrentBuilding(building);
-					}
-				}
-
-				else {
-					Robot robot = (Robot) unit;
-					RoboticStation roboticStation = building.getRoboticStation();
-
-					if (!roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-
-						robot.setPosition(settlementLoc);
-						robot.setCurrentBuilding(building);
-					}
-				}
-			} catch (Exception e) {
-				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
+			else {
+				addRobotToBuildingRandomLocation((Robot) unit, building);
 			}
 		} else {
 			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
 		}
 	}
+	
+	/**
+	 * Adds the person to the building at a random location if possible.
+	 *
+	 * @param person   the person to add.
+	 * @param building the building to add the person to.
+	 */
+	public static void addPersonToBuildingRandomLocation(Person person, Building building) {
+		try {
+			// Add person to random location within building.
+			LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
+			LifeSupport lifeSupport = building.getLifeSupport();
+
+			if (!lifeSupport.containsOccupant(person)) {
+				lifeSupport.addPerson(person);
+
+				person.setPosition(settlementLoc);
+				person.setCurrentBuilding(building);
+			}
+
+		} catch (Exception e) {
+			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
+		}
+	}
+
+	/**
+	 * Adds the robot to the building at a random location if possible.
+	 *
+	 * @param robot   the robot to add.
+	 * @param building the building to add the robot to.
+	 */
+	public static void addRobotToBuildingRandomLocation(Robot robot, Building building) {
+		try {
+			// Add robot to random location within building.
+			LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+
+			RoboticStation roboticStation = building.getRoboticStation();
+
+			if (!roboticStation.containsRobotOccupant(robot)) {
+				roboticStation.addRobot(robot);
+
+				robot.setPosition(settlementLoc);
+				robot.setCurrentBuilding(building);
+			}
+
+		} catch (Exception e) {
+			logger.log(building, robot, Level.SEVERE, 2000, "Could not be added.", e);
+		}
+	}
+	
 	/**
 	 * Removes the person from a building if possible.
 	 *
@@ -1542,7 +1569,6 @@ public class BuildingManager implements Serializable {
 	public static void removePersonFromBuilding(Person person, Building building) {
 		if (building != null) {
 			try {
-
 				LifeSupport lifeSupport = building.getLifeSupport();
 
 				if (lifeSupport.containsOccupant(person)) {
@@ -1550,10 +1576,9 @@ public class BuildingManager implements Serializable {
 
 					person.setCurrentBuilding(null);
 				}
-
-
 			} catch (Exception e) {
-				logger.log(building, person, Level.SEVERE, 2000, "could not be removed", e);
+				logger.log(building, person, Level.SEVERE, 2000, 
+						"could not be removed", e);
 			}
 		} else {
 			logger.log(person, Level.SEVERE, 2000, "Building is null.");
@@ -1569,7 +1594,6 @@ public class BuildingManager implements Serializable {
 	public static void removeRobotFromBuilding(Robot robot, Building building) {
 		if (building != null) {
 			try {
-
 				RoboticStation roboticStation = building.getRoboticStation();
 
 				if (roboticStation.containsRobotOccupant(robot)) {
@@ -1577,13 +1601,11 @@ public class BuildingManager implements Serializable {
 
 					robot.setCurrentBuilding(null);
 				}
-
 			} catch (Exception e) {
 				logger.log(building, robot, Level.SEVERE, 2000,
 						   " could not be removed", e);
 			}
 		} else {
-//			throw new IllegalStateException("Building is null");
 			logger.log(robot, Level.SEVERE, 2000, "building is null.");
 		}
 	}

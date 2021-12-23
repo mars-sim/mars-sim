@@ -410,82 +410,83 @@ public class RelationshipManager implements Serializable {
 
 		// Go through each person in local group.
 		Iterator<Person> i = localGroup.iterator();
-//		int count2 = 0;
 		while (i.hasNext()) {
 			Person localPerson = i.next();
-			double localPersonStress = localPerson.getPhysicalCondition().getStress();
-
-			// Check if new relationship.
-			if (!hasRelationship(person, localPerson)) {
-				addRelationship(person, localPerson, Relationship.EXISTING_RELATIONSHIP);
-//				if (logger.isLoggable(Level.FINEST)) {
-					logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
-//				}
-			}
-
-			// Determine probability of relationship change per millisol.
-			double changeProbability = BASE_RELATIONSHIP_CHANGE_PROBABILITY * time;
-			double stressProbModifier = 1D + ((personStress + localPersonStress) / 100D);
-			if (RandomUtil.lessThanRandPercent(changeProbability * stressProbModifier)) {
-
-				// Randomly determine change amount (negative or positive)
-				double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
-				if (RandomUtil.lessThanRandPercent(50))
-					changeAmount = 0 - changeAmount;
-
-				// Modify based on difference in other person's opinion.
-				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person)
-						- getOpinionOfPerson(person, localPerson)) / 100D;
-				otherOpinionModifier *= BASE_OPINION_MODIFIER * time;
-				changeAmount += RandomUtil.getRandomDouble(otherOpinionModifier);
-
-				// Modify based on the conversation attribute of other person.
-				double conversation = localPerson.getNaturalAttributeManager()
-						.getAttribute(NaturalAttributeType.CONVERSATION);
-				double conversationModifier = (conversation - 50D) / 50D;
-				conversationModifier *= BASE_CONVERSATION_MODIFIER * time;
-				changeAmount += RandomUtil.getRandomDouble(conversationModifier);
-
-				// Modify based on attractiveness attribute if people are of opposite genders.
-				// Note: We may add sexual orientation later that will add further complexity to
-				// this.
-				double attractiveness = localPerson.getNaturalAttributeManager()
-						.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
-				double attractivenessModifier = (attractiveness - 50D) / 50D;
-				attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
-				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
-				if (oppositeGenders)
-					RandomUtil.getRandomDouble(changeAmount += attractivenessModifier);
-
-				// Modify based on same-gender bonding.
-				double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
-				if (!oppositeGenders)
-					RandomUtil.getRandomDouble(changeAmount += genderBondingModifier);
-
-				// Modify based on personality differences.
-				MBTIPersonality personPersonality = person.getMind().getMBTI();
-				MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
-				double personalityDiffModifier = (2D
-						- (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
-				personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
-				changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
-
-				// Modify based on settlers being trained to get along with each other.
-				double settlerModifier = SETTLER_MODIFIER * time;
-				changeAmount += RandomUtil.getRandomDouble(settlerModifier);
-
-				// Modify magnitude based on the collective stress of the two people.
-				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
-				changeAmount *= stressChangeModifier;
-
-				// Change the person's opinion of the other person.
-				Relationship relationship = getRelationship(person, localPerson);
-				if (relationship != null)
-					relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
-//				if (logger.isLoggable(Level.FINEST)) {
-					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
-							+ changeAmount);
-//				}
+			if (!localPerson.equals(person)) {
+				double localPersonStress = localPerson.getPhysicalCondition().getStress();
+	
+				// Check if new relationship.
+				if (!hasRelationship(person, localPerson)) {
+					addRelationship(person, localPerson, Relationship.EXISTING_RELATIONSHIP);
+	//				if (logger.isLoggable(Level.FINEST)) {
+						logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
+	//				}
+				}
+	
+				// Determine probability of relationship change per millisol.
+				double changeProbability = BASE_RELATIONSHIP_CHANGE_PROBABILITY * time;
+				double stressProbModifier = 1D + ((personStress + localPersonStress) / 100D);
+				if (RandomUtil.lessThanRandPercent(changeProbability * stressProbModifier)) {
+	
+					// Randomly determine change amount (negative or positive)
+					double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
+					if (RandomUtil.lessThanRandPercent(50))
+						changeAmount = 0 - changeAmount;
+	
+					// Modify based on difference in other person's opinion.
+					double otherOpinionModifier = (getOpinionOfPerson(localPerson, person)
+							- getOpinionOfPerson(person, localPerson)) / 100D;
+					otherOpinionModifier *= BASE_OPINION_MODIFIER * time;
+					changeAmount += RandomUtil.getRandomDouble(otherOpinionModifier);
+	
+					// Modify based on the conversation attribute of other person.
+					double conversation = localPerson.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.CONVERSATION);
+					double conversationModifier = (conversation - 50D) / 50D;
+					conversationModifier *= BASE_CONVERSATION_MODIFIER * time;
+					changeAmount += RandomUtil.getRandomDouble(conversationModifier);
+	
+					// Modify based on attractiveness attribute if people are of opposite genders.
+					// Note: We may add sexual orientation later that will add further complexity to
+					// this.
+					double attractiveness = localPerson.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
+					double attractivenessModifier = (attractiveness - 50D) / 50D;
+					attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
+					boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
+					if (oppositeGenders)
+						RandomUtil.getRandomDouble(changeAmount += attractivenessModifier);
+	
+					// Modify based on same-gender bonding.
+					double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
+					if (!oppositeGenders)
+						RandomUtil.getRandomDouble(changeAmount += genderBondingModifier);
+	
+					// Modify based on personality differences.
+					MBTIPersonality personPersonality = person.getMind().getMBTI();
+					MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
+					double personalityDiffModifier = (2D
+							- (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+					personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
+					changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
+	
+					// Modify based on settlers being trained to get along with each other.
+					double settlerModifier = SETTLER_MODIFIER * time;
+					changeAmount += RandomUtil.getRandomDouble(settlerModifier);
+	
+					// Modify magnitude based on the collective stress of the two people.
+					double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
+					changeAmount *= stressChangeModifier;
+	
+					// Change the person's opinion of the other person.
+					Relationship relationship = getRelationship(person, localPerson);
+					if (relationship != null)
+						relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
+	//				if (logger.isLoggable(Level.FINEST)) {
+						logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
+								+ changeAmount);
+	//				}
+				}
 			}
 		}
 //		count2++;
@@ -502,9 +503,13 @@ public class RelationshipManager implements Serializable {
 		double stressModifier = 0D;
 
 		Iterator<Person> i = person.getLocalGroup().iterator();
-		while (i.hasNext())
-			stressModifier -= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
-
+		while (i.hasNext()) {
+			Person p = i.next();
+			if (!p.equals(person)) {
+				stressModifier -= ((getOpinionOfPerson(person, p) - 50D) / 50D);
+			}
+		}
+		
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
 		person.getPhysicalCondition().addStress(stressModifier);
 	}

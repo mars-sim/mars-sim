@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * Mining.java
- * @date 2021-10-20
+ * @date 2021-12-21
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
@@ -16,6 +15,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -198,10 +199,8 @@ public class Mining extends RoverMission
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-
-			if (vehicle instanceof LightUtilityVehicle) {
+			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				boolean usable = !vehicle.isReserved();
-
                 usable = vehicle.isVehicleReady();
 
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
@@ -411,7 +410,7 @@ public class Mining extends RoverMission
 				Iterator<MissionMember> i = getMembers().iterator();
 				while (i.hasNext()) {
 					MissionMember tempMember = i.next();
-					if (member instanceof Person) {
+					if (member.getUnitType() == UnitType.PERSON) {
 						Person tempPerson = (Person) tempMember;
 
 						Task task = tempPerson.getMind().getTaskManager().getTask();
@@ -427,20 +426,16 @@ public class Mining extends RoverMission
 		}
 
 		if (!getPhaseEnded()) {
-
 			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(75D)) {
+			if (RandomUtil.lessThanRandPercent(75D)
 				// If mining is still needed at site, assign tasks.
-				if (!endMiningSite && !timeExpired) {
-					// If person can collect minerals the site, start that task.
-					if (canCollectExcavatedMinerals(member)) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							AmountResource mineralToCollect = getMineralToCollect(person);
-							assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
-						}
-					}
-				}
+				&& !endMiningSite && !timeExpired
+				// If person can collect minerals the site, start that task.
+				&& canCollectExcavatedMinerals(member)
+				&& member.getUnitType() == UnitType.PERSON) {
+					Person person = (Person) member;
+					AmountResource mineralToCollect = getMineralToCollect(person);
+					assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
 			}
 		} else {
 			// Mark site as mined.
@@ -511,7 +506,7 @@ public class Mining extends RoverMission
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			if (member instanceof Person) {
+			if (member.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) member;
 
 				Task task = person.getMind().getTaskManager().getTask();
@@ -669,8 +664,7 @@ public class Mining extends RoverMission
 	 */
 	private static double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
 		double tripTimeTravellingLimit = tripTimeLimit - MINING_SITE_TIME;
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
+		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
@@ -706,8 +700,7 @@ public class Mining extends RoverMission
 		Iterator<Vehicle> i = getStartingSettlement().getParkedVehicles().iterator();
 		while (i.hasNext() && (result == null)) {
 			Vehicle vehicle = i.next();
-
-			if (vehicle instanceof LightUtilityVehicle) {
+			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
 				if ((luvTemp.haveStatusType(StatusType.PARKED) || luvTemp.haveStatusType(StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
@@ -795,7 +788,7 @@ public class Mining extends RoverMission
 	@Override
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance); // new HashMap<>();
+		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingMiningSiteTime();

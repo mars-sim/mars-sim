@@ -64,13 +64,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private AreothermalMap areothermalMap;
 
 	/** The locations that have been explored and/or mined. */
-	private volatile List<ExploredLocation> exploredLocations;
+	private List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
-	private volatile Map<Coordinates, Double> opticalDepthMap;
+	private Map<Coordinates, Double> opticalDepthMap;
 	/** The most recent value of solar irradiance by Coordinate. */
-	private volatile Map<Coordinates, Double> currentIrradiance;
+	private Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
-	private volatile Map<Coordinates, Double> irradianceCache;
+	private Map<Coordinates, Double> irradianceCache;
 
 	private MarsClock currentTime;
 
@@ -222,7 +222,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// irradiance in Fig 2.8.
 
 		// Add randomness to optical depth
-		tau = tau + RandomUtil.getRandomDouble(.03) - RandomUtil.getRandomDouble(.03);
+		tau = tau + RandomUtil.getRandomDouble(-.03, .03);
 		// Notes:
 		// (1) during relatively periods of clear sky, typical values for optical depth
 		// were between 0.2 and 0.5
@@ -670,7 +670,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				// If not, mark as unreserved.
 				boolean goodMission = false;
 
-				for(Mission mission : missionManager.getMissions()) {
+				for (Mission mission : missionManager.getMissions()) {
 					if (mission.getMissionType() == MissionType.MINING) {
 						if (site.equals(((Mining) mission).getMiningSite())) {
 							goodMission = true;

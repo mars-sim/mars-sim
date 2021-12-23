@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarageMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
+import org.mars_sim.msp.core.robot.RobotType;
 
 /**
  * Meta task for the LoadVehicleGarage task.
@@ -52,6 +52,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement()) {
+        	
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
@@ -86,24 +87,22 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
+        if (robot.getRobotType() == RobotType.DELIVERYBOT
+    		&& robot.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 
-    		if (robot.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement(), true);
+                result = 100D * missions.size();
+            }
+            catch (Exception e) {
+                logger.severe(robot, "Error finding loading missions.", e);
+            }
 
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement(), true);
-	                result = 100D * missions.size();
-	            }
-	            catch (Exception e) {
-	                logger.severe(robot, "Error finding loading missions.", e);
-	            }
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
 
-
-	            // Effort-driven task modifier.
-	            result *= robot.getPerformanceRating();
-
-	        }
+        }
 
         return result;
     }

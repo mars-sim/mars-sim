@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendFishTankMeta.java
- * @date 2021-10-29
+ * @date 2021-12-22
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 
@@ -89,7 +89,7 @@ public class TendFishTankMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Gardenbot && robot.isInSettlement()) {
+        if (robot.getRobotType() == RobotType.GARDENBOT && robot.isInSettlement()) {
 
             try {
                 // See if there is an available greenhouse.

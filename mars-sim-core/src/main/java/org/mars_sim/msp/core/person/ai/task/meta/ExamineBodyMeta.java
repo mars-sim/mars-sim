@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExamineBodyMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
-import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the ExamineBody task.
@@ -105,7 +105,7 @@ public class ExamineBodyMeta extends MetaTask {
 		if (person.isInSettlement()) {
 			result = hasNeedyMedicalAidsAtSettlement(person);
 		} else if (person.isInVehicle()) {
-			result = hasNeedyMedicalAidsInVehicle(person, person.getVehicle());
+			result = hasNeedyMedicalAidsInVehicle(person);
 		}
 
 		return result;
@@ -143,8 +143,8 @@ public class ExamineBodyMeta extends MetaTask {
 	 * @param vehicle the vehicle.
 	 * @return true if needy medical aids.
 	 */
-	private boolean hasNeedyMedicalAidsInVehicle(Person person, Vehicle vehicle) {
-		if (person.getVehicle() instanceof Rover) {
+	private boolean hasNeedyMedicalAidsInVehicle(Person person) {
+		if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
 			Rover rover = (Rover) person.getVehicle();
 			if (rover.hasSickBay()) {
 				SickBay sickBay = rover.getSickBay();

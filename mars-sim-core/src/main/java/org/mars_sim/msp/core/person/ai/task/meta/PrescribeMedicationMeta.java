@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedicationMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.health.AnxietyMedication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.person.health.RadioProtectiveAgent;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Medicbot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -97,12 +97,11 @@ public class PrescribeMedicationMeta extends MetaTask {
 
     public boolean hasADoctor(Person patient) {
     	Collection<Person> list = null;
-//        LocationSituation loc = patient.getLocationSituation();
-        if (patient.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == loc) {
+        if (patient.isInSettlement()) {
             list = patient.getSettlement().getIndoorPeople();
 
         }
-        else if (patient.isInVehicle()) {//LocationSituation.IN_VEHICLE == loc) {
+        else if (patient.isInVehicle()) {
         	Rover rover = (Rover)patient.getContainerUnit();
         	list = rover.getCrew();
         	
@@ -127,7 +126,7 @@ public class PrescribeMedicationMeta extends MetaTask {
         	return 0;
         
         // Only medicbot or a doctor is allowed to perform this task.
-        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
+        if (robot.getRobotType() == RobotType.MEDICBOT) {
         	
             // Determine patient needing medication.
         	Person patient = determinePatients(robot);
@@ -161,10 +160,10 @@ public class PrescribeMedicationMeta extends MetaTask {
         Collection<Person> patientList = null;
         
         if (p != null) {
-	        if (p.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
+	        if (p.isInSettlement()) {
 	            patientList = p.getSettlement().getIndoorPeople();
 	        }
-	        else if (p.isInVehicle()) {//LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
+	        else if (p.isInVehicle()) {
 	            Vehicle vehicle = p.getVehicle();
 	            if (vehicle instanceof Crewable) {
 	                Crewable crewVehicle = (Crewable) vehicle;
@@ -174,10 +173,10 @@ public class PrescribeMedicationMeta extends MetaTask {
         }
         
         else if (r != null) {
-	        if (r.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
+	        if (r.isInSettlement()) {
 	            patientList = r.getSettlement().getIndoorPeople();
 	        }
-	        else if (r.isInVehicle()) {//LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
+	        else if (r.isInVehicle()) {
 	            Vehicle vehicle = r.getVehicle();
 	            if (vehicle instanceof Crewable) {
 	                Crewable crewVehicle = (Crewable) vehicle;

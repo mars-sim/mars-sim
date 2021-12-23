@@ -895,7 +895,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		List<BuildingTemplate> newBuildings = resupplyMission.getNewBuildings();
 
 		// Create map of resupply mission's buildings and numbers.
-		Map<String, Integer> oldBuildings = new HashMap<String, Integer>();
+		Map<String, Integer> oldBuildings = new HashMap<>();
 		Iterator<BuildingTemplate> i = newBuildings.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate template = i.next();
@@ -950,7 +950,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						Iterator<BuildingTemplate> k = newBuildings.iterator();
 						while (k.hasNext()) {
 							BuildingTemplate template = k.next();
-							if (template.getBuildingType().equals(type)) {
+							if (template.getBuildingType().equalsIgnoreCase(type)) {
 								k.remove();
 								break;
 							}
@@ -981,7 +981,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				Iterator<BuildingTemplate> m = newBuildings.iterator();
 				while (m.hasNext()) {
 					BuildingTemplate template = m.next();
-					if (template.getBuildingType().equals(type)) {
+					if (template.getBuildingType().equalsIgnoreCase(type)) {
 						m.remove();
 					}
 				}

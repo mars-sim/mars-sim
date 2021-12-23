@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainersMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
+import org.mars_sim.msp.core.robot.RobotType;
 
 /**
  * Meta task for the ConsolidateContainers task.
@@ -71,7 +71,7 @@ public class ConsolidateContainersMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot && robot.isInside()) {
+        if (robot.getRobotType() == RobotType.DELIVERYBOT && robot.isInside()) {
 
             // Check if there are local containers that need resource consolidation.
             if (ConsolidateContainers.needResourceConsolidation(robot)) {

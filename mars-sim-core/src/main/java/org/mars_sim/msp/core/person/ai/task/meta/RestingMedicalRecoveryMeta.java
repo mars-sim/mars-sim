@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RestingMedicalRecoveryMeta.java
- * @date 2021-12-05
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the RestingMedicalRecoveryMeta task.
@@ -57,7 +58,7 @@ public class RestingMedicalRecoveryMeta extends MetaTask {
         }
 
         if (bedRestNeeded) {
-            result = 200D;
+            result = 500D;
 
             int hunger = (int) person.getPhysicalCondition().getHunger();
             result = result - (hunger - 333) / 3.0;
@@ -138,7 +139,7 @@ public class RestingMedicalRecoveryMeta extends MetaTask {
 
         boolean result = false;
 
-        if (person.getVehicle() instanceof Rover) {
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();

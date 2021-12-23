@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -91,14 +91,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
-//	public static final int HORIZONTAL = 435;//700;//635;
-//	public static final int VERTICAL = 435;
-
 	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.IMAGE_WIDTH; 
-	public static final int HORIZONTAL_FULL = HORIZONTAL_SURFACE_MAP * 2;//800; //310; //300;// 274
+	public static final int HORIZONTAL_FULL = HORIZONTAL_SURFACE_MAP * 2;
 	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
-//	public static final int VERTICAL_MINIMAP = 340; //660; //700;// 695;
-	public static final int HEIGHT_BUTTON_PANE = 26; //700;// 695;
+	public static final int HEIGHT_BUTTON_PANE = 26;
 	public static final int HEIGHT = (int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
 	
 	public static final int CB_WIDTH = 120;
@@ -109,7 +105,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final String THETA = "Theta: ";
 	public static final String PHI = "Phi: ";
 	public static final String CLOSE_P = ")";
-
 	
 	private static final String RGB = "RGB (";
 	private static final String HSB = "HSB (";
@@ -117,12 +112,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private static final String ELEVATION = "Elev: ";
 	private static final String KM = " km";
 	
-//	private static final String WHITESPACES_4 = "    ";
-//	private static final String WHITESPACES_3 = "   ";
-//	private static final String WHITESPACES_2 = "  ";
-	
-	// Data members
-	
+	// Data member
 	/** The status bar. */
 	private JStatusBar statusBar;
 	/** The latitude combox  */
@@ -211,16 +201,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		this.terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 		this.landmarks = mars.getSurfaceFeatures().getLandmarks();
 		this.unitManager = sim.getUnitManager();
-		
-		// setTitleName(null);
-		// ...
-//			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-//			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-//			// Remove title bar
-//			BasicInternalFrameUI bi = (BasicInternalFrameUI) super.getUI();
-//			bi.setNorthPane(null);
-//			// Remove border (not working)
-//			setBorder(null);
 
 		setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 		setMaximumSize(getPreferredSize());
@@ -233,7 +213,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		JPanel wholePane = new JPanel(new GridLayout(1, 2));
 		wholePane.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 //		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
-		// mainPane.setBorder(new MarsPanelBorder());
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel leftPane = new JPanel(new BorderLayout(0, 0));

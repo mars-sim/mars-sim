@@ -97,6 +97,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
+	public static final String WORKSHOP = "workshop";
+	public static final String MANUFACTURING = "manufacturing shed";
+	public static final String MACHINERY = "machinery hab";
+	public static final String LOUNGE = "lounge";
+	public static final String LANDER_HAB = "lander hab";
+	public static final String OUTPOST_HUB = "outpost hub";
+	public static final String INFIRMARY = "infirmary";
+	public static final String MEDICAL = "medical";
+	public static final String GARAGE = "garage";
 	public static final String HALLWAY = "hallway";
 	public static final String TUNNEL = "tunnel";
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
@@ -185,8 +194,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private LivingAccommodations livingAccommodations;
 	private LifeSupport lifeSupport;
 	private Management management;
-	private Manufacture workshop;
-	private MedicalCare medical;
+	private Manufacture manufacture;
+	private MedicalCare medicalCare;
 	private ThermalGeneration furnace;
 	private PowerGeneration powerGen;
 	private PowerStorage powerStorage;
@@ -197,7 +206,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private RoboticStation roboticStation;
 	private Storage storage;
 	private WasteDisposal waste;
-	private VehicleMaintenance garage;
+	private VehicleMaintenance vehicleMaintenance;
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
@@ -458,15 +467,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	public Manufacture getManufacture() {
-		if (workshop == null)
-			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
-		return workshop;
+		if (manufacture == null)
+			manufacture = (Manufacture) getFunction(FunctionType.MANUFACTURE);
+		return manufacture;
 	}
 
 	public MedicalCare getMedical() {
-		if (medical == null)
-			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
-		return medical;
+		if (medicalCare == null)
+			medicalCare = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
+		return medicalCare;
 	}
 
 	public PowerGeneration getPowerGeneration() {
@@ -537,9 +546,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	public VehicleMaintenance getVehicleMaintenance() {
-		if (garage == null)
-			garage = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-		return garage;
+		if (vehicleMaintenance == null)
+			vehicleMaintenance = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		return vehicleMaintenance;
 	}
 
 	/**

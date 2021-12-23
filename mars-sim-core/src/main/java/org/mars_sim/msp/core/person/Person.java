@@ -241,8 +241,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Set the container unit
 		setContainerUnit(settlement);
 
-		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		// Add to a random building
+		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
 	}
@@ -296,9 +296,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * Initialize field data and class
 	 */
 	public void initialize() {
-		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
-		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		// WARNING: setAssociatedSettlement(settlement) may cause suffocation 
+		// Reloading from a saved sim
+		
+		// Add to a random building
+		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
 		// Set up the time stamp for the person
 		calculateBirthDate(earthClock);
 		// Create favorites
@@ -1107,7 +1109,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	/**
 	 * Gets the person's local group of people (in building or rover)
 	 *
-	 * @return collection of people in person's location.
+	 * @return collection of people in person's location. The collectino incldues the Person
 	 */
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = null;
@@ -1125,9 +1127,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		if (localGroup == null) {
 			localGroup = Collections.emptyList();
-		}
-		else if (localGroup.contains(this)) {
-			localGroup.remove(this);
 		}
 		return localGroup;
 	}
@@ -1255,7 +1254,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			achievementCredit += scientificAchievement.get(science);
 		}
 		scientificAchievement.put(science, achievementCredit);
-//		System.out.println(" Person : " + this + " " + science + " " + achievementCredit);
 	}
 
 	/**
@@ -1265,12 +1263,13 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return
 	 */
 	public boolean isAdjacentBuildingType(String type) {
-		if (getSettlement() != null) {
+		Settlement s = getSettlement();
+		if (s != null) {
 			Building b = getBuildingLocation();
 
-			List<Building> list = getSettlement().createAdjacentBuildings(b);
+			List<Building> list = s.createAdjacentBuildings(b);
 			for (Building bb : list) {
-				if (bb.getBuildingType().equals(type))
+				if (bb.getBuildingType().equalsIgnoreCase(type))
 					return true;
 			}
 		}
@@ -1337,7 +1336,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
             || des.contains("dream")
             || des.contains("listen")
             || des.contains("invit")
-            || des.contains("meet")
             || des.contains("teach"));
     	
 	}

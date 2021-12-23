@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class CollectIceMeta extends AbstractMetaMission {
 
 
-	private static final double VALUE = 50D;
+	private static final double VALUE = 30D;
 
 	CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, "collectIce",
