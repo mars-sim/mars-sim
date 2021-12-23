@@ -88,6 +88,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 
 /**
@@ -116,6 +117,7 @@ public class Simulation implements ClockListener, Serializable {
 			sim.savePending = type;
 		}
 	};
+	
 	/** default serial id. */
 	private static final long serialVersionUID = -631308653510974249L;
 
@@ -614,13 +616,12 @@ public class Simulation implements ClockListener, Serializable {
 				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
 		}
 
-		int MISSION_SOL = masterClock.getMarsClock().getMissionSol();
-		int MSOL_CACHE = masterClock.getMarsClock().getMillisolInt();
+		int lastSol = masterClock.getMarsClock().getMissionSol();
 
-		logger.config("  - - - - - - - - - Sol " + MISSION_SOL
+		logger.config("  - - - - - - - - - Sol " + lastSol
 				+ " (Cont') - - - - - - - - - - - ");
 
-		instance().initialSimulationCreated = true;
+		initialSimulationCreated = true;
 
 		// Re-initialize instances
 		reinitializeInstances();
@@ -846,8 +847,8 @@ public class Simulation implements ClockListener, Serializable {
 			
 			case AUTOSAVE:
 				int missionSol = masterClock.getMarsClock().getMissionSol();
-	
-				String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
+				String saveTime = new SystemDateTime().getDateTimeStr();
+				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + BUILD
 						+ SAVE_FILE_EXTENSION;
 				file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
 				logger.config("Autosaving the simulation as " + autosaveFilename + ".");
