@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MarsMap.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -26,7 +26,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
  * The MarsMap class generates the surface, the topographical and 
  * the geological map for GlobeDisplay.
  */
-
 public class MarsMap {
 
 	/** default logger. */
@@ -34,8 +33,7 @@ public class MarsMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	// private final static int map_height = 150;
-	public final static int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP; //HORIZONTAL_LEFT_HALF; //
+	public final static int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	/** Width of map source image (pixels). */
 	public final static int MAP_W = MAP_H * 2;
 
@@ -109,8 +107,6 @@ public class MarsMap {
 
 		centerCoords = adjNewCenter;
 
-		// double PI_half = Math.PI / 2D;
-		// double PI_double = Math.PI * 2D;
 		double phi = centerCoords.getPhi();
 		double theta = centerCoords.getTheta();
 		double end_row = phi - PI_half;
@@ -157,7 +153,7 @@ public class MarsMap {
 			int circum = sphereColor[array_y].size();
 			double row_cos =  MoreMath.cos(row);
 
-			// Determine visible boundry of row
+			// Determine visible boundary of row
 			double col_boundry = Math.PI;
 			if (phi <= PI_half) {
 				if ((row >= PI_half *  MoreMath.cos(phi)) && (row < PI_half)) {
@@ -227,20 +223,18 @@ public class MarsMap {
 		// Create image out of buffer array
 		globeImage = displayArea
 				.createImage(new MemoryImageSource(MAP_H, MAP_H, buffer_array, 0, MAP_H));
-
+		
+		// NOTE: Replace MediaTracker with faster method
+		// Use BufferedImage image = ImageIO.read() ? 
 		MediaTracker mt = new MediaTracker(displayArea);
 		mt.addImage(globeImage, 0);
-		// System.out.println("mt.addImage(globeImage, 0)");
 		try {
 			mt.waitForID(0);
 			// Indicate that image is complete
 			imageDone = true;
-			// System.out.println("mt.waitForID(0)");
-
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 		}
-
 	}
 
 	/**
@@ -266,6 +260,7 @@ public class MarsMap {
 		int[][] map_pixels = new int[MAP_W][MAP_H];
 
 		// Grab mars_surface image into pixels_color array using PixelGrabber
+		// NOTE: Replace PixelGrabber with faster method
 		PixelGrabber pg_color = new PixelGrabber(marsMap, 0, 0, MAP_W, MAP_H, pixels_color, 0, MAP_W);
 		try {
 			pg_color.grabPixels();
@@ -324,6 +319,4 @@ public class MarsMap {
 		displayArea = null;
 		imageDone = true;
 	}
-	
-
 }

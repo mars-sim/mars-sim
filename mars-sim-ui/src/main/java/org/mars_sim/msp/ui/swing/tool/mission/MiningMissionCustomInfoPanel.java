@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MiningMissionCustomInfoPanel.java
- * @date 2021-09-20
+ * @date 2021-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -114,10 +114,6 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		WebPanel excavationPane = new WebPanel(new BorderLayout());
 		excavationPane.setBorder(BorderFactory.createTitledBorder("Minerals Excavated - Aboard Vehicle"));
 		centerPane.add(excavationPane);
-
-		// Create excavation label.
-//		WebLabel excavationLabel = new WebLabel("Minerals Excavated at Site:");
-//		excavationPane.add(excavationLabel, BorderLayout.NORTH);
 
 		// Create excavation scroll panel.
 		WebScrollPane excavationScrollPane = new WebScrollPane();
