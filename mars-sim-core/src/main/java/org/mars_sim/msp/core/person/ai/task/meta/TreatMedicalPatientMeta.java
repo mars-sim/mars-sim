@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TreatMedicalPatientMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -27,13 +27,14 @@ import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the TreatMedicalPatient task.
  */
 public class TreatMedicalPatientMeta extends MetaTask {
     
-	private static final int VALUE = 1000;
+	private static final int VALUE = 500;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -56,25 +57,18 @@ public class TreatMedicalPatientMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-      
-        // Probability affected by the person's stress and fatigue.
-//        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
-//        	return 0;
-          
+         
         if (person.isInside()) {
 	        // Get the local medical aids to use.
 	        if (hasNeedyMedicalAids(person)) {
-	            result = VALUE;	
+	            result += VALUE;	
 	            
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.
 	    	        if (Vehicle.inMovingRover(person)) {
-	    	        	result += -50;
-	    	        } 	       
-	    	        else
-	    	        	result += 50;
+	    	        	result -= 100;
+	    	        }
 	            }
-	            
 	        }
 	
 	        result = applyPersonModifier(result, person);
@@ -144,7 +138,7 @@ public class TreatMedicalPatientMeta extends MetaTask {
 
         boolean result = false;
 
-        if (person.getVehicle() instanceof Rover) {
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();

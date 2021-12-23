@@ -1254,7 +1254,6 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			achievementCredit += scientificAchievement.get(science);
 		}
 		scientificAchievement.put(science, achievementCredit);
-//		System.out.println(" Person : " + this + " " + science + " " + achievementCredit);
 	}
 
 	/**
@@ -1264,12 +1263,13 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @return
 	 */
 	public boolean isAdjacentBuildingType(String type) {
-		if (getSettlement() != null) {
+		Settlement s = getSettlement();
+		if (s != null) {
 			Building b = getBuildingLocation();
 
-			List<Building> list = getSettlement().createAdjacentBuildings(b);
+			List<Building> list = s.createAdjacentBuildings(b);
 			for (Building bb : list) {
-				if (bb.getBuildingType().equals(type))
+				if (bb.getBuildingType().equalsIgnoreCase(type))
 					return true;
 			}
 		}

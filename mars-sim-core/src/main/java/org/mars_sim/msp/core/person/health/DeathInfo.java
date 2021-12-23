@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Barry Evans
  */
 
@@ -19,8 +19,8 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -257,11 +256,7 @@ public class DeathInfo implements Serializable {
 		
 		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
-		BotMind botMind = robot.getBotMind();
-
-		robotJob = botMind.getRobotJob();
-
-		TaskManager taskMgr = botMind.getBotTaskManager();
+		TaskManager taskMgr = robot.getBotMind().getBotTaskManager();
 		if (taskMgr.hasTask()) {
 
 			if (task == null)
@@ -272,9 +267,6 @@ public class DeathInfo implements Serializable {
 				if (phase != null) {
 					taskPhase = phase.getName();
 				}
-				// else {
-				// taskPhase = "";
-				// }
 			}
 		}
 

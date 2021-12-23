@@ -135,10 +135,10 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
         MedicalAid result = null;
 
-		if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+		if (person.isInSettlement()) {
             result = determineMedicalAidAtSettlement();
         }
-        else if (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = determineMedicalAidInVehicle();
         }
 

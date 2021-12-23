@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -90,27 +91,28 @@ public class UnloadVehicleGarageMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
-	        if (robot.isInSettlement()) {
+        if (robot.getRobotType() == RobotType.DELIVERYBOT
+	        && robot.isInSettlement()) {
 
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                int numVehicles = 0;
-	                
-	               	Settlement settlement = robot.getAssociatedSettlement();
-	                
-	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, true).size();
-	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
-	                result = 100D * numVehicles;
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-	            }
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                int numVehicles = 0;
+                
+               	Settlement settlement = robot.getAssociatedSettlement();
+                
+                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, true).size();
+                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
+                result = 100D * numVehicles;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+            }
 
-		        // Effort-driven task modifier.
-		        result *= robot.getPerformanceRating();
-	        }
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
 
+        }
+        
         return result;
     }
 }

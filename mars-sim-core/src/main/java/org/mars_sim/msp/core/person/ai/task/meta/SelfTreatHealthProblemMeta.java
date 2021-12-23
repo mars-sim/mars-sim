@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the SelfTreatHealthProblem task.
@@ -59,7 +60,6 @@ public class SelfTreatHealthProblemMeta extends MetaTask {
 	        // Check if person has available medical aids.
 	        boolean hasAvailableMedicalAids = hasAvailableMedicalAids(person);
 
-
 	        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
 	            result = VALUE * size;
 	        }
@@ -86,7 +86,7 @@ public class SelfTreatHealthProblemMeta extends MetaTask {
      */
     private List<HealthProblem> getSelfTreatableHealthProblems(Person person) {
 
-        List<HealthProblem> result = new ArrayList<HealthProblem>();
+        List<HealthProblem> result = new ArrayList<>();
 
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
         while (i.hasNext()) {
@@ -179,7 +179,7 @@ public class SelfTreatHealthProblemMeta extends MetaTask {
 
         boolean result = false;
 
-        if (person.getVehicle() instanceof Rover) {
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();

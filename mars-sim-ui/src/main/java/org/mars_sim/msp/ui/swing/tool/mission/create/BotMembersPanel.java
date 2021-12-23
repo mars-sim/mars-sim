@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
  * BotMembersPanel.java
- * @date 2021-08-27
+ * @date 2021-12-22
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
@@ -34,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -65,7 +65,6 @@ implements ActionListener {
 	private WebLabel errorMessageLabel;
 	private WebButton addButton;
 	private WebButton removeButton;
-//	private WebLabel roverCapacityLabel;
 
 	/**
 	 * Constructor
@@ -335,7 +334,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
+						result = RobotJob.getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getTypeID();
@@ -461,7 +460,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
+						result = RobotJob.getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getTypeID();

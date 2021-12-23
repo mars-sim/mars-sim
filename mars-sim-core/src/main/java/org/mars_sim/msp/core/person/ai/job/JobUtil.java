@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JobUtil.java
- * @Date 2021-09-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -172,7 +172,7 @@ public final class JobUtil {
 		return result;
 	}
 
-	// TODO: determine the need for this method since it promotes robotJob switching
+	// NOTE: determine the need for this method since it promotes robotJob switching
 	// For robots
 	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
 		double result = robotJob.getSettlementNeed(settlement);

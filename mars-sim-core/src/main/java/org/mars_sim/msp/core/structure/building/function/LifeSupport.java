@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LifeSupport.java
- * @date 2021-10-21
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,12 +13,9 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -34,8 +31,6 @@ public class LifeSupport extends Function implements Serializable {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
-
-//	private DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	private static final FunctionType THE_FUNCTION = FunctionType.LIFE_SUPPORT;
 
@@ -61,14 +56,12 @@ public class LifeSupport extends Function implements Serializable {
 		occupants = new HashSet<>();
 
 		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
-
+		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), THE_FUNCTION);
 		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 
 		length = building.getLength();
 		width = building.getWidth();
 		floorArea = length * width;
-
 	}
 
 	/**
@@ -96,13 +89,13 @@ public class LifeSupport extends Function implements Serializable {
 	/**
 	 * Gets the value of the function for a named building.
 	 * 
-	 * @param buildingName the building name.
+	 * @param buildingType the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String buildingType, boolean newBuilding, Settlement settlement) {
 
 		// Demand is 2 occupant capacity for every inhabitant.
 		double demand = settlement.getNumCitizens() * 2D;
@@ -112,25 +105,22 @@ public class LifeSupport extends Function implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(THE_FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				LifeSupport lsFunction = building.getLifeSupport();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += lsFunction.occupantCapacity * wearModifier;
+				supply += building.getLifeSupport().occupantCapacity * wearModifier;
 			}
 		}
 
 		double occupantCapacityValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		int occupantCapacity = config.getFunctionCapacity(buildingName, FunctionType.LIFE_SUPPORT);
+		int occupantCapacity = buildingConfig.getFunctionCapacity(buildingType, THE_FUNCTION);
 
 		double result = occupantCapacity * occupantCapacityValue;
 
 		// Subtract power usage cost per sol.
-		double power = config.getLifeSupportPowerRequirement(buildingName);
-//		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+		double power = buildingConfig.getLifeSupportPowerRequirement(buildingType);
 		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
@@ -203,7 +193,6 @@ public class LifeSupport extends Function implements Serializable {
 				if (building.hasFunction(THE_FUNCTION)) {
 					// remove this person from the old building first
 					BuildingManager.removePersonFromBuilding(person, building);
-//					building.getLifeSupport().removePerson(person);
 				}
 			}
 			

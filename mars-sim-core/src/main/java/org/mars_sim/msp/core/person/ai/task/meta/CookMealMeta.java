@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Chefbot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
@@ -100,28 +100,26 @@ public class CookMealMeta extends MetaTask {
         double result = 0D;
 
 
-        if (CookMeal.isMealTime(robot, 20)) {
+        if (CookMeal.isMealTime(robot, 20)
+            && robot.getRobotType() == RobotType.CHEFBOT) {
+            // See if there is an available kitchen.
+            Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
 
-            if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
-                // See if there is an available kitchen.
-                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
+            if (kitchenBuilding != null) {
 
-                if (kitchenBuilding != null) {
+                Cooking kitchen = kitchenBuilding.getCooking();
 
-                    Cooking kitchen = kitchenBuilding.getCooking();
+                // Check if enough meals have been cooked at kitchen for this meal time.
+                boolean enoughMeals = kitchen.getCookNoMore();
 
-                    // Check if enough meals have been cooked at kitchen for this meal time.
-                    boolean enoughMeals = kitchen.getCookNoMore();
+                if (enoughMeals) return 0;
 
-                    if (enoughMeals) return 0;
-
-                    if (kitchen.canCookMeal()) {
-                        result = 300D;
-                        // Crowding modifier.
-                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-                        // Effort-driven task modifier.
-                        result *= robot.getPerformanceRating();
-                    }
+                if (kitchen.canCookMeal()) {
+                    result = 300D;
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+                    // Effort-driven task modifier.
+                    result *= robot.getPerformanceRating();
                 }
             }
         }

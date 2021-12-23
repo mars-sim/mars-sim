@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGoodMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -111,7 +111,7 @@ public class ManufactureGoodMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
+        if (robot.getRobotType() == RobotType.MAKERBOT) {
 
 	        if (robot.isInSettlement()) {
 	            // If settlement has manufacturing override, no new

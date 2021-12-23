@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -34,7 +34,6 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 	private MedicalStation medicalStation;
 
-
 	/**
 	 * Constructor.
 	 * 
@@ -50,9 +49,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		medicalStation = new MedicalStation(techLevel, beds);
 		medicalStation.setBuilding(building);
 
-		// TODO: need to distinguish between activity spots and bed locations
-		// Load bed locations
-		//loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
+		// NOTE: will need to distinguish between activity spots and bed locations
+		// Load bed locations by loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()))
 	}
 
 	/**
@@ -77,7 +75,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				MedicalCare medFunction = building.getMedical();// (MedicalCare) building.getFunction(FUNCTION);
+				MedicalCare medFunction = building.getMedical();
 				double tech = medFunction.getTechLevel();
 				double beds = medFunction.getSickBedNum();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -145,8 +143,6 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Task task = i.next().getMind().getTaskManager().getTask();
-//					if (task instanceof MedicalAssistance) {
-//						MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
 				if (task instanceof TreatMedicalPatient) {
 					MedicalAid aid = ((TreatMedicalPatient) task).getMedicalAid();						
 					if ((aid != null) && (aid == this))
@@ -229,12 +225,9 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-
 		double result = 0D;
-
 		// Add maintenance for treatment level.
 		result += medicalStation.getTreatmentLevel() * 10D;
-
 		// Add maintenance for number of sick beds.
 		result += medicalStation.getSickBedNum() * 10D;
 

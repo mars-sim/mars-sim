@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -141,7 +141,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 			skillManager = null;
 			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
-				if (tempRobot.getBotMind().getRobotJob() instanceof Makerbot) {
+				if (tempRobot.getRobotType() == RobotType.MAKERBOT) {
 					// if (skillManager == null)
 					skillManager = tempRobot.getSkillManager();
 					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
@@ -153,7 +153,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 			for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
 				Manufacture manufacturingFunction = building.getManufacture();
-				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
+				List<ManufactureProcess> processes = new ArrayList<>(
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
@@ -275,7 +275,7 @@ public class ManufactureGood extends Task implements Serializable {
 	 */
 	private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -298,7 +298,7 @@ public class ManufactureGood extends Task implements Serializable {
 	 */
 	private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -348,7 +348,7 @@ public class ManufactureGood extends Task implements Serializable {
 	 */
 	private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();
@@ -415,7 +415,7 @@ public class ManufactureGood extends Task implements Serializable {
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil
-				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator(); // java.util.ConcurrentModificationException
+				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator(); 
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
@@ -578,7 +578,7 @@ public class ManufactureGood extends Task implements Serializable {
 			int techLevel = workshop.getTechLevel();
 
 			// Determine all manufacturing processes that are possible and profitable.
-			Map<ManufactureProcessInfo, Double> processProbMap = new HashMap<ManufactureProcessInfo, Double>();
+			Map<ManufactureProcessInfo, Double> processProbMap = new HashMap<>();
 			Iterator<ManufactureProcessInfo> i = ManufactureUtil
 					.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
 			while (i.hasNext()) {

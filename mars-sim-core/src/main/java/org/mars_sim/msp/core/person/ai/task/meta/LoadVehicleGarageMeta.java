@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
 /**
@@ -86,24 +87,22 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
+        if (robot.getRobotType() == RobotType.DELIVERYBOT
+    		&& robot.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 
-    		if (robot.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement(), true);
+                result = 100D * missions.size();
+            }
+            catch (Exception e) {
+                logger.severe(robot, "Error finding loading missions.", e);
+            }
 
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement(), true);
-	                result = 100D * missions.size();
-	            }
-	            catch (Exception e) {
-	                logger.severe(robot, "Error finding loading missions.", e);
-	            }
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
 
-
-	            // Effort-driven task modifier.
-	            result *= robot.getPerformanceRating();
-
-	        }
+        }
 
         return result;
     }

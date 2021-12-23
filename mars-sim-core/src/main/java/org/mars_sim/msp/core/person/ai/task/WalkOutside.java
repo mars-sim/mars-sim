@@ -88,7 +88,7 @@ public class WalkOutside extends Task implements Serializable {
 
 		// Check that the person is currently outside a settlement or vehicle.
 		if (person.isInside())
-			throw new IllegalStateException("WalkOutside task started when " + person + " is " + person.getLocationStateType());
+			throw new IllegalStateException("WalkOutside task started when " + person + " was " + person.getLocationStateType());
 
 		init(start, destination, ignoreEndEVA);
 	}
@@ -110,7 +110,7 @@ public class WalkOutside extends Task implements Serializable {
 
 		// Check that the robot is currently outside a settlement or vehicle.
 		if (robot.isInside())
-			throw new IllegalStateException("WalkOutside task started when " + robot + " is " + robot.getLocationStateType());
+			throw new IllegalStateException("WalkOutside task started when " + robot + " was " + robot.getLocationStateType());
 
 		init(start, destination, ignoreEndEVA);
 	}

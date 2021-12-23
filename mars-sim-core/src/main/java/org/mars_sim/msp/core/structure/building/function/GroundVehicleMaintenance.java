@@ -77,7 +77,7 @@ implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (!newBuilding && building.getBuildingType().equals(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
