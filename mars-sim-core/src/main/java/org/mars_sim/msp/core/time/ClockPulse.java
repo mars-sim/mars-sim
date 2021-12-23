@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.time;
 
 public class ClockPulse {
 	/**
-	 * The real time passed since last pulse
+	 * The sols passed since last pulse
 	 */
-	private double time;
+	private double elapsed;
 	
 	/**
 	 * Updated Mars time for this simulation
@@ -61,7 +61,7 @@ public class ClockPulse {
 		}
 		
 		this.id = id;
-		this.time = elapsed;
+		this.elapsed = elapsed;
 		this.marsTime = marsTime;
 		this.earthTime = earthTime;
 		this.master = master;
@@ -73,8 +73,12 @@ public class ClockPulse {
 		return id;
 	}
 	
+	/**
+	 * The elapsed real time since the last pulse.
+	 * @return
+	 */
 	public double getElapsed() {
-		return time;
+		return elapsed;
 	}
 
 	public MarsClock getMarsTime() {
@@ -95,5 +99,20 @@ public class ClockPulse {
 	
 	public EarthClock getEarthTime() {
 		return earthTime;
+	}
+
+	/**
+	 * Create a new pulse based on this one but add extra msol elapsed time.
+	 * This does not change any of the original flags; only the elapses time.
+	 * @param msolsSkipped 
+	 * @return
+	 */
+	public ClockPulse addElapsed(double msolsSkipped) {
+		double actualElapsed = msolsSkipped + elapsed;
+		
+		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
+		boolean actualNewSol = newSol || (actualElapsed > marsTime.getMillisol());
+		
+		return new ClockPulse(id, actualElapsed, marsTime, earthTime, master, actualNewSol, newMSol);
 	}
 }

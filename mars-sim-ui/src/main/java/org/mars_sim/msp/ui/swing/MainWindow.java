@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -70,7 +69,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
-import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
@@ -707,7 +705,7 @@ extends JComponent implements ClockListener {
 		mainPane.add(overlay, BorderLayout.CENTER);
 
 		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
+		masterClock.addClockListener(this, 1000L);
 
 		// Create Earth date text field
 		createEarthDate();
@@ -886,7 +884,6 @@ extends JComponent implements ClockListener {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
 					masterClock.increaseSpeed();
-					updateTimeLabel();
 				}
 			};
 		});
@@ -899,18 +896,13 @@ extends JComponent implements ClockListener {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
 					masterClock.decreaseSpeed();
-					updateTimeLabel();
 				}
 			};
 		});
 
 	}
 
-	public void updateTimeLabel() {
-		((TimeWindow) desktop.getToolWindow(TimeWindow.NAME)).updateSlowLabels();
-	}
-
-	public void createSolLabel() {
+	private void createSolLabel() {
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		solLabel.setFont(FONT_SANS_SERIF_1);
 		solLabel.setForeground(Color.DARK_GRAY);
@@ -1074,36 +1066,25 @@ extends JComponent implements ClockListener {
 	 * location and new filename to save the simulation.
 	 *
 	 * @param defaultFile is the default.sim file be used
-	 * @param isAutosave
 	 */
-	public void saveSimulation(boolean defaultFile, boolean isAutosave) {
-		if (isAutosave) {
-			// Note: may need to use SwingUtilities.invokeLater(() -> layerUI.start());
-			masterClock.setSaveSim(SaveType.AUTOSAVE, null);
-		}
-
-		else {
-
-			if (!defaultFile) {
-				JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
-				chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
-				if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					final File fileLocn = chooser.getSelectedFile();
-					// Note: may use SwingUtilities.invokeLater(() -> layerUI.start());
-					masterClock.setSaveSim(SaveType.SAVE_AS, fileLocn);
-				} else {
-					return;
-				}
+	public void saveSimulation(boolean defaultFile) {
+		File fileLocn = null;
+		if (!defaultFile) {
+			JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
+			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
+			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+				fileLocn = chooser.getSelectedFile();
 			}
-
 			else {
-				// Note: may use SwingUtilities.invokeLater(() -> layerUI.start());
-				masterClock.setSaveSim(SaveType.SAVE_DEFAULT, null);
+				return;
 			}
 		}
+
+		// Request the save
+		sim.requestSave(fileLocn);
 
 		sleeping.set(true);
-		while (sleeping.get() && masterClock.isSavingSimulation()) {
+		while (sleeping.get() && sim.isSavePending()) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(200L);
 			} catch (InterruptedException e) {
@@ -1161,7 +1142,7 @@ extends JComponent implements ClockListener {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		if (!masterClock.isPaused() && !masterClock.isSavingSimulation()) {
+		if (!masterClock.isPaused() && !sim.isSavePending()) {
 			int reply = JOptionPane.showConfirmDialog(frame,
 					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
 	        if (reply == JOptionPane.YES_OPTION) {
@@ -1394,10 +1375,6 @@ extends JComponent implements ClockListener {
 			// Increments the Earth and Mars clock labels.
 			incrementClocks();
 		}
-	}
-
-	@Override
-	public void uiPulse(double time) {
 	}
 
 	/**

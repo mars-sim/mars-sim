@@ -183,13 +183,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private MapLayer landmarkLayer;
 	private MapLayer exploredSiteLayer;
 
-	private static List<Landmark> landmarks;
-	
-	private static Simulation sim = Simulation.instance();
-	private static TerrainElevation terrainElevation;
-	private static Environment mars;
-	
-	private static UnitManager unitManager = sim.getUnitManager();
+	private List<Landmark> landmarks;
+	private TerrainElevation terrainElevation;
+	private UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -199,14 +195,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public NavigatorWindow(MainDesktopPane desktop) {
 		// use ToolWindow constructor
 		super(NAME, desktop);
-		this.desktop = desktop;
 
-		if (mars == null)
-			mars = sim.getMars();
-		if (terrainElevation == null)
-			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-		
-		landmarks = mars.getSurfaceFeatures().getLandmarks();
+		Simulation sim = desktop.getSimulation();
+		Environment mars = sim.getMars();
+		this.terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+		this.landmarks = mars.getSurfaceFeatures().getLandmarks();
+		this.unitManager = sim.getUnitManager();
 
 		setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 		setMaximumSize(getPreferredSize());
@@ -891,11 +885,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			
 			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			if (mars == null)
-				mars = sim.getMars();
-			if (terrainElevation == null)
-				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-
 			double e = terrainElevation.getMOLAElevation(clickedPosition);
 					
 			StringBuilder s0 = new StringBuilder();
@@ -1029,20 +1018,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
          popOver.add(c);
          popOver.show(event.getComponent(), x + 5, y + 5, PopOverDirection.down);
 	}
-	
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
 
+	@Override
 	public void destroy() {
 		if (mapLayerPanel != null)
 			mapLayerPanel.destroy();
 		if (globeNav != null)
 			globeNav.destroy();
-
-		sim = null;
-		unitManager = null;
-		landmarks = null;
 
 		latCB = null;
 		longCB = null;

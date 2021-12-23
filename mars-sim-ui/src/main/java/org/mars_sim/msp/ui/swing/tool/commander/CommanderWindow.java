@@ -40,11 +40,11 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -137,7 +137,8 @@ public class CommanderWindow extends ToolWindow {
 	private List<String> taskCache;
 
 	/** The MarsClock instance. */
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
+	private MasterClock masterClock;
 
 
 	/**
@@ -148,7 +149,8 @@ public class CommanderWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		this.masterClock = desktop.getSimulation().getMasterClock();
+		this.marsClock = masterClock.getMarsClock();
 
 		cc = GameManager.commanderPerson;
 		settlement = cc.getAssociatedSettlement();
@@ -724,16 +726,11 @@ public class CommanderWindow extends ToolWindow {
      * @return sample long list data
      */
     protected List<Settlement> getOtherSettlements() {
-    	List<Settlement> list = new ArrayList<Settlement>(unitManager.getSettlements());
+    	List<Settlement> list = new ArrayList<>(desktop.getSimulation().getUnitManager().getSettlements());
     	list.remove(settlement);
-//    	list.removeIf(x -> list.contains(settlement));
         return list;
-//        return new ArrayList<Settlement>(unitManager.getSettlements()).remove(settlement);
-    }
 
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
+    }
 
 	/**
 	 * Picks a task and delete it
@@ -765,6 +762,7 @@ public class CommanderWindow extends ToolWindow {
         return tabPane.getSelectedIndex() == 1;
 	}
 
+	@Override
 	public void update() {
 //		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
 

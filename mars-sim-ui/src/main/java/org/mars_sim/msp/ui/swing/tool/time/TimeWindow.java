@@ -53,6 +53,9 @@ import com.alee.managers.tooltip.TooltipWay;
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
 
+	// Milliseconds between updates to date fields
+	private static final long DATE_UPDATE_PERIOD = 500L;
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -128,8 +131,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
 	private final DecimalFormat formatter3 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
-	/** Simulation instance */
-	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
 	/** Martian Clock. */
@@ -142,10 +143,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Arial font. */
 	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
 	/** Sans serif font. */
-	private final Font sansSerifFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
-	private final Font monospacedFont = new Font(Font.MONOSPACED, Font.ITALIC, 12);
-	private final Font dialogFont = new Font(Font.DIALOG, Font.BOLD, 14);
-	private final Font serifFont = new Font(Font.SERIF, Font.ITALIC, 12);
+	private static final Font sansSerifFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+	private static final Font monospacedFont = new Font(Font.MONOSPACED, Font.ITALIC, 12);
+	private static final Font dialogFont = new Font(Font.DIALOG, Font.BOLD, 14);
+	private static final Font serifFont = new Font(Font.SERIF, Font.ITALIC, 12);
+
+	private long lastDateUpdate = 0;
 	
 	/**
 	 * Constructs a TimeWindow object
@@ -158,8 +161,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	
 		// Set window resizable to false.
 		setResizable(false);
+		
 		// Initialize data members
-		sim = Simulation.instance();
+		Simulation sim = desktop.getSimulation();
 		masterClock = sim.getMasterClock();
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
@@ -167,8 +171,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		
 		uptimer = masterClock.getUpTimer();
 
-		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
+		// Add this class to the master clock's listener at 5 per second
+		// BUT there are 2 updates at different speeds within the clockPulse method
+		masterClock.addClockListener(this, 200L);
 
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -434,7 +439,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				// Check the sim speed
 				masterClock.checkSpeed();
 				// Update the two time labels
-				updateSlowLabels();
+				updateRateLabels();
 			}
 		});
 
@@ -446,23 +451,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		setSize(new Dimension((int) windowSize.getWidth() + 10, (int) windowSize.getHeight()));
 
 		// Update the two time labels
-		updateTimeLabels();
+		updateRateLabels();
 	}
 
 	/**
 	 * Update various time labels
 	 */
-	public void updateTimeLabels() {
+	private void updateRateLabels() {
 
-		if (marsTime != null && masterClock != null) {
-			if (masterClock.getClockPulse().isNewSol()) {
-				String mn = marsTime.getMonthName();
-				if (mn != null)
-					SwingUtilities.invokeLater(() -> martianMonthHeaderLabel.setText("Month of " + mn));
-				setSeason();
-			}
-		}
-		
 		// Update average TPS label
 		double ave = masterClock.updateAverageTPS();
 		aveTPSLabel.setText(formatter2.format(ave));
@@ -494,7 +490,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Set and update the season labels
 	 */
-	public void setSeason() {
+	private void setSeason() {
 		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
 		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
 	
@@ -527,7 +523,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 *
 	 * @param hemi the northern or southern hemisphere
 	 */
-	public String getSeasonTip(String hemi) {
+	private static String getSeasonTip(String hemi) {
 		if (hemi.contains("Spring"))
 			return Msg.getString("TimeWindow.season.spring");
 		else if (hemi.contains("Summer"))
@@ -543,19 +539,25 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Update the calendar, the areocentric longitude and the time labels via ui pulse
 	 */
-	public void updateSlowLabels() {
-		// Update the time labels
-		updateTimeLabels();
+	private void updateDateLabels() {
 		// Update the calender
 		calendarDisplay.update();
 		// Update areocentric longitude
-		longLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");		
+		longLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");	
+		
+		// Update season
+		if (masterClock.getClockPulse().isNewSol()) {
+			String mn = marsTime.getMonthName();
+			if (mn != null)
+				SwingUtilities.invokeLater(() -> martianMonthHeaderLabel.setText("Month of " + mn));
+			setSeason();
+		}
 	}
 
 	/**
 	 * Updates date and time in Time Tool via clock pulse
 	 */
-	public void updateFastLabels() {
+	private void updateFastLabels() {
 		if (marsTime != null && martianTimeLabel != null) {
 			String ts = marsTime.getDisplayDateTimeStamp() + UMT;
 			SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
@@ -586,7 +588,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (!isPaused && desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the slow labels
-			updateSlowLabels();
+			updateDateLabels();
+
 		}
 	}
 
@@ -595,14 +598,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the fast labels
 			updateFastLabels();
-		}
-	}
 
-	@Override
-	public void uiPulse(double time) {
-		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			// update the slow labels
-			updateSlowLabels();
+			long currentTime = System.currentTimeMillis();
+			if ((currentTime - lastDateUpdate) > DATE_UPDATE_PERIOD) {
+				// update the slow labels
+				updateDateLabels();
+				updateRateLabels();
+				lastDateUpdate = currentTime;
+			}
 		}
 	}
 

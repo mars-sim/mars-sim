@@ -197,11 +197,12 @@ implements ClockListener, HistoricalEventListener {
 		innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
 		outerSupplyPane.add(new WebScrollPane(innerSupplyPane), BorderLayout.CENTER);
 
-		// Set as clock listener.
-		Simulation.instance().getMasterClock().addClockListener(this);
+		// Set as clock listener. Only need sparse updates
+		Simulation sim = desktop.getSimulation();
+		sim.getMasterClock().addClockListener(this, 2000L);
 
 		// Set as historical event listener.
-		Simulation.instance().getEventManager().addListener(this);
+		sim.getEventManager().addListener(this);
 	}
 
 	/**
@@ -700,11 +701,6 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// Nothing
-	}
-	
-	@Override
-	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
 			updateArrival();
 		}	
@@ -719,6 +715,10 @@ implements ClockListener, HistoricalEventListener {
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
+		Simulation sim = desktop.getSimulation();
+		sim.getMasterClock().removeClockListener(this);
+		sim.getEventManager().removeListener(this);
+		
 		resupply = null;
 
 		destinationValueLabel = null;

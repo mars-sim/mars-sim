@@ -89,6 +89,7 @@ public class VehicleWindow extends UnitWindow {
 	/**
 	 * Updates this window.
 	 */
+	@Override
 	public void update() {
 		super.update();
 		// Check if equipment has been salvaged.
@@ -99,7 +100,9 @@ public class VehicleWindow extends UnitWindow {
 		}
 	}
 
+	@Override
 	public void destroy() {
+		super.destroy();
 		vehicle = null;
 	}
 

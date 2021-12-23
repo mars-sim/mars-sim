@@ -10,7 +10,6 @@ package org.mars.sim.console.chat.simcommand;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
-import org.mars_sim.msp.core.Simulation.SaveType;
 
 public class SaveCommand extends ChatCommand {
 
@@ -27,7 +26,7 @@ public class SaveCommand extends ChatCommand {
 	
         if ("Y".equalsIgnoreCase(toSave)) {
             context.println("Saving Simulation...");
-            context.getSim().getMasterClock().setSaveSim(SaveType.SAVE_DEFAULT, null); 
+            context.getSim().requestSave(null); 
         }
 
 		context.println("Done");

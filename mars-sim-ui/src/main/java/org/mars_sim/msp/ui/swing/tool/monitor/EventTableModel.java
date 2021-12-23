@@ -23,8 +23,6 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
@@ -36,7 +34,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
  */
 @SuppressWarnings("serial")
 public class EventTableModel extends AbstractTableModel
-		implements MonitorModel, HistoricalEventListener, ClockListener {
+		implements MonitorModel, HistoricalEventListener{
 
 	/** default logger. */
 //	private static final Logger logger = Logger.getLogger(EventTableModel.class.getName());
@@ -96,17 +94,14 @@ public class EventTableModel extends AbstractTableModel
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 
-	private String header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
-
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
 
 	private List<String> messageCache = new ArrayList<>();
 
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+	private UnitManager unitManager;
+	private HistoricalEventManager eventManager;
 
 	/**
 	 * constructor. Create a new Event model based on the specified event manager.
@@ -118,42 +113,32 @@ public class EventTableModel extends AbstractTableModel
 
 		this.desktop = desktop;
 
-		desktop.setEventTableModel(this);
-
+		// Add this model as an event listener.
+		Simulation sim = desktop.getSimulation();
+		this.unitManager = sim.getUnitManager();
+		this.eventManager = sim.getEventManager();
+		
 		// Update the cached events.
 		updateCachedEvents();
-
-		// Add this model as an event listener.
+		
+		// Add listener only when fully constructed
 		eventManager.addListener(this);
-
-//		appIconSet.put(0, icon_mal);
-//		appIconSet.put(1, icon_med);
-//		appIconSet.put(2, icon_mission);
-//		appIconSet.put(3, icon_hazard);
-
 	}
 
 	private synchronized void updateCachedEvents() {
 		List<SimpleEvent> events = null;
 
 		// Clean out existing cached events for the Event Table.
-//		cachedEvents = new ArrayList<HistoricalEvent>();
-		cachedEvents = new ArrayList<SimpleEvent>();
+		cachedEvents = new ArrayList<>();
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			int id = unitManager.getCommanderSettlement().getIdentifier();
-			events = new ArrayList<SimpleEvent>(eventManager.getEvents(id));
+			events = new ArrayList<>(eventManager.getEvents(id));
 		}
 		else {
-			events = new ArrayList<SimpleEvent>(eventManager.getEvents());
+			events = new ArrayList<>(eventManager.getEvents());
 		}
 
-		// NOTE: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
-//		int size = manager.getEvents().size();
-//		// Filter events based on category.
-//		for (int x = 0; x < size; x++) {
-//			HistoricalEvent event = manager.getEvent(x);
-//			SimpleEvent event = manager.getEvent(x);
 
 		for (SimpleEvent event : events) {
 			HistoricalEventCategory category = HistoricalEventCategory.int2enum((int) (event.getCat()));
@@ -838,26 +823,10 @@ public class EventTableModel extends AbstractTableModel
 		return noFiring;
 	}
 
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		noFiring = isPaused;
-	}
-
-	public void clockPulse(ClockPulse pulse) {
-		// not need at this point. But pauseChange() is needed
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-	}
-
 	/**
 	 * Prepares the model for deletion.
 	 */
 	public void destroy() {
-		if (Simulation.instance().getMasterClock() != null)
-			Simulation.instance().getMasterClock().removeClockListener(this);
 		eventManager.removeListener(this);
 		eventManager = null;
 		desktop = null;

@@ -90,7 +90,7 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the settlement list.
 		settlementListModel = new SettlementListModel();
-		settlementList = new JList<Settlement>(settlementListModel);
+		settlementList = new JList<>(settlementListModel);
 		settlementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		settlementListPane.add(new WebScrollPane(settlementList), BorderLayout.CENTER);
 		settlementList.addMouseListener(new MouseAdapter() {
@@ -109,7 +109,7 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the mission list.
 		missionListModel = new MissionListModel(this);
-		missionList = new JList<Mission>(missionListModel);
+		missionList = new JList<>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//SINGLE_INTERVAL_SELECTION);
 		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
 		missionList.addMouseListener(new MouseAdapter() {
@@ -342,10 +342,6 @@ public class MissionWindow extends ToolWindow {
 
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
-	}
-
-	public MainDesktopPane getDesktop() {
-		return desktop;
 	}
 
 	public boolean isNavPointsMapTabOpen() {

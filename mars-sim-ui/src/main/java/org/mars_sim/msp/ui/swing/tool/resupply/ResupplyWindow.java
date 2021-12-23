@@ -50,9 +50,6 @@ implements ListSelectionListener {
 	private WebButton modifyButton;
 	private WebButton cancelButton;
 
-	private MainDesktopPane desktop;
-//	private MainScene mainScene;
-
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -60,10 +57,6 @@ implements ListSelectionListener {
 	public ResupplyWindow(MainDesktopPane desktop) {
 		// Use the ToolWindow constructor.
 		super(NAME, desktop);
-
-		this.desktop = desktop;
-//		MainWindow mw = desktop.getMainWindow();
-//		mainScene = desktop.getMainScene();
 
 		// Create main panel.
 		WebPanel mainPane = new WebPanel(new BorderLayout());

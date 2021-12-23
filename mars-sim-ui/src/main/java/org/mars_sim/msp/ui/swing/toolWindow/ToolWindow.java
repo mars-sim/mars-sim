@@ -9,15 +9,8 @@ package org.mars_sim.msp.ui.swing.toolWindow;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
-import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
@@ -36,12 +29,6 @@ public abstract class ToolWindow extends JInternalFrame {
 
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-	protected MonitorWindow monitorWindow;
-	protected CommanderWindow commanderWindow;
-
-	protected static Simulation sim = Simulation.instance();
-	protected static MasterClock masterClock = sim.getMasterClock();
-	protected static UnitManager unitManager = sim.getUnitManager();
 
 	/**
 	 * Constructor.
@@ -61,12 +48,6 @@ public abstract class ToolWindow extends JInternalFrame {
 		// Initialize data members
 		this.name = name;
 		this.desktop = desktop;
-
-		if (this instanceof MonitorWindow)
-			this.monitorWindow = (MonitorWindow) this;
-
-		else if (this instanceof CommanderWindow)
-			this.commanderWindow = (CommanderWindow) this;
 
 		opened = false;
 
@@ -97,6 +78,14 @@ public abstract class ToolWindow extends JInternalFrame {
 	}
 
 	/**
+	 * Get the parent main desktop
+	 * @return
+	 */
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+	
+	/**
 	 * Sets the tool name.
 	 *
 	 * @param tool name
@@ -122,31 +111,12 @@ public abstract class ToolWindow extends JInternalFrame {
 	public void setWasOpened(boolean opened) {
 		this.opened = opened;
 	}
-
-	public void closeMaps() {
-		if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-//			mainScene.closeMaps();
-		}
-	}
-
+	
 	/**
-	 * Update window.
+	 * Update window. This is overriden by subclasses
 	 */
 	public void update() {
-		if (isVisible() || isShowing()) {
-			// Note: need to update the table color style after the theme is changed
-//			if (getToolName().equals(MonitorWindow.TITLE))
-//				monitorWindow.refreshTableStyle();
-				// pack(); // create time lag, and draw artifact
-
-			if (getToolName().equals(CommanderWindow.NAME))
-				commanderWindow.update();
-		}
-		else {
-			opened = false;
-			if (this.getToolName().equals(NavigatorWindow.NAME))
-				desktop.closeToolWindow(NavigatorWindow.NAME);
-		}
+		// Nothing to do in the base class
 	}
 
 	/**
@@ -154,8 +124,5 @@ public abstract class ToolWindow extends JInternalFrame {
 	 */
 	public void destroy() {
 		desktop = null;
-		masterClock = null;
-		monitorWindow = null;
-		commanderWindow = null;
 	}
 }

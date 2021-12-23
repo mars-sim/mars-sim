@@ -28,7 +28,6 @@ import javax.swing.JComponent;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
@@ -129,11 +128,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private int rightWidth = positionMetrics.stringWidth(longitude);
 	
 	private MainDesktopPane desktop;
-	
-	private Simulation sim = Simulation.instance();
-	private SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
-	private MasterClock masterClock = sim.getMasterClock();
-	private UnitManager unitManager = sim.getUnitManager();
+	private SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
@@ -144,17 +139,18 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {
 		this.desktop = navwin.getDesktop();
-		
-		masterClock.addClockListener(this);
-		
-		//Initialize data members
+
+		// Initialize data members
 		this.globalWidth = GLOBE_BOX_WIDTH;
 		this.globalHeight = GLOBE_BOX_HEIGHT;
 
 		globeCircumference = globalHeight * 2;
 		rho = globeCircumference / (2D * Math.PI);
 
-		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
+		this.starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
+
+		this.surfaceFeatures = desktop.getSimulation().getMars().getSurfaceFeatures();
+
 
 		// Set component size
 		setPreferredSize(new Dimension(globalWidth, globalHeight));
@@ -179,6 +175,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		// Initially show real surface globe
 		showSurf();
+		
+		// Add listener once fully constructed
+		MasterClock masterClock = desktop.getSimulation().getMasterClock();
+		masterClock.addClockListener(this, 1000L);
 	}
 	
 	public class Dragger extends MouseAdapter {
@@ -187,7 +187,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		public Dragger (NavigatorWindow navwin) {
 			this.navwin = navwin;
 	    }
-		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -205,11 +205,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			navwin.updateCoords(centerCoords);
 			e.consume();
 		}
-		
-//		@Override
-//	    public void mouseEntered(MouseEvent e){
-//			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//	    }
+
 	    @Override
 	    public void mouseExited(MouseEvent e){
 	    	navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -455,6 +451,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * @param g graphics context
 	 */
 	protected void drawUnits(Graphics2D g) {
+		UnitManager unitManager = desktop.getSimulation().getUnitManager();
 		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
@@ -586,11 +583,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// nothing
-	}
-
-	@Override
-	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 			updateDisplay();
 		}
@@ -598,18 +590,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Nothing
 	}
 
 	/**
 	 * Prepare globe for deletion.
 	 */
 	public void destroy() {
+		MasterClock masterClock = desktop.getSimulation().getMasterClock();
 		masterClock.removeClockListener(this);
 		removeMouseListener(dragger);
 		dragger = null;
-		masterClock = null;
-		unitManager = null;
 		surfaceFeatures = null;
 		desktop  = null;
 

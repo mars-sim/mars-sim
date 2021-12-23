@@ -135,7 +135,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(true, false);
+				parentMainWindow.saveSimulation(true);
 			};
 		});
 		add(saveButton);
@@ -143,7 +143,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("img.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveAsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(false, false);
+				parentMainWindow.saveSimulation(false);
 			};
 		});
 		add(saveAsButton);

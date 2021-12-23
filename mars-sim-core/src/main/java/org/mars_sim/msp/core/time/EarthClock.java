@@ -47,8 +47,6 @@ public class EarthClock implements Serializable {
 	 */
 	private static long millisAtStart;
 
-	private String lastSavedLocalTime;
-
 	private SimpleDateFormat f0;
 	private SimpleDateFormat f1;
 	private SimpleDateFormat f2;
@@ -390,24 +388,6 @@ public class EarthClock implements Serializable {
 
 	public LocalTime getLocalTime() {
 		return zonedDateTime.toLocalTime();
-	}
-
-	/**
-	 * Save the local machine timestamp
-	 */
-	public void setLastSavedLocalTime() {
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		lastSavedLocalTime = f4.format(timestamp);
-		logger.config("Saving local timestamp as " + lastSavedLocalTime);
-	}
-
-	/**
-	 * Gets the last saved local machine timestamp
-	 *
-	 * @return
-	 */
-	public String getLastSavedLocalTime() {
-		return lastSavedLocalTime;
 	}
 
 	/**
