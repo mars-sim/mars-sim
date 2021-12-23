@@ -108,6 +108,11 @@ public class ClockPulse {
 	 * @return
 	 */
 	public ClockPulse addElapsed(double msolsSkipped) {
-		return new ClockPulse(id, elapsed + msolsSkipped, marsTime, earthTime, master, newSol, newMSol);
+		double actualElapsed = msolsSkipped + elapsed;
+		
+		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
+		boolean actualNewSol = newSol || (actualElapsed > marsTime.getMillisol());
+		
+		return new ClockPulse(id, actualElapsed, marsTime, earthTime, master, actualNewSol, newMSol);
 	}
 }

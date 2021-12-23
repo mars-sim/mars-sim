@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.time;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +24,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 
@@ -72,9 +70,6 @@ public class MasterClock implements Serializable {
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 
-	/** Mode for saving a simulation. */
-	private transient SaveType saveType = SaveType.NONE;
-
 	/** The scale factor for updating process and crop update calls. */
 	private double scaleFactor;
 	/** The current simulation time ratio. */
@@ -93,9 +88,6 @@ public class MasterClock implements Serializable {
 
 	/** A list of clock listener tasks. */
 	private transient Collection<ClockListenerTask> clockListenerTasks;
-
-	/** The file to save or load the simulation. */
-	private transient File file;
 
 	/** Is pausing millisol in use. */
 	public boolean canPauseTime = false;
@@ -139,9 +131,6 @@ public class MasterClock implements Serializable {
 	private ClockThreadTask clockThreadTask;
 	/** The clock pulse. */
 	private transient ClockPulse currentPulse;
-	
-	/** The instance of Simulation. */
-	private static Simulation sim = Simulation.instance();
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
@@ -273,7 +262,6 @@ public class MasterClock implements Serializable {
 	public final void removeClockListener(ClockListener oldListener) {
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
 		if (task != null) {
-			logger.config("Remove clock listener " + oldListener);
 			clockListenerTasks.remove(task);
 		}
 	}
@@ -309,39 +297,6 @@ public class MasterClock implements Serializable {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Sets the load simulation flag and the file to load from.
-	 *
-	 * @param file the file to load from.
-	 */
-	public void loadSimulation(File file) {
-		this.setPaused(false, false);
-		this.file = file;
-	}
-
-	/**
-	 * Sets the save simulation flag and the file to save to.
-	 *
-	 * @param file save to file or null if default file.
-	 */
-	public void setSaveSim(SaveType type, File file) {
-		saveType = type;
-		this.file = file;
-	}
-
-	/**
-	 * Checks if in the process of saving a simulation.
-	 *
-	 * @return true if saving simulation.
-	 */
-	public boolean isSavingSimulation() {
-        return saveType != SaveType.NONE;
-	}
-
-	public void setSaveType() {
-		saveType = SaveType.NONE;
 	}
 
 	/**
@@ -480,7 +435,7 @@ public class MasterClock implements Serializable {
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
-			if (sim.isDoneInitializing() && !isPaused) {
+			if (!isPaused) {
 
 				while (keepRunning) {
 					long startTime = System.currentTimeMillis();
@@ -522,12 +477,9 @@ public class MasterClock implements Serializable {
 
 					// Exit program if exitProgram flag is true.
 					if (exitProgram) {
-						AutosaveScheduler.cancel();
+						//AutosaveScheduler.cancel();
 						System.exit(0);
 					}
-
-					// Check to see if the simulation should be saved at this point.
-					checkSave();
 
 				} // end of while
 			} // if fxgl is not used
@@ -655,33 +607,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Checks if it is on pause or a saving process has been requested. Keeps track
-	 * of the time pulse
-	 *
-	 * @return true if it's saving
-	 */
-	private boolean checkSave() {
-
-		if (saveType != SaveType.NONE) {
-			try {
-				sim.saveSimulation(saveType, file);
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,
-						"Exception. Could not save the simulation: ", e);
-			}
-
-			// Reset saveType back to zero
-			saveType = SaveType.NONE;
-
-			return true;
-		}
-
-		else
-			return false;
-	}
-
-	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
@@ -702,7 +627,7 @@ public class MasterClock implements Serializable {
 
 		@Override
 		public String call() throws Exception {
-			if (sim.isDoneInitializing() && !isPaused) {
+			if (!isPaused) {
 				try {
 					// The most important job for ClockListener is to send a clock pulse to listener
 					// gets updated.
@@ -981,11 +906,11 @@ public class MasterClock implements Serializable {
 			this.isPaused = value;
 
 			if (value) {
-				AutosaveScheduler.cancel();
+				//AutosaveScheduler.cancel();
 				actualTR = 0; // Clear the actual rate
 			}
 			else {
-				AutosaveScheduler.start();
+				//AutosaveScheduler.start();
 
 				// Reset the last pulse time
 				timestampPulseStart();
@@ -1065,11 +990,9 @@ public class MasterClock implements Serializable {
 				tpfCache = 0;
 			}
 
-			checkSave();
-
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
-				AutosaveScheduler.cancel();
+				//AutosaveScheduler.cancel();
 				System.exit(0);
 			}
 		}
@@ -1145,6 +1068,5 @@ public class MasterClock implements Serializable {
 		uptimer = null;
 		clockThreadTask = null;
 		listenerExecutor = null;
-		file = null;
 	}
 }

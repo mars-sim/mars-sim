@@ -20,7 +20,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -81,13 +83,11 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 
 /**
@@ -96,14 +96,32 @@ import org.mars_sim.msp.core.tool.CheckSerializedSize;
  */
 public class Simulation implements ClockListener, Serializable {
 
+	private static class AutoSaveTrigger implements ClockListener {
+		private Simulation sim;
+		private SaveType type;
+		
+		public AutoSaveTrigger(Simulation sim, SaveType type) {
+			super();
+			this.sim = sim;
+			this.type = type;
+		}
+
+		@Override
+		public void pauseChange(boolean isPaused, boolean showPane) {
+		}
+		
+		@Override
+		public void clockPulse(ClockPulse currentPulse) {
+			// Set the pending save flag for an auto save
+			sim.savePending = type;
+		}
+	};
 	/** default serial id. */
 	private static final long serialVersionUID = -631308653510974249L;
 
 	private static final Logger logger = Logger.getLogger(Simulation.class.getName());
 
-	public enum SaveType {
-		/** Do not save */
-		NONE,
+	private enum SaveType {
 		/** Save as default.sim. */
 		SAVE_DEFAULT,
 		/** Save as other name. */
@@ -138,10 +156,6 @@ public class Simulation implements ClockListener, Serializable {
 	public final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	public final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
-	/** local time string */
-	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
-	/** 2 whitespaces. */
-	private final static String WHITESPACES = "  ";
 
 	public final static String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 	// + " - " + VENDOR
@@ -160,18 +174,15 @@ public class Simulation implements ClockListener, Serializable {
 
 	private transient boolean justSaved = true;
 
-	private transient boolean autosaveDefault;
-
 	private transient boolean clockOnPause = false;
 
 	private boolean initialSimulationCreated = false;
 
-	private boolean changed = true;
-
-	/** The modified time stamp of the last saved sim */
-	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
-	private String lastSaveTimeStamp = null;
+	private Date lastSaveTimeStamp = null;
+	
+	/** Clock listener that triggers autosaving **/
+	private transient ClockListener autoSaveHandler;
 
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
@@ -200,6 +211,9 @@ public class Simulation implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
 	private SimulationConfig simulationConfig;
+
+	private transient SaveType savePending = null;
+	private transient File savePendingFile = null;
 
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -428,10 +442,13 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void startClock(boolean autosaveDefault) {
 		masterClock.addClockListener(this, 0);
-
-		this.autosaveDefault = autosaveDefault;
-		AutosaveScheduler.defaultStart();
-
+		
+		// Add a listener to trigger the auto save
+		autoSaveHandler = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
+		long autoSaveDuration = simulationConfig.getAutosaveInterval() * 60000L;
+		logger.config("Adding autosave handled for every " + autoSaveDuration + "ms");
+		masterClock.addClockListener(autoSaveHandler, autoSaveDuration);
+		
 		masterClock.start();
 	}
 
@@ -506,6 +523,7 @@ public class Simulation implements ClockListener, Serializable {
 			ois = new ObjectInputStream(new GZIPInputStream(in));
 
 			// Load remaining serialized objects
+			lastSaveTimeStamp = (Date) ois.readObject();
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
 			environment = (Environment) ois.readObject();
 			missionManager = (MissionManager) ois.readObject();
@@ -586,7 +604,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthClock().getTimeStampF4());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-		logger.config("   Machine Local Time Stamp : " + masterClock.getEarthClock().getLastSavedLocalTime());
+		logger.config("   Machine Local Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config(DASHES);
 		if (Simulation.BUILD.equals(loadBuild)) {
 			logger.config(" Note : The two builds are identical.");
@@ -618,11 +636,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
-
-		// Restart the autosave scheduler
-		AutosaveScheduler.defaultStart();
-		// Set save type to NONE
-		masterClock.setSaveType();
 
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
@@ -769,20 +782,21 @@ public class Simulation implements ClockListener, Serializable {
 	 *
 	 * @param file the file to be saved to.
 	 */
-	public synchronized void saveSimulation(SaveType type, File file) throws IOException {
+	private synchronized void saveSimulation(SaveType type, File file) {
 
 		// Checks to see if the simulation is on pause
-		boolean isPause = masterClock.isPaused();
+		boolean isAlreadyPaused = masterClock.isPaused();
 
-		Simulation sim = instance();
 		// Stops the master clock and removes the Simulation clock listener
-		sim.halt(isPause);
+		masterClock.stop();
+		if (!isAlreadyPaused) masterClock.setPaused(true, false);
 
+		// Call up garbage collector. But it's up to the gc what it will do.
+		System.gc();
 		// Experiment with saving in JSON format
 //		writeJSON();
 
-		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
-		changed = true;
+		lastSaveTimeStamp = new Date();
 
 		// Create the backup file for storing the previous version of default.sim
 		File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
@@ -790,89 +804,98 @@ public class Simulation implements ClockListener, Serializable {
 		Path destPath = null;
 		Path srcPath = null;
 
-		// Use type to differentiate in what name/dir it is saved
-		if (type == SaveType.SAVE_DEFAULT) {
-
-			file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
-
-			if (file.exists() && !file.isDirectory()) {
-				fileSys = FileSystems.getDefault();
-				destPath = fileSys.getPath(backupFile.getPath());
-				srcPath = fileSys.getPath(file.getPath());
-				// Backup the existing default.sim
-				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+		try {
+			// Use type to differentiate in what name/dir it is saved
+			switch(type) {
+			case SAVE_DEFAULT:
+				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+	
+				if (file.exists() && !file.isDirectory()) {
+					fileSys = FileSystems.getDefault();
+					destPath = fileSys.getPath(backupFile.getPath());
+					srcPath = fileSys.getPath(file.getPath());
+					// Backup the existing default.sim
+					Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+				}
+	
+				logger.config("Saving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
+				break;
+			
+			case SAVE_AS:
+				String f = file.getName();
+				String dir = file.getParentFile().getAbsolutePath();
+				if (!f.contains(".sim"))
+					file = new File(dir, f + SAVE_FILE_EXTENSION);
+				logger.config("Saving the simulation as " + file + "...");
+				break;
+	
+			case AUTOSAVE_AS_DEFAULT:
+	
+				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+	
+				if (file.exists() && !file.isDirectory()) {
+					fileSys = FileSystems.getDefault();
+					destPath = fileSys.getPath(backupFile.getPath());
+					srcPath = fileSys.getPath(file.getPath());
+					// Backup the existing default.sim
+					Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+				}
+	
+				logger.config("Autosaving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
+				break;
+			
+			case AUTOSAVE:
+				int missionSol = masterClock.getMarsClock().getMissionSol();
+	
+				String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
+						+ SAVE_FILE_EXTENSION;
+				file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
+				logger.config("Autosaving the simulation as " + autosaveFilename + ".");
+				
+				// TODO Should purge old auto saved files
+				break;
+				
+			default:
+				break;
 			}
-
-			logger.config("Saving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
-
-		}
-
-		else if (type == SaveType.SAVE_AS) {
-			String f = file.getName();
-			String dir = file.getParentFile().getAbsolutePath();
-			if (!f.contains(".sim"))
-				file = new File(dir, f + SAVE_FILE_EXTENSION);
-			logger.config("Saving the simulation as " + file + "...");
-		}
-
-		else if (type == SaveType.AUTOSAVE_AS_DEFAULT) {
-
-			file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
-
-			if (file.exists() && !file.isDirectory()) {
-				fileSys = FileSystems.getDefault();
-				destPath = fileSys.getPath(backupFile.getPath());
-				srcPath = fileSys.getPath(file.getPath());
-				// Backup the existing default.sim
-				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+	
+			// if the autosave/default save directory does not exist, create one now
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
 			}
-
-			logger.config("Autosaving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
-
+	
+			// Get current size of heap in bytes
+			long heapSize = Runtime.getRuntime().totalMemory();
+			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+			long heapMaxSize = Runtime.getRuntime().maxMemory();
+			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+			long heapFreeSize = Runtime.getRuntime().freeMemory();
+	
+			logger.config(
+			"Current Heap Size: " + formatSize(heapSize)
+			+ "    Heap Max Size: " + formatSize(heapMaxSize)
+			+ "    Heap Free Size: " + formatSize(heapFreeSize) + "");
+	
+			// Call up garbage collector. But it's up to the gc what it will do.
+			System.gc();
+	
+			if (heapFreeSize > MIN_HEAP_SPACE){
+				// Save local machine timestamp
+				// Serialize the file
+				lastSaveTimeStamp = new Date();
+				serialize(type, file, srcPath, destPath);
+			}
+			else {
+				logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
+			}
 		}
-
-		else if (type == SaveType.AUTOSAVE) {
-			int missionSol = masterClock.getMarsClock().getMissionSol();
-
-			String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
-					+ SAVE_FILE_EXTENSION;
-			file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
-			logger.config("Autosaving the simulation as " + autosaveFilename + ".");
-
+		catch (IOException ioe) {
+			logger.severe("Problem saving simulation " + ioe.getMessage());
 		}
-
-		// if the autosave/default save directory does not exist, create one now
-		if (!file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
-		}
-
-		// Get current size of heap in bytes
-		long heapSize = Runtime.getRuntime().totalMemory();
-		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
-		long heapMaxSize = Runtime.getRuntime().maxMemory();
-		 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
-		long heapFreeSize = Runtime.getRuntime().freeMemory();
-
-		logger.config(
-		"Current Heap Size: " + formatSize(heapSize)
-		+ "    Heap Max Size: " + formatSize(heapMaxSize)
-		+ "    Heap Free Size: " + formatSize(heapFreeSize) + "");
-
-		// Call up garbage collector. But it's up to the gc what it will do.
-		System.gc();
-
-		if (heapFreeSize > MIN_HEAP_SPACE){
-			// Save local machine timestamp
-			masterClock.getEarthClock().setLastSavedLocalTime();
-			// Serialize the file
-			serialize(type, file, srcPath, destPath);
-		}
-		else {
-			logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
-		}
-
+		
 		// Restarts the master clock and adds back the Simulation clock listener
-		sim.proceed(isPause);
+		if (!isAlreadyPaused) masterClock.setPaused(false, false);
+		masterClock.restart();
 	}
 
 	/**
@@ -910,6 +933,7 @@ public class Simulation implements ClockListener, Serializable {
 			delay(500L);
 
 			// Store the in-transient objects.
+			oos.writeObject(lastSaveTimeStamp);
 			oos.writeObject(malfunctionFactory);
 			oos.writeObject(environment);
 			oos.writeObject(missionManager);
@@ -1122,10 +1146,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
-	public void endMasterClock() {
-		masterClock = null;
-	}
-
 	/**
 	 * Stop the simulation.
 	 */
@@ -1133,64 +1153,10 @@ public class Simulation implements ClockListener, Serializable {
 		if (masterClock != null) {
 			masterClock.stop();
 			masterClock.removeClockListener(this);
+			masterClock.removeClockListener(autoSaveHandler);
 		}
 	}
 
-	/*
-	 * Stops the master clock and removes the Simulation clock listener
-	 *
-	 * @param isPause has it been on pause ?
-	 */
-	public void halt(boolean isPause) {
-		if (masterClock != null) {
-			masterClock.stop();
-			if (!isPause) masterClock.setPaused(true, false);
-			masterClock.removeClockListener(this);
-		}
-
-		// Call up garbage collector. But it's up to the gc what it will do.
-		System.gc();
-	}
-
-	/*
-	 * Restarts the master clock and adds back the Simulation clock listener
-	 *
-	 * @param isPause has it been on pause ?
-	 */
-	public void proceed(boolean isPause) {
-		if (masterClock != null) {
-			masterClock.addClockListener(this, 0);
-			if (!isPause) masterClock.setPaused(false, false);
-			masterClock.restart();
-		}
-	}
-
-	/**
-	 * Returns the time string of the last saving or autosaving action
-	 */
-	public String getLastSaveTimeStamp() {
-		if (lastSaveTimeStamp == null || lastSaveTimeStamp.equals(""))
-			return "Never     ";
-		else if (!changed) {
-			return lastSaveTimeStampMod;
-		} else {
-			changed = false;
-			StringBuilder sb = new StringBuilder();
-			int l = lastSaveTimeStamp.length();
-
-			// Past : e.g. 03-22-2017_022018PM
-			// String s = lastSave.substring(l-8, l);
-			// sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4))
-			// .append(" ").append(s.substring(6, 8)).append(" (local time)");
-
-			// Now e.g. 2007-12-03T10.15.30
-			// String id = ZonedDateTime.now().getZone().toString();
-			String s = lastSaveTimeStamp.substring(lastSaveTimeStamp.indexOf("T") + 1, l).replace(".", ":");
-			sb.append(s).append(WHITESPACES).append(LOCAL_TIME);
-			lastSaveTimeStampMod = sb.toString();
-			return lastSaveTimeStampMod;
-		}
-	}
 
 	/**
 	 * Get the planet Mars.
@@ -1338,11 +1304,13 @@ public class Simulation implements ClockListener, Serializable {
 			unitManager.timePassing(pulse);
 
 			transportManager.timePassing(pulse);
+			
+			// Pending save
+			if (savePending != null) {
+				saveSimulation(savePending, savePendingFile);
+				savePending = null;
+			}
 		}
-	}
-
-	public boolean getAutosaveDefault() {
-		return autosaveDefault;
 	}
 
 	@Override
@@ -1357,8 +1325,13 @@ public class Simulation implements ClockListener, Serializable {
 	public void destroyOldSimulation() {
 		logger.config("Starting destroyOldSimulation()");
 
-		AutosaveScheduler.cancel();
-
+		// Remove old clock listeners ?
+		if (masterClock != null) {
+			masterClock.removeClockListener(this);
+			if (autoSaveHandler != null) {
+				masterClock.removeClockListener(autoSaveHandler);
+			}
+		}
 		malfunctionFactory = null;
 
 		if (environment != null) {
@@ -1413,4 +1386,20 @@ public class Simulation implements ClockListener, Serializable {
 		 logger.config("Done with Simulation's destroyOldSimulation()");
 	}
 
+	/**
+	 * Request that the simulation is saved on the next idle period
+	 * @param saveFile Optional file to save info, null means default file.
+	 */
+	public void requestSave(File saveFile) {
+		savePending = (saveFile == null ? SaveType.SAVE_DEFAULT : SaveType.SAVE_AS);
+		savePendingFile = saveFile;		
+	}
+
+	/**
+	 * Is a save request still pending
+	 * @return
+	 */
+	public boolean isSavePending() {
+		return (savePending != null);
+	}
 }

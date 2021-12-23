@@ -448,13 +448,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			mainWindow.exitSimulation();
 		// else if (selectedItem == newItem) mainWindow.newSimulationProcess();
 		else if (selectedItem == saveItem)
-			mainWindow.saveSimulation(true, false);
+			mainWindow.saveSimulation(true);
 		else if (selectedItem == saveAsItem)
-			mainWindow.saveSimulation(false, false);
-//		else if (selectedItem == loadItem)
-//			mainWindow.loadSimulation(false);
-//		else if (selectedItem == loadAutosaveItem)
-//			mainWindow.loadSimulation(true);
+			mainWindow.saveSimulation(false);
 
 		else if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected())

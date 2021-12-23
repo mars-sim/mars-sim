@@ -125,7 +125,7 @@ public class EnterAirlock extends Task implements Serializable {
 		} else if (REQUEST_INGRESS.equals(getPhase())) {
 			return requestIngress(time);
 		} else if (DEPRESSURIZE_CHAMBER.equals(getPhase())) {
-			return depressurizeChamber(time);
+			return depressurizeChamber(time); 
 		} else if (ENTER_AIRLOCK.equals(getPhase())) {
 			return enterAirlock(time);
 		} else if (WALK_TO_CHAMBER.equals(getPhase())) {
@@ -445,7 +445,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 				if (!airlock.isOuterDoorLocked()) {
 
-					if (!airlock.isChamberFull() && airlock.hasSpace()) {
+					if ((!airlock.isChamberFull() && airlock.hasSpace()) || airlock.inAirlock(person)) {
 
 						if (!airlock.inAirlock(person)) {
 							canProceed = airlock.enterAirlock(person, id, false);
