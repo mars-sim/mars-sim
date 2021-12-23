@@ -32,13 +32,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 
-	private static final double FACTOR = 10_000D;
+	private static final double FACTOR = 1_000D;
 
-	/** The resource process to be toggled. */
-	private ResourceProcess process;
-	/** The building the resource process is in. */
-	private Building resourceProcessBuilding;
-	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -47,25 +42,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 	@Override
 	public Task constructInstance(Person person) {
-
-		if (resourceProcessBuilding == null || process == null) {
-			SimpleEntry<Building, ResourceProcess> entry = ToggleResourceProcess.getResourceProcessingBuilding(person);
-			resourceProcessBuilding = entry.getKey();
-			process = entry.getValue();
-		}
-		
-		if (resourceProcessBuilding != null || process != null) {
-			// Set the change flag to true
-			process.setFlag(true);
-			
-			ToggleResourceProcess task = new ToggleResourceProcess(person, resourceProcessBuilding, process);
-			// Set the instance to null
-			process = null;
-			resourceProcessBuilding = null;
-			return task;
-		}
-		
-		return null;
+		return new ToggleResourceProcess(person);
 	}
 
 	@Override
@@ -89,8 +66,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 			}
 			
 			SimpleEntry<Building, ResourceProcess> entry = ToggleResourceProcess.getResourceProcessingBuilding(person);
-			resourceProcessBuilding = entry.getKey();
-			process = entry.getValue();
+			Building resourceProcessBuilding = entry.getKey();
+			ResourceProcess process = entry.getValue();
 			
 			if (resourceProcessBuilding != null || process != null) {
 

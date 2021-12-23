@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -75,7 +74,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -100,7 +98,7 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class MainDetailPanel extends WebPanel implements MissionListener, UnitListener { // ListSelectionListener
 	/** initialized logger for this class. */
-	private static final Logger logger = Logger.getLogger(MainDetailPanel.class.getName());
+//	For future use: private static final Logger logger = Logger.getLogger(MainDetailPanel.class.getName())
 
 	// Custom mission panel IDs.
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
@@ -142,9 +140,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private MainDesktopPane desktop;
 
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
-
-	private static AmountResource iceAR = ResourceUtil.iceAR;
-	private static AmountResource regolithAR = ResourceUtil.regolithAR;
 
 	/**
 	 * Constructor.

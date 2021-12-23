@@ -4,7 +4,6 @@
  * @date 2021-09-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
@@ -16,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Simulation;
@@ -112,11 +112,12 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Create excavation panel.
 		WebPanel excavationPane = new WebPanel(new BorderLayout());
+		excavationPane.setBorder(BorderFactory.createTitledBorder("Minerals Excavated - Aboard Vehicle"));
 		centerPane.add(excavationPane);
 
 		// Create excavation label.
-		WebLabel excavationLabel = new WebLabel("Minerals Excavated at Site:");
-		excavationPane.add(excavationLabel, BorderLayout.NORTH);
+//		WebLabel excavationLabel = new WebLabel("Minerals Excavated at Site:");
+//		excavationPane.add(excavationLabel, BorderLayout.NORTH);
 
 		// Create excavation scroll panel.
 		WebScrollPane excavationScrollPane = new WebScrollPane();
@@ -182,8 +183,8 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			super();
 
 			// Initialize concentration maps.
-			estimatedConcentrationMap = new HashMap<String, Double>();
-			actualConcentrationMap = new HashMap<String, Double>();
+			estimatedConcentrationMap = new HashMap<>();
+			actualConcentrationMap = new HashMap<>();
 		}
 
 		/**
@@ -287,7 +288,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			super();
 
 			// Initialize excavation map.
-			excavationMap = new HashMap<AmountResource, Double>();
+			excavationMap = new HashMap<>();
 		}
 
 		/**

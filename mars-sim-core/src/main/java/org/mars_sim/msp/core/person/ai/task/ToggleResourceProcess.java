@@ -74,21 +74,24 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 *
 	 * @param person the person performing the task.
 	 */
-	public ToggleResourceProcess(Person person, Building resourceProcessBuilding, ResourceProcess process) {
+	public ToggleResourceProcess(Person person) {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 10D);
-        this.resourceProcessBuilding = resourceProcessBuilding;
-        this.process = process;
 
-        if (!process.isFlagged()) {
-        	end("'" + process.getProcessName() + "' was no longer flagged for change.");
-        }
-        
-        if (person.isInSettlement()) {
-        	setupResourceProcess();
-        }
-        else {
-        	end("Not in Settlement.");
-        }
+        SimpleEntry<Building, ResourceProcess> entry = ToggleResourceProcess.getResourceProcessingBuilding(person);
+		resourceProcessBuilding = entry.getKey();
+		process = entry.getValue();
+		
+		if (resourceProcessBuilding != null || process != null) {
+	        if (person.isInSettlement()) {
+	        	setupResourceProcess();
+	        }
+	        else {
+	        	end("Not in Settlement.");
+	        }
+		}
+		else {
+			end("No resource processes found.");
+		}
 	}
 
 	/**
@@ -269,13 +272,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public static double getResourcesValueDiff(Settlement settlement, ResourceProcess process) {
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);
-		double diff = 0;
+		double diff = 0.01;
 
-		if (inputValue < SMALL_AMOUNT) {
-			diff = outputValue;
-		}
-		else
+		if (inputValue > SMALL_AMOUNT) {
 			diff = (outputValue - inputValue) / inputValue;
+		}
 
 		// Subtract power required per millisol.
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
