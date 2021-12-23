@@ -701,11 +701,6 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// Nothing
-	}
-	
-	@Override
-	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
 			updateArrival();
 		}	

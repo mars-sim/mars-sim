@@ -685,7 +685,7 @@ public class MasterClock implements Serializable {
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
-		private double timeCache = 0;
+		private double msolsSkipped = 0;
 		private long lastPulseDelivered = 0;
 		private ClockListener listener;
 		private long minDuration;
@@ -706,22 +706,28 @@ public class MasterClock implements Serializable {
 				try {
 					// The most important job for ClockListener is to send a clock pulse to listener
 					// gets updated.
-					listener.clockPulse(currentPulse);
-					timeCache += currentPulse.getElapsed();
-
-					// One UI Pulse per X seconds
-					long timeNow = System.currentTimeMillis();
-					if ((timeNow - lastPulseDelivered) > minDuration) {
-						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
-						// Check for logger.info("UI Update pulse " + timeNow  + " for " + listener)
-						listener.uiPulse(timeCache);
+					ClockPulse activePulse = currentPulse;
+					
+					// Handler is collapsing pulses so check the passed time
+					if (minDuration > 0) {
+						// Compare elapsed real time to the minimum
+						long timeNow = System.currentTimeMillis();
+						if ((timeNow - lastPulseDelivered) < minDuration) {
+							// Less than the minimum so record elapse and skip
+							msolsSkipped += currentPulse.getElapsed();
+							return "skip";
+						}
+						
+						// Build new pulse to include skipped time
+						activePulse = currentPulse.addElapsed(msolsSkipped);
+						
 						// Reset count
 						lastPulseDelivered = timeNow;
-						
-						// Reset timeRatioCache
-						timeCache = 0;
+						msolsSkipped = 0;
 					}
-
+					
+					// Call handler
+					listener.clockPulse(activePulse);
 				}
 				catch (Exception e) {
 					logger.log(Level.SEVERE, "Can't send out clock pulse: ", e);

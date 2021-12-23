@@ -54,8 +54,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	private MainDesktopPane desktop;
 	
-	private static MarsClock currentTime;
-	private static MasterClock masterClock;
+	private MarsClock currentTime;
 	
 	private int solsToArrival = -1;
 	
@@ -68,7 +67,7 @@ implements ClockListener, HistoricalEventListener {
 		super();
 		this.desktop = desktop;
 	
-		masterClock = Simulation.instance().getMasterClock();
+		MasterClock masterClock = desktop.getSimulation().getMasterClock();
 		currentTime = masterClock.getMarsClock();
 		
 		setLayout(new BorderLayout(0, 10));
@@ -296,11 +295,6 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// Nothing
-	}
-	
-	@Override
-	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
 			updateArrival();
 		}				
@@ -308,17 +302,14 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// NOTHING
 	}
 	
 	/**
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
-		if (Simulation.instance().getEventManager() != null)
-			Simulation.instance().getEventManager().removeListener(this);
-		if (masterClock != null)
-			masterClock.removeClockListener(this);
+		desktop.getSimulation().getEventManager().removeListener(this);
+		desktop.getSimulation().getMasterClock().removeClockListener(this);
 		
 		nameValueLabel = null;
 		stateValueLabel = null;
@@ -331,7 +322,6 @@ implements ClockListener, HistoricalEventListener {
 		desktop = null;
 
 		currentTime = null;
-		masterClock = null;
 	}
 
 }

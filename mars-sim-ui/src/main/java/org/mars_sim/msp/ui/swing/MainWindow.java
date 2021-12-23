@@ -886,7 +886,6 @@ extends JComponent implements ClockListener {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
 					masterClock.increaseSpeed();
-					updateTimeLabel();
 				}
 			};
 		});
@@ -899,18 +898,13 @@ extends JComponent implements ClockListener {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {
 					masterClock.decreaseSpeed();
-					updateTimeLabel();
 				}
 			};
 		});
 
 	}
 
-	public void updateTimeLabel() {
-		((TimeWindow) desktop.getToolWindow(TimeWindow.NAME)).updateSlowLabels();
-	}
-
-	public void createSolLabel() {
+	private void createSolLabel() {
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		solLabel.setFont(FONT_SANS_SERIF_1);
 		solLabel.setForeground(Color.DARK_GRAY);
@@ -1394,10 +1388,6 @@ extends JComponent implements ClockListener {
 			// Increments the Earth and Mars clock labels.
 			incrementClocks();
 		}
-	}
-
-	@Override
-	public void uiPulse(double time) {
 	}
 
 	/**

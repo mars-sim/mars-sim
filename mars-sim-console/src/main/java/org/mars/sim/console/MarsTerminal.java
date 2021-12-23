@@ -352,13 +352,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		// not needed
 	}
 
-
-	@Override
-	public void uiPulse(double time) {
-		// not needed
-	}
-
-
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);

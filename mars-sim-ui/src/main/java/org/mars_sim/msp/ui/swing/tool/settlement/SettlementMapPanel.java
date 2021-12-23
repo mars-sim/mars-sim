@@ -1201,12 +1201,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void uiPulse(double time) {
 		if (isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 			repaint();
 		}
@@ -1214,8 +1208,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

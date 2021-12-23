@@ -139,8 +139,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
-	private int solCache;
-
 	private double temperatureCache;
 	private double opticalDepthCache;
 	private double windSpeedCache;
@@ -1323,9 +1321,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		 * Prepare class for deletion.
 		 */
 		public void destroy() {
-
-			removeAllElements();
-
 			unitManager.removeUnitManagerListener(this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<>(settlements);
@@ -1333,7 +1328,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			while (i.hasNext()) {
 				i.next().removeUnitListener(this);
 			}
-
 		}
 	}
 
@@ -1382,14 +1376,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void uiPulse(double time) {
 		if (isVisible() || isShowing()) {
 			// THis can be removed once uiPulse is collapsed into timePulse
-			MarsClock marsClock = desktop.getSimulation().getMasterClock().getMarsClock();
+			MarsClock marsClock = pulse.getMarsTime();
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 
 				Settlement s = (Settlement) settlementListBox.getSelectedItem();
@@ -1403,17 +1392,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 							+ (int)getSolarIrradiance(s.getCoordinates())
 							+ WM);
 
-					int solElapsed = marsClock.getMissionSol();
-					// Check for the new sol
-					if (solCache != solElapsed) {
-						solCache = solElapsed;
-
+					if (pulse.isNewSol()) {
 						displaySunData(s.getCoordinates());
 
-						if (solCache > 1) {
+						if (marsClock.getMissionSol() > 1) {
 							Collection<Settlement> list = unitManager.getSettlements();
 							for (Settlement s0: list)
-							prepareResourceStat(s0);
+							prepareResourceStat(s0, marsClock.getMissionSol());
 						}
 					}
 				}
@@ -1426,9 +1411,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 *
 	 * @param s
 	 */
-	public void prepareResourceStat(Settlement s) {
+	private void prepareResourceStat(Settlement s, int missionSol) {
 		String text = "";
-		Map<Integer, Double> yestersolResources = s.gatherResourceStat(solCache - 1);
+		Map<Integer, Double> yestersolResources = s.gatherResourceStat(missionSol - 1);
 		int size = yestersolResources.size();
 		int i = 0;
 		for (int id: yestersolResources.keySet()) {

@@ -705,44 +705,13 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-//			timeCache += time;
-//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//				keepRunning = true;
-				updateDisplay();
-//				keepRunning = false;
-//				timeCache = 0;
-//			}
+			updateDisplay();
 		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public StyleId getDefaultStyleId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getUIClassID() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -765,6 +734,24 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		dbg = null;
 		dbImage = null;
 		starfield = null;
+	}
+
+	@Override
+	public StyleId getDefaultStyleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getUIClassID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

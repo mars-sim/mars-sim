@@ -514,39 +514,13 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void uiPulse(double time) {
-//		if (mainScene != null) {
-//			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()
-//					&& (desktop.isToolWindowOpen(NavigatorWindow.NAME) || (desktop.isToolWindowOpen(MissionWindow.NAME)
-//							&& ((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).isNavPointsMapTabOpen()))) {
-//				// TODO: should also check if navpoints tab is open or not
-////				timeCache += time;
-////				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//				// Repaint map panel
-//				updateDisplay();
-////					timeCache = 0;
-////				}	
-//			}
-//		} else 
-			if (desktop.isToolWindowOpen(NavigatorWindow.NAME) || desktop.isToolWindowOpen(MissionWindow.NAME)
-		// ||desktop.isToolWindowOpen(ResupplyWindow.NAME)
-		) {
-//			timeCache += time;
-//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+		if (desktop.isToolWindowOpen(NavigatorWindow.NAME) || desktop.isToolWindowOpen(MissionWindow.NAME)) {
 			updateDisplay();
-//				timeCache = 0;
-//			}
 		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -556,9 +530,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// Remove clock listener.
 		desktop.getSimulation().getMasterClock().removeClockListener(this);
 		mapLayers = null;
-//		centerCoords = null; // may create NPE when ending the sim
 		executor = null;
-//		map = null; // // may create NPE when ending the sim
 		surfMap = null;
 		topoMap = null;
 		geoMap = null;

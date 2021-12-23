@@ -1345,11 +1345,6 @@ public class Simulation implements ClockListener, Serializable {
 		return autosaveDefault;
 	}
 
-
-	@Override
-	public void uiPulse(double time) {
-	}
-
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
         clockOnPause = isPaused;

@@ -114,7 +114,6 @@ public class MainDesktopPane extends JDesktopPane
 	private CommanderWindow commanderWindow;
 
 	private MainWindow mainWindow;
-	private EventTableModel eventTableModel;
 
 	private Simulation sim;
 
@@ -1063,35 +1062,19 @@ public class MainDesktopPane extends JDesktopPane
 		return toolWindows;
 	}
 
-	public void setEventTableModel(EventTableModel eventTableModel) {
-		this.eventTableModel = eventTableModel;
-	}
-
-	public EventTableModel getEventTableModel() {
-		return eventTableModel;
-	}
-
 	public SettlementMapPanel getSettlementMapPanel() {
 		return settlementWindow.getMapPanel();
 	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		if (time > 0 && !mainWindow.isIconified()) {
+		if (!mainWindow.isIconified()) {
 			updateWindows();
 		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-	}
-
-	public boolean isEmpty() {
-        return super.getAllFrames().length == 0;
 	}
 
 	/**
@@ -1124,7 +1107,6 @@ public class MainDesktopPane extends JDesktopPane
 		timeWindow = null;
 		commanderWindow = null;
 		mainWindow = null;
-		eventTableModel = null;
 	}
 
 }

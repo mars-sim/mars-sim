@@ -19,15 +19,6 @@ public interface ClockListener {
 	public void clockPulse(ClockPulse currentPulse);
 
 	/**
-	 * Change in time for map related class
-	 * TODO: Shouldn't the UI just be another clock listener? The UI listener beats at a slowed down rate 
-	 * so this should be part of the how the listener is registered with the MasterClock, i.e. slow or fast.
-	 * 
-	 * @param time the amount of time changed. (millisols)
-	 */
-	public void uiPulse(double time);
-
-	/**
 	 * Change the pause state of the clock.
 	 * 
 	 * @param isPaused true if clock is paused.
