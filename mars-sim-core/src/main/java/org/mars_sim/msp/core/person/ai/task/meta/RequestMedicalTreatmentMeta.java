@@ -89,11 +89,10 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
 
                     // Check if person can treat the health problem himself/herself.
                     boolean selfTreat = false;
-                    if (treatment.getSelfAdminister()) {
-                        if (personMedicalSkill >= treatment.getSkill()) {
-                            result += VALUE;
-                            selfTreat = true;
-                        }
+                    if (treatment.getSelfAdminister()
+                        && personMedicalSkill >= treatment.getSkill()) {
+                    	result += VALUE;
+                    	selfTreat = true;
                     }
 
                     if (canTreat && !selfTreat) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarageMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
 /**
  * Meta task for the LoadVehicleGarage task.
@@ -53,6 +52,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement()) {
+        	
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             

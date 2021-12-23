@@ -11,14 +11,13 @@ public class Conversion {
 	public Conversion() {
 	}
 	
-		// convert nameStr down into an array
-		// create new String at each whitespace
+		// Convert nameStr down into an array
+		// Create new String at each whitespace
 
-		// at each word, do
-		// String word = null;
-		// word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
+		// At each word, 
+		// Do this: String word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase()
 
-		// convert the array back to one single String
+		// Convert the array back to one single String
 
 	/**
 	 * Checks if the initial of the string is a vowel
@@ -207,7 +206,7 @@ public class Conversion {
 	 * @param a number
 	 * @return a String
 	 */
-	private static String getCharForNumber(int i) {
+	public static String getCharForNumber(int i) {
 		// Do note delete. Will use it
 		// NOTE: i must be > 1, if i = 0, return null
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;

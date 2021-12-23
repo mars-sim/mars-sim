@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SelfTreatHealthProblem.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A task for performing a medical self-treatment at a medical station.
@@ -204,7 +204,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
         MedicalAid result = null;
 
-        if (person.getVehicle() instanceof Rover) {
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();
@@ -272,7 +272,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
      */
     private List<HealthProblem> getSelfTreatableHealthProblems() {
 
-        List<HealthProblem> result = new ArrayList<HealthProblem>();
+        List<HealthProblem> result = new ArrayList<>();
 
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
         while (i.hasNext()) {

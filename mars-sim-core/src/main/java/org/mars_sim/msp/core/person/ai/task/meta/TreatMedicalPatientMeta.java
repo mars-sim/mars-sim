@@ -63,11 +63,10 @@ public class TreatMedicalPatientMeta extends MetaTask {
 	        if (hasNeedyMedicalAids(person)) {
 	            result += VALUE;	
 	            
-	            if (person.isInVehicle()) {	
+	            if (person.isInVehicle()	
 	    	        // Check if person is in a moving rover.
-	    	        if (Vehicle.inMovingRover(person)) {
+	    	        && Vehicle.inMovingRover(person)) {
 	    	        	result -= 100;
-	    	        }
 	            }
 	        }
 	
