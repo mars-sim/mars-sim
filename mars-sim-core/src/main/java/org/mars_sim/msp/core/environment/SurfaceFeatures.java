@@ -247,18 +247,22 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public int getTrend(Coordinates location) {
 		int trend = 0;
-
-		if (irradianceCache.containsKey(location)
-				&& currentIrradiance.containsKey(location)) {
-
-			double past = irradianceCache.get(location);
-			double current =  currentIrradiance.get(location);
-
+		double past = 0;
+		double current = 0;
+		
+		if (irradianceCache.containsKey(location)) {
+			// Sometimes irradianceCache.get(location) may get NPE
+			past = irradianceCache.get(location);
+		}
+		if (currentIrradiance.containsKey(location)) {
+			current =  currentIrradiance.get(location);
+		}
+		
+		if (past > 0 && current > 0) {
 			if (past < current)
 				trend = 1;
 			if (past > current)
 				trend = -1;
-
 		}
 
 		return trend;

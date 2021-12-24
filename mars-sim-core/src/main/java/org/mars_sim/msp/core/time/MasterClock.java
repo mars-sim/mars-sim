@@ -403,12 +403,6 @@ public class MasterClock implements Serializable {
 		double ratio = TIME_INTERVAL / MAX_SPEED;
 		scaleFactor = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
 		logger.config("The scale factor becomes " + scaleFactor);
-//		// Update the interval in resource processing
-//		ResourceProcessing.resetInterval();
-//		ResourceProcessing.setInterval(scale);
-//		// Update the interval in Farming
-//		Farming.resetInterval();
-//		Farming.setInterval(scale);
 	}
 
 	/**
@@ -699,27 +693,51 @@ public class MasterClock implements Serializable {
 		currentPulse = new ClockPulse(newPulseId, time, marsClock, earthClock, this, isNewSol, isNewMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
-		try {
-			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
-			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {				
-				Future<String> result = listenerExecutor.submit(c);
-				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-				result.get();
-			}
-		} catch (ExecutionException ee) {
-			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
-		} catch (RejectedExecutionException ree) {
-			// Application shutting down
-			Thread.currentThread().interrupt();
-			// Executor is shutdown and cannot complete queued tasks
-			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-		} catch (InterruptedException e) {
-			// Program closing down
-			Thread.currentThread().interrupt();
-			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
-		}
+//		try {
+//			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
+//			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {				
+//				Future<String> result = listenerExecutor.submit(c);
+//				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+//				result.get();
+//			}
+//		} catch (ExecutionException ee) {
+//			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
+//		} catch (RejectedExecutionException ree) {
+//			// Application shutting down
+//			Thread.currentThread().interrupt();
+//			// Executor is shutdown and cannot complete queued tasks
+//			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+//		} catch (InterruptedException e) {
+//			// Program closing down
+//			Thread.currentThread().interrupt();
+//			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
+//		}
+		
 		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
 		// Not using clockListenerTasks.forEach(s -> { }) for now
+
+		// Execute all listener concurrently and wait for all to complete before advancing
+		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
+		new HashSet<>(clockListenerTasks).parallelStream().forEach(s -> {
+			
+			Future<String> result = listenerExecutor.submit(s);
+			
+			try {
+				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+				result.get();
+			} catch (ExecutionException ee) {
+				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
+			} catch (RejectedExecutionException ree) {
+				// Application shutting down
+				Thread.currentThread().interrupt();
+				// Executor is shutdown and cannot complete queued tasks
+				logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+			} catch (InterruptedException e) {
+				// Program closing down
+				Thread.currentThread().interrupt();
+				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
+			}
+		});
 	}
 
 	/**
@@ -767,14 +785,19 @@ public class MasterClock implements Serializable {
 	 * Increases the speed / time ratio
 	 */
 	public void increaseSpeed() {
-		if (targetTR < 1)
+		// newTR is targetTR * 2
+		int newTR = targetTR << 1;
+		if (newTR < 1) {
+			newTR = 1;
 			targetTR = 1;
-		int newTR = targetTR * 2;
-		if (newTR > trArray[trArray.length - 1])
-			newTR = trArray[trArray.length - 1];
+		}
+		else {
+//			if (newTR > trArray[trArray.length - 1]) {
+//				newTR = trArray[trArray.length - 1];
+				compareTPS(newTR, true);
+//			}
+		}
 		preferredTR = newTR;
-
-		compareTPS(newTR, true);
 	}
 
 	/**
@@ -783,11 +806,14 @@ public class MasterClock implements Serializable {
 	public void decreaseSpeed() {
 		// Divide by 2
 		int newTR = targetTR >> 1;
-		if (newTR < 1)
+		if (newTR < 1) {
 			newTR = 1;
+			targetTR = 1;
+		}
+		else {
+			compareTPS(newTR, false);
+		}
 		preferredTR = newTR;
-
-		compareTPS(newTR, false);
 	}
 
 	/**
