@@ -49,7 +49,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
 
-	private static final double SMALL_AMOUNT = 0.0001;
+	private static final double SMALL_AMOUNT = 0.000001;
 	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
@@ -305,6 +305,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				diff = 0D;
 			}
 		}
+		
 		return diff;
 	}
 
@@ -415,12 +416,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double togglingPhase(double time) {
-
-		// Check if the process has already been completed by another person.
-		if (process.isProcessRunning() == toBeToggledOn) {
-			setPhase(FINISHED);
-		}
-		
+	
 		double perf = person.getPerformanceRating();
 		// If person is incapacitated, enter airlock.
 		if (perf == 0D) {

@@ -134,11 +134,11 @@ public class ResourceProcess implements Serializable {
 			toggleRunningWorkTime = 0D;
 			
 			runningProcess = !runningProcess;
-			if (runningProcess) {
-				logger.fine("Done turning on " + name);
-			} else {
-				logger.fine("Done turning off " + name);
-			}
+//			if (runningProcess) {
+//				logger.fine("Done turning on " + name);
+//			} else {
+//				logger.fine("Done turning off " + name);
+//			}
 
 			// Reset for next toggle
 			resetToggleTime(marsClock.getMissionSol(), marsClock.getMillisolInt());

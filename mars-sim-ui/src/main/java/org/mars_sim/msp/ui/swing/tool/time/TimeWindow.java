@@ -452,6 +452,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Update the two time labels
 		updateRateLabels();
+		// Update season labels
+		updateSeason();
 	}
 
 	/**
@@ -490,7 +492,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Set and update the season labels
 	 */
-	private void setSeason() {
+	private void updateSeason() {
 		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
 		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
 	
@@ -515,7 +517,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			southernSeasonTip = getSeasonTip(southernSeason);
 			TooltipManager.setTooltip(southernSeasonLabel, southernSeasonTip, TooltipWay.down);
 		}
-
 	}
 
 	/**
@@ -550,7 +551,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			String mn = marsTime.getMonthName();
 			if (mn != null)
 				SwingUtilities.invokeLater(() -> martianMonthHeaderLabel.setText("Month of " + mn));
-			setSeason();
+			updateSeason();
 		}
 	}
 
@@ -589,7 +590,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (!isPaused && desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the slow labels
 			updateDateLabels();
-
 		}
 	}
 
