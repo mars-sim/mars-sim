@@ -590,6 +590,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		// placeholder
 	}
 
 	/**

@@ -1077,6 +1077,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		// placeholder
 	}
 
 	/**

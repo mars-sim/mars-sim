@@ -216,7 +216,6 @@ implements ClockListener, HistoricalEventListener {
 	 * Update displayed information.
 	 */
 	private void updateArrivingSettlementInfo() {
-
 		nameValueLabel.setText(arrivingSettlement.getName());
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateString());
@@ -236,7 +235,6 @@ implements ClockListener, HistoricalEventListener {
 	private void updateTimeToArrival() {
 		String timeArrival = Msg.getString("ArrivingSettlementDetailPanel.noTime"); //$NON-NLS-1$
 		solsToArrival = -1;
-		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
@@ -275,7 +273,6 @@ implements ClockListener, HistoricalEventListener {
 	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
-			//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
@@ -302,6 +299,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		// placeholder
 	}
 	
 	/**

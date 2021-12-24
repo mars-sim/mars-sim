@@ -48,7 +48,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	private static int dragx, dragy;
 
-	// private ThreadPoolExecutor executor;
 	private transient ExecutorService executor;
 
 	// Data members
@@ -77,16 +76,11 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
 		this.desktop = desktop;
-//		this.mainScene = desktop.getMainScene();
 
-		// executor = ? (ThreadPoolExecutor) Executors.newCachedThreadPool(); //
-		// newFixedThreadPool(1); //
 		executor = Executors.newSingleThreadExecutor();
 
 		// Update the map from the clock once a second
 		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
-
-		// this.refreshRate = refreshRate;
 
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
@@ -120,39 +114,30 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				// setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				int dx, dy, x = e.getX(), y = e.getY();
 
 				dx = dragx - x;
 				dy = dragy - y;
 
-				if (dx != 0 || dy != 0) {
-					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
-						// double rho = CannedMarsMap.PIXEL_RHO;
-						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+				if ((dx != 0 || dy != 0) 
+					 && x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
+					// setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					// double rho = CannedMarsMap.PIXEL_RHO;
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 
-						// if (!executor.isTerminated() || !executor.isShutdown() )
-						// executor.execute(new MapTask());
+					map.drawMap(centerCoords);
 
-						map.drawMap(centerCoords);
-
-//						paintDoubleBuffer();
-						repaint();
-					}
+					repaint();
 				}
 
 				dragx = x;
 				dragy = y;
-
-				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// System.out.println("mousepressed X = " + e.getX());
-				// System.out.println(" Y = " + e.getY());
 				dragx = e.getX();
 				dragy = e.getY();
 				setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -192,28 +177,20 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 
-						// if (!executor.isTerminated() || !executor.isShutdown() )
-						// executor.execute(new MapTask());
-
 						map.drawMap(centerCoords);
 
-//						paintDoubleBuffer();
 						repaint();
 					}
 				}
 
 				dragx = x;
 				dragy = y;
-
-				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// System.out.println("mousepressed X = " + e.getX());
-				// System.out.println(" Y = " + e.getY());
 				dragx = e.getX();
 				dragy = e.getY();
 				setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -372,78 +349,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 		}
 	}
 
-//	public void paintComponent(Graphics g) {
-//		super.paintComponent(g);
-//		if (dbImage != null) {
-//			g.drawImage(dbImage, 0, 0, null);
-//		}
-//	}
-
-//	/*
-//	 * Uses double buffering to draws into its own graphics object dbg before
-//	 * calling paintComponent()
-//	 */
-//	public void paintDoubleBuffer() {
-//		if (dbImage == null) {
-//			dbImage = createImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT);
-//			if (dbImage == null) {
-//				// System.out.println("dbImage is null");
-//				return;
-//			} else
-//				dbg = dbImage.getGraphics();
-//		}
-//
-////        Graphics2D g2d = (Graphics2D) dbg;
-////        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//
-//		if (wait) {
-//			if (mapImage != null) {
-//				dbg.drawImage(mapImage, 0, 0, this);
-//			}
-//			String message = "Generating Map";
-//			drawCenteredMessage(message, dbg);
-//		} else {
-//			if (mapError) {
-//				logger.log(Level.SEVERE, "mapError: " + mapErrorMessage);
-//				// Display previous map image
-//				if (mapImage != null) {
-//					dbg.drawImage(mapImage, 0, 0, this);
-//				}
-//
-//				// Draw error message
-//				if (mapErrorMessage == null) {
-//					mapErrorMessage = "Null Map";
-//				}
-//				drawCenteredMessage(mapErrorMessage, dbg);
-//			} else {
-//				// Paint black background
-//				dbg.setColor(Color.black);
-//				dbg.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-//
-//				if (centerCoords != null) {
-//					if (map != null) {
-//						if (map.isImageDone()) {
-//							mapImage = map.getMapImage();
-//							dbg.drawImage(mapImage, 0, 0, this);
-//						}
-//					}
-//
-//					// Display map layers.
-//					// List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
-//					// Iterator<MapLayer> i = tempMapLayers.iterator();
-//					// while (i.hasNext()) {
-//					// i.next().displayLayer(centerCoords, mapType, dbg);
-//					// }
-//
-//					for (MapLayer l : mapLayers) {
-//						if (dbg != null)
-//							l.displayLayer(centerCoords, mapType, dbg);
-//					}
-//				}
-//			}
-//		}
-//	}
-
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -521,6 +426,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		// placeholder
 	}
 
 	/**

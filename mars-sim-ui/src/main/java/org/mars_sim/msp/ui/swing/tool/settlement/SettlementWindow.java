@@ -56,9 +56,6 @@ public class SettlementWindow extends ToolWindow {
 	public static final int HORIZONTAL = 800;// 630;
 	public static final int VERTICAL = 800;// 590;
 
-//	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
-//	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
-
 	private WebStyledLabel buildingXYLabel;
 	private WebStyledLabel mapXYLabel;
 	private WebStyledLabel pixelXYLabel;
@@ -72,9 +69,6 @@ public class SettlementWindow extends ToolWindow {
 
 	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 
-	/** static MarsClock instance. */
-	private MarsClock marsClock;
-
 	/**
 	 * Constructor.
 	 *
@@ -84,32 +78,15 @@ public class SettlementWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
-		marsClock = desktop.getSimulation().getMasterClock().getMarsClock();
-
-//			// setTitleName(null);
-//			// Remove title bar
-//			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-//			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-//			BasicInternalFrameUI bi = (BasicInternalFrameUI) super.getUI();
-//			bi.setNorthPane(null);
-//			setBorder(null);
-
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-		// getRootPane().setOpaque(false);
-		// getRootPane().setBackground(new Color(0,0,0,128));
-
 		setBackground(Color.BLACK);
-		// setOpaque(false);
-		// setBackground(new Color(0,0,0,128));
 
 		WebPanel mainPanel = new WebPanel(new BorderLayout());
-		// mainPanel.setOpaque(false);
-		// mainPanel.setBackground(new Color(0,0,0,128));
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new WebStatusBar();//JStatusBar(3, 3, 18);
+        statusBar = new WebStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
 		Font font1 = new Font("SansSerif", Font.BOLD, 13);
@@ -156,8 +133,6 @@ public class SettlementWindow extends ToolWindow {
         // Create subPanel for housing the settlement map
 		subPanel = new WebPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
-		// subPanel.setOpaque(false);
-		// subPanel.setBackground(new Color(0,0,0,128));
 		subPanel.setBackground(Color.BLACK);
 
 		mapPanel = new SettlementMapPanel(desktop, this);
@@ -167,7 +142,6 @@ public class SettlementWindow extends ToolWindow {
 		LayerUI<WebPanel> layerUI = new SpotlightLayerUI(mapPanel);
 		JLayer<WebPanel> jlayer = new JLayer<WebPanel>(mapPanel, layerUI);
 		subPanel.add(jlayer, BorderLayout.CENTER);
-		// subPanel.add(mapPanel, BorderLayout.CENTER);
 
 		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
@@ -177,7 +151,6 @@ public class SettlementWindow extends ToolWindow {
 		setMaximizable(true);
 
 		setVisible(true);
-//		pack();
 	}
 
 	/**
@@ -188,7 +161,6 @@ public class SettlementWindow extends ToolWindow {
 	public SettlementMapPanel getMapPanel() {
 		return mapPanel;
 	}
-
 
 	public String format0(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);

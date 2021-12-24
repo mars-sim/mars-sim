@@ -339,26 +339,24 @@ public class MasterClock implements Serializable {
 	 * @param ratio
 	 */
 	public void setTargetTR(int ratio) {
-		if (targetTR != ratio) {
+		if (ratio > 0D && targetTR != ratio) {
 
-			if (ratio > 0D && targetTR != ratio) {
+			int max = (int)Math.pow(2, MAX_SPEED);
 
-				int max = (int)Math.pow(2, MAX_SPEED);
+			if (ratio <= max) {
+				logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
+				targetTR = ratio;
 
-				if (ratio <= max) {
-					logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
-					targetTR = ratio;
-
-					// Set the new scale factor
-					setScaleFactor();
-				}
-				else {
-					ratio = max;
-					logger.config("Time-ratio cannot be greater than " + max + ".");
-				}
+				// Set the new scale factor
+				setScaleFactor();
 			}
-			else
-				targetTR = 1;
+			else {
+				ratio = max;
+				logger.config("Time-ratio cannot be greater than " + max + ".");
+			}
+		}
+		else {
+			targetTR = 1;
 		}
 	}
 
@@ -477,7 +475,6 @@ public class MasterClock implements Serializable {
 
 					// Exit program if exitProgram flag is true.
 					if (exitProgram) {
-						//AutosaveScheduler.cancel();
 						System.exit(0);
 					}
 
@@ -722,25 +719,7 @@ public class MasterClock implements Serializable {
 			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
 		}
 		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
-//		clockListenerTasks.forEach(s -> {
-//			s.setCurrentPulse(pulse);
-//			Future<String> result = listenerExecutor.submit(s);
-//			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-//			try {
-//				result.get();
-//			} catch (ExecutionException ee) {
-//				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
-//			} catch (RejectedExecutionException ree) {
-//				// App shutting down
-//				Thread.currentThread().interrupt();
-//				// Executor is shutdown and cannot complete queued tasks
-//				logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-//			} catch (InterruptedException e) {
-//				// Program closing down
-//				Thread.currentThread().interrupt();
-//				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
-//			}
-//		});
+		// Not using clockListenerTasks.forEach(s -> { }) for now
 	}
 
 	/**
@@ -906,12 +885,10 @@ public class MasterClock implements Serializable {
 			this.isPaused = value;
 
 			if (value) {
-				//AutosaveScheduler.cancel();
+
 				actualTR = 0; // Clear the actual rate
 			}
 			else {
-				//AutosaveScheduler.start();
-
 				// Reset the last pulse time
 				timestampPulseStart();
 			}
@@ -985,14 +962,12 @@ public class MasterClock implements Serializable {
 			if (tpfCache >= BASE_TR) {
 
 				addTime();
-
 				// Set tpfCache back to zero
 				tpfCache = 0;
 			}
 
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
-				//AutosaveScheduler.cancel();
 				System.exit(0);
 			}
 		}

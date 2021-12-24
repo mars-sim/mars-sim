@@ -1380,32 +1380,41 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// THis can be removed once uiPulse is collapsed into timePulse
 			MarsClock marsClock = pulse.getMarsTime();
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
-
 				Settlement s = (Settlement) settlementListBox.getSelectedItem();
-
 				displayBanner(s);
 				updateIcon();
+				updateSunData(pulse, s);
+			}
+		}
+	}
 
-				if (currentSunLabel != null) {
+	/**
+	 * Updates the sun data
+	 * 
+	 * @param pulse
+	 * @param s
+	 */
+	private void updateSunData(ClockPulse pulse, Settlement s) {
+		if (currentSunLabel != null) {
+			currentSunLabel.setText(CURRENT_LIGHT
+					+ (int)getSolarIrradiance(s.getCoordinates())
+					+ WM);
 
-					currentSunLabel.setText(CURRENT_LIGHT
-							+ (int)getSolarIrradiance(s.getCoordinates())
-							+ WM);
+			if (pulse.isNewSol()) {
+				displaySunData(s.getCoordinates());
 
-					if (pulse.isNewSol()) {
-						displaySunData(s.getCoordinates());
-
-						if (marsClock.getMissionSol() > 1) {
-							Collection<Settlement> list = unitManager.getSettlements();
-							for (Settlement s0: list)
-							prepareResourceStat(s0, marsClock.getMissionSol());
-						}
+				int sol = pulse.getMarsTime().getMissionSol();
+				if (sol > 1) {
+					Collection<Settlement> list = unitManager.getSettlements();
+					for (Settlement s0: list) {
+						prepareResourceStat(s0, sol);
 					}
 				}
 			}
 		}
 	}
-
+	
+	
 	/**
 	 * Prepares for the critical resource statistics String
 	 *

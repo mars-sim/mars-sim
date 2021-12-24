@@ -91,15 +91,10 @@ public class CommanderWindow extends ToolWindow {
 	public static final String SEE_RIGHT = ".    -->";
 
 	// Private members
-
 	private String deletingTaskType;
-
-//	private Map<Person, List<String>> orders = new HashMap<>();
 
 	private final Font SERIF = new Font("Serif", Font.PLAIN, 10);
 	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
-
-//	private DefaultComboBoxModel<String> taskComboBoxModel;
 
 	private JTabbedPane tabPane;
 
@@ -109,7 +104,6 @@ public class CommanderWindow extends ToolWindow {
 	private ListModel listModel;
 	private JScrollPane listScrollPanel;
 	private JList<String> list;
-//	private JLabel leadershipPointsLabel;
 	private JTextArea logBookTA;
 
 	private WebPanel emptyPanel = new WebPanel();
@@ -127,10 +121,7 @@ public class CommanderWindow extends ToolWindow {
 
 	private WebCheckBoxList<?> settlementMissionList;
 
-//	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
-
 	private Person cc;
-//	private Person selectedPerson;
 
 	private Settlement settlement;
 
@@ -726,9 +717,9 @@ public class CommanderWindow extends ToolWindow {
      * @return sample long list data
      */
     protected List<Settlement> getOtherSettlements() {
-    	List<Settlement> list = new ArrayList<>(desktop.getSimulation().getUnitManager().getSettlements());
-    	list.remove(settlement);
-        return list;
+    	List<Settlement> list0 = new ArrayList<>(desktop.getSimulation().getUnitManager().getSettlements());
+    	list0.remove(settlement);
+        return list0;
 
     }
 

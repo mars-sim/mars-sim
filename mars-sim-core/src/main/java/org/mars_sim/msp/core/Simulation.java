@@ -109,6 +109,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		@Override
 		public void pauseChange(boolean isPaused, boolean showPane) {
+			// placeholder
 		}
 		
 		@Override
@@ -116,7 +117,7 @@ public class Simulation implements ClockListener, Serializable {
 			// Set the pending save flag for an auto save
 			sim.savePending = type;
 		}
-	};
+	}
 	
 	/** default serial id. */
 	private static final long serialVersionUID = -631308653510974249L;
@@ -606,7 +607,8 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthClock().getTimeStampF4());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-		logger.config("   Machine Local Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
+		if (lastSaveTimeStamp != null)
+			logger.config("   Machine Local Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config(DASHES);
 		if (Simulation.BUILD.equals(loadBuild)) {
 			logger.config(" Note : The two builds are identical.");
@@ -853,7 +855,7 @@ public class Simulation implements ClockListener, Serializable {
 				file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
 				logger.config("Autosaving the simulation as " + autosaveFilename + ".");
 				
-				// TODO Should purge old auto saved files
+				// NOTE: Should purge old auto saved files
 				break;
 				
 			default:
