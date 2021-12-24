@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTableModel.java
- * @date 2021-12-07
+ * @date 2021-12-24
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -60,13 +60,9 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int WATER = 10;
 	private final static int ICE = 11;
 
-//	private final static int GREY_WATER = 10;
-//	private final static int BLACK_WATER = 11;
-
 	private final static int ROCK_SAMPLES = 12;
 	private final static int REGOLITH = 13;
 	private final static int CONCRETE = 14;
-//	private final static int MORTAR = 14;
 	private final static int CEMENT = 15;
 
 	private int type = -1;
@@ -103,10 +99,6 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes[WATER] = Number.class;
 		columnNames[METHANE] = "Methane";
 		columnTypes[METHANE] = Number.class;
-//		columnNames[GREY_WATER] = "Grey Water";
-//		columnTypes[GREY_WATER] = Number.class;
-//		columnNames[BLACK_WATER] = "Black Water";
-//		columnTypes[BLACK_WATER] = Number.class;
 		columnNames[CONCRETE] = "Concrete";
 		columnTypes[CONCRETE] = Number.class;
 		columnNames[CEMENT] = "Cement";
@@ -131,9 +123,6 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int waterID = ResourceUtil.waterID;
 	private final static int iceID = ResourceUtil.iceID;
 
-//	private final static int greyWaterID = ResourceUtil.greyWaterID;
-//	private final static int blackWaterID = ResourceUtil.blackWaterID;
-
 	private final static int oxygenID = ResourceUtil.oxygenID;
 	private final static int co2ID = ResourceUtil.co2ID;
 	private final static int hydrogenID = ResourceUtil.hydrogenID;
@@ -141,7 +130,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private final static int regolithID = ResourceUtil.regolithID;
 	private final static int concreteID = ResourceUtil.concreteID;
-//	private final static int mortarID = ResourceUtil.mortarID;
 	private final static int cementID = ResourceUtil.cementID;
 	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
 
@@ -376,17 +364,6 @@ public class SettlementTableModel extends UnitTableModel {
 					tempColumnNum = WATER;
 					currentValue = resourceMap.get(waterID);
 				}
-
-
-//				else if (target == greyWaterID) {
-//					tempColumnNum = GREY_WATER;
-//					currentValue = resourceMap.get(greyWaterID);
-//				}
-//				else if (target == blackWaterID) {
-//					tempColumnNum = BLACK_WATER;
-//					currentValue = resourceMap.get(blackWaterID);
-//				}
-
 				else if (target == concreteID) {
 					tempColumnNum = CONCRETE;
 					currentValue = resourceMap.get(concreteID);
@@ -395,7 +372,6 @@ public class SettlementTableModel extends UnitTableModel {
 					tempColumnNum = CEMENT;
 					currentValue = resourceMap.get(cementID);
 				}
-
 				else if (target == rockSamplesID) {
 					tempColumnNum = ROCK_SAMPLES;
 					currentValue = resourceMap.get(rockSamplesID);
@@ -499,14 +475,8 @@ public class SettlementTableModel extends UnitTableModel {
 	 */
 	public void destroy() {
 		super.destroy();
-
-		UnitManager unitManager = Simulation.instance().getUnitManager();
 		unitManager.removeUnitManagerListener(unitManagerListener);
 		unitManagerListener = null;
-
-		// if (resourceCache != null) {
-		// resourceCache.clear();
-		// }
 		resourceCache = null;
 	}
 
@@ -539,13 +509,12 @@ public class SettlementTableModel extends UnitTableModel {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
 			if (unit.getUnitType() == UnitType.SETTLEMENT) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					if (!containsUnit(unit))
+				if (eventType == UnitManagerEventType.ADD_UNIT
+					&& !containsUnit(unit)) {
 						addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					if (containsUnit(unit))
+				} else if (eventType == UnitManagerEventType.REMOVE_UNIT
+					&& containsUnit(unit))
 						removeUnit(unit);
-				}
 			}
 		}
 	}

@@ -885,8 +885,8 @@ public class MasterClock implements Serializable {
 			this.isPaused = value;
 
 			if (value) {
-
-				actualTR = 0; // Clear the actual rate
+				// Clear the actual rate
+				actualTR = 0; 
 			}
 			else {
 				// Reset the last pulse time
@@ -926,7 +926,7 @@ public class MasterClock implements Serializable {
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(num,
-					new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
+					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
 		}
 	}
 

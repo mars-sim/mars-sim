@@ -725,10 +725,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void tableChanged(TableModelEvent e) {
 		if (e.getType() != TableModelEvent.UPDATE) {
 			refreshTableStyle();
-//			MonitorTab selected = getSelected();
-//			if (selected == eventsTab) {
-//				rowCount.setText(eventsTab.getCountString());
-//			}
 		}
 	}
 
@@ -907,101 +903,4 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	        return c;
 	    }
 	}
-
-//	/**
-//	 * Inner class combo box model for settlements.
-//	 */
-//	public class SettlementComboBoxModel
-//	extends DefaultComboBoxModel<Object>
-//	implements
-//	UnitManagerListener,
-//	UnitListener {
-//
-//		/** default serial id. */
-//		private static final long serialVersionUID = 1L;
-//
-//		/**
-//		 * Constructor.
-//		 */
-//		public SettlementComboBoxModel() {
-//			// User DefaultComboBoxModel constructor.
-//			super();
-//			// Initialize settlement list.
-//			updateSettlements();
-//			// Add this as a unit manager listener.
-//			unitManager.addUnitManagerListener(this);
-//
-//			// Add addUnitListener
-//			Collection<Settlement> settlements = unitManager.getSettlements();
-//			List<Settlement> settlementList = new ArrayList<>(settlements);
-//			Iterator<Settlement> i = settlementList.iterator();
-//			while (i.hasNext()) {
-//				i.next().addUnitListener(this);
-//			}
-//
-//		}
-//
-//		/**
-//		 * Update the list of settlements.
-//		 */
-//		private void updateSettlements() {
-//			// Clear all elements
-//			removeAllElements();
-//
-//			List<Settlement> settlements = new ArrayList<>();
-//
-//			// Add the command dashboard button
-//			if (GameManager.getGameMode() == GameMode.COMMAND) {
-//				settlements = unitManager.getCommanderSettlements();
-//			}
-//
-//			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-//				settlements.addAll(unitManager.getSettlements());
-//			}
-//
-//			Collections.sort(settlements);
-//
-//			Iterator<Settlement> i = settlements.iterator();
-//			while (i.hasNext()) {
-//				addElement(i.next());
-//			}
-//		}
-//
-//		@Override
-//		public void unitManagerUpdate(UnitManagerEvent event) {
-//			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-//				updateSettlements();
-//			}
-//		}
-//
-//		@Override
-//		public void unitUpdate(UnitEvent event) {
-//			// Note: Easily 100+ UnitEvent calls every second
-//			UnitEventType eventType = event.getType();
-//			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-//
-//			}
-//
-//			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
-//
-//			}
-//		}
-//
-//		/**
-//		 * Prepare class for deletion.
-//		 */
-//		public void destroy() {
-//
-//			removeAllElements();
-//
-//			unitManager.removeUnitManagerListener(this);
-//			Collection<Settlement> settlements = unitManager.getSettlements();
-//			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-//			Iterator<Settlement> i = settlementList.iterator();
-//			while (i.hasNext()) {
-//				i.next().removeUnitListener(this);
-//			}
-//		}
-//	}
-
 }
