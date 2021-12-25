@@ -370,7 +370,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create the actual time ratio label
 		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(actualTRHeader, "Master clock's actual time ratio", TooltipWay.down);
-		double actualTR = masterClock.getActualRatio();
+		double actualTR = masterClock.getActualTR();
 		actuallTRLabel = new WebLabel(Math.round(actualTR*10.0)/10.0 + "", WebLabel.LEFT); //$NON-NLS-1$
 		actuallTRLabel.setFont(serifFont);
 
@@ -482,7 +482,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		preferredTRLabel.setText(prefTR + "x");
 
 		// Update actual TR label
-		double actualTR = masterClock.getActualRatio();
+		double actualTR = masterClock.getActualTR();
 		actuallTRLabel.setText((int)actualTR + "x");
 
 		// Update time compression label

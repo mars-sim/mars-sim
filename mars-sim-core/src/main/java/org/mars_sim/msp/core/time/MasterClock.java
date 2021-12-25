@@ -355,9 +355,6 @@ public class MasterClock implements Serializable {
 				logger.config("Time-ratio cannot be greater than " + max + ".");
 			}
 		}
-		else {
-			targetTR = 1;
-		}
 	}
 
 	/**
@@ -370,7 +367,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the simulation target time ratio.
+	 * Gets the target time ratio.
 	 *
 	 * @return ratio
 	 */
@@ -379,6 +376,15 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
+	 * Gets the actual time ratio
+	 *
+	 * @return
+	 */
+	public double getActualTR() {
+		return actualTR;
+	}
+ 
+	/**
 	 * Gets the user preferred time ratio.
 	 *
 	 * @return ratio
@@ -386,7 +392,7 @@ public class MasterClock implements Serializable {
 	public int getPreferredTR() {
 		return preferredTR;
 	}
-
+			
 	/**
 	 * Sets the user preferred time ratio
 	 * 
@@ -465,6 +471,9 @@ public class MasterClock implements Serializable {
 								Thread.currentThread().interrupt();
 							}
 						}
+						// What to do if there's negative or not enough sleep time ?
+						// Reduce the time ratio ? 
+						// Note that sleep time is negative at the start of the sim and after coming back from pause
 					}
 
 					// Exit program if exitProgram flag is true.
@@ -498,11 +507,11 @@ public class MasterClock implements Serializable {
 			// Highest pulse rate can not be higher than predicted max
 			double highestPulseRate = Math.min(mostAccurateRate, predictedMaxPulses);
 
-			// Desired rate is between the low & high and use the accuracy to bias between the 2 limits
-			double newRate = lowestPulseRate + ((highestPulseRate - lowestPulseRate) * accuracyBias);
+			// Desired pulse rate is between the low & high and use the accuracy to bias between the 2 limits
+			double newPulseRate = lowestPulseRate + ((highestPulseRate - lowestPulseRate) * accuracyBias);
 
 			// Sleep time allows for the execution time
-			sleepTime = (long)(maxWaitTimeBetweenPulses/newRate) - executionTime;
+			sleepTime = (long)(maxWaitTimeBetweenPulses/newPulseRate) - executionTime;
 
 			// What has happened?
 //			String msg = String.format("Sleep calcs d=%.2f msol, p=%.3f, l=%.3f, m=%.3f, r=%.3f, s=%d ms, e=%d ms",
@@ -512,6 +521,12 @@ public class MasterClock implements Serializable {
 		}
 	}
 
+	/**
+	 * Sets the pause time for the Command Mode
+	 * 
+	 * @param value0
+	 * @param value1
+	 */
 	public void setCommandPause(boolean value0, double value1) {
 		// Check GameManager.mode == GameMode.COMMAND ?
 		canPauseTime = value0;
@@ -520,7 +535,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/*
-	 * Add earth time and mars time.
+	 * Adds earth time and mars time.
 	 *
 	 * @return true if the pulse was accepted
 	 */
@@ -547,14 +562,18 @@ public class MasterClock implements Serializable {
 
 				// Pulse must be less than the max and positive
 				if (lastPulseTime > 0) {
+					
 					acceptablePulse = true;
+					
 					if (lastPulseTime > maxMilliSolPerPulse) {
-						logger.config(20_000, "Proposed pulse " + Math.round(lastPulseTime*100_000.0)/100_000.0
+						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
 								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
 						lastPulseTime = maxMilliSolPerPulse;
+						// Decrease the time ratio
+						decreaseSpeed();
 					}
 					else if (lastPulseTime < minMilliSolPerPulse) {
-						logger.config(20_000, "Proposed pulse " + Math.round(lastPulseTime*100_000.0)/100_000.0
+						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
 								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
 						lastPulseTime = minMilliSolPerPulse;
 					}
@@ -569,7 +588,7 @@ public class MasterClock implements Serializable {
 
 				// Calculate the actual rate for feedback
 				actualTR = earthMillisec / realElaspedMilliSec;
-
+				
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {
 					// Do the pulse
@@ -653,16 +672,6 @@ public class MasterClock implements Serializable {
 		}
 	}
 
-	   /**
-     * Gets the simulation speed
-     *
-     * @return
-     */
-    public double getActualRatio() {
-    	return actualTR;
-    }
-
-
 	public long getNextPulse() {
 		return nextPulseId;
 	}
@@ -693,53 +702,42 @@ public class MasterClock implements Serializable {
 		currentPulse = new ClockPulse(newPulseId, time, marsClock, earthClock, this, isNewSol, isNewMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
-//		try {
-//			// Note: may try new ConcurrentSkipListSet(clockListenerTasks))
-//			for (ClockListenerTask c: new HashSet<>(clockListenerTasks)) {				
-//				Future<String> result = listenerExecutor.submit(c);
-//				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-//				result.get();
-//			}
-//		} catch (ExecutionException ee) {
-//			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
-//		} catch (RejectedExecutionException ree) {
-//			// Application shutting down
-//			Thread.currentThread().interrupt();
-//			// Executor is shutdown and cannot complete queued tasks
-//			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-//		} catch (InterruptedException e) {
-//			// Program closing down
-//			Thread.currentThread().interrupt();
-//			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
-//		}
+
+		// May do it using for loop
 		
 		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
 		// Not using clockListenerTasks.forEach(s -> { }) for now
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		new HashSet<>(clockListenerTasks).parallelStream().forEach(s -> {
-			
-			Future<String> result = listenerExecutor.submit(s);
-			
-			try {
-				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-				result.get();
-			} catch (ExecutionException ee) {
-				logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
-			} catch (RejectedExecutionException ree) {
-				// Application shutting down
-				Thread.currentThread().interrupt();
-				// Executor is shutdown and cannot complete queued tasks
-				logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-			} catch (InterruptedException e) {
-				// Program closing down
-				Thread.currentThread().interrupt();
-				logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
-			}
-		});
+		new HashSet<>(clockListenerTasks).parallelStream().forEach(t -> executeClockListenerTask(t));
 	}
 
+	/**
+	 * Execute the clock listener task
+	 * 
+	 * @param task
+	 */
+	public void executeClockListenerTask(ClockListenerTask task) {
+		Future<String> result = listenerExecutor.submit(task);
+		
+		try {
+			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+			result.get();
+		} catch (ExecutionException ee) {
+			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
+		} catch (RejectedExecutionException ree) {
+			// Application shutting down
+			Thread.currentThread().interrupt();
+			// Executor is shutdown and cannot complete queued tasks
+			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+		} catch (InterruptedException e) {
+			// Program closing down
+			Thread.currentThread().interrupt();
+			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
+		}
+	}
+	
 	/**
 	 * Stop the clock
 	 */
@@ -792,10 +790,7 @@ public class MasterClock implements Serializable {
 			targetTR = 1;
 		}
 		else {
-//			if (newTR > trArray[trArray.length - 1]) {
-//				newTR = trArray[trArray.length - 1];
-				compareTPS(newTR, true);
-//			}
+			compareTPS(newTR, true);
 		}
 		preferredTR = newTR;
 	}

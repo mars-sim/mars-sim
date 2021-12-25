@@ -100,7 +100,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 				// Create super set of topographical regions.
 				Set<Coordinates> regionSet = new HashSet<Coordinates>(4000);
-				Iterator<String> j = mineralType.locales.iterator();
+				Iterator<String> j = mineralType.getLocales().iterator();
 				while (j.hasNext()) {
 					String locale = j.next().trim();
 					if (CRATER_REGION.equalsIgnoreCase(locale))

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMapConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-12-25
  * @author Scott Davis
  */
 
@@ -104,7 +104,7 @@ public class MineralMapConfig implements Serializable {
 
 		String name;
 		String frequency;
-		List<String> locales;
+		private List<String> locales;
 
 		private MineralType(String name, String frequency) {
 			this.name = name;
@@ -114,6 +114,10 @@ public class MineralMapConfig implements Serializable {
 
 		private void addLocale(String localeName) {
 			locales.add(localeName);
+		}
+		
+		public List<String> getLocales() {
+			return locales;
 		}
 	}
 }
