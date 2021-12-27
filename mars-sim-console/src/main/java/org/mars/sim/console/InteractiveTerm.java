@@ -46,12 +46,11 @@ public class InteractiveTerm {
 
 	// Screen sizes presented to user
 	private static final Dimension[] screenSizes = {
-							new Dimension(1920, 1080),
-							new Dimension(1280, 800),
-							new Dimension(1280, 1024),
-							new Dimension(1600, 900),
-							new Dimension(1366, 768)
-						};
+			setDimension(1920, 1080),
+			setDimension(1280, 800),
+			setDimension(1280, 1024),
+			setDimension(1600, 900),
+			setDimension(1366, 768)};
 
 	private static GameManager gm = new GameManager();
 	private static MarsTerminal marsTerminal = new MarsTerminal();
@@ -66,6 +65,10 @@ public class InteractiveTerm {
 
 	private CommanderProfile profile;
 
+	private static Dimension setDimension(int w, int h) {
+		return new Dimension(w, h);
+	}
+	
 	public InteractiveTerm(boolean restart) {
 
         marsTerminal.init();
@@ -93,6 +96,29 @@ public class InteractiveTerm {
 	}
 
 	/**
+	 * Prints the main menu
+	 */
+	private void printMainMenu() {
+		marsTerminal.print(System.lineSeparator()
+				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
+				+ System.lineSeparator()
+				+ "                          * * *   Main Menu   * * *\n"
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				+ EXIT_OPTION_0
+				+ System.lineSeparator()
+				+ "1. Start a new Sim"
+				+ System.lineSeparator()
+				+ "2. Load a saved Sim"
+				+ System.lineSeparator()
+				+ "3. Change screen resolution"
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				);
+	}
+	
+	
+	/**
 	 * Selects the game mode
 	 *
 	 * @return
@@ -100,24 +126,9 @@ public class InteractiveTerm {
 	private int selectMenu() {
 		int menuChoice = 0;
 
-		try {
-			marsTerminal.print(System.lineSeparator()
-					+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
-					+ System.lineSeparator()
-					+ "                          * * *   Main Menu   * * *\n"
-					+ System.lineSeparator()
-					+ System.lineSeparator()
-					+ EXIT_OPTION_0
-					+ System.lineSeparator()
-					+ "1. Start a new Sim"
-					+ System.lineSeparator()
-					+ "2. Load a saved Sim"
-					+ System.lineSeparator()
-					+ "3. Change screen resolution"
-					+ System.lineSeparator()
-					+ System.lineSeparator()
-					);
-
+		try {	
+			printMainMenu();
+			
 	        handler.addStringTask("menu", "Choose an option :", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
 	        handler.executeOneTask();
 
@@ -209,13 +220,9 @@ public class InteractiveTerm {
 	}
 
 	/**
-	 * Selects the game mode
-	 *
-	 * @return
+	 * Prints the command mode menu
 	 */
-	private int selectMode() {
-		int modeChoice = 0;
-
+	private void printModeSelectionMenu() {
 		marsTerminal.print(System.lineSeparator()
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
 				+ System.lineSeparator()
@@ -230,7 +237,18 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
+	}
+	
+	/**
+	 * Selects the game mode
+	 *
+	 * @return
+	 */
+	private int selectMode() {
+		int modeChoice = 0;
 
+		printModeSelectionMenu();
+		
         handler.addStringTask("input", "Select the Game Mode:", false).addChoices("0", "1", "2").constrainInputToChoices();
         handler.executeOneTask();
 
@@ -262,6 +280,37 @@ public class InteractiveTerm {
 	}
 
 	/**
+	 * Prints the command mode menu
+	 */
+	private void printCommandMenu() {
+		 marsTerminal.println(System.lineSeparator()
+	        		+ System.lineSeparator()
+	        		+ "            * * *   Command Mode (Experimental only) - Crew Selection   * * *"
+	        		+ System.lineSeparator()
+	        		+ System.lineSeparator()
+					+ EXIT_OPTION_0
+	        		+ System.lineSeparator()
+					+ SCENARIO_EDITOR_OPTION_1
+					+ System.lineSeparator()
+					+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
+					+ System.lineSeparator()
+					+ "3. " + PROCEED_TO_START_THE_SIM
+					+ System.lineSeparator()
+					+ "4. " + BACK_TO_THE_PREVIOUS_MENU
+					+ System.lineSeparator()
+					+ "5. Set up a new commander profile"
+					+ System.lineSeparator()
+					+ "6. Load an exiting commander profile"
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ NOTE_1
+					+ System.lineSeparator()
+					+ NOTE_2
+					+ System.lineSeparator()
+					);
+	}
+	
+	/**
 	 * Configures the command mode
 	 *
 	 * @param isLoaded
@@ -274,32 +323,8 @@ public class InteractiveTerm {
 		// Set the Game Mode to Command Mode in GameManager
 		GameManager.setGameMode(GameMode.COMMAND);
 
-        marsTerminal.println(System.lineSeparator()
-        		+ System.lineSeparator()
-        		+ "            * * *   Command Mode (Experimental only) - Crew Selection   * * *"
-        		+ System.lineSeparator()
-        		+ System.lineSeparator()
-				+ EXIT_OPTION_0
-        		+ System.lineSeparator()
-				+ SCENARIO_EDITOR_OPTION_1
-				+ System.lineSeparator()
-				+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
-				+ System.lineSeparator()
-				+ "3. " + PROCEED_TO_START_THE_SIM
-				+ System.lineSeparator()
-				+ "4. " + BACK_TO_THE_PREVIOUS_MENU
-				+ System.lineSeparator()
-				+ "5. Set up a new commander profile"
-				+ System.lineSeparator()
-				+ "6. Load an exiting commander profile"
-				+ System.lineSeparator()
-				+ System.lineSeparator()
-				+ NOTE_1
-				+ System.lineSeparator()
-				+ NOTE_2
-				+ System.lineSeparator()
-				);
-
+		printCommandMenu();
+		
         handler.addStringTask("commandCfg", ENTER_YOUR_CHOICE, false).addChoices("0", "1", "2", "3", "4", "5", "6").constrainInputToChoices();
         handler.executeOneTask();
 
@@ -397,6 +422,33 @@ public class InteractiveTerm {
         return commandCfg;
 	}
 
+	/**
+	 * Prints the sandbox mode menu
+	 */
+	private void printSandoxMenu() {
+		 marsTerminal.println(System.lineSeparator()
+	        		+ System.lineSeparator()
+	        		+ "           * * *  Sandbox Mode - Crew and Scenario Selection  * * *"
+	        		+ System.lineSeparator()
+	        		+ System.lineSeparator()
+					+ EXIT_OPTION_0
+	        		+ System.lineSeparator()
+					+ SCENARIO_EDITOR_OPTION_1
+					+ System.lineSeparator()
+					+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
+					+ System.lineSeparator()
+					+ "3. " + PROCEED_TO_START_THE_SIM
+					+ System.lineSeparator()
+					+ "4. " + BACK_TO_THE_PREVIOUS_MENU
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ NOTE_1
+					+ System.lineSeparator()
+					+ NOTE_2
+					+ System.lineSeparator()
+					);
+	}
+	
 
 	/**
 	 * Configures the sandbox mode
@@ -408,27 +460,7 @@ public class InteractiveTerm {
 
 		GameManager.setGameMode(GameMode.SANDBOX);
 
-        marsTerminal.println(System.lineSeparator()
-        		+ System.lineSeparator()
-        		+ "           * * *  Sandbox Mode - Crew and Scenario Selection  * * *"
-        		+ System.lineSeparator()
-        		+ System.lineSeparator()
-				+ EXIT_OPTION_0
-        		+ System.lineSeparator()
-				+ SCENARIO_EDITOR_OPTION_1
-				+ System.lineSeparator()
-				+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
-				+ System.lineSeparator()
-				+ "3. " + PROCEED_TO_START_THE_SIM
-				+ System.lineSeparator()
-				+ "4. " + BACK_TO_THE_PREVIOUS_MENU
-				+ System.lineSeparator()
-				+ System.lineSeparator()
-				+ NOTE_1
-				+ System.lineSeparator()
-				+ NOTE_2
-				+ System.lineSeparator()
-				);
+		printSandoxMenu();
 
         handler.addStringTask("sandboxCfg", ENTER_YOUR_CHOICE, false)
         	.addChoices("0", "1", "2", "3", "4").constrainInputToChoices();

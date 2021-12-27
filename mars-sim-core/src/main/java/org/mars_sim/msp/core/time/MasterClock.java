@@ -710,7 +710,7 @@ public class MasterClock implements Serializable {
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		new HashSet<>(clockListenerTasks).parallelStream().forEach(t -> executeClockListenerTask(t));
+		new HashSet<>(clockListenerTasks).parallelStream().forEach(this::executeClockListenerTask);
 	}
 
 	/**
@@ -731,10 +731,10 @@ public class MasterClock implements Serializable {
 			Thread.currentThread().interrupt();
 			// Executor is shutdown and cannot complete queued tasks
 			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ie) {
 			// Program closing down
 			Thread.currentThread().interrupt();
-			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", e);
+			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", ie);
 		}
 	}
 	
