@@ -443,7 +443,8 @@ public class UnitManager implements Serializable, Temporal {
 	private void runExecutor(ClockPulse pulse) {
 		setupExecutor();
 		setupTasks();
-		settlementTasks.parallelStream().forEach(s -> s.setCurrentPulse(pulse));
+		// May use parallelStream() after it's proven to be safe
+		settlementTasks.stream().forEach(s -> s.setCurrentPulse(pulse));
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
@@ -529,7 +530,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Adds the unit for display
-	 * 
+	 *
 	 * @param unit
 	 */
 	private void addDisplayUnit(Unit unit) {

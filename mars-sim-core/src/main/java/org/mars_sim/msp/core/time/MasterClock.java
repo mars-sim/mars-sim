@@ -133,7 +133,7 @@ public class MasterClock implements Serializable {
 	private transient ClockPulse currentPulse;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
-	
+
 	static {
 		for (int i=0; i<MAX_SPEED + 1; i++) {
 			int ratio = (int) Math.pow(2, i);
@@ -152,7 +152,7 @@ public class MasterClock implements Serializable {
 
 		// Create a martian clock
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
-		
+
 		// Save a copy of the initial mars time
 		initialMarsTime = (MarsClock) marsClock.clone();
 
@@ -235,11 +235,11 @@ public class MasterClock implements Serializable {
 	/**
 	 * Adds a clock listener. A minumum duratino can be specified which throttles how many
 	 * pulses the listener receives. If the duration is set to zero then all Pulses are distributed.
-	 * 
-	 * If the duration is positive then pulses will be skipped to ensure a pulse is not delivered any 
+	 *
+	 * If the duration is positive then pulses will be skipped to ensure a pulse is not delivered any
 	 * quicker than the min duration. The delivered Pulse will have the full elapsed times including
 	 * the skipped Pulses.
-	 * 
+	 *
 	 *
 	 * @param newListener the listener to add.
 	 * @Param minDuration The minimum duration in milliseconds between pulses.
@@ -268,7 +268,7 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Does it has the clock listener
-	 * 
+	 *
 	 * @param listener
 	 * @return
 	 */
@@ -281,7 +281,7 @@ public class MasterClock implements Serializable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Retrieve the clock listener task instance, given its clock listener
 	 *
@@ -326,7 +326,7 @@ public class MasterClock implements Serializable {
 			listenerExecutor.shutdown();
 			listenerExecutor = null;
 		}
-		
+
 		// Restart executor, listener tasks are still in place
 		startClockListenerExecutor();
 	}
@@ -383,7 +383,7 @@ public class MasterClock implements Serializable {
 	public double getActualTR() {
 		return actualTR;
 	}
- 
+
 	/**
 	 * Gets the user preferred time ratio.
 	 *
@@ -392,16 +392,16 @@ public class MasterClock implements Serializable {
 	public int getPreferredTR() {
 		return preferredTR;
 	}
-			
+
 	/**
 	 * Sets the user preferred time ratio
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setPreferredTR(int value) {
 		preferredTR = value;
 	}
-	
+
 	/**
 	 * Set the new scale factor
 	 */
@@ -472,7 +472,7 @@ public class MasterClock implements Serializable {
 							}
 						}
 						// What to do if there's negative or not enough sleep time ?
-						// Reduce the time ratio ? 
+						// Reduce the time ratio ?
 						// Note that sleep time is negative at the start of the sim and after coming back from pause
 					}
 
@@ -523,7 +523,7 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Sets the pause time for the Command Mode
-	 * 
+	 *
 	 * @param value0
 	 * @param value1
 	 */
@@ -562,15 +562,15 @@ public class MasterClock implements Serializable {
 
 				// Pulse must be less than the max and positive
 				if (lastPulseTime > 0) {
-					
+
 					acceptablePulse = true;
-					
+
 					if (lastPulseTime > maxMilliSolPerPulse) {
 						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
 								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
 						lastPulseTime = maxMilliSolPerPulse;
 						// Decrease the time ratio
-						decreaseSpeed();
+//						decreaseSpeed();
 					}
 					else if (lastPulseTime < minMilliSolPerPulse) {
 						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
@@ -588,12 +588,12 @@ public class MasterClock implements Serializable {
 
 				// Calculate the actual rate for feedback
 				actualTR = earthMillisec / realElaspedMilliSec;
-				
+
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {
 					// Do the pulse
 					timestampPulseStart();
-					
+
 					// Update the uptimer
 					uptimer.updateTime(realElaspedMilliSec);
 
@@ -642,7 +642,7 @@ public class MasterClock implements Serializable {
 					// The most important job for ClockListener is to send a clock pulse to listener
 					// gets updated.
 					ClockPulse activePulse = currentPulse;
-					
+
 					// Handler is collapsing pulses so check the passed time
 					if (minDuration > 0) {
 						// Compare elapsed real time to the minimum
@@ -652,15 +652,15 @@ public class MasterClock implements Serializable {
 							msolsSkipped += currentPulse.getElapsed();
 							return "skip";
 						}
-						
+
 						// Build new pulse to include skipped time
 						activePulse = currentPulse.addElapsed(msolsSkipped);
-						
+
 						// Reset count
 						lastPulseDelivered = timeNow;
 						msolsSkipped = 0;
 					}
-					
+
 					// Call handler
 					listener.clockPulse(activePulse);
 				}
@@ -704,23 +704,24 @@ public class MasterClock implements Serializable {
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
 		// May do it using for loop
-		
+
 		// Note: Using .parallelStream().forEach() in a quad cpu machine would reduce TPS and unable to increase it beyond 512x
 		// Not using clockListenerTasks.forEach(s -> { }) for now
 
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
-		new HashSet<>(clockListenerTasks).parallelStream().forEach(this::executeClockListenerTask);
+		// May use parallelStream() after it's proven to be safe
+		new HashSet<>(clockListenerTasks).stream().forEach(this::executeClockListenerTask);
 	}
 
 	/**
 	 * Execute the clock listener task
-	 * 
+	 *
 	 * @param task
 	 */
 	public void executeClockListenerTask(ClockListenerTask task) {
 		Future<String> result = listenerExecutor.submit(task);
-		
+
 		try {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 			result.get();
@@ -737,7 +738,7 @@ public class MasterClock implements Serializable {
 			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", ie);
 		}
 	}
-	
+
 	/**
 	 * Stop the clock
 	 */
@@ -907,7 +908,7 @@ public class MasterClock implements Serializable {
 
 			if (value) {
 				// Clear the actual rate
-				actualTR = 0; 
+				actualTR = 0;
 			}
 			else {
 				// Reset the last pulse time
@@ -1023,7 +1024,7 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * How many pulses per second
-	 * 
+	 *
 	 * @return
 	 */
 	public double getPulsesPerSecond() {
@@ -1046,13 +1047,13 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Gets the clock pulse
-	 * 
+	 *
 	 * @return
 	 */
 	public ClockPulse getClockPulse() {
 		return currentPulse;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
