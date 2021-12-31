@@ -71,6 +71,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Map<Coordinates, Double> currentIrradiance;
 	/** The cache value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> irradianceCache;
+	/** The trend value of lightness by Coordinate. */
+	private Map<Coordinates, Double> lightTrend;
 
 	private MarsClock currentTime;
 
@@ -79,7 +81,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 
 	private static List<Landmark> landmarks = null;
-	
+
 	private static MissionManager missionManager;
 
 	/**
@@ -91,7 +93,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		this.orbitInfo = orbitInfo;
 		this.weather = weather;
 		this.currentTime = marsClock;
-	
+
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
@@ -100,6 +102,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		irradianceCache = new HashMap<>();
 		currentIrradiance = new HashMap<>();
 		opticalDepthMap = new HashMap<>();
+		lightTrend = new HashMap<>();
 
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
@@ -180,7 +183,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	/**
 	 * Gets the optical depth due to the martian dust
-	 * 
+	 *
 	 * @param location
 	 * @return
 	 */
@@ -245,27 +248,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return a number
 	 */
-	public int getTrend(Coordinates location) {
-		int trend = 0;
-		double past = 0;
-		double current = 0;
-		
-		if (irradianceCache.containsKey(location)) {
-			// Sometimes irradianceCache.get(location) may get NPE
-			past = irradianceCache.get(location);
-		}
-		if (currentIrradiance.containsKey(location)) {
-			current =  currentIrradiance.get(location);
-		}
-		
-		if (past > 0 && current > 0) {
-			if (past < current)
-				trend = 1;
-			if (past > current)
-				trend = -1;
+	public double getTrend(Coordinates location) {
+		// If the radiance is below 12 and is decreasing
+		// then it's getting dark
+
+		if (lightTrend.containsKey(location)) {
+			return lightTrend.get(location);
 		}
 
-		return trend;
+		return -5;
 	}
 
 	/**
@@ -290,8 +281,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			return 0;
 
 		if (isNewMSol) {
-
-			if (!currentIrradiance.isEmpty()) {
+			if (!currentIrradiance.isEmpty() && !irradianceCache.isEmpty()) {
+				double current = currentIrradiance.get(location);
+				double past = irradianceCache.get(location);
+				double pastTrend = 0;
+				if (!lightTrend.isEmpty()) {
+					pastTrend = lightTrend.get(location);
+				}
+				// Save the trend value
+				lightTrend.put(location, ((current - past) + pastTrend)/2.0);
+				// Update the irradiance
 				irradianceCache = currentIrradiance;
 				// Clear the current cache value of solar irradiance of all settlements
 				currentIrradiance.clear();
@@ -305,15 +304,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			return G_h;
 		}
 
-		if (currentIrradiance.containsKey(location)) {
-			Double d = currentIrradiance.get(location);
-			if (d != null)
-				return d.doubleValue();
-			else
-				return 0;
+		Double d = currentIrradiance.get(location);
+		if (d != null) {
+			return d;
 		}
 
-		else {//if (currentIrradiance.isEmpty()) {
+		else {
 			// If location is not in cache, calculate the solar irradiance
 			double G_h = calculateSolarIrradiance(location);
 			// Save the value in the cache
@@ -662,7 +658,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		isNewMSol = pulse.isNewMSol();
-		
+
 		// Is this needed ? Mining Mission unreserves the site when it completes
 		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.

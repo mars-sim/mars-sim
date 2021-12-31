@@ -219,7 +219,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected void setBinLocation(LocalPosition pos) {
 		binPosition = pos;
 	}
-	
+
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
@@ -429,23 +429,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {
+		if (surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
+			return false;
+		}
 
-        return surfaceFeatures.getTrend(person.getCoordinates()) < 0 &&
-                hasLittleSunlight(person);
-    }
+		// if it's at night
+		if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < 0) {
+			return false;
+		}
 
-
-	/**
-	 * Checks if there is any sunlight
-	 *
-	 * @param person
-	 * @return
-	 */
-	public static boolean hasLittleSunlight(Person person) {
-
-		// Check if it is night time.
-        return !(surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 12D)
-                || surfaceFeatures.inDarkPolarRegion(person.getCoordinates());
+		// if the sunlight is getting less
+        return surfaceFeatures.getTrend(person.getCoordinates()) < 0;
     }
 
 	/**
@@ -626,7 +620,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 
 				LocalPosition boundedLocalPoint = rover.getPosition().getPosition(distance, radianDirection);
-				
+
 				newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, rover);
 				goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
 			}
@@ -644,7 +638,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/**
 	 * Set the outside location near a BoundedObject
-	 * 
+	 *
 	 * @param basePoint
 	 * @return A location has been chosen.
 	 */
@@ -719,7 +713,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static Airlock getWalkableAvailableEgressAirlock(Worker worker) {
 		return getClosestWalkableAvailableAirlock(worker, worker.getPosition(), false);
 	}
-	
+
 	/**
 	 * Unload any held Equipment back to a Vehicle
 	 * @param destination
