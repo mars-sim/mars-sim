@@ -1203,7 +1203,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			int now = pulse.getMarsTime().getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTargetTR()));
+			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
 
