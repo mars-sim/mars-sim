@@ -337,7 +337,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		TPSHeaderLabel.setFont(sansSerifFont);
 		TPSHeaderLabel.setForeground(Color.MAGENTA.darker());
 		
-		String TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
+		String TicksPerSec = formatter2.format(masterClock.getCurrentPulsesPerSecond());
 		ticksPerSecLabel = new WebLabel(TicksPerSec, WebLabel.LEFT);
 		ticksPerSecLabel.setFont(sansSerifFont);
 		ticksPerSecLabel.setForeground(Color.red.darker());
@@ -461,7 +461,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private void updateRateLabels() {
 
 		// Update average TPS label
-		double ave = masterClock.updateAverageTPS();
+		double ave = masterClock.getAveragePulsesPerSecond();
 		aveTPSLabel.setText(formatter2.format(ave));
 
 		// Update execution time label
@@ -569,7 +569,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (masterClock != null) {
-			SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getPulsesPerSecond())));
+			SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getCurrentPulsesPerSecond())));
 		}
 
 		if (uptimer != null) {

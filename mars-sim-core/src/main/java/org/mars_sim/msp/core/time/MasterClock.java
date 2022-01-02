@@ -7,13 +7,10 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -46,13 +42,11 @@ public class MasterClock implements Serializable {
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 	// Maximum number of pulses in the log
-	private static final int MAX_PULSE_LOG = 10;
+	private static final int MAX_PULSE_LOG = 30;
 	// What is a reasonable jump in the observed real time
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
-	/** The time interval between each pulse for updating resource processes and crop growth. */
-	private static final double TIME_INTERVAL = 50.0;
 
 	// Data members
 	/** Runnable flag. */
@@ -64,8 +58,6 @@ public class MasterClock implements Serializable {
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 
-	/** The scale factor for updating process and crop update calls. */
-	private double scaleFactor;
 	/** The current simulation time ratio. */
 	private double actualTR = 0;
 	/** The time taken to execute one frame in the game loop */
@@ -105,9 +97,6 @@ public class MasterClock implements Serializable {
 
 	// Records the real milli time when a pulse is execited
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
-
-	// A list of recent TPS for computing average value of TPS
-	private List<Double> aveTPSList;
 
 	/** The Martian Clock. */
 	private MarsClock marsClock;
@@ -172,9 +161,6 @@ public class MasterClock implements Serializable {
 		logger.config("          Max millisol per pulse     : " + maxMilliSolPerPulse);
 		logger.config(" Max elapsed time between pulses     : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config("-----------------------------------------------------");
-
-		// Set the new scale factor
-		setScaleFactor();
 	}
 
 	/**
@@ -323,9 +309,6 @@ public class MasterClock implements Serializable {
 		if (ratio > 0D && desiredTR != ratio) {
 			desiredTR = ratio;
 			logger.config("Time-ratio x" + desiredTR);
-
-			// Set the new scale factor
-			setScaleFactor();
 		}
 	}
 
@@ -345,22 +328,6 @@ public class MasterClock implements Serializable {
 	 */
 	public double getActualTR() {
 		return actualTR;
-	}
-
-	/**
-	 * Set the new scale factor
-	 */
-	private void setScaleFactor() {
-		double ratio = TIME_INTERVAL / MAX_SPEED;
-		scaleFactor = Math.round(TIME_INTERVAL *10.0)/10.0;
-		logger.config("The scale factor becomes " + scaleFactor);
-	}
-
-	/**
-	 * Gets the scale factor
-	 */
-	public double getScaleFactor() {
-		return scaleFactor;
 	}
 
 	/**
@@ -438,10 +405,10 @@ public class MasterClock implements Serializable {
 			// Sleep time allows for the execution time
 			sleepTime = (long)(milliSecondsPerPulse - executionTime);
 
-			// What has happened?
-			String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
-					desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
-		    logger.info(msg);
+			// Very useful but generates a LOT of log
+//			String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
+//					desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
+//		    logger.info(msg);
 		}
 	}
 
@@ -720,40 +687,6 @@ public class MasterClock implements Serializable {
 		}
 	}
 
-	/**
-	 * Updates the average TPS
-	 *
-	 * @return
-	 */
-	public double updateAverageTPS() {
-		return getAverageTPS(getPulsesPerSecond());
-	}
-
-	/**
-	 * Gets the average TPS value
-	 *
-	 * @param tps the current TPS
-	 * @return the average TPS
-	 */
-	private double getAverageTPS(double tps) {
-		// Compute the average value of TPS
-		if (aveTPSList == null)
-			aveTPSList = new ArrayList<>();
-		if (tps > 0.3125) {
-			aveTPSList.add(tps);
-			if (aveTPSList.size() > 20)
-				aveTPSList.remove(0);
-		}
-
-		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
-		double ave = stats.getAverage();
-		if (ave <= 0.3125) {
-			aveTPSList.clear();
-			ave = tps;
-		}
-
-		return ave;
-	}
 
 	/**
 	 * Set if the simulation is paused or not.
@@ -855,12 +788,37 @@ public class MasterClock implements Serializable {
 		return executionTime;
 	}
 
+
 	/**
 	 * How many pulses per second
 	 *
 	 * @return
 	 */
-	public double getPulsesPerSecond() {
+	public double getCurrentPulsesPerSecond() {
+		double ticksPerSecond = 0;
+
+		// Make sure enough pulses have passed
+		if (nextPulseId >= 0) {
+			// Recent idx will be the previous pulse id but check it is not negative
+			int recentIdx = (int)((nextPulseId-1) % MAX_PULSE_LOG);
+			recentIdx = (recentIdx < 0 ? (MAX_PULSE_LOG-1) : recentIdx);
+
+			// Penultimate pulse id will be one before the recent
+			int penIdx = (int)((recentIdx-1) % MAX_PULSE_LOG);
+			penIdx = (penIdx < 0 ? (MAX_PULSE_LOG-1) : penIdx);
+			long elapsedMilli = (pulseLog[recentIdx] - pulseLog[penIdx]);
+			ticksPerSecond = 1000D/elapsedMilli;
+		}
+
+		return ticksPerSecond;
+	}
+	
+	/**
+	 * How many pulses per second
+	 *
+	 * @return
+	 */
+	public double getAveragePulsesPerSecond() {
 		double ticksPerSecond = 0;
 
 		// Make sure enough pulses have passed
