@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 public class SpeedCommand extends ChatCommand {
 
+	private static final int MAX_RATE = 2048;
+
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed", "Change the simulation speed");
 		setInteractive(true);
@@ -23,20 +25,20 @@ public class SpeedCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		MasterClock clock = context.getSim().getMasterClock();
-        int currentRatio = clock.getTargetTR();
-        int currentSpeed = clock.getCurrentSpeed();
+        double desiredRatio = clock.getDesiredTR();
+        double currentRatio = clock.getActualTR();
+        
 
-        context.println("The target simulation ratio is x" + currentRatio + ", speed " + currentSpeed);
-
+        context.println("The target simulation ratio is x" + desiredRatio);
+        context.println("The actual simualtion ratio achieved is x" + currentRatio);
+        
 		String change = context.getInput("Change (Y/N)?");
 
         if ("Y".equalsIgnoreCase(change)) {
-            int newSpeed = context.getIntInput("Enter the new simulation speed [1.." + MasterClock.MAX_SPEED + "]");
-            if ((1 <= newSpeed) && (newSpeed <= MasterClock.MAX_SPEED)) {
-            	int ratio = (int) Math.pow(2, newSpeed);
-            	clock.setTargetTR(ratio);
-            	clock.setPreferredTR(ratio);
-            	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
+            int newRate = context.getIntInput("Enter the new simulation rate 1.." + MAX_RATE);
+            if ((1 <= newRate) && (newRate <= MAX_RATE)) {
+            	clock.setDesiredTR(newRate);
+            	context.println("New desired ratio is x" + newRate);
             }
         }
         else {

@@ -337,7 +337,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		TPSHeaderLabel.setFont(sansSerifFont);
 		TPSHeaderLabel.setForeground(Color.MAGENTA.darker());
 		
-		String TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
+		String TicksPerSec = formatter2.format(masterClock.getCurrentPulsesPerSecond());
 		ticksPerSecLabel = new WebLabel(TicksPerSec, WebLabel.LEFT);
 		ticksPerSecLabel.setFont(sansSerifFont);
 		ticksPerSecLabel.setForeground(Color.red.darker());
@@ -363,7 +363,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create the target time ratio label
 		WebLabel prefTRHeader = new WebLabel(Msg.getString("TimeWindow.prefTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(prefTRHeader, "User-preferred target time ratio", TooltipWay.down);
-		int prefTR = (int)masterClock.getPreferredTR();
+		int prefTR = masterClock.getDesiredTR();
 		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
 		preferredTRLabel.setFont(monospacedFont);
 
@@ -436,8 +436,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				// Check the sim speed
-				masterClock.checkSpeed();
+				
 				// Update the two time labels
 				updateRateLabels();
 			}
@@ -462,7 +461,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private void updateRateLabels() {
 
 		// Update average TPS label
-		double ave = masterClock.updateAverageTPS();
+		double ave = masterClock.getAveragePulsesPerSecond();
 		aveTPSLabel.setText(formatter2.format(ave));
 
 		// Update execution time label
@@ -478,7 +477,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		marsPulseLabel.setText(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS);
 
 		// Update Preferred TR label
-		int prefTR = (int)masterClock.getPreferredTR();
+		int prefTR = masterClock.getDesiredTR();
 		preferredTRLabel.setText(prefTR + "x");
 
 		// Update actual TR label
@@ -570,7 +569,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (masterClock != null) {
-			SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getPulsesPerSecond())));
+			SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getCurrentPulsesPerSecond())));
 		}
 
 		if (uptimer != null) {

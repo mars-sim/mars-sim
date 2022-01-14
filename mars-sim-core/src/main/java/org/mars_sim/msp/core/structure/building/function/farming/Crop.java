@@ -31,6 +31,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
+	// TODO both of these should be configurable from CropConfig
+	// How often are the crops checked in mSols
+	private static final double CHECK_CROP_PERIOD = 4D;
+	// How often to calculate the crop health
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 
 	private static final double TUNING_FACTOR = .18;
@@ -183,17 +187,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private Farming farm;
 	private Building building;
 
-	private final static int WATER_ID = ResourceUtil.waterID;
-	private final static int OXYGEN_ID = ResourceUtil.oxygenID;
-	private final static int CO2_ID = ResourceUtil.co2ID;
-	private final static int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	private final static int CROP_WASTE_ID = ResourceUtil.cropWasteID;
-	private final static int FERTILIZER_ID = ResourceUtil.fertilizerID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
+	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
+	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
+	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
 
-	private final static int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
 
 	private static CropConfig cropConfig;
-
 
 	/**
 	 * Constructor.
@@ -738,14 +741,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 			return true;
 		}
 
-		double processInterval = pulse.getMasterClock().getScaleFactor();
 		double elapsed = pulse.getElapsed();
 		accumulatedTime += elapsed;
 
-		if (accumulatedTime >= processInterval) {
+		if (accumulatedTime >= CHECK_CROP_PERIOD) {
 //			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
 
-			accumulatedTime = accumulatedTime - processInterval;
+			accumulatedTime = accumulatedTime - CHECK_CROP_PERIOD;
 
 			double time = accumulatedTime * productionLevel;
 

@@ -112,12 +112,14 @@ public class CompositionOfAir implements Serializable, Temporal {
 	public static final double H2_MOLAR_MASS = 2.016 / 1000;; // [in kg/mol]
 
 	private static final int MILLISOLS_PER_UPDATE = 2;
+	private static final double CALCULATE_FREQUENCY = 2D;
 
 	public static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
 	// alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
 	// see https://en.wikipedia.org/wiki/Gas_constant
 
 	public static final int numGases = 5;
+
 
 	// Data members
 	private int sizeCache;
@@ -365,14 +367,12 @@ public class CompositionOfAir implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 		accumulatedTime += time;
 
-		double processInterval = pulse.getMasterClock().getScaleFactor();
-
-		if (accumulatedTime >= processInterval) {
+		if (accumulatedTime >= CALCULATE_FREQUENCY) {
 //			logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
 //					+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //					+ "  processInterval: " + processInterval);
 
-			accumulatedTime = accumulatedTime - processInterval;
+			accumulatedTime = accumulatedTime - CALCULATE_FREQUENCY;
 
 			double o2 = o2Consumed * time;
 			double cO2 = cO2Expelled * time;

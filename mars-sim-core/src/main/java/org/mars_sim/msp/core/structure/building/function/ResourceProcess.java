@@ -32,6 +32,10 @@ public class ResourceProcess implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
+
+	// How often should the process be checked? 
+	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
+	
 	/** Flag for change. */
 	private boolean flag;
 	/** is this process running ? */
@@ -219,14 +223,12 @@ public class ResourceProcess implements Serializable {
 
 			accumulatedTime += time;
 
-			double processInterval = pulse.getMasterClock().getScaleFactor();
-
-			if (accumulatedTime >= processInterval) {
+			if (accumulatedTime >= PROCESS_CHECK_FREQUENCY) {
 //				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
 //						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //						+ "  processInterval: " + processInterval);
 
-				accumulatedTime = accumulatedTime - processInterval;
+				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
 
 				// Get resource bottleneck
 				double bottleneck = getInputBottleneck(time, settlement);

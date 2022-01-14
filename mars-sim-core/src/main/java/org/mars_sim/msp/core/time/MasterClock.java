@@ -7,13 +7,10 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -46,19 +42,11 @@ public class MasterClock implements Serializable {
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 	// Maximum number of pulses in the log
-	private static final int MAX_PULSE_LOG = 10;
+	private static final int MAX_PULSE_LOG = 30;
 	// What is a reasonable jump in the observed real time
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
-	/** The base value of time ratio from simulation.xml. */
-	private static int BASE_TR;
-	/** The multiplier value that relates TPS to upper TR. */
-	private static final double MULTIPLIER  = 128.0;
-	/** The time interval between each pulse for updating resource processes and crop growth. */
-	private static final double TIME_INTERVAL = 50.0;
-	/** The time ratio int array. */
-	private static int[] trArray = new int[MAX_SPEED + 1];
 
 	// Data members
 	/** Runnable flag. */
@@ -70,16 +58,12 @@ public class MasterClock implements Serializable {
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 
-	/** The scale factor for updating process and crop update calls. */
-	private double scaleFactor;
 	/** The current simulation time ratio. */
 	private double actualTR = 0;
 	/** The time taken to execute one frame in the game loop */
 	private long executionTime;
-	/** The target simulation time ratio. */
-	private int targetTR = 0;
 	/** The user's preferred simulation time ratio. */
-	private int preferredTR = 0;
+	private int desiredTR = 0;
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -103,10 +87,8 @@ public class MasterClock implements Serializable {
 	private double minMilliSolPerPulse;
 	/** The maximum time span covered by each simulation pulse in millisols. */
 	private double maxMilliSolPerPulse;
-	/** How accurate is the timespan between the actual pulse rate and the calculated min & max pulse. */
-	private double accuracyBias;
-	/** Mode for saving a simulation. */
-	private double tpfCache = 0;
+	/** The optimal time span covered by each simulation pulse in millisols. */
+	private double optMilliSolPerPulse;
 
 	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
 	private long nextPulseId = 1;
@@ -115,9 +97,6 @@ public class MasterClock implements Serializable {
 
 	// Records the real milli time when a pulse is execited
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
-
-	// A list of recent TPS for computing average value of TPS
-	private List<Double> aveTPSList;
 
 	/** The Martian Clock. */
 	private MarsClock marsClock;
@@ -133,13 +112,6 @@ public class MasterClock implements Serializable {
 	private transient ClockPulse currentPulse;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
-
-	static {
-		for (int i=0; i<MAX_SPEED + 1; i++) {
-			int ratio = (int) Math.pow(2, i);
-			trArray[i] = ratio;
-		}
-	}
 
 	/**
 	 * Constructor
@@ -172,11 +144,10 @@ public class MasterClock implements Serializable {
 
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
-		accuracyBias = simulationConfig.getAccuracyBias();
+		// Optimal rate is bais towards the minimum whihc is more accurate
+		optMilliSolPerPulse = minMilliSolPerPulse + ((maxMilliSolPerPulse - minMilliSolPerPulse) * 0.25);
 		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
-		BASE_TR = (int)simulationConfig.getTimeRatio();
-		targetTR = BASE_TR;
-		preferredTR = BASE_TR;
+		desiredTR = (int)simulationConfig.getTimeRatio();
 
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
@@ -184,16 +155,12 @@ public class MasterClock implements Serializable {
 			throw new IllegalStateException("The min millisol per pulse cannot be higher than the max.");
 		}
 
-		logger.config("                 Base time-ratio : " + BASE_TR + "x");
-		logger.config("          Min millisol per pulse : " + minMilliSolPerPulse);
-		logger.config("          Max millisol per pulse : " + maxMilliSolPerPulse);
-		logger.config(" Max elapsed time between pulses : " + maxWaitTimeBetweenPulses + " ms");
-		logger.config("                   Accuracy bias : " + accuracyBias);
-//		logger.config("        Default random algorithm : " + RandomUtil.getAlgorithm());
+		logger.config("                 Base time-ratio     : " + desiredTR + "x");
+		logger.config("          Min millisol per pulse     : " + minMilliSolPerPulse);
+		logger.config("          Optimal millisol per pulse : " + optMilliSolPerPulse);
+		logger.config("          Max millisol per pulse     : " + maxMilliSolPerPulse);
+		logger.config(" Max elapsed time between pulses     : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config("-----------------------------------------------------");
-
-		// Set the new scale factor
-		setScaleFactor();
 	}
 
 	/**
@@ -338,32 +305,11 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param ratio
 	 */
-	public void setTargetTR(int ratio) {
-		if (ratio > 0D && targetTR != ratio) {
-
-			int max = (int)Math.pow(2, MAX_SPEED);
-
-			if (ratio <= max) {
-				logger.config("Time-ratio " + targetTR + "x -> " + ratio + "x");
-				targetTR = ratio;
-
-				// Set the new scale factor
-				setScaleFactor();
-			}
-			else {
-				ratio = max;
-				logger.config("Time-ratio cannot be greater than " + max + ".");
-			}
+	public void setDesiredTR(int ratio) {
+		if (ratio > 0D && desiredTR != ratio) {
+			desiredTR = ratio;
+			logger.config("Time-ratio x" + desiredTR);
 		}
-	}
-
-	/**
-	 * Gets the current speed
-	 *
-	 * @return
-	 */
-	public int getCurrentSpeed() {
-		return (int)(Math.log(targetTR) / Math.log(2));
 	}
 
 	/**
@@ -371,10 +317,10 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return ratio
 	 */
-	public int getTargetTR() {
-		return targetTR;
+	public int getDesiredTR() {
+		return desiredTR;
 	}
-
+	
 	/**
 	 * Gets the actual time ratio
 	 *
@@ -382,40 +328,6 @@ public class MasterClock implements Serializable {
 	 */
 	public double getActualTR() {
 		return actualTR;
-	}
-
-	/**
-	 * Gets the user preferred time ratio.
-	 *
-	 * @return ratio
-	 */
-	public int getPreferredTR() {
-		return preferredTR;
-	}
-
-	/**
-	 * Sets the user preferred time ratio
-	 *
-	 * @param value
-	 */
-	public void setPreferredTR(int value) {
-		preferredTR = value;
-	}
-
-	/**
-	 * Set the new scale factor
-	 */
-	public void setScaleFactor() {
-		double ratio = TIME_INTERVAL / MAX_SPEED;
-		scaleFactor = Math.round(ratio * getCurrentSpeed() *10.0)/10.0;
-		logger.config("The scale factor becomes " + scaleFactor);
-	}
-
-	/**
-	 * Gets the scale factor
-	 */
-	public double getScaleFactor() {
-		return scaleFactor;
 	}
 
 	/**
@@ -457,12 +369,6 @@ public class MasterClock implements Serializable {
 							logger.warning("Sleep too long: clipped to " + maxWaitTimeBetweenPulses);
 							sleepTime = maxWaitTimeBetweenPulses;
 						}
-						if (sleepTime > 3000) {
-							if (preferredTR > targetTR) {
-								// Multiply by 2
-								targetTR = targetTR << 1;
-							}
-						}
 						if (sleepTime > 0) {
 							// Pause simulation to allow other threads to complete.
 							try {
@@ -471,9 +377,6 @@ public class MasterClock implements Serializable {
 								Thread.currentThread().interrupt();
 							}
 						}
-						// What to do if there's negative or not enough sleep time ?
-						// Reduce the time ratio ?
-						// Note that sleep time is negative at the start of the sim and after coming back from pause
 					}
 
 					// Exit program if exitProgram flag is true.
@@ -489,34 +392,22 @@ public class MasterClock implements Serializable {
 		} // end of run
 
 		private void calculateSleepTime() {
-			// Max number of pulses this environment can handle
-			double predictedMaxPulses = (double)maxWaitTimeBetweenPulses/executionTime;
-
-			// The Desired simulation period
-			double desiredMSol = (maxWaitTimeBetweenPulses * targetTR) / MILLISECONDS_PER_MILLISOL;
-
-			// Most accurate simulation is with the pulse duration; will be highest rate
-			double mostAccurateRate = desiredMSol/minMilliSolPerPulse;
-
-			// Least accurate is with the largest pulse duration; will be lower rate
-			double leastAccurateRate = desiredMSol/maxMilliSolPerPulse;
-
-			// Lowest pulse rate can not be less than 1
-			double lowestPulseRate = Math.max(leastAccurateRate, 1D);
-
-			// Highest pulse rate can not be higher than predicted max
-			double highestPulseRate = Math.min(mostAccurateRate, predictedMaxPulses);
-
-			// Desired pulse rate is between the low & high and use the accuracy to bias between the 2 limits
-			double newPulseRate = lowestPulseRate + ((highestPulseRate - lowestPulseRate) * accuracyBias);
+			// Desired Millisols per seconds
+			double desiredMsolPerSecond = desiredTR / MarsClock.SECONDS_PER_MILLISOL;
+			
+			// How many pulses are needed to fufill this desire
+			double desiredPulses = desiredMsolPerSecond / optMilliSolPerPulse;
+			desiredPulses = Math.max(desiredPulses, 1D);
+			
+			// Pulse periodicy
+			double milliSecondsPerPulse = 1000D / desiredPulses;
 
 			// Sleep time allows for the execution time
-			sleepTime = (long)(maxWaitTimeBetweenPulses/newPulseRate) - executionTime;
+			sleepTime = (long)(milliSecondsPerPulse - executionTime);
 
-			// What has happened?
-//			String msg = String.format("Sleep calcs d=%.2f msol, p=%.3f, l=%.3f, m=%.3f, r=%.3f, s=%d ms, e=%d ms",
-//				    desiredMSol, predictedMaxPulses, leastAccurateRate, mostAccurateRate, newRate, sleepTime,
-//				    executionTime);
+			// Very useful but generates a LOT of log
+//			String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
+//					desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
 //		    logger.info(msg);
 		}
 	}
@@ -558,7 +449,7 @@ public class MasterClock implements Serializable {
 			}
 			else {
 				// Get the time pulse length in millisols.
-				lastPulseTime = (realElaspedMilliSec * targetTR) / MILLISECONDS_PER_MILLISOL;
+				lastPulseTime = (realElaspedMilliSec * desiredTR) / MILLISECONDS_PER_MILLISOL;
 
 				// Pulse must be less than the max and positive
 				if (lastPulseTime > 0) {
@@ -569,8 +460,7 @@ public class MasterClock implements Serializable {
 						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
 								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
 						lastPulseTime = maxMilliSolPerPulse;
-						// Decrease the time ratio
-//						decreaseSpeed();
+					
 					}
 					else if (lastPulseTime < minMilliSolPerPulse) {
 						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
@@ -784,117 +674,19 @@ public class MasterClock implements Serializable {
 	 * Increases the speed / time ratio
 	 */
 	public void increaseSpeed() {
-		// newTR is targetTR * 2
-		int newTR = targetTR << 1;
-		if (newTR < 1) {
-			newTR = 1;
-			targetTR = 1;
-		}
-		else {
-			compareTPS(newTR, true);
-		}
-		preferredTR = newTR;
+		desiredTR *= 2;
 	}
 
 	/**
 	 * Decreases the speed / time ratio
 	 */
 	public void decreaseSpeed() {
-		// Divide by 2
-		int newTR = targetTR >> 1;
-		if (newTR < 1) {
-			newTR = 1;
-			targetTR = 1;
-		}
-		else {
-			compareTPS(newTR, false);
-		}
-		preferredTR = newTR;
-	}
-
-	/**
-	 * Check if the speed is optimal
-	 */
-	public void checkSpeed() {
-		if (preferredTR > targetTR) {
-			// Multiply by 2
-			targetTR = targetTR << 1;
-			logger.config("Attempting to increase targetTR to " + targetTR + ".");
-		}
-
-		compareTPS(targetTR, true);
-	}
-
-	/**
-	 * Compares TPS and set upper limits on TR
-	 *
-	 * @param newTR
-	 * @param increase
-	 */
-	public void compareTPS(int newTR, boolean increase) {
-		double tps = getPulsesPerSecond();
-
-		if (increase) {
-			double aveTPS = getAverageTPS(tps);
-			double value = aveTPS * MULTIPLIER;
-			int upperTR = findUpperTR(value);
-            setTargetTR(Math.min(newTR, upperTR));
-		}
-		else {
-			setTargetTR(newTR);
+		desiredTR /= 2;
+		if (desiredTR < 1) {
+			desiredTR = 1;
 		}
 	}
 
-	/**
-	 * Find the upper TR limit
-	 *
-	 * @param value
-	 * @return
-	 */
-	public int findUpperTR(double value) {
-		int size = trArray.length;
-		for (int i=0; i<size; i++) {
-			if (value < trArray[i]) {
-				return trArray[i];
-			}
-		}
-		return trArray[size-1];
-	}
-
-	/**
-	 * Updates the average TPS
-	 *
-	 * @return
-	 */
-	public double updateAverageTPS() {
-		return getAverageTPS(getPulsesPerSecond());
-	}
-
-	/**
-	 * Gets the average TPS value
-	 *
-	 * @param tps the current TPS
-	 * @return the average TPS
-	 */
-	public double getAverageTPS(double tps) {
-		// Compute the average value of TPS
-		if (aveTPSList == null)
-			aveTPSList = new ArrayList<>();
-		if (tps > 0.3125) {
-			aveTPSList.add(tps);
-			if (aveTPSList.size() > 20)
-				aveTPSList.remove(0);
-		}
-
-		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
-		double ave = stats.getAverage();
-		if (ave <= 0.3125) {
-			aveTPSList.clear();
-			ave = tps;
-		}
-
-		return ave;
-	}
 
 	/**
 	 * Set if the simulation is paused or not.
@@ -906,11 +698,7 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
-			if (value) {
-				// Clear the actual rate
-				actualTR = 0;
-			}
-			else {
+			if (!value) {
 				// Reset the last pulse time
 				timestampPulseStart();
 			}
@@ -974,28 +762,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Sends out a clock pulse if using FXGL
-	 *
-	 * @param tpf
-	 */
-	public void onUpdate(double tpf) {
-		if (!isPaused) {
-			tpfCache += tpf;
-			if (tpfCache >= BASE_TR) {
-
-				addTime();
-				// Set tpfCache back to zero
-				tpfCache = 0;
-			}
-
-			// Exit program if exitProgram flag is true.
-			if (exitProgram) {
-				System.exit(0);
-			}
-		}
-	}
-
-	/**
 	 * Gets the sleep time in milliseconds
 	 *
 	 * @return
@@ -1022,12 +788,37 @@ public class MasterClock implements Serializable {
 		return executionTime;
 	}
 
+
 	/**
 	 * How many pulses per second
 	 *
 	 * @return
 	 */
-	public double getPulsesPerSecond() {
+	public double getCurrentPulsesPerSecond() {
+		double ticksPerSecond = 0;
+
+		// Make sure enough pulses have passed
+		if (nextPulseId >= 0) {
+			// Recent idx will be the previous pulse id but check it is not negative
+			int recentIdx = (int)((nextPulseId-1) % MAX_PULSE_LOG);
+			recentIdx = (recentIdx < 0 ? (MAX_PULSE_LOG-1) : recentIdx);
+
+			// Penultimate pulse id will be one before the recent
+			int penIdx = (int)((recentIdx-1) % MAX_PULSE_LOG);
+			penIdx = (penIdx < 0 ? (MAX_PULSE_LOG-1) : penIdx);
+			long elapsedMilli = (pulseLog[recentIdx] - pulseLog[penIdx]);
+			ticksPerSecond = 1000D/elapsedMilli;
+		}
+
+		return ticksPerSecond;
+	}
+	
+	/**
+	 * How many pulses per second
+	 *
+	 * @return
+	 */
+	public double getAveragePulsesPerSecond() {
 		double ticksPerSecond = 0;
 
 		// Make sure enough pulses have passed
