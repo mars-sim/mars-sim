@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunctionMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -28,7 +28,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 300D;
-	
+
     public RepairEVAMalfunctionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
@@ -43,23 +43,23 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 
 	@Override
 	public double getProbability(Person person) {
-				
+
 		double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 1000))
         	return 0;
-        
+
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 			return 0;
-        		
+
         if (person.isInVehicle()) {
         	// Get the malfunctioning entity.
         	Malfunctionable entity = RepairEVAMalfunction.getEVAMalfunctionEntity(person);
-			
+
 			if (entity != null) {
 				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
-						
+
 				if (malfunction != null) {
 					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
 				}
@@ -68,12 +68,12 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 				return 0;
 			}
         }
-        
+
         else if (person.isInSettlement()) {
-			
+
     		//Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
     		Settlement settlement = person.getSettlement();
-        	
+
 			// Check for radiation events
 			boolean[] exposed = settlement.getExposed();
 
@@ -82,11 +82,10 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 			}
 
 			// Check if it is night time.
-			// Even if it's night time, technicians/engineers are assigned to man that work shift 
+			// Even if it's night time, technicians/engineers are assigned to man that work shift
 			// to take care of the the repair.
-			
-			result = getSettlementProbability(settlement);
 
+			result = getSettlementProbability(settlement);
 
 			if (exposed[0]) {
 				result = result / 3D;// Baseline can give a fair amount dose of radiation
@@ -100,7 +99,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 				result = 0;
 			}
 		}
-        
+
         if (person.isInside()) {
 			result = applyPersonModifier(result, person);
         }

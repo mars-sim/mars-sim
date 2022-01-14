@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @date 2021-12-05
+ * @date 2022-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 
 /**
@@ -63,9 +65,22 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         	return;
 		}
 
-		containerUnit = person.getTopContainerUnit();
+		if (person.isInSettlement()) {
+			containerUnit = person.getSettlement();
+		}
+		else if (person.isInSettlementVicinity()) {
+			containerUnit = person.getNearbySettlement();
+		}
+		else if (person.isInVehicle()){
+			containerUnit = person.getVehicle();
+		}
+		else if (person.getMission() != null) {
+			// if the person is out on mission and not within a settlement vicinity
+			Mission mission = person.getMission();
+			containerUnit = ((VehicleMission)mission).getVehicle();
+		}
 
-		if (!(containerUnit.getUnitType() == UnitType.PLANET)) {
+		if (containerUnit != null) {
 			// Get the malfunctioning entity.
 			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(person)) {
 				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
@@ -76,7 +91,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				}
 			}
 		}
-
 
 		// Start if found
 		if (entity != null) {
