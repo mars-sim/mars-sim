@@ -403,8 +403,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 			return true;
 
 		// Check for sunlight
-		if (isGettingDark(person))
+		if (isGettingDark(person)) {
+			// Added to show issue #509
+			logger.warning(worker, "Ending " + getName() + " too dark");
 			return true;
+		}
 
 		// Check for any EVA problems.
 		if (hasEVAProblem(person))
