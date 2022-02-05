@@ -44,8 +44,8 @@ public class AirlockCommand extends AbstractSettlementCommand {
 		else {
 			// Display details
 			for(Building b : bm.getBuildings(FunctionType.EVA)) {
-				if (b.getNickName().contains(input)) {
-					CommandHelper.outputAirlockDetailed(response, b.getNickName(),
+				if (b.getName().contains(input)) {
+					CommandHelper.outputAirlockDetailed(response, b.getName(),
 														b.getEVA().getAirlock());
 					response.appendBlankLine();
 				}

@@ -44,7 +44,7 @@ public class ProcessCommand extends AbstractSettlementCommand {
 		
 		// Loop building that do processing
 		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING)) {
-			String bName = building.getNickName();
+			String bName = building.getName();
 			ResourceProcessing processor = building.getResourceProcessing();
 		
 			for(ResourceProcess p : processor.getProcesses()) {

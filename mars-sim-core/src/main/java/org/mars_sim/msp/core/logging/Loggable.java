@@ -33,7 +33,7 @@ public interface Loggable {
 	 * 
 	 * @return
 	 */
-	String getNickName();
+	String getName();
 
 	/**
 	 * Physical location the surface

@@ -67,7 +67,7 @@ public class PeopleCommand extends AbstractSettlementCommand {
 		for (Person person : everyone) {
 			response.appendTableRow(person.getName(),
 									citizens.contains(person),
-									(indoorP.contains(person) ? person.getBuildingLocation().getNickName() : "No"),
+									(indoorP.contains(person) ? person.getBuildingLocation().getName() : "No"),
 									onMission.contains(person),
 									eva.contains(person),
 									(buriedP.contains(person) ? "Buried"

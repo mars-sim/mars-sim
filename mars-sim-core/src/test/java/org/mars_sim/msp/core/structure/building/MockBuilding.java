@@ -21,8 +21,6 @@ public class MockBuilding extends Building {
     public MockBuilding(BuildingManager manager, String name)  {
 		super(manager, name);
 		buildingType = "EVA Airlock";
-		setNickName(name);
-		changeName(name);
 
 		if (manager == null) {
 			throw new IllegalArgumentException("Bulding manager can not be null");
@@ -30,20 +28,19 @@ public class MockBuilding extends Building {
 		manager.addMockBuilding(this);
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
-		functions = new ArrayList<Function>();
+		functions = new ArrayList<>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
     
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
 		super(template, manager);
 		buildingType = "Mock Type";
-		setNickName("Mock Building");
 		changeName("Mock Building");
 		
 		unitManager.addUnit(this);
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
-		functions = new ArrayList<Function>();
+		functions = new ArrayList<>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
 
@@ -79,11 +76,6 @@ public class MockBuilding extends Building {
 	    functions.add(function);
 	}
 	
-	@Override
-	public String toString() {
-		return super.getNickName();
-	}
-
 	public void setLocation(double x, double y) {
 		loc = new LocalPosition(x, y);	
 	}

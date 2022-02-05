@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 
 /**
@@ -211,10 +210,10 @@ public class SimLogger {
 		}
 		else if (actor instanceof Settlement) {
 			// Actor in bracket; it's top level
-			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
+			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
 		}
 		else if (actor instanceof ConstructionSite) {
-			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
+			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
 		}
 		else {
 			// Need container hierarchy in brackets
@@ -224,7 +223,7 @@ public class SimLogger {
 			else {
 				outputMessage.append(LocationFormat.getLocationDescription(actor, location));
 			}
-			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
+			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getName()).append(DASH);
 		}
 
 		outputMessage.append(message);
@@ -241,29 +240,6 @@ public class SimLogger {
 	}
 
 	/**
-	 * THhis method will be moved into Unit as part of Issue #296
-	 * @param location
-	 * @param outputMessage
-	 */
-	private static void locationDescription(Unit location, StringBuilder outputMessage) {
-		Unit next = null;
-		if (location instanceof Building) {
-			next = location.getAssociatedSettlement();
-		}
-		else {
-			next = location.getContainerUnit();
-		}
-
-		// Go up the chain if not surface
-		if (next != null && (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID)) {
-			locationDescription(next, outputMessage);
-			outputMessage.append(" - ");
-		}
-		outputMessage.append(location.getNickName());
-	}
-
-
-	/**
 	 * Returns the line
 	 *
 	 * @return
@@ -271,7 +247,7 @@ public class SimLogger {
 	private static String getUniqueIdentifer(Loggable actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		String loggerClass = SimLogger.class.getName();
-		String nickName = (actor != null ? actor.getNickName() : "unknown");
+		String nickName = (actor != null ? actor.getName() : "unknown");
 
 		// Skip the first frame as it is the "getStackTrace" call
 		for (int idx = 1; idx < stackTrace.length; idx++) {

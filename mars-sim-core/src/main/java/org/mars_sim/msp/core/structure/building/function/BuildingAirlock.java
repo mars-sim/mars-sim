@@ -213,7 +213,7 @@ public class BuildingAirlock extends Airlock {
 
     @Override
     public String getEntityName() {
-        return building.getNickName();
+        return building.getName();
     }
 
     @Override
