@@ -258,8 +258,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param newName new name
 	 */
 	public final void changeName(String newName) {
-//		String oldName = this.name;
-
 		// Create an event here ?
 		setName(newName);
 	}

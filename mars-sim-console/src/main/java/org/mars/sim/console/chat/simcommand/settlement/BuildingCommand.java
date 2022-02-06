@@ -36,7 +36,7 @@ public class BuildingCommand extends AbstractSettlementCommand {
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Power", 10, "Demand (kwh)", "Heat %",
 									"Temp.", "People");
 		for (Building building : i) {
-			response.appendTableRow(building.getNickName(), building.getPowerMode().getName(),
+			response.appendTableRow(building.getName(), building.getPowerMode().getName(),
 									building.getFullPowerRequired(),
 									building.getHeatMode().getPercentage(), building.getCurrentTemperature(),
 									building.getNumPeople());

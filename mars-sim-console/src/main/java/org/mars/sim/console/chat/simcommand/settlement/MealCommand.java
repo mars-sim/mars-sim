@@ -41,7 +41,7 @@ public class MealCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		for (Building building : kitchens) {
 			Cooking kitchen = building.getCooking();
-			response.appendHeading(building.getNickName());
+			response.appendHeading(building.getName());
 			List<CookedMeal> meals = kitchen.getCookedMealList();
 			if (meals.isEmpty()) {
 				response.append("No meals available");

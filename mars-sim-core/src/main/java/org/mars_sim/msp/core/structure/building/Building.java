@@ -164,8 +164,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	/** Type of building. */
 	protected String buildingType;
-	/** Nick name for this building. */
-	private String nickName;
 	/** Description for this building. */
 	private String description;
 
@@ -242,17 +240,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
-	 * @param nickName     the building's nick name.
+	 * @param name         the building's name.
 	 * @param bounds       the physical position of this Building
 	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String buildingType, String nickName, BoundedObject bounds, BuildingManager manager) {
-		super(nickName, manager.getSettlement().getCoordinates());
+	public Building(int id, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
+		super(name, manager.getSettlement().getCoordinates());
 
 		this.templateID = id;
 		this.buildingType = buildingType;
-		this.nickName = nickName;
 
 		this.settlement = manager.getSettlement();
 		this.settlementID = settlement.getIdentifier();
@@ -351,15 +348,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public String getDescription() {
 		return description;
-	}
-
-	/**
-	 * Sets building nickname
-	 *
-	 * @param nick name
-	 */
-	public void setBuildingNickName(String name) {
-		this.nickName = name;
 	}
 
 	/**
@@ -796,38 +784,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Sets the building's nickName
-	 *
-	 * @return none
-	 */
-	// Called by TabPanelBuilding.java for building nickname change
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-		changeName(nickName);
-	}
-
-	/**
-	 * Gets the building's nickName
-	 *
-	 * @return building's nickName as a String
-	 */
-	// Called by TabPanelBuilding.java for building nickname change
-	public String getNickName() {
-		if (nickName == null || nickName.equalsIgnoreCase(""))
-			nickName = getName();
-		return nickName;
-	}
-
-	/**
-	 * Gets the building type, not building's nickname
-	 *
-	 * @return building type as a String.
-	 */
-	public String getName() {
-		return buildingType;
-	}
-
-	/**
 	 * Gets the building type.
 	 *
 	 * @return building type as a String. TODO internationalize building names for
@@ -1120,16 +1076,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 
 		return people;
-	}
-
-
-	/**
-	 * String representation of this building.
-	 *
-	 * @return building's nickName.
-	 */
-	public String toString() {
-		return nickName;
 	}
 
 	/**
@@ -1531,13 +1477,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Building b = (Building) obj;
-		return this.getIdentifier() == b.getIdentifier()
-			&& this.buildingType.equals(b.getBuildingType());
-//			&& this.nickName.equals(b.getNickName());
+		return super.equals(obj);
 	}
 
 	/**
@@ -1545,11 +1485,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
-		int hashCode = nickName.hashCode();
-		hashCode *= getIdentifier();
-		hashCode *= buildingType.hashCode();
-		return hashCode;
+		return super.hashCode();
 	}
 
 	/**
@@ -1565,7 +1503,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		buildingType = null;
 		powerModeCache = null;
 		heatModeCache = null;
-//		malfunctionManager.destroy();
 		malfunctionManager = null;
 	}
 }

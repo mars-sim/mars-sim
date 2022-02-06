@@ -41,7 +41,7 @@ public class ManufactureCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		for (Building building : workshops) {
 			Manufacture workshop = building.getManufacture();
-			response.appendHeading(building.getNickName());
+			response.appendHeading(building.getName());
 			response.appendLabelledDigit("Printers In Use", workshop.getNumPrintersInUse());
 			response.appendLabeledString("Processes Active", workshop.getCurrentProcesses() + "/" + workshop.getMaxProcesses());
 			List<ManufactureProcess> processes = workshop.getProcesses();

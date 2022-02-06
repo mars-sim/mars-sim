@@ -652,10 +652,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = getNickName().hashCode();
-		hashCode *= getEquipmentType().hashCode() ;
+		int hashCode = getEquipmentType().hashCode() ;
 		hashCode *= getIdentifier();
-		return hashCode;
+		return hashCode % 64;
 	}
 
 	@Override

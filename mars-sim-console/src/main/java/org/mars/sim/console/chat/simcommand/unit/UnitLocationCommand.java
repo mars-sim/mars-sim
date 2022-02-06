@@ -47,7 +47,7 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 			Building building = source.getBuildingLocation();
 			message.append("In ");
 			if (building != null) {
-				message.append(building.getNickName()).append(" @ ");
+				message.append(building.getName()).append(" @ ");
 			}
 
 			message.append(base.getName());				

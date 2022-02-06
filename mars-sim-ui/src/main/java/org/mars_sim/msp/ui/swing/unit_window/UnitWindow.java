@@ -105,7 +105,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 */
 	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
 		// Use JInternalFrame constructor
-		super(unit.getNickName(), false, true, false, true);
+		super(unit.getName(), false, true, false, true);
 
 		// Initialize data members
 		this.desktop = desktop;
@@ -435,7 +435,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	@Override
     public String getName() {
 		if (unit != null && unit.getName() != null)
-			return unit.getNickName() +"'s unit window";
+			return unit.getName() +"'s unit window";
 		return null;
     }
 

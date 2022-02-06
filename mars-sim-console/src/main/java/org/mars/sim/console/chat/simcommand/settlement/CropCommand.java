@@ -46,7 +46,7 @@ public class CropCommand extends AbstractSettlementCommand {
 									.collect(Collectors.toList());
 		// Display each farm seperately
 		for (Farming farm : farms) {			
-			response.append(farm.getBuilding().getNickName());
+			response.append(farm.getBuilding().getName());
 			response.appendBlankLine();
 			if (farm.getNumCrops2Plant() > 0) {
 				response.appendLabelledDigit("Available Crop Spaces", farm.getNumCrops2Plant());
