@@ -11,15 +11,11 @@
 	<artifactId>mars-sim-mapdata</artifactId>
 	<name>mars-sim-mapdata</name>
 	<dependencies>
-		<!-- http://tukaani.org/xz/java.html 
-			 https://mvnrepository.com/artifact/org.tukaani/xz : 113 KB 
-			 Note that 1.9 has issues that affects saving -->
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>
 			<version>1.9</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/me.lemire.integercompression/JavaFastPFOR : 196 KB-->
 		<dependency>
 		    <groupId>me.lemire.integercompression</groupId>
 		    <artifactId>JavaFastPFOR</artifactId>
