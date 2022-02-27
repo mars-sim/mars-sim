@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,8 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The Heating class is a building function for regulating temperature in a settlement..
  */
 public class Heating
-extends Function
-implements Serializable {
+extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -120,8 +118,6 @@ implements Serializable {
     
 //    private static final int HEAT_CAP = 200;  
  	private static final int PER_UPDATE = 2 ; // must be a multiple of 2
-    /** The cache for msols */     
- 	private int msolCache;
     /** The counter for heating cycle */ 	
 	//private int counts;
     /** the heat gain from equipment in kW */
@@ -991,11 +987,7 @@ implements Serializable {
 		double t_out = building.getSettlement().getOutsideTemperature();
 
 		if (mass == 0) {
-			int id = building.getInhabitableID();
-			double[] totalMass = building.getSettlement().getCompositionOfAir().getTotalMass();
-			if (totalMass.length <= id)
-				return;
-			mass = totalMass[id]; 
+			mass = building.getSettlement().getCompositionOfAir().getTotalMass(building);
 			conversion_factor = C_s * mass / timeSlice; 
 			//System.out.println(building.getNickName() + "'s total mass : " + mass);
 			// also, mass = density * HEIGHT * floorArea * M_TO_FT * M_TO_FT * M_TO_FT;

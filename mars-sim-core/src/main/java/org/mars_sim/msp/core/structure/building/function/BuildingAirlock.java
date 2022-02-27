@@ -133,7 +133,7 @@ public class BuildingAirlock extends Airlock {
 			Settlement settlement = building.getSettlement();
 
             // 1.0. Pump air into the airlock to make it breathable
-			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
+			settlement.getCompositionOfAir().releaseOrRecaptureAir(true, building);
 
             // 1.1. Transfer a person from the surface of Mars to the building inventory
 			successful = person.transfer(settlement);
@@ -183,7 +183,7 @@ public class BuildingAirlock extends Airlock {
   			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
 
             // 5.0. Recapture air from the airlock before depressurizing it
-  			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
+  			settlement.getCompositionOfAir().releaseOrRecaptureAir(false, building);
 
             // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
             successful = person.transfer(marsSurface);

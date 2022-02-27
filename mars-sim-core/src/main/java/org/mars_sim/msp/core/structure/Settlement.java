@@ -878,10 +878,9 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		double totalPressureArea = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		for (Building b : buildings) {
-			int id = b.getInhabitableID();
 			double area = b.getFloorArea();
 			totalArea += area;
-			totalPressureArea += compositionOfAir.getTotalPressure()[id] * area;
+			totalPressureArea += compositionOfAir.getTotalPressure(b) * area;
 			totalTArea += b.getCurrentTemperature() * area;
 		}
 		if (totalArea == 0) {
@@ -906,8 +905,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		for (Building b : buildings) {
 			if (b == building) {
-				int id = b.getInhabitableID();
-				p = compositionOfAir.getTotalPressure()[id];
+				p = compositionOfAir.getTotalPressure(b);
 			}
 		}
 		// convert from atm to kPascal
