@@ -170,8 +170,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
 		oxygenCapacity = spec.getCargoCapacity(LifeSupportInterface.OXYGEN);
 
-		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS
-				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
+		fullO2PartialPressure = Math.round(CompositionOfAir.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
 		massO2MinimumLimit = Math.round(MIN_O2_PRESSURE / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
 		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit*10_000.0)/10_000.0;
 		
@@ -606,9 +605,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		else if (oxygenLeft < massO2NominalLimit) {
 			// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
-
-			double remainingMass = oxygenLeft;
-			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume;
+			double pp = CompositionOfAir.getOxygenPressure(oxygenLeft, cabinAirVolume);
 			logger.log(this, Level.WARNING, 60_000,
 					Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");

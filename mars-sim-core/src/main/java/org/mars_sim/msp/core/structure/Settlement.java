@@ -144,7 +144,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	private static final double MAX_MISSION_SCORE = 1000D;
 
 	/** Normal air pressure [in kPa] */
-	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
+	private static final double NORMAL_AIR_PRESSURE = 34D;
 
 	/** The settlement water consumption */
 	public static double water_consumption_rate;

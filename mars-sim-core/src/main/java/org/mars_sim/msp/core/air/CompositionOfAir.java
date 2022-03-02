@@ -15,12 +15,12 @@ import java.util.Map.Entry;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -36,7 +36,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 	static final public class GasDetails implements Serializable {
 		double percent;
 		double partialPressure;
-		double temperature;
 		double numMoles;
 		double mass;
 		double standardMoles;
@@ -63,6 +62,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		double totalPressure; // in atm
 		double totalMoles;
 		double totalMass; // in kg
+		double temperature; // in C
 	
 		Map<Integer, GasDetails> gases = new HashMap<>();
 
@@ -77,6 +77,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 			
 			// Part 2 : calculate total # of moles, total mass and total pressure
 			fixedVolume = vol;
+			temperature = t;
 			for(Entry<Integer, GasDetails> g : gases.entrySet()) {
 				int gasId = g.getKey();
 				double molecularMass = getMolecularMass(gasId);
@@ -86,7 +87,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 				double nm = p * vol / R_GAS_CONSTANT / t;
 				double m = molecularMass * nm;
 	
-				gas.temperature = t;
 				gas.numMoles = nm;
 				gas.standardMoles = nm;
 				gas.mass = m;
@@ -151,6 +151,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 			totalPressure = 0;
 			totalMoles = 0;
 			totalMass = 0;
+			temperature = t;
 
 			for(Entry<Integer, GasDetails> g : gases.entrySet()) {
 				int gasId = g.getKey();
@@ -183,7 +184,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 				if (m < 0)
 					m = 0;
 
-				gas.temperature = t;
 				gas.partialPressure = p;
 				gas.mass = m;
 				gas.numMoles = nm;
@@ -202,12 +202,15 @@ public class CompositionOfAir implements Serializable, Temporal {
 		}
 
 		/**
-		 * Monitor the gases exchanges with the parent Building
+		 * Monitor the gases exchanges to a Resource Holder. 
+		 * @param rh Source or destination of excess gasses.
+		 * @param t Current temperature
 		 */
-		public void monitorGases(Building b, double t) {
+		public void monitorGases(ResourceHolder rh, double t) {
 			totalPressure = 0;
 			totalMoles = 0;
 			totalMass = 0;
+			temperature = t;
 
 			for(Entry<Integer,GasDetails> g : gases.entrySet()) {
 				int gasId = g.getKey();
@@ -231,12 +234,12 @@ public class CompositionOfAir implements Serializable, Temporal {
 					// save the future effort
 
 					if (d_mass > 0) {
-						b.getSettlement().retrieveAmountResource(gasId, d_mass);
+						rh.retrieveAmountResource(gasId, d_mass);
 					}
 					else { // too much gas, need to recapture it; d_mass is less than 0
 						double recaptured = -d_mass * GAS_CAPTURE_EFFICIENCY;
 						if (recaptured > 0) {
-							b.getSettlement().storeAmountResource(gasId, recaptured);								
+							rh.storeAmountResource(gasId, recaptured);								
 						}						
 					}
 
@@ -250,7 +253,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 						new_moles = new_m / molecularMass;
 					}
 
-					gas.temperature = t;
 					gas.partialPressure = new_moles * R_GAS_CONSTANT * t / fixedVolume;
 					gas.mass = new_m;
 					gas.numMoles = new_moles;
@@ -270,9 +272,9 @@ public class CompositionOfAir implements Serializable, Temporal {
 	 	 *
 	 	 * @param volume   volume change in the building
 	 	 * @param isReleasing positive if releasing, negative if recapturing
-	 	 * @param b        the building
+	 	 * @param rh        local store of gases
 	 	*/
-		public void releaseOrRecaptureAir(double volume, boolean isReleasing, Building b) {
+		public void releaseOrRecaptureAir(double volume, boolean isReleasing, ResourceHolder rh) {
 			for(Entry<Integer,GasDetails> g : gases.entrySet()) {
 				int gasId = g.getKey();
 				GasDetails gas = g.getValue();
@@ -286,14 +288,14 @@ public class CompositionOfAir implements Serializable, Temporal {
 					gas.numMoles = gas.numMoles + d_moles;
 					gas.mass  = gas.mass + d_mass;
 					if (d_mass > 0) {
-						b.getSettlement().retrieveAmountResource(gasId, d_mass);
+						rh.retrieveAmountResource(gasId, d_mass);
 					}
 				}
 				else { // recapture
 					gas.numMoles = gas.numMoles - d_moles;
 					gas.mass  = gas.mass - d_mass;
 					if (d_mass > 0) {
-						b.getSettlement().storeAmountResource(gasId, d_mass * GAS_CAPTURE_EFFICIENCY);	
+						rh.storeAmountResource(gasId, d_mass * GAS_CAPTURE_EFFICIENCY);	
 					}
 				}
 
@@ -309,9 +311,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	public static final double C_TO_K = 273.15;
-
-	private static final double AIRLOCK_VOLUME_IN_LITER =
-			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
@@ -334,13 +333,8 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	// Assume having a 1% of water moisture
 
-
-	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_ATM = 340D;
-	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_MB = 340D;
-	public static final double SKYLAB_TOTAL_AIR_PRESSURE_kPA = 34D;
-
 	public static final double PSI_PER_ATM = 14.696;
-	public static final double MMHG_PER_ATM = 760;
+	private static final double MMHG_PER_ATM = 760;
 	public static final double KPA_PER_ATM = 101.32501;
 	public static final double MB_PER_ATM = 1013.2501;
 
@@ -358,29 +352,19 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private static final double CO2_PARTIAL_PRESSURE = 0.5 / MB_PER_ATM;
 	private static final double ARGON_PARTIAL_PRESSURE = 0.1 / MB_PER_ATM;
 	private static final double N2_PARTIAL_PRESSURE = 120 / MB_PER_ATM;
-	public static final double O2_PARTIAL_PRESSURE = 200 / MB_PER_ATM;
+	private static final double O2_PARTIAL_PRESSURE = 200 / MB_PER_ATM;
 	private static final double H2O_PARTIAL_PRESSURE = 19.4 / MB_PER_ATM;
 
-	// https://en.wikipedia.org/wiki/Vapour_pressure_of_water
-
-	/** The upper safe limit of the partial pressure [in atm] of O2 */
-	// private static final double O2_PRESSURE_UPPER_LIMIT = 1.5;// [in atm]
-	/** The lower safe limit of the partial pressure [in atm] of O2 */
-	// private static final double O2_PRESSURE_LOWER_LIMIT = 0.15;// [in atm]
-
-	public static final double CO2_MOLAR_MASS = 44.0095 / 1000;; // [in kg/mol]
-	public static final double ARGON_MOLAR_MASS = 39.948 / 1000;; // [in kg/mol]
-	public static final double N2_MOLAR_MASS = 28.02 / 1000;; // [in kg/mol]
-	public static final double O2_MOLAR_MASS = 32.00 / 1000;; // [in kg/mol]
-	public static final double H2O_MOLAR_MASS = 18.02 / 1000;; // [in kg/mol]
-
-	public static final double CH4_MOLAR_MASS = 16.04276 / 1000;; // [in kg/mol]
-	public static final double H2_MOLAR_MASS = 2.016 / 1000;; // [in kg/mol]
+	private static final double CO2_MOLAR_MASS = 44.0095 / 1000;; // [in kg/mol]
+	private static final double ARGON_MOLAR_MASS = 39.948 / 1000;; // [in kg/mol]
+	private static final double N2_MOLAR_MASS = 28.02 / 1000;; // [in kg/mol]
+	private static final double O2_MOLAR_MASS = 32.00 / 1000;; // [in kg/mol]
+	private static final double H2O_MOLAR_MASS = 18.02 / 1000;; // [in kg/mol]
 
 	private static final int MILLISOLS_PER_UPDATE = 2;
 	private static final double CALCULATE_FREQUENCY = 2D;
 
-	public static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
+	private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
 	// alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
 	// see https://en.wikipedia.org/wiki/Gas_constant
 
@@ -399,10 +383,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private double cO2Expelled;
 	/** Moisture expelled by a person [kg/millisol] */
 	private double moistureExpelled;
-	/** Water consumed by a person [kg/millisol] */
-	// private double h2oConsumed;
-
-	// private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
 
 	// Assume using Earth's atmospheric pressure at sea level, 14.7 psi, or ~ 1 bar,
 	// for the habitat
@@ -426,7 +406,6 @@ public class CompositionOfAir implements Serializable, Temporal {
 	// in Martian atmosphere, nitrogen (~2.7%) , argon (~1.6%) , carbon dioxide
 	// (~95.3%)
 	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static PersonConfig personConfig;
 	private static UnitManager unitManager = sim.getUnitManager();
 
@@ -440,7 +419,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 		settlementID = settlement.getIdentifier();
 
-		personConfig = simulationConfig.getPersonConfig();
+		personConfig = SimulationConfig.instance().getPersonConfig();
 
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
 
@@ -557,6 +536,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 		// check % of gas in each building
 		// find the delta mass needed for each gas to go within the threshold
 		// calculate for each gas the new partial pressure, the mass and # of moles
+		ResourceHolder rh = unitManager.getSettlementByID(settlementID);
 
 		for (Building b : buildings) {
 			AirComposition air = indoorBuildings.get(b.getIdentifier());
@@ -567,7 +547,7 @@ public class CompositionOfAir implements Serializable, Temporal {
 				if (tt > -40 && tt < 40) {
 
 					double t = C_TO_K + tt;
-					air.monitorGases(b, t);
+					air.monitorGases(rh, t);
 				}
 			}
 		}
@@ -594,22 +574,20 @@ public class CompositionOfAir implements Serializable, Temporal {
 	 *
 	 * @param isReleasing positive if releasing, negative if recapturing
 	 * @param b        the building
+	 * @param volLitres Gas volume in litres being exchanged
 	 */
-	public void releaseOrRecaptureAir(boolean isReleasing, Building b) {
+	public void releaseOrRecaptureAir(boolean isReleasing, Building b, double volLitres) {
 		AirComposition air = indoorBuildings.get(b.getIdentifier());
-		air.releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, isReleasing, b);
+		air.releaseOrRecaptureAir(volLitres, isReleasing, b);
 	}
 
 	/**
-	 * Calculates the partial pressure of water vapor at a given temperature using
-	 * Buck equation
-	 *
-	 * @param t_C temperature in deg celsius
-	 * @return partial pressure in kPa Note : see
-	 *         https://en.wikipedia.org/wiki/Vapour_pressure_of_water
+	 * Calculate the O2 pressure for a quantity in a fixed volume.
+	 * @param gasVol Amount of O2 present
+	 * @param totalVol Total volume of the container 
 	 */
-	public double calculateWaterVaporPressure(double t_C) {
-		return 0.61121 * Math.exp((18.678 - t_C / 234.5) * (t_C / (257.14 + t_C)));
+	public final static double getOxygenPressure(double gasVol, double totalVol) {
+		return KPA_PER_ATM * gasVol / O2_MOLAR_MASS * R_GAS_CONSTANT / totalVol;
 	}
 
 	/**
@@ -626,12 +604,11 @@ public class CompositionOfAir implements Serializable, Temporal {
 	}
 
 	public void destroy() {
-//		buildingManager = null;
 		personConfig = null;
 	}
 
 	/**
-	 * Get teh total air mass for a building
+	 * Get the total air mass for a building
 	 */
     public double getTotalMass(Building b) {
         return indoorBuildings.get(b.getIdentifier()).totalMass;
@@ -641,7 +618,6 @@ public class CompositionOfAir implements Serializable, Temporal {
     public double getTotalPressure(Building b) {
         return indoorBuildings.get(b.getIdentifier()).totalPressure;
     }
-
 
     public GasDetails getGasDetails(Building b, int gasId) {
         return indoorBuildings.get(b.getIdentifier()).gases.get(gasId);

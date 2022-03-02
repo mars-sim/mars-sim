@@ -74,8 +74,6 @@ extends Function {
 	/** The speed of the ventilation fan */
 	private static final double CFM  = 50;
 	
-	/** The average volume of a airlock [m^3] */	
-    private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
     /**  convert meters to feet  */
 //	private static final double M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
@@ -127,7 +125,7 @@ extends Function {
 	/** Density of dry breathable air [kg/m3] */	
 	private double dryAirDensity = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
-	private double energy_factor_EVA = C_p * AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
+	private double energy_factor_EVA = C_p * BuildingAirlock.AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
 
     private double width;
     

@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.Computation;
@@ -124,8 +123,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
 	public static final double HEIGHT = 2.5;
-	/** The volume of an airlock in cubic meters */
-	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
 	public static final double kWEvaHeater = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
@@ -144,7 +141,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	/** The inhabitable ID for this building. */
-	protected int inhabitableID = -1;
+	//protected int inhabitableID = -1;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
 
@@ -229,9 +226,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			&& lifeSupport == null) {
 			// Set the instance of life support
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-			// Set up an inhabitable_building id for tracking composition of air
-			int id = manager.obtainNextInhabitableID();
-			setInhabitableID(id);
 		}
 	}
 
@@ -1208,24 +1202,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	public Coordinates getLocation() {
 		return settlement.getCoordinates();
-	}
-
-	/**
-	 * Gets the building's inhabitable ID number.
-	 *
-	 * @return id.
-	 */
-	public int getInhabitableID() {
-		return inhabitableID;
-	}
-
-	/**
-	 * Sets the building's settlement inhabitable ID number.
-	 *
-	 * @param id.
-	 */
-	public void setInhabitableID(int id) {
-		inhabitableID = id;
 	}
 
 	/**

@@ -41,6 +41,7 @@ public class BuildingAirlock extends Airlock {
 
 	/** The volume of an airlock in cubic meters. */
 	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
+	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
     // Data members.
 	/** The building this airlock is for. */
@@ -133,7 +134,7 @@ public class BuildingAirlock extends Airlock {
 			Settlement settlement = building.getSettlement();
 
             // 1.0. Pump air into the airlock to make it breathable
-			settlement.getCompositionOfAir().releaseOrRecaptureAir(true, building);
+			settlement.getCompositionOfAir().releaseOrRecaptureAir(true, building, AIRLOCK_VOLUME_IN_LITER);
 
             // 1.1. Transfer a person from the surface of Mars to the building inventory
 			successful = person.transfer(settlement);
@@ -183,7 +184,7 @@ public class BuildingAirlock extends Airlock {
   			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
 
             // 5.0. Recapture air from the airlock before depressurizing it
-  			settlement.getCompositionOfAir().releaseOrRecaptureAir(false, building);
+  			settlement.getCompositionOfAir().releaseOrRecaptureAir(false, building, AIRLOCK_VOLUME_IN_LITER);
 
             // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
             successful = person.transfer(marsSurface);

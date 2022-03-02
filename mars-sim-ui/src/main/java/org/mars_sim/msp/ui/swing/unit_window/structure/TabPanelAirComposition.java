@@ -505,15 +505,13 @@ public class TabPanelAirComposition extends TabPanel {
 
 		private CompositionOfAir air;
 		private TableModel(Settlement settlement) {
-//			this.settlement = settlement;
 			this.manager = settlement.getBuildingManager();
 			this.air = settlement.getCompositionOfAir();
 			this.buildings = selectBuildingsWithLS();
 			this.size = buildings.size();
-
 		}
 
-		public List<Building> selectBuildingsWithLS() {
+		private List<Building> selectBuildingsWithLS() {
 			return manager.getBuildingsWithLifeSupport();
 		}
 
@@ -562,8 +560,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 		public Object getValueAt(int row, int column) {
 
-			//Building b = buildings.get(row);
-			Building b = manager.getInhabitableBuilding(row);
+			Building b = buildings.get(row);
 
 			// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
 			if (column == 0) {
@@ -607,20 +604,11 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		public void update() {
-			//int newSize = buildings.size();
-			//if (size != newSize) {
-			//	size = newSize;
-			//	buildings = selectBuildingsWithLS();
-				//Collections.sort(buildings);
-			//}
-			//else {
-				List<Building> newBuildings = selectBuildingsWithLS();
-				if (!buildings.equals(newBuildings)) {
-					buildings = newBuildings;
-					scrollPane.validate();
-					//Collections.sort(buildings);
-				}
-			//}
+			List<Building> newBuildings = selectBuildingsWithLS();
+			if (!buildings.equals(newBuildings)) {
+				buildings = newBuildings;
+				scrollPane.validate();
+			}
 
 			fireTableDataChanged();
 		}
