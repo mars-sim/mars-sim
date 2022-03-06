@@ -28,8 +28,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.air.AirComposition.GasDetails;
 import org.mars_sim.msp.core.air.CompositionOfAir;
-import org.mars_sim.msp.core.air.CompositionOfAir.GasDetails;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -163,31 +164,31 @@ public class TabPanelAirComposition extends TabPanel {
 
 		WebLabel co2 = new WebLabel(Msg.getString("TabPanelAirComposition.cO2.title"), SwingConstants.RIGHT);
 		gasPanel.add(co2);
-		cO2Cache = getOverallComposition(ResourceUtil.co2ID);
+		cO2Cache = -1;
 		cO2Label = new WebLabel(Msg.getString(LABEL_PERCENT, DECIMAL_PLACES3.format(cO2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
 		gasPanel.add(cO2Label);
 
 		WebLabel ar = new WebLabel(Msg.getString("TabPanelAirComposition.ar.title"), SwingConstants.RIGHT);
 		gasPanel.add(ar);
-		arCache = getOverallComposition(ResourceUtil.argonID);
+		arCache = 0;
 		arLabel = new WebLabel(Msg.getString(LABEL_PERCENT, DECIMAL_PLACES2.format(arCache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
 		gasPanel.add(arLabel);
 		
 		WebLabel n2 = new WebLabel(Msg.getString("TabPanelAirComposition.n2.title"), SwingConstants.RIGHT);
 		gasPanel.add(n2);
-		n2Cache = getOverallComposition(ResourceUtil.nitrogenID);
+		n2Cache = 0;
 		n2Label = new WebLabel(Msg.getString(LABEL_PERCENT, DECIMAL_PLACES1.format(n2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
 		gasPanel.add(n2Label);
 
 		WebLabel o2 = new WebLabel(Msg.getString("TabPanelAirComposition.o2.title"), SwingConstants.RIGHT);
 		gasPanel.add(o2);
-		o2Cache = getOverallComposition(ResourceUtil.oxygenID);
+		o2Cache = 0;
 		o2Label = new WebLabel(Msg.getString(LABEL_PERCENT, DECIMAL_PLACES2.format(o2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
 		gasPanel.add(o2Label);
 
 		WebLabel h2O = new WebLabel(Msg.getString("TabPanelAirComposition.h2O.title"), SwingConstants.RIGHT);
 		gasPanel.add(h2O);
-		h2OCache = getOverallComposition(ResourceUtil.waterID);
+		h2OCache = 0;
 		h2OLabel = new WebLabel(Msg.getString(LABEL_PERCENT, DECIMAL_PLACES2.format(h2OCache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
 		gasPanel.add(h2OLabel);
 		gasPanel.add(new WebLabel(""));
@@ -304,12 +305,6 @@ public class TabPanelAirComposition extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(4).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(5).setCellRenderer(renderer);
-//		table.getColumnModel().getColumn(6).setCellRenderer(renderer);
 		
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -320,17 +315,20 @@ public class TabPanelAirComposition extends TabPanel {
 
 		scrollPane.setViewportView(table);
 
+		//Foruce an update to load
+		update();
+
 	}
 
 	public double getOverallComposition(int gasId) {
 		double result = 0;
 		int size = buildingsCache.size();
 		for (Building b : buildingsCache) {
-			GasDetails gas = air.getGasDetails(b, gasId);
+			AirComposition.GasDetails gas = air.getGasDetails(b, gasId);
 			double percent = gas.getPercent();
 			result += percent;
 		}
-		return Math.round(result/size*100.0)/100.0;
+		return (result/size);
 	}
 
 	public String getSubtotal(Building b) {
@@ -396,7 +394,7 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 		else {
 
-			double cO2 = getOverallComposition(0);
+			double cO2 = getOverallComposition(ResourceUtil.co2ID);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
 				cO2Label.setText(
@@ -405,7 +403,7 @@ public class TabPanelAirComposition extends TabPanel {
 					);
 			}
 
-			double ar = getOverallComposition(1);
+			double ar = getOverallComposition(ResourceUtil.argonID);
 			if (arCache != ar) {
 				arCache = ar;
 				arLabel.setText(
@@ -415,7 +413,7 @@ public class TabPanelAirComposition extends TabPanel {
 			}
 			
 
-			double n2 =  getOverallComposition(2);
+			double n2 =  getOverallComposition(ResourceUtil.nitrogenID);
 			if (n2Cache != n2) {
 				n2Cache = n2;
 				n2Label.setText(
@@ -426,7 +424,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 
 
-			double o2 = getOverallComposition(3);
+			double o2 = getOverallComposition(ResourceUtil.oxygenID);
 			if (o2Cache != o2) {
 				o2Cache = o2;
 				o2Label.setText(
@@ -435,7 +433,7 @@ public class TabPanelAirComposition extends TabPanel {
 					);
 			}
 
-			double h2O = getOverallComposition(4);
+			double h2O = getOverallComposition(ResourceUtil.waterID);
 			if (h2OCache != h2O) {
 				h2OCache = h2O;
 				h2OLabel.setText(
@@ -582,7 +580,7 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		public double getValue(int gasId, Building b) {
-			GasDetails gas = air.getGasDetails(b, gasId);
+			AirComposition.GasDetails gas = air.getGasDetails(b, gasId);
 			if (percent_btn.isSelected())
 				return gas.getPercent();
 			else if (kPa_btn.isSelected())

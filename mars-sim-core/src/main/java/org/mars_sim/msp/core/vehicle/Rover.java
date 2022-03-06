@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -170,7 +170,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
 		oxygenCapacity = spec.getCargoCapacity(LifeSupportInterface.OXYGEN);
 
-		fullO2PartialPressure = Math.round(CompositionOfAir.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
+		fullO2PartialPressure = Math.round(AirComposition.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
 		massO2MinimumLimit = Math.round(MIN_O2_PRESSURE / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
 		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * massO2MinimumLimit*10_000.0)/10_000.0;
 		
@@ -605,7 +605,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		else if (oxygenLeft < massO2NominalLimit) {
 			// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
-			double pp = CompositionOfAir.getOxygenPressure(oxygenLeft, cabinAirVolume);
+			double pp = AirComposition.getOxygenPressure(oxygenLeft, cabinAirVolume);
 			logger.log(this, Level.WARNING, 60_000,
 					Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
