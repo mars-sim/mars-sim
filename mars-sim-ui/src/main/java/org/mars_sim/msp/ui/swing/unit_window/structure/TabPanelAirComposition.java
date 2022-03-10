@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.air.AirComposition.GasDetails;
-import org.mars_sim.msp.core.air.CompositionOfAir;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -93,7 +92,6 @@ public class TabPanelAirComposition extends TabPanel {
 
 	private Settlement settlement;
 	private BuildingManager manager;
-	private CompositionOfAir air;
 
 	/**
 	 * Constructor.
@@ -118,7 +116,6 @@ public class TabPanelAirComposition extends TabPanel {
 	protected void buildUI(JPanel content) {
 		
 		manager = settlement.getBuildingManager();
-		air = settlement.getCompositionOfAir();
 
 		buildingsCache = manager.getBuildingsWithLifeSupport();
 		numBuildingsCache = buildingsCache.size();
@@ -324,7 +321,7 @@ public class TabPanelAirComposition extends TabPanel {
 		double result = 0;
 		int size = buildingsCache.size();
 		for (Building b : buildingsCache) {
-			AirComposition.GasDetails gas = air.getGasDetails(b, gasId);
+			AirComposition.GasDetails gas = b.getLifeSupport().getAir().getGas(gasId);
 			double percent = gas.getPercent();
 			result += percent;
 		}
@@ -333,7 +330,8 @@ public class TabPanelAirComposition extends TabPanel {
 
 	public String getSubtotal(Building b) {
 		double v = 0;
-		
+		AirComposition air = b.getLifeSupport().getAir();
+
 		if (percent_btn.isSelected()) {
 			/** 
 			 * Percentage is ALWAYS going to be 100%
@@ -346,31 +344,31 @@ public class TabPanelAirComposition extends TabPanel {
 			return "100.0";
 		}
 		else if (kPa_btn.isSelected()) {
-			v = air.getTotalPressure(b);
+			v = air.getTotalPressure();
 			// convert to kPascal
-			return String.format("%1.2f", v * CompositionOfAir.KPA_PER_ATM);
+			return String.format("%1.2f", v * AirComposition.KPA_PER_ATM);
 		}
 		else if (atm_btn.isSelected()) {
-			v = air.getTotalPressure(b);
+			v = air.getTotalPressure();
 			// convert to atm
 			return String.format("%1.4f", v);
 		}
 		else if (mb_btn.isSelected()) {
-			v = air.getTotalPressure(b);
+			v = air.getTotalPressure();
 			// convert to millibar
-			return String.format("%1.1f", v * CompositionOfAir.MB_PER_ATM);
+			return String.format("%1.1f", v * AirComposition.MB_PER_ATM);
 		}
 		else if (psi_btn.isSelected()) {
-			v = air.getTotalPressure(b);
+			v = air.getTotalPressure();
 			// convert to psi
-			return String.format("%1.2f", v * CompositionOfAir.PSI_PER_ATM);
+			return String.format("%1.2f", v * AirComposition.PSI_PER_ATM);
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
 		//	return (String.format("%1.1e", v)).replaceAll("e+", "e"); 
 		//}
 		else if (mass_btn.isSelected()) {
-			v = air.getTotalMass(b);
+			v = air.getTotalMass();
 			return String.format("%1.2f", v); 
 		}
 		else
@@ -461,17 +459,17 @@ public class TabPanelAirComposition extends TabPanel {
 			}
 			else if (atm_btn.isSelected()) {
 				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM*10000.0)/10000.0);
+						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM*10000.0)/10000.0);
 			}
 			else if (mb_btn.isSelected()) {
 				// convert from atm to mb
 				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.mb",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.MB_PER_ATM*100.0)/100.0);
+						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM*100.0)/100.0);
 			}
 			else if (psi_btn.isSelected()) {
 				// convert from atm to kPascal
 				indoorPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.PSI_PER_ATM*1000.0)/1000.0);
+						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM*1000.0)/1000.0);
 			}
 			
 			if (!indoorPressureCache.equals(indoorPressure)) {
@@ -496,15 +494,12 @@ public class TabPanelAirComposition extends TabPanel {
 
 		private int size;
 
-//		private Settlement settlement;
 		private BuildingManager manager;
 
 		private List<Building> buildings = new ArrayList<>();
 
-		private CompositionOfAir air;
 		private TableModel(Settlement settlement) {
 			this.manager = settlement.getBuildingManager();
-			this.air = settlement.getCompositionOfAir();
 			this.buildings = selectBuildingsWithLS();
 			this.size = buildings.size();
 		}
@@ -580,17 +575,17 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		public double getValue(int gasId, Building b) {
-			AirComposition.GasDetails gas = air.getGasDetails(b, gasId);
+			AirComposition.GasDetails gas = b.getLifeSupport().getAir().getGas(gasId);
 			if (percent_btn.isSelected())
 				return gas.getPercent();
 			else if (kPa_btn.isSelected())
-				return gas.getPartialPressure() * CompositionOfAir.KPA_PER_ATM;
+				return gas.getPartialPressure() * AirComposition.KPA_PER_ATM;
 			else if (atm_btn.isSelected())
 				return gas.getPartialPressure();
 			else if (mb_btn.isSelected())
-				return gas.getPartialPressure() * CompositionOfAir.MB_PER_ATM;
+				return gas.getPartialPressure() * AirComposition.MB_PER_ATM;
 			else if (psi_btn.isSelected())
-				return gas.getPartialPressure() * CompositionOfAir.PSI_PER_ATM;
+				return gas.getPartialPressure() * AirComposition.PSI_PER_ATM;
 			//else if (temperature_btn.isSelected())
 			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
 			//else if (moles_btn.isSelected())
@@ -639,6 +634,5 @@ public class TabPanelAirComposition extends TabPanel {
 		tableModel = null;
 		settlement = null;
 		manager = null;
-		air = null;
 	}
 }

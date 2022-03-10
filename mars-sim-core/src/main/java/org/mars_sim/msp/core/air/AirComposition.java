@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * Models the composition of auir within a containment. Holds the specific gas composition and pressure.
@@ -46,6 +48,32 @@ public class AirComposition implements Serializable {
         }
     }
 
+	// see https://en.wikipedia.org/wiki/Gas_constant
+	private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
+	public static final double MB_PER_ATM = 1013.2501;
+	public static final double KPA_PER_ATM = 101.32501;
+	public static final double PSI_PER_ATM = 14.696;
+
+	/**
+     * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
+     * the overall pressure rating.
+     */
+    // see http://www.collectspace.com/ubb/Forum29/HTML/001309.html
+    // The partial pressures of each gas are in atm
+    private static final double CO2_PARTIAL_PRESSURE = 0.5 / MB_PER_ATM;
+    private static final double ARGON_PARTIAL_PRESSURE = 0.1 / MB_PER_ATM;
+    private static final double N2_PARTIAL_PRESSURE = 120 / MB_PER_ATM;
+    private static final double O2_PARTIAL_PRESSURE = 200 / MB_PER_ATM;
+    private static final double H2O_PARTIAL_PRESSURE = 19.4 / MB_PER_ATM;
+    private static final double H2O_MOLAR_MASS = 18.02 / 1000;
+    private static final double O2_MOLAR_MASS = 32.00 / 1000;
+    private static final double N2_MOLAR_MASS = 28.02 / 1000;
+    private static final double ARGON_MOLAR_MASS = 39.948 / 1000;
+    private static final double CO2_MOLAR_MASS = 44.0095 / 1000;
+	private static final int MILLISOLS_PER_UPDATE = 2;
+	private static final double CALCULATE_FREQUENCY = 2D;
+	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
+
     private static double o2Consumed;
 	private static double cO2Expelled;
 	private static double moistureExpelled;
@@ -54,42 +82,29 @@ public class AirComposition implements Serializable {
 	private double totalPressure; // in atm
 	private double totalMass; // in kg
 
-	private Map<Integer, AirComposition.GasDetails> gases = new HashMap<>();
-    /**
-     * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
-     * the overall pressure rating.
-     */
-    // see http://www.collectspace.com/ubb/Forum29/HTML/001309.html
-    // The partial pressures of each gas are in atm
-    private static final double CO2_PARTIAL_PRESSURE = 0.5 / CompositionOfAir.MB_PER_ATM;
-    private static final double ARGON_PARTIAL_PRESSURE = 0.1 / CompositionOfAir.MB_PER_ATM;
-    private static final double N2_PARTIAL_PRESSURE = 120 / CompositionOfAir.MB_PER_ATM;
-    private static final double O2_PARTIAL_PRESSURE = 200 / CompositionOfAir.MB_PER_ATM;
-    private static final double H2O_PARTIAL_PRESSURE = 19.4 / CompositionOfAir.MB_PER_ATM;
-    private static final double H2O_MOLAR_MASS = 18.02 / 1000;
-    private static final double O2_MOLAR_MASS = 32.00 / 1000;
-    private static final double N2_MOLAR_MASS = 28.02 / 1000;
-    private static final double ARGON_MOLAR_MASS = 39.948 / 1000;
-    private static final double CO2_MOLAR_MASS = 44.0095 / 1000;
+	private Map<Integer, GasDetails> gases = new HashMap<>();
+	private double accumulatedTime;
+	public static final double C_TO_K = 273.15;
+
 
 	public AirComposition(double t, double vol) {
 
 		// Part 1 : set up initial conditions at the start of sim
-		initialiseGas(ResourceUtil.co2ID, AirComposition.CO2_PARTIAL_PRESSURE);
-		initialiseGas(ResourceUtil.argonID, AirComposition.ARGON_PARTIAL_PRESSURE);
-		initialiseGas(ResourceUtil.nitrogenID, AirComposition.N2_PARTIAL_PRESSURE);
-		initialiseGas(ResourceUtil.oxygenID, AirComposition.O2_PARTIAL_PRESSURE);
-		initialiseGas(ResourceUtil.waterID, AirComposition.H2O_PARTIAL_PRESSURE);
+		initialiseGas(ResourceUtil.co2ID);
+		initialiseGas(ResourceUtil.argonID);
+		initialiseGas(ResourceUtil.nitrogenID);
+		initialiseGas(ResourceUtil.oxygenID);
+		initialiseGas(ResourceUtil.waterID);
 		
 		// Part 2 : calculate total # of moles, total mass and total pressure
 		fixedVolume = vol;
-		for(Entry<Integer, AirComposition.GasDetails> g : gases.entrySet()) {
+		for(Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			double molecularMass = getMolecularMass(gasId);
-			AirComposition.GasDetails gas = g.getValue();
+			GasDetails gas = g.getValue();
 
 			double p = gas.partialPressure;
-			double nm = p * vol / CompositionOfAir.R_GAS_CONSTANT / t;
+			double nm = p * vol / R_GAS_CONSTANT / t;
 			double m = molecularMass * nm;
 
 			gas.numMoles = nm;
@@ -104,63 +119,47 @@ public class AirComposition implements Serializable {
 		updateGasPercentage();
 	}
 
-	public static void initializeInstances(PersonConfig personConfig) {
-		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
-
-		cO2Expelled = personConfig.getCO2ExpelledRate() / 1000D; // [in kg/millisol] 1.0433 kg or 2.3 pounds CO2 per day
-																	// for high metabolic activity.
-
-		// If we are breathing regular air, at about ~20-21% 02, we use about 5% of that
-		// O2 and exhale the by product of
-		// glucose utilization CO2 and the balance of the O2, so exhaled breath is about
-		// 16% oxygen, and about 4.75 % CO2.
-
-		moistureExpelled = .8 / 1000D; // ~800 ml through breathing, sweat and skin per sol, divide by 1000 to convert								// to [kg/millisol]
-	}
-
-	private static final double getMolecularMass(int gasId) {
-		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
-		if (gasId == ResourceUtil.co2ID)
-			return AirComposition.CO2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.argonID)
-			return AirComposition.ARGON_MOLAR_MASS;
-		else if (gasId == ResourceUtil.nitrogenID)
-			return AirComposition.N2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.oxygenID)
-			return AirComposition.O2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.waterID)
-				return AirComposition.H2O_MOLAR_MASS;
-		else
-			throw new IllegalArgumentException("Unknown gas id=" + gasId);
-	}
-
-	private static final double getIdealPressure(int gasId) {
-		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
-		if (gasId == ResourceUtil.co2ID)
-			return AirComposition.CO2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.argonID)
-			return AirComposition.ARGON_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.nitrogenID)
-			return AirComposition.N2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.oxygenID)
-			return AirComposition.O2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.waterID)
-			 return AirComposition.H2O_PARTIAL_PRESSURE;
-		else
-			throw new IllegalArgumentException("Unknown gas id=" + gasId);
-	}
-
-	private void initialiseGas(int gasId, double initialPressure) {
-		AirComposition.GasDetails gas = new AirComposition.GasDetails();
+	/**
+	 * Initialise a new gas to the composition
+	 */
+	private void initialiseGas(int gasId) {
+		GasDetails gas = new GasDetails();
 		gas.partialPressure = getIdealPressure(gasId);
 
 		gases.put(gasId, gas);
 	}
 
+	/**
+	 * Update all the individual Gas percentages based on the partial & total pressure.
+	 */
 	private void updateGasPercentage() {
-		for (AirComposition.GasDetails gd : gases.values()) {
+		for (GasDetails gd : gases.values()) {
 			// calculate for each gas the % composition
 			gd.percent = gd.partialPressure / totalPressure * 100D;
+		}
+	}
+
+	/**
+	 * Calculate the impact of time passing
+	 */
+	public void timePassing(Building building, ClockPulse pulse) {
+		accumulatedTime += pulse.getElapsed();
+		double tt = building.getCurrentTemperature();
+
+		if (tt > -40 && tt < 40) {
+			double t = AirComposition.C_TO_K + tt;
+
+			if (accumulatedTime >= CALCULATE_FREQUENCY) {
+
+				int numPeople = building.getNumPeople();
+
+				calcPersonImpact(t, numPeople,  accumulatedTime);
+				accumulatedTime = 0;
+			}
+
+			if (pulse.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
+				monitorGases(building, t);
+			}
 		}
 	}
 
@@ -170,14 +169,14 @@ public class AirComposition implements Serializable {
 	 * @param numPeople Number of people in using air
 	 * @param time The time span of the gas consumption
 	 */
-	public void calcPersonImpact(double t, int numPeople, double time) {
+	private void calcPersonImpact(double t, int numPeople, double time) {
 		
 		totalPressure = 0;
 		totalMass = 0;
 		
-		for(Entry<Integer, AirComposition.GasDetails> g : gases.entrySet()) {
+		for(Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
-			AirComposition.GasDetails gas = g.getValue();
+			GasDetails gas = g.getValue();
 
 			// Part 1 : calculate for each gas the partial pressure and # of moles
 			double m = gas.mass;
@@ -192,7 +191,7 @@ public class AirComposition implements Serializable {
 			// Divide by molecular mass to convert mass to # of moles
 			// note the kg/mole are as indicated as each gas have different amu
 			double nm = m / getMolecularMass(gasId);
-			double p = nm * CompositionOfAir.R_GAS_CONSTANT * t / fixedVolume;
+			double p = nm * AirComposition.R_GAS_CONSTANT * t / fixedVolume;
 
 			if (p < 0)
 				p = 0;
@@ -222,18 +221,17 @@ public class AirComposition implements Serializable {
 	 * @param rh Source or destination of excess gasses.
 	 * @param t Current temperature
 	 */
-	public void monitorGases(ResourceHolder rh, double t) {
+	private void monitorGases(ResourceHolder rh, double t) {
 		totalPressure = 0;
 		totalMass = 0;
 
-		for(Entry<Integer,AirComposition.GasDetails> g : gases.entrySet()) {
+		for(Entry<Integer,GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
-			AirComposition.GasDetails gas = g.getValue();
+			GasDetails gas = g.getValue();
 
-			// double diff = delta/standard_moles;
-			double PP = getIdealPressure(gasId);
+			double pp = getIdealPressure(gasId);
 			double p = gas.partialPressure;
-			double tolerance = p / PP;
+			double tolerance = p / pp;
 
 			// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
 			// composition
@@ -241,35 +239,33 @@ public class AirComposition implements Serializable {
 			// composition
 			if (tolerance > 1.1 || tolerance < .9) {
 
-				double d_new_moles = gas.standardMoles - gas.numMoles;
+				double dNewMoles = gas.standardMoles - gas.numMoles;
 				double molecularMass = getMolecularMass(gasId);
-				double d_mass = d_new_moles * molecularMass; // d_mass can be -ve;
-				// if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to
-				// save the future effort
+				double dMass = dNewMoles * molecularMass; // d_mass can be -ve
 
-				if (d_mass > 0) {
-					rh.retrieveAmountResource(gasId, d_mass);
+				if (dMass > 0) {
+					rh.retrieveAmountResource(gasId, dMass);
 				}
 				else { // too much gas, need to recapture it; d_mass is less than 0
-					double recaptured = -d_mass * CompositionOfAir.GAS_CAPTURE_EFFICIENCY;
+					double recaptured = -dMass * GAS_CAPTURE_EFFICIENCY;
 					if (recaptured > 0) {
 						rh.storeAmountResource(gasId, recaptured);								
 					}						
 				}
 
-				double new_m = gas.mass + d_mass;
-				double new_moles = 0;
+				double newM = gas.mass + dMass;
+				double newMoles = 0;
 
-				if (new_m < 0) {
-					new_m = 0;
+				if (newM < 0) {
+					newM = 0;
 				}
 				else {
-					new_moles = new_m / molecularMass;
+					newMoles = newM / molecularMass;
 				}
 
-				gas.partialPressure = new_moles * CompositionOfAir.R_GAS_CONSTANT * t / fixedVolume;
-				gas.mass = new_m;
-				gas.numMoles = new_moles;
+				gas.partialPressure = newMoles * R_GAS_CONSTANT * t / fixedVolume;
+				gas.mass = newM;
+				gas.numMoles = newMoles;
             }
 
             // Update total
@@ -288,27 +284,27 @@ public class AirComposition implements Serializable {
  	 * @param rh        local store of gases
  	*/
 	public void releaseOrRecaptureAir(double volume, boolean isReleasing, ResourceHolder rh) {
-		for(Entry<Integer,AirComposition.GasDetails> g : gases.entrySet()) {
+		for(Entry<Integer,GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
-			AirComposition.GasDetails gas = g.getValue();
+			GasDetails gas = g.getValue();
 
-			double d_moles = gas.numMoles * volume / fixedVolume;
+			double dMoles = gas.numMoles * volume / fixedVolume;
 
 			double molecularMass = getMolecularMass(gasId);
-			double d_mass = molecularMass * d_moles;
+			double dMass = molecularMass * dMoles;
 
 			if (isReleasing) {
-				gas.numMoles = gas.numMoles + d_moles;
-				gas.mass  = gas.mass + d_mass;
-				if (d_mass > 0) {
-					rh.retrieveAmountResource(gasId, d_mass);
+				gas.numMoles = gas.numMoles + dMoles;
+				gas.mass  = gas.mass + dMass;
+				if (dMass > 0) {
+					rh.retrieveAmountResource(gasId, dMass);
 				}
 			}
 			else { // recapture
-				gas.numMoles = gas.numMoles - d_moles;
-				gas.mass  = gas.mass - d_mass;
-				if (d_mass > 0) {
-					rh.storeAmountResource(gasId, d_mass * CompositionOfAir.GAS_CAPTURE_EFFICIENCY);	
+				gas.numMoles = gas.numMoles - dMoles;
+				gas.mass  = gas.mass - dMass;
+				if (dMass > 0) {
+					rh.storeAmountResource(gasId, dMass * AirComposition.GAS_CAPTURE_EFFICIENCY);	
 				}
 			}
 
@@ -331,12 +327,61 @@ public class AirComposition implements Serializable {
         return gases.get(gasId);
     }
 
+	
+	public static void initializeInstances(PersonConfig personConfig) {
+		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
+
+		cO2Expelled = personConfig.getCO2ExpelledRate() / 1000D; // [in kg/millisol] 1.0433 kg or 2.3 pounds CO2 per day
+																	// for high metabolic activity.
+
+		// If we are breathing regular air, at about ~20-21% 02, we use about 5% of that
+		// O2 and exhale the by product of
+		// glucose utilization CO2 and the balance of the O2, so exhaled breath is about
+		// 16% oxygen, and about 4.75 % CO2.
+		moistureExpelled = .8 / 1000D; // ~800 ml through breathing, sweat and skin per sol, divide by 1000 to convert								// to [kg/millisol]
+	}
+
+	private static final double getMolecularMass(int gasId) {
+		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
+		if (gasId == ResourceUtil.co2ID)
+			return CO2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.argonID)
+			return ARGON_MOLAR_MASS;
+		else if (gasId == ResourceUtil.nitrogenID)
+			return N2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.oxygenID)
+			return O2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.waterID)
+				return H2O_MOLAR_MASS;
+		else
+			throw new IllegalArgumentException("Unknown gas id=" + gasId);
+	}
+
+	/**
+	 * Get the ideal pressure for a particular gas.
+	 */
+	private static final double getIdealPressure(int gasId) {
+		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
+		if (gasId == ResourceUtil.co2ID)
+			return CO2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.argonID)
+			return ARGON_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.nitrogenID)
+			return N2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.oxygenID)
+			return O2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.waterID)
+			 return H2O_PARTIAL_PRESSURE;
+		else
+			throw new IllegalArgumentException("Unknown gas id=" + gasId);
+	}
+
     /**
      * Calculate the O2 pressure for a quantity in a fixed volume.
      * @param gasVol Amount of O2 present
      * @param totalVol Total volume of the container 
      */
-    public final static double getOxygenPressure(double gasVol, double totalVol) {
-    	return CompositionOfAir.KPA_PER_ATM * gasVol / O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / totalVol;
+    public static final double getOxygenPressure(double gasVol, double totalVol) {
+    	return KPA_PER_ATM * gasVol / O2_MOLAR_MASS * R_GAS_CONSTANT / totalVol;
     }
 }

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -44,24 +45,17 @@ public class LifeSupport extends Function implements Serializable {
 
 	private Collection<Person> occupants;
 
+	private AirComposition air;
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
 	 */
 	public LifeSupport(Building building) {
-		// Call Function constructor.
-		super(THE_FUNCTION, building);
-
-		occupants = new HashSet<>();
-
-		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), THE_FUNCTION);
-		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
-
-		length = building.getLength();
-		width = building.getWidth();
-		floorArea = length * width;
+		this(building,
+			buildingConfig.getFunctionCapacity(building.getBuildingType(), THE_FUNCTION),
+			buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType()));
 	}
 
 	/**
@@ -84,6 +78,10 @@ public class LifeSupport extends Function implements Serializable {
 		length = building.getLength();
 		width = building.getWidth();
 		floorArea = length * width;
+
+		double t = AirComposition.C_TO_K + building.getCurrentTemperature();
+		double vol = building.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
+		air = new AirComposition(t, vol);
 	}
 
 	/**
@@ -254,8 +252,19 @@ public class LifeSupport extends Function implements Serializable {
 					}
 				}
 			}
+
+			// Update Air
+			air.timePassing(building, pulse);
 		}
 		return valid;
+	}
+
+	/**
+	 * Get details about the composition of the air
+	 * @return
+	 */
+	public AirComposition getAir() {
+		return air;
 	}
 
 	/**
@@ -263,6 +272,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * 
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		return powerRequired;
 	}
@@ -279,4 +289,5 @@ public class LifeSupport extends Function implements Serializable {
 		occupants.clear();
 		occupants = null;
 	}
+
 }

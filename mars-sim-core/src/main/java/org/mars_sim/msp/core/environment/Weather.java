@@ -16,7 +16,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -125,7 +125,7 @@ public class Weather implements Serializable, Temporal {
 		// The air density is derived from the equation of state : d = p / .1921 / (t +
 		// 273.1)
 		double result = 1000D * getAirPressure(location)
-				/ (.1921 * (getTemperature(location) + CompositionOfAir.C_TO_K));
+				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
 		return Math.round(result * 100.0) / 100.0;
 	}
 
@@ -422,7 +422,7 @@ public class Weather implements Serializable, Temporal {
 			// The swing can be plus and minus 10K deg
 
 			t = EXTREME_COLD + RandomUtil.getRandomDouble(10)
-					- CompositionOfAir.C_TO_K;
+					- AirComposition.C_TO_K;
 
 			// double millisol = marsClock.getMillisol();
 			// TODO: how to relate at what millisols are the mean daytime and mean night
@@ -454,7 +454,7 @@ public class Weather implements Serializable, Temporal {
 			else if (lS <= 360)
 				t = .25 * lS + 55;
 
-			t = t + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3) - CompositionOfAir.C_TO_K;
+			t = t + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3) - AirComposition.C_TO_K;
 
 		} else {
 			// We arrived at this temperature model based on Viking 1 & Opportunity Rover

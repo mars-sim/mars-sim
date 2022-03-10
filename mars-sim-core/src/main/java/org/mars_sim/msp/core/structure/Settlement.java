@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
@@ -285,8 +285,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	protected ThermalSystem thermalSystem;
 	/** The settlement's chain of command. */
 	private ChainOfCommand chainOfCommand;
-	/** The settlement's composition of air. */
-	private CompositionOfAir compositionOfAir;
 	/** The settlement's location. */
 	private Coordinates location;
 	/** The settlement's last dust storm. */
@@ -513,9 +511,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
-
-		// Add tracking composition of air
-		compositionOfAir = new CompositionOfAir(this);
 
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
@@ -880,7 +875,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		for (Building b : buildings) {
 			double area = b.getFloorArea();
 			totalArea += area;
-			totalPressureArea += compositionOfAir.getTotalPressure(b) * area;
+			totalPressureArea += b.getLifeSupport().getAir().getTotalPressure() * area;
 			totalTArea += b.getCurrentTemperature() * area;
 		}
 		if (totalArea == 0) {
@@ -888,7 +883,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		}
 
 		// convert from atm to kPascal
-		currentPressure =  totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
+		currentPressure =  totalPressureArea * AirComposition.KPA_PER_ATM / totalArea;
 		currentTemperature = totalTArea / totalArea;
 
 		outside_temperature = weather.getTemperature(location);
@@ -905,11 +900,11 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		for (Building b : buildings) {
 			if (b == building) {
-				p = compositionOfAir.getTotalPressure(b);
+				p = b.getLifeSupport().getAir().getTotalPressure();
 			}
 		}
 		// convert from atm to kPascal
-		return p * CompositionOfAir.KPA_PER_ATM;
+		return p * AirComposition.KPA_PER_ATM;
 	}
 
 	/**
@@ -1002,8 +997,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 		thermalSystem.timePassing(pulse);
 
 		buildingManager.timePassing(pulse);
-
-		compositionOfAir.timePassing(pulse);
 
 		// Update citizens
 		timePassing(pulse, citizens);
@@ -3023,10 +3016,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		} else
 			exposed[2] = false;
-	}
-
-	public CompositionOfAir getCompositionOfAir() {
-		return compositionOfAir;
 	}
 
 	/**

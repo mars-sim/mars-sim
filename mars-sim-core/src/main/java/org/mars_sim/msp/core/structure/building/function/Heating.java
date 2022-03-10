@@ -985,10 +985,8 @@ extends Function {
 		double t_out = building.getSettlement().getOutsideTemperature();
 
 		if (mass == 0) {
-			mass = building.getSettlement().getCompositionOfAir().getTotalMass(building);
+			mass = building.getLifeSupport().getAir().getTotalMass();
 			conversion_factor = C_s * mass / timeSlice; 
-			//System.out.println(building.getNickName() + "'s total mass : " + mass);
-			// also, mass = density * HEIGHT * floorArea * M_TO_FT * M_TO_FT * M_TO_FT;
 		}
 		
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
