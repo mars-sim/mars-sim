@@ -142,31 +142,27 @@ public class Simulation implements ClockListener, Serializable {
 	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
-	public final static String VERSION = Version.getVersion();
+	public static final String VERSION = Version.getVersion();
 	/** Build string. */
-	public final static String BUILD = Version.getBuild();
+	public static final String BUILD = Version.getBuild();
 	/** Java version string. */
-	private final static String JAVA_TAG = System.getProperty("java.version");
-	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";
+	private static final String JAVA_TAG = System.getProperty("java.version");
 	/** Java version string. */
-	public final static String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ?
+	public static final String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ?
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
-	/** Vendor string. */
-	// public final static String VENDOR = System.getProperty("java.vendor");
 	/** OS architecture string. */
-	private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	/** Default save filename. */
-	public final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
+	public static final String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
-	public final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
+	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
 
-	public final static String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
-	// + " - " + VENDOR
+	public static final String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
 	/** The minimum size of heap space in bytes */
-	public final static int MIN_HEAP_SPACE = 64*1024*1024;
+	private static final int MIN_HEAP_SPACE = 64*1024*1024;
 
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
@@ -493,25 +489,6 @@ public class Simulation implements ClockListener, Serializable {
 		System.gc();
 	}
 
-//	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
-//
-//		String name = mars.getClass().getSimpleName();
-//		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
-//
-//		if (file.exists() && file.canRead()) {
-//			// Use Jackson json to read json file data to String
-//			byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
-//			System.out.println(new String(jsonData));
-//
-////	        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
-////	        System.out.println(mars);
-//
-//			// Use Jackson json to read
-////			mars = objectMapper.readValue(file, Mars.class);
-////			System.out.println(mars);
-//		}
-//	}
-
     /**
      * Deserialize to Object from given file.
      */
@@ -744,44 +721,6 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Writes the JSON file
-	 *
-	 * @throws JsonGenerationException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-//	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {
-		// Write to console, can write to any output stream such as file
-//		StringWriter stringEmp = new StringWriter();
-
-//		Simulation sim = instance();
-//		SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
-//		String name = surface.getClass().getSimpleName();
-//		objectMapper.writeValue(stringEmp, surface);
-//		System.out.println(name + " JSON representation :\n" + stringEmp);
-//		// Write to the file
-//		objectMapper.writeValue(new File(name + "." + JSON_EXTENSION), surface);
-
-//		String name = mars.getClass().getSimpleName();
-//		objectMapper.writeValue(stringEmp, mars);
-//		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
-//		// Write to the file
-//		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
-
-//		Object o = mars;
-//		String name = o.getClass().getSimpleName();
-
-//		objectMapper.writeValue(stringEmp, o);
-//		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
-//		// Write to the file
-//		objectMapper.writeValue(new File(SAVE_DIR, name + JSON_EXTENSION), o);
-//
-//		String json = objectMapper.writeValueAsString(o) ;
-//		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
-//	}
-
-
-	/**
 	 * Saves a simulation instance to a save file.
 	 *
 	 * @param file the file to be saved to.
@@ -797,25 +736,25 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
-		// Experiment with saving in JSON format
-//		writeJSON();
 
 		lastSaveTimeStamp = new Date();
 
-		// Create the backup file for storing the previous version of default.sim
-		File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
-		FileSystem fileSys = null;
-		Path destPath = null;
 		Path srcPath = null;
+		Path destPath = null;
 
 		try {
 			// Use type to differentiate in what name/dir it is saved
 			switch(type) {
+			case AUTOSAVE_AS_DEFAULT:
 			case SAVE_DEFAULT:
 				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 	
 				if (file.exists() && !file.isDirectory()) {
-					fileSys = FileSystems.getDefault();
+					FileSystem fileSys = FileSystems.getDefault();
+					
+					// Create the backup file for storing the previous version of default.sim
+					File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
+
 					destPath = fileSys.getPath(backupFile.getPath());
 					srcPath = fileSys.getPath(file.getPath());
 					// Backup the existing default.sim
@@ -831,21 +770,6 @@ public class Simulation implements ClockListener, Serializable {
 				if (!f.contains(".sim"))
 					file = new File(dir, f + SAVE_FILE_EXTENSION);
 				logger.config("Saving the simulation as " + file + "...");
-				break;
-	
-			case AUTOSAVE_AS_DEFAULT:
-	
-				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
-	
-				if (file.exists() && !file.isDirectory()) {
-					fileSys = FileSystems.getDefault();
-					destPath = fileSys.getPath(backupFile.getPath());
-					srcPath = fileSys.getPath(file.getPath());
-					// Backup the existing default.sim
-					Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-				}
-	
-				logger.config("Autosaving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
 				break;
 			
 			case AUTOSAVE:
@@ -868,26 +792,27 @@ public class Simulation implements ClockListener, Serializable {
 				file.getParentFile().mkdirs();
 			}
 	
-			// Get current size of heap in bytes
-			long heapSize = Runtime.getRuntime().totalMemory();
+			// Call up garbage collector. But it's up to the gc what it will do.
+			System.gc();
+
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
 			long heapMaxSize = Runtime.getRuntime().maxMemory();
 			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
 			long heapFreeSize = Runtime.getRuntime().freeMemory();
 	
-			logger.config(
-			"Current Heap Size: " + formatSize(heapSize)
-			+ "    Heap Max Size: " + formatSize(heapMaxSize)
-			+ "    Heap Free Size: " + formatSize(heapFreeSize) + "");
-	
-			// Call up garbage collector. But it's up to the gc what it will do.
-			System.gc();
+			logger.config("Heap Max Size: " + formatSize(heapMaxSize)
+						+ ", Heap Free Size: " + formatSize(heapFreeSize));
 	
 			if (heapFreeSize > MIN_HEAP_SPACE){
 				// Save local machine timestamp
 				// Serialize the file
 				lastSaveTimeStamp = new Date();
-				serialize(type, file, srcPath, destPath);
+				boolean sucessful = serialize(type, file, srcPath, destPath);
+
+				if (sucessful && (type == SaveType.AUTOSAVE)) {
+					// Purge old auto backups
+					SimulationFiles.purgeAutoSave(simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
+				}
 			}
 			else {
 				logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
@@ -907,7 +832,7 @@ public class Simulation implements ClockListener, Serializable {
 	 *
 	 * @param millis
 	 */
-    public static void delay(long millis) {
+    private static void delay(long millis) {
         try {
 			TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {
@@ -925,10 +850,11 @@ public class Simulation implements ClockListener, Serializable {
 
     /**
      * Serialize the given object and save it to a given file.
+     * @return 
      */
-    private void serialize(SaveType type, File file, Path srcPath, Path destPath)
+    private boolean serialize(SaveType type, File file, Path srcPath, Path destPath)
             throws IOException {
-
+		boolean success = false;
 	    ObjectOutputStream oos = new ObjectOutputStream(
 	    			new GZIPOutputStream(new FileOutputStream(file)));
 		try {
@@ -956,26 +882,7 @@ public class Simulation implements ClockListener, Serializable {
 			// Print the size of the saved sim
 			logger.config("           File size : " + computeFileSize(file));
 			logger.config("Done saving. The simulation resumes.");
-
-//		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
-//		} catch (WriteAbortedException e) {
-//			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());
-//
-//		} catch (OptionalDataException e) {
-//			// Thrown by readObject when there is primitive data in the stream and an object is expected. 
-//			// The length field of the exception indicates the number of bytes that are available in the current block.
-//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when saving " + file + " : " + e.getMessage());
-//
-//		} catch (InvalidObjectException e) {
-//			// Thrown when a restored object cannot be made valid.
-//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());
-//
-//		} catch (NotActiveException e) {
-//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when saving " + file + " : " + e.getMessage());
-//
-//		} catch (StreamCorruptedException e) {
-//			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when saving " + file + " : " + e.getMessage());
+			success = true;
 
 		} catch (NotSerializableException e) {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
@@ -1009,6 +916,8 @@ public class Simulation implements ClockListener, Serializable {
 
 			justSaved = true;
 		}
+
+		return success;
     }
 
 	/**
@@ -1326,7 +1235,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Destroys the current simulation to prepare for creating or loading a new
 	 * simulation.
 	 */
-	public void destroyOldSimulation() {
+	private void destroyOldSimulation() {
 		logger.config("Starting destroyOldSimulation()");
 
 		// Remove old clock listeners ?

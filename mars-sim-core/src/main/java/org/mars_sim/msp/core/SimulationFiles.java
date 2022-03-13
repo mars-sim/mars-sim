@@ -8,6 +8,10 @@
 package org.mars_sim.msp.core;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * A singleton that controls where the simulation files reside on the file system
@@ -61,4 +65,22 @@ public class SimulationFiles {
 	public static String getLogDir() {
 		return dataDir + File.separator + LOG_DIR;
 	}
+
+	/**
+	 * Purge any old samed simulation files fromt eh auto save dir
+	 */
+    public static void purgeAutoSave(int retainedCount, String saveFileExtension) {
+		File[] files = (new File(getAutoSaveDir())).listFiles((d, name) -> name.endsWith(saveFileExtension));
+		Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+
+		for(int i = retainedCount; i < files.length; i++) {
+			try {
+				files[i].delete();
+			}
+			catch(Exception e) {
+				// Pretty fatal
+				System.err.println("Failed to remove old sim file " + files[i]);
+			}
+		}
+    }
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE simulation-configuration [
 	<!ELEMENT simulation-configuration (time-configuration)>
 	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse,
-	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time,
+	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, autosave-number, average-transit-time,
 	unused-cores)>
 	<!ELEMENT base-time-ratio EMPTY>
 	<!ATTLIST base-time-ratio value CDATA #REQUIRED>
@@ -20,6 +20,8 @@
 	<!ATTLIST mars-start-date-time value CDATA #REQUIRED>
 	<!ELEMENT autosave-interval EMPTY>
 	<!ATTLIST autosave-interval value CDATA #REQUIRED>
+	<!ELEMENT autosave-number EMPTY>
+	<!ATTLIST autosave-number value CDATA #REQUIRED>
 	<!ELEMENT average-transit-time EMPTY>
 	<!ATTLIST average-transit-time value CDATA #REQUIRED>
 	<!ELEMENT unused-cores EMPTY>
@@ -87,6 +89,11 @@
 		<!-- Min : 1 ; Max : 360 -->
 		<!-- Default: 15 -->
 		<autosave-interval value="15" />
+
+		<!-- autosave-number is the number of autosave files retained -->
+		<!-- Min : 1 ; Max : 360 -->
+		<!-- Default: 5 -->
+		<autosave-number value="5" />
 
 		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
 		<!-- Min : 1 ; Max : 430 -->

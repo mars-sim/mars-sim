@@ -111,6 +111,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
+	private static final String AUTOSAVE_NUMBER = "autosave-number";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
 	private static final String BASE_TIME_RATIO = "base-time-ratio";
@@ -126,6 +127,7 @@ public class SimulationConfig implements Serializable {
 	private int defaultTimePulse = 0; 
 	private int baseTimeRatio = 0;
 	private int autosaveInterval = 0;
+	private int numberOfAutoSaves = 0;
 	private int averageTransitTime = 0;
 	private int unusedCores = 0;	
 	private transient boolean loaded = false;
@@ -219,19 +221,21 @@ public class SimulationConfig implements Serializable {
 		
 		// Load simulation document
 		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-		obtainMarsStartDateTime(simulationDoc);
-		obtainEarthStartDateTime(simulationDoc);
+
+		earthStartDate = loadValue(simulationDoc, TIME_CONFIGURATION, EARTH_START_DATE_TIME);	
+		marsStartDate = loadValue(simulationDoc, TIME_CONFIGURATION, MARS_START_DATE_TIME);
 		
-		obtainAccuracyBias(simulationDoc);
-		obtainMinSimulatedPulse(simulationDoc);
-		obtainMaxSimulatedPulse(simulationDoc);
-		
-		obtainDefaultPulsePeriod(simulationDoc);
-		obtainTimeRatio(simulationDoc);
-		obtainUnusedCores(simulationDoc);
-		obtainAverageTransitTime(simulationDoc);
-		obtainAutosaveInterval(simulationDoc);
-		
+		accuracyBias =  loadDoubleValue(simulationDoc, TIME_CONFIGURATION, ACCURACY_BIAS, 0D, 1D);
+		minSimulatedPulse = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MIN_SIMULATED_PULSE, 0.0001D, 5D);
+		maxSimulatedPulse = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MAX_SIMULATED_PULSE, 0.0001D, 5D);
+	
+		defaultTimePulse = loadIntValue(simulationDoc,  TIME_CONFIGURATION, DEFAULT_TIME_PULSE, 1, 2048);
+		baseTimeRatio = loadIntValue(simulationDoc, TIME_CONFIGURATION, BASE_TIME_RATIO, 16, 2048);
+		unusedCores = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_UNUSEDCORES, 1, 360);
+		averageTransitTime = loadIntValue(simulationDoc, TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME, 0, 430);
+		autosaveInterval = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_INTERVAL, 1, 360);
+		numberOfAutoSaves = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_NUMBER, 1, 100);
+
 		checkXMLFileVersion();
 
 		try {
@@ -471,43 +475,64 @@ public class SimulationConfig implements Serializable {
 	 * @param child Value element
 	 * @return String value found
 	 */
-	private String findValue(Document simulationDoc, String parent, String child) {
+	private static String loadValue(Document simulationDoc, String parent, String child) {
 		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(parent);
-		Element timeRatioEL = timeConfig.getChild(child);
-		String str = timeRatioEL.getAttributeValue(VALUE);
+		Element parentConfig = root.getChild(parent);
+		Element childItem = parentConfig.getChild(child);
+		String str = childItem.getAttributeValue(VALUE);
 
 
 		if ((str == null) || str.trim().length() == 0)
 			throw new IllegalStateException(parent + "->" + child + " must be greater than zero and cannot be blank.");
-		return str;
+		return str.trim();
 	}
 
-	private int loadIntValue(Document simulationDoc, String parent, String child) {
-		String str = findValue(simulationDoc, parent, child);
+	/**
+	 * Load an integer value that is held as a 'value' attribute.
+	 * @param simulationDoc parent doc
+	 * @param parent Parent XML node
+	 * @param child XML Node containing the 'value'
+	 * @param minValue Minimum allowable value
+	 * @param maxValue Maximum allowable value
+	 */
+	private static int loadIntValue(Document simulationDoc, String parent, String child,
+									   int minValue, int maxValue) {
+		String str = loadValue(simulationDoc, parent, child);
 		int i = 0;
 		try {
-			i = Integer.parseInt(str.trim());
+			i = Integer.parseInt(str);
 
 		} catch (NumberFormatException nfe) {
 			logger.severe("NumberFormatException found in " + parent + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
+		if (i < minValue || i > maxValue)
+			throw new IllegalStateException(child + " must be between " + minValue + " -> " + maxValue);
 		return i;
 	}
 
-	private double loadDoubleValue(Document simulationDoc, String parent, String child) {
-		String str = findValue(simulationDoc, parent, child);
+	/**
+	 * Load an double value that is held as a 'value' attribute.
+	 * @param simulationDoc parent doc
+	 * @param parent Parent XML node
+	 * @param child XML Node containing the 'value'
+	 * @param minValue Minimum allowable value
+	 * @param maxValue Maximum allowable value
+	 */
+	private double loadDoubleValue(Document simulationDoc, String parent, String child, double minValue, double maxValue) {
+		String str = loadValue(simulationDoc, parent, child);
 		double d = 0;
 		try {
-			d = Double.valueOf(str.trim()).doubleValue();
+			d = Double.parseDouble(str);
 
 		} catch (NumberFormatException nfe) {
 			logger.severe("NumberFormatException found in " + parent + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
+		if (d < minValue || d > maxValue)
+			throw new IllegalStateException(child + " must be between " + minValue + " -> " + maxValue);
 		return d;
 	}
 
@@ -527,13 +552,6 @@ public class SimulationConfig implements Serializable {
 		return baseTimeRatio;
 	}
 
-	public void obtainTimeRatio(Document simulationDoc) {
-		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, BASE_TIME_RATIO);
-		if (d < 16 && d > 2048)
-			throw new IllegalStateException(BASE_TIME_RATIO + " must be between 16 and 2048");
-		baseTimeRatio = d;
-	}
-
 	/**
 	 * Gets the minimum simulation pulse size in terms of MilliSol in simulation.xml
 	 *
@@ -542,14 +560,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public double getMinSimulatedPulse() {
 		return minSimulatedPulse;
-	}
-
-	public void obtainMinSimulatedPulse(Document simulationDoc) {
-		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MIN_SIMULATED_PULSE);
-		if (d <= 0)
-			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MIN_SIMULATED_PULSE
-                    	+ " must be greater then zero");
-		minSimulatedPulse = d;
 	}
 
 	/**
@@ -562,14 +572,6 @@ public class SimulationConfig implements Serializable {
 		return maxSimulatedPulse;
 	}
 
-	public void obtainMaxSimulatedPulse(Document simulationDoc) {
-		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MAX_SIMULATED_PULSE);
-		if (d <= 0)
-			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MAX_SIMULATED_PULSE
-                    	+ " must be greater then zero");
-		maxSimulatedPulse = d;
-	}
-
 	/**
 	 * Load the accuracy bias. Must be between 0.0 -> 1.0
 	 * 
@@ -577,14 +579,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public double getAccuracyBias() {
 		return accuracyBias;
-	}
-
-	public void obtainAccuracyBias(Document simulationDoc) {
-		double d = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, ACCURACY_BIAS);
-		if (d < 0 || d > 1)
-			throw new IllegalStateException(TIME_CONFIGURATION + "->" + ACCURACY_BIAS
-                    	+ " must be between 0.0 & 1.0");
-		accuracyBias = d;
 	}
 
 	/**
@@ -596,15 +590,6 @@ public class SimulationConfig implements Serializable {
 		return defaultTimePulse;
 	}
 
-	public void obtainDefaultPulsePeriod(Document simulationDoc) {
-		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_TIME_PULSE);
-		if (d <= 0)
-			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_TIME_PULSE
-                    	+ " must be greater then zero");
-		defaultTimePulse = d;
-	}
-
-
 	/**
 	 * The difference between number of cores in the machine and the simulation threads created, 
 	 * i.e. the unused cores. Must be positive.
@@ -613,14 +598,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public int getUnusedCores() {
 		return unusedCores;
-	}
-
-	public void obtainUnusedCores(Document simulationDoc) {
-		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_UNUSEDCORES);
-		if (d < 0)
-			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_UNUSEDCORES
-                    	+ " must be greater then zero");
-		unusedCores = d;
 	}
 
 	/**
@@ -632,15 +609,6 @@ public class SimulationConfig implements Serializable {
 	public String getEarthStartDateTime() {
 		return earthStartDate;
 	}
-	
-	public void obtainEarthStartDateTime(Document simulationDoc) {		
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element date = timeConfig.getChild(EARTH_START_DATE_TIME);
-		earthStartDate = date.getAttributeValue(VALUE);
-		if ((earthStartDate == null) || earthStartDate.trim().length() == 0)
-			throw new IllegalStateException("Earth start date time must not be blank.");
-	}
 
 	/**
 	 * Gets the Mars date/time when the simulation starts.
@@ -650,15 +618,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public String getMarsStartDateTime() {
 		return marsStartDate;
-	}
-			
-	public void obtainMarsStartDateTime(Document simulationDoc) {		
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element date = timeConfig.getChild(MARS_START_DATE_TIME);
-		marsStartDate = date.getAttributeValue(VALUE);
-		if ((marsStartDate == null) || marsStartDate.trim().length() == 0)
-			throw new IllegalStateException("Mars start date time must not be blank.");
 	}
 
 	/**
@@ -680,11 +639,12 @@ public class SimulationConfig implements Serializable {
 		return autosaveInterval;
 	}
 
-	public void obtainAutosaveInterval(Document simulationDoc) {
-		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_INTERVAL);
-		if (d < 1 || d > 360)
-			throw new IllegalStateException("autosave_interval must be between 1 and 360.");
-		autosaveInterval = d;
+	/**
+	 * How many auto saves should be retained.
+	 * @param Integer value.
+	 */
+	public int getNumberAutoSaves() {
+		return numberOfAutoSaves;
 	}
 
 	/**
@@ -695,13 +655,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public int getAverageTransitTime() {
 		return averageTransitTime;
-	}
-	
-	public void obtainAverageTransitTime(Document simulationDoc) {
-		int d = loadIntValue(simulationDoc, TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME);
-		if (d < 0 || d > 430)
-			throw new IllegalStateException("average-transit-time must be between 0 and 430.");
-		averageTransitTime = d;
 	}
 
 	/**
@@ -933,7 +886,6 @@ public class SimulationConfig implements Serializable {
 			else {
 				// if the xml file doesn't exist
 				if(testf.renameTo(f)) {
-//					logger.config(f.getName() + " didn't exist locally. Just got created.");
 					logger.config("A new version of " + f.getName() + " just got created.");
 				} else {
 					logger.config("Error in renaming the test xml file " + testf.getName());
@@ -947,12 +899,11 @@ public class SimulationConfig implements Serializable {
 
 					if (!excludeXMLFile(filename)) {
 						String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;
-				        File dir = null;//new File(s0.trim());
+				        File dir = null;
 
 						// Case C2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
 			        	// if that buildText directory already exists
 			        	// Get timestamp in UTC
-	//				            Instant timestamp = Instant.now();
 			            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
 			            int lastIndxDot = timestamp.lastIndexOf('.');
 			            timestamp = timestamp.substring(0, lastIndxDot);
@@ -999,7 +950,7 @@ public class SimulationConfig implements Serializable {
 	 */
 	private boolean excludeXMLFile(String filename) {
 		if (excludedList == null) {
-			excludedList = new ArrayList<String>();
+			excludedList = new ArrayList<>();
 
 			File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator
 					+ EXCEPTION_FILE);
